@@ -53,7 +53,8 @@ export interface IndustrialDetailsResponse {
   driveInDoors?: number;
   floorLoadCapacityValue?: number;
   floorLoadCapacityUnit?: string;
-  powerCapacityKva?: number;
+  powerCapacityValue?: number;
+  powerCapacityUnit?: string;
   hasThreePhasePower?: boolean;
   hasCrane?: boolean;
   craneCapacityValue?: number;
@@ -160,12 +161,14 @@ export interface PropertyResponse {
 
   // Utilities & Connections
   electricityConnectionType?: string;
-  electricityCapacityAmps?: number;
+  electricityCapacityValue?: number;
+  electricityCapacityUnit?: string;
   waterConnectionType?: string;
   hasGasConnection?: boolean;
   sewageType?: string;
   internetConnectionType?: string;
-  internetMaxSpeedMbps?: number;
+  internetMaxSpeedValue?: number;
+  internetMaxSpeedUnit?: string;
   internetStatus?: string;
 
   // Parking
@@ -279,7 +282,8 @@ export interface IndustrialDetailsRequest {
   driveInDoors?: number;
   floorLoadCapacityValue?: number;
   floorLoadCapacityUnit?: string;
-  powerCapacityKva?: number;
+  powerCapacityValue?: number;
+  powerCapacityUnit?: string;
   hasThreePhasePower?: boolean;
   hasCrane?: boolean;
   craneCapacityValue?: number;
@@ -349,12 +353,14 @@ export interface CreatePropertyRequest {
   hotWaterSystem?: string;
   insulationNotes?: string;
   electricityConnectionType?: string;
-  electricityCapacityAmps?: number;
+  electricityCapacityValue?: number;
+  electricityCapacityUnit?: string;
   waterConnectionType?: string;
   hasGasConnection?: boolean;
   sewageType?: string;
   internetConnectionType?: string;
-  internetMaxSpeedMbps?: number;
+  internetMaxSpeedValue?: number;
+  internetMaxSpeedUnit?: string;
   internetStatus?: string;
   parkingSpaces?: number;
   parkingType?: string;
@@ -406,12 +412,14 @@ export interface UpdatePropertyRequest {
   hotWaterSystem?: string;
   insulationNotes?: string;
   electricityConnectionType?: string;
-  electricityCapacityAmps?: number;
+  electricityCapacityValue?: number;
+  electricityCapacityUnit?: string;
   waterConnectionType?: string;
   hasGasConnection?: boolean;
   sewageType?: string;
   internetConnectionType?: string;
-  internetMaxSpeedMbps?: number;
+  internetMaxSpeedValue?: number;
+  internetMaxSpeedUnit?: string;
   internetStatus?: string;
   parkingSpaces?: number;
   parkingType?: string;

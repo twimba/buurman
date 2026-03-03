@@ -1076,11 +1076,11 @@ export const PropertyDetailPage = () => {
 
             {/* Utilities & Connections */}
             {(property.electricityConnectionType ||
-              property.electricityCapacityAmps != null ||
+              property.electricityCapacityValue != null ||
               property.waterConnectionType ||
               property.sewageType ||
               property.internetConnectionType ||
-              property.internetMaxSpeedMbps != null ||
+              property.internetMaxSpeedValue != null ||
               property.internetStatus) && (
               <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
                 <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide mb-4">
@@ -1097,13 +1097,13 @@ export const PropertyDetailPage = () => {
                       </div>
                     </div>
                   )}
-                  {property.electricityCapacityAmps != null && (
+                  {property.electricityCapacityValue != null && (
                     <div>
                       <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
                         Capacity
                       </div>
                       <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                        {property.electricityCapacityAmps} A
+                        {property.electricityCapacityValue} {(property.electricityCapacityUnit ?? 'A').toUpperCase()}
                       </div>
                     </div>
                   )}
@@ -1145,13 +1145,13 @@ export const PropertyDetailPage = () => {
                       </div>
                     </div>
                   )}
-                  {property.internetMaxSpeedMbps != null && (
+                  {property.internetMaxSpeedValue != null && (
                     <div>
                       <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
                         Internet Speed
                       </div>
                       <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                        {property.internetMaxSpeedMbps} Mbps
+                        {property.internetMaxSpeedValue} {(property.internetMaxSpeedUnit ?? 'Mbps').toUpperCase()}
                       </div>
                     </div>
                   )}

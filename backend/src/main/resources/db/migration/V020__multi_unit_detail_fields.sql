@@ -84,3 +84,67 @@ SET
     crane_capacity_unit = 'metric_tons'
 WHERE
     crane_capacity_value IS NOT NULL;
+
+-- =============================================
+-- Properties: electricity_capacity_amps -> electricity_capacity_value + electricity_capacity_unit
+-- =============================================
+ALTER TABLE properties
+RENAME COLUMN electricity_capacity_amps TO electricity_capacity_value;
+
+ALTER TABLE properties
+ADD COLUMN electricity_capacity_unit VARCHAR(20);
+
+ALTER TABLE properties
+DROP CONSTRAINT chk_properties_electricity_capacity_amps;
+
+ALTER TABLE properties
+ADD CONSTRAINT chk_properties_electricity_capacity CHECK (electricity_capacity_value > 0);
+
+-- Default existing data to amps
+UPDATE properties
+SET
+    electricity_capacity_unit = 'a'
+WHERE
+    electricity_capacity_value IS NOT NULL;
+
+-- =============================================
+-- Properties: internet_max_speed_mbps -> internet_max_speed_value + internet_max_speed_unit
+-- =============================================
+ALTER TABLE properties
+RENAME COLUMN internet_max_speed_mbps TO internet_max_speed_value;
+
+ALTER TABLE properties
+ADD COLUMN internet_max_speed_unit VARCHAR(20);
+
+ALTER TABLE properties
+DROP CONSTRAINT chk_properties_internet_max_speed_mbps;
+
+ALTER TABLE properties
+ADD CONSTRAINT chk_properties_internet_max_speed CHECK (internet_max_speed_value > 0);
+
+UPDATE properties
+SET
+    internet_max_speed_unit = 'mbps'
+WHERE
+    internet_max_speed_value IS NOT NULL;
+
+-- =============================================
+-- Industrial Details: power_capacity_kva -> power_capacity_value + power_capacity_unit
+-- =============================================
+ALTER TABLE property_industrial_details
+RENAME COLUMN power_capacity_kva TO power_capacity_value;
+
+ALTER TABLE property_industrial_details
+ADD COLUMN power_capacity_unit VARCHAR(20);
+
+ALTER TABLE property_industrial_details
+DROP CONSTRAINT chk_industrial_power;
+
+ALTER TABLE property_industrial_details
+ADD CONSTRAINT chk_industrial_power CHECK (power_capacity_value > 0);
+
+UPDATE property_industrial_details
+SET
+    power_capacity_unit = 'kva'
+WHERE
+    power_capacity_value IS NOT NULL;

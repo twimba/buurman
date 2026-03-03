@@ -444,7 +444,8 @@ public class PropertyService {
                 d.setDriveInDoors(i.driveInDoors());
                 d.setFloorLoadCapacityValue(i.floorLoadCapacityValue());
                 d.setFloorLoadCapacityUnit(i.floorLoadCapacityUnit());
-                d.setPowerCapacityKva(i.powerCapacityKva());
+                d.setPowerCapacityValue(i.powerCapacityValue());
+                d.setPowerCapacityUnit(i.powerCapacityUnit());
                 d.setHasThreePhasePower(Optional.of(i.hasThreePhasePower().orElse(false)));
                 d.setHasCrane(Optional.of(i.hasCrane().orElse(false)));
                 d.setCraneCapacityValue(i.craneCapacityValue());
@@ -558,7 +559,8 @@ public class PropertyService {
                 d.setDriveInDoors(i.driveInDoors());
                 d.setFloorLoadCapacityValue(i.floorLoadCapacityValue());
                 d.setFloorLoadCapacityUnit(i.floorLoadCapacityUnit());
-                d.setPowerCapacityKva(i.powerCapacityKva());
+                d.setPowerCapacityValue(i.powerCapacityValue());
+                d.setPowerCapacityUnit(i.powerCapacityUnit());
                 d.setHasThreePhasePower(Optional.of(i.hasThreePhasePower().orElse(false)));
                 d.setHasCrane(Optional.of(i.hasCrane().orElse(false)));
                 d.setCraneCapacityValue(i.craneCapacityValue());
@@ -655,7 +657,8 @@ public class PropertyService {
                     d.getDriveInDoors(),
                     d.getFloorLoadCapacityValue(),
                     d.getFloorLoadCapacityUnit(),
-                    d.getPowerCapacityKva(),
+                    d.getPowerCapacityValue(),
+                    d.getPowerCapacityUnit(),
                     d.getHasThreePhasePower(),
                     d.getHasCrane(),
                     d.getCraneCapacityValue(),
@@ -785,12 +788,14 @@ public class PropertyService {
         response.insulationNotes(),
         // Utilities & Connections
         response.electricityConnectionType(),
-        response.electricityCapacityAmps(),
+        response.electricityCapacityValue(),
+        response.electricityCapacityUnit(),
         response.waterConnectionType(),
         response.hasGasConnection(),
         response.sewageType(),
         response.internetConnectionType(),
-        response.internetMaxSpeedMbps(),
+        response.internetMaxSpeedValue(),
+        response.internetMaxSpeedUnit(),
         response.internetStatus(),
         // Parking
         response.parkingSpaces(),

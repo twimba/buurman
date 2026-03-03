@@ -14,7 +14,8 @@ public record IndustrialDetailsRequest(
     Optional<@Positive(message = "Floor load capacity must be positive") BigDecimal>
         floorLoadCapacityValue,
     Optional<String> floorLoadCapacityUnit,
-    Optional<@Positive(message = "Power capacity must be positive") Integer> powerCapacityKva,
+    Optional<@Positive(message = "Power capacity must be positive") Integer> powerCapacityValue,
+    Optional<String> powerCapacityUnit,
     Optional<Boolean> hasThreePhasePower,
     Optional<Boolean> hasCrane,
     Optional<@Positive(message = "Crane capacity must be positive") BigDecimal> craneCapacityValue,

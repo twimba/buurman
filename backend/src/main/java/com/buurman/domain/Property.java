@@ -56,12 +56,14 @@ public class Property {
 
   // Utilities & Connections
   @Builder.Default private Optional<String> electricityConnectionType = Optional.empty();
-  @Builder.Default private Optional<Integer> electricityCapacityAmps = Optional.empty();
+  @Builder.Default private Optional<Integer> electricityCapacityValue = Optional.empty();
+  @Builder.Default private Optional<String> electricityCapacityUnit = Optional.empty();
   @Builder.Default private Optional<String> waterConnectionType = Optional.empty();
   @Builder.Default private Optional<Boolean> hasGasConnection = Optional.empty();
   @Builder.Default private Optional<String> sewageType = Optional.empty();
   @Builder.Default private Optional<String> internetConnectionType = Optional.empty();
-  @Builder.Default private Optional<Integer> internetMaxSpeedMbps = Optional.empty();
+  @Builder.Default private Optional<Integer> internetMaxSpeedValue = Optional.empty();
+  @Builder.Default private Optional<String> internetMaxSpeedUnit = Optional.empty();
   @Builder.Default private Optional<String> internetStatus = Optional.empty();
 
   // Parking

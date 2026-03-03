@@ -58,8 +58,11 @@ public class PropertyIndustrialDetailsRepository {
               PROPERTY_INDUSTRIAL_DETAILS.FLOOR_LOAD_CAPACITY_UNIT,
               details.getFloorLoadCapacityUnit().orElse(null))
           .set(
-              PROPERTY_INDUSTRIAL_DETAILS.POWER_CAPACITY_KVA,
-              details.getPowerCapacityKva().orElse(null))
+              PROPERTY_INDUSTRIAL_DETAILS.POWER_CAPACITY_VALUE,
+              details.getPowerCapacityValue().orElse(null))
+          .set(
+              PROPERTY_INDUSTRIAL_DETAILS.POWER_CAPACITY_UNIT,
+              details.getPowerCapacityUnit().orElse(null))
           .set(
               PROPERTY_INDUSTRIAL_DETAILS.HAS_THREE_PHASE_POWER,
               details.getHasThreePhasePower().orElse(null))
@@ -109,8 +112,11 @@ public class PropertyIndustrialDetailsRepository {
               PROPERTY_INDUSTRIAL_DETAILS.FLOOR_LOAD_CAPACITY_UNIT,
               details.getFloorLoadCapacityUnit().orElse(null))
           .set(
-              PROPERTY_INDUSTRIAL_DETAILS.POWER_CAPACITY_KVA,
-              details.getPowerCapacityKva().orElse(null))
+              PROPERTY_INDUSTRIAL_DETAILS.POWER_CAPACITY_VALUE,
+              details.getPowerCapacityValue().orElse(null))
+          .set(
+              PROPERTY_INDUSTRIAL_DETAILS.POWER_CAPACITY_UNIT,
+              details.getPowerCapacityUnit().orElse(null))
           .set(
               PROPERTY_INDUSTRIAL_DETAILS.HAS_THREE_PHASE_POWER,
               details.getHasThreePhasePower().orElse(null))
@@ -169,7 +175,8 @@ public class PropertyIndustrialDetailsRepository {
     d.setDriveInDoors(Optional.ofNullable(record.getDriveInDoors()));
     d.setFloorLoadCapacityValue(Optional.ofNullable(record.getFloorLoadCapacityValue()));
     d.setFloorLoadCapacityUnit(Optional.ofNullable(record.getFloorLoadCapacityUnit()));
-    d.setPowerCapacityKva(Optional.ofNullable(record.getPowerCapacityKva()));
+    d.setPowerCapacityValue(Optional.ofNullable(record.getPowerCapacityValue()));
+    d.setPowerCapacityUnit(Optional.ofNullable(record.getPowerCapacityUnit()));
     d.setHasThreePhasePower(Optional.ofNullable(record.getHasThreePhasePower()));
     d.setHasCrane(Optional.ofNullable(record.getHasCrane()));
     d.setCraneCapacityValue(Optional.ofNullable(record.getCraneCapacityValue()));

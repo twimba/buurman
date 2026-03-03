@@ -350,8 +350,9 @@ public class DemoPropertyGenerator {
             .set(PROPERTIES.HOT_WATER_SYSTEM, "BOILER")
             .set(PROPERTIES.ELECTRICITY_CONNECTION_TYPE, "MUNICIPAL")
             .set(
-                PROPERTIES.ELECTRICITY_CAPACITY_AMPS,
+                PROPERTIES.ELECTRICITY_CAPACITY_VALUE,
                 "INDUSTRIAL".equals(propertyCategory) ? 63 : random.nextBoolean() ? 25 : 35)
+            .set(PROPERTIES.ELECTRICITY_CAPACITY_UNIT, "a")
             .set(PROPERTIES.WATER_CONNECTION_TYPE, "MUNICIPAL")
             .set(
                 PROPERTIES.HAS_GAS_CONNECTION,
@@ -360,7 +361,8 @@ public class DemoPropertyGenerator {
                 PROPERTIES.SEWAGE_TYPE,
                 "AGRICULTURAL".equals(propertyCategory) ? "SEPTIC" : "MUNICIPAL")
             .set(PROPERTIES.INTERNET_CONNECTION_TYPE, pick(INTERNET_TYPES))
-            .set(PROPERTIES.INTERNET_MAX_SPEED_MBPS, random.nextBoolean() ? 500 : 1000)
+            .set(PROPERTIES.INTERNET_MAX_SPEED_VALUE, random.nextBoolean() ? 500 : 1000)
+            .set(PROPERTIES.INTERNET_MAX_SPEED_UNIT, "mbps")
             .set(PROPERTIES.INTERNET_STATUS, "ACTIVE")
             .set(
                 PROPERTIES.PARKING_SPACES,
@@ -669,7 +671,8 @@ public class DemoPropertyGenerator {
                   PROPERTY_INDUSTRIAL_DETAILS.FLOOR_LOAD_CAPACITY_VALUE,
                   BigDecimal.valueOf(1000 + random.nextInt(4000)))
               .set(PROPERTY_INDUSTRIAL_DETAILS.FLOOR_LOAD_CAPACITY_UNIT, "kg_sqm")
-              .set(PROPERTY_INDUSTRIAL_DETAILS.POWER_CAPACITY_KVA, random.nextInt(50, 500))
+              .set(PROPERTY_INDUSTRIAL_DETAILS.POWER_CAPACITY_VALUE, random.nextInt(50, 500))
+              .set(PROPERTY_INDUSTRIAL_DETAILS.POWER_CAPACITY_UNIT, "kva")
               .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_THREE_PHASE_POWER, true)
               .set(PROPERTY_INDUSTRIAL_DETAILS.HAS_CRANE, random.nextInt(3) == 0)
               .set(

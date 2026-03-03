@@ -26,7 +26,8 @@ public class PropertyIndustrialDetails {
   @Builder.Default private Optional<Integer> driveInDoors = Optional.empty();
   @Builder.Default private Optional<BigDecimal> floorLoadCapacityValue = Optional.empty();
   @Builder.Default private Optional<String> floorLoadCapacityUnit = Optional.empty();
-  @Builder.Default private Optional<Integer> powerCapacityKva = Optional.empty();
+  @Builder.Default private Optional<Integer> powerCapacityValue = Optional.empty();
+  @Builder.Default private Optional<String> powerCapacityUnit = Optional.empty();
   @Builder.Default private Optional<Boolean> hasThreePhasePower = Optional.empty();
   @Builder.Default private Optional<Boolean> hasCrane = Optional.empty();
   @Builder.Default private Optional<BigDecimal> craneCapacityValue = Optional.empty();

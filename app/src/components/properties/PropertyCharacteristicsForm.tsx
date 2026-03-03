@@ -161,6 +161,20 @@ const WEIGHT_UNITS = [
   { value: 'metric_tons', label: 't' },
   { value: 'us_tons', label: 'US tons' },
 ];
+const ELECTRICITY_UNITS = [
+  { value: 'a', label: 'A' },
+  { value: 'ka', label: 'kA' },
+];
+const INTERNET_SPEED_UNITS = [
+  { value: 'mbps', label: 'Mbps' },
+  { value: 'gbps', label: 'Gbps' },
+  { value: 'tbps', label: 'Tbps' },
+];
+const POWER_UNITS = [
+  { value: 'kva', label: 'kVA' },
+  { value: 'mva', label: 'MVA' },
+  { value: 'hp', label: 'HP' },
+];
 
 interface MeasurementFieldProps {
   label: string;
@@ -309,12 +323,12 @@ export const PropertyCharacteristicsForm = ({
   ];
   const utilityFields = [
     formData.electricityConnectionType,
-    formData.electricityCapacityAmps,
+    formData.electricityCapacityValue,
     formData.waterConnectionType,
     formData.hasGasConnection,
     formData.sewageType,
     formData.internetConnectionType,
-    formData.internetMaxSpeedMbps,
+    formData.internetMaxSpeedValue,
     formData.internetStatus,
   ];
   const parkingFields = [formData.parkingSpaces, formData.parkingType];
@@ -488,13 +502,15 @@ export const PropertyCharacteristicsForm = ({
             options={arrayOptions(ELECTRICITY_CONNECTION_TYPES)}
             onChange={(v) => onChange('electricityConnectionType', v)}
           />
-          <NumberField
+          <MeasurementField
             label="Electricity Capacity"
-            value={formData.electricityCapacityAmps}
-            onChange={(v) => onChange('electricityCapacityAmps', v)}
+            value={formData.electricityCapacityValue}
+            onChange={(v) => onChange('electricityCapacityValue', v)}
+            unit={formData.electricityCapacityUnit ?? 'a'}
+            unitOptions={ELECTRICITY_UNITS}
+            onUnitChange={(u) => onChange('electricityCapacityUnit', u)}
             min={0}
-            suffix="Amps"
-            tooltip="Main fuse capacity in amperes"
+            tooltip="Main fuse capacity"
           />
           <SelectField
             label="Water Connection"
@@ -519,12 +535,14 @@ export const PropertyCharacteristicsForm = ({
             options={arrayOptions(INTERNET_CONNECTION_TYPES)}
             onChange={(v) => onChange('internetConnectionType', v)}
           />
-          <NumberField
+          <MeasurementField
             label="Internet Max Speed"
-            value={formData.internetMaxSpeedMbps}
-            onChange={(v) => onChange('internetMaxSpeedMbps', v)}
+            value={formData.internetMaxSpeedValue}
+            onChange={(v) => onChange('internetMaxSpeedValue', v)}
+            unit={formData.internetMaxSpeedUnit ?? 'mbps'}
+            unitOptions={INTERNET_SPEED_UNITS}
+            onUnitChange={(u) => onChange('internetMaxSpeedUnit', u)}
             min={0}
-            suffix="Mbps"
           />
           <SelectField
             label="Internet Status"
@@ -1016,7 +1034,7 @@ const IndustrialDetailsSection = ({
     details.loadingDocks,
     details.driveInDoors,
     details.floorLoadCapacityValue,
-    details.powerCapacityKva,
+    details.powerCapacityValue,
     details.hasThreePhasePower,
     details.hasCrane,
     details.craneCapacityValue,
@@ -1068,13 +1086,15 @@ const IndustrialDetailsSection = ({
           unitOptions={FLOOR_LOAD_UNITS}
           onUnitChange={(u) => update('floorLoadCapacityUnit', u)}
         />
-        <NumberField
+        <MeasurementField
           label="Power Capacity"
-          value={details.powerCapacityKva}
-          onChange={(v) => update('powerCapacityKva', v)}
+          value={details.powerCapacityValue}
+          onChange={(v) => update('powerCapacityValue', v)}
+          unit={details.powerCapacityUnit ?? 'kva'}
+          unitOptions={POWER_UNITS}
+          onUnitChange={(u) => update('powerCapacityUnit', u)}
           min={0}
           step={1}
-          suffix="kVA"
         />
         <MeasurementField
           label="Crane Capacity"
