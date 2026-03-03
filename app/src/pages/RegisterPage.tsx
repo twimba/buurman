@@ -165,9 +165,10 @@ const RegisterPage: React.FC = () => {
         lastName: formData.lastName,
         password: formData.password,
         invitationToken,
-        registrationInvitationCode: invitationRequired
-          ? invitationCode.trim()
-          : undefined,
+        registrationInvitationCode:
+          invitationRequired && !invitationToken
+            ? invitationCode.trim()
+            : undefined,
       });
       // Clear pending invitation since it was auto-accepted during registration
       if (invitationToken) {
@@ -343,8 +344,8 @@ const RegisterPage: React.FC = () => {
                   onKeyDown={handleCmdEnter}
                   className="space-y-5"
                 >
-                  {/* Invitation Code Gate */}
-                  {invitationRequired && (
+                  {/* Invitation Code Gate — skip when user has a team invitation */}
+                  {invitationRequired && !invitationToken && (
                     <div
                       className={`rounded-xl border-2 p-4 transition-all duration-300 ${
                         codeValidated
@@ -430,7 +431,7 @@ const RegisterPage: React.FC = () => {
 
                   <div
                     className={
-                      invitationRequired && !codeValidated
+                      invitationRequired && !codeValidated && !invitationToken
                         ? 'opacity-40 pointer-events-none select-none'
                         : ''
                     }
@@ -644,7 +645,7 @@ const RegisterPage: React.FC = () => {
                         registerMutation.isPending ||
                         !allRulesMet ||
                         !passwordsMatch ||
-                        (invitationRequired && !codeValidated)
+                        (invitationRequired && !codeValidated && !invitationToken)
                       }
                       className="group w-full mt-3 bg-gradient-to-r from-[#4263eb] to-[#5c7cfa] text-white py-3.5 px-6 rounded-xl hover:from-[#3b5bdb] hover:to-[#4c6ef5] transition-all duration-200 font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg"
                     >

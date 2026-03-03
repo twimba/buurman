@@ -98,7 +98,10 @@ public class AuthService {
     Optional<String> registrationCode =
         request.registrationInvitationCode().filter(s -> !s.isBlank());
 
-    if (invitationRequired) {
+    // Users with a valid team invitation token bypass the registration code requirement
+    boolean hasValidTeamInvitation = hasValidTeamInvitationToken(request);
+
+    if (invitationRequired && !hasValidTeamInvitation) {
       if (registrationCode.isEmpty()) {
         throw new BadRequestException("Invitation code is required");
       }
@@ -158,17 +161,18 @@ public class AuthService {
       member.setJoinedAt(clock.instant());
       teamMemberRepository.save(member);
 
+      final User finalUser = user;
+
       // Record registration invitation usage atomically
-      if (invitationRequired && !registrationCode.get().isBlank()) {
-        registrationInvitationService.recordUsage(registrationCode.get(), user.getId());
-      }
+      registrationCode
+          .filter(code -> invitationRequired && !code.isBlank())
+          .ifPresent(code -> registrationInvitationService.recordUsage(code, finalUser.getId()));
 
       // Send verification code email
       String code = generateVerificationCode();
-      createAndSendVerificationCode(user, code);
+      createAndSendVerificationCode(finalUser, code);
 
       // Auto-accept invitation if token provided
-      final User finalUser = user;
       request
           .invitationToken()
           .filter(t -> !t.isBlank())
@@ -333,6 +337,17 @@ public class AuthService {
                                 "expiresMinutes",
                                 15))
                         .build()));
+  }
+
+  private boolean hasValidTeamInvitationToken(RegisterRequest request) {
+    return request
+        .invitationToken()
+        .filter(t -> !t.isBlank())
+        .flatMap(invitationRepository::findByToken)
+        .filter(inv -> inv.getAcceptedAt().isEmpty())
+        .filter(inv -> inv.getExpiresAt().isAfter(clock.instant()))
+        .filter(inv -> inv.getEmail().equalsIgnoreCase(request.email()))
+        .isPresent();
   }
 
   private void acceptInvitationForNewUser(String token, User user) {
