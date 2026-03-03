@@ -12,6 +12,14 @@ http:
       service: backend-local
       priority: 10
 
+    app-calendar-local:
+      rule: "Host(`app.local.buurman.io`) && PathPrefix(`/calendar`)"
+      entryPoints:
+        - websecure
+      tls: {}
+      service: backend-local
+      priority: 20
+
     app-local:
       rule: "Host(`app.local.buurman.io`)"
       entryPoints:
