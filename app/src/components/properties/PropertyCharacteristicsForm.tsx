@@ -108,6 +108,9 @@ interface NumberFieldProps {
   step?: number;
   tooltip?: string;
   suffix?: string;
+  unitOptions?: Record<string, string>;
+  unitValue?: string;
+  onUnitChange?: (unit: string) => void;
 }
 
 const NumberField = ({
@@ -118,6 +121,9 @@ const NumberField = ({
   step,
   tooltip,
   suffix,
+  unitOptions,
+  unitValue,
+  onUnitChange,
 }: NumberFieldProps) => (
   <div>
     <label className={labelCls}>
@@ -135,11 +141,22 @@ const NumberField = ({
         }
         className={inputCls}
       />
-      {suffix && (
+      {unitOptions && onUnitChange ? (
+        <select
+          value={unitValue ?? ''}
+          onChange={(e) => onUnitChange(e.target.value)}
+          className="absolute right-1 top-1/2 -translate-y-1/2 text-xs text-[#6b7094] dark:text-[#8b90b0] bg-white/80 dark:bg-[#1e2030]/80 rounded px-1.5 py-0.5 cursor-pointer focus:outline-none border border-[#d1d5e4] dark:border-[#3b3f5c] hover:border-[#9ca0b8] dark:hover:border-[#5c6180] transition-colors"
+          title={`Change ${label} unit`}
+        >
+          {Object.entries(unitOptions).map(([k, v]) => (
+            <option key={k} value={k}>{v}</option>
+          ))}
+        </select>
+      ) : suffix ? (
         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#9ca0b8] dark:text-[#5c6180]">
           {suffix}
         </span>
-      )}
+      ) : null}
     </div>
   </div>
 );
@@ -856,7 +873,9 @@ const CommercialDetailsSection = ({
           onChange={(v) => update('usableAreaValue', v)}
           min={0}
           step={0.01}
-          suffix={details.usableAreaUnit === 'sqft' ? 'ft²' : 'm²'}
+          unitOptions={{ sqm: 'm²', sqft: 'ft²' }}
+          unitValue={details.usableAreaUnit ?? 'sqm'}
+          onUnitChange={(u) => update('usableAreaUnit', u)}
         />
         <NumberField
           label="Common Area"
@@ -864,7 +883,9 @@ const CommercialDetailsSection = ({
           onChange={(v) => update('commonAreaValue', v)}
           min={0}
           step={0.01}
-          suffix={details.commonAreaUnit === 'sqft' ? 'ft²' : 'm²'}
+          unitOptions={{ sqm: 'm²', sqft: 'ft²' }}
+          unitValue={details.commonAreaUnit ?? 'sqm'}
+          onUnitChange={(u) => update('commonAreaUnit', u)}
         />
         <NumberField
           label="Floor Level"
@@ -878,7 +899,9 @@ const CommercialDetailsSection = ({
           onChange={(v) => update('ceilingHeightValue', v)}
           min={0}
           step={0.1}
-          suffix={details.ceilingHeightUnit === 'ft' ? 'ft' : 'm'}
+          unitOptions={{ m: 'm', ft: 'ft' }}
+          unitValue={details.ceilingHeightUnit ?? 'm'}
+          onUnitChange={(u) => update('ceilingHeightUnit', u)}
         />
         <NumberField
           label="Max Occupancy"
@@ -976,7 +999,9 @@ const IndustrialDetailsSection = ({
           onChange={(v) => update('clearHeightValue', v)}
           min={0}
           step={0.1}
-          suffix={details.clearHeightUnit === 'ft' ? 'ft' : 'm'}
+          unitOptions={{ m: 'm', ft: 'ft' }}
+          unitValue={details.clearHeightUnit ?? 'm'}
+          onUnitChange={(u) => update('clearHeightUnit', u)}
         />
         <NumberField
           label="Loading Docks"
@@ -998,7 +1023,9 @@ const IndustrialDetailsSection = ({
           onChange={(v) => update('floorLoadCapacityValue', v)}
           min={0}
           step={1}
-          suffix={details.floorLoadCapacityUnit === 'lbs_sqft' ? 'lbs/ft²' : 'kg/m²'}
+          unitOptions={{ kg_sqm: 'kg/m²', lbs_sqft: 'lbs/ft²' }}
+          unitValue={details.floorLoadCapacityUnit ?? 'kg_sqm'}
+          onUnitChange={(u) => update('floorLoadCapacityUnit', u)}
         />
         <NumberField
           label="Power Capacity"
@@ -1014,7 +1041,9 @@ const IndustrialDetailsSection = ({
           onChange={(v) => update('craneCapacityValue', v)}
           min={0}
           step={0.1}
-          suffix={details.craneCapacityUnit === 'us_tons' ? 'US tons' : 't'}
+          unitOptions={{ metric_tons: 't', us_tons: 'US tons' }}
+          unitValue={details.craneCapacityUnit ?? 'metric_tons'}
+          onUnitChange={(u) => update('craneCapacityUnit', u)}
           tooltip="Only relevant if crane is available"
         />
         <NumberField
@@ -1023,7 +1052,9 @@ const IndustrialDetailsSection = ({
           onChange={(v) => update('yardAreaValue', v)}
           min={0}
           step={0.01}
-          suffix={details.yardAreaUnit === 'sqft' ? 'ft²' : 'm²'}
+          unitOptions={{ sqm: 'm²', sqft: 'ft²' }}
+          unitValue={details.yardAreaUnit ?? 'sqm'}
+          onUnitChange={(u) => update('yardAreaUnit', u)}
         />
         <div>
           <label className={labelCls}>Zoning Classification</label>
@@ -1147,7 +1178,9 @@ const AgriculturalDetailsSection = ({
           onChange={(v) => update('totalLandAreaValue', v)}
           min={0}
           step={0.01}
-          suffix={details.totalLandAreaUnit === 'sqft' ? 'ft²' : 'm²'}
+          unitOptions={{ sqm: 'm²', sqft: 'ft²' }}
+          unitValue={details.totalLandAreaUnit ?? 'sqm'}
+          onUnitChange={(u) => update('totalLandAreaUnit', u)}
         />
         <NumberField
           label="Arable Area"
@@ -1155,7 +1188,9 @@ const AgriculturalDetailsSection = ({
           onChange={(v) => update('arableAreaValue', v)}
           min={0}
           step={0.01}
-          suffix={details.arableAreaUnit === 'sqft' ? 'ft²' : 'm²'}
+          unitOptions={{ sqm: 'm²', sqft: 'ft²' }}
+          unitValue={details.arableAreaUnit ?? 'sqm'}
+          onUnitChange={(u) => update('arableAreaUnit', u)}
         />
         <SelectField
           label="Soil Type"
