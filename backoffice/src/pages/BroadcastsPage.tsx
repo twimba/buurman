@@ -20,7 +20,10 @@ import {
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { RichTextEditor } from "../components/RichTextEditor";
 import { RichTextDisplay } from "../components/RichTextDisplay";
-import { TargetTeamSelector, TargetUserSelector } from "../components/TargetSelector";
+import {
+  TargetTeamSelector,
+  TargetUserSelector,
+} from "../components/TargetSelector";
 import type {
   BroadcastMessage,
   BroadcastSeverity,
@@ -578,7 +581,11 @@ export const BroadcastsPage = () => {
                 <div className="flex flex-wrap gap-4">
                   <label
                     className={`flex items-center gap-2 text-sm ${form.scope !== "GLOBAL" ? "text-[#9ca0b8] dark:text-[#5c6180] cursor-not-allowed" : "text-[#3d4463] dark:text-[#c4c8db] cursor-pointer"}`}
-                    title={form.scope !== "GLOBAL" ? "Only available for Global scope" : undefined}
+                    title={
+                      form.scope !== "GLOBAL"
+                        ? "Only available for Global scope"
+                        : undefined
+                    }
                   >
                     <input
                       type="checkbox"
@@ -596,7 +603,11 @@ export const BroadcastsPage = () => {
                   </label>
                   <label
                     className={`flex items-center gap-2 text-sm ${form.scope !== "GLOBAL" ? "text-[#9ca0b8] dark:text-[#5c6180] cursor-not-allowed" : "text-[#3d4463] dark:text-[#c4c8db] cursor-pointer"}`}
-                    title={form.scope !== "GLOBAL" ? "Only available for Global scope" : undefined}
+                    title={
+                      form.scope !== "GLOBAL"
+                        ? "Only available for Global scope"
+                        : undefined
+                    }
                   >
                     <input
                       type="checkbox"

@@ -141,4 +141,8 @@ public class UlidGenerator {
   public static Ulid newPropertyFeeId() {
     return generate(EntityPrefix.FEE);
   }
+
+  public static Ulid newTakeoutId() {
+    return generate(EntityPrefix.TKO);
+  }
 }

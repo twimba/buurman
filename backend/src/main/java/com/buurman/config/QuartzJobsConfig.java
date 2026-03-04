@@ -19,6 +19,7 @@ import com.buurman.job.NotificationOutboxJob;
 import com.buurman.job.PaymentGenerationJob;
 import com.buurman.job.PaymentReminderCheckJob;
 import com.buurman.job.RateLimitCleanupJob;
+import com.buurman.job.TakeoutCleanupJob;
 import com.buurman.job.ThumbnailBackfillJob;
 import com.buurman.job.VerificationCodeCleanupJob;
 
@@ -208,6 +209,25 @@ public class QuartzJobsConfig {
         .forJob(rateLimitCleanupJobDetail)
         .withIdentity("rateLimitCleanupTrigger", "system")
         .withSchedule(CronScheduleBuilder.cronSchedule("0 0 */6 * * ?"))
+        .build();
+  }
+
+  // ── Takeout Cleanup ────────────────────────────────────────────────────
+
+  @Bean
+  public JobDetail takeoutCleanupJobDetail() {
+    return JobBuilder.newJob(TakeoutCleanupJob.class)
+        .withIdentity("takeoutCleanupJob", "system")
+        .storeDurably()
+        .build();
+  }
+
+  @Bean
+  public Trigger takeoutCleanupTrigger(JobDetail takeoutCleanupJobDetail) {
+    return TriggerBuilder.newTrigger()
+        .forJob(takeoutCleanupJobDetail)
+        .withIdentity("takeoutCleanupTrigger", "system")
+        .withSchedule(CronScheduleBuilder.cronSchedule("0 0 4 * * ?"))
         .build();
   }
 

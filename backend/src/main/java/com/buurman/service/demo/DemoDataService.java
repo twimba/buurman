@@ -4,6 +4,7 @@ import static com.buurman.jooq.generated.Tables.AUDIT_LOG;
 import static com.buurman.jooq.generated.Tables.CALENDAR_FEEDS;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.CONTRACT_PAYMENT_INSTRUCTIONS;
+import static com.buurman.jooq.generated.Tables.DATA_TAKEOUTS;
 import static com.buurman.jooq.generated.Tables.DOCUMENTS;
 import static com.buurman.jooq.generated.Tables.EMAIL_VERIFICATION_CODES;
 import static com.buurman.jooq.generated.Tables.EXPENSES;
@@ -231,6 +232,10 @@ public class DemoDataService {
             .where(GENERATED_REPORTS.TEAM_ID.in(demoTeamIds))
             .execute();
     log.debug("Deleted {} generated reports", deleted);
+
+    // 4b. Data takeouts
+    deleted = dsl.deleteFrom(DATA_TAKEOUTS).where(DATA_TAKEOUTS.TEAM_ID.in(demoTeamIds)).execute();
+    log.debug("Deleted {} data takeouts", deleted);
 
     // 5. Documents
     deleted = dsl.deleteFrom(DOCUMENTS).where(DOCUMENTS.TEAM_ID.in(demoTeamIds)).execute();
@@ -471,6 +476,13 @@ public class DemoDataService {
             .where(GENERATED_REPORTS.TEAM_ID.in(demoTeamIds))
             .and(GENERATED_REPORTS.FILE_KEY.isNotNull())
             .fetch(GENERATED_REPORTS.FILE_KEY));
+
+    keys.addAll(
+        dsl.select(DATA_TAKEOUTS.FILE_KEY)
+            .from(DATA_TAKEOUTS)
+            .where(DATA_TAKEOUTS.TEAM_ID.in(demoTeamIds))
+            .and(DATA_TAKEOUTS.FILE_KEY.isNotNull())
+            .fetch(DATA_TAKEOUTS.FILE_KEY));
 
     log.info("Collected {} S3 file keys to delete", keys.size());
     return keys;

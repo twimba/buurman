@@ -1,0 +1,15 @@
+package com.buurman.dto.response;
+
+import java.time.Instant;
+
+import org.jspecify.annotations.Nullable;
+
+public record TakeoutResponse(
+    String identifier,
+    String status,
+    int progress,
+    @Nullable Long fileSize,
+    Instant createdAt,
+    @Nullable Instant completedAt,
+    @Nullable Instant expiresAt,
+    @Nullable String downloadUrl) {}

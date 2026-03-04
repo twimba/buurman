@@ -13,6 +13,7 @@ import {
   Calendar,
   Bell,
   ClipboardList,
+  Download,
   Settings,
   LogOut,
   Menu,
@@ -58,6 +59,7 @@ const administrationNavigation = [
   { name: 'Team Members', href: '/admin/team-members', icon: Users },
   { name: 'Calendar Feeds', href: '/admin/calendar-feeds', icon: Calendar },
   { name: 'Notifications', href: '/admin/notifications', icon: Bell },
+  { name: 'Data Export', href: '/admin/data-export', icon: Download },
   { name: 'Subscription & Billing', href: '/admin/billing', icon: Receipt },
   { name: 'Activity Log', href: '/admin/activity-log', icon: ClipboardList },
 ];

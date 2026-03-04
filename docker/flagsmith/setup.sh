@@ -24,6 +24,8 @@ FEATURE_FLAGS_FILE = "/FeatureFlags.java"
 _FLAG_PATTERN = re.compile(r'public static final String \w+\s*=\s*"([^"]+)"')
 # Flags that should be disabled by default (opt-in features)
 DISABLED_BY_DEFAULT = {"sms_notifications", "block_email_notifications", "block_sms_notifications"}
+# Flags with initial remote config values (key → value)
+INITIAL_VALUES = {"takeout_max_exports": "3"}
 
 
 def parse_flags():
@@ -178,13 +180,17 @@ for flag_name in desired_flags:
     if flag_name in existing_names:
         log(f"  Flag '{flag_name}' already exists, skipping.")
     else:
-        resp = api_call("POST", f"/api/v1/projects/{project_id}/features/", {
+        payload = {
             "name": flag_name,
             "default_enabled": flag_name not in DISABLED_BY_DEFAULT,
             "type": "FLAG",
-        }, token=token)
+        }
+        if flag_name in INITIAL_VALUES:
+            payload["initial_value"] = INITIAL_VALUES[flag_name]
+        resp = api_call("POST", f"/api/v1/projects/{project_id}/features/", payload, token=token)
         if resp.get("id"):
-            log(f"  Created flag '{flag_name}' (default: enabled).")
+            value_info = f" (value={INITIAL_VALUES[flag_name]})" if flag_name in INITIAL_VALUES else ""
+            log(f"  Created flag '{flag_name}'{value_info}.")
         else:
             log(f"  WARNING: Failed to create flag '{flag_name}': {resp}")
 

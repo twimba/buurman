@@ -17,7 +17,10 @@ const PILL_CLASS =
 const CHECK_ITEM_CLASS =
   "flex items-center gap-2 px-3 py-1.5 text-sm text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f8f9fc] dark:hover:bg-[#1a1d28] cursor-pointer rounded transition-colors";
 
-export const TargetTeamSelector = ({ selected, onChange }: TargetSelectorProps) => {
+export const TargetTeamSelector = ({
+  selected,
+  onChange,
+}: TargetSelectorProps) => {
   const [search, setSearch] = useState("");
   const { data } = useTeams({ search: search || undefined, size: 20 });
 
@@ -90,7 +93,10 @@ export const TargetTeamSelector = ({ selected, onChange }: TargetSelectorProps) 
   );
 };
 
-export const TargetUserSelector = ({ selected, onChange }: TargetSelectorProps) => {
+export const TargetUserSelector = ({
+  selected,
+  onChange,
+}: TargetSelectorProps) => {
   const [search, setSearch] = useState("");
   const { data } = useUsers({ search: search || undefined, size: 20 });
 
@@ -154,7 +160,9 @@ export const TargetUserSelector = ({ selected, onChange }: TargetSelectorProps) 
               <span>
                 {user.firstName} {user.lastName}
               </span>
-              <span className="text-[#9ca0b8] text-xs ml-auto">{user.email}</span>
+              <span className="text-[#9ca0b8] text-xs ml-auto">
+                {user.email}
+              </span>
             </label>
           ))
         )}
