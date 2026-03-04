@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.UserIdentifier;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamMember;
 import com.buurman.domain.User;
@@ -60,7 +61,7 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
   public List<TeamFlagEvaluation> getUserFlags(String userIdentifier) {
     User user =
         userRepository
-            .findByIdentifierUnscoped(Ulid.of(userIdentifier))
+            .findByIdentifierUnscoped(UserIdentifier.of(userIdentifier))
             .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
     List<TeamMember> memberships = teamMemberRepository.findAllByUserId(user.getId());

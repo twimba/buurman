@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Ulid;
 import com.buurman.domain.LabelCount;
+import com.buurman.domain.identifier.NotificationIdentifier;
+import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.domain.Notification;
 import com.buurman.domain.NotificationStatus;
 import com.buurman.domain.Team;
@@ -40,7 +42,7 @@ public class BackofficeNotificationService {
   @Transactional(readOnly = true)
   public PageResponse<BackofficeNotificationResponse> listNotifications(
       PageRequest pageRequest,
-      @Nullable Ulid teamIdentifier,
+      @Nullable TeamIdentifier teamIdentifier,
       @Nullable String type,
       @Nullable String channel,
       @Nullable String status,
@@ -69,19 +71,19 @@ public class BackofficeNotificationService {
   }
 
   @Transactional(readOnly = true)
-  public BackofficeNotificationResponse getNotification(Ulid identifier) {
+  public BackofficeNotificationResponse getNotification(NotificationIdentifier identifier) {
     Notification notification = notificationRepository.getByIdentifierUnscoped(identifier);
     return toResponse(notification);
   }
 
   @Transactional
   public BackofficeNotificationResponse resendNotification(
-      Ulid identifier, BackofficePrincipal principal) {
+      NotificationIdentifier identifier, BackofficePrincipal principal) {
     Notification original = notificationRepository.getByIdentifierUnscoped(identifier);
 
     Notification resent =
         notificationService.resend(
-            original.getTeamId().orElse(null), original.getIdentifier().orElseThrow(), null);
+            original.getTeamId().orElse(null), identifier, null);
 
     log.info(
         "Backoffice user {} resent notification {} (type={}, channel={})",

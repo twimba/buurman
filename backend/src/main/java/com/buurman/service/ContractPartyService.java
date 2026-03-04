@@ -22,7 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.ContractIdentifier;
+import com.buurman.domain.identifier.ContractPartyIdentifier;
+import com.buurman.domain.identifier.TenantIdentifier;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
@@ -61,7 +63,7 @@ public class ContractPartyService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContractPartyResponse addParty(
-      Ulid contractIdentifier, AddContractPartyRequest request, UserPrincipal principal) {
+      ContractIdentifier contractIdentifier, AddContractPartyRequest request, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
@@ -75,7 +77,7 @@ public class ContractPartyService {
 
     Tenant tenant =
         resolveOrCreateTenant(
-            request.tenantIdentifier().map(Ulid::of).orElse(null), request.newTenant().orElse(null), principal);
+            request.tenantIdentifier().map(TenantIdentifier::of).orElse(null), request.newTenant().orElse(null), principal);
 
     if (contractPartyRepository.existsByContractIdAndTenantIdAndTeamId(
         contract.getId(), tenant.getId(), teamId)) {
@@ -121,7 +123,7 @@ public class ContractPartyService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void removeParty(
-      Ulid contractIdentifier, Ulid partyIdentifier, UserPrincipal principal) {
+      ContractIdentifier contractIdentifier, ContractPartyIdentifier partyIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
@@ -165,7 +167,7 @@ public class ContractPartyService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContractPartyResponse changePrimaryTenant(
-      Ulid contractIdentifier, ChangePrimaryTenantRequest request, UserPrincipal principal) {
+      ContractIdentifier contractIdentifier, ChangePrimaryTenantRequest request, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
@@ -174,7 +176,7 @@ public class ContractPartyService {
 
     Tenant newTenant =
         resolveOrCreateTenant(
-            request.tenantIdentifier().map(Ulid::of).orElse(null), request.newTenant().orElse(null), principal);
+            request.tenantIdentifier().map(TenantIdentifier::of).orElse(null), request.newTenant().orElse(null), principal);
 
     // Find current primary tenant
     ContractParty currentPrimary =
@@ -252,7 +254,7 @@ public class ContractPartyService {
     for (ContractPartyRequest partyReq : parties) {
       Tenant tenant =
           resolveOrCreateTenant(
-              partyReq.tenantIdentifier().map(Ulid::of).orElse(null),
+              partyReq.tenantIdentifier().map(TenantIdentifier::of).orElse(null),
               partyReq.newTenant().orElse(null),
               principal);
 
@@ -404,7 +406,7 @@ public class ContractPartyService {
   }
 
   private Tenant resolveOrCreateTenant(
-      @Nullable Ulid tenantIdentifier,
+      @Nullable TenantIdentifier tenantIdentifier,
       @Nullable CreateTenantRequest newTenant,
       UserPrincipal principal) {
     if (tenantIdentifier != null) {

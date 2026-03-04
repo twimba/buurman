@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
 import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.Document;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateDocumentRequest;
@@ -154,7 +155,7 @@ public class DocumentService {
     return documents.stream().map(this::toResponseWithDownloadUrl).toList();
   }
 
-  public URL getDownloadUrl(Ulid identifier, UserPrincipal principal) {
+  public URL getDownloadUrl(DocumentIdentifier identifier, UserPrincipal principal) {
     Document document =
         documentRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -165,7 +166,7 @@ public class DocumentService {
   }
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-  public void deleteDocument(Ulid identifier, UserPrincipal principal) {
+  public void deleteDocument(DocumentIdentifier identifier, UserPrincipal principal) {
     Document document =
         documentRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -196,7 +197,7 @@ public class DocumentService {
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public DocumentResponse updateDocument(
-      Ulid identifier, UpdateDocumentRequest request, UserPrincipal principal) {
+      DocumentIdentifier identifier, UpdateDocumentRequest request, UserPrincipal principal) {
     Document document =
         documentRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -282,7 +283,7 @@ public class DocumentService {
     return documents.stream().map(this::toResponseWithDownloadUrl).toList();
   }
 
-  public DocumentResponse getDocument(Ulid identifier, UserPrincipal principal) {
+  public DocumentResponse getDocument(DocumentIdentifier identifier, UserPrincipal principal) {
     Document document =
         documentRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return toResponseWithDownloadUrl(document);

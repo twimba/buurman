@@ -18,8 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.config.models.AppProperties;
-import com.buurman.domain.Ulid;
 import com.buurman.domain.Contract;
+import com.buurman.domain.identifier.ContractIdentifier;
+import com.buurman.domain.identifier.ContractRentPeriodIdentifier;
 import com.buurman.domain.ContractRentPeriod;
 import com.buurman.domain.NotificationType;
 import com.buurman.domain.Payment;
@@ -60,7 +61,7 @@ public class ContractRentPeriodService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public RentPeriodResponse addRentPeriod(
-      Ulid contractIdentifier, CreateRentPeriodRequest request, UserPrincipal principal) {
+      ContractIdentifier contractIdentifier, CreateRentPeriodRequest request, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
 
@@ -137,7 +138,7 @@ public class ContractRentPeriodService {
   }
 
   public List<RentPeriodResponse> getRentTimeline(
-      Ulid contractIdentifier, UserPrincipal principal) {
+      ContractIdentifier contractIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
     List<ContractRentPeriod> periods =
@@ -156,8 +157,8 @@ public class ContractRentPeriodService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public RentPeriodResponse updateRentPeriod(
-      Ulid contractIdentifier,
-      Ulid periodIdentifier,
+      ContractIdentifier contractIdentifier,
+      ContractRentPeriodIdentifier periodIdentifier,
       UpdateRentPeriodRequest request,
       UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
@@ -226,7 +227,7 @@ public class ContractRentPeriodService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void deleteRentPeriod(
-      Ulid contractIdentifier, Ulid periodIdentifier, UserPrincipal principal) {
+      ContractIdentifier contractIdentifier, ContractRentPeriodIdentifier periodIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
     ContractRentPeriod period =

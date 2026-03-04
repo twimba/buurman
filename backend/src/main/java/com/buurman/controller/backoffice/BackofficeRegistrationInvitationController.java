@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.RegistrationInvitationIdentifier;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.backoffice.CreateRegistrationInvitationRequest;
 import com.buurman.dto.request.backoffice.SendRegistrationInvitationRequest;
@@ -42,20 +42,20 @@ public class BackofficeRegistrationInvitationController
 
   @Override
   public RegistrationInvitationDetailResponse get(String identifier) {
-    return invitationService.getByIdentifier(Ulid.of(identifier));
+    return invitationService.getByIdentifier(RegistrationInvitationIdentifier.of(identifier));
   }
 
   @Override
   public void revoke(String identifier) {
     BackofficePrincipal principal = SecurityUtils.getBackofficePrincipal();
-    invitationService.revoke(Ulid.of(identifier), principal);
+    invitationService.revoke(RegistrationInvitationIdentifier.of(identifier), principal);
   }
 
   @Override
   public void send(
       String identifier, SendRegistrationInvitationRequest sendRegistrationInvitationRequest) {
     BackofficePrincipal principal = SecurityUtils.getBackofficePrincipal();
-    invitationService.sendInvitation(Ulid.of(identifier), sendRegistrationInvitationRequest, principal);
+    invitationService.sendInvitation(RegistrationInvitationIdentifier.of(identifier), sendRegistrationInvitationRequest, principal);
   }
 
   @Override
@@ -64,7 +64,7 @@ public class BackofficeRegistrationInvitationController
       UpdateRegistrationInvitationNoteRequest updateRegistrationInvitationNoteRequest) {
     BackofficePrincipal principal = SecurityUtils.getBackofficePrincipal();
     return invitationService.updateNote(
-        Ulid.of(identifier), updateRegistrationInvitationNoteRequest, principal);
+        RegistrationInvitationIdentifier.of(identifier), updateRegistrationInvitationNoteRequest, principal);
   }
 
   @Override

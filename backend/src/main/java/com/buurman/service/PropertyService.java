@@ -18,7 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
-import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.DocumentIdentifier;
+import com.buurman.domain.identifier.PhotoIdentifier;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.domain.NotificationType;
 import com.buurman.domain.Photo;
 import com.buurman.domain.Property;
@@ -227,7 +229,7 @@ public class PropertyService {
         responses, pageRequest.page(), pageRequest.size(), result.totalElements());
   }
 
-  public PropertyResponse getProperty(Ulid identifier, UserPrincipal principal) {
+  public PropertyResponse getProperty(PropertyIdentifier identifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -237,7 +239,7 @@ public class PropertyService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyResponse updateProperty(
-      Ulid identifier, UpdatePropertyRequest request, UserPrincipal principal) {
+      PropertyIdentifier identifier, UpdatePropertyRequest request, UserPrincipal principal) {
 
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
@@ -305,7 +307,7 @@ public class PropertyService {
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void deleteProperty(Ulid identifier, UserPrincipal principal) {
+  public void deleteProperty(PropertyIdentifier identifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -317,7 +319,7 @@ public class PropertyService {
   }
 
   public DocumentResponse uploadDocument(
-      Ulid identifier,
+      PropertyIdentifier identifier,
       MultipartFile file,
       @Nullable String title,
       @Nullable String notes,
@@ -328,35 +330,35 @@ public class PropertyService {
         file, "PROPERTY", property.getId(), property.getIdentifier().orElseThrow(), title, notes, principal);
   }
 
-  public List<DocumentResponse> getDocuments(Ulid identifier, UserPrincipal principal) {
+  public List<DocumentResponse> getDocuments(PropertyIdentifier identifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return documentService.getDocuments("PROPERTY", property.getId(), principal);
   }
 
-  public Map<String, String> getDownloadUrl(Ulid documentIdentifier, UserPrincipal principal) {
+  public Map<String, String> getDownloadUrl(DocumentIdentifier documentIdentifier, UserPrincipal principal) {
     URL url = documentService.getDownloadUrl(documentIdentifier, principal);
     return Map.of("url", url.toString());
   }
 
-  public void deleteDocument(Ulid documentIdentifier, UserPrincipal principal) {
+  public void deleteDocument(DocumentIdentifier documentIdentifier, UserPrincipal principal) {
     documentService.deleteDocument(documentIdentifier, principal);
   }
 
-  public List<RecentActivityResponse> getAuditLog(Ulid identifier, UserPrincipal principal) {
+  public List<RecentActivityResponse> getAuditLog(PropertyIdentifier identifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return auditService.getEntityAuditLog(principal.requireTeamId(), "PROPERTY", property.getId());
   }
 
-  public List<PhotoResponse> getPhotos(Ulid identifier, UserPrincipal principal) {
+  public List<PhotoResponse> getPhotos(PropertyIdentifier identifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return photoService.getPhotos("PROPERTY", property.getId(), principal);
   }
 
   public PhotoResponse uploadPhoto(
-      Ulid identifier,
+      PropertyIdentifier identifier,
       MultipartFile file,
       @Nullable String title,
       @Nullable String notes,
@@ -368,7 +370,7 @@ public class PropertyService {
   }
 
   public PhotoResponse setMainPhoto(
-      Ulid identifier, Ulid photoIdentifier, UserPrincipal principal) {
+      PropertyIdentifier identifier, PhotoIdentifier photoIdentifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     Photo photo =

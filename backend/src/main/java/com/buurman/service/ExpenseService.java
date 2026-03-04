@@ -23,8 +23,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
-import com.buurman.domain.Ulid;
 import com.buurman.domain.AmountStats;
+import com.buurman.domain.identifier.ExpenseIdentifier;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.domain.Expense;
 import com.buurman.domain.NotificationType;
 import com.buurman.domain.Property;
@@ -168,7 +169,7 @@ public class ExpenseService {
   }
 
   @Transactional(readOnly = true)
-  public ExpenseResponse getExpense(Ulid identifier, UserPrincipal principal) {
+  public ExpenseResponse getExpense(ExpenseIdentifier identifier, UserPrincipal principal) {
     Expense expense =
         expenseRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -203,7 +204,7 @@ public class ExpenseService {
         responses, pageRequest.page(), pageRequest.size(), result.totalElements());
   }
 
-  public UUID resolvePropertyId(Ulid propertyIdentifier, UUID teamId) {
+  public UUID resolvePropertyId(PropertyIdentifier propertyIdentifier, UUID teamId) {
     return propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId).getId();
   }
 
@@ -244,7 +245,7 @@ public class ExpenseService {
 
   @Transactional(readOnly = true)
   public List<ExpenseResponse> getExpensesByProperty(
-      Ulid propertyIdentifier, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier, UserPrincipal principal) {
     // Resolve property identifier to UUID
     Property property =
         propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.requireTeamId());
@@ -270,7 +271,7 @@ public class ExpenseService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ExpenseResponse updateExpense(
-      Ulid identifier, UpdateExpenseRequest request, UserPrincipal principal) {
+      ExpenseIdentifier identifier, UpdateExpenseRequest request, UserPrincipal principal) {
     Expense expense =
         expenseRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -300,7 +301,7 @@ public class ExpenseService {
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void deleteExpense(Ulid identifier, UserPrincipal principal) {
+  public void deleteExpense(ExpenseIdentifier identifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Expense expense = expenseRepository.getByIdentifierAndTeamId(identifier, teamId);
     UUID expenseId = expense.getId();
@@ -326,7 +327,7 @@ public class ExpenseService {
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public DocumentResponse uploadExpenseDocument(
-      Ulid identifier,
+      ExpenseIdentifier identifier,
       MultipartFile file,
       @Nullable String title,
       @Nullable String notes,
@@ -338,7 +339,7 @@ public class ExpenseService {
         file, "EXPENSE", expense.getId(), expense.getIdentifier().orElseThrow(), title, notes, principal);
   }
 
-  public List<DocumentResponse> getExpenseDocuments(Ulid identifier, UserPrincipal principal) {
+  public List<DocumentResponse> getExpenseDocuments(ExpenseIdentifier identifier, UserPrincipal principal) {
     Expense expense =
         expenseRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -346,7 +347,7 @@ public class ExpenseService {
   }
 
   public List<RecentActivityResponse> getExpenseAuditLog(
-      Ulid identifier, UserPrincipal principal) {
+      ExpenseIdentifier identifier, UserPrincipal principal) {
     Expense expense =
         expenseRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 

@@ -20,6 +20,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.FinancingPaymentIdentifier;
+import com.buurman.domain.identifier.PropertyFinancingIdentifier;
 import com.buurman.domain.FinancingPayment;
 import com.buurman.domain.PropertyFinancing;
 import com.buurman.dto.request.CreateFinancingPaymentRequest;
@@ -53,13 +55,13 @@ public class FinancingPaymentService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public FinancingPaymentResponse create(
-      Ulid financingIdentifier, CreateFinancingPaymentRequest request, UserPrincipal principal) {
+      PropertyFinancingIdentifier financingIdentifier, CreateFinancingPaymentRequest request, UserPrincipal principal) {
     return performCreate(financingIdentifier, request, principal);
   }
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public List<BulkCreateResult<FinancingPaymentResponse>> bulkCreate(
-      Ulid financingIdentifier,
+      PropertyFinancingIdentifier financingIdentifier,
       List<CreateFinancingPaymentRequest> requests,
       UserPrincipal principal) {
 
@@ -95,7 +97,7 @@ public class FinancingPaymentService {
   }
 
   private FinancingPaymentResponse performCreate(
-      Ulid financingIdentifier, CreateFinancingPaymentRequest request, UserPrincipal principal) {
+      PropertyFinancingIdentifier financingIdentifier, CreateFinancingPaymentRequest request, UserPrincipal principal) {
 
     PropertyFinancing financing =
         financingRepository.getByIdentifierAndTeamId(
@@ -133,7 +135,7 @@ public class FinancingPaymentService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public FinancingPaymentResponse update(
-      Ulid paymentIdentifier, UpdateFinancingPaymentRequest request, UserPrincipal principal) {
+      FinancingPaymentIdentifier paymentIdentifier, UpdateFinancingPaymentRequest request, UserPrincipal principal) {
 
     FinancingPayment payment =
         paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.requireTeamId());
@@ -185,7 +187,7 @@ public class FinancingPaymentService {
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void delete(Ulid paymentIdentifier, UserPrincipal principal) {
+  public void delete(FinancingPaymentIdentifier paymentIdentifier, UserPrincipal principal) {
     FinancingPayment payment =
         paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.requireTeamId());
 
@@ -210,7 +212,7 @@ public class FinancingPaymentService {
 
   @Transactional(readOnly = true)
   public List<FinancingPaymentResponse> listByFinancing(
-      Ulid financingIdentifier, UserPrincipal principal) {
+      PropertyFinancingIdentifier financingIdentifier, UserPrincipal principal) {
 
     PropertyFinancing financing =
         financingRepository.getByIdentifierAndTeamId(
@@ -227,7 +229,7 @@ public class FinancingPaymentService {
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public DocumentResponse uploadPaymentDocument(
-      Ulid paymentIdentifier,
+      FinancingPaymentIdentifier paymentIdentifier,
       MultipartFile file,
       @Nullable String title,
       @Nullable String notes,
@@ -246,7 +248,7 @@ public class FinancingPaymentService {
   }
 
   public List<DocumentResponse> getPaymentDocuments(
-      Ulid paymentIdentifier, UserPrincipal principal) {
+      FinancingPaymentIdentifier paymentIdentifier, UserPrincipal principal) {
     FinancingPayment payment =
         paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.requireTeamId());
 

@@ -7,7 +7,7 @@ import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.response.PropertyDashboardResponse;
 import com.buurman.exception.ForbiddenException;
 import com.buurman.generated.api.PropertyDashboardApi;
@@ -39,14 +39,14 @@ public class PropertyDashboardController implements PropertyDashboardApi {
   @Override
   public PropertyDashboardResponse getDashboard(String identifier, Integer months) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return dashboardService.getDashboard(Ulid.of(identifier), months, principal);
+    return dashboardService.getDashboard(PropertyIdentifier.of(identifier), months, principal);
   }
 
   @Override
   public byte[] exportPdf(String identifier, Integer months) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     PropertyDashboardResponse dashboard =
-        dashboardService.getDashboard(Ulid.of(identifier), months, principal);
+        dashboardService.getDashboard(PropertyIdentifier.of(identifier), months, principal);
     httpServletResponse.setHeader(
         CONTENT_DISPOSITION, "attachment; filename=property-dashboard-" + identifier + ".pdf");
     httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
@@ -57,7 +57,7 @@ public class PropertyDashboardController implements PropertyDashboardApi {
   public byte[] exportCsv(String identifier, Integer months) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     PropertyDashboardResponse dashboard =
-        dashboardService.getDashboard(Ulid.of(identifier), months, principal);
+        dashboardService.getDashboard(PropertyIdentifier.of(identifier), months, principal);
     httpServletResponse.setHeader(
         CONTENT_DISPOSITION, "attachment; filename=property-dashboard-" + identifier + ".csv");
     httpServletResponse.setContentType("text/csv");

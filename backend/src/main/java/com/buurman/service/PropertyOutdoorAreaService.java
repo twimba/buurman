@@ -11,7 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyOutdoorArea;
-import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.PropertyIdentifier;
+import com.buurman.domain.identifier.PropertyOutdoorAreaIdentifier;
 import com.buurman.dto.request.PropertyOutdoorAreaRequest;
 import com.buurman.dto.response.PropertyOutdoorAreaResponse;
 import com.buurman.repository.PropertyOutdoorAreaRepository;
@@ -28,7 +29,7 @@ public class PropertyOutdoorAreaService {
   private final PropertyRepository propertyRepository;
 
   public List<PropertyOutdoorAreaResponse> getOutdoorAreas(
-      Ulid propertyIdentifier, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier, UserPrincipal principal) {
     Property property = resolveProperty(propertyIdentifier, principal);
     return outdoorAreaRepository
         .findByPropertyIdAndTeamId(property.getId(), principal.requireTeamId())
@@ -40,7 +41,7 @@ public class PropertyOutdoorAreaService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyOutdoorAreaResponse createOutdoorArea(
-      Ulid propertyIdentifier, PropertyOutdoorAreaRequest request, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier, PropertyOutdoorAreaRequest request, UserPrincipal principal) {
 
     Property property = resolveProperty(propertyIdentifier, principal);
 
@@ -61,8 +62,8 @@ public class PropertyOutdoorAreaService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyOutdoorAreaResponse updateOutdoorArea(
-      Ulid propertyIdentifier,
-      Ulid areaIdentifier,
+      PropertyIdentifier propertyIdentifier,
+      PropertyOutdoorAreaIdentifier areaIdentifier,
       PropertyOutdoorAreaRequest request,
       UserPrincipal principal) {
 
@@ -83,7 +84,7 @@ public class PropertyOutdoorAreaService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void deleteOutdoorArea(
-      Ulid propertyIdentifier, Ulid areaIdentifier, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier, PropertyOutdoorAreaIdentifier areaIdentifier, UserPrincipal principal) {
 
     resolveProperty(propertyIdentifier, principal);
 
@@ -93,7 +94,7 @@ public class PropertyOutdoorAreaService {
     outdoorAreaRepository.softDeleteByIdAndTeamId(area.getId(), principal.requireTeamId());
   }
 
-  private Property resolveProperty(Ulid propertyIdentifier, UserPrincipal principal) {
+  private Property resolveProperty(PropertyIdentifier propertyIdentifier, UserPrincipal principal) {
     return propertyRepository.getByIdentifierAndTeamId(
         propertyIdentifier, principal.requireTeamId());
   }

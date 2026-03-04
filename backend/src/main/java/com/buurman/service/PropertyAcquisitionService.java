@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyAcquisition;
-import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.UpsertPropertyAcquisitionRequest;
 import com.buurman.dto.response.PropertyAcquisitionResponse;
 import com.buurman.mapper.PropertyAcquisitionMapper;
@@ -34,7 +34,7 @@ public class PropertyAcquisitionService {
 
   @Transactional(readOnly = true)
   public Optional<PropertyAcquisitionResponse> getByProperty(
-      Ulid propertyIdentifier, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.requireTeamId());
 
@@ -46,7 +46,7 @@ public class PropertyAcquisitionService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyAcquisitionResponse upsert(
-      Ulid propertyIdentifier,
+      PropertyIdentifier propertyIdentifier,
       UpsertPropertyAcquisitionRequest request,
       UserPrincipal principal) {
     Property property =

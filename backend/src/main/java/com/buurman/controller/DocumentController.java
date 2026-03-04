@@ -6,7 +6,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.dto.request.BulkDownloadRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateDocumentRequest;
@@ -39,13 +39,13 @@ public class DocumentController implements DocumentsApi {
   @Override
   public DocumentResponse getDocument(String identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return documentService.getDocument(Ulid.of(identifier), principal);
+    return documentService.getDocument(DocumentIdentifier.of(identifier), principal);
   }
 
   @Override
   public String getDocumentDownloadUrl(String identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    URL downloadUrl = documentService.getDownloadUrl(Ulid.of(identifier), principal);
+    URL downloadUrl = documentService.getDownloadUrl(DocumentIdentifier.of(identifier), principal);
     return downloadUrl.toString();
   }
 
@@ -53,7 +53,7 @@ public class DocumentController implements DocumentsApi {
   public String getDocumentPreviewUrl(String identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     // For now, preview URL is same as download URL
-    URL previewUrl = documentService.getDownloadUrl(Ulid.of(identifier), principal);
+    URL previewUrl = documentService.getDownloadUrl(DocumentIdentifier.of(identifier), principal);
     return previewUrl.toString();
   }
 
@@ -61,13 +61,13 @@ public class DocumentController implements DocumentsApi {
   public DocumentResponse updateDocument(
       String identifier, UpdateDocumentRequest updateDocumentRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return documentService.updateDocument(Ulid.of(identifier), updateDocumentRequest, principal);
+    return documentService.updateDocument(DocumentIdentifier.of(identifier), updateDocumentRequest, principal);
   }
 
   @Override
   public void deleteDocument(String identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    documentService.deleteDocument(Ulid.of(identifier), principal);
+    documentService.deleteDocument(DocumentIdentifier.of(identifier), principal);
   }
 
   @Override

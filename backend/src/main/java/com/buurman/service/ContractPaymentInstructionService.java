@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Ulid;
 import com.buurman.domain.Contract;
+import com.buurman.domain.identifier.ContractIdentifier;
+import com.buurman.domain.identifier.ContractPaymentInstructionIdentifier;
 import com.buurman.domain.ContractPaymentInstruction;
 import com.buurman.domain.PaymentInstruction;
 import com.buurman.dto.request.CreateContractPaymentInstructionRequest;
@@ -42,7 +44,7 @@ public class ContractPaymentInstructionService {
   private final Clock clock;
 
   public List<ContractPaymentInstructionResponse> getHistory(
-      Ulid contractIdentifier, UserPrincipal principal) {
+      ContractIdentifier contractIdentifier, UserPrincipal principal) {
     Contract contract = resolveContract(contractIdentifier, principal);
     List<ContractPaymentInstruction> history =
         cpiRepository.findByContractIdAndTeamId(contract.getId(), principal.requireTeamId());
@@ -66,7 +68,7 @@ public class ContractPaymentInstructionService {
   }
 
   public Optional<ContractPaymentInstructionResponse> getCurrent(
-      Ulid contractIdentifier, UserPrincipal principal) {
+      ContractIdentifier contractIdentifier, UserPrincipal principal) {
     Contract contract = resolveContract(contractIdentifier, principal);
     return cpiRepository
         .findCurrentByContractIdAndTeamId(contract.getId(), principal.requireTeamId())
@@ -88,7 +90,7 @@ public class ContractPaymentInstructionService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContractPaymentInstructionResponse create(
-      Ulid contractIdentifier,
+      ContractIdentifier contractIdentifier,
       CreateContractPaymentInstructionRequest request,
       UserPrincipal principal) {
 
@@ -141,8 +143,8 @@ public class ContractPaymentInstructionService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContractPaymentInstructionResponse update(
-      Ulid contractIdentifier,
-      Ulid instructionIdentifier,
+      ContractIdentifier contractIdentifier,
+      ContractPaymentInstructionIdentifier instructionIdentifier,
       UpdateContractPaymentInstructionRequest request,
       UserPrincipal principal) {
 
@@ -222,7 +224,7 @@ public class ContractPaymentInstructionService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void delete(
-      Ulid contractIdentifier, Ulid instructionIdentifier, UserPrincipal principal) {
+      ContractIdentifier contractIdentifier, ContractPaymentInstructionIdentifier instructionIdentifier, UserPrincipal principal) {
     Contract contract = resolveContract(contractIdentifier, principal);
     ContractPaymentInstruction cpi =
         cpiRepository.getByIdentifierAndTeamId(instructionIdentifier, principal.requireTeamId());
@@ -254,7 +256,7 @@ public class ContractPaymentInstructionService {
         cpi);
   }
 
-  private Contract resolveContract(Ulid contractIdentifier, UserPrincipal principal) {
+  private Contract resolveContract(ContractIdentifier contractIdentifier, UserPrincipal principal) {
     return contractRepository.getByIdentifierAndTeamId(
         contractIdentifier, principal.requireTeamId());
   }

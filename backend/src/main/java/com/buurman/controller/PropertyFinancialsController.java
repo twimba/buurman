@@ -2,7 +2,7 @@ package com.buurman.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.response.PropertyFinancialSummaryResponse;
 import com.buurman.generated.api.PropertyFinancialsApi;
 import com.buurman.security.SecurityUtils;
@@ -20,6 +20,6 @@ public class PropertyFinancialsController implements PropertyFinancialsApi {
   @Override
   public PropertyFinancialSummaryResponse getFinancialSummary(String propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return financialsService.getFinancialSummary(Ulid.of(propertyIdentifier), principal);
+    return financialsService.getFinancialSummary(PropertyIdentifier.of(propertyIdentifier), principal);
   }
 }

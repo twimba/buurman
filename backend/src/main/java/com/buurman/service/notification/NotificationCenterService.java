@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Ulid;
 import com.buurman.domain.LabelCount;
+import com.buurman.domain.identifier.NotificationIdentifier;
 import com.buurman.domain.Notification;
 import com.buurman.domain.NotificationStatus;
 import com.buurman.dto.request.PageRequest;
@@ -65,7 +66,7 @@ public class NotificationCenterService {
   }
 
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public NotificationResponse getNotification(UserPrincipal principal, Ulid identifier) {
+  public NotificationResponse getNotification(UserPrincipal principal, NotificationIdentifier identifier) {
     Notification notification =
         notificationRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -110,7 +111,7 @@ public class NotificationCenterService {
 
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   @Transactional
-  public NotificationResponse resendNotification(UserPrincipal principal, Ulid identifier) {
+  public NotificationResponse resendNotification(UserPrincipal principal, NotificationIdentifier identifier) {
     Notification resent =
         notificationService.resend(principal.requireTeamId(), identifier, principal.getUserId());
     return toResponse(resent);
@@ -118,7 +119,7 @@ public class NotificationCenterService {
 
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public NotificationResponse refreshNotificationStatus(
-      UserPrincipal principal, Ulid identifier) {
+      UserPrincipal principal, NotificationIdentifier identifier) {
     Notification notification =
         notificationRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 

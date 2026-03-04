@@ -12,7 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.domain.PropertyFee;
 import com.buurman.domain.PropertyFinancing;
 import com.buurman.domain.PropertyInsurance;
@@ -55,7 +55,7 @@ public class PropertyFinancialsService {
   @Transactional(readOnly = true)
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public PropertyFinancialSummaryResponse getFinancialSummary(
-      Ulid propertyIdentifier, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier, UserPrincipal principal) {
 
     var acquisition = acquisitionService.getByProperty(propertyIdentifier, principal);
     var latestValuation = valuationService.getLatestByProperty(propertyIdentifier, principal);

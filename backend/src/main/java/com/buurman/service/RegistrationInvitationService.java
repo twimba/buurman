@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.buurman.domain.Ulid;
 import com.buurman.domain.NotificationChannel;
+import com.buurman.domain.identifier.RegistrationInvitationIdentifier;
 import com.buurman.domain.RegistrationInvitation;
 import com.buurman.domain.RegistrationInvitationUsage;
 import com.buurman.dto.request.PageRequest;
@@ -108,7 +108,7 @@ public class RegistrationInvitationService {
   }
 
   @Transactional(readOnly = true)
-  public RegistrationInvitationDetailResponse getByIdentifier(Ulid identifier) {
+  public RegistrationInvitationDetailResponse getByIdentifier(RegistrationInvitationIdentifier identifier) {
     RegistrationInvitation invitation = invitationRepository.getByIdentifier(identifier);
 
     List<RegistrationInvitationUsage> usages =
@@ -118,7 +118,7 @@ public class RegistrationInvitationService {
   }
 
   @Transactional
-  public void revoke(Ulid identifier, BackofficePrincipal principal) {
+  public void revoke(RegistrationInvitationIdentifier identifier, BackofficePrincipal principal) {
     RegistrationInvitation invitation = invitationRepository.getByIdentifier(identifier);
 
     if (invitation.getRevokedAt().isPresent()) {
@@ -167,7 +167,7 @@ public class RegistrationInvitationService {
 
   @Transactional
   public void sendInvitation(
-      Ulid identifier, SendRegistrationInvitationRequest request, BackofficePrincipal principal) {
+      RegistrationInvitationIdentifier identifier, SendRegistrationInvitationRequest request, BackofficePrincipal principal) {
     RegistrationInvitation invitation = invitationRepository.getByIdentifier(identifier);
 
     if (!invitation.isValid()) {
@@ -194,7 +194,7 @@ public class RegistrationInvitationService {
 
   @Transactional
   public RegistrationInvitationDetailResponse updateNote(
-      Ulid identifier,
+      RegistrationInvitationIdentifier identifier,
       UpdateRegistrationInvitationNoteRequest request,
       BackofficePrincipal principal) {
     RegistrationInvitation invitation = invitationRepository.getByIdentifier(identifier);

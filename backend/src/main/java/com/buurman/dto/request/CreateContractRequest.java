@@ -11,7 +11,7 @@ import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 
 import com.buurman.domain.Contract;
-import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.PropertyIdentifier;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
@@ -21,7 +21,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 
 public record CreateContractRequest(
-    @NotNull(message = "Property identifier is required") Ulid propertyIdentifier,
+    @NotNull(message = "Property identifier is required") PropertyIdentifier propertyIdentifier,
     @NotNull(message = "At least one party is required") @Size(min = 1, message = "At least one party is required") @Valid List<ContractPartyRequest> parties,
     @NotNull(message = "Contract type is required") Contract.ContractType contractType,
     @NotNull(message = "Start date is required") LocalDate startDate,

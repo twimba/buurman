@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.buurman.domain.BroadcastMessage;
 import com.buurman.domain.Team;
 import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.BroadcastMessageIdentifier;
 import com.buurman.domain.User;
 import com.buurman.dto.request.backoffice.CreateBroadcastMessageRequest;
 import com.buurman.dto.request.backoffice.UpdateBroadcastMessageRequest;
@@ -79,7 +80,7 @@ public class BackofficeBroadcastMessageService {
 
   @Transactional
   public BackofficeBroadcastMessageResponse update(
-      Ulid identifier, UpdateBroadcastMessageRequest request, BackofficePrincipal principal) {
+      BroadcastMessageIdentifier identifier, UpdateBroadcastMessageRequest request, BackofficePrincipal principal) {
     String scope = request.scope();
     validateScope(
         scope,
@@ -116,7 +117,7 @@ public class BackofficeBroadcastMessageService {
   }
 
   @Transactional
-  public void delete(Ulid identifier, BackofficePrincipal principal) {
+  public void delete(BroadcastMessageIdentifier identifier, BackofficePrincipal principal) {
     BroadcastMessage existing = repository.getByIdentifier(identifier);
     repository.delete(existing.getId());
 

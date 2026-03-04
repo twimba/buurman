@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.OccupancyPeriodIdentifier;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.domain.Contract;
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyFinancing;
@@ -56,7 +58,7 @@ public class OccupancyPeriodService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public OccupancyPeriodResponse create(
-      Ulid propertyIdentifier, CreateOccupancyPeriodRequest request, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier, CreateOccupancyPeriodRequest request, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
@@ -109,8 +111,8 @@ public class OccupancyPeriodService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public OccupancyPeriodResponse update(
-      Ulid propertyIdentifier,
-      Ulid periodIdentifier,
+      PropertyIdentifier propertyIdentifier,
+      OccupancyPeriodIdentifier periodIdentifier,
       UpdateOccupancyPeriodRequest request,
       UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
@@ -147,8 +149,8 @@ public class OccupancyPeriodService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public OccupancyPeriodResponse end(
-      Ulid propertyIdentifier,
-      Ulid periodIdentifier,
+      PropertyIdentifier propertyIdentifier,
+      OccupancyPeriodIdentifier periodIdentifier,
       EndOccupancyPeriodRequest request,
       UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
@@ -178,7 +180,7 @@ public class OccupancyPeriodService {
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void delete(Ulid propertyIdentifier, Ulid periodIdentifier, UserPrincipal principal) {
+  public void delete(PropertyIdentifier propertyIdentifier, OccupancyPeriodIdentifier periodIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
     PropertyOccupancyPeriod period = repository.getByIdentifierAndTeamId(periodIdentifier, teamId);
@@ -202,7 +204,7 @@ public class OccupancyPeriodService {
   @Transactional(readOnly = true)
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public List<OccupancyPeriodResponse> findByProperty(
-      Ulid propertyIdentifier, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
     return repository.findByPropertyIdAndTeamId(property.getId(), teamId).stream()
@@ -213,7 +215,7 @@ public class OccupancyPeriodService {
   @Transactional(readOnly = true)
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public OccupancyPeriodResponse get(
-      Ulid propertyIdentifier, Ulid periodIdentifier, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier, OccupancyPeriodIdentifier periodIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
     PropertyOccupancyPeriod period = repository.getByIdentifierAndTeamId(periodIdentifier, teamId);
@@ -222,7 +224,7 @@ public class OccupancyPeriodService {
 
   @Transactional(readOnly = true)
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
-  public PropertyTimelineResponse getTimeline(Ulid propertyIdentifier, UserPrincipal principal) {
+  public PropertyTimelineResponse getTimeline(PropertyIdentifier propertyIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 

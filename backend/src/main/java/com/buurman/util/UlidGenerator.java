@@ -1,6 +1,37 @@
 package com.buurman.util;
 
 import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.AmenityIdentifier;
+import com.buurman.domain.identifier.BroadcastMessageIdentifier;
+import com.buurman.domain.identifier.CalendarFeedIdentifier;
+import com.buurman.domain.identifier.ContractIdentifier;
+import com.buurman.domain.identifier.ContractPartyIdentifier;
+import com.buurman.domain.identifier.ContractPaymentInstructionIdentifier;
+import com.buurman.domain.identifier.ContractRentPeriodIdentifier;
+import com.buurman.domain.identifier.DataTakeoutIdentifier;
+import com.buurman.domain.identifier.DocumentIdentifier;
+import com.buurman.domain.identifier.ExpenseIdentifier;
+import com.buurman.domain.identifier.FinancingPaymentIdentifier;
+import com.buurman.domain.identifier.GeneratedReportIdentifier;
+import com.buurman.domain.identifier.NotificationIdentifier;
+import com.buurman.domain.identifier.OccupancyPeriodIdentifier;
+import com.buurman.domain.identifier.PaymentIdentifier;
+import com.buurman.domain.identifier.PaymentInstructionIdentifier;
+import com.buurman.domain.identifier.PaymentReceivalIdentifier;
+import com.buurman.domain.identifier.PhotoIdentifier;
+import com.buurman.domain.identifier.PropertyAcquisitionIdentifier;
+import com.buurman.domain.identifier.PropertyFeeIdentifier;
+import com.buurman.domain.identifier.PropertyFinancingIdentifier;
+import com.buurman.domain.identifier.PropertyIdentifier;
+import com.buurman.domain.identifier.PropertyInsuranceIdentifier;
+import com.buurman.domain.identifier.PropertyOutdoorAreaIdentifier;
+import com.buurman.domain.identifier.PropertyTaxIdentifier;
+import com.buurman.domain.identifier.PropertyValuationIdentifier;
+import com.buurman.domain.identifier.RegistrationInvitationIdentifier;
+import com.buurman.domain.identifier.TeamIdentifier;
+import com.buurman.domain.identifier.TenantAddressIdentifier;
+import com.buurman.domain.identifier.TenantIdentifier;
+import com.buurman.domain.identifier.UserIdentifier;
 
 import de.huxhorn.sulky.ulid.ULID;
 
@@ -10,139 +41,139 @@ public class UlidGenerator {
 
   private UlidGenerator() {}
 
-  private static Ulid generate() {
-    return Ulid.of(ulid.nextULID());
+  private static String generateRaw() {
+    return ulid.nextULID();
   }
 
-  private static Ulid generate(EntityPrefix prefix) {
-    return Ulid.of(prefix.getCode() + ulid.nextULID());
+  private static String generateRaw(EntityPrefix prefix) {
+    return prefix.getCode() + ulid.nextULID();
   }
 
   public static Ulid newToken() {
-    return generate();
+    return Ulid.of(generateRaw());
   }
 
-  public static Ulid newAmenityId() {
-    return generate(EntityPrefix.AMN);
+  public static AmenityIdentifier newAmenityId() {
+    return AmenityIdentifier.of(generateRaw(EntityPrefix.AMN));
   }
 
-  public static Ulid newBroadcastMessageId() {
-    return generate(EntityPrefix.BCM);
+  public static BroadcastMessageIdentifier newBroadcastMessageId() {
+    return BroadcastMessageIdentifier.of(generateRaw(EntityPrefix.BCM));
   }
 
-  public static Ulid newCalendarFeedId() {
-    return generate(EntityPrefix.CAL);
+  public static CalendarFeedIdentifier newCalendarFeedId() {
+    return CalendarFeedIdentifier.of(generateRaw(EntityPrefix.CAL));
   }
 
-  public static Ulid newContractId() {
-    return generate(EntityPrefix.CON);
+  public static ContractIdentifier newContractId() {
+    return ContractIdentifier.of(generateRaw(EntityPrefix.CON));
   }
 
-  public static Ulid newContractPartyId() {
-    return generate(EntityPrefix.CTP);
+  public static ContractPartyIdentifier newContractPartyId() {
+    return ContractPartyIdentifier.of(generateRaw(EntityPrefix.CTP));
   }
 
-  public static Ulid newContractRentPeriodId() {
-    return generate(EntityPrefix.CRP);
+  public static ContractRentPeriodIdentifier newContractRentPeriodId() {
+    return ContractRentPeriodIdentifier.of(generateRaw(EntityPrefix.CRP));
   }
 
-  public static Ulid newContractPaymentInstructionId() {
-    return generate(EntityPrefix.CPI);
+  public static ContractPaymentInstructionIdentifier newContractPaymentInstructionId() {
+    return ContractPaymentInstructionIdentifier.of(generateRaw(EntityPrefix.CPI));
   }
 
-  public static Ulid newDocumentId() {
-    return generate(EntityPrefix.DOC);
+  public static DocumentIdentifier newDocumentId() {
+    return DocumentIdentifier.of(generateRaw(EntityPrefix.DOC));
   }
 
-  public static Ulid newExpenseId() {
-    return generate(EntityPrefix.EXP);
+  public static ExpenseIdentifier newExpenseId() {
+    return ExpenseIdentifier.of(generateRaw(EntityPrefix.EXP));
   }
 
-  public static Ulid newGeneratedReportId() {
-    return generate(EntityPrefix.GRP);
+  public static GeneratedReportIdentifier newGeneratedReportId() {
+    return GeneratedReportIdentifier.of(generateRaw(EntityPrefix.GRP));
   }
 
-  public static Ulid newNotificationId() {
-    return generate(EntityPrefix.NTF);
+  public static NotificationIdentifier newNotificationId() {
+    return NotificationIdentifier.of(generateRaw(EntityPrefix.NTF));
   }
 
-  public static Ulid newPaymentId() {
-    return generate(EntityPrefix.PAY);
+  public static PaymentIdentifier newPaymentId() {
+    return PaymentIdentifier.of(generateRaw(EntityPrefix.PAY));
   }
 
-  public static Ulid newPaymentInstructionId() {
-    return generate(EntityPrefix.PIN);
+  public static PaymentInstructionIdentifier newPaymentInstructionId() {
+    return PaymentInstructionIdentifier.of(generateRaw(EntityPrefix.PIN));
   }
 
-  public static Ulid newPaymentReceivalId() {
-    return generate(EntityPrefix.PRE);
+  public static PaymentReceivalIdentifier newPaymentReceivalId() {
+    return PaymentReceivalIdentifier.of(generateRaw(EntityPrefix.PRE));
   }
 
-  public static Ulid newPhotoId() {
-    return generate(EntityPrefix.PHO);
+  public static PhotoIdentifier newPhotoId() {
+    return PhotoIdentifier.of(generateRaw(EntityPrefix.PHO));
   }
 
-  public static Ulid newPropertyId() {
-    return generate(EntityPrefix.PRO);
+  public static PropertyIdentifier newPropertyId() {
+    return PropertyIdentifier.of(generateRaw(EntityPrefix.PRO));
   }
 
-  public static Ulid newOccupancyPeriodId() {
-    return generate(EntityPrefix.OCP);
+  public static OccupancyPeriodIdentifier newOccupancyPeriodId() {
+    return OccupancyPeriodIdentifier.of(generateRaw(EntityPrefix.OCP));
   }
 
-  public static Ulid newPropertyOutdoorAreaId() {
-    return generate(EntityPrefix.POA);
+  public static PropertyOutdoorAreaIdentifier newPropertyOutdoorAreaId() {
+    return PropertyOutdoorAreaIdentifier.of(generateRaw(EntityPrefix.POA));
   }
 
-  public static Ulid newRegistrationInvitationId() {
-    return generate(EntityPrefix.RIN);
+  public static RegistrationInvitationIdentifier newRegistrationInvitationId() {
+    return RegistrationInvitationIdentifier.of(generateRaw(EntityPrefix.RIN));
   }
 
-  public static Ulid newTeamId() {
-    return generate(EntityPrefix.TEA);
+  public static TeamIdentifier newTeamId() {
+    return TeamIdentifier.of(generateRaw(EntityPrefix.TEA));
   }
 
-  public static Ulid newTenantId() {
-    return generate(EntityPrefix.TEN);
+  public static TenantIdentifier newTenantId() {
+    return TenantIdentifier.of(generateRaw(EntityPrefix.TEN));
   }
 
-  public static Ulid newTenantAddressId() {
-    return generate(EntityPrefix.TAD);
+  public static TenantAddressIdentifier newTenantAddressId() {
+    return TenantAddressIdentifier.of(generateRaw(EntityPrefix.TAD));
   }
 
-  public static Ulid newUserId() {
-    return generate(EntityPrefix.USR);
+  public static UserIdentifier newUserId() {
+    return UserIdentifier.of(generateRaw(EntityPrefix.USR));
   }
 
-  public static Ulid newAcquisitionId() {
-    return generate(EntityPrefix.ACQ);
+  public static PropertyAcquisitionIdentifier newAcquisitionId() {
+    return PropertyAcquisitionIdentifier.of(generateRaw(EntityPrefix.ACQ));
   }
 
-  public static Ulid newValuationId() {
-    return generate(EntityPrefix.VAL);
+  public static PropertyValuationIdentifier newValuationId() {
+    return PropertyValuationIdentifier.of(generateRaw(EntityPrefix.VAL));
   }
 
-  public static Ulid newFinancingId() {
-    return generate(EntityPrefix.FIN);
+  public static PropertyFinancingIdentifier newFinancingId() {
+    return PropertyFinancingIdentifier.of(generateRaw(EntityPrefix.FIN));
   }
 
-  public static Ulid newFinancingPaymentId() {
-    return generate(EntityPrefix.FPY);
+  public static FinancingPaymentIdentifier newFinancingPaymentId() {
+    return FinancingPaymentIdentifier.of(generateRaw(EntityPrefix.FPY));
   }
 
-  public static Ulid newInsuranceId() {
-    return generate(EntityPrefix.INS);
+  public static PropertyInsuranceIdentifier newInsuranceId() {
+    return PropertyInsuranceIdentifier.of(generateRaw(EntityPrefix.INS));
   }
 
-  public static Ulid newPropertyTaxId() {
-    return generate(EntityPrefix.PTX);
+  public static PropertyTaxIdentifier newPropertyTaxId() {
+    return PropertyTaxIdentifier.of(generateRaw(EntityPrefix.PTX));
   }
 
-  public static Ulid newPropertyFeeId() {
-    return generate(EntityPrefix.FEE);
+  public static PropertyFeeIdentifier newPropertyFeeId() {
+    return PropertyFeeIdentifier.of(generateRaw(EntityPrefix.FEE));
   }
 
-  public static Ulid newTakeoutId() {
-    return generate(EntityPrefix.TKO);
+  public static DataTakeoutIdentifier newTakeoutId() {
+    return DataTakeoutIdentifier.of(generateRaw(EntityPrefix.TKO));
   }
 }

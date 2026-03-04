@@ -34,7 +34,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.TenantIdentifier;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Payment;
@@ -64,7 +64,7 @@ public class TenantBookletExporter {
   private final PdfRenderer pdfRenderer;
   private final Clock clock;
 
-  public byte[] generate(Ulid tenantIdentifier, UUID teamId) {
+  public byte[] generate(TenantIdentifier tenantIdentifier, UUID teamId) {
     Tenant tenant = tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, teamId);
 
     List<TenantAddress> addresses = tenantAddressRepository.findByTenantId(tenant.getId(), teamId);

@@ -40,7 +40,7 @@ import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
@@ -91,7 +91,7 @@ public class ContractBookletExporter {
           "ZELLE", "Zelle",
           "OTHER", "Other");
 
-  public byte[] generate(Ulid contractIdentifier, UUID teamId) {
+  public byte[] generate(ContractIdentifier contractIdentifier, UUID teamId) {
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
     Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
 

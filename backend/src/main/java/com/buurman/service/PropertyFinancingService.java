@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyFinancing;
 import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.PropertyFinancingIdentifier;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.CreatePropertyFinancingRequest;
 import com.buurman.dto.request.UpdatePropertyFinancingRequest;
 import com.buurman.dto.response.PropertyFinancingResponse;
@@ -37,7 +39,7 @@ public class PropertyFinancingService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyFinancingResponse create(
-      Ulid propertyIdentifier, CreatePropertyFinancingRequest request, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier, CreatePropertyFinancingRequest request, UserPrincipal principal) {
 
     Property property =
         propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.requireTeamId());
@@ -65,7 +67,7 @@ public class PropertyFinancingService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyFinancingResponse update(
-      Ulid financingIdentifier, UpdatePropertyFinancingRequest request, UserPrincipal principal) {
+      PropertyFinancingIdentifier financingIdentifier, UpdatePropertyFinancingRequest request, UserPrincipal principal) {
 
     PropertyFinancing financing =
         financingRepository.getByIdentifierAndTeamId(
@@ -88,7 +90,7 @@ public class PropertyFinancingService {
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void delete(Ulid financingIdentifier, UserPrincipal principal) {
+  public void delete(PropertyFinancingIdentifier financingIdentifier, UserPrincipal principal) {
     PropertyFinancing financing =
         financingRepository.getByIdentifierAndTeamId(
             financingIdentifier, principal.requireTeamId());
@@ -103,7 +105,7 @@ public class PropertyFinancingService {
 
   @Transactional(readOnly = true)
   public List<PropertyFinancingResponse> listByProperty(
-      Ulid propertyIdentifier, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier, UserPrincipal principal) {
 
     Property property =
         propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.requireTeamId());
@@ -117,7 +119,7 @@ public class PropertyFinancingService {
 
   @Transactional(readOnly = true)
   public PropertyFinancingResponse getFinancing(
-      Ulid financingIdentifier, UserPrincipal principal) {
+      PropertyFinancingIdentifier financingIdentifier, UserPrincipal principal) {
 
     PropertyFinancing financing =
         financingRepository.getByIdentifierAndTeamId(

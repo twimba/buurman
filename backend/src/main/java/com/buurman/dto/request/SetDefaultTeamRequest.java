@@ -1,7 +1,7 @@
 package com.buurman.dto.request;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.TeamIdentifier;
 
 import jakarta.validation.constraints.NotNull;
 
-public record SetDefaultTeamRequest(@NotNull Ulid teamIdentifier) {}
+public record SetDefaultTeamRequest(@NotNull TeamIdentifier teamIdentifier) {}

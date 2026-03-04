@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.BroadcastMessage;
-import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.BroadcastMessageIdentifier;
 import com.buurman.dto.response.BroadcastMessageResponse;
 import com.buurman.repository.BroadcastMessageDismissalRepository;
 import com.buurman.repository.BroadcastMessageRepository;
@@ -36,7 +36,7 @@ public class BroadcastMessageService {
   }
 
   @Transactional
-  public void dismiss(UUID userId, Ulid identifier) {
+  public void dismiss(UUID userId, BroadcastMessageIdentifier identifier) {
     BroadcastMessage message = repository.getByIdentifier(identifier);
     dismissalRepository.save(message.getId(), userId);
   }

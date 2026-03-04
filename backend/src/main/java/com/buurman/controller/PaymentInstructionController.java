@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.PaymentInstructionIdentifier;
 import com.buurman.dto.request.CreatePaymentInstructionRequest;
 import com.buurman.dto.request.UpdatePaymentInstructionRequest;
 import com.buurman.dto.response.PaymentInstructionResponse;
@@ -31,7 +31,7 @@ public class PaymentInstructionController implements PaymentInstructionsApi {
   @Override
   public PaymentInstructionResponse getByIdentifier(String identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentInstructionService.getByIdentifier(Ulid.of(identifier), principal);
+    return paymentInstructionService.getByIdentifier(PaymentInstructionIdentifier.of(identifier), principal);
   }
 
   @Override
@@ -45,12 +45,12 @@ public class PaymentInstructionController implements PaymentInstructionsApi {
   public PaymentInstructionResponse updatePaymentInstruction(
       String identifier, @Valid UpdatePaymentInstructionRequest updatePaymentInstructionRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentInstructionService.update(Ulid.of(identifier), updatePaymentInstructionRequest, principal);
+    return paymentInstructionService.update(PaymentInstructionIdentifier.of(identifier), updatePaymentInstructionRequest, principal);
   }
 
   @Override
   public void deletePaymentInstruction(String identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    paymentInstructionService.delete(Ulid.of(identifier), principal);
+    paymentInstructionService.delete(PaymentInstructionIdentifier.of(identifier), principal);
   }
 }

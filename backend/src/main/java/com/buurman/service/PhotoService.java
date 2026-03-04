@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
 import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.PhotoIdentifier;
 import com.buurman.domain.Photo;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdatePhotoRequest;
@@ -155,12 +156,12 @@ public class PhotoService {
     return photos.stream().map(this::toResponseWithDownloadUrl).toList();
   }
 
-  public PhotoResponse getPhoto(Ulid identifier, UserPrincipal principal) {
+  public PhotoResponse getPhoto(PhotoIdentifier identifier, UserPrincipal principal) {
     Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return toResponseWithDownloadUrl(photo);
   }
 
-  public URL getDownloadUrl(Ulid identifier, UserPrincipal principal) {
+  public URL getDownloadUrl(PhotoIdentifier identifier, UserPrincipal principal) {
     Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     metricsService.incrementCounter("photo.download.total", "entity_type", photo.getEntityType());
@@ -169,7 +170,7 @@ public class PhotoService {
   }
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-  public void deletePhoto(Ulid identifier, UserPrincipal principal) {
+  public void deletePhoto(PhotoIdentifier identifier, UserPrincipal principal) {
     Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     // Soft delete in database
@@ -200,7 +201,7 @@ public class PhotoService {
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PhotoResponse updatePhoto(
-      Ulid identifier, UpdatePhotoRequest request, UserPrincipal principal) {
+      PhotoIdentifier identifier, UpdatePhotoRequest request, UserPrincipal principal) {
     Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     Optional<String> oldTitle = photo.getTitle();

@@ -7,8 +7,8 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.buurman.domain.Ulid;
 import com.buurman.domain.Team;
+import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.domain.TeamMember;
 import com.buurman.domain.User;
 import com.buurman.dto.request.UpdateUserProfileRequest;
@@ -107,7 +107,7 @@ public class UserTeamService {
   }
 
   @Transactional
-  public UserTeamResponse switchTeam(Ulid teamIdentifier, UserPrincipal principal) {
+  public UserTeamResponse switchTeam(TeamIdentifier teamIdentifier, UserPrincipal principal) {
     User user = userRepository.getById(principal.getUserId());
 
     Team team = resolveTeam(teamIdentifier);
@@ -133,7 +133,7 @@ public class UserTeamService {
   }
 
   @Transactional
-  public UserTeamResponse setDefaultTeam(Ulid teamIdentifier, UserPrincipal principal) {
+  public UserTeamResponse setDefaultTeam(TeamIdentifier teamIdentifier, UserPrincipal principal) {
     User user = userRepository.getById(principal.getUserId());
 
     Team team = resolveTeam(teamIdentifier);
@@ -159,7 +159,7 @@ public class UserTeamService {
   }
 
   @Transactional
-  public void leaveTeam(Ulid teamIdentifier, UserPrincipal principal) {
+  public void leaveTeam(TeamIdentifier teamIdentifier, UserPrincipal principal) {
     Team team = resolveTeam(teamIdentifier);
 
     // Verify user is member of target team
@@ -193,7 +193,7 @@ public class UserTeamService {
     }
   }
 
-  private Team resolveTeam(Ulid teamIdentifier) {
+  private Team resolveTeam(TeamIdentifier teamIdentifier) {
     return teamRepository.getByIdentifier(teamIdentifier);
   }
 }

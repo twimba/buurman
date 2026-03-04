@@ -10,7 +10,9 @@ import java.util.function.Supplier;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.ContractIdentifier;
+import com.buurman.domain.identifier.PropertyIdentifier;
+import com.buurman.domain.identifier.TenantIdentifier;
 import com.buurman.dto.response.PropertyDashboardResponse;
 import com.buurman.service.export.ContractBookletExporter;
 import com.buurman.service.export.PropertyBookletExporter;
@@ -48,17 +50,17 @@ public class ExportService {
         "transaction_pdf", () -> transactionPdfExporter.generate(startDate, endDate, teamId));
   }
 
-  public byte[] generatePropertyBrochurePDF(Ulid propertyIdentifier, UUID teamId) {
+  public byte[] generatePropertyBrochurePDF(PropertyIdentifier propertyIdentifier, UUID teamId) {
     return withMetrics(
         "property_brochure", () -> propertyBookletExporter.generate(propertyIdentifier, teamId));
   }
 
-  public byte[] generateContractReportPDF(Ulid contractIdentifier, UUID teamId) {
+  public byte[] generateContractReportPDF(ContractIdentifier contractIdentifier, UUID teamId) {
     return withMetrics(
         "contract_report", () -> contractBookletExporter.generate(contractIdentifier, teamId));
   }
 
-  public byte[] generateTenantReportPDF(Ulid tenantIdentifier, UUID teamId) {
+  public byte[] generateTenantReportPDF(TenantIdentifier tenantIdentifier, UUID teamId) {
     return withMetrics(
         "tenant_report", () -> tenantBookletExporter.generate(tenantIdentifier, teamId));
   }

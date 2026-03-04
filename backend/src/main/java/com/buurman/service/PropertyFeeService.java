@@ -13,7 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyFee;
-import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.PropertyFeeIdentifier;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.CreatePropertyFeeRequest;
 import com.buurman.dto.request.UpdatePropertyFeeRequest;
 import com.buurman.dto.response.PropertyFeeResponse;
@@ -41,7 +42,7 @@ public class PropertyFeeService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyFeeResponse create(
-      Ulid propertyIdentifier, CreatePropertyFeeRequest request, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier, CreatePropertyFeeRequest request, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
@@ -70,7 +71,7 @@ public class PropertyFeeService {
   }
 
   @Transactional(readOnly = true)
-  public PropertyFeeResponse get(Ulid identifier, UserPrincipal principal) {
+  public PropertyFeeResponse get(PropertyFeeIdentifier identifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     PropertyFee fee = feeRepository.getByIdentifierAndTeamId(identifier, teamId);
     return enrichResponse(fee, teamId);
@@ -78,7 +79,7 @@ public class PropertyFeeService {
 
   @Transactional(readOnly = true)
   public List<PropertyFeeResponse> listByProperty(
-      Ulid propertyIdentifier, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
@@ -90,7 +91,7 @@ public class PropertyFeeService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyFeeResponse update(
-      Ulid identifier, UpdatePropertyFeeRequest request, UserPrincipal principal) {
+      PropertyFeeIdentifier identifier, UpdatePropertyFeeRequest request, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     PropertyFee fee = feeRepository.getByIdentifierAndTeamId(identifier, teamId);
 
@@ -107,7 +108,7 @@ public class PropertyFeeService {
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void delete(Ulid identifier, UserPrincipal principal) {
+  public void delete(PropertyFeeIdentifier identifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     PropertyFee fee = feeRepository.getByIdentifierAndTeamId(identifier, teamId);
 

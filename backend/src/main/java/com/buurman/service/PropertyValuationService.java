@@ -12,7 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyValuation;
-import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.PropertyIdentifier;
+import com.buurman.domain.identifier.PropertyValuationIdentifier;
 import com.buurman.dto.request.CreatePropertyValuationRequest;
 import com.buurman.dto.request.UpdatePropertyValuationRequest;
 import com.buurman.dto.response.PropertyValuationResponse;
@@ -37,7 +38,7 @@ public class PropertyValuationService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyValuationResponse create(
-      Ulid propertyIdentifier, CreatePropertyValuationRequest request, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier, CreatePropertyValuationRequest request, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.requireTeamId());
 
@@ -64,7 +65,7 @@ public class PropertyValuationService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyValuationResponse update(
-      Ulid identifier, UpdatePropertyValuationRequest request, UserPrincipal principal) {
+      PropertyValuationIdentifier identifier, UpdatePropertyValuationRequest request, UserPrincipal principal) {
     PropertyValuation valuation =
         valuationRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -82,7 +83,7 @@ public class PropertyValuationService {
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void delete(Ulid identifier, UserPrincipal principal) {
+  public void delete(PropertyValuationIdentifier identifier, UserPrincipal principal) {
     PropertyValuation valuation =
         valuationRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -96,7 +97,7 @@ public class PropertyValuationService {
 
   @Transactional(readOnly = true)
   public List<PropertyValuationResponse> listByProperty(
-      Ulid propertyIdentifier, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.requireTeamId());
 
@@ -109,7 +110,7 @@ public class PropertyValuationService {
 
   @Transactional(readOnly = true)
   public Optional<PropertyValuationResponse> getLatestByProperty(
-      Ulid propertyIdentifier, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.requireTeamId());
 

@@ -12,8 +12,8 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.buurman.domain.Ulid;
 import com.buurman.domain.Team;
+import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.domain.TeamMember;
 import com.buurman.domain.TeamPreferences;
 import com.buurman.domain.User;
@@ -59,7 +59,7 @@ public class BackofficeTeamService {
   }
 
   @Transactional(readOnly = true)
-  public BackofficeTeamDetailResponse getTeam(Ulid identifier) {
+  public BackofficeTeamDetailResponse getTeam(TeamIdentifier identifier) {
     Team team = teamRepository.getByIdentifierForBackoffice(identifier);
 
     // Members + batch user lookup
@@ -128,7 +128,7 @@ public class BackofficeTeamService {
 
   @Transactional
   public BackofficeTeamResponse updateTeamName(
-      Ulid identifier, UpdateTeamNameRequest request, BackofficePrincipal principal) {
+      TeamIdentifier identifier, UpdateTeamNameRequest request, BackofficePrincipal principal) {
     Team team = teamRepository.getByIdentifierForBackoffice(identifier);
 
     team.setName(request.name());
@@ -143,7 +143,7 @@ public class BackofficeTeamService {
   }
 
   @Transactional
-  public void deleteTeam(Ulid identifier, BackofficePrincipal principal) {
+  public void deleteTeam(TeamIdentifier identifier, BackofficePrincipal principal) {
     Team team = teamRepository.getByIdentifierForBackoffice(identifier);
 
     teamRepository.softDeleteById(team.getId());

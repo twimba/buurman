@@ -4,7 +4,8 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.PropertyIdentifier;
+import com.buurman.domain.identifier.PropertyInsuranceIdentifier;
 import com.buurman.dto.request.CreatePropertyInsuranceRequest;
 import com.buurman.dto.request.UpdatePropertyInsuranceRequest;
 import com.buurman.dto.response.PropertyInsuranceResponse;
@@ -24,20 +25,20 @@ public class PropertyInsuranceController implements PropertyInsurancesApi {
   @Override
   public List<PropertyInsuranceResponse> listInsurances(String propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return insuranceService.listByProperty(Ulid.of(propertyIdentifier), principal);
+    return insuranceService.listByProperty(PropertyIdentifier.of(propertyIdentifier), principal);
   }
 
   @Override
   public PropertyInsuranceResponse getInsurance(String propertyIdentifier, String identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return insuranceService.get(Ulid.of(identifier), principal);
+    return insuranceService.get(PropertyInsuranceIdentifier.of(identifier), principal);
   }
 
   @Override
   public PropertyInsuranceResponse createInsurance(
       String propertyIdentifier, CreatePropertyInsuranceRequest createPropertyInsuranceRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return insuranceService.create(Ulid.of(propertyIdentifier), createPropertyInsuranceRequest, principal);
+    return insuranceService.create(PropertyIdentifier.of(propertyIdentifier), createPropertyInsuranceRequest, principal);
   }
 
   @Override
@@ -46,12 +47,12 @@ public class PropertyInsuranceController implements PropertyInsurancesApi {
       String identifier,
       UpdatePropertyInsuranceRequest updatePropertyInsuranceRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return insuranceService.update(Ulid.of(identifier), updatePropertyInsuranceRequest, principal);
+    return insuranceService.update(PropertyInsuranceIdentifier.of(identifier), updatePropertyInsuranceRequest, principal);
   }
 
   @Override
   public void deleteInsurance(String propertyIdentifier, String identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    insuranceService.delete(Ulid.of(identifier), principal);
+    insuranceService.delete(PropertyInsuranceIdentifier.of(identifier), principal);
   }
 }

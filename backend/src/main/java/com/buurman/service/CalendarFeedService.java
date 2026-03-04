@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.buurman.config.models.AppProperties;
 import com.buurman.domain.Ulid;
 import com.buurman.domain.CalendarFeed;
+import com.buurman.domain.identifier.CalendarFeedIdentifier;
 import com.buurman.domain.Contract;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
@@ -149,7 +150,7 @@ public class CalendarFeedService {
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public CalendarFeedResponse rotateFeedToken(Ulid identifier, UserPrincipal principal) {
+  public CalendarFeedResponse rotateFeedToken(CalendarFeedIdentifier identifier, UserPrincipal principal) {
     CalendarFeed feed =
         calendarFeedRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -165,7 +166,7 @@ public class CalendarFeedService {
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void deleteFeed(Ulid identifier, UserPrincipal principal) {
+  public void deleteFeed(CalendarFeedIdentifier identifier, UserPrincipal principal) {
     CalendarFeed feed =
         calendarFeedRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 

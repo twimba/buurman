@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.domain.Amenity;
 import com.buurman.domain.Contract;
 import com.buurman.domain.Expense;
@@ -101,7 +101,7 @@ public class PropertyBookletExporter {
   private final PdfRenderer pdfRenderer;
   private final Clock clock;
 
-  public byte[] generate(Ulid propertyIdentifier, UUID teamId) {
+  public byte[] generate(PropertyIdentifier propertyIdentifier, UUID teamId) {
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
     UUID propertyId = property.getId();
 

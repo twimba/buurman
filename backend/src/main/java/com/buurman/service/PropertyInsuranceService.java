@@ -13,7 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyInsurance;
-import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.PropertyIdentifier;
+import com.buurman.domain.identifier.PropertyInsuranceIdentifier;
 import com.buurman.dto.request.CreatePropertyInsuranceRequest;
 import com.buurman.dto.request.UpdatePropertyInsuranceRequest;
 import com.buurman.dto.response.PropertyInsuranceResponse;
@@ -41,7 +42,7 @@ public class PropertyInsuranceService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyInsuranceResponse create(
-      Ulid propertyIdentifier, CreatePropertyInsuranceRequest request, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier, CreatePropertyInsuranceRequest request, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
@@ -70,7 +71,7 @@ public class PropertyInsuranceService {
   }
 
   @Transactional(readOnly = true)
-  public PropertyInsuranceResponse get(Ulid identifier, UserPrincipal principal) {
+  public PropertyInsuranceResponse get(PropertyInsuranceIdentifier identifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     PropertyInsurance insurance = insuranceRepository.getByIdentifierAndTeamId(identifier, teamId);
     return enrichResponse(insurance, teamId);
@@ -78,7 +79,7 @@ public class PropertyInsuranceService {
 
   @Transactional(readOnly = true)
   public List<PropertyInsuranceResponse> listByProperty(
-      Ulid propertyIdentifier, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
@@ -90,7 +91,7 @@ public class PropertyInsuranceService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyInsuranceResponse update(
-      Ulid identifier, UpdatePropertyInsuranceRequest request, UserPrincipal principal) {
+      PropertyInsuranceIdentifier identifier, UpdatePropertyInsuranceRequest request, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     PropertyInsurance insurance = insuranceRepository.getByIdentifierAndTeamId(identifier, teamId);
 
@@ -108,7 +109,7 @@ public class PropertyInsuranceService {
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void delete(Ulid identifier, UserPrincipal principal) {
+  public void delete(PropertyInsuranceIdentifier identifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     PropertyInsurance insurance = insuranceRepository.getByIdentifierAndTeamId(identifier, teamId);
 

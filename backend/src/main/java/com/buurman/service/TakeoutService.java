@@ -52,6 +52,10 @@ import org.springframework.stereotype.Service;
 import com.buurman.domain.DataTakeout;
 import com.buurman.domain.DataTakeout.TakeoutStatus;
 import com.buurman.domain.Ulid;
+import com.buurman.domain.identifier.ContractIdentifier;
+import com.buurman.domain.identifier.DataTakeoutIdentifier;
+import com.buurman.domain.identifier.PropertyIdentifier;
+import com.buurman.domain.identifier.TenantIdentifier;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.TakeoutResponse;
@@ -216,7 +220,7 @@ public class TakeoutService {
         String bookletFolder = folderName + "/booklets";
         for (Ulid identifier : propertyIdentifiers) {
           try {
-            byte[] pdf = propertyBookletExporter.generate(identifier, teamId);
+            byte[] pdf = propertyBookletExporter.generate(PropertyIdentifier.of(identifier.value()), teamId);
             addZipEntry(zos, bookletFolder + "/properties/" + identifier.value() + ".pdf", pdf);
           } catch (Exception e) {
             log.warn("Failed to generate property booklet for {}: {}", identifier, e.getMessage());
@@ -226,7 +230,7 @@ public class TakeoutService {
         }
         for (Ulid identifier : tenantIdentifiers) {
           try {
-            byte[] pdf = tenantBookletExporter.generate(identifier, teamId);
+            byte[] pdf = tenantBookletExporter.generate(TenantIdentifier.of(identifier.value()), teamId);
             addZipEntry(zos, bookletFolder + "/tenants/" + identifier.value() + ".pdf", pdf);
           } catch (Exception e) {
             log.warn("Failed to generate tenant booklet for {}: {}", identifier, e.getMessage());
@@ -236,7 +240,7 @@ public class TakeoutService {
         }
         for (Ulid identifier : contractIdentifiers) {
           try {
-            byte[] pdf = contractBookletExporter.generate(identifier, teamId);
+            byte[] pdf = contractBookletExporter.generate(ContractIdentifier.of(identifier.value()), teamId);
             addZipEntry(zos, bookletFolder + "/contracts/" + identifier.value() + ".pdf", pdf);
           } catch (Exception e) {
             log.warn("Failed to generate contract booklet for {}: {}", identifier, e.getMessage());
@@ -296,7 +300,7 @@ public class TakeoutService {
   }
 
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public TakeoutResponse getTakeout(Ulid identifier, UUID teamId) {
+  public TakeoutResponse getTakeout(DataTakeoutIdentifier identifier, UUID teamId) {
     DataTakeout takeout = takeoutRepository.getByIdentifierAndTeamId(identifier, teamId);
     return toResponse(takeout);
   }
@@ -310,7 +314,7 @@ public class TakeoutService {
   }
 
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void deleteTakeout(Ulid identifier, UUID teamId) {
+  public void deleteTakeout(DataTakeoutIdentifier identifier, UUID teamId) {
     DataTakeout takeout = takeoutRepository.getByIdentifierAndTeamId(identifier, teamId);
     takeout
         .getFileKey()
