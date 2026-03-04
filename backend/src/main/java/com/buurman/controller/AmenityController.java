@@ -31,21 +31,22 @@ public class AmenityController implements AmenitiesApi, PropertyAmenitiesApi {
   }
 
   @Override
-  public List<PropertyAmenityResponse> getPropertyAmenities(String propertyIdentifier) {
+  public List<PropertyAmenityResponse> getPropertyAmenities(PropertyIdentifier propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return propertyAmenityService.getPropertyAmenities(PropertyIdentifier.of(propertyIdentifier), principal);
+    return propertyAmenityService.getPropertyAmenities(propertyIdentifier, principal);
   }
 
   @Override
   public PropertyAmenityResponse addAmenity(
-      String propertyIdentifier, @Valid PropertyAmenityRequest propertyAmenityRequest) {
+      PropertyIdentifier propertyIdentifier, @Valid PropertyAmenityRequest propertyAmenityRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return propertyAmenityService.addAmenity(PropertyIdentifier.of(propertyIdentifier), propertyAmenityRequest, principal);
+    return propertyAmenityService.addAmenity(propertyIdentifier, propertyAmenityRequest, principal);
   }
 
   @Override
-  public void removeAmenity(String propertyIdentifier, String amenityIdentifier) {
+  public void removeAmenity(
+      PropertyIdentifier propertyIdentifier, AmenityIdentifier amenityIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    propertyAmenityService.removeAmenity(PropertyIdentifier.of(propertyIdentifier), AmenityIdentifier.of(amenityIdentifier), principal);
+    propertyAmenityService.removeAmenity(propertyIdentifier, amenityIdentifier, principal);
   }
 }

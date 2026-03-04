@@ -26,22 +26,22 @@ public class BackofficeUserController implements BackofficeUsersApi {
   }
 
   @Override
-  public BackofficeUserResponse getUser(String identifier) {
-    return backofficeUserService.getUser(UserIdentifier.of(identifier));
+  public BackofficeUserResponse getUser(UserIdentifier identifier) {
+    return backofficeUserService.getUser(identifier);
   }
 
   @Override
-  public void disableUser(String identifier) {
-    backofficeUserService.disableUser(UserIdentifier.of(identifier), SecurityUtils.getBackofficePrincipal());
+  public void disableUser(UserIdentifier identifier) {
+    backofficeUserService.disableUser(identifier, SecurityUtils.getBackofficePrincipal());
   }
 
   @Override
-  public void enableUser(String identifier) {
-    backofficeUserService.enableUser(UserIdentifier.of(identifier), SecurityUtils.getBackofficePrincipal());
+  public void enableUser(UserIdentifier identifier) {
+    backofficeUserService.enableUser(identifier, SecurityUtils.getBackofficePrincipal());
   }
 
   @Override
-  public void resetPassword(String identifier) {
-    backofficeUserService.resetPassword(UserIdentifier.of(identifier), SecurityUtils.getBackofficePrincipal());
+  public void resetPassword(UserIdentifier identifier) {
+    backofficeUserService.resetPassword(identifier, SecurityUtils.getBackofficePrincipal());
   }
 }

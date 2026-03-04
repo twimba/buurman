@@ -24,36 +24,39 @@ public class PropertyValuationController implements PropertyValuationsApi {
   private final PropertyValuationService valuationService;
 
   @Override
-  public List<PropertyValuationResponse> listValuations(String propertyIdentifier) {
+  public List<PropertyValuationResponse> listValuations(PropertyIdentifier propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return valuationService.listByProperty(PropertyIdentifier.of(propertyIdentifier), principal);
+    return valuationService.listByProperty(propertyIdentifier, principal);
   }
 
   @Override
-  public @Nullable PropertyValuationResponse getLatestValuation(String propertyIdentifier) {
+  public @Nullable PropertyValuationResponse getLatestValuation(
+      PropertyIdentifier propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return valuationService.getLatestByProperty(PropertyIdentifier.of(propertyIdentifier), principal).orElse(null);
+    return valuationService.getLatestByProperty(propertyIdentifier, principal).orElse(null);
   }
 
   @Override
   public PropertyValuationResponse createValuation(
-      String propertyIdentifier, CreatePropertyValuationRequest createPropertyValuationRequest) {
+      PropertyIdentifier propertyIdentifier,
+      CreatePropertyValuationRequest createPropertyValuationRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return valuationService.create(PropertyIdentifier.of(propertyIdentifier), createPropertyValuationRequest, principal);
+    return valuationService.create(propertyIdentifier, createPropertyValuationRequest, principal);
   }
 
   @Override
   public PropertyValuationResponse updateValuation(
-      String propertyIdentifier,
-      String identifier,
+      PropertyIdentifier propertyIdentifier,
+      PropertyValuationIdentifier identifier,
       UpdatePropertyValuationRequest updatePropertyValuationRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return valuationService.update(PropertyValuationIdentifier.of(identifier), updatePropertyValuationRequest, principal);
+    return valuationService.update(identifier, updatePropertyValuationRequest, principal);
   }
 
   @Override
-  public void deleteValuation(String propertyIdentifier, String identifier) {
+  public void deleteValuation(
+      PropertyIdentifier propertyIdentifier, PropertyValuationIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    valuationService.delete(PropertyValuationIdentifier.of(identifier), principal);
+    valuationService.delete(identifier, principal);
   }
 }

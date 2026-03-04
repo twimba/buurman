@@ -77,7 +77,13 @@ public class PaymentController implements PaymentsApi {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     return paymentService.getPaymentsPaginated(
-        principal, status, contractIdentifier != null ? ContractIdentifier.of(contractIdentifier) : null, propertyIdentifier != null ? PropertyIdentifier.of(propertyIdentifier) : null, dateFrom, dateTo, pageRequest);
+        principal,
+        status,
+        contractIdentifier != null ? ContractIdentifier.of(contractIdentifier) : null,
+        propertyIdentifier != null ? PropertyIdentifier.of(propertyIdentifier) : null,
+        dateFrom,
+        dateTo,
+        pageRequest);
   }
 
   @Override
@@ -93,90 +99,95 @@ public class PaymentController implements PaymentsApi {
   }
 
   @Override
-  public PaymentResponse getPayment(String identifier) {
+  public PaymentResponse getPayment(PaymentIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentService.getPayment(PaymentIdentifier.of(identifier), principal);
+    return paymentService.getPayment(identifier, principal);
   }
 
   @Override
   public PaymentResponse updatePayment(
-      String identifier, UpdatePaymentRequest updatePaymentRequest) {
+      PaymentIdentifier identifier, UpdatePaymentRequest updatePaymentRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentService.updatePayment(PaymentIdentifier.of(identifier), updatePaymentRequest, principal);
+    return paymentService.updatePayment(identifier, updatePaymentRequest, principal);
   }
 
   @Override
-  public PaymentResponse markPaymentAsPaid(String identifier, MarkPaidRequest markPaidRequest) {
+  public PaymentResponse markPaymentAsPaid(
+      PaymentIdentifier identifier, MarkPaidRequest markPaidRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentService.markPaymentAsPaid(PaymentIdentifier.of(identifier), markPaidRequest, principal);
+    return paymentService.markPaymentAsPaid(identifier, markPaidRequest, principal);
   }
 
   @Override
   public PaymentResponse registerReceival(
-      String identifier, CreatePaymentReceivalRequest createPaymentReceivalRequest) {
+      PaymentIdentifier identifier, CreatePaymentReceivalRequest createPaymentReceivalRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentService.registerReceival(PaymentIdentifier.of(identifier), createPaymentReceivalRequest, principal);
+    return paymentService.registerReceival(identifier, createPaymentReceivalRequest, principal);
   }
 
   @Override
-  public List<PaymentReceivalResponse> getReceivals(String identifier) {
+  public List<PaymentReceivalResponse> getReceivals(PaymentIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentService.getReceivalsForPayment(PaymentIdentifier.of(identifier), principal);
+    return paymentService.getReceivalsForPayment(identifier, principal);
   }
 
   @Override
   public PaymentResponse updateReceival(
-      String identifier,
-      String receivalIdentifier,
+      PaymentIdentifier identifier,
+      PaymentReceivalIdentifier receivalIdentifier,
       UpdatePaymentReceivalRequest updatePaymentReceivalRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return paymentService.updateReceival(
-        PaymentIdentifier.of(identifier), PaymentReceivalIdentifier.of(receivalIdentifier), updatePaymentReceivalRequest, principal);
+        identifier, receivalIdentifier, updatePaymentReceivalRequest, principal);
   }
 
   @Override
-  public PaymentResponse deleteReceival(String identifier, String receivalIdentifier) {
+  public PaymentResponse deleteReceival(
+      PaymentIdentifier identifier, PaymentReceivalIdentifier receivalIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentService.deleteReceival(PaymentIdentifier.of(identifier), PaymentReceivalIdentifier.of(receivalIdentifier), principal);
+    return paymentService.deleteReceival(identifier, receivalIdentifier, principal);
   }
 
   @Override
-  public void deletePayment(String identifier) {
+  public void deletePayment(PaymentIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    paymentService.deletePayment(PaymentIdentifier.of(identifier), principal);
+    paymentService.deletePayment(identifier, principal);
   }
 
   @Override
   @SuppressWarnings("NullAway")
   public DocumentResponse uploadPaymentDocument(
-      String identifier, String title, String notes, UploadPhotoRequest uploadPhotoRequest) {
+      PaymentIdentifier identifier,
+      String title,
+      String notes,
+      UploadPhotoRequest uploadPhotoRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     // Generated interface mismodels multipart upload as JSON body
-    return paymentService.uploadDocument(PaymentIdentifier.of(identifier), null, title, notes, principal);
+    return paymentService.uploadDocument(identifier, null, title, notes, principal);
   }
 
   @Override
-  public List<DocumentResponse> getPaymentDocuments(String identifier) {
+  public List<DocumentResponse> getPaymentDocuments(PaymentIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentService.getDocuments(PaymentIdentifier.of(identifier), principal);
+    return paymentService.getDocuments(identifier, principal);
   }
 
   @Override
-  public Map<String, String> getPaymentDocumentDownloadUrl(String documentIdentifier) {
+  public Map<String, String> getPaymentDocumentDownloadUrl(DocumentIdentifier documentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    URL url = paymentService.getDocumentDownloadUrl(DocumentIdentifier.of(documentIdentifier), principal);
+    URL url = paymentService.getDocumentDownloadUrl(documentIdentifier, principal);
     return Map.of("url", url.toString());
   }
 
   @Override
-  public void deletePaymentDocument(String documentIdentifier) {
+  public void deletePaymentDocument(DocumentIdentifier documentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    paymentService.deleteDocument(DocumentIdentifier.of(documentIdentifier), principal);
+    paymentService.deleteDocument(documentIdentifier, principal);
   }
 
   @Override
-  public List<RecentActivityResponse> getPaymentAuditLog(String identifier) {
+  public List<RecentActivityResponse> getPaymentAuditLog(PaymentIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentService.getAuditLog(PaymentIdentifier.of(identifier), principal);
+    return paymentService.getAuditLog(identifier, principal);
   }
 }

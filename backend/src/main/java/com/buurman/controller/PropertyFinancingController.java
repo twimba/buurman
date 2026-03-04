@@ -40,85 +40,89 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
   // ===== Financings =====
 
   @Override
-  public List<PropertyFinancingResponse> listFinancings(String propertyIdentifier) {
+  public List<PropertyFinancingResponse> listFinancings(PropertyIdentifier propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return financingService.listByProperty(PropertyIdentifier.of(propertyIdentifier), principal);
+    return financingService.listByProperty(propertyIdentifier, principal);
   }
 
   @Override
   public PropertyFinancingResponse getFinancing(
-      String propertyIdentifier, String financingIdentifier) {
+      PropertyIdentifier propertyIdentifier, PropertyFinancingIdentifier financingIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return financingService.getFinancing(PropertyFinancingIdentifier.of(financingIdentifier), principal);
+    return financingService.getFinancing(financingIdentifier, principal);
   }
 
   @Override
   public PropertyFinancingResponse createFinancing(
-      String propertyIdentifier, CreatePropertyFinancingRequest createPropertyFinancingRequest) {
+      PropertyIdentifier propertyIdentifier,
+      CreatePropertyFinancingRequest createPropertyFinancingRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return financingService.create(PropertyIdentifier.of(propertyIdentifier), createPropertyFinancingRequest, principal);
+    return financingService.create(propertyIdentifier, createPropertyFinancingRequest, principal);
   }
 
   @Override
   public PropertyFinancingResponse updateFinancing(
-      String propertyIdentifier,
-      String financingIdentifier,
+      PropertyIdentifier propertyIdentifier,
+      PropertyFinancingIdentifier financingIdentifier,
       UpdatePropertyFinancingRequest updatePropertyFinancingRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return financingService.update(PropertyFinancingIdentifier.of(financingIdentifier), updatePropertyFinancingRequest, principal);
+    return financingService.update(financingIdentifier, updatePropertyFinancingRequest, principal);
   }
 
   @Override
-  public void deleteFinancing(String propertyIdentifier, String financingIdentifier) {
+  public void deleteFinancing(
+      PropertyIdentifier propertyIdentifier, PropertyFinancingIdentifier financingIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    financingService.delete(PropertyFinancingIdentifier.of(financingIdentifier), principal);
+    financingService.delete(financingIdentifier, principal);
   }
 
   // ===== Financing Payments =====
 
   @Override
   public List<FinancingPaymentResponse> listPayments(
-      String propertyIdentifier, String financingIdentifier) {
+      PropertyIdentifier propertyIdentifier, PropertyFinancingIdentifier financingIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentService.listByFinancing(PropertyFinancingIdentifier.of(financingIdentifier), principal);
+    return paymentService.listByFinancing(financingIdentifier, principal);
   }
 
   @Override
   public FinancingPaymentResponse createFinancingPayment(
-      String propertyIdentifier,
-      String financingIdentifier,
+      PropertyIdentifier propertyIdentifier,
+      PropertyFinancingIdentifier financingIdentifier,
       CreateFinancingPaymentRequest createFinancingPaymentRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentService.create(PropertyFinancingIdentifier.of(financingIdentifier), createFinancingPaymentRequest, principal);
+    return paymentService.create(financingIdentifier, createFinancingPaymentRequest, principal);
   }
 
   @Override
   @SuppressWarnings({"rawtypes", "unchecked"})
   public List<BulkCreateResult> bulkCreateFinancingPayments(
-      String propertyIdentifier,
-      String financingIdentifier,
+      PropertyIdentifier propertyIdentifier,
+      PropertyFinancingIdentifier financingIdentifier,
       BulkCreateFinancingPaymentsRequest bulkCreateFinancingPaymentsRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return (List)
         paymentService.bulkCreate(
-            PropertyFinancingIdentifier.of(financingIdentifier), bulkCreateFinancingPaymentsRequest.items(), principal);
+            financingIdentifier, bulkCreateFinancingPaymentsRequest.items(), principal);
   }
 
   @Override
   public FinancingPaymentResponse updateFinancingPayment(
-      String propertyIdentifier,
-      String financingIdentifier,
-      String paymentIdentifier,
+      PropertyIdentifier propertyIdentifier,
+      PropertyFinancingIdentifier financingIdentifier,
+      FinancingPaymentIdentifier paymentIdentifier,
       UpdateFinancingPaymentRequest updateFinancingPaymentRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentService.update(FinancingPaymentIdentifier.of(paymentIdentifier), updateFinancingPaymentRequest, principal);
+    return paymentService.update(paymentIdentifier, updateFinancingPaymentRequest, principal);
   }
 
   @Override
   public void deleteFinancingPayment(
-      String propertyIdentifier, String financingIdentifier, String paymentIdentifier) {
+      PropertyIdentifier propertyIdentifier,
+      PropertyFinancingIdentifier financingIdentifier,
+      FinancingPaymentIdentifier paymentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    paymentService.delete(FinancingPaymentIdentifier.of(paymentIdentifier), principal);
+    paymentService.delete(paymentIdentifier, principal);
   }
 
   // ===== Payment Documents =====
@@ -127,35 +131,41 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
   @SuppressWarnings(
       "NullAway") // Generated interface uses UploadPhotoRequest instead of MultipartFile
   public DocumentResponse uploadFinancingPaymentDocument(
-      String propertyIdentifier,
-      String financingIdentifier,
-      String paymentIdentifier,
+      PropertyIdentifier propertyIdentifier,
+      PropertyFinancingIdentifier financingIdentifier,
+      FinancingPaymentIdentifier paymentIdentifier,
       String title,
       String notes,
       UploadPhotoRequest uploadPhotoRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentService.uploadPaymentDocument(FinancingPaymentIdentifier.of(paymentIdentifier), null, title, notes, principal);
+    return paymentService.uploadPaymentDocument(paymentIdentifier, null, title, notes, principal);
   }
 
   @Override
   public List<DocumentResponse> getFinancingPaymentDocuments(
-      String propertyIdentifier, String financingIdentifier, String paymentIdentifier) {
+      PropertyIdentifier propertyIdentifier,
+      PropertyFinancingIdentifier financingIdentifier,
+      FinancingPaymentIdentifier paymentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentService.getPaymentDocuments(FinancingPaymentIdentifier.of(paymentIdentifier), principal);
+    return paymentService.getPaymentDocuments(paymentIdentifier, principal);
   }
 
   @Override
   public Map<String, String> getFinancingPaymentDocumentDownloadUrl(
-      String propertyIdentifier, String financingIdentifier, String documentIdentifier) {
+      PropertyIdentifier propertyIdentifier,
+      PropertyFinancingIdentifier financingIdentifier,
+      DocumentIdentifier documentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    URL url = documentService.getDownloadUrl(DocumentIdentifier.of(documentIdentifier), principal);
+    URL url = documentService.getDownloadUrl(documentIdentifier, principal);
     return Map.of("url", url.toString());
   }
 
   @Override
   public void deleteFinancingPaymentDocument(
-      String propertyIdentifier, String financingIdentifier, String documentIdentifier) {
+      PropertyIdentifier propertyIdentifier,
+      PropertyFinancingIdentifier financingIdentifier,
+      DocumentIdentifier documentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    documentService.deleteDocument(DocumentIdentifier.of(documentIdentifier), principal);
+    documentService.deleteDocument(documentIdentifier, principal);
   }
 }

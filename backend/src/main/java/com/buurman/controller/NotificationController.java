@@ -44,9 +44,9 @@ public class NotificationController implements NotificationsApi {
   }
 
   @Override
-  public NotificationResponse getNotification(String identifier) {
+  public NotificationResponse getNotification(NotificationIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return centerService.getNotification(principal, NotificationIdentifier.of(identifier));
+    return centerService.getNotification(principal, identifier);
   }
 
   @Override
@@ -56,14 +56,14 @@ public class NotificationController implements NotificationsApi {
   }
 
   @Override
-  public NotificationResponse resendNotification(String identifier) {
+  public NotificationResponse resendNotification(NotificationIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return centerService.resendNotification(principal, NotificationIdentifier.of(identifier));
+    return centerService.resendNotification(principal, identifier);
   }
 
   @Override
-  public NotificationResponse refreshStatus(String identifier) {
+  public NotificationResponse refreshStatus(NotificationIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return centerService.refreshNotificationStatus(principal, NotificationIdentifier.of(identifier));
+    return centerService.refreshNotificationStatus(principal, identifier);
   }
 }

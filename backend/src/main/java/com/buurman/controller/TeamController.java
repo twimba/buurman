@@ -36,71 +36,71 @@ public class TeamController implements TeamsApi {
   }
 
   @Override
-  public List<TeamMemberResponse> getTeamMembers(String teamIdentifier) {
+  public List<TeamMemberResponse> getTeamMembers(TeamIdentifier teamIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return teamService.getTeamMembers(TeamIdentifier.of(teamIdentifier), principal);
+    return teamService.getTeamMembers(teamIdentifier, principal);
   }
 
   @Override
   public InvitationResponse createInvitation(
-      String teamIdentifier, @Valid CreateInvitationRequest createInvitationRequest) {
+      TeamIdentifier teamIdentifier, @Valid CreateInvitationRequest createInvitationRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return teamService.createInvitation(TeamIdentifier.of(teamIdentifier), createInvitationRequest, principal);
+    return teamService.createInvitation(teamIdentifier, createInvitationRequest, principal);
   }
 
   @Override
-  public List<InvitationResponse> getTeamPendingInvitations(String teamIdentifier) {
+  public List<InvitationResponse> getTeamPendingInvitations(TeamIdentifier teamIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return teamService.getTeamPendingInvitations(TeamIdentifier.of(teamIdentifier), principal);
+    return teamService.getTeamPendingInvitations(teamIdentifier, principal);
   }
 
   @Override
-  public InvitationResponse resendInvitation(String teamIdentifier, String token) {
+  public InvitationResponse resendInvitation(TeamIdentifier teamIdentifier, String token) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return teamService.resendInvitation(TeamIdentifier.of(teamIdentifier), token, principal);
+    return teamService.resendInvitation(teamIdentifier, token, principal);
   }
 
   @Override
-  public void removeMember(String teamIdentifier, String userIdentifier) {
+  public void removeMember(TeamIdentifier teamIdentifier, UserIdentifier userIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    teamService.removeMember(TeamIdentifier.of(teamIdentifier), UserIdentifier.of(userIdentifier), principal);
+    teamService.removeMember(teamIdentifier, userIdentifier, principal);
   }
 
   @Override
   public TeamMemberResponse updateMemberRole(
-      String teamIdentifier,
-      String userIdentifier,
+      TeamIdentifier teamIdentifier,
+      UserIdentifier userIdentifier,
       @Valid UpdateMemberRoleRequest updateMemberRoleRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return teamService.updateMemberRole(
-        TeamIdentifier.of(teamIdentifier), UserIdentifier.of(userIdentifier), updateMemberRoleRequest, principal);
+        teamIdentifier, userIdentifier, updateMemberRoleRequest, principal);
   }
 
   @Override
   public TeamResponse updateTeam(
-      String teamIdentifier, @Valid UpdateTeamRequest updateTeamRequest) {
+      TeamIdentifier teamIdentifier, @Valid UpdateTeamRequest updateTeamRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return teamService.updateTeam(TeamIdentifier.of(teamIdentifier), updateTeamRequest, principal);
+    return teamService.updateTeam(teamIdentifier, updateTeamRequest, principal);
   }
 
   @Override
   public TeamPreferencesResponse updateTeamSettings(
-      String teamIdentifier, @Valid UpdateTeamSettingsRequest updateTeamSettingsRequest) {
+      TeamIdentifier teamIdentifier, @Valid UpdateTeamSettingsRequest updateTeamSettingsRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return teamService.updateTeamPreferences(TeamIdentifier.of(teamIdentifier), updateTeamSettingsRequest, principal);
+    return teamService.updateTeamPreferences(teamIdentifier, updateTeamSettingsRequest, principal);
   }
 
   @Override
-  public TeamPreferencesResponse getTeamSettings(String teamIdentifier) {
+  public TeamPreferencesResponse getTeamSettings(TeamIdentifier teamIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return teamService.getTeamPreferences(TeamIdentifier.of(teamIdentifier), principal);
+    return teamService.getTeamPreferences(teamIdentifier, principal);
   }
 
   @Override
   public TeamMemberResponse transferOwnership(
-      String teamIdentifier, @Valid TransferOwnershipRequest transferOwnershipRequest) {
+      TeamIdentifier teamIdentifier, @Valid TransferOwnershipRequest transferOwnershipRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return teamService.transferOwnership(
-        TeamIdentifier.of(teamIdentifier), transferOwnershipRequest.newOwnerIdentifier(), principal);
+        teamIdentifier, transferOwnershipRequest.newOwnerIdentifier(), principal);
   }
 }

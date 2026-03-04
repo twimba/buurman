@@ -29,9 +29,9 @@ public class PaymentInstructionController implements PaymentInstructionsApi {
   }
 
   @Override
-  public PaymentInstructionResponse getByIdentifier(String identifier) {
+  public PaymentInstructionResponse getByIdentifier(PaymentInstructionIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentInstructionService.getByIdentifier(PaymentInstructionIdentifier.of(identifier), principal);
+    return paymentInstructionService.getByIdentifier(identifier, principal);
   }
 
   @Override
@@ -43,14 +43,15 @@ public class PaymentInstructionController implements PaymentInstructionsApi {
 
   @Override
   public PaymentInstructionResponse updatePaymentInstruction(
-      String identifier, @Valid UpdatePaymentInstructionRequest updatePaymentInstructionRequest) {
+      PaymentInstructionIdentifier identifier,
+      @Valid UpdatePaymentInstructionRequest updatePaymentInstructionRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentInstructionService.update(PaymentInstructionIdentifier.of(identifier), updatePaymentInstructionRequest, principal);
+    return paymentInstructionService.update(identifier, updatePaymentInstructionRequest, principal);
   }
 
   @Override
-  public void deletePaymentInstruction(String identifier) {
+  public void deletePaymentInstruction(PaymentInstructionIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    paymentInstructionService.delete(PaymentInstructionIdentifier.of(identifier), principal);
+    paymentInstructionService.delete(identifier, principal);
   }
 }

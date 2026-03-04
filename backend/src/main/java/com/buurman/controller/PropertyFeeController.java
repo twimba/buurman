@@ -23,36 +23,37 @@ public class PropertyFeeController implements PropertyFeesApi {
   private final PropertyFeeService feeService;
 
   @Override
-  public List<PropertyFeeResponse> listFees(String propertyIdentifier) {
+  public List<PropertyFeeResponse> listFees(PropertyIdentifier propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return feeService.listByProperty(PropertyIdentifier.of(propertyIdentifier), principal);
+    return feeService.listByProperty(propertyIdentifier, principal);
   }
 
   @Override
-  public PropertyFeeResponse getFee(String propertyIdentifier, String identifier) {
+  public PropertyFeeResponse getFee(
+      PropertyIdentifier propertyIdentifier, PropertyFeeIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return feeService.get(PropertyFeeIdentifier.of(identifier), principal);
+    return feeService.get(identifier, principal);
   }
 
   @Override
   public PropertyFeeResponse createFee(
-      String propertyIdentifier, CreatePropertyFeeRequest createPropertyFeeRequest) {
+      PropertyIdentifier propertyIdentifier, CreatePropertyFeeRequest createPropertyFeeRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return feeService.create(PropertyIdentifier.of(propertyIdentifier), createPropertyFeeRequest, principal);
+    return feeService.create(propertyIdentifier, createPropertyFeeRequest, principal);
   }
 
   @Override
   public PropertyFeeResponse updateFee(
-      String propertyIdentifier,
-      String identifier,
+      PropertyIdentifier propertyIdentifier,
+      PropertyFeeIdentifier identifier,
       UpdatePropertyFeeRequest updatePropertyFeeRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return feeService.update(PropertyFeeIdentifier.of(identifier), updatePropertyFeeRequest, principal);
+    return feeService.update(identifier, updatePropertyFeeRequest, principal);
   }
 
   @Override
-  public void deleteFee(String propertyIdentifier, String identifier) {
+  public void deleteFee(PropertyIdentifier propertyIdentifier, PropertyFeeIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    feeService.delete(PropertyFeeIdentifier.of(identifier), principal);
+    feeService.delete(identifier, principal);
   }
 }

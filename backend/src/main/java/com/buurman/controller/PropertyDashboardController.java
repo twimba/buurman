@@ -37,16 +37,16 @@ public class PropertyDashboardController implements PropertyDashboardApi {
   }
 
   @Override
-  public PropertyDashboardResponse getDashboard(String identifier, Integer months) {
+  public PropertyDashboardResponse getDashboard(PropertyIdentifier identifier, Integer months) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return dashboardService.getDashboard(PropertyIdentifier.of(identifier), months, principal);
+    return dashboardService.getDashboard(identifier, months, principal);
   }
 
   @Override
-  public byte[] exportPdf(String identifier, Integer months) {
+  public byte[] exportPdf(PropertyIdentifier identifier, Integer months) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     PropertyDashboardResponse dashboard =
-        dashboardService.getDashboard(PropertyIdentifier.of(identifier), months, principal);
+        dashboardService.getDashboard(identifier, months, principal);
     httpServletResponse.setHeader(
         CONTENT_DISPOSITION, "attachment; filename=property-dashboard-" + identifier + ".pdf");
     httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
@@ -54,10 +54,10 @@ public class PropertyDashboardController implements PropertyDashboardApi {
   }
 
   @Override
-  public byte[] exportCsv(String identifier, Integer months) {
+  public byte[] exportCsv(PropertyIdentifier identifier, Integer months) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     PropertyDashboardResponse dashboard =
-        dashboardService.getDashboard(PropertyIdentifier.of(identifier), months, principal);
+        dashboardService.getDashboard(identifier, months, principal);
     httpServletResponse.setHeader(
         CONTENT_DISPOSITION, "attachment; filename=property-dashboard-" + identifier + ".csv");
     httpServletResponse.setContentType("text/csv");

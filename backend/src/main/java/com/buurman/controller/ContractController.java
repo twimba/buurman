@@ -66,7 +66,8 @@ public class ContractController implements ContractsApi {
     // wrapped in PageResponse
     if (propertyIdentifier != null) {
       List<ContractResponse> results =
-          contractService.getContractsByProperty(PropertyIdentifier.of(propertyIdentifier), principal);
+          contractService.getContractsByProperty(
+              PropertyIdentifier.of(propertyIdentifier), principal);
       return PageResponse.of(results, 0, results.size(), results.size());
     }
 
@@ -81,41 +82,41 @@ public class ContractController implements ContractsApi {
   }
 
   @Override
-  public ContractResponse getContract(String identifier) {
+  public ContractResponse getContract(ContractIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return contractService.getContract(ContractIdentifier.of(identifier), principal);
+    return contractService.getContract(identifier, principal);
   }
 
   @Override
   public ContractResponse updateContract(
-      String identifier, UpdateContractRequest updateContractRequest) {
+      ContractIdentifier identifier, UpdateContractRequest updateContractRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return contractService.updateContract(ContractIdentifier.of(identifier), updateContractRequest, principal);
+    return contractService.updateContract(identifier, updateContractRequest, principal);
   }
 
   @Override
-  public void deleteContract(String identifier) {
+  public void deleteContract(ContractIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    contractService.deleteContract(ContractIdentifier.of(identifier), principal);
+    contractService.deleteContract(identifier, principal);
   }
 
   @Override
   public ContractResponse changeContractStatus(
-      String identifier, ChangeContractStatusRequest changeContractStatusRequest) {
+      ContractIdentifier identifier, ChangeContractStatusRequest changeContractStatusRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return contractService.changeContractStatus(ContractIdentifier.of(identifier), changeContractStatusRequest, principal);
+    return contractService.changeContractStatus(identifier, changeContractStatusRequest, principal);
   }
 
   @Override
-  public ContractResponse reopenContract(String identifier) {
+  public ContractResponse reopenContract(ContractIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return contractService.reopenContract(ContractIdentifier.of(identifier), principal);
+    return contractService.reopenContract(identifier, principal);
   }
 
   @Override
-  public ContractResponse duplicateContract(String identifier) {
+  public ContractResponse duplicateContract(ContractIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return contractService.duplicateContract(ContractIdentifier.of(identifier), principal);
+    return contractService.duplicateContract(identifier, principal);
   }
 
   @Override
@@ -134,63 +135,66 @@ public class ContractController implements ContractsApi {
 
   @Override
   public ContractPartyResponse addParty(
-      String identifier, AddContractPartyRequest addContractPartyRequest) {
+      ContractIdentifier identifier, AddContractPartyRequest addContractPartyRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return contractPartyService.addParty(ContractIdentifier.of(identifier), addContractPartyRequest, principal);
+    return contractPartyService.addParty(identifier, addContractPartyRequest, principal);
   }
 
   @Override
-  public void removeParty(String identifier, String partyIdentifier) {
+  public void removeParty(ContractIdentifier identifier, ContractPartyIdentifier partyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    contractPartyService.removeParty(ContractIdentifier.of(identifier), ContractPartyIdentifier.of(partyIdentifier), principal);
+    contractPartyService.removeParty(identifier, partyIdentifier, principal);
   }
 
   @Override
   public ContractPartyResponse changePrimaryTenant(
-      String identifier, ChangePrimaryTenantRequest changePrimaryTenantRequest) {
+      ContractIdentifier identifier, ChangePrimaryTenantRequest changePrimaryTenantRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return contractPartyService.changePrimaryTenant(
-        ContractIdentifier.of(identifier), changePrimaryTenantRequest, principal);
+        identifier, changePrimaryTenantRequest, principal);
   }
 
   @Override
   @SuppressWarnings("NullAway")
   public DocumentResponse uploadContractDocument(
-      String identifier, String title, String notes, UploadPhotoRequest uploadPhotoRequest) {
+      ContractIdentifier identifier,
+      String title,
+      String notes,
+      UploadPhotoRequest uploadPhotoRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     // Generated interface mismodels multipart upload as JSON body
-    return contractService.uploadDocument(ContractIdentifier.of(identifier), null, title, notes, principal);
+    return contractService.uploadDocument(identifier, null, title, notes, principal);
   }
 
   @Override
-  public List<DocumentResponse> getContractDocuments(String identifier) {
+  public List<DocumentResponse> getContractDocuments(ContractIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return contractService.getDocuments(ContractIdentifier.of(identifier), principal);
+    return contractService.getDocuments(identifier, principal);
   }
 
   @Override
-  public Map<String, String> getContractDocumentDownloadUrl(String documentIdentifier) {
+  public Map<String, String> getContractDocumentDownloadUrl(DocumentIdentifier documentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    URL url = contractService.getDocumentDownloadUrl(DocumentIdentifier.of(documentIdentifier), principal);
+    URL url = contractService.getDocumentDownloadUrl(documentIdentifier, principal);
     return Map.of("url", url.toString());
   }
 
   @Override
-  public void deleteContractDocument(String documentIdentifier) {
+  public void deleteContractDocument(DocumentIdentifier documentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    contractService.deleteDocument(DocumentIdentifier.of(documentIdentifier), principal);
+    contractService.deleteDocument(documentIdentifier, principal);
   }
 
   @Override
-  public List<RecentActivityResponse> getContractAuditLog(String identifier) {
+  public List<RecentActivityResponse> getContractAuditLog(ContractIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return contractService.getAuditLog(ContractIdentifier.of(identifier), principal);
+    return contractService.getAuditLog(identifier, principal);
   }
 
   @Override
   public Map<String, Object> generatePayments(
-      String identifier, GeneratePaymentsRequest generatePaymentsRequest) {
+      ContractIdentifier identifier, GeneratePaymentsRequest generatePaymentsRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return contractService.generatePayments(ContractIdentifier.of(identifier), generatePaymentsRequest, principal);
+    return contractService.generatePayments(identifier, generatePaymentsRequest, principal);
   }
 }

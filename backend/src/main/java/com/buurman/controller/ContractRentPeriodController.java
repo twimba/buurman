@@ -23,31 +23,32 @@ public class ContractRentPeriodController implements ContractRentPeriodsApi {
   private final ContractRentPeriodService rentPeriodService;
 
   @Override
-  public List<RentPeriodResponse> getRentTimeline(String contractIdentifier) {
+  public List<RentPeriodResponse> getRentTimeline(ContractIdentifier contractIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return rentPeriodService.getRentTimeline(ContractIdentifier.of(contractIdentifier), principal);
+    return rentPeriodService.getRentTimeline(contractIdentifier, principal);
   }
 
   @Override
   public RentPeriodResponse addRentPeriod(
-      String contractIdentifier, CreateRentPeriodRequest createRentPeriodRequest) {
+      ContractIdentifier contractIdentifier, CreateRentPeriodRequest createRentPeriodRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return rentPeriodService.addRentPeriod(ContractIdentifier.of(contractIdentifier), createRentPeriodRequest, principal);
+    return rentPeriodService.addRentPeriod(contractIdentifier, createRentPeriodRequest, principal);
   }
 
   @Override
   public RentPeriodResponse updateRentPeriod(
-      String contractIdentifier,
-      String periodIdentifier,
+      ContractIdentifier contractIdentifier,
+      ContractRentPeriodIdentifier periodIdentifier,
       UpdateRentPeriodRequest updateRentPeriodRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return rentPeriodService.updateRentPeriod(
-        ContractIdentifier.of(contractIdentifier), ContractRentPeriodIdentifier.of(periodIdentifier), updateRentPeriodRequest, principal);
+        contractIdentifier, periodIdentifier, updateRentPeriodRequest, principal);
   }
 
   @Override
-  public void deleteRentPeriod(String contractIdentifier, String periodIdentifier) {
+  public void deleteRentPeriod(
+      ContractIdentifier contractIdentifier, ContractRentPeriodIdentifier periodIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    rentPeriodService.deleteRentPeriod(ContractIdentifier.of(contractIdentifier), ContractRentPeriodIdentifier.of(periodIdentifier), principal);
+    rentPeriodService.deleteRentPeriod(contractIdentifier, periodIdentifier, principal);
   }
 }

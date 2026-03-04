@@ -426,6 +426,33 @@
                                 <schemaMapping>BulkCreateResultExpenseResponse=com.buurman.dto.response.BulkCreateResult</schemaMapping>
                                 <schemaMapping>BulkCreateResultFinancingPaymentResponse=com.buurman.dto.response.BulkCreateResult</schemaMapping>
                                 <schemaMapping>BulkCreateResultPaymentResponse=com.buurman.dto.response.BulkCreateResult</schemaMapping>
+                                <!-- Typed identifiers — map schema refs to hand-written identifier classes -->
+                                <schemaMapping>AmenityIdentifier=com.buurman.domain.identifier.AmenityIdentifier</schemaMapping>
+                                <schemaMapping>CalendarFeedIdentifier=com.buurman.domain.identifier.CalendarFeedIdentifier</schemaMapping>
+                                <schemaMapping>ContractIdentifier=com.buurman.domain.identifier.ContractIdentifier</schemaMapping>
+                                <schemaMapping>ContractPartyIdentifier=com.buurman.domain.identifier.ContractPartyIdentifier</schemaMapping>
+                                <schemaMapping>ContractPaymentInstructionIdentifier=com.buurman.domain.identifier.ContractPaymentInstructionIdentifier</schemaMapping>
+                                <schemaMapping>ContractRentPeriodIdentifier=com.buurman.domain.identifier.ContractRentPeriodIdentifier</schemaMapping>
+                                <schemaMapping>DocumentIdentifier=com.buurman.domain.identifier.DocumentIdentifier</schemaMapping>
+                                <schemaMapping>ExpenseIdentifier=com.buurman.domain.identifier.ExpenseIdentifier</schemaMapping>
+                                <schemaMapping>FinancingPaymentIdentifier=com.buurman.domain.identifier.FinancingPaymentIdentifier</schemaMapping>
+                                <schemaMapping>NotificationIdentifier=com.buurman.domain.identifier.NotificationIdentifier</schemaMapping>
+                                <schemaMapping>OccupancyPeriodIdentifier=com.buurman.domain.identifier.OccupancyPeriodIdentifier</schemaMapping>
+                                <schemaMapping>PaymentIdentifier=com.buurman.domain.identifier.PaymentIdentifier</schemaMapping>
+                                <schemaMapping>PaymentInstructionIdentifier=com.buurman.domain.identifier.PaymentInstructionIdentifier</schemaMapping>
+                                <schemaMapping>PaymentReceivalIdentifier=com.buurman.domain.identifier.PaymentReceivalIdentifier</schemaMapping>
+                                <schemaMapping>PhotoIdentifier=com.buurman.domain.identifier.PhotoIdentifier</schemaMapping>
+                                <schemaMapping>PropertyFeeIdentifier=com.buurman.domain.identifier.PropertyFeeIdentifier</schemaMapping>
+                                <schemaMapping>PropertyFinancingIdentifier=com.buurman.domain.identifier.PropertyFinancingIdentifier</schemaMapping>
+                                <schemaMapping>PropertyIdentifier=com.buurman.domain.identifier.PropertyIdentifier</schemaMapping>
+                                <schemaMapping>PropertyInsuranceIdentifier=com.buurman.domain.identifier.PropertyInsuranceIdentifier</schemaMapping>
+                                <schemaMapping>PropertyOutdoorAreaIdentifier=com.buurman.domain.identifier.PropertyOutdoorAreaIdentifier</schemaMapping>
+                                <schemaMapping>PropertyTaxIdentifier=com.buurman.domain.identifier.PropertyTaxIdentifier</schemaMapping>
+                                <schemaMapping>PropertyValuationIdentifier=com.buurman.domain.identifier.PropertyValuationIdentifier</schemaMapping>
+                                <schemaMapping>TeamIdentifier=com.buurman.domain.identifier.TeamIdentifier</schemaMapping>
+                                <schemaMapping>TenantAddressIdentifier=com.buurman.domain.identifier.TenantAddressIdentifier</schemaMapping>
+                                <schemaMapping>TenantIdentifier=com.buurman.domain.identifier.TenantIdentifier</schemaMapping>
+                                <schemaMapping>UserIdentifier=com.buurman.domain.identifier.UserIdentifier</schemaMapping>
                             </schemaMappings>
                             <importMappings>
                                 <importMapping>Instant=java.time.Instant</importMapping>
@@ -624,6 +651,11 @@
                                 <schemaMapping>PageResponseBuurmyResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <schemaMapping>PageResponseJobExecutionHistoryResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <schemaMapping>PageResponseRegistrationInvitationResponse=com.buurman.dto.response.PageResponse</schemaMapping>
+                                <!-- Typed identifiers -->
+                                <schemaMapping>NotificationIdentifier=com.buurman.domain.identifier.NotificationIdentifier</schemaMapping>
+                                <schemaMapping>RegistrationInvitationIdentifier=com.buurman.domain.identifier.RegistrationInvitationIdentifier</schemaMapping>
+                                <schemaMapping>TeamIdentifier=com.buurman.domain.identifier.TeamIdentifier</schemaMapping>
+                                <schemaMapping>UserIdentifier=com.buurman.domain.identifier.UserIdentifier</schemaMapping>
                             </schemaMappings>
                             <importMappings>
                                 <importMapping>Instant=java.time.Instant</importMapping>

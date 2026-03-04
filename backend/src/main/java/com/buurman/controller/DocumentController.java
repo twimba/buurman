@@ -37,37 +37,37 @@ public class DocumentController implements DocumentsApi {
   }
 
   @Override
-  public DocumentResponse getDocument(String identifier) {
+  public DocumentResponse getDocument(DocumentIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return documentService.getDocument(DocumentIdentifier.of(identifier), principal);
+    return documentService.getDocument(identifier, principal);
   }
 
   @Override
-  public String getDocumentDownloadUrl(String identifier) {
+  public String getDocumentDownloadUrl(DocumentIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    URL downloadUrl = documentService.getDownloadUrl(DocumentIdentifier.of(identifier), principal);
+    URL downloadUrl = documentService.getDownloadUrl(identifier, principal);
     return downloadUrl.toString();
   }
 
   @Override
-  public String getDocumentPreviewUrl(String identifier) {
+  public String getDocumentPreviewUrl(DocumentIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     // For now, preview URL is same as download URL
-    URL previewUrl = documentService.getDownloadUrl(DocumentIdentifier.of(identifier), principal);
+    URL previewUrl = documentService.getDownloadUrl(identifier, principal);
     return previewUrl.toString();
   }
 
   @Override
   public DocumentResponse updateDocument(
-      String identifier, UpdateDocumentRequest updateDocumentRequest) {
+      DocumentIdentifier identifier, UpdateDocumentRequest updateDocumentRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return documentService.updateDocument(DocumentIdentifier.of(identifier), updateDocumentRequest, principal);
+    return documentService.updateDocument(identifier, updateDocumentRequest, principal);
   }
 
   @Override
-  public void deleteDocument(String identifier) {
+  public void deleteDocument(DocumentIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    documentService.deleteDocument(DocumentIdentifier.of(identifier), principal);
+    documentService.deleteDocument(identifier, principal);
   }
 
   @Override

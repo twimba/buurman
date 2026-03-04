@@ -89,8 +89,8 @@ public class UserController implements UsersApi {
   }
 
   @Override
-  public void leaveTeam(String teamIdentifier) {
+  public void leaveTeam(TeamIdentifier teamIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    userTeamService.leaveTeam(TeamIdentifier.of(teamIdentifier), principal);
+    userTeamService.leaveTeam(teamIdentifier, principal);
   }
 }

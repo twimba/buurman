@@ -28,19 +28,19 @@ public class BackofficeTeamController implements BackofficeTeamsApi {
   }
 
   @Override
-  public BackofficeTeamDetailResponse getTeam(String identifier) {
-    return backofficeTeamService.getTeam(TeamIdentifier.of(identifier));
+  public BackofficeTeamDetailResponse getTeam(TeamIdentifier identifier) {
+    return backofficeTeamService.getTeam(identifier);
   }
 
   @Override
   public BackofficeTeamResponse updateTeamName(
-      String identifier, UpdateTeamNameRequest updateTeamNameRequest) {
+      TeamIdentifier identifier, UpdateTeamNameRequest updateTeamNameRequest) {
     return backofficeTeamService.updateTeamName(
-        TeamIdentifier.of(identifier), updateTeamNameRequest, SecurityUtils.getBackofficePrincipal());
+        identifier, updateTeamNameRequest, SecurityUtils.getBackofficePrincipal());
   }
 
   @Override
-  public void deleteTeam(String identifier) {
-    backofficeTeamService.deleteTeam(TeamIdentifier.of(identifier), SecurityUtils.getBackofficePrincipal());
+  public void deleteTeam(TeamIdentifier identifier) {
+    backofficeTeamService.deleteTeam(identifier, SecurityUtils.getBackofficePrincipal());
   }
 }

@@ -45,18 +45,25 @@ public class BackofficeNotificationController implements BackofficeNotifications
 
     PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     return backofficeNotificationService.listNotifications(
-        pageRequest, teamIdentifier != null ? TeamIdentifier.of(teamIdentifier) : null, type, channel, status, recipientEmail, from, to);
+        pageRequest,
+        teamIdentifier != null ? TeamIdentifier.of(teamIdentifier) : null,
+        type,
+        channel,
+        status,
+        recipientEmail,
+        from,
+        to);
   }
 
   @Override
-  public BackofficeNotificationResponse getNotification(String identifier) {
-    return backofficeNotificationService.getNotification(NotificationIdentifier.of(identifier));
+  public BackofficeNotificationResponse getNotification(NotificationIdentifier identifier) {
+    return backofficeNotificationService.getNotification(identifier);
   }
 
   @Override
-  public BackofficeNotificationResponse resendNotification(String identifier) {
+  public BackofficeNotificationResponse resendNotification(NotificationIdentifier identifier) {
     BackofficePrincipal principal = SecurityUtils.getBackofficePrincipal();
-    return backofficeNotificationService.resendNotification(NotificationIdentifier.of(identifier), principal);
+    return backofficeNotificationService.resendNotification(identifier, principal);
   }
 
   @Override

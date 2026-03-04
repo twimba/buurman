@@ -26,53 +26,55 @@ public class OccupancyPeriodController implements OccupancyPeriodsApi {
 
   @Override
   public OccupancyPeriodResponse create(
-      String propertyIdentifier, CreateOccupancyPeriodRequest createOccupancyPeriodRequest) {
+      PropertyIdentifier propertyIdentifier,
+      CreateOccupancyPeriodRequest createOccupancyPeriodRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return occupancyPeriodService.create(
-        PropertyIdentifier.of(propertyIdentifier), createOccupancyPeriodRequest, principal);
+        propertyIdentifier, createOccupancyPeriodRequest, principal);
   }
 
   @Override
-  public List<OccupancyPeriodResponse> callList(String propertyIdentifier) {
+  public List<OccupancyPeriodResponse> callList(PropertyIdentifier propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return occupancyPeriodService.findByProperty(PropertyIdentifier.of(propertyIdentifier), principal);
+    return occupancyPeriodService.findByProperty(propertyIdentifier, principal);
   }
 
   @Override
-  public OccupancyPeriodResponse get(String propertyIdentifier, String identifier) {
+  public OccupancyPeriodResponse get(
+      PropertyIdentifier propertyIdentifier, OccupancyPeriodIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return occupancyPeriodService.get(PropertyIdentifier.of(propertyIdentifier), OccupancyPeriodIdentifier.of(identifier), principal);
+    return occupancyPeriodService.get(propertyIdentifier, identifier, principal);
   }
 
   @Override
   public OccupancyPeriodResponse update(
-      String propertyIdentifier,
-      String identifier,
+      PropertyIdentifier propertyIdentifier,
+      OccupancyPeriodIdentifier identifier,
       UpdateOccupancyPeriodRequest updateOccupancyPeriodRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return occupancyPeriodService.update(
-        PropertyIdentifier.of(propertyIdentifier), OccupancyPeriodIdentifier.of(identifier), updateOccupancyPeriodRequest, principal);
+        propertyIdentifier, identifier, updateOccupancyPeriodRequest, principal);
   }
 
   @Override
   public OccupancyPeriodResponse end(
-      String propertyIdentifier,
-      String identifier,
+      PropertyIdentifier propertyIdentifier,
+      OccupancyPeriodIdentifier identifier,
       EndOccupancyPeriodRequest endOccupancyPeriodRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return occupancyPeriodService.end(
-        PropertyIdentifier.of(propertyIdentifier), OccupancyPeriodIdentifier.of(identifier), endOccupancyPeriodRequest, principal);
+        propertyIdentifier, identifier, endOccupancyPeriodRequest, principal);
   }
 
   @Override
-  public void delete(String propertyIdentifier, String identifier) {
+  public void delete(PropertyIdentifier propertyIdentifier, OccupancyPeriodIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    occupancyPeriodService.delete(PropertyIdentifier.of(propertyIdentifier), OccupancyPeriodIdentifier.of(identifier), principal);
+    occupancyPeriodService.delete(propertyIdentifier, identifier, principal);
   }
 
   @Override
-  public PropertyTimelineResponse getTimeline(String propertyIdentifier) {
+  public PropertyTimelineResponse getTimeline(PropertyIdentifier propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return occupancyPeriodService.getTimeline(PropertyIdentifier.of(propertyIdentifier), principal);
+    return occupancyPeriodService.getTimeline(propertyIdentifier, principal);
   }
 }

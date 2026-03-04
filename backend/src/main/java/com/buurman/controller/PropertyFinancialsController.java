@@ -18,8 +18,9 @@ public class PropertyFinancialsController implements PropertyFinancialsApi {
   private final PropertyFinancialsService financialsService;
 
   @Override
-  public PropertyFinancialSummaryResponse getFinancialSummary(String propertyIdentifier) {
+  public PropertyFinancialSummaryResponse getFinancialSummary(
+      PropertyIdentifier propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return financialsService.getFinancialSummary(PropertyIdentifier.of(propertyIdentifier), principal);
+    return financialsService.getFinancialSummary(propertyIdentifier, principal);
   }
 }

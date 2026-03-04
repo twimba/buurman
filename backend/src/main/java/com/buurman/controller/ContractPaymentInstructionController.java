@@ -24,42 +24,45 @@ public class ContractPaymentInstructionController implements ContractPaymentInst
   private final ContractPaymentInstructionService service;
 
   @Override
-  public List<ContractPaymentInstructionResponse> getHistory(String contractIdentifier) {
+  public List<ContractPaymentInstructionResponse> getHistory(
+      ContractIdentifier contractIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return service.getHistory(ContractIdentifier.of(contractIdentifier), principal);
+    return service.getHistory(contractIdentifier, principal);
   }
 
   @Override
-  public @Nullable ContractPaymentInstructionResponse getCurrent(String contractIdentifier) {
+  public @Nullable ContractPaymentInstructionResponse getCurrent(
+      ContractIdentifier contractIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return service.getCurrent(ContractIdentifier.of(contractIdentifier), principal).orElse(null);
+    return service.getCurrent(contractIdentifier, principal).orElse(null);
   }
 
   @Override
   public ContractPaymentInstructionResponse createContractPaymentInstruction(
-      String contractIdentifier,
+      ContractIdentifier contractIdentifier,
       CreateContractPaymentInstructionRequest createContractPaymentInstructionRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return service.create(ContractIdentifier.of(contractIdentifier), createContractPaymentInstructionRequest, principal);
+    return service.create(contractIdentifier, createContractPaymentInstructionRequest, principal);
   }
 
   @Override
   public ContractPaymentInstructionResponse updateContractPaymentInstruction(
-      String contractIdentifier,
-      String instructionIdentifier,
+      ContractIdentifier contractIdentifier,
+      ContractPaymentInstructionIdentifier instructionIdentifier,
       UpdateContractPaymentInstructionRequest updateContractPaymentInstructionRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return service.update(
-        ContractIdentifier.of(contractIdentifier),
-        ContractPaymentInstructionIdentifier.of(instructionIdentifier),
+        contractIdentifier,
+        instructionIdentifier,
         updateContractPaymentInstructionRequest,
         principal);
   }
 
   @Override
   public void deleteContractPaymentInstruction(
-      String contractIdentifier, String instructionIdentifier) {
+      ContractIdentifier contractIdentifier,
+      ContractPaymentInstructionIdentifier instructionIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    service.delete(ContractIdentifier.of(contractIdentifier), ContractPaymentInstructionIdentifier.of(instructionIdentifier), principal);
+    service.delete(contractIdentifier, instructionIdentifier, principal);
   }
 }

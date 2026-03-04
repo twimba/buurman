@@ -22,28 +22,28 @@ public class BookletController implements BookletsApi {
   private final HttpServletResponse httpServletResponse;
 
   @Override
-  public byte[] exportPropertyBooklet(String propertyIdentifier) {
+  public byte[] exportPropertyBooklet(PropertyIdentifier propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     httpServletResponse.setHeader(
         "Content-Disposition", "attachment; filename=property-booklet.pdf");
     httpServletResponse.setContentType(MediaType.APPLICATION_PDF_VALUE);
-    return exportService.generatePropertyBrochurePDF(PropertyIdentifier.of(propertyIdentifier), principal.requireTeamId());
+    return exportService.generatePropertyBrochurePDF(propertyIdentifier, principal.requireTeamId());
   }
 
   @Override
-  public byte[] exportTenantBooklet(String tenantIdentifier) {
+  public byte[] exportTenantBooklet(TenantIdentifier tenantIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     httpServletResponse.setHeader("Content-Disposition", "attachment; filename=tenant-booklet.pdf");
     httpServletResponse.setContentType(MediaType.APPLICATION_PDF_VALUE);
-    return exportService.generateTenantReportPDF(TenantIdentifier.of(tenantIdentifier), principal.requireTeamId());
+    return exportService.generateTenantReportPDF(tenantIdentifier, principal.requireTeamId());
   }
 
   @Override
-  public byte[] exportContractBooklet(String contractIdentifier) {
+  public byte[] exportContractBooklet(ContractIdentifier contractIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     httpServletResponse.setHeader(
         "Content-Disposition", "attachment; filename=contract-booklet.pdf");
     httpServletResponse.setContentType(MediaType.APPLICATION_PDF_VALUE);
-    return exportService.generateContractReportPDF(ContractIdentifier.of(contractIdentifier), principal.requireTeamId());
+    return exportService.generateContractReportPDF(contractIdentifier, principal.requireTeamId());
   }
 }

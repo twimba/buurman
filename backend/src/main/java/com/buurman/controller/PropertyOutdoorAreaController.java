@@ -22,32 +22,34 @@ public class PropertyOutdoorAreaController implements PropertyOutdoorAreasApi {
   private final PropertyOutdoorAreaService outdoorAreaService;
 
   @Override
-  public List<PropertyOutdoorAreaResponse> getOutdoorAreas(String propertyIdentifier) {
+  public List<PropertyOutdoorAreaResponse> getOutdoorAreas(PropertyIdentifier propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return outdoorAreaService.getOutdoorAreas(PropertyIdentifier.of(propertyIdentifier), principal);
+    return outdoorAreaService.getOutdoorAreas(propertyIdentifier, principal);
   }
 
   @Override
   public PropertyOutdoorAreaResponse createOutdoorArea(
-      String propertyIdentifier, PropertyOutdoorAreaRequest propertyOutdoorAreaRequest) {
+      PropertyIdentifier propertyIdentifier,
+      PropertyOutdoorAreaRequest propertyOutdoorAreaRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return outdoorAreaService.createOutdoorArea(
-        PropertyIdentifier.of(propertyIdentifier), propertyOutdoorAreaRequest, principal);
+        propertyIdentifier, propertyOutdoorAreaRequest, principal);
   }
 
   @Override
   public PropertyOutdoorAreaResponse updateOutdoorArea(
-      String propertyIdentifier,
-      String areaIdentifier,
+      PropertyIdentifier propertyIdentifier,
+      PropertyOutdoorAreaIdentifier areaIdentifier,
       PropertyOutdoorAreaRequest propertyOutdoorAreaRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return outdoorAreaService.updateOutdoorArea(
-        PropertyIdentifier.of(propertyIdentifier), PropertyOutdoorAreaIdentifier.of(areaIdentifier), propertyOutdoorAreaRequest, principal);
+        propertyIdentifier, areaIdentifier, propertyOutdoorAreaRequest, principal);
   }
 
   @Override
-  public void deleteOutdoorArea(String propertyIdentifier, String areaIdentifier) {
+  public void deleteOutdoorArea(
+      PropertyIdentifier propertyIdentifier, PropertyOutdoorAreaIdentifier areaIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    outdoorAreaService.deleteOutdoorArea(PropertyIdentifier.of(propertyIdentifier), PropertyOutdoorAreaIdentifier.of(areaIdentifier), principal);
+    outdoorAreaService.deleteOutdoorArea(propertyIdentifier, areaIdentifier, principal);
   }
 }

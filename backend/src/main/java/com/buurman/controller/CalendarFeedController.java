@@ -52,14 +52,14 @@ public class CalendarFeedController implements CalendarFeedsApi {
   }
 
   @Override
-  public CalendarFeedResponse rotateFeedToken(String identifier) {
+  public CalendarFeedResponse rotateFeedToken(CalendarFeedIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return calendarFeedService.rotateFeedToken(CalendarFeedIdentifier.of(identifier), principal);
+    return calendarFeedService.rotateFeedToken(identifier, principal);
   }
 
   @Override
-  public void deleteFeed(String identifier) {
+  public void deleteFeed(CalendarFeedIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    calendarFeedService.deleteFeed(CalendarFeedIdentifier.of(identifier), principal);
+    calendarFeedService.deleteFeed(identifier, principal);
   }
 }

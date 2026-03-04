@@ -37,36 +37,37 @@ public class PhotoController implements PhotosApi {
   }
 
   @Override
-  public PhotoResponse getPhoto(String identifier) {
+  public PhotoResponse getPhoto(PhotoIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return photoService.getPhoto(PhotoIdentifier.of(identifier), principal);
+    return photoService.getPhoto(identifier, principal);
   }
 
   @Override
-  public String getPhotoDownloadUrl(String identifier) {
+  public String getPhotoDownloadUrl(PhotoIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    URL downloadUrl = photoService.getDownloadUrl(PhotoIdentifier.of(identifier), principal);
+    URL downloadUrl = photoService.getDownloadUrl(identifier, principal);
     return downloadUrl.toString();
   }
 
   @Override
-  public String getPreviewUrl(String identifier) {
+  public String getPreviewUrl(PhotoIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     // For now, preview URL is same as download URL
-    URL previewUrl = photoService.getDownloadUrl(PhotoIdentifier.of(identifier), principal);
+    URL previewUrl = photoService.getDownloadUrl(identifier, principal);
     return previewUrl.toString();
   }
 
   @Override
-  public PhotoResponse updatePhoto(String identifier, UpdatePhotoRequest updatePhotoRequest) {
+  public PhotoResponse updatePhoto(
+      PhotoIdentifier identifier, UpdatePhotoRequest updatePhotoRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return photoService.updatePhoto(PhotoIdentifier.of(identifier), updatePhotoRequest, principal);
+    return photoService.updatePhoto(identifier, updatePhotoRequest, principal);
   }
 
   @Override
-  public void deletePhoto(String identifier) {
+  public void deletePhoto(PhotoIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    photoService.deletePhoto(PhotoIdentifier.of(identifier), principal);
+    photoService.deletePhoto(identifier, principal);
   }
 
   @Override

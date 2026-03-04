@@ -20,17 +20,18 @@ public class PropertyAcquisitionController implements PropertyAcquisitionsApi {
   private final PropertyAcquisitionService acquisitionService;
 
   @Override
-  public @Nullable PropertyAcquisitionResponse getAcquisition(String propertyIdentifier) {
+  public @Nullable PropertyAcquisitionResponse getAcquisition(
+      PropertyIdentifier propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return acquisitionService.getByProperty(PropertyIdentifier.of(propertyIdentifier), principal).orElse(null);
+    return acquisitionService.getByProperty(propertyIdentifier, principal).orElse(null);
   }
 
   @Override
   public PropertyAcquisitionResponse upsertAcquisition(
-      String propertyIdentifier,
+      PropertyIdentifier propertyIdentifier,
       UpsertPropertyAcquisitionRequest upsertPropertyAcquisitionRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return acquisitionService.upsert(
-        PropertyIdentifier.of(propertyIdentifier), upsertPropertyAcquisitionRequest, principal);
+        propertyIdentifier, upsertPropertyAcquisitionRequest, principal);
   }
 }
