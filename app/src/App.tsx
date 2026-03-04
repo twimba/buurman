@@ -155,6 +155,11 @@ const AdminCalendarFeedsPage = lazy(() =>
     default: m.AdminCalendarFeedsPage,
   }))
 );
+const AdminDataExportPage = lazy(() =>
+  import('./pages/admin/AdminDataExportPage').then((m) => ({
+    default: m.AdminDataExportPage,
+  }))
+);
 const AdminNotificationsPage = lazy(() =>
   import('./pages/admin/AdminNotificationsPage').then((m) => ({
     default: m.AdminNotificationsPage,
@@ -481,6 +486,16 @@ function App() {
                           <ProtectedRoute>
                             <Layout>
                               <AdminCalendarFeedsPage />
+                            </Layout>
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/admin/data-export"
+                        element={
+                          <ProtectedRoute>
+                            <Layout>
+                              <AdminDataExportPage />
                             </Layout>
                           </ProtectedRoute>
                         }

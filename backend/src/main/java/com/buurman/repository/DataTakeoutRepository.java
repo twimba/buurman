@@ -167,6 +167,29 @@ public class DataTakeoutRepository {
         .execute();
   }
 
+  public boolean hasInProgressByTeamId(UUID teamId) {
+    return dsl.fetchExists(
+        dsl.selectOne()
+            .from(DATA_TAKEOUTS)
+            .where(
+                DATA_TAKEOUTS
+                    .TEAM_ID
+                    .eq(teamId)
+                    .and(DATA_TAKEOUTS.DELETED_AT.isNull())
+                    .and(
+                        DATA_TAKEOUTS.STATUS.in(
+                            TakeoutStatus.PENDING.name(), TakeoutStatus.PROCESSING.name()))));
+  }
+
+  public long countActiveByTeamId(UUID teamId) {
+    Long count =
+        dsl.selectCount()
+            .from(DATA_TAKEOUTS)
+            .where(DATA_TAKEOUTS.TEAM_ID.eq(teamId).and(DATA_TAKEOUTS.DELETED_AT.isNull()))
+            .fetchOne(0, long.class);
+    return count != null ? count : 0L;
+  }
+
   public List<DataTakeout> findExpired(Instant now) {
     LocalDateTime cutoff = LocalDateTime.ofInstant(now, UTC);
     return dsl.selectFrom(DATA_TAKEOUTS)

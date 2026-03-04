@@ -10,6 +10,7 @@ import {
   FileArchive,
   ShieldAlert,
 } from 'lucide-react';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { useTeam } from '@/context/TeamContext';
 import {
   useTakeouts,
@@ -158,19 +159,12 @@ export const DataExportSection = () => {
   const { data: takeoutsPage, isLoading, isError, refetch } = useTakeouts();
   const requestMutation = useRequestTakeout();
   const deleteMutation = useDeleteTakeout();
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const takeouts = takeoutsPage?.content ?? [];
   const hasActiveTakeout = takeouts.some(
     (t) => t.status === 'PENDING' || t.status === 'PROCESSING'
   );
-
-  const handleDelete = (identifier: string) => {
-    setDeletingId(identifier);
-    deleteMutation.mutate(identifier, {
-      onSettled: () => setDeletingId(null),
-    });
-  };
 
   if (!canEditTeamSettings) {
     return (
@@ -258,14 +252,32 @@ export const DataExportSection = () => {
                 <TakeoutRow
                   key={takeout.identifier}
                   takeout={takeout}
-                  onDelete={handleDelete}
-                  isDeleting={deletingId === takeout.identifier}
+                  onDelete={setDeleteTarget}
+                  isDeleting={
+                    deleteTarget === takeout.identifier &&
+                    deleteMutation.isPending
+                  }
                 />
               ))}
             </div>
           )}
         </div>
       </div>
+
+      {deleteTarget && (
+        <ConfirmDialog
+          title="Delete Export"
+          message="Are you sure you want to delete this data export? The exported file will be permanently removed. This action cannot be undone."
+          confirmLabel="Delete"
+          variant="danger"
+          isLoading={deleteMutation.isPending}
+          onConfirm={async () => {
+            await deleteMutation.mutateAsync(deleteTarget);
+            setDeleteTarget(null);
+          }}
+          onCancel={() => setDeleteTarget(null)}
+        />
+      )}
     </div>
   );
 };

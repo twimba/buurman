@@ -23,6 +23,7 @@ import static com.buurman.jooq.generated.Tables.TEAMS;
 import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
 import static com.buurman.jooq.generated.Tables.TENANTS;
 import static com.buurman.jooq.generated.Tables.TENANT_ADDRESSES;
+import static com.buurman.util.FeatureFlags.TAKEOUT_MAX_EXPORTS;
 
 import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
@@ -52,8 +53,14 @@ import com.buurman.domain.DataTakeout.TakeoutStatus;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.TakeoutResponse;
+import com.buurman.exception.BusinessRuleException;
 import com.buurman.repository.DataTakeoutRepository;
 import com.buurman.repository.TeamPreferencesRepository;
+import com.buurman.security.SecurityUtils;
+import com.buurman.security.UserPrincipal;
+import com.buurman.service.export.ContractBookletExporter;
+import com.buurman.service.export.PropertyBookletExporter;
+import com.buurman.service.export.TenantBookletExporter;
 import com.buurman.util.UlidGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -61,6 +68,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.opencsv.CSVWriter;
 
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -68,16 +76,47 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class TakeoutService {
 
+  @Setter(
+      onMethod_ = {
+        @org.springframework.beans.factory.annotation.Autowired,
+        @org.springframework.context.annotation.Lazy
+      })
+  private TakeoutService self;
+
   private final DataTakeoutRepository takeoutRepository;
   private final TeamPreferencesRepository preferencesRepository;
   private final S3StorageService s3StorageService;
   private final MetricsService metricsService;
+  private final FeatureFlagService featureFlagService;
+  private final PropertyBookletExporter propertyBookletExporter;
+  private final TenantBookletExporter tenantBookletExporter;
+  private final ContractBookletExporter contractBookletExporter;
   private final DSLContext dsl;
   private final ObjectMapper objectMapper;
   private final Clock clock;
 
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public TakeoutResponse requestTakeout(UUID teamId, String teamIdentifier, UUID userId) {
+    if (takeoutRepository.hasInProgressByTeamId(teamId)) {
+      throw new BusinessRuleException(
+          "An export is already in progress. Please wait for it to complete before requesting"
+              + " another.");
+    }
+
+    UserPrincipal userPrincipal = SecurityUtils.getCurrentPrincipal();
+    featureFlagService
+        .getValue(TAKEOUT_MAX_EXPORTS, userPrincipal)
+        .ifPresent(
+            value -> {
+              int maxExports = Integer.parseInt(value.toString());
+              long currentCount = takeoutRepository.countActiveByTeamId(teamId);
+              if (currentCount >= maxExports) {
+                throw new BusinessRuleException(
+                    "Export limit reached. Maximum %d exports allowed. Delete existing exports to create new ones."
+                        .formatted(maxExports));
+              }
+            });
+
     DataTakeout takeout =
         DataTakeout.builder()
             .identifier(UlidGenerator.newTakeoutId().value())
@@ -91,8 +130,8 @@ public class TakeoutService {
     log.info("Data takeout requested: {} for team {}", takeout.getIdentifier(), teamIdentifier);
     metricsService.incrementCounter("takeout.requested.total");
 
-    // Trigger async processing
-    processTakeout(takeout.getId(), teamId, teamIdentifier);
+    // Trigger async processing (via proxy so @Async is honoured)
+    self.processTakeout(takeout.getId(), teamId, teamIdentifier);
 
     return toResponse(takeout);
   }
@@ -154,7 +193,13 @@ public class TakeoutService {
           new ExportCategory("team-members.csv", () -> exportTeamMembers(teamId)),
         };
 
-        int totalCategories = categories.length + 2; // +2 for team.json and manifest.json
+        // Collect identifiers for booklet generation
+        List<String> propertyIdentifiers = fetchIdentifiers(PROPERTIES, teamId);
+        List<String> tenantIdentifiers = fetchIdentifiers(TENANTS, teamId);
+        List<String> contractIdentifiers = fetchIdentifiers(CONTRACTS, teamId);
+        int totalBooklets =
+            propertyIdentifiers.size() + tenantIdentifiers.size() + contractIdentifiers.size();
+        int totalSteps = categories.length + totalBooklets + 2; // +2 for team.json and manifest
         int completed = 0;
 
         // Export CSV categories
@@ -162,18 +207,56 @@ public class TakeoutService {
           byte[] csvData = category.exporter.export();
           addZipEntry(zos, folderName + "/" + category.filename, csvData);
           completed++;
-          int progress = (int) ((completed * 90.0) / totalCategories);
-          takeoutRepository.updateProgress(takeoutId, progress);
+          takeoutRepository.updateProgress(takeoutId, (int) ((completed * 85.0) / totalSteps));
+        }
+
+        // Generate booklet PDFs
+        String bookletFolder = folderName + "/booklets";
+        for (String identifier : propertyIdentifiers) {
+          try {
+            byte[] pdf = propertyBookletExporter.generate(identifier, teamId);
+            addZipEntry(zos, bookletFolder + "/properties/" + identifier + ".pdf", pdf);
+          } catch (Exception e) {
+            log.warn("Failed to generate property booklet for {}: {}", identifier, e.getMessage());
+          }
+          completed++;
+          takeoutRepository.updateProgress(takeoutId, (int) ((completed * 85.0) / totalSteps));
+        }
+        for (String identifier : tenantIdentifiers) {
+          try {
+            byte[] pdf = tenantBookletExporter.generate(identifier, teamId);
+            addZipEntry(zos, bookletFolder + "/tenants/" + identifier + ".pdf", pdf);
+          } catch (Exception e) {
+            log.warn("Failed to generate tenant booklet for {}: {}", identifier, e.getMessage());
+          }
+          completed++;
+          takeoutRepository.updateProgress(takeoutId, (int) ((completed * 85.0) / totalSteps));
+        }
+        for (String identifier : contractIdentifiers) {
+          try {
+            byte[] pdf = contractBookletExporter.generate(identifier, teamId);
+            addZipEntry(zos, bookletFolder + "/contracts/" + identifier + ".pdf", pdf);
+          } catch (Exception e) {
+            log.warn("Failed to generate contract booklet for {}: {}", identifier, e.getMessage());
+          }
+          completed++;
+          takeoutRepository.updateProgress(takeoutId, (int) ((completed * 85.0) / totalSteps));
         }
 
         // Export team.json
         byte[] teamJson = exportTeamJson(teamId);
         addZipEntry(zos, folderName + "/team.json", teamJson);
-        completed++;
-        takeoutRepository.updateProgress(takeoutId, (int) ((completed * 90.0) / totalCategories));
+        takeoutRepository.updateProgress(takeoutId, 90);
 
         // Export manifest.json
-        byte[] manifest = buildManifest(teamIdentifier, dateSuffix, categories);
+        byte[] manifest =
+            buildManifest(
+                teamIdentifier,
+                dateSuffix,
+                categories,
+                propertyIdentifiers.size(),
+                tenantIdentifiers.size(),
+                contractIdentifiers.size());
         addZipEntry(zos, folderName + "/manifest.json", manifest);
         takeoutRepository.updateProgress(takeoutId, 95);
       }
@@ -289,8 +372,29 @@ public class TakeoutService {
     }
   }
 
+  private <R extends Record> List<String> fetchIdentifiers(Table<R> table, UUID teamId) {
+    Field<UUID> teamIdField = table.field("team_id", UUID.class);
+    Field<String> identifierField = table.field("identifier", String.class);
+    Field<?> deletedAtField = table.field("deleted_at");
+
+    if (teamIdField == null || identifierField == null) {
+      return List.of();
+    }
+
+    var query = dsl.select(identifierField).from(table).where(teamIdField.eq(teamId));
+    if (deletedAtField != null) {
+      query = query.and(deletedAtField.isNull());
+    }
+    return query.fetch(identifierField);
+  }
+
   private byte[] buildManifest(
-      String teamIdentifier, String dateSuffix, ExportCategory[] categories) {
+      String teamIdentifier,
+      String dateSuffix,
+      ExportCategory[] categories,
+      int propertyBooklets,
+      int tenantBooklets,
+      int contractBooklets) {
     try {
       ObjectNode manifest = objectMapper.createObjectNode();
       manifest.put("version", "1.0");
@@ -304,6 +408,11 @@ public class TakeoutService {
       }
       files.add("team.json");
       files.add("manifest.json");
+
+      ObjectNode booklets = manifest.putObject("booklets");
+      booklets.put("properties", propertyBooklets);
+      booklets.put("tenants", tenantBooklets);
+      booklets.put("contracts", contractBooklets);
 
       return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(manifest);
     } catch (Exception e) {

@@ -103,25 +103,14 @@ public class FeatureFlagService {
     return !isEnabled(flagKey, principal);
   }
 
-  /** Get remote config value for a flag (global). */
-  public Optional<Object> getValue(String flagKey) {
-    return flagsmithClient.flatMap(
-        client -> {
-          try {
-            return Optional.ofNullable(client.getEnvironmentFlags().getFeatureValue(flagKey));
-          } catch (Exception e) {
-            log.warn("Failed to get value for flag '{}', returning empty", flagKey, e);
-            return Optional.empty();
-          }
-        });
-  }
-
   /** Get remote config value for a flag (identity-aware). */
   public Optional<Object> getValue(String flagKey, UserPrincipal principal) {
     return flagsmithClient.flatMap(
         client -> {
           try {
-            Flags flags = client.getIdentityFlags(buildIdentity(principal), buildTraits(principal));
+            String identity = buildIdentity(principal);
+            Map<String, Object> traits = buildTraits(principal);
+            Flags flags = client.getIdentityFlags(identity, traits);
             return Optional.ofNullable(flags.getFeatureValue(flagKey));
           } catch (Exception e) {
             log.warn("Failed to get value for flag '{}' for identity, returning empty", flagKey, e);

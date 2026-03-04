@@ -19,13 +19,12 @@ export const useTakeouts = () => {
   return useQuery({
     queryKey: TAKEOUT_KEYS.list(),
     queryFn: () => listTakeouts({ size: 20 }),
-    staleTime: 30_000,
     refetchInterval: (query) => {
       const data = query.state.data;
       const hasActive = data?.content?.some(
         (t) => t.status === 'PENDING' || t.status === 'PROCESSING'
       );
-      return hasActive ? 5_000 : false;
+      return hasActive ? 3_000 : 30_000;
     },
   });
 };
@@ -50,7 +49,19 @@ export const useRequestTakeout = () => {
   const { showToast } = useToast();
   return useMutation({
     mutationFn: requestTakeout,
-    onSuccess: () => {
+    onSuccess: (newTakeout) => {
+      queryClient.setQueryData(TAKEOUT_KEYS.list(), (old: any) => {
+        if (!old) {
+          return {
+            content: [newTakeout],
+            totalElements: 1,
+            page: 0,
+            size: 20,
+            totalPages: 1,
+          };
+        }
+        return { ...old, content: [newTakeout, ...old.content] };
+      });
       queryClient.invalidateQueries({ queryKey: TAKEOUT_KEYS.all });
       showToast(
         'Data export requested. This may take a few minutes.',
@@ -68,7 +79,16 @@ export const useDeleteTakeout = () => {
   const { showToast } = useToast();
   return useMutation({
     mutationFn: deleteTakeout,
-    onSuccess: () => {
+    onSuccess: (_data, identifier) => {
+      queryClient.setQueryData(TAKEOUT_KEYS.list(), (old: any) => {
+        if (!old) {
+          return old;
+        }
+        return {
+          ...old,
+          content: old.content.filter((t: any) => t.identifier !== identifier),
+        };
+      });
       queryClient.invalidateQueries({ queryKey: TAKEOUT_KEYS.all });
       showToast('Data export deleted.', 'success');
     },
