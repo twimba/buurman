@@ -52,6 +52,7 @@ import com.buurman.domain.PropertyIndustrialDetails;
 import com.buurman.domain.PropertyOutdoorArea;
 import com.buurman.domain.PropertyResidentialDetails;
 import com.buurman.domain.Tenant;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.response.PropertyDashboardResponse;
 import com.buurman.dto.response.PropertyDashboardResponse.CategorySlice;
 import com.buurman.dto.response.PropertyDashboardResponse.MonthlyDataPoint;
@@ -100,7 +101,7 @@ public class PropertyBookletExporter {
   private final PdfRenderer pdfRenderer;
   private final Clock clock;
 
-  public byte[] generate(String propertyIdentifier, UUID teamId) {
+  public byte[] generate(PropertyIdentifier propertyIdentifier, UUID teamId) {
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
     UUID propertyId = property.getId();
 
@@ -327,7 +328,7 @@ public class PropertyBookletExporter {
     appendCoverCell(html, "Total Area", area);
     html.append("</tr><tr>");
     appendCoverCell(html, "Year Built", property.getYearBuilt().map(Object::toString).orElse("—"));
-    appendCoverCell(html, "Reference", property.getIdentifier());
+    appendCoverCell(html, "Reference", property.getIdentifier().orElseThrow().value());
     html.append("</tr>");
   }
 
@@ -357,7 +358,7 @@ public class PropertyBookletExporter {
             details.getCeilingHeightValue().orElse(null),
             details.getCeilingHeightUnit().orElse(null),
             "m"));
-    appendCoverCell(html, "Reference", property.getIdentifier());
+    appendCoverCell(html, "Reference", property.getIdentifier().orElseThrow().value());
     html.append("</tr>");
   }
 
@@ -394,7 +395,7 @@ public class PropertyBookletExporter {
             .map(v -> v + " " + details.getPowerCapacityUnit().orElse("kVA"))
             .orElse("—"));
     html.append("</tr><tr>");
-    appendCoverCell(html, "Reference", property.getIdentifier());
+    appendCoverCell(html, "Reference", property.getIdentifier().orElseThrow().value());
     html.append("<td></td>");
     html.append("</tr>");
   }
@@ -428,7 +429,7 @@ public class PropertyBookletExporter {
         "Current Use",
         details.getCurrentUse().map(BookletHelper::formatEnumValue).orElse("—"));
     html.append("</tr><tr>");
-    appendCoverCell(html, "Reference", property.getIdentifier());
+    appendCoverCell(html, "Reference", property.getIdentifier().orElseThrow().value());
     html.append("<td></td>");
     html.append("</tr>");
   }
@@ -446,7 +447,7 @@ public class PropertyBookletExporter {
     appendCoverCell(html, "Total Area", area);
     appendCoverCell(html, "Year Built", property.getYearBuilt().map(Object::toString).orElse("—"));
     html.append("</tr><tr>");
-    appendCoverCell(html, "Reference", property.getIdentifier());
+    appendCoverCell(html, "Reference", property.getIdentifier().orElseThrow().value());
     html.append("<td></td>");
     html.append("</tr>");
   }
@@ -1183,7 +1184,7 @@ public class PropertyBookletExporter {
               : "Unknown";
 
       html.append("<tr>");
-      html.append("<td>#").append(contract.getIdentifier()).append("</td>");
+      html.append("<td>#").append(contract.getIdentifier().orElseThrow().value()).append("</td>");
       html.append("<td>").append(escapeHtml(tenantName)).append("</td>");
       html.append("<td>").append(contract.getStartDate()).append("</td>");
       html.append("<td>")

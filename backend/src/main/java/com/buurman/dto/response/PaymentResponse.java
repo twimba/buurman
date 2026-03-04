@@ -7,9 +7,10 @@ import java.util.List;
 import java.util.Optional;
 
 import com.buurman.domain.Payment;
+import com.buurman.domain.Sid;
 
 public record PaymentResponse(
-    String identifier,
+    Sid identifier,
     Optional<ContractSummary> contract,
     Optional<TenantSummary> tenant,
     Optional<PropertySummary> property,

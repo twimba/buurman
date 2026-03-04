@@ -1,9 +1,10 @@
 package com.buurman.service;
 
-import static com.buurman.util.UlidGenerator.newFinancingId;
+import static com.buurman.util.SidGenerator.newFinancingId;
 
 import java.time.Clock;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyFinancing;
+import com.buurman.domain.Sid;
+import com.buurman.domain.identifier.PropertyFinancingIdentifier;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.CreatePropertyFinancingRequest;
 import com.buurman.dto.request.UpdatePropertyFinancingRequest;
 import com.buurman.dto.response.PropertyFinancingResponse;
@@ -35,14 +39,16 @@ public class PropertyFinancingService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyFinancingResponse create(
-      String propertyIdentifier, CreatePropertyFinancingRequest request, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier,
+      CreatePropertyFinancingRequest request,
+      UserPrincipal principal) {
 
     Property property =
         propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.requireTeamId());
 
     PropertyFinancing financing = financingMapper.toEntity(request);
     financing.setPropertyId(property.getId());
-    financing.setIdentifier(newFinancingId().value());
+    financing.setIdentifier(Optional.of(newFinancingId()));
     financing.setTeamId(principal.requireTeamId());
     financing.setCreatedBy(principal.getUserId());
     financing.setUpdatedBy(principal.getUserId());
@@ -53,17 +59,19 @@ public class PropertyFinancingService {
 
     log.info(
         "Created property financing {} for property {} by user {}",
-        saved.getIdentifier(),
-        property.getIdentifier(),
+        saved.getIdentifier().orElseThrow(),
+        property.getIdentifier().orElseThrow(),
         principal.getUserId());
 
-    return toResponse(saved, property.getIdentifier());
+    return toResponse(saved, property.getIdentifier().orElseThrow());
   }
 
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyFinancingResponse update(
-      String financingIdentifier, UpdatePropertyFinancingRequest request, UserPrincipal principal) {
+      PropertyFinancingIdentifier financingIdentifier,
+      UpdatePropertyFinancingRequest request,
+      UserPrincipal principal) {
 
     PropertyFinancing financing =
         financingRepository.getByIdentifierAndTeamId(
@@ -76,9 +84,11 @@ public class PropertyFinancingService {
     PropertyFinancing updated = financingRepository.save(financing);
 
     log.info(
-        "Updated property financing {} by user {}", updated.getIdentifier(), principal.getUserId());
+        "Updated property financing {} by user {}",
+        updated.getIdentifier().orElseThrow(),
+        principal.getUserId());
 
-    String propertyIdentifier =
+    Sid propertyIdentifier =
         resolvePropertyIdentifier(updated.getPropertyId(), principal.requireTeamId());
 
     return toResponse(updated, propertyIdentifier);
@@ -86,7 +96,7 @@ public class PropertyFinancingService {
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void delete(String financingIdentifier, UserPrincipal principal) {
+  public void delete(PropertyFinancingIdentifier financingIdentifier, UserPrincipal principal) {
     PropertyFinancing financing =
         financingRepository.getByIdentifierAndTeamId(
             financingIdentifier, principal.requireTeamId());
@@ -95,13 +105,13 @@ public class PropertyFinancingService {
 
     log.info(
         "Deleted property financing {} by user {}",
-        financing.getIdentifier(),
+        financing.getIdentifier().orElseThrow(),
         principal.getUserId());
   }
 
   @Transactional(readOnly = true)
   public List<PropertyFinancingResponse> listByProperty(
-      String propertyIdentifier, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier, UserPrincipal principal) {
 
     Property property =
         propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.requireTeamId());
@@ -109,26 +119,26 @@ public class PropertyFinancingService {
     return financingRepository
         .findByPropertyIdAndTeamId(property.getId(), principal.requireTeamId())
         .stream()
-        .map(f -> toResponse(f, property.getIdentifier()))
+        .map(f -> toResponse(f, property.getIdentifier().orElseThrow()))
         .toList();
   }
 
   @Transactional(readOnly = true)
   public PropertyFinancingResponse getFinancing(
-      String financingIdentifier, UserPrincipal principal) {
+      PropertyFinancingIdentifier financingIdentifier, UserPrincipal principal) {
 
     PropertyFinancing financing =
         financingRepository.getByIdentifierAndTeamId(
             financingIdentifier, principal.requireTeamId());
 
-    String propertyIdentifier =
+    Sid propertyIdentifier =
         resolvePropertyIdentifier(financing.getPropertyId(), principal.requireTeamId());
 
     return toResponse(financing, propertyIdentifier);
   }
 
   private PropertyFinancingResponse toResponse(
-      PropertyFinancing financing, String propertyIdentifier) {
+      PropertyFinancing financing, Sid propertyIdentifier) {
 
     PropertyFinancingResponse mapped = financingMapper.toResponse(financing);
     return new PropertyFinancingResponse(
@@ -155,10 +165,10 @@ public class PropertyFinancingService {
         mapped.updatedAt());
   }
 
-  private String resolvePropertyIdentifier(java.util.UUID propertyId, java.util.UUID teamId) {
+  private Sid resolvePropertyIdentifier(java.util.UUID propertyId, java.util.UUID teamId) {
     return propertyRepository
         .findByIdAndTeamId(propertyId, teamId)
-        .map(Property::getIdentifier)
-        .orElse("UNKNOWN");
+        .flatMap(Property::getIdentifier)
+        .orElseThrow();
   }
 }

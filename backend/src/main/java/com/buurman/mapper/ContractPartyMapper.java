@@ -15,6 +15,6 @@ public class ContractPartyMapper {
   public ContractPartyResponse toResponse(
       ContractParty party, @Nullable TenantSummary tenantSummary) {
     return new ContractPartyResponse(
-        party.getIdentifier(), Optional.ofNullable(tenantSummary), party.getRole());
+        party.getIdentifier().orElseThrow(), Optional.ofNullable(tenantSummary), party.getRole());
   }
 }

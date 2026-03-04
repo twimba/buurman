@@ -21,7 +21,7 @@ public class PropertyAcquisitionRecordMapper {
 
     PropertyAcquisition acq = new PropertyAcquisition();
     acq.setId(record.getId());
-    acq.setIdentifier(record.getIdentifier());
+    acq.setIdentifier(java.util.Optional.of(record.getIdentifier()));
     acq.setPropertyId(record.getPropertyId());
     acq.setTeamId(record.getTeamId());
     acq.setAcquisitionType(

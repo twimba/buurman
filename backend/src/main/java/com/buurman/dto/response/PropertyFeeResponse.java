@@ -6,9 +6,10 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.PropertyFee;
+import com.buurman.domain.Sid;
 
 public record PropertyFeeResponse(
-    String identifier,
+    Sid identifier,
     Optional<PropertySummary> property,
     PropertyFee.FeeType feeType,
     Optional<String> name,

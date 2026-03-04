@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buurman.domain.Property;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.response.DataDateRangeResponse;
 import com.buurman.dto.response.ExpenseBreakdownResponse;
 import com.buurman.dto.response.FinancialOverviewResponse;
@@ -134,7 +135,7 @@ public class ReportController implements ReportsApi {
       return null;
     }
     return identifiers.stream()
-        .map(id -> propertyRepository.getByIdentifierAndTeamId(id, teamId))
+        .map(id -> propertyRepository.getByIdentifierAndTeamId(PropertyIdentifier.of(id), teamId))
         .map(Property::getId)
         .toList();
   }

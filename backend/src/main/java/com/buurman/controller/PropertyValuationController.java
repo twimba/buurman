@@ -5,6 +5,8 @@ import java.util.List;
 import org.jspecify.annotations.Nullable;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.identifier.PropertyIdentifier;
+import com.buurman.domain.identifier.PropertyValuationIdentifier;
 import com.buurman.dto.request.CreatePropertyValuationRequest;
 import com.buurman.dto.request.UpdatePropertyValuationRequest;
 import com.buurman.dto.response.PropertyValuationResponse;
@@ -22,35 +24,38 @@ public class PropertyValuationController implements PropertyValuationsApi {
   private final PropertyValuationService valuationService;
 
   @Override
-  public List<PropertyValuationResponse> listValuations(String propertyIdentifier) {
+  public List<PropertyValuationResponse> listValuations(PropertyIdentifier propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return valuationService.listByProperty(propertyIdentifier, principal);
   }
 
   @Override
-  public @Nullable PropertyValuationResponse getLatestValuation(String propertyIdentifier) {
+  public @Nullable PropertyValuationResponse getLatestValuation(
+      PropertyIdentifier propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return valuationService.getLatestByProperty(propertyIdentifier, principal).orElse(null);
   }
 
   @Override
   public PropertyValuationResponse createValuation(
-      String propertyIdentifier, CreatePropertyValuationRequest createPropertyValuationRequest) {
+      PropertyIdentifier propertyIdentifier,
+      CreatePropertyValuationRequest createPropertyValuationRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return valuationService.create(propertyIdentifier, createPropertyValuationRequest, principal);
   }
 
   @Override
   public PropertyValuationResponse updateValuation(
-      String propertyIdentifier,
-      String identifier,
+      PropertyIdentifier propertyIdentifier,
+      PropertyValuationIdentifier identifier,
       UpdatePropertyValuationRequest updatePropertyValuationRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return valuationService.update(identifier, updatePropertyValuationRequest, principal);
   }
 
   @Override
-  public void deleteValuation(String propertyIdentifier, String identifier) {
+  public void deleteValuation(
+      PropertyIdentifier propertyIdentifier, PropertyValuationIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     valuationService.delete(identifier, principal);
   }

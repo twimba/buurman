@@ -14,7 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.buurman.domain.LabelCount;
 import com.buurman.domain.Notification;
 import com.buurman.domain.NotificationStatus;
+import com.buurman.domain.Sid;
 import com.buurman.domain.Team;
+import com.buurman.domain.identifier.NotificationIdentifier;
+import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.backoffice.BackofficeNotificationResponse;
@@ -39,7 +42,7 @@ public class BackofficeNotificationService {
   @Transactional(readOnly = true)
   public PageResponse<BackofficeNotificationResponse> listNotifications(
       PageRequest pageRequest,
-      @Nullable String teamIdentifier,
+      @Nullable TeamIdentifier teamIdentifier,
       @Nullable String type,
       @Nullable String channel,
       @Nullable String status,
@@ -48,7 +51,7 @@ public class BackofficeNotificationService {
       @Nullable LocalDateTime dateTo) {
 
     UUID teamId = null;
-    if (teamIdentifier != null && !teamIdentifier.isBlank()) {
+    if (teamIdentifier != null) {
       teamId =
           teamRepository
               .findByIdentifierForBackoffice(teamIdentifier)
@@ -68,19 +71,18 @@ public class BackofficeNotificationService {
   }
 
   @Transactional(readOnly = true)
-  public BackofficeNotificationResponse getNotification(String identifier) {
+  public BackofficeNotificationResponse getNotification(NotificationIdentifier identifier) {
     Notification notification = notificationRepository.getByIdentifierUnscoped(identifier);
     return toResponse(notification);
   }
 
   @Transactional
   public BackofficeNotificationResponse resendNotification(
-      String identifier, BackofficePrincipal principal) {
+      NotificationIdentifier identifier, BackofficePrincipal principal) {
     Notification original = notificationRepository.getByIdentifierUnscoped(identifier);
 
     Notification resent =
-        notificationService.resend(
-            original.getTeamId().orElse(null), original.getIdentifier(), null);
+        notificationService.resend(original.getTeamId().orElse(null), identifier, null);
 
     log.info(
         "Backoffice user {} resent notification {} (type={}, channel={})",
@@ -124,24 +126,24 @@ public class BackofficeNotificationService {
   }
 
   private BackofficeNotificationResponse toResponse(Notification notification) {
-    String teamIdentifier = null;
+    Sid teamIdentifier = null;
     String teamName = null;
     if (notification.getTeamId().isPresent()) {
       Team team = teamRepository.findById(notification.getTeamId().get()).orElse(null);
       if (team != null) {
-        teamIdentifier = team.getIdentifier();
+        teamIdentifier = team.getIdentifier().orElseThrow();
         teamName = team.getName();
       }
     }
 
-    Optional<String> resentFromIdentifier =
+    Optional<Sid> resentFromIdentifier =
         notification
             .getResentFromId()
-            .flatMap(id -> notificationRepository.findByIdentifierUnscoped(id.toString()))
-            .map(Notification::getIdentifier);
+            .flatMap(id -> notificationRepository.findByIdAndTeamId(id, null))
+            .flatMap(Notification::getIdentifier);
 
     return new BackofficeNotificationResponse(
-        notification.getIdentifier(),
+        notification.getIdentifier().orElseThrow(),
         Optional.ofNullable(teamIdentifier),
         Optional.ofNullable(teamName),
         notification.getNotificationType().name(),

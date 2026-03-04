@@ -21,7 +21,7 @@ public class PropertyFeeRecordMapper {
 
     PropertyFee fee = new PropertyFee();
     fee.setId(record.getId());
-    fee.setIdentifier(record.getIdentifier());
+    fee.setIdentifier(java.util.Optional.of(record.getIdentifier()));
     fee.setPropertyId(record.getPropertyId());
     fee.setTeamId(record.getTeamId());
     fee.setFeeType(PropertyFee.FeeType.valueOf(record.getFeeType()));

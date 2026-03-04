@@ -3,9 +3,11 @@ package com.buurman.dto.response.backoffice;
 import java.time.Instant;
 import java.util.Optional;
 
+import com.buurman.domain.Sid;
+
 public record BackofficeNotificationResponse(
-    String identifier,
-    Optional<String> teamIdentifier,
+    Sid identifier,
+    Optional<Sid> teamIdentifier,
     Optional<String> teamName,
     String notificationType,
     String channel,
@@ -20,7 +22,7 @@ public record BackofficeNotificationResponse(
     int clickCount,
     Optional<Instant> firstOpenedAt,
     Optional<Instant> firstClickedAt,
-    Optional<String> resentFromIdentifier,
+    Optional<Sid> resentFromIdentifier,
     Optional<String> resendReason,
     boolean demoBlocked,
     Instant createdAt,

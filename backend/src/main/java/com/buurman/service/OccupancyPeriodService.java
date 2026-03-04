@@ -2,7 +2,7 @@ package com.buurman.service;
 
 import static com.buurman.domain.Property.PropertyStatus.SELF_OCCUPIED;
 import static com.buurman.domain.Property.PropertyStatus.VACANT;
-import static com.buurman.util.UlidGenerator.newOccupancyPeriodId;
+import static com.buurman.util.SidGenerator.newOccupancyPeriodId;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -22,6 +22,9 @@ import com.buurman.domain.Contract;
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyFinancing;
 import com.buurman.domain.PropertyOccupancyPeriod;
+import com.buurman.domain.Sid;
+import com.buurman.domain.identifier.OccupancyPeriodIdentifier;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.CreateOccupancyPeriodRequest;
 import com.buurman.dto.request.EndOccupancyPeriodRequest;
 import com.buurman.dto.request.UpdateOccupancyPeriodRequest;
@@ -55,7 +58,9 @@ public class OccupancyPeriodService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public OccupancyPeriodResponse create(
-      String propertyIdentifier, CreateOccupancyPeriodRequest request, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier,
+      CreateOccupancyPeriodRequest request,
+      UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
@@ -74,7 +79,7 @@ public class OccupancyPeriodService {
     Instant now = Instant.now(clock);
     PropertyOccupancyPeriod period =
         PropertyOccupancyPeriod.builder()
-            .identifier(newOccupancyPeriodId().value())
+            .identifier(Optional.of(newOccupancyPeriodId()))
             .teamId(teamId)
             .propertyId(property.getId())
             .startDate(request.startDate())
@@ -99,7 +104,7 @@ public class OccupancyPeriodService {
 
     log.info(
         "Created self-occupancy period {} for property {}",
-        period.getIdentifier(),
+        period.getIdentifier().orElseThrow(),
         propertyIdentifier);
 
     return toResponse(period, propertyIdentifier);
@@ -108,8 +113,8 @@ public class OccupancyPeriodService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public OccupancyPeriodResponse update(
-      String propertyIdentifier,
-      String periodIdentifier,
+      PropertyIdentifier propertyIdentifier,
+      OccupancyPeriodIdentifier periodIdentifier,
       UpdateOccupancyPeriodRequest request,
       UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
@@ -146,8 +151,8 @@ public class OccupancyPeriodService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public OccupancyPeriodResponse end(
-      String propertyIdentifier,
-      String periodIdentifier,
+      PropertyIdentifier propertyIdentifier,
+      OccupancyPeriodIdentifier periodIdentifier,
       EndOccupancyPeriodRequest request,
       UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
@@ -177,7 +182,10 @@ public class OccupancyPeriodService {
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void delete(String propertyIdentifier, String periodIdentifier, UserPrincipal principal) {
+  public void delete(
+      PropertyIdentifier propertyIdentifier,
+      OccupancyPeriodIdentifier periodIdentifier,
+      UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
     PropertyOccupancyPeriod period = repository.getByIdentifierAndTeamId(periodIdentifier, teamId);
@@ -201,7 +209,7 @@ public class OccupancyPeriodService {
   @Transactional(readOnly = true)
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public List<OccupancyPeriodResponse> findByProperty(
-      String propertyIdentifier, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
     return repository.findByPropertyIdAndTeamId(property.getId(), teamId).stream()
@@ -212,7 +220,9 @@ public class OccupancyPeriodService {
   @Transactional(readOnly = true)
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public OccupancyPeriodResponse get(
-      String propertyIdentifier, String periodIdentifier, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier,
+      OccupancyPeriodIdentifier periodIdentifier,
+      UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
     PropertyOccupancyPeriod period = repository.getByIdentifierAndTeamId(periodIdentifier, teamId);
@@ -221,7 +231,8 @@ public class OccupancyPeriodService {
 
   @Transactional(readOnly = true)
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
-  public PropertyTimelineResponse getTimeline(String propertyIdentifier, UserPrincipal principal) {
+  public PropertyTimelineResponse getTimeline(
+      PropertyIdentifier propertyIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
@@ -243,7 +254,7 @@ public class OccupancyPeriodService {
       entries.add(
           new TimelineEntry(
               TimelineEntryType.SELF_OCCUPANCY,
-              p.getIdentifier(),
+              p.getIdentifier().orElseThrow(),
               p.getStartDate(),
               p.getEndDate(),
               Optional.of(p.getType().name()),
@@ -258,7 +269,7 @@ public class OccupancyPeriodService {
       entries.add(
           new TimelineEntry(
               TimelineEntryType.CONTRACT,
-              c.getIdentifier(),
+              c.getIdentifier().orElseThrow(),
               c.getStartDate(),
               c.getEndDate(),
               Optional.of(c.getStatus().name()),
@@ -274,7 +285,7 @@ public class OccupancyPeriodService {
             .map(
                 f ->
                     new PropertyTimelineResponse.FinancingEntry(
-                        f.getIdentifier(),
+                        f.getIdentifier().orElseThrow(),
                         f.getStartDate(),
                         f.getEndDate(),
                         f.getFinancingType().name(),
@@ -309,7 +320,7 @@ public class OccupancyPeriodService {
         String endStr = c.getEndDate().map(LocalDate::toString).orElse("ongoing");
         throw new BusinessRuleException(
             "Cannot create self-occupancy period: overlaps with contract "
-                + c.getIdentifier()
+                + c.getIdentifier().orElseThrow()
                 + " ("
                 + c.getStartDate()
                 + " → "
@@ -320,9 +331,9 @@ public class OccupancyPeriodService {
   }
 
   private OccupancyPeriodResponse toResponse(
-      PropertyOccupancyPeriod period, String propertyIdentifier) {
+      PropertyOccupancyPeriod period, Sid propertyIdentifier) {
     return new OccupancyPeriodResponse(
-        period.getIdentifier(),
+        period.getIdentifier().orElseThrow(),
         propertyIdentifier,
         period.getStartDate(),
         period.getEndDate(),

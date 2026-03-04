@@ -2,7 +2,7 @@ package com.buurman.service.demo;
 
 import static com.buurman.jooq.generated.Tables.TEAMS;
 import static com.buurman.jooq.generated.Tables.TEAM_PREFERENCES;
-import static com.buurman.util.UlidGenerator.newTeamId;
+import static com.buurman.util.SidGenerator.newTeamId;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -11,6 +11,8 @@ import java.util.UUID;
 
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Component;
+
+import com.buurman.domain.Sid;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +44,7 @@ public class DemoTeamGenerator {
 
     for (var entry : TEAMS_MAP.entrySet()) {
       UUID teamId = UUID.randomUUID();
-      String identifier = newTeamId().value();
+      Sid identifier = newTeamId();
 
       dsl.insertInto(TEAMS)
           .set(TEAMS.ID, teamId)

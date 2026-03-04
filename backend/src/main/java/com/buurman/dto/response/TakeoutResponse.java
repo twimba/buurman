@@ -4,8 +4,10 @@ import java.time.Instant;
 
 import org.jspecify.annotations.Nullable;
 
+import com.buurman.domain.Sid;
+
 public record TakeoutResponse(
-    String identifier,
+    Sid identifier,
     String status,
     int progress,
     @Nullable Long fileSize,

@@ -35,7 +35,7 @@ public class Expense {
   }
 
   private UUID id;
-  private String identifier;
+  @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private UUID teamId;
   private UUID propertyId;
   private ExpenseCategory category;

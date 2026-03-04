@@ -8,6 +8,9 @@ import java.util.UUID;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.identifier.DocumentIdentifier;
+import com.buurman.domain.identifier.ExpenseIdentifier;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.BulkCreateExpensesRequest;
 import com.buurman.dto.request.CreateExpenseRequest;
 import com.buurman.dto.request.PageRequest;
@@ -63,7 +66,9 @@ public class ExpenseController implements ExpensesApi {
     PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     UUID propertyId = null;
     if (propertyIdentifier != null) {
-      propertyId = expenseService.resolvePropertyId(propertyIdentifier, principal.requireTeamId());
+      propertyId =
+          expenseService.resolvePropertyId(
+              PropertyIdentifier.of(propertyIdentifier), principal.requireTeamId());
     }
     return expenseService.getExpensesPaginated(
         principal, category, propertyId, dateFrom, dateTo, pageRequest);
@@ -76,20 +81,20 @@ public class ExpenseController implements ExpensesApi {
   }
 
   @Override
-  public ExpenseResponse getExpense(String identifier) {
+  public ExpenseResponse getExpense(ExpenseIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return expenseService.getExpense(identifier, principal);
   }
 
   @Override
   public ExpenseResponse updateExpense(
-      String identifier, UpdateExpenseRequest updateExpenseRequest) {
+      ExpenseIdentifier identifier, UpdateExpenseRequest updateExpenseRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return expenseService.updateExpense(identifier, updateExpenseRequest, principal);
   }
 
   @Override
-  public void deleteExpense(String identifier) {
+  public void deleteExpense(ExpenseIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     expenseService.deleteExpense(identifier, principal);
   }
@@ -97,33 +102,36 @@ public class ExpenseController implements ExpensesApi {
   @Override
   @SuppressWarnings("NullAway")
   public DocumentResponse uploadExpenseDocument(
-      String identifier, String title, String notes, UploadPhotoRequest uploadPhotoRequest) {
+      ExpenseIdentifier identifier,
+      String title,
+      String notes,
+      UploadPhotoRequest uploadPhotoRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     // Generated interface mismodels multipart upload as JSON body
     return expenseService.uploadExpenseDocument(identifier, null, title, notes, principal);
   }
 
   @Override
-  public List<DocumentResponse> getExpenseDocuments(String identifier) {
+  public List<DocumentResponse> getExpenseDocuments(ExpenseIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return expenseService.getExpenseDocuments(identifier, principal);
   }
 
   @Override
-  public Map<String, String> getExpenseDocumentDownloadUrl(String documentIdentifier) {
+  public Map<String, String> getExpenseDocumentDownloadUrl(DocumentIdentifier documentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     URL url = documentService.getDownloadUrl(documentIdentifier, principal);
     return Map.of("url", url.toString());
   }
 
   @Override
-  public void deleteExpenseDocument(String documentIdentifier) {
+  public void deleteExpenseDocument(DocumentIdentifier documentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     documentService.deleteDocument(documentIdentifier, principal);
   }
 
   @Override
-  public List<RecentActivityResponse> getExpenseAuditLog(String identifier) {
+  public List<RecentActivityResponse> getExpenseAuditLog(ExpenseIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return expenseService.getExpenseAuditLog(identifier, principal);
   }

@@ -40,6 +40,7 @@ import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
 import com.buurman.domain.Tenant;
 import com.buurman.domain.TenantAddress;
+import com.buurman.domain.identifier.TenantIdentifier;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
@@ -63,7 +64,7 @@ public class TenantBookletExporter {
   private final PdfRenderer pdfRenderer;
   private final Clock clock;
 
-  public byte[] generate(String tenantIdentifier, UUID teamId) {
+  public byte[] generate(TenantIdentifier tenantIdentifier, UUID teamId) {
     Tenant tenant = tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, teamId);
 
     List<TenantAddress> addresses = tenantAddressRepository.findByTenantId(tenant.getId(), teamId);
@@ -185,7 +186,7 @@ public class TenantBookletExporter {
     appendCoverCell(html, "Total Contracts", String.valueOf(totalContracts));
     html.append("</tr><tr>");
     appendCoverCell(html, "Current Property", currentPropertyName);
-    appendCoverCell(html, "Reference", tenant.getIdentifier());
+    appendCoverCell(html, "Reference", tenant.getIdentifier().orElseThrow().value());
     html.append("</tr>");
     html.append("</table>");
 
@@ -212,7 +213,7 @@ public class TenantBookletExporter {
     appendField(html, "Email", tenant.getEmail().orElse(null));
     html.append("</tr><tr>");
     appendField(html, "Phone", tenant.getPhone().orElse(null));
-    appendField(html, "Reference", "#" + tenant.getIdentifier());
+    appendField(html, "Reference", "#" + tenant.getIdentifier().orElseThrow().value());
     html.append("</tr>");
     if (tenant.getTaxNumber().isPresent() || tenant.getIdNumber().isPresent()) {
       html.append("<tr>");
@@ -386,7 +387,7 @@ public class TenantBookletExporter {
           .append("</div>");
 
       html.append("<table class='detail-grid'><tr>");
-      appendField(html, "Contract ID", "#" + contract.getIdentifier());
+      appendField(html, "Contract ID", "#" + contract.getIdentifier().orElseThrow().value());
       appendField(
           html,
           "Type",

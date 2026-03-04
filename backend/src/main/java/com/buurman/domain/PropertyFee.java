@@ -38,7 +38,7 @@ public class PropertyFee {
   }
 
   private UUID id;
-  private String identifier;
+  @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private UUID propertyId;
   private UUID teamId;
   private FeeType feeType;

@@ -30,6 +30,7 @@ import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyAcquisition;
 import com.buurman.domain.PropertyOccupancyPeriod;
+import com.buurman.domain.Sid;
 import com.buurman.dto.response.PropertyDashboardResponse;
 import com.buurman.dto.response.PropertyDashboardResponse.CashFlowChartData;
 import com.buurman.dto.response.PropertyDashboardResponse.CategorySlice;
@@ -90,7 +91,7 @@ public class PropertyDashboardService {
   @Transactional(readOnly = true)
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public PropertyDashboardResponse getDashboard(
-      String propertyIdentifier, @Nullable Integer months, UserPrincipal principal) {
+      Sid propertyIdentifier, @Nullable Integer months, UserPrincipal principal) {
     int effectiveMonths = months != null ? months : DEFAULT_MONTHS;
     return getDashboardData(propertyIdentifier, effectiveMonths, principal.requireTeamId());
   }
@@ -98,7 +99,7 @@ public class PropertyDashboardService {
   /** Internal method for use by other services (authorization handled by caller). */
   @Transactional(readOnly = true)
   public PropertyDashboardResponse getDashboardData(
-      String propertyIdentifier, int months, UUID teamId) {
+      Sid propertyIdentifier, int months, UUID teamId) {
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
     UUID propertyId = property.getId();
 

@@ -23,7 +23,7 @@ public class FinancingPaymentRecordMapper {
 
     FinancingPayment payment = new FinancingPayment();
     payment.setId(record.getId());
-    payment.setIdentifier(record.getIdentifier());
+    payment.setIdentifier(java.util.Optional.of(record.getIdentifier()));
     payment.setFinancingId(record.getFinancingId());
     payment.setTeamId(record.getTeamId());
     payment.setPaymentDate(record.getPaymentDate());

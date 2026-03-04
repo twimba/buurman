@@ -1,7 +1,7 @@
 package com.buurman.repository;
 
 import static com.buurman.jooq.generated.Tables.TENANT_ADDRESSES;
-import static com.buurman.util.UlidGenerator.newTenantAddressId;
+import static com.buurman.util.SidGenerator.newTenantAddressId;
 import static java.time.ZoneOffset.UTC;
 
 import java.math.BigDecimal;
@@ -15,6 +15,7 @@ import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.springframework.stereotype.Repository;
 
+import com.buurman.domain.Sid;
 import com.buurman.domain.TenantAddress;
 import com.buurman.domain.TenantAddress.AddressStatus;
 import com.buurman.domain.TenantAddress.AddressType;
@@ -35,7 +36,7 @@ public class TenantAddressRepository {
     if (address.getId() == null) {
       // Insert
       UUID id = UUID.randomUUID();
-      String identifier = newTenantAddressId().value();
+      Sid identifier = newTenantAddressId();
       LocalDateTime createdAt = now;
       LocalDateTime updatedAt = now;
 
@@ -63,7 +64,7 @@ public class TenantAddressRepository {
           .set(TENANT_ADDRESSES.UPDATED_BY, address.getUpdatedBy())
           .execute();
       address.setId(id);
-      address.setIdentifier(identifier);
+      address.setIdentifier(java.util.Optional.of(identifier));
     } else {
       // Update
       LocalDateTime updatedAt = now;
@@ -110,7 +111,7 @@ public class TenantAddressRepository {
             .toList());
   }
 
-  public Optional<TenantAddress> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Optional<TenantAddress> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(TENANT_ADDRESSES)
         .where(
             TENANT_ADDRESSES
@@ -134,7 +135,7 @@ public class TenantAddressRepository {
         .map(this::toDomain);
   }
 
-  public TenantAddress getByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public TenantAddress getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Tenant address not found"));
   }
@@ -155,7 +156,7 @@ public class TenantAddressRepository {
   private TenantAddress toDomain(Record record) {
     return TenantAddress.builder()
         .id(record.get(TENANT_ADDRESSES.ID))
-        .identifier(record.get(TENANT_ADDRESSES.IDENTIFIER))
+        .identifier(java.util.Optional.of(record.get(TENANT_ADDRESSES.IDENTIFIER)))
         .tenantId(record.get(TENANT_ADDRESSES.TENANT_ID))
         .teamId(record.get(TENANT_ADDRESSES.TEAM_ID))
         .street(record.get(TENANT_ADDRESSES.STREET))

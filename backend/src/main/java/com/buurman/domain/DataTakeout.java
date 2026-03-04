@@ -24,7 +24,7 @@ public class DataTakeout {
   }
 
   private UUID id;
-  private String identifier;
+  @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private UUID teamId;
   private TakeoutStatus status;
   @Builder.Default private int progress = 0;

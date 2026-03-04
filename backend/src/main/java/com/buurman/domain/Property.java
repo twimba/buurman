@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class Property {
 
   private UUID id;
-  private String identifier;
+  @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private UUID teamId;
   private String street;
   private String city;

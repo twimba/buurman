@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.DataTakeout;
 import com.buurman.domain.DataTakeout.TakeoutStatus;
+import com.buurman.domain.Sid;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.jooq.generated.tables.records.DataTakeoutsRecord;
@@ -42,7 +43,7 @@ public class DataTakeoutRepository {
 
       dsl.insertInto(DATA_TAKEOUTS)
           .set(DATA_TAKEOUTS.ID, id)
-          .set(DATA_TAKEOUTS.IDENTIFIER, takeout.getIdentifier())
+          .set(DATA_TAKEOUTS.IDENTIFIER, takeout.getIdentifier().orElseThrow())
           .set(DATA_TAKEOUTS.TEAM_ID, takeout.getTeamId())
           .set(DATA_TAKEOUTS.STATUS, takeout.getStatus().name())
           .set(DATA_TAKEOUTS.PROGRESS, takeout.getProgress())
@@ -92,7 +93,7 @@ public class DataTakeoutRepository {
     return takeout;
   }
 
-  public Optional<DataTakeout> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Optional<DataTakeout> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(DATA_TAKEOUTS)
         .where(
             DATA_TAKEOUTS
@@ -104,7 +105,7 @@ public class DataTakeoutRepository {
         .map(this::toDomain);
   }
 
-  public DataTakeout getByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public DataTakeout getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Data takeout not found"));
   }
@@ -215,7 +216,7 @@ public class DataTakeoutRepository {
   private DataTakeout toDomain(DataTakeoutsRecord record) {
     return DataTakeout.builder()
         .id(record.getId())
-        .identifier(record.getIdentifier())
+        .identifier(Optional.of(record.getIdentifier()))
         .teamId(record.getTeamId())
         .status(TakeoutStatus.valueOf(record.getStatus()))
         .progress(record.getProgress())

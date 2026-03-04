@@ -17,6 +17,7 @@ import com.buurman.domain.PropertyFinancing;
 import com.buurman.domain.PropertyInsurance;
 import com.buurman.domain.PropertyTax;
 import com.buurman.domain.PropertyValuation;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.response.PropertyFinancialSummaryResponse;
 import com.buurman.repository.PropertyAcquisitionRepository;
 import com.buurman.repository.PropertyFeeRepository;
@@ -54,7 +55,7 @@ public class PropertyFinancialsService {
   @Transactional(readOnly = true)
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public PropertyFinancialSummaryResponse getFinancialSummary(
-      String propertyIdentifier, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier, UserPrincipal principal) {
 
     var acquisition = acquisitionService.getByProperty(propertyIdentifier, principal);
     var latestValuation = valuationService.getLatestByProperty(propertyIdentifier, principal);

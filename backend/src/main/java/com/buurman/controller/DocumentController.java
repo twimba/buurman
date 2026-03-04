@@ -6,6 +6,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.dto.request.BulkDownloadRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateDocumentRequest;
@@ -36,20 +37,20 @@ public class DocumentController implements DocumentsApi {
   }
 
   @Override
-  public DocumentResponse getDocument(String identifier) {
+  public DocumentResponse getDocument(DocumentIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return documentService.getDocument(identifier, principal);
   }
 
   @Override
-  public String getDocumentDownloadUrl(String identifier) {
+  public String getDocumentDownloadUrl(DocumentIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     URL downloadUrl = documentService.getDownloadUrl(identifier, principal);
     return downloadUrl.toString();
   }
 
   @Override
-  public String getDocumentPreviewUrl(String identifier) {
+  public String getDocumentPreviewUrl(DocumentIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     // For now, preview URL is same as download URL
     URL previewUrl = documentService.getDownloadUrl(identifier, principal);
@@ -58,13 +59,13 @@ public class DocumentController implements DocumentsApi {
 
   @Override
   public DocumentResponse updateDocument(
-      String identifier, UpdateDocumentRequest updateDocumentRequest) {
+      DocumentIdentifier identifier, UpdateDocumentRequest updateDocumentRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return documentService.updateDocument(identifier, updateDocumentRequest, principal);
   }
 
   @Override
-  public void deleteDocument(String identifier) {
+  public void deleteDocument(DocumentIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     documentService.deleteDocument(identifier, principal);
   }

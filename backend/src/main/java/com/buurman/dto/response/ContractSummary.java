@@ -5,9 +5,10 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.Contract;
+import com.buurman.domain.Sid;
 
 public record ContractSummary(
-    String identifier,
+    Sid identifier,
     PropertySummary property,
     Optional<TenantSummary> primaryTenant,
     LocalDate startDate,

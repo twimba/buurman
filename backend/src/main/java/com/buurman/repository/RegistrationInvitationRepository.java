@@ -1,7 +1,7 @@
 package com.buurman.repository;
 
 import static com.buurman.jooq.generated.Tables.REGISTRATION_INVITATIONS;
-import static com.buurman.util.UlidGenerator.newRegistrationInvitationId;
+import static com.buurman.util.SidGenerator.newRegistrationInvitationId;
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.lower;
 
@@ -19,6 +19,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.RegistrationInvitation;
+import com.buurman.domain.Sid;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.util.PaginationHelper;
@@ -35,7 +36,7 @@ public class RegistrationInvitationRepository {
   public RegistrationInvitation save(RegistrationInvitation invitation) {
     LocalDateTime now = LocalDateTime.now(clock);
     UUID id = UUID.randomUUID();
-    String identifier = newRegistrationInvitationId().value();
+    Sid identifier = newRegistrationInvitationId();
 
     dsl.insertInto(REGISTRATION_INVITATIONS)
         .set(REGISTRATION_INVITATIONS.ID, id)
@@ -53,7 +54,7 @@ public class RegistrationInvitationRepository {
         .execute();
 
     invitation.setId(id);
-    invitation.setIdentifier(identifier);
+    invitation.setIdentifier(java.util.Optional.of(identifier));
     invitation.setUsageCount(0);
     invitation.setCreatedAt(now.toInstant(UTC));
     invitation.setUpdatedAt(now.toInstant(UTC));
@@ -67,7 +68,7 @@ public class RegistrationInvitationRepository {
         .map(this::toDomain);
   }
 
-  public Optional<RegistrationInvitation> findByIdentifier(String identifier) {
+  public Optional<RegistrationInvitation> findByIdentifier(Sid identifier) {
     return dsl.selectFrom(REGISTRATION_INVITATIONS)
         .where(REGISTRATION_INVITATIONS.IDENTIFIER.eq(identifier))
         .fetchOptional()
@@ -81,7 +82,7 @@ public class RegistrationInvitationRepository {
         .map(this::toDomain);
   }
 
-  public RegistrationInvitation getByIdentifier(String identifier) {
+  public RegistrationInvitation getByIdentifier(Sid identifier) {
     return findByIdentifier(identifier)
         .orElseThrow(() -> new NotFoundException("Registration invitation not found"));
   }
@@ -171,7 +172,7 @@ public class RegistrationInvitationRepository {
   private RegistrationInvitation toDomain(org.jooq.Record record) {
     RegistrationInvitation inv = new RegistrationInvitation();
     inv.setId(record.get(REGISTRATION_INVITATIONS.ID));
-    inv.setIdentifier(record.get(REGISTRATION_INVITATIONS.IDENTIFIER));
+    inv.setIdentifier(java.util.Optional.of(record.get(REGISTRATION_INVITATIONS.IDENTIFIER)));
     inv.setCode(record.get(REGISTRATION_INVITATIONS.CODE));
     inv.setMaxUsages(Optional.ofNullable(record.get(REGISTRATION_INVITATIONS.MAX_USAGES)));
     inv.setUsageCount(record.get(REGISTRATION_INVITATIONS.USAGE_COUNT));

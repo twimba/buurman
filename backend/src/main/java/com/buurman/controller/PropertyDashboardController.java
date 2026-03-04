@@ -7,6 +7,7 @@ import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.response.PropertyDashboardResponse;
 import com.buurman.exception.ForbiddenException;
 import com.buurman.generated.api.PropertyDashboardApi;
@@ -36,13 +37,13 @@ public class PropertyDashboardController implements PropertyDashboardApi {
   }
 
   @Override
-  public PropertyDashboardResponse getDashboard(String identifier, Integer months) {
+  public PropertyDashboardResponse getDashboard(PropertyIdentifier identifier, Integer months) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return dashboardService.getDashboard(identifier, months, principal);
   }
 
   @Override
-  public byte[] exportPdf(String identifier, Integer months) {
+  public byte[] exportPdf(PropertyIdentifier identifier, Integer months) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     PropertyDashboardResponse dashboard =
         dashboardService.getDashboard(identifier, months, principal);
@@ -53,7 +54,7 @@ public class PropertyDashboardController implements PropertyDashboardApi {
   }
 
   @Override
-  public byte[] exportCsv(String identifier, Integer months) {
+  public byte[] exportCsv(PropertyIdentifier identifier, Integer months) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     PropertyDashboardResponse dashboard =
         dashboardService.getDashboard(identifier, months, principal);

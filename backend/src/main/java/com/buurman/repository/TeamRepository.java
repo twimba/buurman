@@ -17,6 +17,7 @@ import org.jooq.Field;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
+import com.buurman.domain.Sid;
 import com.buurman.domain.Team;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
@@ -44,7 +45,7 @@ public class TeamRepository {
     return findById(id).orElseThrow(() -> new NotFoundException("Team not found"));
   }
 
-  public Team getByIdentifier(String identifier) {
+  public Team getByIdentifier(Sid identifier) {
     return findByIdentifier(identifier).orElseThrow(() -> new NotFoundException("Team not found"));
   }
 
@@ -60,7 +61,7 @@ public class TeamRepository {
 
       dsl.insertInto(TEAMS)
           .set(TEAMS.ID, newId)
-          .set(TEAMS.IDENTIFIER, team.getIdentifier())
+          .set(TEAMS.IDENTIFIER, team.getIdentifier().orElseThrow())
           .set(TEAMS.NAME, team.getName())
           .set(TEAMS.DEMO, team.isDemo())
           .set(TEAMS.CREATED_AT, createdAt)
@@ -76,7 +77,7 @@ public class TeamRepository {
           team.getUpdatedAt() != null ? LocalDateTime.ofInstant(team.getUpdatedAt(), UTC) : now;
 
       dsl.update(TEAMS)
-          .set(TEAMS.IDENTIFIER, team.getIdentifier())
+          .set(TEAMS.IDENTIFIER, team.getIdentifier().orElseThrow())
           .set(TEAMS.NAME, team.getName())
           .set(TEAMS.UPDATED_AT, updatedAt)
           .set(TEAMS.UPDATED_BY, team.getUpdatedBy())
@@ -94,7 +95,7 @@ public class TeamRepository {
     dsl.update(TEAMS).set(TEAMS.DELETED_AT, now).where(TEAMS.ID.eq(id)).execute();
   }
 
-  public Optional<Team> findByIdentifier(String identifier) {
+  public Optional<Team> findByIdentifier(Sid identifier) {
     return dsl.selectFrom(TEAMS)
         .where(TEAMS.IDENTIFIER.eq(identifier))
         .fetchOptional()
@@ -129,14 +130,14 @@ public class TeamRepository {
   }
 
   /** Find by identifier including soft-deleted teams. For backoffice use. */
-  public Optional<Team> findByIdentifierForBackoffice(String identifier) {
+  public Optional<Team> findByIdentifierForBackoffice(Sid identifier) {
     return dsl.selectFrom(TEAMS)
         .where(TEAMS.IDENTIFIER.eq(identifier).and(TEAMS.DELETED_AT.isNull()))
         .fetchOptional()
         .flatMap(mapper::toDomain);
   }
 
-  public Team getByIdentifierForBackoffice(String identifier) {
+  public Team getByIdentifierForBackoffice(Sid identifier) {
     return findByIdentifierForBackoffice(identifier)
         .orElseThrow(() -> new NotFoundException("Team not found"));
   }

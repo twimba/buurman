@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.buurman.domain.NotificationChannel;
 import com.buurman.domain.RegistrationInvitation;
 import com.buurman.domain.RegistrationInvitationUsage;
+import com.buurman.domain.identifier.RegistrationInvitationIdentifier;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.backoffice.CreateRegistrationInvitationRequest;
 import com.buurman.dto.request.backoffice.SendRegistrationInvitationRequest;
@@ -107,7 +108,8 @@ public class RegistrationInvitationService {
   }
 
   @Transactional(readOnly = true)
-  public RegistrationInvitationDetailResponse getByIdentifier(String identifier) {
+  public RegistrationInvitationDetailResponse getByIdentifier(
+      RegistrationInvitationIdentifier identifier) {
     RegistrationInvitation invitation = invitationRepository.getByIdentifier(identifier);
 
     List<RegistrationInvitationUsage> usages =
@@ -117,7 +119,7 @@ public class RegistrationInvitationService {
   }
 
   @Transactional
-  public void revoke(String identifier, BackofficePrincipal principal) {
+  public void revoke(RegistrationInvitationIdentifier identifier, BackofficePrincipal principal) {
     RegistrationInvitation invitation = invitationRepository.getByIdentifier(identifier);
 
     if (invitation.getRevokedAt().isPresent()) {
@@ -166,7 +168,9 @@ public class RegistrationInvitationService {
 
   @Transactional
   public void sendInvitation(
-      String identifier, SendRegistrationInvitationRequest request, BackofficePrincipal principal) {
+      RegistrationInvitationIdentifier identifier,
+      SendRegistrationInvitationRequest request,
+      BackofficePrincipal principal) {
     RegistrationInvitation invitation = invitationRepository.getByIdentifier(identifier);
 
     if (!invitation.isValid()) {
@@ -193,7 +197,7 @@ public class RegistrationInvitationService {
 
   @Transactional
   public RegistrationInvitationDetailResponse updateNote(
-      String identifier,
+      RegistrationInvitationIdentifier identifier,
       UpdateRegistrationInvitationNoteRequest request,
       BackofficePrincipal principal) {
     RegistrationInvitation invitation = invitationRepository.getByIdentifier(identifier);
@@ -274,7 +278,7 @@ public class RegistrationInvitationService {
 
   private RegistrationInvitationResponse toResponse(RegistrationInvitation inv) {
     return new RegistrationInvitationResponse(
-        inv.getIdentifier(),
+        inv.getIdentifier().orElseThrow(),
         inv.getCode(),
         inv.getMaxUsages(),
         inv.getUsageCount(),
@@ -298,7 +302,7 @@ public class RegistrationInvitationService {
             .toList();
 
     return new RegistrationInvitationDetailResponse(
-        inv.getIdentifier(),
+        inv.getIdentifier().orElseThrow(),
         inv.getCode(),
         inv.getMaxUsages(),
         inv.getUsageCount(),

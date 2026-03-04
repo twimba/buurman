@@ -12,14 +12,14 @@ import static com.buurman.jooq.generated.Tables.PROPERTY_OUTDOOR_AREAS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_RESIDENTIAL_DETAILS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_TAXES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_VALUATIONS;
-import static com.buurman.util.UlidGenerator.newAcquisitionId;
-import static com.buurman.util.UlidGenerator.newFinancingId;
-import static com.buurman.util.UlidGenerator.newInsuranceId;
-import static com.buurman.util.UlidGenerator.newPropertyFeeId;
-import static com.buurman.util.UlidGenerator.newPropertyId;
-import static com.buurman.util.UlidGenerator.newPropertyOutdoorAreaId;
-import static com.buurman.util.UlidGenerator.newPropertyTaxId;
-import static com.buurman.util.UlidGenerator.newValuationId;
+import static com.buurman.util.SidGenerator.newAcquisitionId;
+import static com.buurman.util.SidGenerator.newFinancingId;
+import static com.buurman.util.SidGenerator.newInsuranceId;
+import static com.buurman.util.SidGenerator.newPropertyFeeId;
+import static com.buurman.util.SidGenerator.newPropertyId;
+import static com.buurman.util.SidGenerator.newPropertyOutdoorAreaId;
+import static com.buurman.util.SidGenerator.newPropertyTaxId;
+import static com.buurman.util.SidGenerator.newValuationId;
 
 import java.math.BigDecimal;
 import java.time.Clock;
@@ -36,6 +36,8 @@ import java.util.UUID;
 import org.jooq.DSLContext;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
+
+import com.buurman.domain.Sid;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -315,7 +317,7 @@ public class DemoPropertyGenerator {
         String coolingType = coolingTypeForCategory(propertyCategory);
         int floors = floorsForCategory(propertyCategory);
 
-        String propertyIdentifier = newPropertyId().value();
+        Sid propertyIdentifier = newPropertyId();
         dsl.insertInto(PROPERTIES)
             .set(PROPERTIES.ID, propertyId)
             .set(PROPERTIES.IDENTIFIER, propertyIdentifier)
@@ -431,7 +433,7 @@ public class DemoPropertyGenerator {
             if (usedTypes.add(outdoorType)) {
               dsl.insertInto(PROPERTY_OUTDOOR_AREAS)
                   .set(PROPERTY_OUTDOOR_AREAS.ID, UUID.randomUUID())
-                  .set(PROPERTY_OUTDOOR_AREAS.IDENTIFIER, newPropertyOutdoorAreaId().value())
+                  .set(PROPERTY_OUTDOOR_AREAS.IDENTIFIER, newPropertyOutdoorAreaId())
                   .set(PROPERTY_OUTDOOR_AREAS.PROPERTY_ID, propertyId)
                   .set(PROPERTY_OUTDOOR_AREAS.TEAM_ID, teamId)
                   .set(PROPERTY_OUTDOOR_AREAS.TYPE, outdoorType)
@@ -754,7 +756,7 @@ public class DemoPropertyGenerator {
       long purchasePrice = purchasePriceForCategory(propertyCategory, i);
       dsl.insertInto(PROPERTY_ACQUISITIONS)
           .set(PROPERTY_ACQUISITIONS.ID, UUID.randomUUID())
-          .set(PROPERTY_ACQUISITIONS.IDENTIFIER, newAcquisitionId().value())
+          .set(PROPERTY_ACQUISITIONS.IDENTIFIER, newAcquisitionId())
           .set(PROPERTY_ACQUISITIONS.PROPERTY_ID, propertyId)
           .set(PROPERTY_ACQUISITIONS.TEAM_ID, teamId)
           .set(PROPERTY_ACQUISITIONS.ACQUISITION_TYPE, "PURCHASE")
@@ -778,7 +780,7 @@ public class DemoPropertyGenerator {
     if (i < 4) {
       dsl.insertInto(PROPERTY_VALUATIONS)
           .set(PROPERTY_VALUATIONS.ID, UUID.randomUUID())
-          .set(PROPERTY_VALUATIONS.IDENTIFIER, newValuationId().value())
+          .set(PROPERTY_VALUATIONS.IDENTIFIER, newValuationId())
           .set(PROPERTY_VALUATIONS.PROPERTY_ID, propertyId)
           .set(PROPERTY_VALUATIONS.TEAM_ID, teamId)
           .set(PROPERTY_VALUATIONS.VALUATION_TYPE, "MARKET")
@@ -797,7 +799,7 @@ public class DemoPropertyGenerator {
     if (i > 0 && i < 4) {
       dsl.insertInto(PROPERTY_FINANCINGS)
           .set(PROPERTY_FINANCINGS.ID, UUID.randomUUID())
-          .set(PROPERTY_FINANCINGS.IDENTIFIER, newFinancingId().value())
+          .set(PROPERTY_FINANCINGS.IDENTIFIER, newFinancingId())
           .set(PROPERTY_FINANCINGS.PROPERTY_ID, propertyId)
           .set(PROPERTY_FINANCINGS.TEAM_ID, teamId)
           .set(PROPERTY_FINANCINGS.FINANCING_TYPE, "MORTGAGE")
@@ -824,7 +826,7 @@ public class DemoPropertyGenerator {
     if (i < 4) {
       dsl.insertInto(PROPERTY_INSURANCES)
           .set(PROPERTY_INSURANCES.ID, UUID.randomUUID())
-          .set(PROPERTY_INSURANCES.IDENTIFIER, newInsuranceId().value())
+          .set(PROPERTY_INSURANCES.IDENTIFIER, newInsuranceId())
           .set(PROPERTY_INSURANCES.PROPERTY_ID, propertyId)
           .set(PROPERTY_INSURANCES.TEAM_ID, teamId)
           .set(PROPERTY_INSURANCES.INSURANCE_TYPE, "BUILDING")
@@ -847,7 +849,7 @@ public class DemoPropertyGenerator {
       String taxDueMonth = String.valueOf(new int[] {1, 4, 7, 10}[i % 4]);
       dsl.insertInto(PROPERTY_TAXES)
           .set(PROPERTY_TAXES.ID, UUID.randomUUID())
-          .set(PROPERTY_TAXES.IDENTIFIER, newPropertyTaxId().value())
+          .set(PROPERTY_TAXES.IDENTIFIER, newPropertyTaxId())
           .set(PROPERTY_TAXES.PROPERTY_ID, propertyId)
           .set(PROPERTY_TAXES.TEAM_ID, teamId)
           .set(PROPERTY_TAXES.TAX_TYPE, "PROPERTY")
@@ -867,7 +869,7 @@ public class DemoPropertyGenerator {
     if (i < 3) {
       dsl.insertInto(PROPERTY_FEES)
           .set(PROPERTY_FEES.ID, UUID.randomUUID())
-          .set(PROPERTY_FEES.IDENTIFIER, newPropertyFeeId().value())
+          .set(PROPERTY_FEES.IDENTIFIER, newPropertyFeeId())
           .set(PROPERTY_FEES.PROPERTY_ID, propertyId)
           .set(PROPERTY_FEES.TEAM_ID, teamId)
           .set(PROPERTY_FEES.FEE_TYPE, "HOA")
@@ -886,7 +888,7 @@ public class DemoPropertyGenerator {
     if (i < 2) {
       dsl.insertInto(PROPERTY_FEES)
           .set(PROPERTY_FEES.ID, UUID.randomUUID())
-          .set(PROPERTY_FEES.IDENTIFIER, newPropertyFeeId().value())
+          .set(PROPERTY_FEES.IDENTIFIER, newPropertyFeeId())
           .set(PROPERTY_FEES.PROPERTY_ID, propertyId)
           .set(PROPERTY_FEES.TEAM_ID, teamId)
           .set(PROPERTY_FEES.FEE_TYPE, "MANAGEMENT")
@@ -907,7 +909,7 @@ public class DemoPropertyGenerator {
     if (i < 4) {
       dsl.insertInto(PROPERTY_FEES)
           .set(PROPERTY_FEES.ID, UUID.randomUUID())
-          .set(PROPERTY_FEES.IDENTIFIER, newPropertyFeeId().value())
+          .set(PROPERTY_FEES.IDENTIFIER, newPropertyFeeId())
           .set(PROPERTY_FEES.PROPERTY_ID, propertyId)
           .set(PROPERTY_FEES.TEAM_ID, teamId)
           .set(PROPERTY_FEES.FEE_TYPE, "MAINTENANCE_RESERVE")

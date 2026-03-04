@@ -6,6 +6,10 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.identifier.DocumentIdentifier;
+import com.buurman.domain.identifier.FinancingPaymentIdentifier;
+import com.buurman.domain.identifier.PropertyFinancingIdentifier;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.BulkCreateFinancingPaymentsRequest;
 import com.buurman.dto.request.CreateFinancingPaymentRequest;
 import com.buurman.dto.request.CreatePropertyFinancingRequest;
@@ -36,36 +40,38 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
   // ===== Financings =====
 
   @Override
-  public List<PropertyFinancingResponse> listFinancings(String propertyIdentifier) {
+  public List<PropertyFinancingResponse> listFinancings(PropertyIdentifier propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return financingService.listByProperty(propertyIdentifier, principal);
   }
 
   @Override
   public PropertyFinancingResponse getFinancing(
-      String propertyIdentifier, String financingIdentifier) {
+      PropertyIdentifier propertyIdentifier, PropertyFinancingIdentifier financingIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return financingService.getFinancing(financingIdentifier, principal);
   }
 
   @Override
   public PropertyFinancingResponse createFinancing(
-      String propertyIdentifier, CreatePropertyFinancingRequest createPropertyFinancingRequest) {
+      PropertyIdentifier propertyIdentifier,
+      CreatePropertyFinancingRequest createPropertyFinancingRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return financingService.create(propertyIdentifier, createPropertyFinancingRequest, principal);
   }
 
   @Override
   public PropertyFinancingResponse updateFinancing(
-      String propertyIdentifier,
-      String financingIdentifier,
+      PropertyIdentifier propertyIdentifier,
+      PropertyFinancingIdentifier financingIdentifier,
       UpdatePropertyFinancingRequest updatePropertyFinancingRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return financingService.update(financingIdentifier, updatePropertyFinancingRequest, principal);
   }
 
   @Override
-  public void deleteFinancing(String propertyIdentifier, String financingIdentifier) {
+  public void deleteFinancing(
+      PropertyIdentifier propertyIdentifier, PropertyFinancingIdentifier financingIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     financingService.delete(financingIdentifier, principal);
   }
@@ -74,15 +80,15 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
 
   @Override
   public List<FinancingPaymentResponse> listPayments(
-      String propertyIdentifier, String financingIdentifier) {
+      PropertyIdentifier propertyIdentifier, PropertyFinancingIdentifier financingIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return paymentService.listByFinancing(financingIdentifier, principal);
   }
 
   @Override
   public FinancingPaymentResponse createFinancingPayment(
-      String propertyIdentifier,
-      String financingIdentifier,
+      PropertyIdentifier propertyIdentifier,
+      PropertyFinancingIdentifier financingIdentifier,
       CreateFinancingPaymentRequest createFinancingPaymentRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return paymentService.create(financingIdentifier, createFinancingPaymentRequest, principal);
@@ -91,8 +97,8 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
   @Override
   @SuppressWarnings({"rawtypes", "unchecked"})
   public List<BulkCreateResult> bulkCreateFinancingPayments(
-      String propertyIdentifier,
-      String financingIdentifier,
+      PropertyIdentifier propertyIdentifier,
+      PropertyFinancingIdentifier financingIdentifier,
       BulkCreateFinancingPaymentsRequest bulkCreateFinancingPaymentsRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return (List)
@@ -102,9 +108,9 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
 
   @Override
   public FinancingPaymentResponse updateFinancingPayment(
-      String propertyIdentifier,
-      String financingIdentifier,
-      String paymentIdentifier,
+      PropertyIdentifier propertyIdentifier,
+      PropertyFinancingIdentifier financingIdentifier,
+      FinancingPaymentIdentifier paymentIdentifier,
       UpdateFinancingPaymentRequest updateFinancingPaymentRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return paymentService.update(paymentIdentifier, updateFinancingPaymentRequest, principal);
@@ -112,7 +118,9 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
 
   @Override
   public void deleteFinancingPayment(
-      String propertyIdentifier, String financingIdentifier, String paymentIdentifier) {
+      PropertyIdentifier propertyIdentifier,
+      PropertyFinancingIdentifier financingIdentifier,
+      FinancingPaymentIdentifier paymentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     paymentService.delete(paymentIdentifier, principal);
   }
@@ -123,9 +131,9 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
   @SuppressWarnings(
       "NullAway") // Generated interface uses UploadPhotoRequest instead of MultipartFile
   public DocumentResponse uploadFinancingPaymentDocument(
-      String propertyIdentifier,
-      String financingIdentifier,
-      String paymentIdentifier,
+      PropertyIdentifier propertyIdentifier,
+      PropertyFinancingIdentifier financingIdentifier,
+      FinancingPaymentIdentifier paymentIdentifier,
       String title,
       String notes,
       UploadPhotoRequest uploadPhotoRequest) {
@@ -135,14 +143,18 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
 
   @Override
   public List<DocumentResponse> getFinancingPaymentDocuments(
-      String propertyIdentifier, String financingIdentifier, String paymentIdentifier) {
+      PropertyIdentifier propertyIdentifier,
+      PropertyFinancingIdentifier financingIdentifier,
+      FinancingPaymentIdentifier paymentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return paymentService.getPaymentDocuments(paymentIdentifier, principal);
   }
 
   @Override
   public Map<String, String> getFinancingPaymentDocumentDownloadUrl(
-      String propertyIdentifier, String financingIdentifier, String documentIdentifier) {
+      PropertyIdentifier propertyIdentifier,
+      PropertyFinancingIdentifier financingIdentifier,
+      DocumentIdentifier documentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     URL url = documentService.getDownloadUrl(documentIdentifier, principal);
     return Map.of("url", url.toString());
@@ -150,7 +162,9 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
 
   @Override
   public void deleteFinancingPaymentDocument(
-      String propertyIdentifier, String financingIdentifier, String documentIdentifier) {
+      PropertyIdentifier propertyIdentifier,
+      PropertyFinancingIdentifier financingIdentifier,
+      DocumentIdentifier documentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     documentService.deleteDocument(documentIdentifier, principal);
   }

@@ -1,6 +1,7 @@
 package com.buurman.domain;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -16,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class Amenity {
 
   private UUID id;
-  private String identifier;
+  @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private String name;
   private String category;
   private String icon;

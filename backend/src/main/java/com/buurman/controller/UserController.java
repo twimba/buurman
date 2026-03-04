@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buurman.domain.PhoneNumberPolicy;
+import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.dto.request.SetDefaultTeamRequest;
 import com.buurman.dto.request.SwitchTeamRequest;
 import com.buurman.dto.request.UpdateUserProfileRequest;
@@ -88,7 +89,7 @@ public class UserController implements UsersApi {
   }
 
   @Override
-  public void leaveTeam(String teamIdentifier) {
+  public void leaveTeam(TeamIdentifier teamIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     userTeamService.leaveTeam(teamIdentifier, principal);
   }

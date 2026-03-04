@@ -1,7 +1,7 @@
 package com.buurman.service.demo;
 
 import static com.buurman.jooq.generated.Tables.EXPENSES;
-import static com.buurman.util.UlidGenerator.newExpenseId;
+import static com.buurman.util.SidGenerator.newExpenseId;
 
 import java.math.BigDecimal;
 import java.time.Clock;
@@ -128,7 +128,7 @@ public class DemoExpenseGenerator {
 
           dsl.insertInto(EXPENSES)
               .set(EXPENSES.ID, UUID.randomUUID())
-              .set(EXPENSES.IDENTIFIER, newExpenseId().value())
+              .set(EXPENSES.IDENTIFIER, newExpenseId())
               .set(EXPENSES.TEAM_ID, teamId)
               .set(EXPENSES.PROPERTY_ID, propertyId)
               .set(EXPENSES.CATEGORY, category)

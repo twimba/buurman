@@ -94,9 +94,9 @@ public class DemoPhotoGenerator {
 
   private int generatePropertyPhotos(
       UUID teamId,
-      String teamIdentifier,
+      com.buurman.domain.Sid teamIdentifier,
       UUID propertyId,
-      String propertyIdentifier,
+      com.buurman.domain.Sid propertyIdentifier,
       UUID uploadedBy,
       String propertyCategory) {
     record PhotoSlot(String category, String title, boolean isMain) {}

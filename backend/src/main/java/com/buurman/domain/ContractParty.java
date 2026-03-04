@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ContractParty {
   private UUID id;
-  private String identifier;
+  @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private UUID teamId;
   private UUID contractId;
   @Builder.Default private Optional<UUID> tenantId = Optional.empty();

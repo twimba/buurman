@@ -13,6 +13,7 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.PropertyFinancing;
+import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.PropertyFinancingRecordMapper;
 import com.buurman.util.CurrencyUtils;
@@ -27,7 +28,7 @@ public class PropertyFinancingRepository {
   private final PropertyFinancingRecordMapper mapper;
   private final Clock clock;
 
-  public Optional<PropertyFinancing> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Optional<PropertyFinancing> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(PROPERTY_FINANCINGS)
         .where(
             PROPERTY_FINANCINGS
@@ -39,7 +40,7 @@ public class PropertyFinancingRepository {
         .flatMap(mapper::toDomain);
   }
 
-  public PropertyFinancing getByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public PropertyFinancing getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Property financing not found"));
   }
@@ -109,7 +110,7 @@ public class PropertyFinancingRepository {
       String origCurrency = financing.getOriginalAmountCurrency();
       dsl.insertInto(PROPERTY_FINANCINGS)
           .set(PROPERTY_FINANCINGS.ID, id)
-          .set(PROPERTY_FINANCINGS.IDENTIFIER, financing.getIdentifier())
+          .set(PROPERTY_FINANCINGS.IDENTIFIER, financing.getIdentifier().orElseThrow())
           .set(PROPERTY_FINANCINGS.PROPERTY_ID, financing.getPropertyId())
           .set(PROPERTY_FINANCINGS.TEAM_ID, financing.getTeamId())
           .set(PROPERTY_FINANCINGS.FINANCING_TYPE, financing.getFinancingType().name())

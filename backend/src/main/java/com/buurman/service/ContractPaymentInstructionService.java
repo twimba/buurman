@@ -18,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractPaymentInstruction;
 import com.buurman.domain.PaymentInstruction;
+import com.buurman.domain.Sid;
+import com.buurman.domain.identifier.ContractIdentifier;
+import com.buurman.domain.identifier.ContractPaymentInstructionIdentifier;
 import com.buurman.dto.request.CreateContractPaymentInstructionRequest;
 import com.buurman.dto.request.UpdateContractPaymentInstructionRequest;
 import com.buurman.dto.response.ContractPaymentInstructionResponse;
@@ -41,7 +44,7 @@ public class ContractPaymentInstructionService {
   private final Clock clock;
 
   public List<ContractPaymentInstructionResponse> getHistory(
-      String contractIdentifier, UserPrincipal principal) {
+      ContractIdentifier contractIdentifier, UserPrincipal principal) {
     Contract contract = resolveContract(contractIdentifier, principal);
     List<ContractPaymentInstruction> history =
         cpiRepository.findByContractIdAndTeamId(contract.getId(), principal.requireTeamId());
@@ -65,7 +68,7 @@ public class ContractPaymentInstructionService {
   }
 
   public Optional<ContractPaymentInstructionResponse> getCurrent(
-      String contractIdentifier, UserPrincipal principal) {
+      ContractIdentifier contractIdentifier, UserPrincipal principal) {
     Contract contract = resolveContract(contractIdentifier, principal);
     return cpiRepository
         .findCurrentByContractIdAndTeamId(contract.getId(), principal.requireTeamId())
@@ -87,7 +90,7 @@ public class ContractPaymentInstructionService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContractPaymentInstructionResponse create(
-      String contractIdentifier,
+      ContractIdentifier contractIdentifier,
       CreateContractPaymentInstructionRequest request,
       UserPrincipal principal) {
 
@@ -104,7 +107,7 @@ public class ContractPaymentInstructionService {
                 cpiRepository.softDeleteByIdAndTeamId(current.getId(), principal.requireTeamId());
                 log.info(
                     "Replaced future payment instruction {} for contract {}",
-                    current.getIdentifier(),
+                    current.getIdentifier().orElseThrow(),
                     contractIdentifier);
               } else {
                 cpiRepository.setEffectiveTo(
@@ -114,7 +117,7 @@ public class ContractPaymentInstructionService {
                     principal.getUserId());
                 log.info(
                     "Closed previous payment instruction {} for contract {}",
-                    current.getIdentifier(),
+                    current.getIdentifier().orElseThrow(),
                     contractIdentifier);
               }
             });
@@ -123,7 +126,7 @@ public class ContractPaymentInstructionService {
     ContractPaymentInstruction saved = cpiRepository.save(cpi);
     log.info(
         "Contract payment instruction created: {} for contract {} in team {}",
-        saved.getIdentifier(),
+        saved.getIdentifier().orElseThrow(),
         contractIdentifier,
         principal.requireTeamId());
 
@@ -140,8 +143,8 @@ public class ContractPaymentInstructionService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContractPaymentInstructionResponse update(
-      String contractIdentifier,
-      String instructionIdentifier,
+      ContractIdentifier contractIdentifier,
+      ContractPaymentInstructionIdentifier instructionIdentifier,
       UpdateContractPaymentInstructionRequest request,
       UserPrincipal principal) {
 
@@ -183,7 +186,7 @@ public class ContractPaymentInstructionService {
         && !request.isCustom().map(Boolean.TRUE::equals).orElse(false)) {
       PaymentInstruction template =
           piRepository.getByIdentifierAndTeamId(
-              request.paymentInstructionIdentifier().get(), principal.requireTeamId());
+              Sid.of(request.paymentInstructionIdentifier().get()), principal.requireTeamId());
       cpi.setPaymentInstructionId(Optional.of(template.getId()));
       cpi.setIsCustom(false);
     } else {
@@ -204,7 +207,7 @@ public class ContractPaymentInstructionService {
     ContractPaymentInstruction saved = cpiRepository.save(cpi);
     log.info(
         "Contract payment instruction updated (new entry): {} for contract {} in team {}",
-        saved.getIdentifier(),
+        saved.getIdentifier().orElseThrow(),
         contractIdentifier,
         principal.requireTeamId());
 
@@ -221,7 +224,9 @@ public class ContractPaymentInstructionService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void delete(
-      String contractIdentifier, String instructionIdentifier, UserPrincipal principal) {
+      ContractIdentifier contractIdentifier,
+      ContractPaymentInstructionIdentifier instructionIdentifier,
+      UserPrincipal principal) {
     Contract contract = resolveContract(contractIdentifier, principal);
     ContractPaymentInstruction cpi =
         cpiRepository.getByIdentifierAndTeamId(instructionIdentifier, principal.requireTeamId());
@@ -253,7 +258,7 @@ public class ContractPaymentInstructionService {
         cpi);
   }
 
-  private Contract resolveContract(String contractIdentifier, UserPrincipal principal) {
+  private Contract resolveContract(ContractIdentifier contractIdentifier, UserPrincipal principal) {
     return contractRepository.getByIdentifierAndTeamId(
         contractIdentifier, principal.requireTeamId());
   }
@@ -295,7 +300,7 @@ public class ContractPaymentInstructionService {
         && !request.isCustom().map(Boolean.TRUE::equals).orElse(false)) {
       PaymentInstruction template =
           piRepository.getByIdentifierAndTeamId(
-              request.paymentInstructionIdentifier().get(), principal.requireTeamId());
+              Sid.of(request.paymentInstructionIdentifier().get()), principal.requireTeamId());
       cpi.setPaymentInstructionId(Optional.of(template.getId()));
       cpi.setIsCustom(false);
     } else {
@@ -336,8 +341,8 @@ public class ContractPaymentInstructionService {
     if (maybeTemplate.isPresent()) {
       PaymentInstruction template = maybeTemplate.get();
       return new ContractPaymentInstructionResponse(
-          cpi.getIdentifier(),
-          Optional.of(template.getIdentifier()),
+          cpi.getIdentifier().orElseThrow(),
+          Optional.of(template.getIdentifier().orElseThrow()),
           Optional.of(false),
           Optional.ofNullable(template.getName()),
           Optional.ofNullable(template.getDescription()),
@@ -360,7 +365,7 @@ public class ContractPaymentInstructionService {
 
     // Custom or template not found
     return new ContractPaymentInstructionResponse(
-        cpi.getIdentifier(),
+        cpi.getIdentifier().orElseThrow(),
         Optional.empty(),
         Optional.of(true),
         cpi.getCustomName(),

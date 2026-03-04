@@ -24,7 +24,7 @@ public class CalendarFeed {
   }
 
   private UUID id;
-  private String identifier;
+  @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private UUID teamId;
   private UUID userId;
   private String feedToken;

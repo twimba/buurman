@@ -20,7 +20,7 @@ public class CalendarFeedRecordMapper {
 
     CalendarFeed feed = new CalendarFeed();
     feed.setId(record.getId());
-    feed.setIdentifier(record.getIdentifier());
+    feed.setIdentifier(java.util.Optional.of(record.getIdentifier()));
     feed.setTeamId(record.getTeamId());
     feed.setUserId(record.getUserId());
     feed.setFeedToken(record.getFeedToken());

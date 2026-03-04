@@ -4,7 +4,7 @@ import static com.buurman.jooq.generated.Tables.BROADCAST_MESSAGES;
 import static com.buurman.jooq.generated.Tables.BROADCAST_MESSAGE_DISMISSALS;
 import static com.buurman.jooq.generated.Tables.BROADCAST_MESSAGE_TEAMS;
 import static com.buurman.jooq.generated.Tables.BROADCAST_MESSAGE_USERS;
-import static com.buurman.util.UlidGenerator.newBroadcastMessageId;
+import static com.buurman.util.SidGenerator.newBroadcastMessageId;
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.exists;
 import static org.jooq.impl.DSL.notExists;
@@ -22,6 +22,7 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.BroadcastMessage;
+import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,7 @@ public class BroadcastMessageRepository {
   public BroadcastMessage save(BroadcastMessage msg) {
     LocalDateTime now = LocalDateTime.now(clock);
     UUID id = UUID.randomUUID();
-    String identifier = newBroadcastMessageId().value();
+    Sid identifier = newBroadcastMessageId();
 
     dsl.insertInto(BROADCAST_MESSAGES)
         .set(BROADCAST_MESSAGES.ID, id)
@@ -59,7 +60,7 @@ public class BroadcastMessageRepository {
         .execute();
 
     msg.setId(id);
-    msg.setIdentifier(identifier);
+    msg.setIdentifier(Optional.of(identifier));
     msg.setCreatedAt(now.toInstant(UTC));
     msg.setUpdatedAt(now.toInstant(UTC));
 
@@ -108,7 +109,7 @@ public class BroadcastMessageRepository {
     dsl.deleteFrom(BROADCAST_MESSAGES).where(BROADCAST_MESSAGES.ID.eq(id)).execute();
   }
 
-  public Optional<BroadcastMessage> findByIdentifier(String identifier) {
+  public Optional<BroadcastMessage> findByIdentifier(Sid identifier) {
     return dsl.selectFrom(BROADCAST_MESSAGES)
         .where(BROADCAST_MESSAGES.IDENTIFIER.eq(identifier))
         .fetchOptional()
@@ -121,7 +122,7 @@ public class BroadcastMessageRepository {
             });
   }
 
-  public BroadcastMessage getByIdentifier(String identifier) {
+  public BroadcastMessage getByIdentifier(Sid identifier) {
     return findByIdentifier(identifier)
         .orElseThrow(() -> new NotFoundException("Broadcast message not found"));
   }
@@ -227,7 +228,7 @@ public class BroadcastMessageRepository {
     var r = record.into(BROADCAST_MESSAGES);
     return BroadcastMessage.builder()
         .id(r.getId())
-        .identifier(r.getIdentifier())
+        .identifier(Optional.of(r.getIdentifier()))
         .title(r.getTitle())
         .body(r.getBody())
         .severity(r.getSeverity())

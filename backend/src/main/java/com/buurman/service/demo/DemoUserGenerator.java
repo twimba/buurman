@@ -4,7 +4,7 @@ import static com.buurman.domain.TeamRole.TEAM_ADMIN;
 import static com.buurman.jooq.generated.Tables.USERS;
 import static com.buurman.jooq.generated.Tables.USER_PREFERENCES;
 import static com.buurman.service.demo.DemoUsers.ALL_USERS;
-import static com.buurman.util.UlidGenerator.newUserId;
+import static com.buurman.util.SidGenerator.newUserId;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -12,6 +12,8 @@ import java.util.UUID;
 
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Component;
+
+import com.buurman.domain.Sid;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +31,7 @@ public class DemoUserGenerator {
 
     for (DemoUsers.DemoUser user : ALL_USERS) {
       UUID userId = UUID.randomUUID();
-      String identifier = newUserId().value();
+      Sid identifier = newUserId();
       String keycloakId = ctx.getKeycloakIds().get(user.email());
 
       dsl.insertInto(USERS)

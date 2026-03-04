@@ -1,6 +1,6 @@
 package com.buurman.repository;
 
-import static com.buurman.util.UlidGenerator.newContractPaymentInstructionId;
+import static com.buurman.util.SidGenerator.newContractPaymentInstructionId;
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
@@ -21,6 +21,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.ContractPaymentInstruction;
+import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -70,13 +71,13 @@ public class ContractPaymentInstructionRepository {
     LocalDateTime now = LocalDateTime.now(clock);
 
     UUID id = UUID.randomUUID();
-    String identifier = newContractPaymentInstructionId().value();
+    Sid identifier = newContractPaymentInstructionId();
     LocalDateTime createdAt = now;
     LocalDateTime updatedAt = now;
 
     dsl.insertInto(TABLE)
         .set(ID, id)
-        .set(IDENTIFIER, identifier)
+        .set(IDENTIFIER, identifier.value())
         .set(TEAM_ID, cpi.getTeamId())
         .set(CONTRACT_ID, cpi.getContractId())
         .set(PAYMENT_INSTRUCTION_ID, cpi.getPaymentInstructionId().orElse(null))
@@ -102,7 +103,7 @@ public class ContractPaymentInstructionRepository {
         .execute();
 
     cpi.setId(id);
-    cpi.setIdentifier(identifier);
+    cpi.setIdentifier(java.util.Optional.of(identifier));
     cpi.setCreatedAt(createdAt.toInstant(UTC));
     cpi.setUpdatedAt(updatedAt.toInstant(UTC));
     return cpi;
@@ -130,7 +131,7 @@ public class ContractPaymentInstructionRepository {
         .map(this::toDomain);
   }
 
-  public ContractPaymentInstruction getByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public ContractPaymentInstruction getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Contract payment instruction not found"));
   }
@@ -141,9 +142,9 @@ public class ContractPaymentInstructionRepository {
   }
 
   public Optional<ContractPaymentInstruction> findByIdentifierAndTeamId(
-      String identifier, UUID teamId) {
+      Sid identifier, UUID teamId) {
     return dsl.selectFrom(TABLE)
-        .where(IDENTIFIER.eq(identifier).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
+        .where(IDENTIFIER.eq(identifier.value()).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
         .fetchOptional()
         .map(this::toDomain);
   }
@@ -173,7 +174,7 @@ public class ContractPaymentInstructionRepository {
   private ContractPaymentInstruction toDomain(Record record) {
     ContractPaymentInstruction cpi = new ContractPaymentInstruction();
     cpi.setId(record.get(ID));
-    cpi.setIdentifier(record.get(IDENTIFIER));
+    cpi.setIdentifier(java.util.Optional.of(com.buurman.domain.Sid.of(record.get(IDENTIFIER))));
     cpi.setTeamId(record.get(TEAM_ID));
     cpi.setContractId(record.get(CONTRACT_ID));
     cpi.setPaymentInstructionId(Optional.ofNullable(record.get(PAYMENT_INSTRUCTION_ID)));

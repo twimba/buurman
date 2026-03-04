@@ -2,8 +2,10 @@ package com.buurman.dto.response;
 
 import java.time.Instant;
 
+import com.buurman.domain.Sid;
+
 public record UserTeamResponse(
-    String identifier,
+    Sid identifier,
     String teamName,
     String role,
     boolean isOwner,

@@ -3,8 +3,8 @@ package com.buurman.service.demo;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static com.buurman.jooq.generated.Tables.PAYMENT_RECEIVALS;
-import static com.buurman.util.UlidGenerator.newPaymentId;
-import static com.buurman.util.UlidGenerator.newPaymentReceivalId;
+import static com.buurman.util.SidGenerator.newPaymentId;
+import static com.buurman.util.SidGenerator.newPaymentReceivalId;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -126,7 +126,7 @@ public class DemoPaymentGenerator {
 
           dsl.insertInto(PAYMENTS)
               .set(PAYMENTS.ID, paymentId)
-              .set(PAYMENTS.IDENTIFIER, newPaymentId().value())
+              .set(PAYMENTS.IDENTIFIER, newPaymentId())
               .set(PAYMENTS.TEAM_ID, teamId)
               .set(PAYMENTS.CONTRACT_ID, contractId)
               .set(PAYMENTS.AMOUNT, rentAmount)
@@ -149,7 +149,7 @@ public class DemoPaymentGenerator {
           if ("PAID".equals(paymentStatus)) {
             dsl.insertInto(PAYMENT_RECEIVALS)
                 .set(PAYMENT_RECEIVALS.ID, UUID.randomUUID())
-                .set(PAYMENT_RECEIVALS.IDENTIFIER, newPaymentReceivalId().value())
+                .set(PAYMENT_RECEIVALS.IDENTIFIER, newPaymentReceivalId())
                 .set(PAYMENT_RECEIVALS.TEAM_ID, teamId)
                 .set(PAYMENT_RECEIVALS.PAYMENT_ID, paymentId)
                 .set(PAYMENT_RECEIVALS.AMOUNT, rentAmount)
@@ -164,7 +164,7 @@ public class DemoPaymentGenerator {
             long partialAmount = (long) (rentAmount * 0.6);
             dsl.insertInto(PAYMENT_RECEIVALS)
                 .set(PAYMENT_RECEIVALS.ID, UUID.randomUUID())
-                .set(PAYMENT_RECEIVALS.IDENTIFIER, newPaymentReceivalId().value())
+                .set(PAYMENT_RECEIVALS.IDENTIFIER, newPaymentReceivalId())
                 .set(PAYMENT_RECEIVALS.TEAM_ID, teamId)
                 .set(PAYMENT_RECEIVALS.PAYMENT_ID, paymentId)
                 .set(PAYMENT_RECEIVALS.AMOUNT, partialAmount)

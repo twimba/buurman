@@ -13,6 +13,7 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.PropertyValuation;
+import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.PropertyValuationRecordMapper;
 import com.buurman.util.CurrencyUtils;
@@ -27,7 +28,7 @@ public class PropertyValuationRepository {
   private final PropertyValuationRecordMapper mapper;
   private final Clock clock;
 
-  public Optional<PropertyValuation> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Optional<PropertyValuation> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(PROPERTY_VALUATIONS)
         .where(
             PROPERTY_VALUATIONS
@@ -39,7 +40,7 @@ public class PropertyValuationRepository {
         .flatMap(mapper::toDomain);
   }
 
-  public PropertyValuation getByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public PropertyValuation getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Property valuation not found"));
   }
@@ -89,7 +90,7 @@ public class PropertyValuationRepository {
       String currency = val.getCurrency();
       dsl.insertInto(PROPERTY_VALUATIONS)
           .set(PROPERTY_VALUATIONS.ID, id)
-          .set(PROPERTY_VALUATIONS.IDENTIFIER, val.getIdentifier())
+          .set(PROPERTY_VALUATIONS.IDENTIFIER, val.getIdentifier().orElseThrow())
           .set(PROPERTY_VALUATIONS.PROPERTY_ID, val.getPropertyId())
           .set(PROPERTY_VALUATIONS.TEAM_ID, val.getTeamId())
           .set(PROPERTY_VALUATIONS.VALUATION_TYPE, val.getValuationType().name())

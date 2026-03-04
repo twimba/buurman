@@ -30,7 +30,7 @@ public class TenantAddress {
   }
 
   private UUID id;
-  private String identifier;
+  @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private UUID tenantId;
   private UUID teamId;
   private String street;

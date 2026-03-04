@@ -6,10 +6,11 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.PropertyFinancing;
+import com.buurman.domain.Sid;
 
 public record PropertyFinancingResponse(
-    String identifier,
-    String propertyIdentifier,
+    Sid identifier,
+    Sid propertyIdentifier,
     PropertyFinancing.FinancingType financingType,
     PropertyFinancing.RateType rateType,
     Optional<String> lenderName,

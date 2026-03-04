@@ -13,6 +13,7 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.CalendarFeed;
+import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.CalendarFeedRecordMapper;
 
@@ -55,7 +56,7 @@ public class CalendarFeedRepository {
         .toList();
   }
 
-  public Optional<CalendarFeed> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Optional<CalendarFeed> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(CALENDAR_FEEDS)
         .where(
             CALENDAR_FEEDS
@@ -67,7 +68,7 @@ public class CalendarFeedRepository {
         .flatMap(mapper::toDomain);
   }
 
-  public CalendarFeed getByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public CalendarFeed getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Calendar feed not found"));
   }
@@ -116,7 +117,7 @@ public class CalendarFeedRepository {
 
       dsl.insertInto(CALENDAR_FEEDS)
           .set(CALENDAR_FEEDS.ID, id)
-          .set(CALENDAR_FEEDS.IDENTIFIER, feed.getIdentifier())
+          .set(CALENDAR_FEEDS.IDENTIFIER, feed.getIdentifier().orElseThrow())
           .set(CALENDAR_FEEDS.TEAM_ID, feed.getTeamId())
           .set(CALENDAR_FEEDS.USER_ID, feed.getUserId())
           .set(CALENDAR_FEEDS.FEED_TOKEN, feed.getFeedToken())

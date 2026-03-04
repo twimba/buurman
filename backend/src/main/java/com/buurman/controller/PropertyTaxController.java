@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.identifier.PropertyIdentifier;
+import com.buurman.domain.identifier.PropertyTaxIdentifier;
 import com.buurman.dto.request.CreatePropertyTaxRequest;
 import com.buurman.dto.request.UpdatePropertyTaxRequest;
 import com.buurman.dto.response.PropertyTaxResponse;
@@ -21,35 +23,36 @@ public class PropertyTaxController implements PropertyTaxesApi {
   private final PropertyTaxService taxService;
 
   @Override
-  public List<PropertyTaxResponse> listTaxes(String propertyIdentifier) {
+  public List<PropertyTaxResponse> listTaxes(PropertyIdentifier propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return taxService.listByProperty(propertyIdentifier, principal);
   }
 
   @Override
-  public PropertyTaxResponse getTax(String propertyIdentifier, String identifier) {
+  public PropertyTaxResponse getTax(
+      PropertyIdentifier propertyIdentifier, PropertyTaxIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return taxService.get(identifier, principal);
   }
 
   @Override
   public PropertyTaxResponse createTax(
-      String propertyIdentifier, CreatePropertyTaxRequest createPropertyTaxRequest) {
+      PropertyIdentifier propertyIdentifier, CreatePropertyTaxRequest createPropertyTaxRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return taxService.create(propertyIdentifier, createPropertyTaxRequest, principal);
   }
 
   @Override
   public PropertyTaxResponse updateTax(
-      String propertyIdentifier,
-      String identifier,
+      PropertyIdentifier propertyIdentifier,
+      PropertyTaxIdentifier identifier,
       UpdatePropertyTaxRequest updatePropertyTaxRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return taxService.update(identifier, updatePropertyTaxRequest, principal);
   }
 
   @Override
-  public void deleteTax(String propertyIdentifier, String identifier) {
+  public void deleteTax(PropertyIdentifier propertyIdentifier, PropertyTaxIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     taxService.delete(identifier, principal);
   }

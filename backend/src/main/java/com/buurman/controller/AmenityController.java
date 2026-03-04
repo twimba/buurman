@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.identifier.AmenityIdentifier;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.PropertyAmenityRequest;
 import com.buurman.dto.response.AmenityResponse;
 import com.buurman.dto.response.PropertyAmenityResponse;
@@ -29,20 +31,21 @@ public class AmenityController implements AmenitiesApi, PropertyAmenitiesApi {
   }
 
   @Override
-  public List<PropertyAmenityResponse> getPropertyAmenities(String propertyIdentifier) {
+  public List<PropertyAmenityResponse> getPropertyAmenities(PropertyIdentifier propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return propertyAmenityService.getPropertyAmenities(propertyIdentifier, principal);
   }
 
   @Override
   public PropertyAmenityResponse addAmenity(
-      String propertyIdentifier, @Valid PropertyAmenityRequest propertyAmenityRequest) {
+      PropertyIdentifier propertyIdentifier, @Valid PropertyAmenityRequest propertyAmenityRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return propertyAmenityService.addAmenity(propertyIdentifier, propertyAmenityRequest, principal);
   }
 
   @Override
-  public void removeAmenity(String propertyIdentifier, String amenityIdentifier) {
+  public void removeAmenity(
+      PropertyIdentifier propertyIdentifier, AmenityIdentifier amenityIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     propertyAmenityService.removeAmenity(propertyIdentifier, amenityIdentifier, principal);
   }

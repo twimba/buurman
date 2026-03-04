@@ -3,7 +3,7 @@ package com.buurman.service;
 import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
 import static com.buurman.domain.Contract.ContractStatus.EXPIRED;
 import static com.buurman.domain.Contract.ContractStatus.TERMINATED;
-import static com.buurman.util.UlidGenerator.newContractPartyId;
+import static com.buurman.util.SidGenerator.newContractPartyId;
 
 import java.time.Clock;
 import java.util.Collection;
@@ -26,6 +26,9 @@ import com.buurman.domain.Contract;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Tenant;
+import com.buurman.domain.identifier.ContractIdentifier;
+import com.buurman.domain.identifier.ContractPartyIdentifier;
+import com.buurman.domain.identifier.TenantIdentifier;
 import com.buurman.dto.request.AddContractPartyRequest;
 import com.buurman.dto.request.ChangePrimaryTenantRequest;
 import com.buurman.dto.request.ContractPartyRequest;
@@ -60,7 +63,9 @@ public class ContractPartyService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContractPartyResponse addParty(
-      String contractIdentifier, AddContractPartyRequest request, UserPrincipal principal) {
+      ContractIdentifier contractIdentifier,
+      AddContractPartyRequest request,
+      UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
@@ -74,7 +79,9 @@ public class ContractPartyService {
 
     Tenant tenant =
         resolveOrCreateTenant(
-            request.tenantIdentifier().orElse(null), request.newTenant().orElse(null), principal);
+            request.tenantIdentifier().map(TenantIdentifier::of).orElse(null),
+            request.newTenant().orElse(null),
+            principal);
 
     if (contractPartyRepository.existsByContractIdAndTenantIdAndTeamId(
         contract.getId(), tenant.getId(), teamId)) {
@@ -82,7 +89,7 @@ public class ContractPartyService {
     }
 
     ContractParty party = new ContractParty();
-    party.setIdentifier(newContractPartyId().value());
+    party.setIdentifier(Optional.of(newContractPartyId()));
     party.setTeamId(teamId);
     party.setContractId(contract.getId());
     party.setTenantId(Optional.of(tenant.getId()));
@@ -96,7 +103,7 @@ public class ContractPartyService {
     log.info(
         "Party added to contract {}: tenant {} as {}",
         contractIdentifier,
-        tenant.getIdentifier(),
+        tenant.getIdentifier().orElseThrow(),
         request.role());
 
     // Audit log
@@ -120,7 +127,9 @@ public class ContractPartyService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void removeParty(
-      String contractIdentifier, String partyIdentifier, UserPrincipal principal) {
+      ContractIdentifier contractIdentifier,
+      ContractPartyIdentifier partyIdentifier,
+      UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
@@ -164,7 +173,9 @@ public class ContractPartyService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContractPartyResponse changePrimaryTenant(
-      String contractIdentifier, ChangePrimaryTenantRequest request, UserPrincipal principal) {
+      ContractIdentifier contractIdentifier,
+      ChangePrimaryTenantRequest request,
+      UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
@@ -173,7 +184,9 @@ public class ContractPartyService {
 
     Tenant newTenant =
         resolveOrCreateTenant(
-            request.tenantIdentifier().orElse(null), request.newTenant().orElse(null), principal);
+            request.tenantIdentifier().map(TenantIdentifier::of).orElse(null),
+            request.newTenant().orElse(null),
+            principal);
 
     // Find current primary tenant
     ContractParty currentPrimary =
@@ -206,7 +219,7 @@ public class ContractPartyService {
 
     // Create new primary
     ContractParty newPrimary = new ContractParty();
-    newPrimary.setIdentifier(newContractPartyId().value());
+    newPrimary.setIdentifier(Optional.of(newContractPartyId()));
     newPrimary.setTeamId(teamId);
     newPrimary.setContractId(contract.getId());
     newPrimary.setTenantId(Optional.of(newTenant.getId()));
@@ -251,7 +264,7 @@ public class ContractPartyService {
     for (ContractPartyRequest partyReq : parties) {
       Tenant tenant =
           resolveOrCreateTenant(
-              partyReq.tenantIdentifier().orElse(null),
+              partyReq.tenantIdentifier().map(TenantIdentifier::of).orElse(null),
               partyReq.newTenant().orElse(null),
               principal);
 
@@ -263,7 +276,7 @@ public class ContractPartyService {
       }
 
       ContractParty party = new ContractParty();
-      party.setIdentifier(newContractPartyId().value());
+      party.setIdentifier(Optional.of(newContractPartyId()));
       party.setTeamId(teamId);
       party.setContractId(contractId);
       party.setTenantId(Optional.of(tenant.getId()));
@@ -285,7 +298,7 @@ public class ContractPartyService {
         contractPartyRepository.findByContractIdAndTeamId(sourceContractId, teamId);
     for (ContractParty source : sourceParties) {
       ContractParty copy = new ContractParty();
-      copy.setIdentifier(newContractPartyId().value());
+      copy.setIdentifier(Optional.of(newContractPartyId()));
       copy.setTeamId(teamId);
       copy.setContractId(targetContractId);
       copy.setTenantId(source.getTenantId());
@@ -403,10 +416,10 @@ public class ContractPartyService {
   }
 
   private Tenant resolveOrCreateTenant(
-      @Nullable String tenantIdentifier,
+      @Nullable TenantIdentifier tenantIdentifier,
       @Nullable CreateTenantRequest newTenant,
       UserPrincipal principal) {
-    if (tenantIdentifier != null && !tenantIdentifier.isBlank()) {
+    if (tenantIdentifier != null) {
       return tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, principal.requireTeamId());
     }
     if (newTenant != null) {

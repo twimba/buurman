@@ -2,6 +2,7 @@ package com.buurman.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.identifier.NotificationIdentifier;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.NotificationResponse;
 import com.buurman.dto.response.NotificationStatsResponse;
@@ -43,7 +44,7 @@ public class NotificationController implements NotificationsApi {
   }
 
   @Override
-  public NotificationResponse getNotification(String identifier) {
+  public NotificationResponse getNotification(NotificationIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return centerService.getNotification(principal, identifier);
   }
@@ -55,13 +56,13 @@ public class NotificationController implements NotificationsApi {
   }
 
   @Override
-  public NotificationResponse resendNotification(String identifier) {
+  public NotificationResponse resendNotification(NotificationIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return centerService.resendNotification(principal, identifier);
   }
 
   @Override
-  public NotificationResponse refreshStatus(String identifier) {
+  public NotificationResponse refreshStatus(NotificationIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return centerService.refreshNotificationStatus(principal, identifier);
   }

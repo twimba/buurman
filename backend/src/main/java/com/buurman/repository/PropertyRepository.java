@@ -20,6 +20,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Property;
+import com.buurman.domain.Sid;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.PropertyRecordMapper;
@@ -36,7 +37,7 @@ public class PropertyRepository {
   private final PropertyRecordMapper mapper;
   private final Clock clock;
 
-  public Optional<Property> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Optional<Property> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(PROPERTIES)
         .where(
             PROPERTIES
@@ -60,7 +61,7 @@ public class PropertyRepository {
         .map(mapper::toDomain);
   }
 
-  public Property getByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Property getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Property not found"));
   }
@@ -110,7 +111,7 @@ public class PropertyRepository {
 
       dsl.insertInto(PROPERTIES)
           .set(PROPERTIES.ID, newId)
-          .set(PROPERTIES.IDENTIFIER, property.getIdentifier())
+          .set(PROPERTIES.IDENTIFIER, property.getIdentifier().orElseThrow())
           .set(PROPERTIES.TEAM_ID, property.getTeamId())
           .set(PROPERTIES.STREET, property.getStreet())
           .set(PROPERTIES.CITY, property.getCity())
@@ -312,7 +313,7 @@ public class PropertyRepository {
                   .like(like)
                   .or(lower(PROPERTIES.CITY).like(like))
                   .or(lower(PROPERTIES.POSTAL_CODE).like(like))
-                  .or(lower(PROPERTIES.IDENTIFIER).like(like))
+                  .or(lower(PROPERTIES.IDENTIFIER.cast(String.class)).like(like))
                   .or(lower(PROPERTIES.PROPERTY_TYPE).like(like)));
     }
     Map<String, Field<?>> sortableFields =

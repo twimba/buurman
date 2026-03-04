@@ -29,6 +29,7 @@ import org.springframework.stereotype.Repository;
 import com.buurman.domain.AmountStats;
 import com.buurman.domain.MonthlyAmount;
 import com.buurman.domain.Payment;
+import com.buurman.domain.Sid;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.PaymentRecordMapper;
@@ -46,7 +47,7 @@ public class PaymentRepository {
   private final PaymentRecordMapper mapper;
   private final Clock clock;
 
-  public Optional<Payment> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Optional<Payment> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(PAYMENTS)
         .where(
             PAYMENTS
@@ -58,7 +59,7 @@ public class PaymentRepository {
         .flatMap(mapper::toDomain);
   }
 
-  public Payment getByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Payment getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Payment not found"));
   }
@@ -179,7 +180,7 @@ public class PaymentRepository {
       String currency = payment.getCurrency();
       dsl.insertInto(PAYMENTS)
           .set(PAYMENTS.ID, id)
-          .set(PAYMENTS.IDENTIFIER, payment.getIdentifier())
+          .set(PAYMENTS.IDENTIFIER, payment.getIdentifier().orElseThrow())
           .set(PAYMENTS.TEAM_ID, payment.getTeamId())
           .set(PAYMENTS.CONTRACT_ID, payment.getContractId())
           .set(PAYMENTS.AMOUNT, CurrencyUtils.toMinorUnits(payment.getAmount(), currency))

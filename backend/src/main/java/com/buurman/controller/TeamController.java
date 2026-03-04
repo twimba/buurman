@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.identifier.TeamIdentifier;
+import com.buurman.domain.identifier.UserIdentifier;
 import com.buurman.dto.request.CreateInvitationRequest;
 import com.buurman.dto.request.TransferOwnershipRequest;
 import com.buurman.dto.request.UpdateMemberRoleRequest;
@@ -34,40 +36,40 @@ public class TeamController implements TeamsApi {
   }
 
   @Override
-  public List<TeamMemberResponse> getTeamMembers(String teamIdentifier) {
+  public List<TeamMemberResponse> getTeamMembers(TeamIdentifier teamIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return teamService.getTeamMembers(teamIdentifier, principal);
   }
 
   @Override
   public InvitationResponse createInvitation(
-      String teamIdentifier, @Valid CreateInvitationRequest createInvitationRequest) {
+      TeamIdentifier teamIdentifier, @Valid CreateInvitationRequest createInvitationRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return teamService.createInvitation(teamIdentifier, createInvitationRequest, principal);
   }
 
   @Override
-  public List<InvitationResponse> getTeamPendingInvitations(String teamIdentifier) {
+  public List<InvitationResponse> getTeamPendingInvitations(TeamIdentifier teamIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return teamService.getTeamPendingInvitations(teamIdentifier, principal);
   }
 
   @Override
-  public InvitationResponse resendInvitation(String teamIdentifier, String token) {
+  public InvitationResponse resendInvitation(TeamIdentifier teamIdentifier, String token) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return teamService.resendInvitation(teamIdentifier, token, principal);
   }
 
   @Override
-  public void removeMember(String teamIdentifier, String userIdentifier) {
+  public void removeMember(TeamIdentifier teamIdentifier, UserIdentifier userIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     teamService.removeMember(teamIdentifier, userIdentifier, principal);
   }
 
   @Override
   public TeamMemberResponse updateMemberRole(
-      String teamIdentifier,
-      String userIdentifier,
+      TeamIdentifier teamIdentifier,
+      UserIdentifier userIdentifier,
       @Valid UpdateMemberRoleRequest updateMemberRoleRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return teamService.updateMemberRole(
@@ -76,27 +78,27 @@ public class TeamController implements TeamsApi {
 
   @Override
   public TeamResponse updateTeam(
-      String teamIdentifier, @Valid UpdateTeamRequest updateTeamRequest) {
+      TeamIdentifier teamIdentifier, @Valid UpdateTeamRequest updateTeamRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return teamService.updateTeam(teamIdentifier, updateTeamRequest, principal);
   }
 
   @Override
   public TeamPreferencesResponse updateTeamSettings(
-      String teamIdentifier, @Valid UpdateTeamSettingsRequest updateTeamSettingsRequest) {
+      TeamIdentifier teamIdentifier, @Valid UpdateTeamSettingsRequest updateTeamSettingsRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return teamService.updateTeamPreferences(teamIdentifier, updateTeamSettingsRequest, principal);
   }
 
   @Override
-  public TeamPreferencesResponse getTeamSettings(String teamIdentifier) {
+  public TeamPreferencesResponse getTeamSettings(TeamIdentifier teamIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return teamService.getTeamPreferences(teamIdentifier, principal);
   }
 
   @Override
   public TeamMemberResponse transferOwnership(
-      String teamIdentifier, @Valid TransferOwnershipRequest transferOwnershipRequest) {
+      TeamIdentifier teamIdentifier, @Valid TransferOwnershipRequest transferOwnershipRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return teamService.transferOwnership(
         teamIdentifier, transferOwnershipRequest.newOwnerIdentifier(), principal);

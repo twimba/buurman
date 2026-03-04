@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 
 import com.buurman.domain.Contract;
+import com.buurman.domain.identifier.PropertyIdentifier;
 
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
@@ -15,7 +16,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
 public record UpdateContractRequest(
-    @NotNull(message = "Property identifier is required") String propertyIdentifier,
+    @NotNull(message = "Property identifier is required") PropertyIdentifier propertyIdentifier,
     @NotNull(message = "Contract type is required") Contract.ContractType contractType,
     @NotNull(message = "Start date is required") LocalDate startDate,
     Optional<LocalDate> endDate,

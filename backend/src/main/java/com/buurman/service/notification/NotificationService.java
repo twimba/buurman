@@ -27,6 +27,7 @@ import com.buurman.domain.TeamMember;
 import com.buurman.domain.User;
 import com.buurman.domain.UserNotificationTypePreference;
 import com.buurman.domain.UserPreferences;
+import com.buurman.domain.identifier.NotificationIdentifier;
 import com.buurman.exception.ExternalServiceException;
 import com.buurman.repository.NotificationOutboxRepository;
 import com.buurman.repository.NotificationRepository;
@@ -191,7 +192,7 @@ public class NotificationService {
 
   @Transactional
   public Notification resend(
-      @Nullable UUID teamId, String notificationIdentifier, @Nullable UUID userId) {
+      @Nullable UUID teamId, NotificationIdentifier notificationIdentifier, @Nullable UUID userId) {
     Notification original =
         notificationRepository.getByIdentifierAndTeamId(notificationIdentifier, teamId);
 

@@ -1,6 +1,6 @@
 package com.buurman.service;
 
-import static com.buurman.util.UlidGenerator.newInsuranceId;
+import static com.buurman.util.SidGenerator.newInsuranceId;
 
 import java.time.Clock;
 import java.util.List;
@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyInsurance;
+import com.buurman.domain.identifier.PropertyIdentifier;
+import com.buurman.domain.identifier.PropertyInsuranceIdentifier;
 import com.buurman.dto.request.CreatePropertyInsuranceRequest;
 import com.buurman.dto.request.UpdatePropertyInsuranceRequest;
 import com.buurman.dto.response.PropertyInsuranceResponse;
@@ -40,13 +42,15 @@ public class PropertyInsuranceService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyInsuranceResponse create(
-      String propertyIdentifier, CreatePropertyInsuranceRequest request, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier,
+      CreatePropertyInsuranceRequest request,
+      UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
     PropertyInsurance insurance = insuranceMapper.toEntity(request);
     insurance.setPropertyId(property.getId());
-    insurance.setIdentifier(newInsuranceId().value());
+    insurance.setIdentifier(Optional.of(newInsuranceId()));
     insurance.setTeamId(teamId);
     insurance.setCreatedBy(principal.getUserId());
     insurance.setUpdatedBy(principal.getUserId());
@@ -61,15 +65,16 @@ public class PropertyInsuranceService {
 
     log.info(
         "Created property insurance {} for property {} by user {}",
-        saved.getIdentifier(),
-        property.getIdentifier(),
+        saved.getIdentifier().orElseThrow(),
+        property.getIdentifier().orElseThrow(),
         principal.getUserId());
 
     return enrichResponse(saved, teamId);
   }
 
   @Transactional(readOnly = true)
-  public PropertyInsuranceResponse get(String identifier, UserPrincipal principal) {
+  public PropertyInsuranceResponse get(
+      PropertyInsuranceIdentifier identifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     PropertyInsurance insurance = insuranceRepository.getByIdentifierAndTeamId(identifier, teamId);
     return enrichResponse(insurance, teamId);
@@ -77,7 +82,7 @@ public class PropertyInsuranceService {
 
   @Transactional(readOnly = true)
   public List<PropertyInsuranceResponse> listByProperty(
-      String propertyIdentifier, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
@@ -89,7 +94,9 @@ public class PropertyInsuranceService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyInsuranceResponse update(
-      String identifier, UpdatePropertyInsuranceRequest request, UserPrincipal principal) {
+      PropertyInsuranceIdentifier identifier,
+      UpdatePropertyInsuranceRequest request,
+      UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     PropertyInsurance insurance = insuranceRepository.getByIdentifierAndTeamId(identifier, teamId);
 
@@ -100,14 +107,16 @@ public class PropertyInsuranceService {
     PropertyInsurance updated = insuranceRepository.save(insurance);
 
     log.info(
-        "Updated property insurance {} by user {}", updated.getIdentifier(), principal.getUserId());
+        "Updated property insurance {} by user {}",
+        updated.getIdentifier().orElseThrow(),
+        principal.getUserId());
 
     return enrichResponse(updated, teamId);
   }
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void delete(String identifier, UserPrincipal principal) {
+  public void delete(PropertyInsuranceIdentifier identifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     PropertyInsurance insurance = insuranceRepository.getByIdentifierAndTeamId(identifier, teamId);
 
@@ -115,7 +124,7 @@ public class PropertyInsuranceService {
 
     log.info(
         "Deleted property insurance {} by user {}",
-        insurance.getIdentifier(),
+        insurance.getIdentifier().orElseThrow(),
         principal.getUserId());
   }
 

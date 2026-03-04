@@ -5,6 +5,10 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.identifier.DocumentIdentifier;
+import com.buurman.domain.identifier.PhotoIdentifier;
+import com.buurman.domain.identifier.TenantAddressIdentifier;
+import com.buurman.domain.identifier.TenantIdentifier;
 import com.buurman.dto.request.CreateTenantAddressRequest;
 import com.buurman.dto.request.CreateTenantRequest;
 import com.buurman.dto.request.LinkTenantToPropertyRequest;
@@ -48,44 +52,45 @@ public class TenantController implements TenantsApi {
   }
 
   @Override
-  public TenantResponse getTenant(String identifier) {
+  public TenantResponse getTenant(TenantIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return tenantService.getTenant(identifier, principal);
   }
 
   @Override
-  public TenantResponse updateTenant(String identifier, UpdateTenantRequest updateTenantRequest) {
+  public TenantResponse updateTenant(
+      TenantIdentifier identifier, UpdateTenantRequest updateTenantRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return tenantService.updateTenant(identifier, updateTenantRequest, principal);
   }
 
   @Override
-  public void deleteTenant(String identifier) {
+  public void deleteTenant(TenantIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     tenantService.deleteTenant(identifier, principal);
   }
 
   @Override
   public TenantResponse linkTenantToProperty(
-      String identifier, LinkTenantToPropertyRequest linkTenantToPropertyRequest) {
+      TenantIdentifier identifier, LinkTenantToPropertyRequest linkTenantToPropertyRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return tenantService.linkTenantToProperty(identifier, linkTenantToPropertyRequest, principal);
   }
 
   @Override
-  public TenantResponse unlinkTenantFromProperty(String identifier) {
+  public TenantResponse unlinkTenantFromProperty(TenantIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return tenantService.unlinkTenantFromProperty(identifier, principal);
   }
 
   @Override
-  public List<PropertyTenantHistoryResponse> getTenantHistory(String identifier) {
+  public List<PropertyTenantHistoryResponse> getTenantHistory(TenantIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return tenantService.getTenantHistory(identifier, principal);
   }
 
   @Override
-  public List<RecentActivityResponse> getTenantAuditLog(String identifier) {
+  public List<RecentActivityResponse> getTenantAuditLog(TenantIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return tenantService.getAuditLog(identifier, principal);
   }
@@ -93,32 +98,35 @@ public class TenantController implements TenantsApi {
   @Override
   @SuppressWarnings("NullAway")
   public DocumentResponse uploadDocument(
-      String identifier, String title, String notes, UploadPhotoRequest uploadPhotoRequest) {
+      TenantIdentifier identifier,
+      String title,
+      String notes,
+      UploadPhotoRequest uploadPhotoRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     // Generated interface mismodels multipart upload as JSON body
     return tenantService.uploadDocument(identifier, null, title, notes, principal);
   }
 
   @Override
-  public List<DocumentResponse> getDocuments(String identifier) {
+  public List<DocumentResponse> getDocuments(TenantIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return tenantService.getDocuments(identifier, principal);
   }
 
   @Override
-  public Map<String, String> getDownloadUrl(String documentIdentifier) {
+  public Map<String, String> getDownloadUrl(DocumentIdentifier documentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return tenantService.getDownloadUrl(documentIdentifier, principal);
   }
 
   @Override
-  public void deleteTenantDocument(String documentIdentifier) {
+  public void deleteTenantDocument(DocumentIdentifier documentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     tenantService.deleteDocument(documentIdentifier, principal);
   }
 
   @Override
-  public List<PhotoResponse> getPhotos(String identifier) {
+  public List<PhotoResponse> getPhotos(TenantIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return tenantService.getPhotos(identifier, principal);
   }
@@ -126,41 +134,45 @@ public class TenantController implements TenantsApi {
   @Override
   @SuppressWarnings("NullAway")
   public PhotoResponse uploadPhoto(
-      String identifier, String title, String notes, UploadPhotoRequest uploadPhotoRequest) {
+      TenantIdentifier identifier,
+      String title,
+      String notes,
+      UploadPhotoRequest uploadPhotoRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     // Generated interface mismodels multipart upload as JSON body
     return tenantService.uploadPhoto(identifier, null, title, notes, principal);
   }
 
   @Override
-  public PhotoResponse setMainPhoto(String identifier, String photoIdentifier) {
+  public PhotoResponse setMainPhoto(TenantIdentifier identifier, PhotoIdentifier photoIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return tenantService.setMainPhoto(identifier, photoIdentifier, principal);
   }
 
   @Override
   public TenantAddressResponse createAddress(
-      String tenantIdentifier, CreateTenantAddressRequest createTenantAddressRequest) {
+      TenantIdentifier tenantIdentifier, CreateTenantAddressRequest createTenantAddressRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return tenantService.createAddress(tenantIdentifier, createTenantAddressRequest, principal);
   }
 
   @Override
-  public List<TenantAddressResponse> getAddresses(String tenantIdentifier) {
+  public List<TenantAddressResponse> getAddresses(TenantIdentifier tenantIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return tenantService.getAddresses(tenantIdentifier, principal);
   }
 
   @Override
-  public TenantAddressResponse getAddress(String tenantIdentifier, String addressIdentifier) {
+  public TenantAddressResponse getAddress(
+      TenantIdentifier tenantIdentifier, TenantAddressIdentifier addressIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return tenantService.getAddress(tenantIdentifier, addressIdentifier, principal);
   }
 
   @Override
   public TenantAddressResponse updateAddress(
-      String tenantIdentifier,
-      String addressIdentifier,
+      TenantIdentifier tenantIdentifier,
+      TenantAddressIdentifier addressIdentifier,
       UpdateTenantAddressRequest updateTenantAddressRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return tenantService.updateAddress(
@@ -168,7 +180,8 @@ public class TenantController implements TenantsApi {
   }
 
   @Override
-  public void deleteAddress(String tenantIdentifier, String addressIdentifier) {
+  public void deleteAddress(
+      TenantIdentifier tenantIdentifier, TenantAddressIdentifier addressIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     tenantService.deleteAddress(tenantIdentifier, addressIdentifier, principal);
   }

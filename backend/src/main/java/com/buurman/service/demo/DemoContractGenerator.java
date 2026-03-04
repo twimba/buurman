@@ -2,8 +2,8 @@ package com.buurman.service.demo;
 
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
-import static com.buurman.util.UlidGenerator.newContractId;
-import static com.buurman.util.UlidGenerator.newContractPartyId;
+import static com.buurman.util.SidGenerator.newContractId;
+import static com.buurman.util.SidGenerator.newContractPartyId;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
@@ -20,6 +20,7 @@ import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.springframework.stereotype.Component;
 
+import com.buurman.domain.Sid;
 import com.buurman.domain.metadata.AtContractMetadata;
 import com.buurman.domain.metadata.BeContractMetadata;
 import com.buurman.domain.metadata.BrContractMetadata;
@@ -185,7 +186,7 @@ public class DemoContractGenerator {
         ContractCountryMetadata metadata =
             countryCode != null ? buildDemoMetadata(countryCode) : null;
 
-        String contractIdentifier = newContractId().value();
+        Sid contractIdentifier = newContractId();
         dsl.insertInto(CONTRACTS)
             .set(CONTRACTS.ID, contractId)
             .set(CONTRACTS.IDENTIFIER, contractIdentifier)

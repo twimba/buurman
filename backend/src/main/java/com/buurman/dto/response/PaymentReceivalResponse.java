@@ -5,8 +5,10 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import com.buurman.domain.Sid;
+
 public record PaymentReceivalResponse(
-    String identifier,
+    Sid identifier,
     BigDecimal amount,
     String currency,
     LocalDate receivalDate,

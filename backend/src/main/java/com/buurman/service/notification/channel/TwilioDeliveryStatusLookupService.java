@@ -42,7 +42,7 @@ public class TwilioDeliveryStatusLookupService implements DeliveryStatusLookupSe
     if (notification.getProviderMessageId().map(String::isBlank).orElse(true)) {
       log.debug(
           "No provider message ID for notification {}, skipping refresh",
-          notification.getIdentifier());
+          notification.getIdentifier().orElseThrow());
       return notification;
     }
 
@@ -53,7 +53,7 @@ public class TwilioDeliveryStatusLookupService implements DeliveryStatusLookupSe
     log.debug(
         "Status refresh not available for channel {} (notification {})",
         notification.getChannel(),
-        notification.getIdentifier());
+        notification.getIdentifier().orElseThrow());
 
     return notification;
   }
@@ -90,14 +90,14 @@ public class TwilioDeliveryStatusLookupService implements DeliveryStatusLookupSe
 
       log.info(
           "Refreshed Twilio status for notification {}: {}",
-          notification.getIdentifier(),
+          notification.getIdentifier().orElseThrow(),
           providerStatus);
 
       return notification;
     } catch (Exception e) {
       log.warn(
           "Failed to refresh Twilio status for notification {}: {}",
-          notification.getIdentifier(),
+          notification.getIdentifier().orElseThrow(),
           e.getMessage());
       return notification;
     }

@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.buurman.domain.LabelCount;
 import com.buurman.domain.Notification;
 import com.buurman.domain.NotificationStatus;
+import com.buurman.domain.Sid;
+import com.buurman.domain.identifier.NotificationIdentifier;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.NotificationResponse;
 import com.buurman.dto.response.NotificationStatsResponse;
@@ -64,7 +66,8 @@ public class NotificationCenterService {
   }
 
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public NotificationResponse getNotification(UserPrincipal principal, String identifier) {
+  public NotificationResponse getNotification(
+      UserPrincipal principal, NotificationIdentifier identifier) {
     Notification notification =
         notificationRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -109,7 +112,8 @@ public class NotificationCenterService {
 
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   @Transactional
-  public NotificationResponse resendNotification(UserPrincipal principal, String identifier) {
+  public NotificationResponse resendNotification(
+      UserPrincipal principal, NotificationIdentifier identifier) {
     Notification resent =
         notificationService.resend(principal.requireTeamId(), identifier, principal.getUserId());
     return toResponse(resent);
@@ -117,7 +121,7 @@ public class NotificationCenterService {
 
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public NotificationResponse refreshNotificationStatus(
-      UserPrincipal principal, String identifier) {
+      UserPrincipal principal, NotificationIdentifier identifier) {
     Notification notification =
         notificationRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -126,18 +130,18 @@ public class NotificationCenterService {
   }
 
   private NotificationResponse toResponse(Notification notification) {
-    String resentFromIdentifier =
+    Sid resentFromIdentifier =
         notification
             .getResentFromId()
             .flatMap(
                 resentId ->
                     notificationRepository.findByIdAndTeamId(
                         resentId, notification.getTeamId().orElse(null)))
-            .map(Notification::getIdentifier)
+            .flatMap(Notification::getIdentifier)
             .orElse(null);
 
     return new NotificationResponse(
-        notification.getIdentifier(),
+        notification.getIdentifier().orElseThrow(),
         notification.getNotificationType().name(),
         notification.getChannel().name(),
         notification.getSubject(),

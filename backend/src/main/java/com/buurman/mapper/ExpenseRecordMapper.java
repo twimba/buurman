@@ -21,7 +21,7 @@ public class ExpenseRecordMapper {
 
     Expense expense = new Expense();
     expense.setId(record.getId());
-    expense.setIdentifier(record.getIdentifier());
+    expense.setIdentifier(java.util.Optional.of(record.getIdentifier()));
     expense.setTeamId(record.getTeamId());
     expense.setPropertyId(record.getPropertyId());
     expense.setCategory(Expense.ExpenseCategory.valueOf(record.getCategory()));

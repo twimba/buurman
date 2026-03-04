@@ -1,7 +1,7 @@
 package com.buurman.repository;
 
 import static com.buurman.jooq.generated.Tables.NOTIFICATIONS;
-import static com.buurman.util.UlidGenerator.newNotificationId;
+import static com.buurman.util.SidGenerator.newNotificationId;
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.trueCondition;
@@ -23,6 +23,7 @@ import org.springframework.stereotype.Repository;
 import com.buurman.domain.LabelCount;
 import com.buurman.domain.Notification;
 import com.buurman.domain.NotificationStatus;
+import com.buurman.domain.Sid;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.NotificationRecordMapper;
@@ -45,7 +46,7 @@ public class NotificationRepository {
   public Notification save(Notification notification) {
     LocalDateTime now = LocalDateTime.now(clock);
     UUID id = UUID.randomUUID();
-    String identifier = newNotificationId().value();
+    Sid identifier = newNotificationId();
     LocalDateTime createdAt =
         notification.getCreatedAt() != null
             ? LocalDateTime.ofInstant(notification.getCreatedAt(), UTC)
@@ -84,7 +85,7 @@ public class NotificationRepository {
         .execute();
 
     notification.setId(id);
-    notification.setIdentifier(identifier);
+    notification.setIdentifier(java.util.Optional.of(identifier));
     notification.setCreatedAt(createdAt.toInstant(UTC));
 
     return notification;
@@ -94,8 +95,7 @@ public class NotificationRepository {
    * Find notification by identifier. When teamId is null, searches across all teams (admin/system
    * use only). For tenant-scoped lookups, always pass a non-null teamId.
    */
-  public Optional<Notification> findByIdentifierAndTeamId(
-      String identifier, @Nullable UUID teamId) {
+  public Optional<Notification> findByIdentifierAndTeamId(Sid identifier, @Nullable UUID teamId) {
     Condition condition = NOTIFICATIONS.IDENTIFIER.eq(identifier);
     if (teamId != null) {
       condition = condition.and(NOTIFICATIONS.TEAM_ID.eq(teamId));
@@ -103,7 +103,7 @@ public class NotificationRepository {
     return dsl.selectFrom(NOTIFICATIONS).where(condition).fetchOptional().flatMap(mapper::toDomain);
   }
 
-  public Notification getByIdentifierAndTeamId(String identifier, @Nullable UUID teamId) {
+  public Notification getByIdentifierAndTeamId(Sid identifier, @Nullable UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Notification not found"));
   }
@@ -314,14 +314,14 @@ public class NotificationRepository {
                 .orElseThrow(() -> new IllegalStateException("Failed to map notification record")));
   }
 
-  public Optional<Notification> findByIdentifierUnscoped(String identifier) {
+  public Optional<Notification> findByIdentifierUnscoped(Sid identifier) {
     return dsl.selectFrom(NOTIFICATIONS)
         .where(NOTIFICATIONS.IDENTIFIER.eq(identifier))
         .fetchOptional()
         .flatMap(mapper::toDomain);
   }
 
-  public Notification getByIdentifierUnscoped(String identifier) {
+  public Notification getByIdentifierUnscoped(Sid identifier) {
     return findByIdentifierUnscoped(identifier)
         .orElseThrow(() -> new NotFoundException("Notification not found"));
   }

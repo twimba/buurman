@@ -26,6 +26,8 @@ import com.buurman.domain.TeamInvitation;
 import com.buurman.domain.TeamMember;
 import com.buurman.domain.TeamPreferences;
 import com.buurman.domain.User;
+import com.buurman.domain.identifier.TeamIdentifier;
+import com.buurman.domain.identifier.UserIdentifier;
 import com.buurman.dto.request.CreateInvitationRequest;
 import com.buurman.dto.request.UpdateMemberRoleRequest;
 import com.buurman.dto.request.UpdateTeamRequest;
@@ -69,7 +71,8 @@ public class TeamService {
     return teamMapper.toResponse(team, memberCount);
   }
 
-  public List<TeamMemberResponse> getTeamMembers(String teamIdentifier, UserPrincipal principal) {
+  public List<TeamMemberResponse> getTeamMembers(
+      TeamIdentifier teamIdentifier, UserPrincipal principal) {
     Team team = resolveTeam(teamIdentifier);
 
     // Verify user belongs to this team
@@ -96,7 +99,7 @@ public class TeamService {
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public InvitationResponse createInvitation(
-      String teamIdentifier, CreateInvitationRequest request, UserPrincipal principal) {
+      TeamIdentifier teamIdentifier, CreateInvitationRequest request, UserPrincipal principal) {
     Team team = resolveTeam(teamIdentifier);
 
     // Verify user is admin of this team
@@ -147,7 +150,7 @@ public class TeamService {
 
     return teamMapper.toInvitationResponse(
         invitation,
-        team.getIdentifier(),
+        team.getIdentifier().orElseThrow().value(),
         team.getName(),
         inviterName,
         appProperties.email().baseUrl() + "/invitation/");
@@ -167,7 +170,7 @@ public class TeamService {
 
     return teamMapper.toInvitationResponse(
         invitation,
-        team.getIdentifier(),
+        team.getIdentifier().orElseThrow().value(),
         team.getName(),
         inviterName,
         appProperties.email().baseUrl() + "/invitation/");
@@ -199,7 +202,7 @@ public class TeamService {
                                   .orElse("Team Admin");
                           return teamMapper.toInvitationResponse(
                               invitation,
-                              team.getIdentifier(),
+                              team.getIdentifier().orElseThrow().value(),
                               team.getName(),
                               inviterName,
                               appProperties.email().baseUrl() + "/invitation/");
@@ -210,7 +213,7 @@ public class TeamService {
 
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public List<InvitationResponse> getTeamPendingInvitations(
-      String teamIdentifier, UserPrincipal principal) {
+      TeamIdentifier teamIdentifier, UserPrincipal principal) {
     Team team = resolveTeam(teamIdentifier);
 
     if (!team.getId().equals(principal.requireTeamId())) {
@@ -227,7 +230,7 @@ public class TeamService {
 
               return teamMapper.toInvitationResponse(
                   invitation,
-                  team.getIdentifier(),
+                  team.getIdentifier().orElseThrow().value(),
                   team.getName(),
                   inviterName,
                   appProperties.email().baseUrl() + "/invitation/");
@@ -238,7 +241,7 @@ public class TeamService {
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public InvitationResponse resendInvitation(
-      String teamIdentifier, String token, UserPrincipal principal) {
+      TeamIdentifier teamIdentifier, String token, UserPrincipal principal) {
     Team team = resolveTeam(teamIdentifier);
 
     if (!team.getId().equals(principal.requireTeamId())) {
@@ -284,7 +287,7 @@ public class TeamService {
 
     return teamMapper.toInvitationResponse(
         invitation,
-        team.getIdentifier(),
+        team.getIdentifier().orElseThrow().value(),
         team.getName(),
         inviterName,
         appProperties.email().baseUrl() + "/invitation/");
@@ -368,7 +371,8 @@ public class TeamService {
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void removeMember(String teamIdentifier, String userIdentifier, UserPrincipal principal) {
+  public void removeMember(
+      TeamIdentifier teamIdentifier, UserIdentifier userIdentifier, UserPrincipal principal) {
     Team team = resolveTeam(teamIdentifier);
 
     // Verify user is admin of this team
@@ -393,8 +397,8 @@ public class TeamService {
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public TeamMemberResponse updateMemberRole(
-      String teamIdentifier,
-      String userIdentifier,
+      TeamIdentifier teamIdentifier,
+      UserIdentifier userIdentifier,
       UpdateMemberRoleRequest request,
       UserPrincipal principal) {
     Team team = resolveTeam(teamIdentifier);
@@ -424,7 +428,7 @@ public class TeamService {
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public TeamResponse updateTeam(
-      String teamIdentifier, UpdateTeamRequest request, UserPrincipal principal) {
+      TeamIdentifier teamIdentifier, UpdateTeamRequest request, UserPrincipal principal) {
     Team team = resolveTeam(teamIdentifier);
 
     // Verify user is admin of this team
@@ -444,7 +448,7 @@ public class TeamService {
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
   public TeamPreferencesResponse updateTeamPreferences(
-      String teamIdentifier, UpdateTeamSettingsRequest request, UserPrincipal principal) {
+      TeamIdentifier teamIdentifier, UpdateTeamSettingsRequest request, UserPrincipal principal) {
     Team team = resolveTeam(teamIdentifier);
 
     if (!team.getId().equals(principal.requireTeamId())
@@ -478,7 +482,7 @@ public class TeamService {
   }
 
   public TeamPreferencesResponse getTeamPreferences(
-      String teamIdentifier, UserPrincipal principal) {
+      TeamIdentifier teamIdentifier, UserPrincipal principal) {
     Team team = resolveTeam(teamIdentifier);
 
     if (!team.getId().equals(principal.requireTeamId())) {
@@ -510,7 +514,7 @@ public class TeamService {
 
   @Transactional
   public TeamMemberResponse transferOwnership(
-      String teamIdentifier, String newOwnerIdentifier, UserPrincipal principal) {
+      TeamIdentifier teamIdentifier, UserIdentifier newOwnerIdentifier, UserPrincipal principal) {
     Team team = resolveTeam(teamIdentifier);
 
     // Verify user is owner of this team
@@ -550,7 +554,7 @@ public class TeamService {
     return teamMapper.toMemberResponse(newOwnerMember, newOwnerUser, principal.getUserId());
   }
 
-  private Team resolveTeam(String teamIdentifier) {
+  private Team resolveTeam(TeamIdentifier teamIdentifier) {
     return teamRepository.getByIdentifier(teamIdentifier);
   }
 

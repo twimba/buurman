@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import com.buurman.domain.AuditLogEntry;
 import com.buurman.domain.ContractPartyRole;
+import com.buurman.domain.Sid;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.RecentActivityResponse;
@@ -207,10 +208,10 @@ public class AuditService {
 
     // Resolve entity identifier from entity UUID
     UUID entityId = record.entityId();
-    String entityIdentifier =
+    Sid entityIdentifier =
         auditLogRepository
             .findEntityIdentifier(entityType, entityId, teamId)
-            .orElse(entityId.toString());
+            .orElse(Sid.of(entityId.toString()));
 
     return new RecentActivityResponse(
         entityType,

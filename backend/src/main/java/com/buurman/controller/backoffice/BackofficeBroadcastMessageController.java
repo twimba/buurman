@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.identifier.BroadcastMessageIdentifier;
 import com.buurman.dto.request.backoffice.CreateBroadcastMessageRequest;
 import com.buurman.dto.request.backoffice.UpdateBroadcastMessageRequest;
 import com.buurman.dto.response.backoffice.BackofficeBroadcastMessageResponse;
@@ -43,14 +44,15 @@ public class BackofficeBroadcastMessageController {
 
   @PutMapping("/backoffice/broadcasts/{identifier}")
   public BackofficeBroadcastMessageResponse update(
-      @PathVariable String identifier, @Valid @RequestBody UpdateBroadcastMessageRequest request) {
+      @PathVariable BroadcastMessageIdentifier identifier,
+      @Valid @RequestBody UpdateBroadcastMessageRequest request) {
     BackofficePrincipal principal = SecurityUtils.getBackofficePrincipal();
     return backofficeBroadcastMessageService.update(identifier, request, principal);
   }
 
   @DeleteMapping("/backoffice/broadcasts/{identifier}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void delete(@PathVariable String identifier) {
+  public void delete(@PathVariable BroadcastMessageIdentifier identifier) {
     BackofficePrincipal principal = SecurityUtils.getBackofficePrincipal();
     backofficeBroadcastMessageService.delete(identifier, principal);
   }

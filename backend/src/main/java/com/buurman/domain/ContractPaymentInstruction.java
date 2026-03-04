@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class ContractPaymentInstruction {
 
   private UUID id;
-  private String identifier;
+  @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private UUID teamId;
   private UUID contractId;
   @Builder.Default private Optional<UUID> paymentInstructionId = Optional.empty();

@@ -27,7 +27,7 @@ public class Payment {
   }
 
   private UUID id;
-  private String identifier;
+  @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private UUID teamId;
   private UUID contractId;
   private BigDecimal amount;

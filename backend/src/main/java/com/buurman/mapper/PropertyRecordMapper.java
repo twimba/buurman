@@ -28,6 +28,9 @@ public interface PropertyRecordMapper {
   @Mapping(target = "createdAt", expression = "java(toInstant(record.getCreatedAt()))")
   @Mapping(target = "updatedAt", expression = "java(toInstant(record.getUpdatedAt()))")
   @Mapping(target = "deletedAt", expression = "java(toOptionalInstant(record.getDeletedAt()))")
+  @Mapping(
+      target = "identifier",
+      expression = "java(java.util.Optional.of(record.getIdentifier()))")
   Property toDomain(PropertiesRecord record);
 
   @Mapping(
@@ -40,6 +43,7 @@ public interface PropertyRecordMapper {
   @Mapping(target = "createdAt", expression = "java(toLocalDateTime(property.getCreatedAt()))")
   @Mapping(target = "updatedAt", expression = "java(toLocalDateTime(property.getUpdatedAt()))")
   @Mapping(target = "deletedAt", expression = "java(fromOptionalInstant(property.getDeletedAt()))")
+  @Mapping(target = "identifier", expression = "java(property.getIdentifier().orElse(null))")
   PropertiesRecord toRecord(Property property);
 
   List<Property> toDomainList(List<PropertiesRecord> records);

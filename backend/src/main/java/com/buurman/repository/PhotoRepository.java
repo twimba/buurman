@@ -1,7 +1,7 @@
 package com.buurman.repository;
 
 import static com.buurman.jooq.generated.Tables.PHOTOS;
-import static com.buurman.util.UlidGenerator.newPhotoId;
+import static com.buurman.util.SidGenerator.newPhotoId;
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.lower;
 
@@ -21,6 +21,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Photo;
+import com.buurman.domain.Sid;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.PhotoRecordMapper;
@@ -37,7 +38,7 @@ public class PhotoRepository {
   private final PhotoRecordMapper mapper;
   private final Clock clock;
 
-  public Optional<Photo> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Optional<Photo> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(PHOTOS)
         .where(
             PHOTOS
@@ -49,12 +50,12 @@ public class PhotoRepository {
         .map(mapper::toDomain);
   }
 
-  public Photo getByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Photo getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Photo not found"));
   }
 
-  public List<Photo> findByIdentifiersAndTeamId(List<String> identifiers, UUID teamId) {
+  public List<Photo> findByIdentifiersAndTeamId(List<Sid> identifiers, UUID teamId) {
     if (identifiers == null || identifiers.isEmpty()) {
       return List.of();
     }
@@ -63,7 +64,7 @@ public class PhotoRepository {
             .where(
                 PHOTOS
                     .IDENTIFIER
-                    .in(identifiers)
+                    .in(identifiers.stream().map(Sid::value).toList())
                     .and(PHOTOS.TEAM_ID.eq(teamId))
                     .and(PHOTOS.DELETED_AT.isNull()))
             .fetch()
@@ -103,7 +104,7 @@ public class PhotoRepository {
     if (photo.getId() == null) {
       // INSERT
       UUID newId = UUID.randomUUID();
-      String identifier = newPhotoId().value();
+      Sid identifier = newPhotoId();
       LocalDateTime uploadedAt =
           photo.getUploadedAt() != null ? LocalDateTime.ofInstant(photo.getUploadedAt(), UTC) : now;
 
@@ -126,7 +127,7 @@ public class PhotoRepository {
           .execute();
 
       photo.setId(newId);
-      photo.setIdentifier(identifier);
+      photo.setIdentifier(java.util.Optional.of(identifier));
       photo.setUploadedAt(uploadedAt.toInstant(UTC));
     } else {
       // UPDATE (title, notes, and isMainPhoto are updatable)

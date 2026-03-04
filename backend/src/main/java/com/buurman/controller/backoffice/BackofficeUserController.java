@@ -2,6 +2,7 @@ package com.buurman.controller.backoffice;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.identifier.UserIdentifier;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.backoffice.BackofficeUserResponse;
@@ -25,22 +26,22 @@ public class BackofficeUserController implements BackofficeUsersApi {
   }
 
   @Override
-  public BackofficeUserResponse getUser(String identifier) {
+  public BackofficeUserResponse getUser(UserIdentifier identifier) {
     return backofficeUserService.getUser(identifier);
   }
 
   @Override
-  public void disableUser(String identifier) {
+  public void disableUser(UserIdentifier identifier) {
     backofficeUserService.disableUser(identifier, SecurityUtils.getBackofficePrincipal());
   }
 
   @Override
-  public void enableUser(String identifier) {
+  public void enableUser(UserIdentifier identifier) {
     backofficeUserService.enableUser(identifier, SecurityUtils.getBackofficePrincipal());
   }
 
   @Override
-  public void resetPassword(String identifier) {
+  public void resetPassword(UserIdentifier identifier) {
     backofficeUserService.resetPassword(identifier, SecurityUtils.getBackofficePrincipal());
   }
 }

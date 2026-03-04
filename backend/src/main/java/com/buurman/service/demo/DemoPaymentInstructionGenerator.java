@@ -2,8 +2,8 @@ package com.buurman.service.demo;
 
 import static com.buurman.jooq.generated.Tables.CONTRACT_PAYMENT_INSTRUCTIONS;
 import static com.buurman.jooq.generated.Tables.PAYMENT_INSTRUCTIONS;
-import static com.buurman.util.UlidGenerator.newContractPaymentInstructionId;
-import static com.buurman.util.UlidGenerator.newPaymentInstructionId;
+import static com.buurman.util.SidGenerator.newContractPaymentInstructionId;
+import static com.buurman.util.SidGenerator.newPaymentInstructionId;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -41,7 +41,7 @@ public class DemoPaymentInstructionGenerator {
       UUID piBank = UUID.randomUUID();
       dsl.insertInto(PAYMENT_INSTRUCTIONS)
           .set(PAYMENT_INSTRUCTIONS.ID, piBank)
-          .set(PAYMENT_INSTRUCTIONS.IDENTIFIER, newPaymentInstructionId().value())
+          .set(PAYMENT_INSTRUCTIONS.IDENTIFIER, newPaymentInstructionId())
           .set(PAYMENT_INSTRUCTIONS.TEAM_ID, teamId)
           .set(PAYMENT_INSTRUCTIONS.NAME, "Primary Bank Account")
           .set(PAYMENT_INSTRUCTIONS.DESCRIPTION, "Main bank account for rent collection")
@@ -63,7 +63,7 @@ public class DemoPaymentInstructionGenerator {
       UUID piDebit = UUID.randomUUID();
       dsl.insertInto(PAYMENT_INSTRUCTIONS)
           .set(PAYMENT_INSTRUCTIONS.ID, piDebit)
-          .set(PAYMENT_INSTRUCTIONS.IDENTIFIER, newPaymentInstructionId().value())
+          .set(PAYMENT_INSTRUCTIONS.IDENTIFIER, newPaymentInstructionId())
           .set(PAYMENT_INSTRUCTIONS.TEAM_ID, teamId)
           .set(PAYMENT_INSTRUCTIONS.NAME, "Direct Debit Account")
           .set(PAYMENT_INSTRUCTIONS.DESCRIPTION, "SEPA direct debit for automatic rent collection")
@@ -85,7 +85,7 @@ public class DemoPaymentInstructionGenerator {
       UUID piPaypal = UUID.randomUUID();
       dsl.insertInto(PAYMENT_INSTRUCTIONS)
           .set(PAYMENT_INSTRUCTIONS.ID, piPaypal)
-          .set(PAYMENT_INSTRUCTIONS.IDENTIFIER, newPaymentInstructionId().value())
+          .set(PAYMENT_INSTRUCTIONS.IDENTIFIER, newPaymentInstructionId())
           .set(PAYMENT_INSTRUCTIONS.TEAM_ID, teamId)
           .set(PAYMENT_INSTRUCTIONS.NAME, "PayPal")
           .set(PAYMENT_INSTRUCTIONS.DESCRIPTION, "PayPal for international tenants")
@@ -121,9 +121,7 @@ public class DemoPaymentInstructionGenerator {
           // Custom payment instruction (every 3rd contract)
           dsl.insertInto(CONTRACT_PAYMENT_INSTRUCTIONS)
               .set(CONTRACT_PAYMENT_INSTRUCTIONS.ID, UUID.randomUUID())
-              .set(
-                  CONTRACT_PAYMENT_INSTRUCTIONS.IDENTIFIER,
-                  newContractPaymentInstructionId().value())
+              .set(CONTRACT_PAYMENT_INSTRUCTIONS.IDENTIFIER, newContractPaymentInstructionId())
               .set(CONTRACT_PAYMENT_INSTRUCTIONS.TEAM_ID, teamId)
               .set(CONTRACT_PAYMENT_INSTRUCTIONS.CONTRACT_ID, contractId)
               .set(CONTRACT_PAYMENT_INSTRUCTIONS.IS_CUSTOM, true)
@@ -148,9 +146,7 @@ public class DemoPaymentInstructionGenerator {
           UUID piId = (i % 2 == 0) ? piBank : piDebit;
           dsl.insertInto(CONTRACT_PAYMENT_INSTRUCTIONS)
               .set(CONTRACT_PAYMENT_INSTRUCTIONS.ID, UUID.randomUUID())
-              .set(
-                  CONTRACT_PAYMENT_INSTRUCTIONS.IDENTIFIER,
-                  newContractPaymentInstructionId().value())
+              .set(CONTRACT_PAYMENT_INSTRUCTIONS.IDENTIFIER, newContractPaymentInstructionId())
               .set(CONTRACT_PAYMENT_INSTRUCTIONS.TEAM_ID, teamId)
               .set(CONTRACT_PAYMENT_INSTRUCTIONS.CONTRACT_ID, contractId)
               .set(CONTRACT_PAYMENT_INSTRUCTIONS.PAYMENT_INSTRUCTION_ID, piId)

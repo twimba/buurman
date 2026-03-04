@@ -3,6 +3,7 @@ package com.buurman.dto.response;
 import java.util.Optional;
 
 import com.buurman.domain.ContractPartyRole;
+import com.buurman.domain.Sid;
 
 public record ContractPartyResponse(
-    String identifier, Optional<TenantSummary> tenant, ContractPartyRole role) {}
+    Sid identifier, Optional<TenantSummary> tenant, ContractPartyRole role) {}

@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.identifier.ContractIdentifier;
+import com.buurman.domain.identifier.ContractRentPeriodIdentifier;
 import com.buurman.dto.request.CreateRentPeriodRequest;
 import com.buurman.dto.request.UpdateRentPeriodRequest;
 import com.buurman.dto.response.RentPeriodResponse;
@@ -21,22 +23,22 @@ public class ContractRentPeriodController implements ContractRentPeriodsApi {
   private final ContractRentPeriodService rentPeriodService;
 
   @Override
-  public List<RentPeriodResponse> getRentTimeline(String contractIdentifier) {
+  public List<RentPeriodResponse> getRentTimeline(ContractIdentifier contractIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return rentPeriodService.getRentTimeline(contractIdentifier, principal);
   }
 
   @Override
   public RentPeriodResponse addRentPeriod(
-      String contractIdentifier, CreateRentPeriodRequest createRentPeriodRequest) {
+      ContractIdentifier contractIdentifier, CreateRentPeriodRequest createRentPeriodRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return rentPeriodService.addRentPeriod(contractIdentifier, createRentPeriodRequest, principal);
   }
 
   @Override
   public RentPeriodResponse updateRentPeriod(
-      String contractIdentifier,
-      String periodIdentifier,
+      ContractIdentifier contractIdentifier,
+      ContractRentPeriodIdentifier periodIdentifier,
       UpdateRentPeriodRequest updateRentPeriodRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return rentPeriodService.updateRentPeriod(
@@ -44,7 +46,8 @@ public class ContractRentPeriodController implements ContractRentPeriodsApi {
   }
 
   @Override
-  public void deleteRentPeriod(String contractIdentifier, String periodIdentifier) {
+  public void deleteRentPeriod(
+      ContractIdentifier contractIdentifier, ContractRentPeriodIdentifier periodIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     rentPeriodService.deleteRentPeriod(contractIdentifier, periodIdentifier, principal);
   }

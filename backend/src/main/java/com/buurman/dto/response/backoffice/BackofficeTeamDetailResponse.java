@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.buurman.domain.Sid;
+
 public record BackofficeTeamDetailResponse(
-    String identifier,
+    Sid identifier,
     String teamName,
     Instant createdAt,
     Optional<Instant> updatedAt,

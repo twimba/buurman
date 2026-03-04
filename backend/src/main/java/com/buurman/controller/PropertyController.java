@@ -5,6 +5,9 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.identifier.DocumentIdentifier;
+import com.buurman.domain.identifier.PhotoIdentifier;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.CreatePropertyRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdatePropertyRequest;
@@ -49,20 +52,20 @@ public class PropertyController implements PropertiesApi {
   }
 
   @Override
-  public PropertyResponse getProperty(String identifier) {
+  public PropertyResponse getProperty(PropertyIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return propertyService.getProperty(identifier, principal);
   }
 
   @Override
   public PropertyResponse updateProperty(
-      String identifier, UpdatePropertyRequest updatePropertyRequest) {
+      PropertyIdentifier identifier, UpdatePropertyRequest updatePropertyRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return propertyService.updateProperty(identifier, updatePropertyRequest, principal);
   }
 
   @Override
-  public void deleteProperty(String identifier) {
+  public void deleteProperty(PropertyIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     propertyService.deleteProperty(identifier, principal);
   }
@@ -71,37 +74,40 @@ public class PropertyController implements PropertiesApi {
   @SuppressWarnings(
       "NullAway") // Generated interface uses UploadPhotoRequest instead of MultipartFile
   public DocumentResponse uploadPropertyDocument(
-      String identifier, String title, String notes, UploadPhotoRequest uploadPhotoRequest) {
+      PropertyIdentifier identifier,
+      String title,
+      String notes,
+      UploadPhotoRequest uploadPhotoRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return propertyService.uploadDocument(identifier, null, title, notes, principal);
   }
 
   @Override
-  public List<DocumentResponse> getPropertyDocuments(String identifier) {
+  public List<DocumentResponse> getPropertyDocuments(PropertyIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return propertyService.getDocuments(identifier, principal);
   }
 
   @Override
-  public Map<String, String> getPropertyDocumentDownloadUrl(String documentIdentifier) {
+  public Map<String, String> getPropertyDocumentDownloadUrl(DocumentIdentifier documentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return propertyService.getDownloadUrl(documentIdentifier, principal);
   }
 
   @Override
-  public void deletePropertyDocument(String documentIdentifier) {
+  public void deletePropertyDocument(DocumentIdentifier documentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     propertyService.deleteDocument(documentIdentifier, principal);
   }
 
   @Override
-  public List<RecentActivityResponse> getPropertyAuditLog(String identifier) {
+  public List<RecentActivityResponse> getPropertyAuditLog(PropertyIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return propertyService.getAuditLog(identifier, principal);
   }
 
   @Override
-  public List<PhotoResponse> getPropertyPhotos(String identifier) {
+  public List<PhotoResponse> getPropertyPhotos(PropertyIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return propertyService.getPhotos(identifier, principal);
   }
@@ -110,13 +116,17 @@ public class PropertyController implements PropertiesApi {
   @SuppressWarnings(
       "NullAway") // Generated interface uses UploadPhotoRequest instead of MultipartFile
   public PhotoResponse uploadPropertyPhoto(
-      String identifier, String title, String notes, UploadPhotoRequest uploadPhotoRequest) {
+      PropertyIdentifier identifier,
+      String title,
+      String notes,
+      UploadPhotoRequest uploadPhotoRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return propertyService.uploadPhoto(identifier, null, title, notes, principal);
   }
 
   @Override
-  public PhotoResponse setMainPropertyPhoto(String identifier, String photoIdentifier) {
+  public PhotoResponse setMainPropertyPhoto(
+      PropertyIdentifier identifier, PhotoIdentifier photoIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return propertyService.setMainPhoto(identifier, photoIdentifier, principal);
   }

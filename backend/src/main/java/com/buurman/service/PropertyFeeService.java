@@ -1,6 +1,6 @@
 package com.buurman.service;
 
-import static com.buurman.util.UlidGenerator.newPropertyFeeId;
+import static com.buurman.util.SidGenerator.newPropertyFeeId;
 
 import java.time.Clock;
 import java.util.List;
@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyFee;
+import com.buurman.domain.identifier.PropertyFeeIdentifier;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.CreatePropertyFeeRequest;
 import com.buurman.dto.request.UpdatePropertyFeeRequest;
 import com.buurman.dto.response.PropertyFeeResponse;
@@ -40,13 +42,15 @@ public class PropertyFeeService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyFeeResponse create(
-      String propertyIdentifier, CreatePropertyFeeRequest request, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier,
+      CreatePropertyFeeRequest request,
+      UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
     PropertyFee fee = feeMapper.toEntity(request);
     fee.setPropertyId(property.getId());
-    fee.setIdentifier(newPropertyFeeId().value());
+    fee.setIdentifier(Optional.of(newPropertyFeeId()));
     fee.setTeamId(teamId);
     fee.setCreatedBy(principal.getUserId());
     fee.setUpdatedBy(principal.getUserId());
@@ -61,15 +65,15 @@ public class PropertyFeeService {
 
     log.info(
         "Created property fee {} for property {} by user {}",
-        saved.getIdentifier(),
-        property.getIdentifier(),
+        saved.getIdentifier().orElseThrow(),
+        property.getIdentifier().orElseThrow(),
         principal.getUserId());
 
     return enrichResponse(saved, teamId);
   }
 
   @Transactional(readOnly = true)
-  public PropertyFeeResponse get(String identifier, UserPrincipal principal) {
+  public PropertyFeeResponse get(PropertyFeeIdentifier identifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     PropertyFee fee = feeRepository.getByIdentifierAndTeamId(identifier, teamId);
     return enrichResponse(fee, teamId);
@@ -77,7 +81,7 @@ public class PropertyFeeService {
 
   @Transactional(readOnly = true)
   public List<PropertyFeeResponse> listByProperty(
-      String propertyIdentifier, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
@@ -89,7 +93,7 @@ public class PropertyFeeService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyFeeResponse update(
-      String identifier, UpdatePropertyFeeRequest request, UserPrincipal principal) {
+      PropertyFeeIdentifier identifier, UpdatePropertyFeeRequest request, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     PropertyFee fee = feeRepository.getByIdentifierAndTeamId(identifier, teamId);
 
@@ -99,20 +103,26 @@ public class PropertyFeeService {
 
     PropertyFee updated = feeRepository.save(fee);
 
-    log.info("Updated property fee {} by user {}", updated.getIdentifier(), principal.getUserId());
+    log.info(
+        "Updated property fee {} by user {}",
+        updated.getIdentifier().orElseThrow(),
+        principal.getUserId());
 
     return enrichResponse(updated, teamId);
   }
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void delete(String identifier, UserPrincipal principal) {
+  public void delete(PropertyFeeIdentifier identifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     PropertyFee fee = feeRepository.getByIdentifierAndTeamId(identifier, teamId);
 
     feeRepository.softDeleteByIdAndTeamId(fee.getId(), teamId);
 
-    log.info("Deleted property fee {} by user {}", fee.getIdentifier(), principal.getUserId());
+    log.info(
+        "Deleted property fee {} by user {}",
+        fee.getIdentifier().orElseThrow(),
+        principal.getUserId());
   }
 
   private PropertyFeeResponse enrichResponse(PropertyFee fee, UUID teamId) {

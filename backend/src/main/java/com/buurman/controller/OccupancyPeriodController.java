@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.identifier.OccupancyPeriodIdentifier;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.CreateOccupancyPeriodRequest;
 import com.buurman.dto.request.EndOccupancyPeriodRequest;
 import com.buurman.dto.request.UpdateOccupancyPeriodRequest;
@@ -24,28 +26,30 @@ public class OccupancyPeriodController implements OccupancyPeriodsApi {
 
   @Override
   public OccupancyPeriodResponse create(
-      String propertyIdentifier, CreateOccupancyPeriodRequest createOccupancyPeriodRequest) {
+      PropertyIdentifier propertyIdentifier,
+      CreateOccupancyPeriodRequest createOccupancyPeriodRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return occupancyPeriodService.create(
         propertyIdentifier, createOccupancyPeriodRequest, principal);
   }
 
   @Override
-  public List<OccupancyPeriodResponse> callList(String propertyIdentifier) {
+  public List<OccupancyPeriodResponse> callList(PropertyIdentifier propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return occupancyPeriodService.findByProperty(propertyIdentifier, principal);
   }
 
   @Override
-  public OccupancyPeriodResponse get(String propertyIdentifier, String identifier) {
+  public OccupancyPeriodResponse get(
+      PropertyIdentifier propertyIdentifier, OccupancyPeriodIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return occupancyPeriodService.get(propertyIdentifier, identifier, principal);
   }
 
   @Override
   public OccupancyPeriodResponse update(
-      String propertyIdentifier,
-      String identifier,
+      PropertyIdentifier propertyIdentifier,
+      OccupancyPeriodIdentifier identifier,
       UpdateOccupancyPeriodRequest updateOccupancyPeriodRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return occupancyPeriodService.update(
@@ -54,8 +58,8 @@ public class OccupancyPeriodController implements OccupancyPeriodsApi {
 
   @Override
   public OccupancyPeriodResponse end(
-      String propertyIdentifier,
-      String identifier,
+      PropertyIdentifier propertyIdentifier,
+      OccupancyPeriodIdentifier identifier,
       EndOccupancyPeriodRequest endOccupancyPeriodRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return occupancyPeriodService.end(
@@ -63,13 +67,13 @@ public class OccupancyPeriodController implements OccupancyPeriodsApi {
   }
 
   @Override
-  public void delete(String propertyIdentifier, String identifier) {
+  public void delete(PropertyIdentifier propertyIdentifier, OccupancyPeriodIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     occupancyPeriodService.delete(propertyIdentifier, identifier, principal);
   }
 
   @Override
-  public PropertyTimelineResponse getTimeline(String propertyIdentifier) {
+  public PropertyTimelineResponse getTimeline(PropertyIdentifier propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return occupancyPeriodService.getTimeline(propertyIdentifier, principal);
   }

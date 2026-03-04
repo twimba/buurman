@@ -2,8 +2,10 @@ package com.buurman.dto.request;
 
 import java.util.Optional;
 
-import jakarta.validation.constraints.NotBlank;
+import com.buurman.domain.identifier.AmenityIdentifier;
+
+import jakarta.validation.constraints.NotNull;
 
 public record PropertyAmenityRequest(
-    @NotBlank(message = "Amenity identifier is required") String amenityIdentifier,
+    @NotNull(message = "Amenity identifier is required") AmenityIdentifier amenityIdentifier,
     Optional<String> notes) {}

@@ -4,7 +4,9 @@ import {
   listTakeouts,
   getTakeout,
   deleteTakeout,
+  TakeoutResponse,
 } from '@/api/takeouts';
+import { PageResponse } from '@/types/common';
 import { useToast } from '@/context/ToastContext';
 import { getErrorMessage } from '@/utils/errorMessages';
 
@@ -50,18 +52,15 @@ export const useRequestTakeout = () => {
   return useMutation({
     mutationFn: requestTakeout,
     onSuccess: (newTakeout) => {
-      queryClient.setQueryData(TAKEOUT_KEYS.list(), (old: any) => {
-        if (!old) {
-          return {
-            content: [newTakeout],
-            totalElements: 1,
-            page: 0,
-            size: 20,
-            totalPages: 1,
-          };
+      queryClient.setQueryData<PageResponse<TakeoutResponse> | undefined>(
+        TAKEOUT_KEYS.list(),
+        (old) => {
+          if (!old) {
+            return undefined;
+          }
+          return { ...old, content: [newTakeout, ...old.content] };
         }
-        return { ...old, content: [newTakeout, ...old.content] };
-      });
+      );
       queryClient.invalidateQueries({ queryKey: TAKEOUT_KEYS.all });
       showToast(
         'Data export requested. This may take a few minutes.',
@@ -80,15 +79,18 @@ export const useDeleteTakeout = () => {
   return useMutation({
     mutationFn: deleteTakeout,
     onSuccess: (_data, identifier) => {
-      queryClient.setQueryData(TAKEOUT_KEYS.list(), (old: any) => {
-        if (!old) {
-          return old;
+      queryClient.setQueryData<PageResponse<TakeoutResponse> | undefined>(
+        TAKEOUT_KEYS.list(),
+        (old) => {
+          if (!old) {
+            return old;
+          }
+          return {
+            ...old,
+            content: old.content.filter((t) => t.identifier !== identifier),
+          };
         }
-        return {
-          ...old,
-          content: old.content.filter((t: any) => t.identifier !== identifier),
-        };
-      });
+      );
       queryClient.invalidateQueries({ queryKey: TAKEOUT_KEYS.all });
       showToast('Data export deleted.', 'success');
     },

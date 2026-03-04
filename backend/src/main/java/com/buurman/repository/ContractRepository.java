@@ -24,6 +24,7 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractIncomeEntry;
+import com.buurman.domain.Sid;
 import com.buurman.domain.metadata.CountryMetadataSerializer;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
@@ -49,7 +50,7 @@ public class ContractRepository {
   private static final Field<JSONB> COUNTRY_METADATA =
       org.jooq.impl.DSL.field("country_metadata", JSONB.class);
 
-  public Optional<Contract> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Optional<Contract> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(CONTRACTS)
         .where(
             CONTRACTS
@@ -61,7 +62,7 @@ public class ContractRepository {
         .flatMap(mapper::toDomain);
   }
 
-  public Contract getByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Contract getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Contract not found"));
   }
@@ -200,7 +201,7 @@ public class ContractRepository {
 
       dsl.insertInto(CONTRACTS)
           .set(CONTRACTS.ID, id)
-          .set(CONTRACTS.IDENTIFIER, contract.getIdentifier())
+          .set(CONTRACTS.IDENTIFIER, contract.getIdentifier().orElseThrow())
           .set(CONTRACTS.TEAM_ID, contract.getTeamId())
           .set(CONTRACTS.PROPERTY_ID, contract.getPropertyId())
           .set(CONTRACTS.CONTRACT_TYPE, contract.getContractType().name())

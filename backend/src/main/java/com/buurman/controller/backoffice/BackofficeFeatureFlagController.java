@@ -4,15 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.Sid;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamMember;
 import com.buurman.domain.User;
+import com.buurman.domain.identifier.TeamIdentifier;
+import com.buurman.domain.identifier.UserIdentifier;
 import com.buurman.dto.request.backoffice.UpdateFeatureFlagRequest;
 import com.buurman.dto.response.backoffice.FeatureFlagUpdateResponse;
 import com.buurman.dto.response.backoffice.SegmentEvaluation;
@@ -57,7 +59,7 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
   }
 
   @Override
-  public List<TeamFlagEvaluation> getUserFlags(String userIdentifier) {
+  public List<TeamFlagEvaluation> getUserFlags(UserIdentifier userIdentifier) {
     User user =
         userRepository
             .findByIdentifierUnscoped(userIdentifier)
@@ -74,13 +76,13 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
         continue;
       }
 
-      String identity =
-          FeatureFlagService.buildIdentity(
-              Objects.requireNonNull(team.getIdentifier()),
-              Objects.requireNonNull(user.getIdentifier()));
+      Sid teamId = team.getIdentifier().orElseThrow();
+      Sid userId = user.getIdentifier().orElseThrow();
+
+      String identity = FeatureFlagService.buildIdentity(teamId.value(), userId.value());
 
       Map<String, Object> traits = new HashMap<>();
-      traits.put("team", team.getIdentifier());
+      traits.put("team", teamId);
       traits.put("role", membership.getRole());
       traits.put("is_owner", membership.isOwner());
 
@@ -88,7 +90,7 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
 
       evaluations.add(
           new TeamFlagEvaluation(
-              team.getIdentifier(),
+              teamId,
               team.getName(),
               membership.getRole().name(),
               membership.isOwner(),
@@ -124,12 +126,13 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
 
   @Override
   public FeatureFlagUpdateResponse upsertIdentityOverride(
-      String userIdentifier,
-      String teamIdentifier,
+      UserIdentifier userIdentifier,
+      TeamIdentifier teamIdentifier,
       String flagName,
       UpdateFeatureFlagRequest updateFeatureFlagRequest) {
 
-    String identity = FeatureFlagService.buildIdentity(teamIdentifier, userIdentifier);
+    String identity =
+        FeatureFlagService.buildIdentity(teamIdentifier.value(), userIdentifier.value());
 
     // Find the feature ID from the global feature states
     FeatureStateInfo globalState =
@@ -184,9 +187,10 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
 
   @Override
   public void deleteIdentityOverride(
-      String userIdentifier, String teamIdentifier, String flagName) {
+      UserIdentifier userIdentifier, TeamIdentifier teamIdentifier, String flagName) {
 
-    String identity = FeatureFlagService.buildIdentity(teamIdentifier, userIdentifier);
+    String identity =
+        FeatureFlagService.buildIdentity(teamIdentifier.value(), userIdentifier.value());
 
     FeatureStateInfo globalState =
         flagsmithAdminService

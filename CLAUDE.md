@@ -93,8 +93,8 @@ Commands (via Makefile):
 
 ### IDs Pattern
 - Internal: UUID (primary keys, never exposed in APIs)
-- External: ULID via `identifier` column (26 chars, sortable, user-facing)
-- `UlidGenerator.java` for generation, `EntityPrefix` for type-prefixed IDs
+- External: Sid via `identifier` column (26 chars, sortable, user-facing)
+- `SidGenerator.java` for generation, `EntityPrefix` for type-prefixed IDs
 
 ### Audit Pattern
 - All entities: `created_at`, `updated_at`, `created_by`, `updated_by`
@@ -117,7 +117,7 @@ com.buurman
 ├── exception/       GlobalExceptionHandler + custom exceptions
 ├── job/             Quartz scheduled jobs
 ├── db/              FlywayMigrationLogger
-└── util/            UlidGenerator, PaginationHelper, EntityPrefix, DateUtils
+└── util/            SidGenerator, PaginationHelper, EntityPrefix, DateUtils
 ```
 
 ### App Structure
@@ -141,7 +141,7 @@ src/
 
 **Security**: `@PreAuthorize` on service methods for role-based access. `@EnableMethodSecurity(prePostEnabled = true)` in SecurityConfig. Role hierarchy: TEAM_ADMIN > TEAM_EDITOR > TEAM_VIEWER.
 
-**DTOs**: Response DTOs are Java `record` types exposing only `identifier` (ULID), never internal UUIDs.
+**DTOs**: Response DTOs are Java `record` types exposing only `identifier` (Sid), never internal UUIDs.
 
 **Pagination**: `PageRequest` / `PageResponse` DTOs with `PaginationHelper` utility for JOOQ LIMIT/OFFSET.
 
@@ -154,7 +154,7 @@ src/
 ## Database Schema Conventions
 
 - `id UUID PRIMARY KEY DEFAULT gen_random_uuid()`
-- `identifier VARCHAR(26) NOT NULL` (ULID)
+- `identifier VARCHAR(26) NOT NULL` (Sid)
 - `team_id UUID NOT NULL REFERENCES teams(id)`
 - Audit: `created_at`, `updated_at`, `created_by`, `updated_by`
 - `deleted_at TIMESTAMP` for soft deletes (NULL = active)

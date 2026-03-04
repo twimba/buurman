@@ -50,6 +50,7 @@ import com.buurman.domain.PaymentInstruction;
 import com.buurman.domain.PaymentReceival;
 import com.buurman.domain.Property;
 import com.buurman.domain.Tenant;
+import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.repository.ContractPaymentInstructionRepository;
 import com.buurman.repository.ContractRentPeriodRepository;
 import com.buurman.repository.ContractRepository;
@@ -90,7 +91,7 @@ public class ContractBookletExporter {
           "ZELLE", "Zelle",
           "OTHER", "Other");
 
-  public byte[] generate(String contractIdentifier, UUID teamId) {
+  public byte[] generate(ContractIdentifier contractIdentifier, UUID teamId) {
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
     Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
 
@@ -211,7 +212,11 @@ public class ContractBookletExporter {
       String ccy,
       DateTimeFormatter dateFmt,
       String generatedDate) {
-    appendCoverStart(html, "CONTRACT REPORT", escapeHtml(contract.getIdentifier()), generatedDate);
+    appendCoverStart(
+        html,
+        "CONTRACT REPORT",
+        escapeHtml(contract.getIdentifier().orElseThrow().value()),
+        generatedDate);
 
     String statusStr = contract.getStatus() != null ? contract.getStatus().name() : "DRAFT";
     appendStatusBadge(html, statusStr);
@@ -261,7 +266,7 @@ public class ContractBookletExporter {
     String statusStr = contract.getStatus() != null ? contract.getStatus().name() : "DRAFT";
     html.append("<table class='detail-grid'>");
     html.append("<tr>");
-    appendField(html, "Contract ID", contract.getIdentifier());
+    appendField(html, "Contract ID", contract.getIdentifier().orElseThrow().value());
     appendField(html, "Status", formatEnumValue(statusStr));
     html.append("</tr><tr>");
     appendField(
@@ -358,7 +363,7 @@ public class ContractBookletExporter {
     appendField(html, "Property Type", formatEnumValue(property.getPropertyType().name()));
     html.append("</tr><tr>");
     appendField(html, "Category", formatEnumValue(property.getPropertyCategory().name()));
-    appendField(html, "Property ID", property.getIdentifier());
+    appendField(html, "Property ID", property.getIdentifier().orElseThrow().value());
     html.append("</tr><tr>");
     appendField(
         html,
@@ -462,7 +467,7 @@ public class ContractBookletExporter {
       html.append(
               "<tr><td class='pd-label'>Reference</td><td class='pd-value'"
                   + " style='color:#a0aec0;font-size:11px;'>")
-          .append(t.getIdentifier())
+          .append(t.getIdentifier().orElseThrow().value())
           .append("</td><td></td><td></td></tr>");
       html.append("</table></div>");
     }

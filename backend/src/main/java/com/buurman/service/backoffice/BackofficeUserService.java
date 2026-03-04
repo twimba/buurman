@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.User;
+import com.buurman.domain.identifier.UserIdentifier;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.backoffice.BackofficeUserResponse;
@@ -68,7 +69,7 @@ public class BackofficeUserService {
   }
 
   @Transactional(readOnly = true)
-  public BackofficeUserResponse getUser(String identifier) {
+  public BackofficeUserResponse getUser(UserIdentifier identifier) {
     User user = userRepository.getByIdentifierUnscoped(identifier);
 
     long teamCount = statsRepository.countTeamsForUser(user.getId());
@@ -85,7 +86,7 @@ public class BackofficeUserService {
   }
 
   @Transactional
-  public void disableUser(String identifier, BackofficePrincipal principal) {
+  public void disableUser(UserIdentifier identifier, BackofficePrincipal principal) {
     User user = userRepository.getByIdentifierUnscoped(identifier);
 
     LocalDateTime now = LocalDateTime.now(clock);
@@ -100,7 +101,7 @@ public class BackofficeUserService {
   }
 
   @Transactional
-  public void enableUser(String identifier, BackofficePrincipal principal) {
+  public void enableUser(UserIdentifier identifier, BackofficePrincipal principal) {
     User user = userRepository.getByIdentifierUnscoped(identifier);
 
     userRepository.updateDisabledAt(user.getId(), null);
@@ -114,7 +115,7 @@ public class BackofficeUserService {
   }
 
   @Transactional
-  public void resetPassword(String identifier, BackofficePrincipal principal) {
+  public void resetPassword(UserIdentifier identifier, BackofficePrincipal principal) {
     User user = userRepository.getByIdentifierUnscoped(identifier);
 
     keycloakService.sendPasswordResetEmail(user.getKeycloakId());
@@ -129,7 +130,7 @@ public class BackofficeUserService {
   private BackofficeUserResponse toResponse(
       User user, long teamCount, long demoTeamCount, boolean online) {
     return new BackofficeUserResponse(
-        java.util.Objects.requireNonNull(user.getIdentifier()),
+        user.getIdentifier().orElseThrow(),
         user.getEmail(),
         Optional.ofNullable(user.getFirstName()),
         Optional.ofNullable(user.getLastName()),

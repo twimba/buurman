@@ -6,9 +6,10 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.PropertyTax;
+import com.buurman.domain.Sid;
 
 public record PropertyTaxResponse(
-    String identifier,
+    Sid identifier,
     Optional<PropertySummary> property,
     PropertyTax.TaxType taxType,
     Optional<String> authority,

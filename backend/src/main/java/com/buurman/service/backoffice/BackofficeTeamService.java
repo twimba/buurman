@@ -16,6 +16,7 @@ import com.buurman.domain.Team;
 import com.buurman.domain.TeamMember;
 import com.buurman.domain.TeamPreferences;
 import com.buurman.domain.User;
+import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.backoffice.UpdateTeamNameRequest;
 import com.buurman.dto.response.PageResponse;
@@ -58,7 +59,7 @@ public class BackofficeTeamService {
   }
 
   @Transactional(readOnly = true)
-  public BackofficeTeamDetailResponse getTeam(String identifier) {
+  public BackofficeTeamDetailResponse getTeam(TeamIdentifier identifier) {
     Team team = teamRepository.getByIdentifierForBackoffice(identifier);
 
     // Members + batch user lookup
@@ -115,7 +116,7 @@ public class BackofficeTeamService {
             Optional.ofNullable(prefs.getFiscalYearStartMonth()));
 
     return new BackofficeTeamDetailResponse(
-        team.getIdentifier(),
+        team.getIdentifier().orElseThrow(),
         team.getName(),
         team.getCreatedAt(),
         Optional.ofNullable(team.getUpdatedAt()),
@@ -127,7 +128,7 @@ public class BackofficeTeamService {
 
   @Transactional
   public BackofficeTeamResponse updateTeamName(
-      String identifier, UpdateTeamNameRequest request, BackofficePrincipal principal) {
+      TeamIdentifier identifier, UpdateTeamNameRequest request, BackofficePrincipal principal) {
     Team team = teamRepository.getByIdentifierForBackoffice(identifier);
 
     team.setName(request.name());
@@ -142,7 +143,7 @@ public class BackofficeTeamService {
   }
 
   @Transactional
-  public void deleteTeam(String identifier, BackofficePrincipal principal) {
+  public void deleteTeam(TeamIdentifier identifier, BackofficePrincipal principal) {
     Team team = teamRepository.getByIdentifierForBackoffice(identifier);
 
     teamRepository.softDeleteById(team.getId());
@@ -166,7 +167,7 @@ public class BackofficeTeamService {
             .orElse(null);
 
     return new BackofficeTeamResponse(
-        team.getIdentifier(),
+        team.getIdentifier().orElseThrow(),
         team.getName(),
         team.isDemo(),
         memberCount,

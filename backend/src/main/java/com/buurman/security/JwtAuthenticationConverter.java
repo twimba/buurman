@@ -70,14 +70,17 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
 
     boolean emailVerified = user.getEmailVerifiedAt().isPresent();
 
-    String userIdentifier = Objects.requireNonNull(user.getIdentifier(), "User identifier is null");
+    String userIdentifier =
+        user.getIdentifier()
+            .orElseThrow(() -> new IllegalStateException("User identifier is null"))
+            .value();
 
     // Resolve team for active membership (team may have been deleted after token was issued)
     Optional<Team> teamOpt = membershipOpt.flatMap(m -> teamRepository.findById(m.getTeamId()));
 
     if (membershipOpt.isPresent() && teamOpt.isPresent()) {
       TeamMember membership = membershipOpt.get();
-      String teamIdentifier = teamOpt.get().getIdentifier();
+      String teamIdentifier = teamOpt.get().getIdentifier().orElseThrow().value();
       principal =
           new UserPrincipal(
               user.getId(),

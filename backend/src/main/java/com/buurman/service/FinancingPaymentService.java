@@ -1,6 +1,6 @@
 package com.buurman.service;
 
-import static com.buurman.util.UlidGenerator.newFinancingPaymentId;
+import static com.buurman.util.SidGenerator.newFinancingPaymentId;
 import static java.util.stream.Collectors.joining;
 
 import java.math.BigDecimal;
@@ -21,6 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.domain.FinancingPayment;
 import com.buurman.domain.PropertyFinancing;
+import com.buurman.domain.Sid;
+import com.buurman.domain.identifier.FinancingPaymentIdentifier;
+import com.buurman.domain.identifier.PropertyFinancingIdentifier;
 import com.buurman.dto.request.CreateFinancingPaymentRequest;
 import com.buurman.dto.request.UpdateFinancingPaymentRequest;
 import com.buurman.dto.response.BulkCreateResult;
@@ -52,13 +55,15 @@ public class FinancingPaymentService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public FinancingPaymentResponse create(
-      String financingIdentifier, CreateFinancingPaymentRequest request, UserPrincipal principal) {
+      PropertyFinancingIdentifier financingIdentifier,
+      CreateFinancingPaymentRequest request,
+      UserPrincipal principal) {
     return performCreate(financingIdentifier, request, principal);
   }
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public List<BulkCreateResult<FinancingPaymentResponse>> bulkCreate(
-      String financingIdentifier,
+      PropertyFinancingIdentifier financingIdentifier,
       List<CreateFinancingPaymentRequest> requests,
       UserPrincipal principal) {
 
@@ -94,7 +99,9 @@ public class FinancingPaymentService {
   }
 
   private FinancingPaymentResponse performCreate(
-      String financingIdentifier, CreateFinancingPaymentRequest request, UserPrincipal principal) {
+      PropertyFinancingIdentifier financingIdentifier,
+      CreateFinancingPaymentRequest request,
+      UserPrincipal principal) {
 
     PropertyFinancing financing =
         financingRepository.getByIdentifierAndTeamId(
@@ -102,7 +109,7 @@ public class FinancingPaymentService {
 
     FinancingPayment payment = paymentMapper.toEntity(request);
     payment.setFinancingId(financing.getId());
-    payment.setIdentifier(newFinancingPaymentId().value());
+    payment.setIdentifier(Optional.of(newFinancingPaymentId()));
     payment.setTeamId(principal.requireTeamId());
     payment.setCreatedBy(principal.getUserId());
     payment.setUpdatedBy(principal.getUserId());
@@ -121,18 +128,20 @@ public class FinancingPaymentService {
 
     log.info(
         "Created financing payment {} for financing {} by user {}{}",
-        saved.getIdentifier(),
-        financing.getIdentifier(),
+        saved.getIdentifier().orElseThrow(),
+        financing.getIdentifier().orElseThrow(),
         principal.getUserId(),
         saved.isBalanceDeducted() ? " (balance deducted by " + deductionAmount + ")" : "");
 
-    return toResponse(saved, financing.getIdentifier());
+    return toResponse(saved, financing.getIdentifier().orElseThrow());
   }
 
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public FinancingPaymentResponse update(
-      String paymentIdentifier, UpdateFinancingPaymentRequest request, UserPrincipal principal) {
+      FinancingPaymentIdentifier paymentIdentifier,
+      UpdateFinancingPaymentRequest request,
+      UserPrincipal principal) {
 
     FinancingPayment payment =
         paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.requireTeamId());
@@ -174,9 +183,11 @@ public class FinancingPaymentService {
     FinancingPayment updated = paymentRepository.save(payment);
 
     log.info(
-        "Updated financing payment {} by user {}", updated.getIdentifier(), principal.getUserId());
+        "Updated financing payment {} by user {}",
+        updated.getIdentifier().orElseThrow(),
+        principal.getUserId());
 
-    String financingIdentifier =
+    Sid financingIdentifier =
         resolveFinancingIdentifier(updated.getFinancingId(), principal.requireTeamId());
 
     return toResponse(updated, financingIdentifier);
@@ -184,7 +195,7 @@ public class FinancingPaymentService {
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void delete(String paymentIdentifier, UserPrincipal principal) {
+  public void delete(FinancingPaymentIdentifier paymentIdentifier, UserPrincipal principal) {
     FinancingPayment payment =
         paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.requireTeamId());
 
@@ -204,12 +215,14 @@ public class FinancingPaymentService {
     paymentRepository.softDeleteByIdAndTeamId(payment.getId(), principal.requireTeamId());
 
     log.info(
-        "Deleted financing payment {} by user {}", payment.getIdentifier(), principal.getUserId());
+        "Deleted financing payment {} by user {}",
+        payment.getIdentifier().orElseThrow(),
+        principal.getUserId());
   }
 
   @Transactional(readOnly = true)
   public List<FinancingPaymentResponse> listByFinancing(
-      String financingIdentifier, UserPrincipal principal) {
+      PropertyFinancingIdentifier financingIdentifier, UserPrincipal principal) {
 
     PropertyFinancing financing =
         financingRepository.getByIdentifierAndTeamId(
@@ -218,7 +231,7 @@ public class FinancingPaymentService {
     return paymentRepository
         .findByFinancingIdAndTeamId(financing.getId(), principal.requireTeamId())
         .stream()
-        .map(p -> toResponse(p, financing.getIdentifier()))
+        .map(p -> toResponse(p, financing.getIdentifier().orElseThrow()))
         .toList();
   }
 
@@ -226,7 +239,7 @@ public class FinancingPaymentService {
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public DocumentResponse uploadPaymentDocument(
-      String paymentIdentifier,
+      FinancingPaymentIdentifier paymentIdentifier,
       MultipartFile file,
       @Nullable String title,
       @Nullable String notes,
@@ -238,14 +251,14 @@ public class FinancingPaymentService {
         file,
         "FINANCING_PAYMENT",
         payment.getId(),
-        payment.getIdentifier(),
+        payment.getIdentifier().orElseThrow(),
         title,
         notes,
         principal);
   }
 
   public List<DocumentResponse> getPaymentDocuments(
-      String paymentIdentifier, UserPrincipal principal) {
+      FinancingPaymentIdentifier paymentIdentifier, UserPrincipal principal) {
     FinancingPayment payment =
         paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.requireTeamId());
 
@@ -277,8 +290,7 @@ public class FinancingPaymentService {
 
   // ===== Response Helpers =====
 
-  private FinancingPaymentResponse toResponse(
-      FinancingPayment payment, String financingIdentifier) {
+  private FinancingPaymentResponse toResponse(FinancingPayment payment, Sid financingIdentifier) {
 
     FinancingPaymentResponse mapped = paymentMapper.toResponse(payment);
     return new FinancingPaymentResponse(
@@ -298,11 +310,11 @@ public class FinancingPaymentService {
         mapped.updatedAt());
   }
 
-  private String resolveFinancingIdentifier(UUID financingId, UUID teamId) {
+  private Sid resolveFinancingIdentifier(UUID financingId, UUID teamId) {
     return financingRepository
         .findByIdAndTeamId(financingId, teamId)
-        .map(PropertyFinancing::getIdentifier)
-        .orElse("UNKNOWN");
+        .flatMap(PropertyFinancing::getIdentifier)
+        .orElseThrow();
   }
 
   private String extractErrorMessage(Exception e) {

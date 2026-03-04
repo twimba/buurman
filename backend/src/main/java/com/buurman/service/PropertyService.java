@@ -1,6 +1,6 @@
 package com.buurman.service;
 
-import static com.buurman.util.UlidGenerator.newPropertyId;
+import static com.buurman.util.SidGenerator.newPropertyId;
 
 import java.net.URL;
 import java.util.EnumMap;
@@ -27,6 +27,9 @@ import com.buurman.domain.PropertyAgriculturalDetails;
 import com.buurman.domain.PropertyCommercialDetails;
 import com.buurman.domain.PropertyIndustrialDetails;
 import com.buurman.domain.PropertyResidentialDetails;
+import com.buurman.domain.identifier.DocumentIdentifier;
+import com.buurman.domain.identifier.PhotoIdentifier;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.AgriculturalDetailsRequest;
 import com.buurman.dto.request.CommercialDetailsRequest;
 import com.buurman.dto.request.CreatePropertyRequest;
@@ -142,7 +145,7 @@ public class PropertyService {
     validateCategoryTypeMatch(request.propertyCategory(), request.propertyType());
 
     Property property = propertyMapper.toEntity(request);
-    property.setIdentifier(newPropertyId().value());
+    property.setIdentifier(Optional.of(newPropertyId()));
     property.setTeamId(principal.requireTeamId());
     property.setCreatedBy(principal.getUserId());
     property.setUpdatedBy(principal.getUserId());
@@ -176,7 +179,7 @@ public class PropertyService {
 
     log.info(
         "Property created: {} ({}) for team {}",
-        savedProperty.getIdentifier(),
+        savedProperty.getIdentifier().orElseThrow(),
         request.propertyCategory(),
         principal.requireTeamId());
 
@@ -226,7 +229,7 @@ public class PropertyService {
         responses, pageRequest.page(), pageRequest.size(), result.totalElements());
   }
 
-  public PropertyResponse getProperty(String identifier, UserPrincipal principal) {
+  public PropertyResponse getProperty(PropertyIdentifier identifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -236,7 +239,7 @@ public class PropertyService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyResponse updateProperty(
-      String identifier, UpdatePropertyRequest request, UserPrincipal principal) {
+      PropertyIdentifier identifier, UpdatePropertyRequest request, UserPrincipal principal) {
 
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
@@ -304,7 +307,7 @@ public class PropertyService {
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void deleteProperty(String identifier, UserPrincipal principal) {
+  public void deleteProperty(PropertyIdentifier identifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -316,7 +319,7 @@ public class PropertyService {
   }
 
   public DocumentResponse uploadDocument(
-      String identifier,
+      PropertyIdentifier identifier,
       MultipartFile file,
       @Nullable String title,
       @Nullable String notes,
@@ -324,38 +327,47 @@ public class PropertyService {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return documentService.uploadDocument(
-        file, "PROPERTY", property.getId(), property.getIdentifier(), title, notes, principal);
+        file,
+        "PROPERTY",
+        property.getId(),
+        property.getIdentifier().orElseThrow(),
+        title,
+        notes,
+        principal);
   }
 
-  public List<DocumentResponse> getDocuments(String identifier, UserPrincipal principal) {
+  public List<DocumentResponse> getDocuments(
+      PropertyIdentifier identifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return documentService.getDocuments("PROPERTY", property.getId(), principal);
   }
 
-  public Map<String, String> getDownloadUrl(String documentIdentifier, UserPrincipal principal) {
+  public Map<String, String> getDownloadUrl(
+      DocumentIdentifier documentIdentifier, UserPrincipal principal) {
     URL url = documentService.getDownloadUrl(documentIdentifier, principal);
     return Map.of("url", url.toString());
   }
 
-  public void deleteDocument(String documentIdentifier, UserPrincipal principal) {
+  public void deleteDocument(DocumentIdentifier documentIdentifier, UserPrincipal principal) {
     documentService.deleteDocument(documentIdentifier, principal);
   }
 
-  public List<RecentActivityResponse> getAuditLog(String identifier, UserPrincipal principal) {
+  public List<RecentActivityResponse> getAuditLog(
+      PropertyIdentifier identifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return auditService.getEntityAuditLog(principal.requireTeamId(), "PROPERTY", property.getId());
   }
 
-  public List<PhotoResponse> getPhotos(String identifier, UserPrincipal principal) {
+  public List<PhotoResponse> getPhotos(PropertyIdentifier identifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return photoService.getPhotos("PROPERTY", property.getId(), principal);
   }
 
   public PhotoResponse uploadPhoto(
-      String identifier,
+      PropertyIdentifier identifier,
       MultipartFile file,
       @Nullable String title,
       @Nullable String notes,
@@ -363,11 +375,17 @@ public class PropertyService {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return photoService.uploadPhoto(
-        file, "PROPERTY", property.getId(), property.getIdentifier(), title, notes, principal);
+        file,
+        "PROPERTY",
+        property.getId(),
+        property.getIdentifier().orElseThrow(),
+        title,
+        notes,
+        principal);
   }
 
   public PhotoResponse setMainPhoto(
-      String identifier, String photoIdentifier, UserPrincipal principal) {
+      PropertyIdentifier identifier, PhotoIdentifier photoIdentifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     Photo photo =
@@ -720,7 +738,7 @@ public class PropertyService {
                     .map(
                         a ->
                             new PropertyOutdoorAreaResponse(
-                                a.getIdentifier(),
+                                a.getIdentifier().orElseThrow(),
                                 a.getType(),
                                 a.getAreaValue(),
                                 Optional.of(a.getAreaUnit()),

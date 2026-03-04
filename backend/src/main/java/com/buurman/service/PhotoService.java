@@ -21,6 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
 import com.buurman.domain.Photo;
+import com.buurman.domain.Sid;
+import com.buurman.domain.identifier.PhotoIdentifier;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdatePhotoRequest;
 import com.buurman.dto.response.PageResponse;
@@ -66,7 +68,7 @@ public class PhotoService {
       MultipartFile file,
       String entityType,
       UUID entityId,
-      String entityIdentifier,
+      Sid entityIdentifier,
       @Nullable String title,
       @Nullable String notes,
       UserPrincipal principal) {
@@ -104,7 +106,7 @@ public class PhotoService {
     // Upload to S3
     String fileKey =
         s3StorageService.uploadFile(
-            file, principal.requireTeamIdentifier(), entityType, entityIdentifier);
+            file, Sid.of(principal.requireTeamIdentifier()), entityType, entityIdentifier);
 
     // Save photo metadata
     Photo photo = new Photo();
@@ -129,7 +131,10 @@ public class PhotoService {
         "photo.upload.bytes", (double) file.getSize(), "entity_type", entityType);
 
     log.info(
-        "Photo uploaded: {} for entity {}/{}", savedPhoto.getIdentifier(), entityType, entityId);
+        "Photo uploaded: {} for entity {}/{}",
+        savedPhoto.getIdentifier().orElseThrow(),
+        entityType,
+        entityId);
 
     // Log to audit trail for the parent entity
     java.util.Map<String, Object> changedFields = new java.util.HashMap<>();
@@ -154,12 +159,12 @@ public class PhotoService {
     return photos.stream().map(this::toResponseWithDownloadUrl).toList();
   }
 
-  public PhotoResponse getPhoto(String identifier, UserPrincipal principal) {
+  public PhotoResponse getPhoto(PhotoIdentifier identifier, UserPrincipal principal) {
     Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return toResponseWithDownloadUrl(photo);
   }
 
-  public URL getDownloadUrl(String identifier, UserPrincipal principal) {
+  public URL getDownloadUrl(PhotoIdentifier identifier, UserPrincipal principal) {
     Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     metricsService.incrementCounter("photo.download.total", "entity_type", photo.getEntityType());
@@ -168,7 +173,7 @@ public class PhotoService {
   }
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-  public void deletePhoto(String identifier, UserPrincipal principal) {
+  public void deletePhoto(PhotoIdentifier identifier, UserPrincipal principal) {
     Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     // Soft delete in database
@@ -180,7 +185,7 @@ public class PhotoService {
 
     metricsService.incrementCounter("photo.delete.total", "entity_type", photo.getEntityType());
 
-    log.info("Photo deleted: {}", photo.getIdentifier());
+    log.info("Photo deleted: {}", photo.getIdentifier().orElseThrow());
 
     // Log to audit trail for the parent entity
     java.util.Map<String, Object> changedFields = new java.util.HashMap<>();
@@ -199,7 +204,7 @@ public class PhotoService {
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PhotoResponse updatePhoto(
-      String identifier, UpdatePhotoRequest request, UserPrincipal principal) {
+      PhotoIdentifier identifier, UpdatePhotoRequest request, UserPrincipal principal) {
     Photo photo = photoRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     Optional<String> oldTitle = photo.getTitle();
@@ -308,7 +313,7 @@ public class PhotoService {
         Optional.ofNullable(thumbnailUrl));
   }
 
-  public byte[] bulkDownload(List<String> photoIdentifiers, UserPrincipal principal) {
+  public byte[] bulkDownload(List<Sid> photoIdentifiers, UserPrincipal principal) {
     if (photoIdentifiers == null || photoIdentifiers.isEmpty()) {
       throw new IllegalArgumentException("No photos selected for download");
     }
@@ -346,7 +351,10 @@ public class PhotoService {
 
           log.debug("Added photo to zip: {}", fileName);
         } catch (Exception e) {
-          log.error("Failed to add photo {} to zip: {}", photo.getIdentifier(), e.getMessage());
+          log.error(
+              "Failed to add photo {} to zip: {}",
+              photo.getIdentifier().orElseThrow(),
+              e.getMessage());
           // Continue with other photos even if one fails
         }
       }

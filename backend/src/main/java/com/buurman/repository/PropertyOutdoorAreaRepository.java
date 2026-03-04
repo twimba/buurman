@@ -13,6 +13,7 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.PropertyOutdoorArea;
+import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,7 @@ public class PropertyOutdoorAreaRepository {
             .map(this::toDomain));
   }
 
-  public Optional<PropertyOutdoorArea> findByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public Optional<PropertyOutdoorArea> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(PROPERTY_OUTDOOR_AREAS)
         .where(
             PROPERTY_OUTDOOR_AREAS
@@ -50,7 +51,7 @@ public class PropertyOutdoorAreaRepository {
         .map(this::toDomain);
   }
 
-  public PropertyOutdoorArea getByIdentifierAndTeamId(String identifier, UUID teamId) {
+  public PropertyOutdoorArea getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Outdoor area not found"));
   }
@@ -65,7 +66,7 @@ public class PropertyOutdoorAreaRepository {
 
       dsl.insertInto(PROPERTY_OUTDOOR_AREAS)
           .set(PROPERTY_OUTDOOR_AREAS.ID, newId)
-          .set(PROPERTY_OUTDOOR_AREAS.IDENTIFIER, area.getIdentifier())
+          .set(PROPERTY_OUTDOOR_AREAS.IDENTIFIER, area.getIdentifier().orElseThrow())
           .set(PROPERTY_OUTDOOR_AREAS.PROPERTY_ID, area.getPropertyId())
           .set(PROPERTY_OUTDOOR_AREAS.TEAM_ID, area.getTeamId())
           .set(PROPERTY_OUTDOOR_AREAS.TYPE, area.getType())
@@ -114,7 +115,7 @@ public class PropertyOutdoorAreaRepository {
       com.buurman.jooq.generated.tables.records.PropertyOutdoorAreasRecord record) {
     PropertyOutdoorArea area = new PropertyOutdoorArea();
     area.setId(record.getId());
-    area.setIdentifier(record.getIdentifier());
+    area.setIdentifier(java.util.Optional.of(record.getIdentifier()));
     area.setPropertyId(record.getPropertyId());
     area.setTeamId(record.getTeamId());
     area.setType(record.getType());

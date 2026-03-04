@@ -5,6 +5,8 @@ import java.util.List;
 import org.jspecify.annotations.Nullable;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.identifier.ContractIdentifier;
+import com.buurman.domain.identifier.ContractPaymentInstructionIdentifier;
 import com.buurman.dto.request.CreateContractPaymentInstructionRequest;
 import com.buurman.dto.request.UpdateContractPaymentInstructionRequest;
 import com.buurman.dto.response.ContractPaymentInstructionResponse;
@@ -22,20 +24,22 @@ public class ContractPaymentInstructionController implements ContractPaymentInst
   private final ContractPaymentInstructionService service;
 
   @Override
-  public List<ContractPaymentInstructionResponse> getHistory(String contractIdentifier) {
+  public List<ContractPaymentInstructionResponse> getHistory(
+      ContractIdentifier contractIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return service.getHistory(contractIdentifier, principal);
   }
 
   @Override
-  public @Nullable ContractPaymentInstructionResponse getCurrent(String contractIdentifier) {
+  public @Nullable ContractPaymentInstructionResponse getCurrent(
+      ContractIdentifier contractIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return service.getCurrent(contractIdentifier, principal).orElse(null);
   }
 
   @Override
   public ContractPaymentInstructionResponse createContractPaymentInstruction(
-      String contractIdentifier,
+      ContractIdentifier contractIdentifier,
       CreateContractPaymentInstructionRequest createContractPaymentInstructionRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return service.create(contractIdentifier, createContractPaymentInstructionRequest, principal);
@@ -43,8 +47,8 @@ public class ContractPaymentInstructionController implements ContractPaymentInst
 
   @Override
   public ContractPaymentInstructionResponse updateContractPaymentInstruction(
-      String contractIdentifier,
-      String instructionIdentifier,
+      ContractIdentifier contractIdentifier,
+      ContractPaymentInstructionIdentifier instructionIdentifier,
       UpdateContractPaymentInstructionRequest updateContractPaymentInstructionRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return service.update(
@@ -56,7 +60,8 @@ public class ContractPaymentInstructionController implements ContractPaymentInst
 
   @Override
   public void deleteContractPaymentInstruction(
-      String contractIdentifier, String instructionIdentifier) {
+      ContractIdentifier contractIdentifier,
+      ContractPaymentInstructionIdentifier instructionIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     service.delete(contractIdentifier, instructionIdentifier, principal);
   }

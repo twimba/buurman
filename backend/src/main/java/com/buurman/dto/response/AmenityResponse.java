@@ -2,9 +2,7 @@ package com.buurman.dto.response;
 
 import java.util.List;
 
+import com.buurman.domain.Sid;
+
 public record AmenityResponse(
-    String identifier,
-    String name,
-    String category,
-    String icon,
-    List<String> applicableCategories) {}
+    Sid identifier, String name, String category, String icon, List<String> applicableCategories) {}

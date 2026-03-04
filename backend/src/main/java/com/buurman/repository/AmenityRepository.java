@@ -12,6 +12,7 @@ import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Amenity;
+import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -30,14 +31,14 @@ public class AmenityRepository {
             .map(this::toDomain));
   }
 
-  public Optional<Amenity> findByIdentifier(String identifier) {
+  public Optional<Amenity> findByIdentifier(Sid identifier) {
     return dsl.selectFrom(AMENITIES)
         .where(AMENITIES.IDENTIFIER.eq(identifier))
         .fetchOptional()
         .map(this::toDomain);
   }
 
-  public Amenity getByIdentifier(String identifier) {
+  public Amenity getByIdentifier(Sid identifier) {
     return findByIdentifier(identifier)
         .orElseThrow(() -> new NotFoundException("Amenity not found"));
   }
@@ -56,7 +57,7 @@ public class AmenityRepository {
   private Amenity toDomain(com.buurman.jooq.generated.tables.records.AmenitiesRecord record) {
     Amenity amenity = new Amenity();
     amenity.setId(record.getId());
-    amenity.setIdentifier(record.getIdentifier());
+    amenity.setIdentifier(java.util.Optional.of(record.getIdentifier()));
     amenity.setName(record.getName());
     amenity.setCategory(record.getCategory());
     amenity.setIcon(record.getIcon());
