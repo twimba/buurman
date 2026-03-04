@@ -14,11 +14,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.buurman.domain.identifier.AmenityIdentifier;
-import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.domain.Amenity;
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyAmenity;
+import com.buurman.domain.identifier.AmenityIdentifier;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.PropertyAmenityRequest;
 import com.buurman.dto.response.AmenityResponse;
 import com.buurman.dto.response.PropertyAmenityResponse;
@@ -67,7 +67,9 @@ public class PropertyAmenityService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyAmenityResponse addAmenity(
-      PropertyIdentifier propertyIdentifier, PropertyAmenityRequest request, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier,
+      PropertyAmenityRequest request,
+      UserPrincipal principal) {
 
     Property property = resolveProperty(propertyIdentifier, principal);
     Amenity amenity = amenityRepository.getByIdentifier(request.amenityIdentifier());
@@ -96,7 +98,9 @@ public class PropertyAmenityService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void removeAmenity(
-      PropertyIdentifier propertyIdentifier, AmenityIdentifier amenityIdentifier, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier,
+      AmenityIdentifier amenityIdentifier,
+      UserPrincipal principal) {
 
     Property property = resolveProperty(propertyIdentifier, principal);
     Amenity amenity = amenityRepository.getByIdentifier(amenityIdentifier);

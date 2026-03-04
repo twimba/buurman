@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.Sid;
 
 public record PropertyTimelineResponse(
     Optional<LocalDate> acquisitionDate,
@@ -14,14 +14,14 @@ public record PropertyTimelineResponse(
 
   public record TimelineEntry(
       TimelineEntryType type,
-      Ulid identifier,
+      Sid identifier,
       LocalDate startDate,
       Optional<LocalDate> endDate,
       Optional<String> description,
       Optional<String> metadata) {}
 
   public record FinancingEntry(
-      Ulid identifier,
+      Sid identifier,
       LocalDate startDate,
       Optional<LocalDate> endDate,
       String financingType,

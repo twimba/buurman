@@ -24,6 +24,7 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractIncomeEntry;
+import com.buurman.domain.Sid;
 import com.buurman.domain.metadata.CountryMetadataSerializer;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
@@ -33,7 +34,6 @@ import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
 import lombok.RequiredArgsConstructor;
-import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -50,7 +50,7 @@ public class ContractRepository {
   private static final Field<JSONB> COUNTRY_METADATA =
       org.jooq.impl.DSL.field("country_metadata", JSONB.class);
 
-  public Optional<Contract> findByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
+  public Optional<Contract> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(CONTRACTS)
         .where(
             CONTRACTS
@@ -62,7 +62,7 @@ public class ContractRepository {
         .flatMap(mapper::toDomain);
   }
 
-  public Contract getByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
+  public Contract getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Contract not found"));
   }

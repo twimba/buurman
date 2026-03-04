@@ -26,11 +26,11 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.AuditLogEntry;
+import com.buurman.domain.Sid;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
 import lombok.RequiredArgsConstructor;
-import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -338,7 +338,7 @@ public class AuditLogRepository {
                     Optional.ofNullable(r.get(USERS.LAST_NAME))));
   }
 
-  public Optional<Ulid> findEntityIdentifier(String entityType, UUID entityId, UUID teamId) {
+  public Optional<Sid> findEntityIdentifier(String entityType, UUID entityId, UUID teamId) {
     return switch (entityType.toLowerCase(Locale.ROOT)) {
       case "property" ->
           dsl.select(PROPERTIES.IDENTIFIER)

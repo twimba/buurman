@@ -1,7 +1,5 @@
 package com.buurman.service.demo;
 
-import com.buurman.domain.Ulid;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -96,9 +94,9 @@ public class DemoPhotoGenerator {
 
   private int generatePropertyPhotos(
       UUID teamId,
-      com.buurman.domain.Ulid teamIdentifier,
+      com.buurman.domain.Sid teamIdentifier,
       UUID propertyId,
-      com.buurman.domain.Ulid propertyIdentifier,
+      com.buurman.domain.Sid propertyIdentifier,
       UUID uploadedBy,
       String propertyCategory) {
     record PhotoSlot(String category, String title, boolean isMain) {}

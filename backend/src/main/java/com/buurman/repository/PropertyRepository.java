@@ -20,6 +20,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Property;
+import com.buurman.domain.Sid;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.PropertyRecordMapper;
@@ -27,7 +28,6 @@ import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
 import lombok.RequiredArgsConstructor;
-import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -37,7 +37,7 @@ public class PropertyRepository {
   private final PropertyRecordMapper mapper;
   private final Clock clock;
 
-  public Optional<Property> findByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
+  public Optional<Property> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(PROPERTIES)
         .where(
             PROPERTIES
@@ -61,7 +61,7 @@ public class PropertyRepository {
         .map(mapper::toDomain);
   }
 
-  public Property getByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
+  public Property getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Property not found"));
   }

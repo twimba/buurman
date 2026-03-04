@@ -12,10 +12,10 @@ import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Amenity;
+import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
-import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -31,14 +31,14 @@ public class AmenityRepository {
             .map(this::toDomain));
   }
 
-  public Optional<Amenity> findByIdentifier(Ulid identifier) {
+  public Optional<Amenity> findByIdentifier(Sid identifier) {
     return dsl.selectFrom(AMENITIES)
         .where(AMENITIES.IDENTIFIER.eq(identifier))
         .fetchOptional()
         .map(this::toDomain);
   }
 
-  public Amenity getByIdentifier(Ulid identifier) {
+  public Amenity getByIdentifier(Sid identifier) {
     return findByIdentifier(identifier)
         .orElseThrow(() -> new NotFoundException("Amenity not found"));
   }

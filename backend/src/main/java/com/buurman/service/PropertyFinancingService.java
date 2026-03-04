@@ -1,6 +1,6 @@
 package com.buurman.service;
 
-import static com.buurman.util.UlidGenerator.newFinancingId;
+import static com.buurman.util.SidGenerator.newFinancingId;
 
 import java.time.Clock;
 import java.util.List;
@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyFinancing;
-import com.buurman.domain.Ulid;
+import com.buurman.domain.Sid;
 import com.buurman.domain.identifier.PropertyFinancingIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.CreatePropertyFinancingRequest;
@@ -39,7 +39,9 @@ public class PropertyFinancingService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyFinancingResponse create(
-      PropertyIdentifier propertyIdentifier, CreatePropertyFinancingRequest request, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier,
+      CreatePropertyFinancingRequest request,
+      UserPrincipal principal) {
 
     Property property =
         propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.requireTeamId());
@@ -67,7 +69,9 @@ public class PropertyFinancingService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyFinancingResponse update(
-      PropertyFinancingIdentifier financingIdentifier, UpdatePropertyFinancingRequest request, UserPrincipal principal) {
+      PropertyFinancingIdentifier financingIdentifier,
+      UpdatePropertyFinancingRequest request,
+      UserPrincipal principal) {
 
     PropertyFinancing financing =
         financingRepository.getByIdentifierAndTeamId(
@@ -80,9 +84,11 @@ public class PropertyFinancingService {
     PropertyFinancing updated = financingRepository.save(financing);
 
     log.info(
-        "Updated property financing {} by user {}", updated.getIdentifier().orElseThrow(), principal.getUserId());
+        "Updated property financing {} by user {}",
+        updated.getIdentifier().orElseThrow(),
+        principal.getUserId());
 
-    Ulid propertyIdentifier =
+    Sid propertyIdentifier =
         resolvePropertyIdentifier(updated.getPropertyId(), principal.requireTeamId());
 
     return toResponse(updated, propertyIdentifier);
@@ -125,14 +131,14 @@ public class PropertyFinancingService {
         financingRepository.getByIdentifierAndTeamId(
             financingIdentifier, principal.requireTeamId());
 
-    Ulid propertyIdentifier =
+    Sid propertyIdentifier =
         resolvePropertyIdentifier(financing.getPropertyId(), principal.requireTeamId());
 
     return toResponse(financing, propertyIdentifier);
   }
 
   private PropertyFinancingResponse toResponse(
-      PropertyFinancing financing, Ulid propertyIdentifier) {
+      PropertyFinancing financing, Sid propertyIdentifier) {
 
     PropertyFinancingResponse mapped = financingMapper.toResponse(financing);
     return new PropertyFinancingResponse(
@@ -159,7 +165,7 @@ public class PropertyFinancingService {
         mapped.updatedAt());
   }
 
-  private Ulid resolvePropertyIdentifier(java.util.UUID propertyId, java.util.UUID teamId) {
+  private Sid resolvePropertyIdentifier(java.util.UUID propertyId, java.util.UUID teamId) {
     return propertyRepository
         .findByIdAndTeamId(propertyId, teamId)
         .flatMap(Property::getIdentifier)

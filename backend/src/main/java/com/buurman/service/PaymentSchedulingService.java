@@ -4,8 +4,8 @@ import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
 import static com.buurman.domain.Payment.PaymentStatus.PAID;
 import static com.buurman.domain.Payment.PaymentStatus.PENDING;
 import static com.buurman.util.Constants.SYSTEM_USER_ID;
-import static com.buurman.util.UlidGenerator.newPaymentId;
-import static com.buurman.util.UlidGenerator.newPaymentReceivalId;
+import static com.buurman.util.SidGenerator.newPaymentId;
+import static com.buurman.util.SidGenerator.newPaymentReceivalId;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -82,7 +82,10 @@ public class PaymentSchedulingService {
       } catch (Exception e) {
         teamsFailed++;
         log.error(
-            "Failed to generate payments for team {}: {}", team.getIdentifier().orElseThrow(), e.getMessage(), e);
+            "Failed to generate payments for team {}: {}",
+            team.getIdentifier().orElseThrow(),
+            e.getMessage(),
+            e);
       }
     }
 
@@ -102,7 +105,8 @@ public class PaymentSchedulingService {
 
     if (contract.getStatus() != ACTIVE) {
       log.debug(
-          "Skipping payment generation for non-ACTIVE contract: {}", contract.getIdentifier().orElseThrow());
+          "Skipping payment generation for non-ACTIVE contract: {}",
+          contract.getIdentifier().orElseThrow());
       return 0;
     }
 
@@ -309,7 +313,11 @@ public class PaymentSchedulingService {
         auditService.logDelete(teamId, "payment", payment.getId(), userId, payment);
 
       } catch (Exception e) {
-        log.error("Failed to delete payment {}: {}", payment.getIdentifier().orElseThrow(), e.getMessage(), e);
+        log.error(
+            "Failed to delete payment {}: {}",
+            payment.getIdentifier().orElseThrow(),
+            e.getMessage(),
+            e);
       }
     }
 

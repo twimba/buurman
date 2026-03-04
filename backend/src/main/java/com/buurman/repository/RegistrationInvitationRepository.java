@@ -1,7 +1,7 @@
 package com.buurman.repository;
 
 import static com.buurman.jooq.generated.Tables.REGISTRATION_INVITATIONS;
-import static com.buurman.util.UlidGenerator.newRegistrationInvitationId;
+import static com.buurman.util.SidGenerator.newRegistrationInvitationId;
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.lower;
 
@@ -19,12 +19,12 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.RegistrationInvitation;
+import com.buurman.domain.Sid;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.util.PaginationHelper;
 
 import lombok.RequiredArgsConstructor;
-import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -36,7 +36,7 @@ public class RegistrationInvitationRepository {
   public RegistrationInvitation save(RegistrationInvitation invitation) {
     LocalDateTime now = LocalDateTime.now(clock);
     UUID id = UUID.randomUUID();
-    Ulid identifier = newRegistrationInvitationId();
+    Sid identifier = newRegistrationInvitationId();
 
     dsl.insertInto(REGISTRATION_INVITATIONS)
         .set(REGISTRATION_INVITATIONS.ID, id)
@@ -68,7 +68,7 @@ public class RegistrationInvitationRepository {
         .map(this::toDomain);
   }
 
-  public Optional<RegistrationInvitation> findByIdentifier(Ulid identifier) {
+  public Optional<RegistrationInvitation> findByIdentifier(Sid identifier) {
     return dsl.selectFrom(REGISTRATION_INVITATIONS)
         .where(REGISTRATION_INVITATIONS.IDENTIFIER.eq(identifier))
         .fetchOptional()
@@ -82,7 +82,7 @@ public class RegistrationInvitationRepository {
         .map(this::toDomain);
   }
 
-  public RegistrationInvitation getByIdentifier(Ulid identifier) {
+  public RegistrationInvitation getByIdentifier(Sid identifier) {
     return findByIdentifier(identifier)
         .orElseThrow(() -> new NotFoundException("Registration invitation not found"));
   }

@@ -5,10 +5,10 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.Sid;
 
 public record PaymentReceivalResponse(
-    Ulid identifier,
+    Sid identifier,
     BigDecimal amount,
     String currency,
     LocalDate receivalDate,

@@ -1,9 +1,9 @@
 package com.buurman.domain.identifier;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.Sid;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-public final class PropertyInsuranceIdentifier extends Ulid {
+public final class PropertyInsuranceIdentifier extends Sid {
 
   private PropertyInsuranceIdentifier(String value) {
     super(value);

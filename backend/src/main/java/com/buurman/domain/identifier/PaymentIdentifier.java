@@ -1,9 +1,9 @@
 package com.buurman.domain.identifier;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.Sid;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-public final class PaymentIdentifier extends Ulid {
+public final class PaymentIdentifier extends Sid {
 
   private PaymentIdentifier(String value) {
     super(value);

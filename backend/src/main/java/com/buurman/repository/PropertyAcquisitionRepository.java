@@ -12,12 +12,12 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.PropertyAcquisition;
+import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.PropertyAcquisitionRecordMapper;
 import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
-import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -39,7 +39,7 @@ public class PropertyAcquisitionRepository {
         .flatMap(mapper::toDomain);
   }
 
-  public Optional<PropertyAcquisition> findByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
+  public Optional<PropertyAcquisition> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(PROPERTY_ACQUISITIONS)
         .where(
             PROPERTY_ACQUISITIONS
@@ -51,7 +51,7 @@ public class PropertyAcquisitionRepository {
         .flatMap(mapper::toDomain);
   }
 
-  public PropertyAcquisition getByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
+  public PropertyAcquisition getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Property acquisition not found"));
   }

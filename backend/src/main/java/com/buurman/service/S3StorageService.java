@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AwsS3Properties;
-import com.buurman.domain.Ulid;
+import com.buurman.domain.Sid;
 import com.buurman.exception.ExternalServiceException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -63,7 +63,7 @@ public class S3StorageService {
    * {teamIdentifier}/{entityType}/{entityIdentifier}/{uuid}_{filename}
    */
   public String uploadFile(
-      MultipartFile file, Ulid teamIdentifier, String entityType, Ulid entityIdentifier) {
+      MultipartFile file, Sid teamIdentifier, String entityType, Sid entityIdentifier) {
     Instant start = clock.instant();
     try {
       String originalFilename = file.getOriginalFilename();
@@ -115,9 +115,9 @@ public class S3StorageService {
   public String uploadFile(
       byte[] data,
       String contentType,
-      Ulid teamIdentifier,
+      Sid teamIdentifier,
       String entityType,
-      Ulid entityIdentifier,
+      Sid entityIdentifier,
       String filename) {
     String fileKey = generateFileKey(teamIdentifier, entityType, entityIdentifier, filename);
     uploadFile(data, contentType, fileKey);
@@ -299,11 +299,12 @@ public class S3StorageService {
    * Generate file key with pattern: {teamIdentifier}/{entityType}/{entityIdentifier}/{uuid}.{ext}
    */
   private String generateFileKey(
-      Ulid teamIdentifier, String entityType, Ulid entityIdentifier, String filename) {
+      Sid teamIdentifier, String entityType, Sid entityIdentifier, String filename) {
     String ext = extractExtension(filename);
     String uniqueId = UUID.randomUUID().toString();
     return String.format(
-        "%s/%s/%s/%s.%s", teamIdentifier.value(), entityType, entityIdentifier.value(), uniqueId, ext);
+        "%s/%s/%s/%s.%s",
+        teamIdentifier.value(), entityType, entityIdentifier.value(), uniqueId, ext);
   }
 
   private static String extractExtension(String filename) {

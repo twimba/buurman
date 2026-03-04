@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Notification;
-import com.buurman.domain.identifier.NotificationIdentifier;
 import com.buurman.domain.NotificationChannel;
 import com.buurman.domain.NotificationOutbox;
 import com.buurman.domain.NotificationStatus;
@@ -28,6 +27,7 @@ import com.buurman.domain.TeamMember;
 import com.buurman.domain.User;
 import com.buurman.domain.UserNotificationTypePreference;
 import com.buurman.domain.UserPreferences;
+import com.buurman.domain.identifier.NotificationIdentifier;
 import com.buurman.exception.ExternalServiceException;
 import com.buurman.repository.NotificationOutboxRepository;
 import com.buurman.repository.NotificationRepository;

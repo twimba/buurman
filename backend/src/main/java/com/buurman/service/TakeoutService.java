@@ -51,7 +51,7 @@ import org.springframework.stereotype.Service;
 
 import com.buurman.domain.DataTakeout;
 import com.buurman.domain.DataTakeout.TakeoutStatus;
-import com.buurman.domain.Ulid;
+import com.buurman.domain.Sid;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.DataTakeoutIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
@@ -67,7 +67,7 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.export.ContractBookletExporter;
 import com.buurman.service.export.PropertyBookletExporter;
 import com.buurman.service.export.TenantBookletExporter;
-import com.buurman.util.UlidGenerator;
+import com.buurman.util.SidGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -125,7 +125,7 @@ public class TakeoutService {
 
     DataTakeout takeout =
         DataTakeout.builder()
-            .identifier(Optional.of(UlidGenerator.newTakeoutId()))
+            .identifier(Optional.of(SidGenerator.newTakeoutId()))
             .teamId(teamId)
             .status(TakeoutStatus.PENDING)
             .createdBy(userId)
@@ -133,7 +133,10 @@ public class TakeoutService {
             .build();
 
     takeout = takeoutRepository.save(takeout);
-    log.info("Data takeout requested: {} for team {}", takeout.getIdentifier().orElseThrow(), teamIdentifier);
+    log.info(
+        "Data takeout requested: {} for team {}",
+        takeout.getIdentifier().orElseThrow(),
+        teamIdentifier);
     metricsService.incrementCounter("takeout.requested.total");
 
     // Trigger async processing (via proxy so @Async is honoured)
@@ -200,9 +203,9 @@ public class TakeoutService {
         };
 
         // Collect identifiers for booklet generation
-        List<Ulid> propertyIdentifiers = fetchIdentifiers(PROPERTIES, teamId);
-        List<Ulid> tenantIdentifiers = fetchIdentifiers(TENANTS, teamId);
-        List<Ulid> contractIdentifiers = fetchIdentifiers(CONTRACTS, teamId);
+        List<Sid> propertyIdentifiers = fetchIdentifiers(PROPERTIES, teamId);
+        List<Sid> tenantIdentifiers = fetchIdentifiers(TENANTS, teamId);
+        List<Sid> contractIdentifiers = fetchIdentifiers(CONTRACTS, teamId);
         int totalBooklets =
             propertyIdentifiers.size() + tenantIdentifiers.size() + contractIdentifiers.size();
         int totalSteps = categories.length + totalBooklets + 2; // +2 for team.json and manifest
@@ -218,9 +221,10 @@ public class TakeoutService {
 
         // Generate booklet PDFs
         String bookletFolder = folderName + "/booklets";
-        for (Ulid identifier : propertyIdentifiers) {
+        for (Sid identifier : propertyIdentifiers) {
           try {
-            byte[] pdf = propertyBookletExporter.generate(PropertyIdentifier.of(identifier.value()), teamId);
+            byte[] pdf =
+                propertyBookletExporter.generate(PropertyIdentifier.of(identifier.value()), teamId);
             addZipEntry(zos, bookletFolder + "/properties/" + identifier.value() + ".pdf", pdf);
           } catch (Exception e) {
             log.warn("Failed to generate property booklet for {}: {}", identifier, e.getMessage());
@@ -228,9 +232,10 @@ public class TakeoutService {
           completed++;
           takeoutRepository.updateProgress(takeoutId, (int) ((completed * 85.0) / totalSteps));
         }
-        for (Ulid identifier : tenantIdentifiers) {
+        for (Sid identifier : tenantIdentifiers) {
           try {
-            byte[] pdf = tenantBookletExporter.generate(TenantIdentifier.of(identifier.value()), teamId);
+            byte[] pdf =
+                tenantBookletExporter.generate(TenantIdentifier.of(identifier.value()), teamId);
             addZipEntry(zos, bookletFolder + "/tenants/" + identifier.value() + ".pdf", pdf);
           } catch (Exception e) {
             log.warn("Failed to generate tenant booklet for {}: {}", identifier, e.getMessage());
@@ -238,9 +243,10 @@ public class TakeoutService {
           completed++;
           takeoutRepository.updateProgress(takeoutId, (int) ((completed * 85.0) / totalSteps));
         }
-        for (Ulid identifier : contractIdentifiers) {
+        for (Sid identifier : contractIdentifiers) {
           try {
-            byte[] pdf = contractBookletExporter.generate(ContractIdentifier.of(identifier.value()), teamId);
+            byte[] pdf =
+                contractBookletExporter.generate(ContractIdentifier.of(identifier.value()), teamId);
             addZipEntry(zos, bookletFolder + "/contracts/" + identifier.value() + ".pdf", pdf);
           } catch (Exception e) {
             log.warn("Failed to generate contract booklet for {}: {}", identifier, e.getMessage());
@@ -269,14 +275,14 @@ public class TakeoutService {
 
       // Upload to S3
       byte[] zipBytes = baos.toByteArray();
-      Ulid teamUlid = Ulid.of(teamIdentifier);
+      Sid teamSid = Sid.of(teamIdentifier);
       String fileKey =
           s3StorageService.uploadFile(
               zipBytes,
               "application/zip",
-              teamUlid,
+              teamSid,
               "takeout",
-              teamUlid,
+              teamSid,
               "takeout-" + dateSuffix + ".zip");
 
       // Calculate expiry
@@ -379,9 +385,9 @@ public class TakeoutService {
     }
   }
 
-  private <R extends Record> List<Ulid> fetchIdentifiers(Table<R> table, UUID teamId) {
+  private <R extends Record> List<Sid> fetchIdentifiers(Table<R> table, UUID teamId) {
     Field<UUID> teamIdField = table.field("team_id", UUID.class);
-    Field<Ulid> identifierField = table.field("identifier", Ulid.class);
+    Field<Sid> identifierField = table.field("identifier", Sid.class);
     Field<?> deletedAtField = table.field("deleted_at");
 
     if (teamIdField == null || identifierField == null) {

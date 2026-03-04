@@ -1,6 +1,6 @@
 package com.buurman.service;
 
-import static com.buurman.util.UlidGenerator.newPropertyTaxId;
+import static com.buurman.util.SidGenerator.newPropertyTaxId;
 
 import java.time.Clock;
 import java.util.List;
@@ -42,7 +42,9 @@ public class PropertyTaxService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyTaxResponse create(
-      PropertyIdentifier propertyIdentifier, CreatePropertyTaxRequest request, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier,
+      CreatePropertyTaxRequest request,
+      UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
@@ -101,7 +103,10 @@ public class PropertyTaxService {
 
     PropertyTax updated = taxRepository.save(tax);
 
-    log.info("Updated property tax {} by user {}", updated.getIdentifier().orElseThrow(), principal.getUserId());
+    log.info(
+        "Updated property tax {} by user {}",
+        updated.getIdentifier().orElseThrow(),
+        principal.getUserId());
 
     return enrichResponse(updated, teamId);
   }
@@ -114,7 +119,10 @@ public class PropertyTaxService {
 
     taxRepository.softDeleteByIdAndTeamId(tax.getId(), teamId);
 
-    log.info("Deleted property tax {} by user {}", tax.getIdentifier().orElseThrow(), principal.getUserId());
+    log.info(
+        "Deleted property tax {} by user {}",
+        tax.getIdentifier().orElseThrow(),
+        principal.getUserId());
   }
 
   private PropertyTaxResponse enrichResponse(PropertyTax tax, UUID teamId) {

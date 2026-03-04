@@ -1,9 +1,9 @@
 package com.buurman.domain.identifier;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.Sid;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-public final class PropertyOutdoorAreaIdentifier extends Ulid {
+public final class PropertyOutdoorAreaIdentifier extends Sid {
 
   private PropertyOutdoorAreaIdentifier(String value) {
     super(value);

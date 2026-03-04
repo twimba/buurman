@@ -8,7 +8,7 @@ import static com.buurman.domain.Contract.ContractStatus.TERMINATED;
 import static com.buurman.domain.Contract.ContractType.FIXED_TERM;
 import static com.buurman.domain.Property.PropertyStatus.OCCUPIED;
 import static com.buurman.domain.Property.PropertyStatus.VACANT;
-import static com.buurman.util.UlidGenerator.newContractId;
+import static com.buurman.util.SidGenerator.newContractId;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -28,18 +28,17 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
-import com.buurman.domain.Ulid;
 import com.buurman.domain.Contract;
-import com.buurman.domain.identifier.ContractIdentifier;
-import com.buurman.domain.identifier.DocumentIdentifier;
-import com.buurman.domain.identifier.PropertyIdentifier;
-import com.buurman.domain.identifier.TenantIdentifier;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Document;
 import com.buurman.domain.NotificationType;
 import com.buurman.domain.Property;
 import com.buurman.domain.Tenant;
+import com.buurman.domain.identifier.ContractIdentifier;
+import com.buurman.domain.identifier.DocumentIdentifier;
+import com.buurman.domain.identifier.PropertyIdentifier;
+import com.buurman.domain.identifier.TenantIdentifier;
 import com.buurman.domain.metadata.ContractCountryMetadata;
 import com.buurman.domain.metadata.CountryMetadataRegistry;
 import com.buurman.domain.metadata.CountryMetadataSerializer;
@@ -713,7 +712,8 @@ public class ContractService {
 
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-  public ContractResponse duplicateContract(ContractIdentifier identifier, UserPrincipal principal) {
+  public ContractResponse duplicateContract(
+      ContractIdentifier identifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
     Contract sourceContract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
@@ -788,16 +788,24 @@ public class ContractService {
     Contract contract =
         contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.requireTeamId());
     return documentService.uploadDocument(
-        file, "CONTRACT", contract.getId(), contract.getIdentifier().orElseThrow(), title, notes, principal);
+        file,
+        "CONTRACT",
+        contract.getId(),
+        contract.getIdentifier().orElseThrow(),
+        title,
+        notes,
+        principal);
   }
 
-  public List<DocumentResponse> getDocuments(ContractIdentifier contractIdentifier, UserPrincipal principal) {
+  public List<DocumentResponse> getDocuments(
+      ContractIdentifier contractIdentifier, UserPrincipal principal) {
     Contract contract =
         contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.requireTeamId());
     return documentService.getDocuments("CONTRACT", contract.getId(), principal);
   }
 
-  public URL getDocumentDownloadUrl(DocumentIdentifier documentIdentifier, UserPrincipal principal) {
+  public URL getDocumentDownloadUrl(
+      DocumentIdentifier documentIdentifier, UserPrincipal principal) {
     Document document =
         documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.requireTeamId());
     return documentService.getDownloadUrl(documentIdentifier, principal);
@@ -817,7 +825,9 @@ public class ContractService {
   }
 
   public Map<String, Object> generatePayments(
-      ContractIdentifier contractIdentifier, GeneratePaymentsRequest request, UserPrincipal principal) {
+      ContractIdentifier contractIdentifier,
+      GeneratePaymentsRequest request,
+      UserPrincipal principal) {
     Contract contract =
         contractRepository.getByIdentifierAndTeamId(contractIdentifier, principal.requireTeamId());
     boolean markAsPaid = request.markAsPaid().map(Boolean.TRUE::equals).orElse(false);

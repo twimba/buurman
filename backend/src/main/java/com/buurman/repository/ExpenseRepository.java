@@ -25,6 +25,7 @@ import com.buurman.domain.AmountStats;
 import com.buurman.domain.CategoryStats;
 import com.buurman.domain.Expense;
 import com.buurman.domain.MonthlyAmount;
+import com.buurman.domain.Sid;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.ExpenseRecordMapper;
@@ -33,7 +34,6 @@ import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
 import lombok.RequiredArgsConstructor;
-import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -43,7 +43,7 @@ public class ExpenseRepository {
   private final ExpenseRecordMapper mapper;
   private final Clock clock;
 
-  public Optional<Expense> findByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
+  public Optional<Expense> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(EXPENSES)
         .where(
             EXPENSES
@@ -55,7 +55,7 @@ public class ExpenseRepository {
         .flatMap(mapper::toDomain);
   }
 
-  public Expense getByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
+  public Expense getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Expense not found"));
   }

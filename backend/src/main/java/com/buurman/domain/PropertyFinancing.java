@@ -42,7 +42,7 @@ public class PropertyFinancing {
   }
 
   private UUID id;
-  @Builder.Default private Optional<Ulid> identifier = Optional.empty();
+  @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private UUID propertyId;
   private UUID teamId;
   private FinancingType financingType;

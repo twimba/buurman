@@ -38,7 +38,8 @@ public class PaymentInstructionService {
         .toList();
   }
 
-  public PaymentInstructionResponse getByIdentifier(PaymentInstructionIdentifier identifier, UserPrincipal principal) {
+  public PaymentInstructionResponse getByIdentifier(
+      PaymentInstructionIdentifier identifier, UserPrincipal principal) {
     PaymentInstruction pi =
         repository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return mapper.toResponse(pi);
@@ -78,7 +79,9 @@ public class PaymentInstructionService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PaymentInstructionResponse update(
-      PaymentInstructionIdentifier identifier, UpdatePaymentInstructionRequest request, UserPrincipal principal) {
+      PaymentInstructionIdentifier identifier,
+      UpdatePaymentInstructionRequest request,
+      UserPrincipal principal) {
     PaymentInstruction pi =
         repository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 

@@ -3,12 +3,12 @@ package com.buurman.dto.response;
 import java.time.Instant;
 import java.util.Optional;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.Sid;
 
 public record DocumentResponse(
-    Ulid identifier,
+    Sid identifier,
     String entityType,
-    Ulid entityIdentifier,
+    Sid entityIdentifier,
     String fileKey,
     String fileName,
     Optional<Long> fileSize,

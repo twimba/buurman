@@ -1,6 +1,6 @@
 package com.buurman.service;
 
-import static com.buurman.util.UlidGenerator.newPropertyId;
+import static com.buurman.util.SidGenerator.newPropertyId;
 
 import java.net.URL;
 import java.util.EnumMap;
@@ -18,9 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
-import com.buurman.domain.identifier.DocumentIdentifier;
-import com.buurman.domain.identifier.PhotoIdentifier;
-import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.domain.NotificationType;
 import com.buurman.domain.Photo;
 import com.buurman.domain.Property;
@@ -30,6 +27,9 @@ import com.buurman.domain.PropertyAgriculturalDetails;
 import com.buurman.domain.PropertyCommercialDetails;
 import com.buurman.domain.PropertyIndustrialDetails;
 import com.buurman.domain.PropertyResidentialDetails;
+import com.buurman.domain.identifier.DocumentIdentifier;
+import com.buurman.domain.identifier.PhotoIdentifier;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.AgriculturalDetailsRequest;
 import com.buurman.dto.request.CommercialDetailsRequest;
 import com.buurman.dto.request.CreatePropertyRequest;
@@ -327,16 +327,24 @@ public class PropertyService {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return documentService.uploadDocument(
-        file, "PROPERTY", property.getId(), property.getIdentifier().orElseThrow(), title, notes, principal);
+        file,
+        "PROPERTY",
+        property.getId(),
+        property.getIdentifier().orElseThrow(),
+        title,
+        notes,
+        principal);
   }
 
-  public List<DocumentResponse> getDocuments(PropertyIdentifier identifier, UserPrincipal principal) {
+  public List<DocumentResponse> getDocuments(
+      PropertyIdentifier identifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return documentService.getDocuments("PROPERTY", property.getId(), principal);
   }
 
-  public Map<String, String> getDownloadUrl(DocumentIdentifier documentIdentifier, UserPrincipal principal) {
+  public Map<String, String> getDownloadUrl(
+      DocumentIdentifier documentIdentifier, UserPrincipal principal) {
     URL url = documentService.getDownloadUrl(documentIdentifier, principal);
     return Map.of("url", url.toString());
   }
@@ -345,7 +353,8 @@ public class PropertyService {
     documentService.deleteDocument(documentIdentifier, principal);
   }
 
-  public List<RecentActivityResponse> getAuditLog(PropertyIdentifier identifier, UserPrincipal principal) {
+  public List<RecentActivityResponse> getAuditLog(
+      PropertyIdentifier identifier, UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return auditService.getEntityAuditLog(principal.requireTeamId(), "PROPERTY", property.getId());
@@ -366,7 +375,13 @@ public class PropertyService {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return photoService.uploadPhoto(
-        file, "PROPERTY", property.getId(), property.getIdentifier().orElseThrow(), title, notes, principal);
+        file,
+        "PROPERTY",
+        property.getId(),
+        property.getIdentifier().orElseThrow(),
+        title,
+        notes,
+        principal);
   }
 
   public PhotoResponse setMainPhoto(

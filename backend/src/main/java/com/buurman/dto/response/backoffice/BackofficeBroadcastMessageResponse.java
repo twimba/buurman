@@ -4,10 +4,10 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.Sid;
 
 public record BackofficeBroadcastMessageResponse(
-    Ulid identifier,
+    Sid identifier,
     String title,
     String body,
     String severity,

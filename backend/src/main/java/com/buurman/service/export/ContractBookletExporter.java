@@ -40,7 +40,6 @@ import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
-import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
@@ -51,6 +50,7 @@ import com.buurman.domain.PaymentInstruction;
 import com.buurman.domain.PaymentReceival;
 import com.buurman.domain.Property;
 import com.buurman.domain.Tenant;
+import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.repository.ContractPaymentInstructionRepository;
 import com.buurman.repository.ContractRentPeriodRepository;
 import com.buurman.repository.ContractRepository;
@@ -212,7 +212,11 @@ public class ContractBookletExporter {
       String ccy,
       DateTimeFormatter dateFmt,
       String generatedDate) {
-    appendCoverStart(html, "CONTRACT REPORT", escapeHtml(contract.getIdentifier().orElseThrow().value()), generatedDate);
+    appendCoverStart(
+        html,
+        "CONTRACT REPORT",
+        escapeHtml(contract.getIdentifier().orElseThrow().value()),
+        generatedDate);
 
     String statusStr = contract.getStatus() != null ? contract.getStatus().name() : "DRAFT";
     appendStatusBadge(html, statusStr);

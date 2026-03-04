@@ -1,7 +1,7 @@
 package com.buurman.service;
 
 import static com.buurman.domain.Payment.PaymentStatus.PENDING;
-import static com.buurman.util.UlidGenerator.newContractRentPeriodId;
+import static com.buurman.util.SidGenerator.newContractRentPeriodId;
 
 import java.math.BigDecimal;
 import java.time.Clock;
@@ -19,13 +19,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.config.models.AppProperties;
 import com.buurman.domain.Contract;
-import com.buurman.domain.identifier.ContractIdentifier;
-import com.buurman.domain.identifier.ContractRentPeriodIdentifier;
 import com.buurman.domain.ContractRentPeriod;
 import com.buurman.domain.NotificationType;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
 import com.buurman.domain.Tenant;
+import com.buurman.domain.identifier.ContractIdentifier;
+import com.buurman.domain.identifier.ContractRentPeriodIdentifier;
 import com.buurman.dto.request.CreateRentPeriodRequest;
 import com.buurman.dto.request.UpdateRentPeriodRequest;
 import com.buurman.dto.response.RentPeriodResponse;
@@ -61,7 +61,9 @@ public class ContractRentPeriodService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public RentPeriodResponse addRentPeriod(
-      ContractIdentifier contractIdentifier, CreateRentPeriodRequest request, UserPrincipal principal) {
+      ContractIdentifier contractIdentifier,
+      CreateRentPeriodRequest request,
+      UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
 
@@ -227,7 +229,9 @@ public class ContractRentPeriodService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void deleteRentPeriod(
-      ContractIdentifier contractIdentifier, ContractRentPeriodIdentifier periodIdentifier, UserPrincipal principal) {
+      ContractIdentifier contractIdentifier,
+      ContractRentPeriodIdentifier periodIdentifier,
+      UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
     ContractRentPeriod period =
@@ -285,7 +289,8 @@ public class ContractRentPeriodService {
     period.setUpdatedAt(clock.instant());
 
     rentPeriodRepository.save(period);
-    log.debug("Initial rent period created for contract {}", contract.getIdentifier().orElseThrow());
+    log.debug(
+        "Initial rent period created for contract {}", contract.getIdentifier().orElseThrow());
   }
 
   /** Updates the initial rent period when a DRAFT contract's rent is edited. */
@@ -347,7 +352,9 @@ public class ContractRentPeriodService {
             contract.setUpdatedAt(clock.instant());
             contractRepository.save(contract);
             log.debug(
-                "Synced contract {} rent_amount to {}", contract.getIdentifier().orElseThrow(), currentRent);
+                "Synced contract {} rent_amount to {}",
+                contract.getIdentifier().orElseThrow(),
+                currentRent);
           }
         });
   }

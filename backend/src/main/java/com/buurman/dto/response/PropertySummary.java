@@ -1,10 +1,10 @@
 package com.buurman.dto.response;
 
 import com.buurman.domain.Property;
-import com.buurman.domain.Ulid;
+import com.buurman.domain.Sid;
 
 public record PropertySummary(
-    Ulid identifier,
+    Sid identifier,
     String street,
     String city,
     String postalCode,

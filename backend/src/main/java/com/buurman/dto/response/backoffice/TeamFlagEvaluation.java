@@ -2,10 +2,10 @@ package com.buurman.dto.response.backoffice;
 
 import java.util.Map;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.Sid;
 
 public record TeamFlagEvaluation(
-    Ulid teamIdentifier,
+    Sid teamIdentifier,
     String teamName,
     String role,
     boolean isOwner,

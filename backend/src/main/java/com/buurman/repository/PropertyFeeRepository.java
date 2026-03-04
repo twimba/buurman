@@ -13,12 +13,12 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.PropertyFee;
+import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.PropertyFeeRecordMapper;
 import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
-import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -28,7 +28,7 @@ public class PropertyFeeRepository {
   private final PropertyFeeRecordMapper mapper;
   private final Clock clock;
 
-  public Optional<PropertyFee> findByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
+  public Optional<PropertyFee> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(PROPERTY_FEES)
         .where(
             PROPERTY_FEES
@@ -40,7 +40,7 @@ public class PropertyFeeRepository {
         .flatMap(mapper::toDomain);
   }
 
-  public PropertyFee getByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
+  public PropertyFee getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Property fee not found"));
   }

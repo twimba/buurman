@@ -34,13 +34,13 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
-import com.buurman.domain.identifier.TenantIdentifier;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
 import com.buurman.domain.Tenant;
 import com.buurman.domain.TenantAddress;
+import com.buurman.domain.identifier.TenantIdentifier;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;

@@ -1,9 +1,9 @@
 package com.buurman.domain.identifier;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.Sid;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-public final class TenantAddressIdentifier extends Ulid {
+public final class TenantAddressIdentifier extends Sid {
 
   private TenantAddressIdentifier(String value) {
     super(value);

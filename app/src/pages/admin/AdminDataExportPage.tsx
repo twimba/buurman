@@ -29,7 +29,7 @@ export const AdminDataExportPage = () => {
             </h1>
           </div>
           <p className="text-[#6b7194] dark:text-[#8b90a8] ml-11">
-            Export your team's data as a downloadable archive
+            Export your team&apos;s data as a downloadable archive
           </p>
         </div>
         <DataExportSection />

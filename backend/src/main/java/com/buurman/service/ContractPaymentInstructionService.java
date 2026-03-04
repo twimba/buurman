@@ -15,12 +15,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.buurman.domain.Ulid;
 import com.buurman.domain.Contract;
-import com.buurman.domain.identifier.ContractIdentifier;
-import com.buurman.domain.identifier.ContractPaymentInstructionIdentifier;
 import com.buurman.domain.ContractPaymentInstruction;
 import com.buurman.domain.PaymentInstruction;
+import com.buurman.domain.Sid;
+import com.buurman.domain.identifier.ContractIdentifier;
+import com.buurman.domain.identifier.ContractPaymentInstructionIdentifier;
 import com.buurman.dto.request.CreateContractPaymentInstructionRequest;
 import com.buurman.dto.request.UpdateContractPaymentInstructionRequest;
 import com.buurman.dto.response.ContractPaymentInstructionResponse;
@@ -186,7 +186,7 @@ public class ContractPaymentInstructionService {
         && !request.isCustom().map(Boolean.TRUE::equals).orElse(false)) {
       PaymentInstruction template =
           piRepository.getByIdentifierAndTeamId(
-              Ulid.of(request.paymentInstructionIdentifier().get()), principal.requireTeamId());
+              Sid.of(request.paymentInstructionIdentifier().get()), principal.requireTeamId());
       cpi.setPaymentInstructionId(Optional.of(template.getId()));
       cpi.setIsCustom(false);
     } else {
@@ -224,7 +224,9 @@ public class ContractPaymentInstructionService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void delete(
-      ContractIdentifier contractIdentifier, ContractPaymentInstructionIdentifier instructionIdentifier, UserPrincipal principal) {
+      ContractIdentifier contractIdentifier,
+      ContractPaymentInstructionIdentifier instructionIdentifier,
+      UserPrincipal principal) {
     Contract contract = resolveContract(contractIdentifier, principal);
     ContractPaymentInstruction cpi =
         cpiRepository.getByIdentifierAndTeamId(instructionIdentifier, principal.requireTeamId());
@@ -298,7 +300,7 @@ public class ContractPaymentInstructionService {
         && !request.isCustom().map(Boolean.TRUE::equals).orElse(false)) {
       PaymentInstruction template =
           piRepository.getByIdentifierAndTeamId(
-              Ulid.of(request.paymentInstructionIdentifier().get()), principal.requireTeamId());
+              Sid.of(request.paymentInstructionIdentifier().get()), principal.requireTeamId());
       cpi.setPaymentInstructionId(Optional.of(template.getId()));
       cpi.setIsCustom(false);
     } else {

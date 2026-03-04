@@ -1,7 +1,7 @@
 package com.buurman.repository;
 
 import static com.buurman.jooq.generated.Tables.USERS;
-import static com.buurman.util.UlidGenerator.newUserId;
+import static com.buurman.util.SidGenerator.newUserId;
 import static java.time.ZoneOffset.UTC;
 
 import java.time.Clock;
@@ -18,6 +18,7 @@ import org.jooq.Field;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
+import com.buurman.domain.Sid;
 import com.buurman.domain.User;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
@@ -26,7 +27,6 @@ import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
 import lombok.RequiredArgsConstructor;
-import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -36,7 +36,7 @@ public class UserRepository {
   private final UserRecordMapper mapper;
   private final Clock clock;
 
-  public Optional<User> findByIdentifier(Ulid identifier) {
+  public Optional<User> findByIdentifier(Sid identifier) {
     return dsl.selectFrom(USERS)
         .where(USERS.IDENTIFIER.eq(identifier))
         .fetchOptional()
@@ -51,7 +51,7 @@ public class UserRepository {
     return findById(id).orElseThrow(() -> new NotFoundException("User not found"));
   }
 
-  public User getByIdentifier(Ulid identifier) {
+  public User getByIdentifier(Sid identifier) {
     return findByIdentifier(identifier).orElseThrow(() -> new NotFoundException("User not found"));
   }
 
@@ -61,7 +61,7 @@ public class UserRepository {
     if (user.getId() == null) {
       // INSERT
       UUID newId = UUID.randomUUID();
-      Ulid identifier = newUserId();
+      Sid identifier = newUserId();
       LocalDateTime createdAt =
           user.getCreatedAt() != null ? LocalDateTime.ofInstant(user.getCreatedAt(), UTC) : now;
       LocalDateTime updatedAt =
@@ -217,7 +217,7 @@ public class UserRepository {
         dsl, USERS, condition, sortableFields, USERS.CREATED_AT, pageRequest, mapper::toDomain);
   }
 
-  public Optional<User> findByIdentifierUnscoped(Ulid identifier) {
+  public Optional<User> findByIdentifierUnscoped(Sid identifier) {
     return dsl.selectFrom(USERS)
         .where(USERS.IDENTIFIER.eq(identifier))
         .and(USERS.DELETED_AT.isNull())
@@ -225,7 +225,7 @@ public class UserRepository {
         .map(mapper::toDomain);
   }
 
-  public User getByIdentifierUnscoped(Ulid identifier) {
+  public User getByIdentifierUnscoped(Sid identifier) {
     return findByIdentifierUnscoped(identifier)
         .orElseThrow(() -> new NotFoundException("User not found"));
   }

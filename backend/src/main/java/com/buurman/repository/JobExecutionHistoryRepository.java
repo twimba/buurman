@@ -26,7 +26,6 @@ import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.backoffice.JobExecutionHistoryResponse;
 
 import lombok.RequiredArgsConstructor;
-import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor

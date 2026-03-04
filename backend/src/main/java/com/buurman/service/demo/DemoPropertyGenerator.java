@@ -1,7 +1,5 @@
 package com.buurman.service.demo;
 
-import com.buurman.domain.Ulid;
-
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_ACQUISITIONS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_AGRICULTURAL_DETAILS;
@@ -14,14 +12,14 @@ import static com.buurman.jooq.generated.Tables.PROPERTY_OUTDOOR_AREAS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_RESIDENTIAL_DETAILS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_TAXES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_VALUATIONS;
-import static com.buurman.util.UlidGenerator.newAcquisitionId;
-import static com.buurman.util.UlidGenerator.newFinancingId;
-import static com.buurman.util.UlidGenerator.newInsuranceId;
-import static com.buurman.util.UlidGenerator.newPropertyFeeId;
-import static com.buurman.util.UlidGenerator.newPropertyId;
-import static com.buurman.util.UlidGenerator.newPropertyOutdoorAreaId;
-import static com.buurman.util.UlidGenerator.newPropertyTaxId;
-import static com.buurman.util.UlidGenerator.newValuationId;
+import static com.buurman.util.SidGenerator.newAcquisitionId;
+import static com.buurman.util.SidGenerator.newFinancingId;
+import static com.buurman.util.SidGenerator.newInsuranceId;
+import static com.buurman.util.SidGenerator.newPropertyFeeId;
+import static com.buurman.util.SidGenerator.newPropertyId;
+import static com.buurman.util.SidGenerator.newPropertyOutdoorAreaId;
+import static com.buurman.util.SidGenerator.newPropertyTaxId;
+import static com.buurman.util.SidGenerator.newValuationId;
 
 import java.math.BigDecimal;
 import java.time.Clock;
@@ -38,6 +36,8 @@ import java.util.UUID;
 import org.jooq.DSLContext;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
+
+import com.buurman.domain.Sid;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -317,7 +317,7 @@ public class DemoPropertyGenerator {
         String coolingType = coolingTypeForCategory(propertyCategory);
         int floors = floorsForCategory(propertyCategory);
 
-        Ulid propertyIdentifier = newPropertyId();
+        Sid propertyIdentifier = newPropertyId();
         dsl.insertInto(PROPERTIES)
             .set(PROPERTIES.ID, propertyId)
             .set(PROPERTIES.IDENTIFIER, propertyIdentifier)

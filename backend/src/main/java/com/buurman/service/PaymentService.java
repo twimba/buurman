@@ -6,8 +6,8 @@ import static com.buurman.domain.Payment.PaymentStatus.OVERDUE;
 import static com.buurman.domain.Payment.PaymentStatus.PAID;
 import static com.buurman.domain.Payment.PaymentStatus.PARTIALLY_PAID;
 import static com.buurman.domain.Payment.PaymentStatus.PENDING;
-import static com.buurman.util.UlidGenerator.newPaymentId;
-import static com.buurman.util.UlidGenerator.newPaymentReceivalId;
+import static com.buurman.util.SidGenerator.newPaymentId;
+import static com.buurman.util.SidGenerator.newPaymentReceivalId;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
@@ -36,11 +36,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
-import com.buurman.domain.identifier.ContractIdentifier;
-import com.buurman.domain.identifier.DocumentIdentifier;
-import com.buurman.domain.identifier.PaymentIdentifier;
-import com.buurman.domain.identifier.PaymentReceivalIdentifier;
-import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.domain.AmountStats;
 import com.buurman.domain.Contract;
 import com.buurman.domain.Document;
@@ -49,6 +44,11 @@ import com.buurman.domain.Payment;
 import com.buurman.domain.PaymentReceival;
 import com.buurman.domain.Property;
 import com.buurman.domain.Tenant;
+import com.buurman.domain.identifier.ContractIdentifier;
+import com.buurman.domain.identifier.DocumentIdentifier;
+import com.buurman.domain.identifier.PaymentIdentifier;
+import com.buurman.domain.identifier.PaymentReceivalIdentifier;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.BulkGeneratePaymentsRequest;
 import com.buurman.dto.request.CreatePaymentReceivalRequest;
 import com.buurman.dto.request.CreatePaymentRequest;
@@ -361,7 +361,9 @@ public class PaymentService {
     PaymentResponse newState = enrichPaymentResponse(updatedPayment, teamId);
 
     log.info(
-        "Updated payment {} by user {}", updatedPayment.getIdentifier().orElseThrow(), principal.getUserId());
+        "Updated payment {} by user {}",
+        updatedPayment.getIdentifier().orElseThrow(),
+        principal.getUserId());
 
     auditService.logUpdate(
         teamId,
@@ -454,7 +456,9 @@ public class PaymentService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PaymentResponse registerReceival(
-      PaymentIdentifier paymentIdentifier, CreatePaymentReceivalRequest request, UserPrincipal principal) {
+      PaymentIdentifier paymentIdentifier,
+      CreatePaymentReceivalRequest request,
+      UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
     Payment payment = paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, teamId);
@@ -609,7 +613,9 @@ public class PaymentService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PaymentResponse deleteReceival(
-      PaymentIdentifier paymentIdentifier, PaymentReceivalIdentifier receivalIdentifier, UserPrincipal principal) {
+      PaymentIdentifier paymentIdentifier,
+      PaymentReceivalIdentifier receivalIdentifier,
+      UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
     Payment payment = paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, teamId);
@@ -711,7 +717,10 @@ public class PaymentService {
     // Soft-delete the payment itself
     paymentRepository.softDeleteByIdAndTeamId(paymentId, teamId);
 
-    log.info("Deleted payment {} by user {}", payment.getIdentifier().orElseThrow(), principal.getUserId());
+    log.info(
+        "Deleted payment {} by user {}",
+        payment.getIdentifier().orElseThrow(),
+        principal.getUserId());
 
     auditService.logDelete(teamId, "PAYMENT", paymentId, principal.getUserId(), payment);
   }
@@ -797,16 +806,24 @@ public class PaymentService {
     Payment payment =
         paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.requireTeamId());
     return documentService.uploadDocument(
-        file, "PAYMENT", payment.getId(), payment.getIdentifier().orElseThrow(), title, notes, principal);
+        file,
+        "PAYMENT",
+        payment.getId(),
+        payment.getIdentifier().orElseThrow(),
+        title,
+        notes,
+        principal);
   }
 
-  public List<DocumentResponse> getDocuments(PaymentIdentifier paymentIdentifier, UserPrincipal principal) {
+  public List<DocumentResponse> getDocuments(
+      PaymentIdentifier paymentIdentifier, UserPrincipal principal) {
     Payment payment =
         paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.requireTeamId());
     return documentService.getDocuments("PAYMENT", payment.getId(), principal);
   }
 
-  public URL getDocumentDownloadUrl(DocumentIdentifier documentIdentifier, UserPrincipal principal) {
+  public URL getDocumentDownloadUrl(
+      DocumentIdentifier documentIdentifier, UserPrincipal principal) {
     Document document =
         documentRepository.getByIdentifierAndTeamId(documentIdentifier, principal.requireTeamId());
     return documentService.getDownloadUrl(documentIdentifier, principal);

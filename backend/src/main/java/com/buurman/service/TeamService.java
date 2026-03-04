@@ -21,13 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.config.models.AppProperties;
 import com.buurman.domain.NotificationType;
-import com.buurman.domain.identifier.TeamIdentifier;
-import com.buurman.domain.identifier.UserIdentifier;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamInvitation;
 import com.buurman.domain.TeamMember;
 import com.buurman.domain.TeamPreferences;
 import com.buurman.domain.User;
+import com.buurman.domain.identifier.TeamIdentifier;
+import com.buurman.domain.identifier.UserIdentifier;
 import com.buurman.dto.request.CreateInvitationRequest;
 import com.buurman.dto.request.UpdateMemberRoleRequest;
 import com.buurman.dto.request.UpdateTeamRequest;
@@ -71,7 +71,8 @@ public class TeamService {
     return teamMapper.toResponse(team, memberCount);
   }
 
-  public List<TeamMemberResponse> getTeamMembers(TeamIdentifier teamIdentifier, UserPrincipal principal) {
+  public List<TeamMemberResponse> getTeamMembers(
+      TeamIdentifier teamIdentifier, UserPrincipal principal) {
     Team team = resolveTeam(teamIdentifier);
 
     // Verify user belongs to this team
@@ -370,7 +371,8 @@ public class TeamService {
 
   @Transactional
   @PreAuthorize("hasRole('TEAM_ADMIN')")
-  public void removeMember(TeamIdentifier teamIdentifier, UserIdentifier userIdentifier, UserPrincipal principal) {
+  public void removeMember(
+      TeamIdentifier teamIdentifier, UserIdentifier userIdentifier, UserPrincipal principal) {
     Team team = resolveTeam(teamIdentifier);
 
     // Verify user is admin of this team

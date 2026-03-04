@@ -10,16 +10,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
   // CORS is configured in SecurityConfig to avoid duplicate/conflicting configuration
 
-  private final UlidConverterFactory ulidConverterFactory;
+  private final SidConverterFactory sidConverterFactory;
 
-  public WebConfig(UlidConverterFactory ulidConverterFactory) {
-    this.ulidConverterFactory = ulidConverterFactory;
+  public WebConfig(SidConverterFactory sidConverterFactory) {
+    this.sidConverterFactory = sidConverterFactory;
   }
 
   @Override
   public void addFormatters(FormatterRegistry registry) {
     registry.addConverterFactory(new CaseInsensitiveEnumConverterFactory());
-    registry.addConverterFactory(ulidConverterFactory);
+    registry.addConverterFactory(sidConverterFactory);
   }
 
   private static class CaseInsensitiveEnumConverterFactory

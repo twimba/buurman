@@ -38,7 +38,7 @@ public class GeneratedReport {
   }
 
   private UUID id;
-  @Builder.Default private Optional<Ulid> identifier = Optional.empty();
+  @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private UUID teamId;
   private ReportType reportType;
   private ReportFormat format;

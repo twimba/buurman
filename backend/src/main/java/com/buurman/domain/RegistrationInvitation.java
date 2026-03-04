@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RegistrationInvitation {
   private UUID id;
-  @Builder.Default private Optional<Ulid> identifier = Optional.empty();
+  @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private String code;
   @Builder.Default private Optional<Integer> maxUsages = Optional.empty();
   private int usageCount;

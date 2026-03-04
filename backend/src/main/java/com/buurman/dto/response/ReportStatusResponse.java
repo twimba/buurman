@@ -3,11 +3,11 @@ package com.buurman.dto.response;
 import java.time.Instant;
 import java.util.Optional;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.Sid;
 
 public record ReportStatusResponse(
     String reportId,
-    Ulid identifier,
+    Sid identifier,
     ReportStatus status,
     Optional<Integer> progress,
     Optional<String> downloadUrl,

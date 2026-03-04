@@ -6,10 +6,10 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.PropertyInsurance;
-import com.buurman.domain.Ulid;
+import com.buurman.domain.Sid;
 
 public record PropertyInsuranceResponse(
-    Ulid identifier,
+    Sid identifier,
     Optional<PropertySummary> property,
     PropertyInsurance.InsuranceType insuranceType,
     Optional<String> provider,

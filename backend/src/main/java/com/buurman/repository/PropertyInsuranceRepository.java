@@ -13,12 +13,12 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.PropertyInsurance;
+import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.PropertyInsuranceRecordMapper;
 import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
-import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -28,7 +28,7 @@ public class PropertyInsuranceRepository {
   private final PropertyInsuranceRecordMapper mapper;
   private final Clock clock;
 
-  public Optional<PropertyInsurance> findByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
+  public Optional<PropertyInsurance> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(PROPERTY_INSURANCES)
         .where(
             PROPERTY_INSURANCES
@@ -40,7 +40,7 @@ public class PropertyInsuranceRepository {
         .flatMap(mapper::toDomain);
   }
 
-  public PropertyInsurance getByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
+  public PropertyInsurance getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Property insurance not found"));
   }

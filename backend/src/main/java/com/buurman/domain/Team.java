@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class Team {
 
   private UUID id;
-  @Builder.Default private Optional<Ulid> identifier = Optional.empty();
+  @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private String name;
   private boolean demo;
   private Instant createdAt;

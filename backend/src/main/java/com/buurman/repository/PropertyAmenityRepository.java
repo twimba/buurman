@@ -16,7 +16,6 @@ import com.buurman.domain.PropertyAmenity;
 import com.buurman.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
-import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor

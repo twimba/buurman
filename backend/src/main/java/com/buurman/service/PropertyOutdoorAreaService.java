@@ -1,6 +1,6 @@
 package com.buurman.service;
 
-import static com.buurman.util.UlidGenerator.newPropertyOutdoorAreaId;
+import static com.buurman.util.SidGenerator.newPropertyOutdoorAreaId;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +41,9 @@ public class PropertyOutdoorAreaService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyOutdoorAreaResponse createOutdoorArea(
-      PropertyIdentifier propertyIdentifier, PropertyOutdoorAreaRequest request, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier,
+      PropertyOutdoorAreaRequest request,
+      UserPrincipal principal) {
 
     Property property = resolveProperty(propertyIdentifier, principal);
 
@@ -84,7 +86,9 @@ public class PropertyOutdoorAreaService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void deleteOutdoorArea(
-      PropertyIdentifier propertyIdentifier, PropertyOutdoorAreaIdentifier areaIdentifier, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier,
+      PropertyOutdoorAreaIdentifier areaIdentifier,
+      UserPrincipal principal) {
 
     resolveProperty(propertyIdentifier, principal);
 

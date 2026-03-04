@@ -16,11 +16,11 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.PropertyOccupancyPeriod;
+import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.PropertyOccupancyPeriodRecordMapper;
 
 import lombok.RequiredArgsConstructor;
-import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -30,8 +30,7 @@ public class PropertyOccupancyPeriodRepository {
   private final PropertyOccupancyPeriodRecordMapper mapper;
   private final Clock clock;
 
-  public Optional<PropertyOccupancyPeriod> findByIdentifierAndTeamId(
-      Ulid identifier, UUID teamId) {
+  public Optional<PropertyOccupancyPeriod> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(PROPERTY_OCCUPANCY_PERIODS)
         .where(
             PROPERTY_OCCUPANCY_PERIODS
@@ -43,7 +42,7 @@ public class PropertyOccupancyPeriodRepository {
         .flatMap(mapper::toDomain);
   }
 
-  public PropertyOccupancyPeriod getByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
+  public PropertyOccupancyPeriod getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Occupancy period not found"));
   }

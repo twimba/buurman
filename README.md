@@ -95,7 +95,7 @@ All data is isolated by `team_id` at the database level. Every query filters by 
 ### ID Strategy
 
 - **Internal**: UUIDs (primary keys, never exposed in APIs)
-- **External**: Type-prefixed ULIDs (26 chars, sortable, user-facing via `identifier` column)
+- **External**: Type-prefixed Sids (26 chars, sortable, user-facing via `identifier` column)
 
 ### Authentication Flow
 
@@ -121,7 +121,7 @@ buurman/
 │   │   ├── security/           #   JWT converter, UserAuthentication, TeamMembershipAspect
 │   │   ├── exception/          #   GlobalExceptionHandler + custom exceptions
 │   │   ├── job/                #   Quartz scheduled jobs
-│   │   └── util/               #   UlidGenerator, PaginationHelper, EntityPrefix
+│   │   └── util/               #   SidGenerator, PaginationHelper, EntityPrefix
 │   └── src/main/resources/
 │       └── db/migration/       #   Flyway migrations (V001–V020)
 ├── app/                        # React application
@@ -213,7 +213,7 @@ Copy `.env.example` to `.env`. All defaults work for local development. Key vari
 - **Audit trail**: `created_at`, `updated_at`, `created_by`, `updated_by` on all entities
 - **No JPA**: Pure JOOQ with `DSLContext` — no base repository class
 - **Thin controllers**: Controllers delegate to services, which contain business logic
-- **Response DTOs**: Java records exposing only `identifier` (ULID), never internal UUIDs
+- **Response DTOs**: Java records exposing only `identifier` (Sid), never internal UUIDs
 - **Frontend data layer**: React Query hooks per resource with automatic cache invalidation
 
 ### Common Issues

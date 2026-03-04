@@ -18,7 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.DataTakeout;
 import com.buurman.domain.DataTakeout.TakeoutStatus;
-import com.buurman.domain.Ulid;
+import com.buurman.domain.Sid;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.jooq.generated.tables.records.DataTakeoutsRecord;
@@ -93,7 +93,7 @@ public class DataTakeoutRepository {
     return takeout;
   }
 
-  public Optional<DataTakeout> findByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
+  public Optional<DataTakeout> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(DATA_TAKEOUTS)
         .where(
             DATA_TAKEOUTS
@@ -105,7 +105,7 @@ public class DataTakeoutRepository {
         .map(this::toDomain);
   }
 
-  public DataTakeout getByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
+  public DataTakeout getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Data takeout not found"));
   }

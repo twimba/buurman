@@ -377,13 +377,13 @@ paths:
       parameters:
         - name: tenantIdentifier
           in: path
-          description: Tenant ULID identifier
+          description: Tenant identifier
           required: true
           schema:
             $ref: "#/components/schemas/TenantIdentifier"
         - name: addressIdentifier
           in: path
-          description: Address ULID identifier
+          description: Address identifier
           required: true
           schema:
             $ref: "#/components/schemas/TenantAddressIdentifier"
@@ -441,13 +441,13 @@ paths:
       parameters:
         - name: tenantIdentifier
           in: path
-          description: Tenant ULID identifier
+          description: Tenant identifier
           required: true
           schema:
             $ref: "#/components/schemas/TenantIdentifier"
         - name: addressIdentifier
           in: path
-          description: Address ULID identifier
+          description: Address identifier
           required: true
           schema:
             $ref: "#/components/schemas/TenantAddressIdentifier"
@@ -511,13 +511,13 @@ paths:
       parameters:
         - name: tenantIdentifier
           in: path
-          description: Tenant ULID identifier
+          description: Tenant identifier
           required: true
           schema:
             $ref: "#/components/schemas/TenantIdentifier"
         - name: addressIdentifier
           in: path
-          description: Address ULID identifier
+          description: Address identifier
           required: true
           schema:
             $ref: "#/components/schemas/TenantAddressIdentifier"
@@ -572,7 +572,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Tenant ULID identifier
+          description: Tenant identifier
           required: true
           schema:
             $ref: "#/components/schemas/TenantIdentifier"
@@ -630,7 +630,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Tenant ULID identifier
+          description: Tenant identifier
           required: true
           schema:
             $ref: "#/components/schemas/TenantIdentifier"
@@ -694,7 +694,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Tenant ULID identifier
+          description: Tenant identifier
           required: true
           schema:
             $ref: "#/components/schemas/TenantIdentifier"
@@ -749,13 +749,13 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Tenant ULID identifier
+          description: Tenant identifier
           required: true
           schema:
             $ref: "#/components/schemas/TenantIdentifier"
         - name: photoIdentifier
           in: path
-          description: Photo ULID identifier
+          description: Photo identifier
           required: true
           schema:
             $ref: "#/components/schemas/PhotoIdentifier"
@@ -814,7 +814,7 @@ paths:
       parameters:
         - name: teamIdentifier
           in: path
-          description: Team ULID identifier
+          description: Team identifier
           required: true
           schema:
             $ref: "#/components/schemas/TeamIdentifier"
@@ -879,7 +879,7 @@ paths:
       parameters:
         - name: teamIdentifier
           in: path
-          description: Team ULID identifier
+          description: Team identifier
           required: true
           schema:
             $ref: "#/components/schemas/TeamIdentifier"
@@ -937,7 +937,7 @@ paths:
       parameters:
         - name: teamIdentifier
           in: path
-          description: Team ULID identifier
+          description: Team identifier
           required: true
           schema:
             $ref: "#/components/schemas/TeamIdentifier"
@@ -1002,13 +1002,13 @@ paths:
       parameters:
         - name: teamIdentifier
           in: path
-          description: Team ULID identifier
+          description: Team identifier
           required: true
           schema:
             $ref: "#/components/schemas/TeamIdentifier"
         - name: userIdentifier
           in: path
-          description: User ULID identifier
+          description: User identifier
           required: true
           schema:
             $ref: "#/components/schemas/UserIdentifier"
@@ -1073,13 +1073,13 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: areaIdentifier
           in: path
-          description: Outdoor area ULID identifier
+          description: Outdoor area identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyOutdoorAreaIdentifier"
@@ -1143,13 +1143,13 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: areaIdentifier
           in: path
-          description: Outdoor area ULID identifier
+          description: Outdoor area identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyOutdoorAreaIdentifier"
@@ -1204,13 +1204,13 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: identifier
           in: path
-          description: Occupancy period ULID identifier
+          description: Occupancy period identifier
           required: true
           schema:
             $ref: "#/components/schemas/OccupancyPeriodIdentifier"
@@ -1268,13 +1268,13 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: identifier
           in: path
-          description: Occupancy period ULID identifier
+          description: Occupancy period identifier
           required: true
           schema:
             $ref: "#/components/schemas/OccupancyPeriodIdentifier"
@@ -1338,13 +1338,13 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: identifier
           in: path
-          description: Occupancy period ULID identifier
+          description: Occupancy period identifier
           required: true
           schema:
             $ref: "#/components/schemas/OccupancyPeriodIdentifier"
@@ -1399,13 +1399,13 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: identifier
           in: path
-          description: Valuation ULID identifier
+          description: Valuation identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyValuationIdentifier"
@@ -1469,13 +1469,13 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: identifier
           in: path
-          description: Valuation ULID identifier
+          description: Valuation identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyValuationIdentifier"
@@ -1530,13 +1530,13 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: identifier
           in: path
-          description: Tax ULID identifier
+          description: Tax identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyTaxIdentifier"
@@ -1594,13 +1594,13 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: identifier
           in: path
-          description: Tax ULID identifier
+          description: Tax identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyTaxIdentifier"
@@ -1664,13 +1664,13 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: identifier
           in: path
-          description: Tax ULID identifier
+          description: Tax identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyTaxIdentifier"
@@ -1725,13 +1725,13 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: identifier
           in: path
-          description: Insurance ULID identifier
+          description: Insurance identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyInsuranceIdentifier"
@@ -1789,13 +1789,13 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: identifier
           in: path
-          description: Insurance ULID identifier
+          description: Insurance identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyInsuranceIdentifier"
@@ -1859,13 +1859,13 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: identifier
           in: path
-          description: Insurance ULID identifier
+          description: Insurance identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyInsuranceIdentifier"
@@ -1920,13 +1920,13 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: financingIdentifier
           in: path
-          description: Financing ULID identifier
+          description: Financing identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyFinancingIdentifier"
@@ -1984,13 +1984,13 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: financingIdentifier
           in: path
-          description: Financing ULID identifier
+          description: Financing identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyFinancingIdentifier"
@@ -2054,13 +2054,13 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: financingIdentifier
           in: path
-          description: Financing ULID identifier
+          description: Financing identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyFinancingIdentifier"
@@ -2115,19 +2115,19 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: financingIdentifier
           in: path
-          description: Financing ULID identifier
+          description: Financing identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyFinancingIdentifier"
         - name: paymentIdentifier
           in: path
-          description: Payment ULID identifier
+          description: Payment identifier
           required: true
           schema:
             $ref: "#/components/schemas/FinancingPaymentIdentifier"
@@ -2191,19 +2191,19 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: financingIdentifier
           in: path
-          description: Financing ULID identifier
+          description: Financing identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyFinancingIdentifier"
         - name: paymentIdentifier
           in: path
-          description: Payment ULID identifier
+          description: Payment identifier
           required: true
           schema:
             $ref: "#/components/schemas/FinancingPaymentIdentifier"
@@ -2258,13 +2258,13 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: identifier
           in: path
-          description: Fee ULID identifier
+          description: Fee identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyFeeIdentifier"
@@ -2322,13 +2322,13 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: identifier
           in: path
-          description: Fee ULID identifier
+          description: Fee identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyFeeIdentifier"
@@ -2392,13 +2392,13 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: identifier
           in: path
-          description: Fee ULID identifier
+          description: Fee identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyFeeIdentifier"
@@ -2453,7 +2453,7 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -2511,7 +2511,7 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -2576,7 +2576,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -2634,7 +2634,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -2698,7 +2698,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -2753,13 +2753,13 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: photoIdentifier
           in: path
-          description: Photo ULID identifier
+          description: Photo identifier
           required: true
           schema:
             $ref: "#/components/schemas/PhotoIdentifier"
@@ -2818,7 +2818,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Photo ULID identifier
+          description: Photo identifier
           required: true
           schema:
             $ref: "#/components/schemas/PhotoIdentifier"
@@ -2872,7 +2872,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Photo ULID identifier
+          description: Photo identifier
           required: true
           schema:
             $ref: "#/components/schemas/PhotoIdentifier"
@@ -2934,7 +2934,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Photo ULID identifier
+          description: Photo identifier
           required: true
           schema:
             $ref: "#/components/schemas/PhotoIdentifier"
@@ -2987,7 +2987,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Payment ULID identifier
+          description: Payment identifier
           required: true
           schema:
             $ref: "#/components/schemas/PaymentIdentifier"
@@ -3045,7 +3045,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Payment ULID identifier
+          description: Payment identifier
           required: true
           schema:
             $ref: "#/components/schemas/PaymentIdentifier"
@@ -3109,7 +3109,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Payment ULID identifier
+          description: Payment identifier
           required: true
           schema:
             $ref: "#/components/schemas/PaymentIdentifier"
@@ -3164,13 +3164,13 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Payment ULID identifier
+          description: Payment identifier
           required: true
           schema:
             $ref: "#/components/schemas/PaymentIdentifier"
         - name: receivalIdentifier
           in: path
-          description: Receival ULID identifier
+          description: Receival identifier
           required: true
           schema:
             $ref: "#/components/schemas/PaymentReceivalIdentifier"
@@ -3234,13 +3234,13 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Payment ULID identifier
+          description: Payment identifier
           required: true
           schema:
             $ref: "#/components/schemas/PaymentIdentifier"
         - name: receivalIdentifier
           in: path
-          description: Receival ULID identifier
+          description: Receival identifier
           required: true
           schema:
             $ref: "#/components/schemas/PaymentReceivalIdentifier"
@@ -3299,7 +3299,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Payment ULID identifier
+          description: Payment identifier
           required: true
           schema:
             $ref: "#/components/schemas/PaymentIdentifier"
@@ -3364,7 +3364,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Payment instruction ULID identifier
+          description: Payment instruction identifier
           required: true
           schema:
             $ref: "#/components/schemas/PaymentInstructionIdentifier"
@@ -3422,7 +3422,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Payment instruction ULID identifier
+          description: Payment instruction identifier
           required: true
           schema:
             $ref: "#/components/schemas/PaymentInstructionIdentifier"
@@ -3486,7 +3486,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Payment instruction ULID identifier
+          description: Payment instruction identifier
           required: true
           schema:
             $ref: "#/components/schemas/PaymentInstructionIdentifier"
@@ -3541,7 +3541,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Expense ULID identifier
+          description: Expense identifier
           required: true
           schema:
             $ref: "#/components/schemas/ExpenseIdentifier"
@@ -3599,7 +3599,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Expense ULID identifier
+          description: Expense identifier
           required: true
           schema:
             $ref: "#/components/schemas/ExpenseIdentifier"
@@ -3663,7 +3663,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Expense ULID identifier
+          description: Expense identifier
           required: true
           schema:
             $ref: "#/components/schemas/ExpenseIdentifier"
@@ -3718,7 +3718,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Document ULID identifier
+          description: Document identifier
           required: true
           schema:
             $ref: "#/components/schemas/DocumentIdentifier"
@@ -3772,7 +3772,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Document ULID identifier
+          description: Document identifier
           required: true
           schema:
             $ref: "#/components/schemas/DocumentIdentifier"
@@ -3834,7 +3834,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Document ULID identifier
+          description: Document identifier
           required: true
           schema:
             $ref: "#/components/schemas/DocumentIdentifier"
@@ -3887,7 +3887,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Contract ULID identifier
+          description: Contract identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractIdentifier"
@@ -3945,7 +3945,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Contract ULID identifier
+          description: Contract identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractIdentifier"
@@ -4009,7 +4009,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Contract ULID identifier
+          description: Contract identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractIdentifier"
@@ -4064,13 +4064,13 @@ paths:
       parameters:
         - name: contractIdentifier
           in: path
-          description: Contract ULID identifier
+          description: Contract identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractIdentifier"
         - name: periodIdentifier
           in: path
-          description: Rent period ULID identifier
+          description: Rent period identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractRentPeriodIdentifier"
@@ -4134,13 +4134,13 @@ paths:
       parameters:
         - name: contractIdentifier
           in: path
-          description: Contract ULID identifier
+          description: Contract identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractIdentifier"
         - name: periodIdentifier
           in: path
-          description: Rent period ULID identifier
+          description: Rent period identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractRentPeriodIdentifier"
@@ -4195,13 +4195,13 @@ paths:
       parameters:
         - name: contractIdentifier
           in: path
-          description: Contract ULID identifier
+          description: Contract identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractIdentifier"
         - name: instructionIdentifier
           in: path
-          description: Payment instruction ULID identifier
+          description: Payment instruction identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractPaymentInstructionIdentifier"
@@ -4265,13 +4265,13 @@ paths:
       parameters:
         - name: contractIdentifier
           in: path
-          description: Contract ULID identifier
+          description: Contract identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractIdentifier"
         - name: instructionIdentifier
           in: path
-          description: Payment instruction ULID identifier
+          description: Payment instruction identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractPaymentInstructionIdentifier"
@@ -4542,7 +4542,7 @@ paths:
       parameters:
         - name: teamIdentifier
           in: path
-          description: Team ULID identifier
+          description: Team identifier
           required: true
           schema:
             $ref: "#/components/schemas/TeamIdentifier"
@@ -4966,7 +4966,7 @@ paths:
       parameters:
         - name: tenantIdentifier
           in: path
-          description: Tenant ULID identifier
+          description: Tenant identifier
           required: true
           schema:
             $ref: "#/components/schemas/TenantIdentifier"
@@ -5026,7 +5026,7 @@ paths:
       parameters:
         - name: tenantIdentifier
           in: path
-          description: Tenant ULID identifier
+          description: Tenant identifier
           required: true
           schema:
             $ref: "#/components/schemas/TenantIdentifier"
@@ -5091,7 +5091,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Tenant ULID identifier
+          description: Tenant identifier
           required: true
           schema:
             $ref: "#/components/schemas/TenantIdentifier"
@@ -5150,7 +5150,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Tenant ULID identifier
+          description: Tenant identifier
           required: true
           schema:
             $ref: "#/components/schemas/TenantIdentifier"
@@ -5210,7 +5210,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Tenant ULID identifier
+          description: Tenant identifier
           required: true
           schema:
             $ref: "#/components/schemas/TenantIdentifier"
@@ -5293,7 +5293,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Tenant ULID identifier
+          description: Tenant identifier
           required: true
           schema:
             $ref: "#/components/schemas/TenantIdentifier"
@@ -5358,7 +5358,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Tenant ULID identifier
+          description: Tenant identifier
           required: true
           schema:
             $ref: "#/components/schemas/TenantIdentifier"
@@ -5418,7 +5418,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Tenant ULID identifier
+          description: Tenant identifier
           required: true
           schema:
             $ref: "#/components/schemas/TenantIdentifier"
@@ -5501,7 +5501,7 @@ paths:
       parameters:
         - name: teamIdentifier
           in: path
-          description: Team ULID identifier
+          description: Team identifier
           required: true
           schema:
             $ref: "#/components/schemas/TeamIdentifier"
@@ -5566,7 +5566,7 @@ paths:
       parameters:
         - name: teamIdentifier
           in: path
-          description: Team ULID identifier
+          description: Team identifier
           required: true
           schema:
             $ref: "#/components/schemas/TeamIdentifier"
@@ -5631,7 +5631,7 @@ paths:
       parameters:
         - name: teamIdentifier
           in: path
-          description: Team ULID identifier
+          description: Team identifier
           required: true
           schema:
             $ref: "#/components/schemas/TeamIdentifier"
@@ -5923,7 +5923,7 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -5983,7 +5983,7 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -6048,7 +6048,7 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -6108,7 +6108,7 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -6173,13 +6173,13 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: identifier
           in: path
-          description: Occupancy period ULID identifier
+          description: Occupancy period identifier
           required: true
           schema:
             $ref: "#/components/schemas/OccupancyPeriodIdentifier"
@@ -6244,7 +6244,7 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -6304,7 +6304,7 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -6369,7 +6369,7 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -6429,7 +6429,7 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -6494,7 +6494,7 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -6554,7 +6554,7 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -6619,7 +6619,7 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -6679,7 +6679,7 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -6744,13 +6744,13 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: financingIdentifier
           in: path
-          description: Financing ULID identifier
+          description: Financing identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyFinancingIdentifier"
@@ -6810,13 +6810,13 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: financingIdentifier
           in: path
-          description: Financing ULID identifier
+          description: Financing identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyFinancingIdentifier"
@@ -6881,19 +6881,19 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: financingIdentifier
           in: path
-          description: Financing ULID identifier
+          description: Financing identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyFinancingIdentifier"
         - name: paymentIdentifier
           in: path
-          description: Payment ULID identifier
+          description: Payment identifier
           required: true
           schema:
             $ref: "#/components/schemas/FinancingPaymentIdentifier"
@@ -6953,19 +6953,19 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: financingIdentifier
           in: path
-          description: Financing ULID identifier
+          description: Financing identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyFinancingIdentifier"
         - name: paymentIdentifier
           in: path
-          description: Payment ULID identifier
+          description: Payment identifier
           required: true
           schema:
             $ref: "#/components/schemas/FinancingPaymentIdentifier"
@@ -7048,13 +7048,13 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: financingIdentifier
           in: path
-          description: Financing ULID identifier
+          description: Financing identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyFinancingIdentifier"
@@ -7121,7 +7121,7 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -7181,7 +7181,7 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -7246,7 +7246,7 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -7306,7 +7306,7 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -7371,7 +7371,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -7431,7 +7431,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -7514,7 +7514,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -7574,7 +7574,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -7727,13 +7727,13 @@ paths:
               - CANCELLED
         - name: contractIdentifier
           in: query
-          description: Contract ULID identifier
+          description: Contract identifier
           required: false
           schema:
             type: string
         - name: propertyIdentifier
           in: query
-          description: Property ULID identifier
+          description: Property identifier
           required: false
           schema:
             type: string
@@ -7902,7 +7902,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Payment ULID identifier
+          description: Payment identifier
           required: true
           schema:
             $ref: "#/components/schemas/PaymentIdentifier"
@@ -7962,7 +7962,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Payment ULID identifier
+          description: Payment identifier
           required: true
           schema:
             $ref: "#/components/schemas/PaymentIdentifier"
@@ -8027,7 +8027,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Payment ULID identifier
+          description: Payment identifier
           required: true
           schema:
             $ref: "#/components/schemas/PaymentIdentifier"
@@ -8087,7 +8087,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Payment ULID identifier
+          description: Payment identifier
           required: true
           schema:
             $ref: "#/components/schemas/PaymentIdentifier"
@@ -8401,7 +8401,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Notification ULID identifier
+          description: Notification identifier
           required: true
           schema:
             $ref: "#/components/schemas/NotificationIdentifier"
@@ -8460,7 +8460,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Notification ULID identifier
+          description: Notification identifier
           required: true
           schema:
             $ref: "#/components/schemas/NotificationIdentifier"
@@ -8641,7 +8641,7 @@ paths:
               - OTHER
         - name: propertyIdentifier
           in: query
-          description: Property ULID identifier
+          description: Property identifier
           required: false
           schema:
             type: string
@@ -8810,7 +8810,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Expense ULID identifier
+          description: Expense identifier
           required: true
           schema:
             $ref: "#/components/schemas/ExpenseIdentifier"
@@ -8870,7 +8870,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Expense ULID identifier
+          description: Expense identifier
           required: true
           schema:
             $ref: "#/components/schemas/ExpenseIdentifier"
@@ -9083,13 +9083,13 @@ paths:
               - PENDING_SIGNATURE
         - name: propertyIdentifier
           in: query
-          description: Property ULID identifier
+          description: Property identifier
           required: false
           schema:
             type: string
         - name: tenantIdentifier
           in: query
-          description: Tenant ULID identifier
+          description: Tenant identifier
           required: false
           schema:
             type: string
@@ -9242,7 +9242,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Contract ULID identifier
+          description: Contract identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractIdentifier"
@@ -9301,7 +9301,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Contract ULID identifier
+          description: Contract identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractIdentifier"
@@ -9366,7 +9366,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Contract ULID identifier
+          description: Contract identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractIdentifier"
@@ -9431,7 +9431,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Contract ULID identifier
+          description: Contract identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractIdentifier"
@@ -9497,7 +9497,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Contract ULID identifier
+          description: Contract identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractIdentifier"
@@ -9556,7 +9556,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Contract ULID identifier
+          description: Contract identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractIdentifier"
@@ -9616,7 +9616,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Contract ULID identifier
+          description: Contract identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractIdentifier"
@@ -9699,7 +9699,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Contract ULID identifier
+          description: Contract identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractIdentifier"
@@ -9764,7 +9764,7 @@ paths:
       parameters:
         - name: contractIdentifier
           in: path
-          description: Contract ULID identifier
+          description: Contract identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractIdentifier"
@@ -9824,7 +9824,7 @@ paths:
       parameters:
         - name: contractIdentifier
           in: path
-          description: Contract ULID identifier
+          description: Contract identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractIdentifier"
@@ -9889,7 +9889,7 @@ paths:
       parameters:
         - name: contractIdentifier
           in: path
-          description: Contract ULID identifier
+          description: Contract identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractIdentifier"
@@ -9949,7 +9949,7 @@ paths:
       parameters:
         - name: contractIdentifier
           in: path
-          description: Contract ULID identifier
+          description: Contract identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractIdentifier"
@@ -10125,7 +10125,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Calendar feed ULID identifier
+          description: Calendar feed identifier
           required: true
           schema:
             $ref: "#/components/schemas/CalendarFeedIdentifier"
@@ -10549,7 +10549,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Tenant ULID identifier
+          description: Tenant identifier
           required: true
           schema:
             $ref: "#/components/schemas/TenantIdentifier"
@@ -10610,7 +10610,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Tenant ULID identifier
+          description: Tenant identifier
           required: true
           schema:
             $ref: "#/components/schemas/TenantIdentifier"
@@ -10671,7 +10671,7 @@ paths:
       parameters:
         - name: documentIdentifier
           in: path
-          description: Document ULID identifier
+          description: Document identifier
           required: true
           schema:
             $ref: "#/components/schemas/DocumentIdentifier"
@@ -10732,7 +10732,7 @@ paths:
       parameters:
         - name: teamIdentifier
           in: path
-          description: Team ULID identifier
+          description: Team identifier
           required: true
           schema:
             $ref: "#/components/schemas/TeamIdentifier"
@@ -10793,7 +10793,7 @@ paths:
       parameters:
         - name: teamIdentifier
           in: path
-          description: Team ULID identifier
+          description: Team identifier
           required: true
           schema:
             $ref: "#/components/schemas/TeamIdentifier"
@@ -10983,7 +10983,7 @@ paths:
           example: "2026-12-31"
         - name: propertyIdentifiers
           in: query
-          description: Property ULID identifiers to filter by
+          description: Property identifiers to filter by
           required: false
           schema:
             type: array
@@ -11259,7 +11259,7 @@ paths:
           example: "2026-12-31"
         - name: propertyIdentifiers
           in: query
-          description: Property ULID identifiers to filter by
+          description: Property identifiers to filter by
           required: false
           schema:
             type: array
@@ -11423,7 +11423,7 @@ paths:
           example: "2026-12-31"
         - name: propertyIdentifiers
           in: query
-          description: Property ULID identifiers to filter by
+          description: Property identifiers to filter by
           required: false
           schema:
             type: array
@@ -11500,7 +11500,7 @@ paths:
           example: "2026-12-31"
         - name: propertyIdentifiers
           in: query
-          description: Property ULID identifiers to filter by
+          description: Property identifiers to filter by
           required: false
           schema:
             type: array
@@ -11593,7 +11593,7 @@ paths:
       tags:
         - Reference
       summary: Entity identifier prefixes
-      description: "Returns the 3-character prefix codes used in entity identifiers (format: <prefix><ULID>)"
+      description: "Returns the 3-character prefix codes used in entity identifiers (format: <prefix><id>)"
       operationId: getEntityPrefixes
       responses:
         "200":
@@ -11680,7 +11680,7 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -11739,7 +11739,7 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -11798,7 +11798,7 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -11857,19 +11857,19 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: financingIdentifier
           in: path
-          description: Financing ULID identifier
+          description: Financing identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyFinancingIdentifier"
         - name: documentIdentifier
           in: path
-          description: Document ULID identifier
+          description: Document identifier
           required: true
           schema:
             $ref: "#/components/schemas/DocumentIdentifier"
@@ -11930,7 +11930,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -11996,7 +11996,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -12063,7 +12063,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -12131,7 +12131,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -12192,7 +12192,7 @@ paths:
       parameters:
         - name: documentIdentifier
           in: path
-          description: Document ULID identifier
+          description: Document identifier
           required: true
           schema:
             $ref: "#/components/schemas/DocumentIdentifier"
@@ -12353,7 +12353,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Photo ULID identifier
+          description: Photo identifier
           required: true
           schema:
             $ref: "#/components/schemas/PhotoIdentifier"
@@ -12410,7 +12410,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Photo ULID identifier
+          description: Photo identifier
           required: true
           schema:
             $ref: "#/components/schemas/PhotoIdentifier"
@@ -12467,7 +12467,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Payment ULID identifier
+          description: Payment identifier
           required: true
           schema:
             $ref: "#/components/schemas/PaymentIdentifier"
@@ -12634,7 +12634,7 @@ paths:
       parameters:
         - name: documentIdentifier
           in: path
-          description: Document ULID identifier
+          description: Document identifier
           required: true
           schema:
             $ref: "#/components/schemas/DocumentIdentifier"
@@ -12854,7 +12854,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Notification ULID identifier
+          description: Notification identifier
           required: true
           schema:
             $ref: "#/components/schemas/NotificationIdentifier"
@@ -13176,7 +13176,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Expense ULID identifier
+          description: Expense identifier
           required: true
           schema:
             $ref: "#/components/schemas/ExpenseIdentifier"
@@ -13289,7 +13289,7 @@ paths:
       parameters:
         - name: documentIdentifier
           in: path
-          description: Document ULID identifier
+          description: Document identifier
           required: true
           schema:
             $ref: "#/components/schemas/DocumentIdentifier"
@@ -13450,7 +13450,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Document ULID identifier
+          description: Document identifier
           required: true
           schema:
             $ref: "#/components/schemas/DocumentIdentifier"
@@ -13507,7 +13507,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Document ULID identifier
+          description: Document identifier
           required: true
           schema:
             $ref: "#/components/schemas/DocumentIdentifier"
@@ -13680,7 +13680,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Contract ULID identifier
+          description: Contract identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractIdentifier"
@@ -13741,7 +13741,7 @@ paths:
       parameters:
         - name: contractIdentifier
           in: path
-          description: Contract ULID identifier
+          description: Contract identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractIdentifier"
@@ -13860,7 +13860,7 @@ paths:
       parameters:
         - name: documentIdentifier
           in: path
-          description: Document ULID identifier
+          description: Document identifier
           required: true
           schema:
             $ref: "#/components/schemas/DocumentIdentifier"
@@ -13969,7 +13969,7 @@ paths:
       parameters:
         - name: tenantIdentifier
           in: path
-          description: Tenant ULID identifier
+          description: Tenant identifier
           required: true
           schema:
             $ref: "#/components/schemas/TenantIdentifier"
@@ -14029,7 +14029,7 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
@@ -14089,7 +14089,7 @@ paths:
       parameters:
         - name: contractIdentifier
           in: path
-          description: Contract ULID identifier
+          description: Contract identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractIdentifier"
@@ -14336,7 +14336,7 @@ paths:
       parameters:
         - name: documentIdentifier
           in: path
-          description: Document ULID identifier
+          description: Document identifier
           required: true
           schema:
             $ref: "#/components/schemas/DocumentIdentifier"
@@ -14391,13 +14391,13 @@ paths:
       parameters:
         - name: teamIdentifier
           in: path
-          description: Team ULID identifier
+          description: Team identifier
           required: true
           schema:
             $ref: "#/components/schemas/TeamIdentifier"
         - name: userIdentifier
           in: path
-          description: User ULID identifier
+          description: User identifier
           required: true
           schema:
             $ref: "#/components/schemas/UserIdentifier"
@@ -14452,19 +14452,19 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: financingIdentifier
           in: path
-          description: Financing ULID identifier
+          description: Financing identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyFinancingIdentifier"
         - name: documentIdentifier
           in: path
-          description: Document ULID identifier
+          description: Document identifier
           required: true
           schema:
             $ref: "#/components/schemas/DocumentIdentifier"
@@ -14519,13 +14519,13 @@ paths:
       parameters:
         - name: propertyIdentifier
           in: path
-          description: Property ULID identifier
+          description: Property identifier
           required: true
           schema:
             $ref: "#/components/schemas/PropertyIdentifier"
         - name: amenityIdentifier
           in: path
-          description: Amenity ULID identifier
+          description: Amenity identifier
           required: true
           schema:
             $ref: "#/components/schemas/AmenityIdentifier"
@@ -14580,7 +14580,7 @@ paths:
       parameters:
         - name: documentIdentifier
           in: path
-          description: Document ULID identifier
+          description: Document identifier
           required: true
           schema:
             $ref: "#/components/schemas/DocumentIdentifier"
@@ -14635,7 +14635,7 @@ paths:
       parameters:
         - name: documentIdentifier
           in: path
-          description: Document ULID identifier
+          description: Document identifier
           required: true
           schema:
             $ref: "#/components/schemas/DocumentIdentifier"
@@ -14690,7 +14690,7 @@ paths:
       parameters:
         - name: documentIdentifier
           in: path
-          description: Document ULID identifier
+          description: Document identifier
           required: true
           schema:
             $ref: "#/components/schemas/DocumentIdentifier"
@@ -14745,13 +14745,13 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Contract ULID identifier
+          description: Contract identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractIdentifier"
         - name: partyIdentifier
           in: path
-          description: Contract party ULID identifier
+          description: Contract party identifier
           required: true
           schema:
             $ref: "#/components/schemas/ContractPartyIdentifier"
@@ -14806,7 +14806,7 @@ paths:
       parameters:
         - name: documentIdentifier
           in: path
-          description: Document ULID identifier
+          description: Document identifier
           required: true
           schema:
             $ref: "#/components/schemas/DocumentIdentifier"
@@ -14861,7 +14861,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Calendar feed ULID identifier
+          description: Calendar feed identifier
           required: true
           schema:
             $ref: "#/components/schemas/CalendarFeedIdentifier"
@@ -14910,82 +14910,82 @@ components:
   schemas:
     AmenityIdentifier:
       type: string
-      description: Amenity ULID identifier
+      description: Amenity identifier
     CalendarFeedIdentifier:
       type: string
-      description: Calendar feed ULID identifier
+      description: Calendar feed identifier
     ContractIdentifier:
       type: string
-      description: Contract ULID identifier
+      description: Contract identifier
     ContractPartyIdentifier:
       type: string
-      description: Contract party ULID identifier
+      description: Contract party identifier
     ContractPaymentInstructionIdentifier:
       type: string
-      description: Contract payment instruction ULID identifier
+      description: Contract payment instruction identifier
     ContractRentPeriodIdentifier:
       type: string
-      description: Contract rent period ULID identifier
+      description: Contract rent period identifier
     DocumentIdentifier:
       type: string
-      description: Document ULID identifier
+      description: Document identifier
     ExpenseIdentifier:
       type: string
-      description: Expense ULID identifier
+      description: Expense identifier
     FinancingPaymentIdentifier:
       type: string
-      description: Financing payment ULID identifier
+      description: Financing payment identifier
     NotificationIdentifier:
       type: string
-      description: Notification ULID identifier
+      description: Notification identifier
     OccupancyPeriodIdentifier:
       type: string
-      description: Occupancy period ULID identifier
+      description: Occupancy period identifier
     PaymentIdentifier:
       type: string
-      description: Payment ULID identifier
+      description: Payment identifier
     PaymentInstructionIdentifier:
       type: string
-      description: Payment instruction ULID identifier
+      description: Payment instruction identifier
     PaymentReceivalIdentifier:
       type: string
-      description: Payment receival ULID identifier
+      description: Payment receival identifier
     PhotoIdentifier:
       type: string
-      description: Photo ULID identifier
+      description: Photo identifier
     PropertyFeeIdentifier:
       type: string
-      description: Property fee ULID identifier
+      description: Property fee identifier
     PropertyFinancingIdentifier:
       type: string
-      description: Property financing ULID identifier
+      description: Property financing identifier
     PropertyIdentifier:
       type: string
-      description: Property ULID identifier
+      description: Property identifier
     PropertyInsuranceIdentifier:
       type: string
-      description: Property insurance ULID identifier
+      description: Property insurance identifier
     PropertyOutdoorAreaIdentifier:
       type: string
-      description: Property outdoor area ULID identifier
+      description: Property outdoor area identifier
     PropertyTaxIdentifier:
       type: string
-      description: Property tax ULID identifier
+      description: Property tax identifier
     PropertyValuationIdentifier:
       type: string
-      description: Property valuation ULID identifier
+      description: Property valuation identifier
     TeamIdentifier:
       type: string
-      description: Team ULID identifier
+      description: Team identifier
     TenantAddressIdentifier:
       type: string
-      description: Tenant address ULID identifier
+      description: Tenant address identifier
     TenantIdentifier:
       type: string
-      description: Tenant ULID identifier
+      description: Tenant identifier
     UserIdentifier:
       type: string
-      description: User ULID identifier
+      description: User identifier
     Entry:
       type: object
       properties:

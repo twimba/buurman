@@ -1,6 +1,6 @@
 package com.buurman.service;
 
-import static com.buurman.util.UlidGenerator.newExpenseId;
+import static com.buurman.util.SidGenerator.newExpenseId;
 import static java.util.stream.Collectors.joining;
 
 import java.math.BigDecimal;
@@ -24,11 +24,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
 import com.buurman.domain.AmountStats;
-import com.buurman.domain.identifier.ExpenseIdentifier;
-import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.domain.Expense;
 import com.buurman.domain.NotificationType;
 import com.buurman.domain.Property;
+import com.buurman.domain.identifier.ExpenseIdentifier;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.CreateExpenseRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateExpenseRequest;
@@ -285,7 +285,9 @@ public class ExpenseService {
     ExpenseResponse newState = enrichExpenseResponse(updatedExpense, principal.requireTeamId());
 
     log.info(
-        "Updated expense {} by user {}", updatedExpense.getIdentifier().orElseThrow(), principal.getUserId());
+        "Updated expense {} by user {}",
+        updatedExpense.getIdentifier().orElseThrow(),
+        principal.getUserId());
 
     auditService.logUpdate(
         principal.requireTeamId(),
@@ -320,7 +322,10 @@ public class ExpenseService {
     // Soft-delete the expense itself
     expenseRepository.softDeleteByIdAndTeamId(expenseId, teamId);
 
-    log.info("Deleted expense {} by user {}", expense.getIdentifier().orElseThrow(), principal.getUserId());
+    log.info(
+        "Deleted expense {} by user {}",
+        expense.getIdentifier().orElseThrow(),
+        principal.getUserId());
 
     auditService.logDelete(teamId, "EXPENSE", expenseId, principal.getUserId(), expense);
   }
@@ -336,10 +341,17 @@ public class ExpenseService {
         expenseRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
     return documentService.uploadDocument(
-        file, "EXPENSE", expense.getId(), expense.getIdentifier().orElseThrow(), title, notes, principal);
+        file,
+        "EXPENSE",
+        expense.getId(),
+        expense.getIdentifier().orElseThrow(),
+        title,
+        notes,
+        principal);
   }
 
-  public List<DocumentResponse> getExpenseDocuments(ExpenseIdentifier identifier, UserPrincipal principal) {
+  public List<DocumentResponse> getExpenseDocuments(
+      ExpenseIdentifier identifier, UserPrincipal principal) {
     Expense expense =
         expenseRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 

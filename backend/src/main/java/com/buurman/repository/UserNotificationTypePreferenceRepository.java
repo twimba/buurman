@@ -16,7 +16,6 @@ import com.buurman.domain.NotificationType;
 import com.buurman.domain.UserNotificationTypePreference;
 
 import lombok.RequiredArgsConstructor;
-import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor

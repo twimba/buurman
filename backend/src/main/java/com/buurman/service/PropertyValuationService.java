@@ -1,6 +1,6 @@
 package com.buurman.service;
 
-import static com.buurman.util.UlidGenerator.newValuationId;
+import static com.buurman.util.SidGenerator.newValuationId;
 
 import java.time.Clock;
 import java.util.List;
@@ -38,7 +38,9 @@ public class PropertyValuationService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyValuationResponse create(
-      PropertyIdentifier propertyIdentifier, CreatePropertyValuationRequest request, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier,
+      CreatePropertyValuationRequest request,
+      UserPrincipal principal) {
     Property property =
         propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, principal.requireTeamId());
 
@@ -65,7 +67,9 @@ public class PropertyValuationService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyValuationResponse update(
-      PropertyValuationIdentifier identifier, UpdatePropertyValuationRequest request, UserPrincipal principal) {
+      PropertyValuationIdentifier identifier,
+      UpdatePropertyValuationRequest request,
+      UserPrincipal principal) {
     PropertyValuation valuation =
         valuationRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
@@ -76,7 +80,9 @@ public class PropertyValuationService {
     PropertyValuation saved = valuationRepository.save(valuation);
 
     log.info(
-        "Updated property valuation {} by user {}", saved.getIdentifier().orElseThrow(), principal.getUserId());
+        "Updated property valuation {} by user {}",
+        saved.getIdentifier().orElseThrow(),
+        principal.getUserId());
 
     return valuationMapper.toResponse(saved);
   }

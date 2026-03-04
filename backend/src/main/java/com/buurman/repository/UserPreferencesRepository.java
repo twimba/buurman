@@ -14,7 +14,6 @@ import org.springframework.stereotype.Repository;
 import com.buurman.domain.UserPreferences;
 
 import lombok.RequiredArgsConstructor;
-import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor

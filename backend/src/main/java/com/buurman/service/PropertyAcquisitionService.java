@@ -1,6 +1,6 @@
 package com.buurman.service;
 
-import static com.buurman.util.UlidGenerator.newAcquisitionId;
+import static com.buurman.util.SidGenerator.newAcquisitionId;
 
 import java.time.Clock;
 import java.util.Optional;

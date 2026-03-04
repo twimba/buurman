@@ -19,6 +19,7 @@ import org.jooq.Field;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
+import com.buurman.domain.Sid;
 import com.buurman.domain.Tenant;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
@@ -27,7 +28,6 @@ import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
 import lombok.RequiredArgsConstructor;
-import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -37,7 +37,7 @@ public class TenantRepository {
   private final TenantRecordMapper mapper;
   private final Clock clock;
 
-  public Optional<Tenant> findByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
+  public Optional<Tenant> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(TENANTS)
         .where(
             TENANTS
@@ -56,7 +56,7 @@ public class TenantRepository {
         .map(mapper::toDomain);
   }
 
-  public Tenant getByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
+  public Tenant getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Tenant not found"));
   }

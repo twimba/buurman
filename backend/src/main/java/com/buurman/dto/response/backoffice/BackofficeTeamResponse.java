@@ -3,10 +3,10 @@ package com.buurman.dto.response.backoffice;
 import java.time.Instant;
 import java.util.Optional;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.Sid;
 
 public record BackofficeTeamResponse(
-    Ulid identifier,
+    Sid identifier,
     String teamName,
     boolean demo,
     long memberCount,

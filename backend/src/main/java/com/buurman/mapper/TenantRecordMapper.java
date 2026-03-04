@@ -37,7 +37,9 @@ public interface TenantRecordMapper {
   @Mapping(
       target = "currentPropertyId",
       expression = "java(java.util.Optional.ofNullable(record.getCurrentPropertyId()))")
-  @Mapping(target = "identifier", expression = "java(java.util.Optional.of(record.getIdentifier()))")
+  @Mapping(
+      target = "identifier",
+      expression = "java(java.util.Optional.of(record.getIdentifier()))")
   Tenant toDomain(TenantsRecord record);
 
   @Mapping(target = "createdAt", expression = "java(toLocalDateTime(tenant.getCreatedAt()))")

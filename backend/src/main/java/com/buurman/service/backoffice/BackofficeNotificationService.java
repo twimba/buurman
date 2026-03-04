@@ -11,13 +11,13 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.buurman.domain.Ulid;
 import com.buurman.domain.LabelCount;
-import com.buurman.domain.identifier.NotificationIdentifier;
-import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.domain.Notification;
 import com.buurman.domain.NotificationStatus;
+import com.buurman.domain.Sid;
 import com.buurman.domain.Team;
+import com.buurman.domain.identifier.NotificationIdentifier;
+import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.backoffice.BackofficeNotificationResponse;
@@ -82,8 +82,7 @@ public class BackofficeNotificationService {
     Notification original = notificationRepository.getByIdentifierUnscoped(identifier);
 
     Notification resent =
-        notificationService.resend(
-            original.getTeamId().orElse(null), identifier, null);
+        notificationService.resend(original.getTeamId().orElse(null), identifier, null);
 
     log.info(
         "Backoffice user {} resent notification {} (type={}, channel={})",
@@ -127,7 +126,7 @@ public class BackofficeNotificationService {
   }
 
   private BackofficeNotificationResponse toResponse(Notification notification) {
-    Ulid teamIdentifier = null;
+    Sid teamIdentifier = null;
     String teamName = null;
     if (notification.getTeamId().isPresent()) {
       Team team = teamRepository.findById(notification.getTeamId().get()).orElse(null);
@@ -137,7 +136,7 @@ public class BackofficeNotificationService {
       }
     }
 
-    Optional<Ulid> resentFromIdentifier =
+    Optional<Sid> resentFromIdentifier =
         notification
             .getResentFromId()
             .flatMap(id -> notificationRepository.findByIdAndTeamId(id, null))

@@ -27,7 +27,9 @@ public interface UserRecordMapper {
   @Mapping(
       target = "disabledAt",
       expression = "java(java.util.Optional.ofNullable(toInstant(record.getDisabledAt())))")
-  @Mapping(target = "identifier", expression = "java(java.util.Optional.of(record.getIdentifier()))")
+  @Mapping(
+      target = "identifier",
+      expression = "java(java.util.Optional.of(record.getIdentifier()))")
   User toDomain(UsersRecord record);
 
   @Mapping(target = "createdAt", expression = "java(toLocalDateTime(user.getCreatedAt()))")

@@ -18,7 +18,6 @@ import org.springframework.stereotype.Repository;
 import com.buurman.domain.LabelCount;
 
 import lombok.RequiredArgsConstructor;
-import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor

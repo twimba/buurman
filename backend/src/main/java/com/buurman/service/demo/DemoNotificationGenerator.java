@@ -7,7 +7,7 @@ import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
 import static com.buurman.jooq.generated.Tables.TENANTS;
 import static com.buurman.jooq.generated.Tables.USERS;
-import static com.buurman.util.UlidGenerator.newNotificationId;
+import static com.buurman.util.SidGenerator.newNotificationId;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;

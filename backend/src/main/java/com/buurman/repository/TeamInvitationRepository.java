@@ -16,7 +16,6 @@ import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.TeamInvitationRecordMapper;
 
 import lombok.RequiredArgsConstructor;
-import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor

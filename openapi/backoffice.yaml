@@ -45,7 +45,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Team ULID identifier
+          description: Team identifier
           required: true
           schema:
             $ref: "#/components/schemas/TeamIdentifier"
@@ -103,7 +103,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Team ULID identifier
+          description: Team identifier
           required: true
           schema:
             $ref: "#/components/schemas/TeamIdentifier"
@@ -167,7 +167,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Team ULID identifier
+          description: Team identifier
           required: true
           schema:
             $ref: "#/components/schemas/TeamIdentifier"
@@ -451,7 +451,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Registration invitation ULID identifier
+          description: Registration invitation identifier
           required: true
           schema:
             $ref: "#/components/schemas/RegistrationInvitationIdentifier"
@@ -649,13 +649,13 @@ paths:
       parameters:
         - name: userIdentifier
           in: path
-          description: User ULID identifier
+          description: User identifier
           required: true
           schema:
             $ref: "#/components/schemas/UserIdentifier"
         - name: teamIdentifier
           in: path
-          description: Team ULID identifier
+          description: Team identifier
           required: true
           schema:
             $ref: "#/components/schemas/TeamIdentifier"
@@ -725,13 +725,13 @@ paths:
       parameters:
         - name: userIdentifier
           in: path
-          description: User ULID identifier
+          description: User identifier
           required: true
           schema:
             $ref: "#/components/schemas/UserIdentifier"
         - name: teamIdentifier
           in: path
-          description: Team ULID identifier
+          description: Team identifier
           required: true
           schema:
             $ref: "#/components/schemas/TeamIdentifier"
@@ -792,7 +792,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: User ULID identifier
+          description: User identifier
           required: true
           schema:
             $ref: "#/components/schemas/UserIdentifier"
@@ -847,7 +847,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: User ULID identifier
+          description: User identifier
           required: true
           schema:
             $ref: "#/components/schemas/UserIdentifier"
@@ -902,7 +902,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: User ULID identifier
+          description: User identifier
           required: true
           schema:
             $ref: "#/components/schemas/UserIdentifier"
@@ -1365,7 +1365,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Registration invitation ULID identifier
+          description: Registration invitation identifier
           required: true
           schema:
             $ref: "#/components/schemas/RegistrationInvitationIdentifier"
@@ -1425,7 +1425,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Registration invitation ULID identifier
+          description: Registration invitation identifier
           required: true
           schema:
             $ref: "#/components/schemas/RegistrationInvitationIdentifier"
@@ -1480,7 +1480,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Notification ULID identifier
+          description: Notification identifier
           required: true
           schema:
             $ref: "#/components/schemas/NotificationIdentifier"
@@ -2405,7 +2405,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: User ULID identifier
+          description: User identifier
           required: true
           schema:
             $ref: "#/components/schemas/UserIdentifier"
@@ -2875,7 +2875,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Registration invitation ULID identifier
+          description: Registration invitation identifier
           required: true
           schema:
             $ref: "#/components/schemas/RegistrationInvitationIdentifier"
@@ -2987,7 +2987,7 @@ paths:
       parameters:
         - name: teamIdentifier
           in: query
-          description: Filter by team ULID identifier
+          description: Filter by team identifier
           required: false
           schema:
             type: string
@@ -3121,7 +3121,7 @@ paths:
       parameters:
         - name: identifier
           in: path
-          description: Notification ULID identifier
+          description: Notification identifier
           required: true
           schema:
             $ref: "#/components/schemas/NotificationIdentifier"
@@ -3346,7 +3346,7 @@ paths:
       parameters:
         - name: userIdentifier
           in: path
-          description: User ULID identifier
+          description: User identifier
           required: true
           schema:
             $ref: "#/components/schemas/UserIdentifier"
@@ -3673,16 +3673,16 @@ components:
   schemas:
     NotificationIdentifier:
       type: string
-      description: Notification ULID identifier
+      description: Notification identifier
     RegistrationInvitationIdentifier:
       type: string
-      description: Registration invitation ULID identifier
+      description: Registration invitation identifier
     TeamIdentifier:
       type: string
-      description: Team ULID identifier
+      description: Team identifier
     UserIdentifier:
       type: string
-      description: User ULID identifier
+      description: User identifier
     UpdateTeamNameRequest:
       type: object
       properties:

@@ -13,10 +13,10 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.PropertyOutdoorArea;
+import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
-import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -39,7 +39,7 @@ public class PropertyOutdoorAreaRepository {
             .map(this::toDomain));
   }
 
-  public Optional<PropertyOutdoorArea> findByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
+  public Optional<PropertyOutdoorArea> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(PROPERTY_OUTDOOR_AREAS)
         .where(
             PROPERTY_OUTDOOR_AREAS
@@ -51,7 +51,7 @@ public class PropertyOutdoorAreaRepository {
         .map(this::toDomain);
   }
 
-  public PropertyOutdoorArea getByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
+  public PropertyOutdoorArea getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Outdoor area not found"));
   }

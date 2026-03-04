@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Optional;
 
 import com.buurman.domain.Expense;
-import com.buurman.domain.Ulid;
+import com.buurman.domain.Sid;
 
 public record ExpenseResponse(
-    Ulid identifier,
+    Sid identifier,
     Optional<PropertySummary> property,
     Expense.ExpenseCategory category,
     BigDecimal amount,

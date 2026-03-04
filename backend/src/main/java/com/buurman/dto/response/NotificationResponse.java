@@ -3,10 +3,10 @@ package com.buurman.dto.response;
 import java.time.Instant;
 import java.util.Optional;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.Sid;
 
 public record NotificationResponse(
-    Ulid identifier,
+    Sid identifier,
     String notificationType,
     String channel,
     Optional<String> subject,
@@ -20,7 +20,7 @@ public record NotificationResponse(
     int clickCount,
     Optional<Instant> firstOpenedAt,
     Optional<Instant> firstClickedAt,
-    Optional<Ulid> resentFromIdentifier,
+    Optional<Sid> resentFromIdentifier,
     Optional<String> resendReason,
     boolean demoBlocked,
     Instant createdAt,

@@ -1,7 +1,7 @@
 package com.buurman.repository;
 
 import static com.buurman.jooq.generated.Tables.DOCUMENTS;
-import static com.buurman.util.UlidGenerator.newDocumentId;
+import static com.buurman.util.SidGenerator.newDocumentId;
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.lower;
 
@@ -21,6 +21,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.Document;
+import com.buurman.domain.Sid;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.DocumentRecordMapper;
@@ -28,7 +29,6 @@ import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
 import lombok.RequiredArgsConstructor;
-import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -38,7 +38,7 @@ public class DocumentRepository {
   private final DocumentRecordMapper mapper;
   private final Clock clock;
 
-  public Optional<Document> findByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
+  public Optional<Document> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(DOCUMENTS)
         .where(
             DOCUMENTS
@@ -50,12 +50,12 @@ public class DocumentRepository {
         .map(mapper::toDomain);
   }
 
-  public Document getByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
+  public Document getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Document not found"));
   }
 
-  public List<Document> findByIdentifiersAndTeamId(List<Ulid> identifiers, UUID teamId) {
+  public List<Document> findByIdentifiersAndTeamId(List<Sid> identifiers, UUID teamId) {
     if (identifiers == null || identifiers.isEmpty()) {
       return List.of();
     }
@@ -64,7 +64,7 @@ public class DocumentRepository {
             .where(
                 DOCUMENTS
                     .IDENTIFIER
-                    .in(identifiers.stream().map(Ulid::value).toList())
+                    .in(identifiers.stream().map(Sid::value).toList())
                     .and(DOCUMENTS.TEAM_ID.eq(teamId))
                     .and(DOCUMENTS.DELETED_AT.isNull()))
             .fetch()
@@ -104,7 +104,7 @@ public class DocumentRepository {
     if (document.getId() == null) {
       // INSERT
       UUID newId = UUID.randomUUID();
-      Ulid identifier = newDocumentId();
+      Sid identifier = newDocumentId();
       LocalDateTime uploadedAt =
           document.getUploadedAt() != null
               ? LocalDateTime.ofInstant(document.getUploadedAt(), UTC)

@@ -1,6 +1,6 @@
 package com.buurman.service;
 
-import static com.buurman.util.UlidGenerator.newFinancingPaymentId;
+import static com.buurman.util.SidGenerator.newFinancingPaymentId;
 import static java.util.stream.Collectors.joining;
 
 import java.math.BigDecimal;
@@ -19,11 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.buurman.domain.Ulid;
-import com.buurman.domain.identifier.FinancingPaymentIdentifier;
-import com.buurman.domain.identifier.PropertyFinancingIdentifier;
 import com.buurman.domain.FinancingPayment;
 import com.buurman.domain.PropertyFinancing;
+import com.buurman.domain.Sid;
+import com.buurman.domain.identifier.FinancingPaymentIdentifier;
+import com.buurman.domain.identifier.PropertyFinancingIdentifier;
 import com.buurman.dto.request.CreateFinancingPaymentRequest;
 import com.buurman.dto.request.UpdateFinancingPaymentRequest;
 import com.buurman.dto.response.BulkCreateResult;
@@ -55,7 +55,9 @@ public class FinancingPaymentService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public FinancingPaymentResponse create(
-      PropertyFinancingIdentifier financingIdentifier, CreateFinancingPaymentRequest request, UserPrincipal principal) {
+      PropertyFinancingIdentifier financingIdentifier,
+      CreateFinancingPaymentRequest request,
+      UserPrincipal principal) {
     return performCreate(financingIdentifier, request, principal);
   }
 
@@ -97,7 +99,9 @@ public class FinancingPaymentService {
   }
 
   private FinancingPaymentResponse performCreate(
-      PropertyFinancingIdentifier financingIdentifier, CreateFinancingPaymentRequest request, UserPrincipal principal) {
+      PropertyFinancingIdentifier financingIdentifier,
+      CreateFinancingPaymentRequest request,
+      UserPrincipal principal) {
 
     PropertyFinancing financing =
         financingRepository.getByIdentifierAndTeamId(
@@ -135,7 +139,9 @@ public class FinancingPaymentService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public FinancingPaymentResponse update(
-      FinancingPaymentIdentifier paymentIdentifier, UpdateFinancingPaymentRequest request, UserPrincipal principal) {
+      FinancingPaymentIdentifier paymentIdentifier,
+      UpdateFinancingPaymentRequest request,
+      UserPrincipal principal) {
 
     FinancingPayment payment =
         paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.requireTeamId());
@@ -177,9 +183,11 @@ public class FinancingPaymentService {
     FinancingPayment updated = paymentRepository.save(payment);
 
     log.info(
-        "Updated financing payment {} by user {}", updated.getIdentifier().orElseThrow(), principal.getUserId());
+        "Updated financing payment {} by user {}",
+        updated.getIdentifier().orElseThrow(),
+        principal.getUserId());
 
-    Ulid financingIdentifier =
+    Sid financingIdentifier =
         resolveFinancingIdentifier(updated.getFinancingId(), principal.requireTeamId());
 
     return toResponse(updated, financingIdentifier);
@@ -207,7 +215,9 @@ public class FinancingPaymentService {
     paymentRepository.softDeleteByIdAndTeamId(payment.getId(), principal.requireTeamId());
 
     log.info(
-        "Deleted financing payment {} by user {}", payment.getIdentifier().orElseThrow(), principal.getUserId());
+        "Deleted financing payment {} by user {}",
+        payment.getIdentifier().orElseThrow(),
+        principal.getUserId());
   }
 
   @Transactional(readOnly = true)
@@ -280,8 +290,7 @@ public class FinancingPaymentService {
 
   // ===== Response Helpers =====
 
-  private FinancingPaymentResponse toResponse(
-      FinancingPayment payment, Ulid financingIdentifier) {
+  private FinancingPaymentResponse toResponse(FinancingPayment payment, Sid financingIdentifier) {
 
     FinancingPaymentResponse mapped = paymentMapper.toResponse(payment);
     return new FinancingPaymentResponse(
@@ -301,7 +310,7 @@ public class FinancingPaymentService {
         mapped.updatedAt());
   }
 
-  private Ulid resolveFinancingIdentifier(UUID financingId, UUID teamId) {
+  private Sid resolveFinancingIdentifier(UUID financingId, UUID teamId) {
     return financingRepository
         .findByIdAndTeamId(financingId, teamId)
         .flatMap(PropertyFinancing::getIdentifier)

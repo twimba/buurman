@@ -14,12 +14,12 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.FinancingPayment;
+import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.FinancingPaymentRecordMapper;
 import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
-import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -29,7 +29,7 @@ public class FinancingPaymentRepository {
   private final FinancingPaymentRecordMapper mapper;
   private final Clock clock;
 
-  public Optional<FinancingPayment> findByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
+  public Optional<FinancingPayment> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(FINANCING_PAYMENTS)
         .where(
             FINANCING_PAYMENTS
@@ -41,7 +41,7 @@ public class FinancingPaymentRepository {
         .flatMap(mapper::toDomain);
   }
 
-  public FinancingPayment getByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
+  public FinancingPayment getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Financing payment not found"));
   }

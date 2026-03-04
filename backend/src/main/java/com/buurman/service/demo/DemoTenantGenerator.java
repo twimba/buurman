@@ -1,11 +1,9 @@
 package com.buurman.service.demo;
 
-import com.buurman.domain.Ulid;
-
 import static com.buurman.jooq.generated.Tables.TENANTS;
 import static com.buurman.jooq.generated.Tables.TENANT_ADDRESSES;
-import static com.buurman.util.UlidGenerator.newTenantAddressId;
-import static com.buurman.util.UlidGenerator.newTenantId;
+import static com.buurman.util.SidGenerator.newTenantAddressId;
+import static com.buurman.util.SidGenerator.newTenantId;
 
 import java.math.BigDecimal;
 import java.time.Clock;
@@ -18,6 +16,8 @@ import java.util.UUID;
 
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Component;
+
+import com.buurman.domain.Sid;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -150,7 +150,7 @@ public class DemoTenantGenerator {
           taxNumber = "NL" + String.format("%09d", random.nextInt(100000000, 999999999)) + "B01";
         }
 
-        Ulid tenantIdentifier = newTenantId();
+        Sid tenantIdentifier = newTenantId();
         dsl.insertInto(TENANTS)
             .set(TENANTS.ID, tenantId)
             .set(TENANTS.IDENTIFIER, tenantIdentifier)

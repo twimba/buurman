@@ -13,10 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Team;
-import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.domain.TeamMember;
 import com.buurman.domain.TeamPreferences;
 import com.buurman.domain.User;
+import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.backoffice.UpdateTeamNameRequest;
 import com.buurman.dto.response.PageResponse;

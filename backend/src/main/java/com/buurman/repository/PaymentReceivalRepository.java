@@ -24,11 +24,11 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.PaymentReceival;
+import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
-import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -74,7 +74,7 @@ public class PaymentReceivalRepository {
   }
 
   public Optional<PaymentReceival> findByIdentifierAndPaymentIdAndTeamId(
-      Ulid identifier, UUID paymentId, UUID teamId) {
+      Sid identifier, UUID paymentId, UUID teamId) {
     return dsl.selectFrom(TABLE)
         .where(
             IDENTIFIER
@@ -87,7 +87,7 @@ public class PaymentReceivalRepository {
   }
 
   public PaymentReceival getByIdentifierAndPaymentIdAndTeamId(
-      Ulid identifier, UUID paymentId, UUID teamId) {
+      Sid identifier, UUID paymentId, UUID teamId) {
     return findByIdentifierAndPaymentIdAndTeamId(identifier, paymentId, teamId)
         .orElseThrow(() -> new NotFoundException("Payment receival not found"));
   }
@@ -176,7 +176,8 @@ public class PaymentReceivalRepository {
     String currency = record.get(CURRENCY);
     PaymentReceival receival = new PaymentReceival();
     receival.setId(record.get(ID));
-    receival.setIdentifier(java.util.Optional.of(com.buurman.domain.Ulid.of(record.get(IDENTIFIER))));
+    receival.setIdentifier(
+        java.util.Optional.of(com.buurman.domain.Sid.of(record.get(IDENTIFIER))));
     receival.setTeamId(record.get(TEAM_ID));
     receival.setPaymentId(record.get(PAYMENT_ID));
     receival.setAmount(CurrencyUtils.toMajorUnits(record.get(AMOUNT), currency));

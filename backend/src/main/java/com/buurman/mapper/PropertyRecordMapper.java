@@ -28,7 +28,9 @@ public interface PropertyRecordMapper {
   @Mapping(target = "createdAt", expression = "java(toInstant(record.getCreatedAt()))")
   @Mapping(target = "updatedAt", expression = "java(toInstant(record.getUpdatedAt()))")
   @Mapping(target = "deletedAt", expression = "java(toOptionalInstant(record.getDeletedAt()))")
-  @Mapping(target = "identifier", expression = "java(java.util.Optional.of(record.getIdentifier()))")
+  @Mapping(
+      target = "identifier",
+      expression = "java(java.util.Optional.of(record.getIdentifier()))")
   Property toDomain(PropertiesRecord record);
 
   @Mapping(

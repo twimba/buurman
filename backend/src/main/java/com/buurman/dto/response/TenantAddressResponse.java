@@ -3,11 +3,11 @@ package com.buurman.dto.response;
 import java.time.Instant;
 import java.util.Optional;
 
+import com.buurman.domain.Sid;
 import com.buurman.domain.TenantAddress;
-import com.buurman.domain.Ulid;
 
 public record TenantAddressResponse(
-    Ulid identifier,
+    Sid identifier,
     String street,
     String city,
     String postalCode,

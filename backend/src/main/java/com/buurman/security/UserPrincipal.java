@@ -10,12 +10,12 @@ import com.buurman.domain.TeamRole;
 
 public class UserPrincipal implements Principal {
   private final UUID userId;
-  private final String userIdentifier; // ULID
+  private final String userIdentifier; // Sid
   private final String keycloakId;
   private final String email;
   private final String name;
   private final Optional<UUID> teamId; // empty for users without team membership
-  private final Optional<String> teamIdentifier; // ULID, empty if no team
+  private final Optional<String> teamIdentifier; // Sid, empty if no team
   private final Optional<TeamRole> role; // empty for users without team membership
   private final boolean isOwner;
   private final boolean emailVerified;
@@ -130,7 +130,7 @@ public class UserPrincipal implements Principal {
         () -> new IllegalStateException("User has no active team membership"));
   }
 
-  /** Returns team identifier (ULID), throwing if the user has no active team membership. */
+  /** Returns team identifier (Sid), throwing if the user has no active team membership. */
   public String requireTeamIdentifier() {
     return teamIdentifier.orElseThrow(
         () -> new IllegalStateException("User has no active team membership"));

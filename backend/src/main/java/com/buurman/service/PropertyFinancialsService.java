@@ -12,12 +12,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.domain.PropertyFee;
 import com.buurman.domain.PropertyFinancing;
 import com.buurman.domain.PropertyInsurance;
 import com.buurman.domain.PropertyTax;
 import com.buurman.domain.PropertyValuation;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.response.PropertyFinancialSummaryResponse;
 import com.buurman.repository.PropertyAcquisitionRepository;
 import com.buurman.repository.PropertyFeeRepository;

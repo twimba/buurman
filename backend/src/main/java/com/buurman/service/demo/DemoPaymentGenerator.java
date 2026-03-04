@@ -3,8 +3,8 @@ package com.buurman.service.demo;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static com.buurman.jooq.generated.Tables.PAYMENT_RECEIVALS;
-import static com.buurman.util.UlidGenerator.newPaymentId;
-import static com.buurman.util.UlidGenerator.newPaymentReceivalId;
+import static com.buurman.util.SidGenerator.newPaymentId;
+import static com.buurman.util.SidGenerator.newPaymentReceivalId;
 
 import java.time.Clock;
 import java.time.LocalDate;

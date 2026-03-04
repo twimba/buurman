@@ -9,9 +9,9 @@ import java.util.UUID;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.Sid;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamMember;
-import com.buurman.domain.Ulid;
 import com.buurman.domain.User;
 import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.domain.identifier.UserIdentifier;
@@ -76,8 +76,8 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
         continue;
       }
 
-      Ulid teamId = team.getIdentifier().orElseThrow();
-      Ulid userId = user.getIdentifier().orElseThrow();
+      Sid teamId = team.getIdentifier().orElseThrow();
+      Sid userId = user.getIdentifier().orElseThrow();
 
       String identity = FeatureFlagService.buildIdentity(teamId.value(), userId.value());
 

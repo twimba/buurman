@@ -1,7 +1,7 @@
 package com.buurman.service.demo;
 
 import static com.buurman.jooq.generated.Tables.EXPENSES;
-import static com.buurman.util.UlidGenerator.newExpenseId;
+import static com.buurman.util.SidGenerator.newExpenseId;
 
 import java.math.BigDecimal;
 import java.time.Clock;

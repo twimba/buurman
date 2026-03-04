@@ -1,6 +1,6 @@
 package com.buurman.service;
 
-import static com.buurman.util.UlidGenerator.newInsuranceId;
+import static com.buurman.util.SidGenerator.newInsuranceId;
 
 import java.time.Clock;
 import java.util.List;
@@ -42,7 +42,9 @@ public class PropertyInsuranceService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyInsuranceResponse create(
-      PropertyIdentifier propertyIdentifier, CreatePropertyInsuranceRequest request, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier,
+      CreatePropertyInsuranceRequest request,
+      UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
@@ -71,7 +73,8 @@ public class PropertyInsuranceService {
   }
 
   @Transactional(readOnly = true)
-  public PropertyInsuranceResponse get(PropertyInsuranceIdentifier identifier, UserPrincipal principal) {
+  public PropertyInsuranceResponse get(
+      PropertyInsuranceIdentifier identifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     PropertyInsurance insurance = insuranceRepository.getByIdentifierAndTeamId(identifier, teamId);
     return enrichResponse(insurance, teamId);
@@ -91,7 +94,9 @@ public class PropertyInsuranceService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyInsuranceResponse update(
-      PropertyInsuranceIdentifier identifier, UpdatePropertyInsuranceRequest request, UserPrincipal principal) {
+      PropertyInsuranceIdentifier identifier,
+      UpdatePropertyInsuranceRequest request,
+      UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     PropertyInsurance insurance = insuranceRepository.getByIdentifierAndTeamId(identifier, teamId);
 
@@ -102,7 +107,9 @@ public class PropertyInsuranceService {
     PropertyInsurance updated = insuranceRepository.save(insurance);
 
     log.info(
-        "Updated property insurance {} by user {}", updated.getIdentifier().orElseThrow(), principal.getUserId());
+        "Updated property insurance {} by user {}",
+        updated.getIdentifier().orElseThrow(),
+        principal.getUserId());
 
     return enrichResponse(updated, teamId);
   }

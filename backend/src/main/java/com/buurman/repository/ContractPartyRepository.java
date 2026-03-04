@@ -19,10 +19,10 @@ import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
+import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
-import com.buurman.domain.Ulid;
 
 @Repository
 @RequiredArgsConstructor
@@ -91,7 +91,7 @@ public class ContractPartyRepository {
             .fetch(this::toDomain));
   }
 
-  public ContractParty getByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
+  public ContractParty getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return findByIdentifierAndTeamId(identifier, teamId)
         .orElseThrow(() -> new NotFoundException("Contract party not found"));
   }
@@ -101,7 +101,7 @@ public class ContractPartyRepository {
         .orElseThrow(() -> new NotFoundException("Contract party not found"));
   }
 
-  public Optional<ContractParty> findByIdentifierAndTeamId(Ulid identifier, UUID teamId) {
+  public Optional<ContractParty> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.select()
         .from(CONTRACT_PARTIES)
         .where(IDENTIFIER.eq(identifier.value()).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
@@ -166,7 +166,7 @@ public class ContractPartyRepository {
   private ContractParty toDomain(Record record) {
     ContractParty party = new ContractParty();
     party.setId(record.get(ID));
-    party.setIdentifier(java.util.Optional.of(com.buurman.domain.Ulid.of(record.get(IDENTIFIER))));
+    party.setIdentifier(java.util.Optional.of(com.buurman.domain.Sid.of(record.get(IDENTIFIER))));
     party.setTeamId(record.get(TEAM_ID));
     party.setContractId(record.get(CONTRACT_ID));
     party.setTenantId(Optional.ofNullable(record.get(TENANT_ID)));

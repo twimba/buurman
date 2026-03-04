@@ -3,7 +3,7 @@ package com.buurman.service;
 import static com.buurman.domain.NotificationType.VERIFICATION_CODE;
 import static com.buurman.domain.TeamRole.TEAM_ADMIN;
 import static com.buurman.util.FeatureFlags.INVITATION_REQUIRED;
-import static com.buurman.util.UlidGenerator.newTeamId;
+import static com.buurman.util.SidGenerator.newTeamId;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static java.time.temporal.ChronoUnit.MINUTES;
 
@@ -17,9 +17,9 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.buurman.domain.Ulid;
 import com.buurman.domain.EmailVerificationCode;
 import com.buurman.domain.NotificationType;
+import com.buurman.domain.Sid;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamInvitation;
 import com.buurman.domain.TeamMember;
@@ -182,7 +182,8 @@ public class AuthService {
       metricsService.incrementCounter("team.registered.total");
       metricsService.incrementCounter("keycloak.user.creation.total", "result", "success");
 
-      return userMapper.toResponse(user, team.getIdentifier().map(Ulid::value).orElse(null), TEAM_ADMIN.name());
+      return userMapper.toResponse(
+          user, team.getIdentifier().map(Sid::value).orElse(null), TEAM_ADMIN.name());
     } catch (Exception e) {
       // Compensate: remove orphaned Keycloak user if DB operations fail
       log.error("Registration failed after Keycloak user creation, compensating", e);
@@ -222,7 +223,8 @@ public class AuthService {
   }
 
   private Optional<String> resolveTeamIdentifier(Optional<TeamMember> member) {
-    return member.flatMap(m -> teamRepository.findById(m.getTeamId()).flatMap(Team::getIdentifier).map(Ulid::value));
+    return member.flatMap(
+        m -> teamRepository.findById(m.getTeamId()).flatMap(Team::getIdentifier).map(Sid::value));
   }
 
   private Optional<TeamMember> getActiveMembership(User user) {

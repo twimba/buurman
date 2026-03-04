@@ -832,8 +832,8 @@
                                         <schemaVersionProvider>SELECT CAST(MAX(installed_rank) AS VARCHAR) FROM flyway_schema_history</schemaVersionProvider>
                                         <forcedTypes>
                                             <forcedType>
-                                                <userType>com.buurman.domain.Ulid</userType>
-                                                <converter>com.buurman.config.jooq.UlidJooqConverter</converter>
+                                                <userType>com.buurman.domain.Sid</userType>
+                                                <converter>com.buurman.config.jooq.SidJooqConverter</converter>
                                                 <includeExpression>.*\.IDENTIFIER</includeExpression>
                                                 <includeTypes>VARCHAR</includeTypes>
                                             </forcedType>

@@ -20,9 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
-import com.buurman.domain.Ulid;
-import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.Document;
+import com.buurman.domain.Sid;
+import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateDocumentRequest;
 import com.buurman.dto.response.DocumentResponse;
@@ -68,7 +68,7 @@ public class DocumentService {
       MultipartFile file,
       String entityType,
       UUID entityId,
-      Ulid entityIdentifier,
+      Sid entityIdentifier,
       @Nullable String title,
       @Nullable String notes,
       UserPrincipal principal) {
@@ -100,7 +100,7 @@ public class DocumentService {
     // Upload to S3
     String fileKey =
         s3StorageService.uploadFile(
-            file, Ulid.of(principal.requireTeamIdentifier()), entityType, entityIdentifier);
+            file, Sid.of(principal.requireTeamIdentifier()), entityType, entityIdentifier);
 
     // Save document metadata
     Document document = new Document();
@@ -289,7 +289,7 @@ public class DocumentService {
     return toResponseWithDownloadUrl(document);
   }
 
-  public byte[] bulkDownload(List<Ulid> documentIdentifiers, UserPrincipal principal) {
+  public byte[] bulkDownload(List<Sid> documentIdentifiers, UserPrincipal principal) {
     if (documentIdentifiers == null || documentIdentifiers.isEmpty()) {
       throw new IllegalArgumentException("No documents selected for download");
     }
@@ -329,7 +329,9 @@ public class DocumentService {
           log.debug("Added document to zip: {}", fileName);
         } catch (Exception e) {
           log.error(
-              "Failed to add document {} to zip: {}", document.getIdentifier().orElseThrow(), e.getMessage());
+              "Failed to add document {} to zip: {}",
+              document.getIdentifier().orElseThrow(),
+              e.getMessage());
           // Continue with other documents even if one fails
         }
       }

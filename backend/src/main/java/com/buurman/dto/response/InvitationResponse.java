@@ -3,12 +3,12 @@ package com.buurman.dto.response;
 import java.time.Instant;
 import java.util.Optional;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.Sid;
 
 public record InvitationResponse(
     String token,
     String email,
-    Ulid teamIdentifier,
+    Sid teamIdentifier,
     String teamName,
     String role,
     Optional<String> inviterName,

@@ -1,6 +1,6 @@
 package com.buurman.util;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.Sid;
 import com.buurman.domain.identifier.AmenityIdentifier;
 import com.buurman.domain.identifier.BroadcastMessageIdentifier;
 import com.buurman.domain.identifier.CalendarFeedIdentifier;
@@ -35,11 +35,11 @@ import com.buurman.domain.identifier.UserIdentifier;
 
 import de.huxhorn.sulky.ulid.ULID;
 
-public class UlidGenerator {
+public class SidGenerator {
 
   private static final ULID ulid = new ULID();
 
-  private UlidGenerator() {}
+  private SidGenerator() {}
 
   private static String generateRaw() {
     return ulid.nextULID();
@@ -49,8 +49,8 @@ public class UlidGenerator {
     return prefix.getCode() + ulid.nextULID();
   }
 
-  public static Ulid newToken() {
-    return Ulid.of(generateRaw());
+  public static Sid newToken() {
+    return Sid.of(generateRaw());
   }
 
   public static AmenityIdentifier newAmenityId() {

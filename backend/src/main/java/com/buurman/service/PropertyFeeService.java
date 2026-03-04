@@ -1,6 +1,6 @@
 package com.buurman.service;
 
-import static com.buurman.util.UlidGenerator.newPropertyFeeId;
+import static com.buurman.util.SidGenerator.newPropertyFeeId;
 
 import java.time.Clock;
 import java.util.List;
@@ -42,7 +42,9 @@ public class PropertyFeeService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PropertyFeeResponse create(
-      PropertyIdentifier propertyIdentifier, CreatePropertyFeeRequest request, UserPrincipal principal) {
+      PropertyIdentifier propertyIdentifier,
+      CreatePropertyFeeRequest request,
+      UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     Property property = propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId);
 
@@ -101,7 +103,10 @@ public class PropertyFeeService {
 
     PropertyFee updated = feeRepository.save(fee);
 
-    log.info("Updated property fee {} by user {}", updated.getIdentifier().orElseThrow(), principal.getUserId());
+    log.info(
+        "Updated property fee {} by user {}",
+        updated.getIdentifier().orElseThrow(),
+        principal.getUserId());
 
     return enrichResponse(updated, teamId);
   }
@@ -114,7 +119,10 @@ public class PropertyFeeService {
 
     feeRepository.softDeleteByIdAndTeamId(fee.getId(), teamId);
 
-    log.info("Deleted property fee {} by user {}", fee.getIdentifier().orElseThrow(), principal.getUserId());
+    log.info(
+        "Deleted property fee {} by user {}",
+        fee.getIdentifier().orElseThrow(),
+        principal.getUserId());
   }
 
   private PropertyFeeResponse enrichResponse(PropertyFee fee, UUID teamId) {

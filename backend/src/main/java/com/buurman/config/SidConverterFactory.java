@@ -8,29 +8,29 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
 import org.springframework.stereotype.Component;
 
-import com.buurman.domain.Ulid;
+import com.buurman.domain.Sid;
 
 /**
- * Spring MVC converter factory so {@code @PathVariable PropertyIdentifier id} and any other Ulid
- * subtype work automatically. Falls back to {@link Ulid#of(String)} for the base type.
+ * Spring MVC converter factory so {@code @PathVariable PropertyIdentifier id} and any other Sid
+ * subtype work automatically. Falls back to {@link Sid#of(String)} for the base type.
  */
 @Component
-public class UlidConverterFactory implements ConverterFactory<String, Ulid> {
+public class SidConverterFactory implements ConverterFactory<String, Sid> {
 
-  private final Map<Class<?>, Converter<String, ? extends Ulid>> converterCache =
+  private final Map<Class<?>, Converter<String, ? extends Sid>> converterCache =
       new ConcurrentHashMap<>();
 
   @Override
   @SuppressWarnings("unchecked")
-  public <T extends Ulid> Converter<String, T> getConverter(Class<T> targetType) {
+  public <T extends Sid> Converter<String, T> getConverter(Class<T> targetType) {
     return (Converter<String, T>)
         converterCache.computeIfAbsent(targetType, type -> createConverter((Class<T>) type));
   }
 
-  private <T extends Ulid> Converter<String, T> createConverter(Class<T> targetType) {
-    if (targetType == Ulid.class) {
+  private <T extends Sid> Converter<String, T> createConverter(Class<T> targetType) {
+    if (targetType == Sid.class) {
       @SuppressWarnings("unchecked")
-      Converter<String, T> converter = source -> (T) Ulid.of(source);
+      Converter<String, T> converter = source -> (T) Sid.of(source);
       return converter;
     }
 
