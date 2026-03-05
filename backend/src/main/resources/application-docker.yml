@@ -49,5 +49,3 @@ app:
   public-url: https://app.local.buurman.io
   api:
     base-url: http://backend:8081
-  email:
-    base-url: https://app.local.buurman.io

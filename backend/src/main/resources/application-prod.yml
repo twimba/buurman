@@ -43,8 +43,6 @@ app:
   public-url: https://app.buurman.io
   api:
     base-url: https://api.buurman.io
-  email:
-    base-url: https://app.buurman.io
   cors:
     allowed-origins: https://app.buurman.io
     backoffice-allowed-origins: https://backoffice.buurman.io
