@@ -25,7 +25,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    const redirect = encodeURIComponent(
+      window.location.pathname + window.location.search
+    );
+    return <Navigate to={`/login?redirect=${redirect}`} replace />;
   }
 
   if (requireVerification && user && !user.emailVerified) {
