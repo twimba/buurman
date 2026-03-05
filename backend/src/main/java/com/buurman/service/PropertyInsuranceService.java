@@ -33,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class PropertyInsuranceService {
 
+  private final CurrencyEnforcementService currencyEnforcement;
   private final PropertyInsuranceRepository insuranceRepository;
   private final PropertyRepository propertyRepository;
   private final PropertyInsuranceMapper insuranceMapper;
@@ -60,6 +61,7 @@ public class PropertyInsuranceService {
     if (insurance.getStatus() == null) {
       insurance.setStatus(PropertyInsurance.InsuranceStatus.ACTIVE);
     }
+    currencyEnforcement.validateCurrency(request.annualPremiumCurrency(), teamId);
 
     PropertyInsurance saved = insuranceRepository.save(insurance);
 
@@ -103,6 +105,7 @@ public class PropertyInsuranceService {
     insuranceMapper.updateEntity(insurance, request);
     insurance.setUpdatedBy(principal.getUserId());
     insurance.setUpdatedAt(clock.instant());
+    request.annualPremiumCurrency().ifPresent(c -> currencyEnforcement.validateCurrency(c, teamId));
 
     PropertyInsurance updated = insuranceRepository.save(insurance);
 

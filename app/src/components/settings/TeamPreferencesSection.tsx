@@ -6,6 +6,7 @@ import {
   Loader2,
   MapPin,
   Building,
+  ArrowRightLeft,
 } from 'lucide-react';
 import {
   useCurrentTeam,
@@ -14,8 +15,9 @@ import {
   useUpdateTeam,
 } from '../../hooks/useTeamHooks';
 import { useTeam } from '../../context/TeamContext';
-import { CurrencySelector } from '../common/CurrencySelector';
 import { CountrySelector } from '../common/CountrySelector';
+import { CurrencyChangeModal } from './CurrencyChangeModal';
+import { useCurrencies, getCurrencySymbol } from '@/hooks/useCurrencies';
 
 export const TeamPreferencesSection = () => {
   const { canEditTeamSettings } = useTeam();
@@ -27,6 +29,8 @@ export const TeamPreferencesSection = () => {
   const [hasChanges, setHasChanges] = useState(false);
   const [teamName, setTeamName] = useState('');
   const [teamNameSynced, setTeamNameSynced] = useState(false);
+  const [showCurrencyChange, setShowCurrencyChange] = useState(false);
+  const { data: currencies } = useCurrencies();
   const [preferences, setPreferences] = useState({
     defaultCurrency: '',
     defaultCountry: '',
@@ -73,7 +77,6 @@ export const TeamPreferencesSection = () => {
     const saveSettings = () =>
       updateSettingsMutation.mutateAsync({
         regional: {
-          defaultCurrency: preferences.defaultCurrency || undefined,
           defaultCountry: preferences.defaultCountry || undefined,
           fiscalYearStartMonth: preferences.fiscalYearStart,
         },
@@ -169,18 +172,25 @@ export const TeamPreferencesSection = () => {
 
             <div>
               <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-                Default Currency
+                Team Currency
               </label>
-              <CurrencySelector
-                value={preferences.defaultCurrency}
-                onChange={(value) =>
-                  handlePreferenceChange('defaultCurrency', value)
-                }
-                disabled={!canEditTeamSettings}
-              />
+              <div className="flex items-center gap-3">
+                <div className="flex-1 px-3 py-2 bg-[#f1f3f9] dark:bg-[#1e2130] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg text-[#1a1d2e] dark:text-[#eef0f6] font-medium">
+                  {preferences.defaultCurrency || 'EUR'}{' '}
+                  ({getCurrencySymbol(currencies, preferences.defaultCurrency || 'EUR')})
+                </div>
+                {canEditTeamSettings && (
+                  <button
+                    onClick={() => setShowCurrencyChange(true)}
+                    className="px-3 py-2 text-sm font-medium text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors flex items-center gap-1.5"
+                  >
+                    <ArrowRightLeft className="h-4 w-4" />
+                    Change
+                  </button>
+                )}
+              </div>
               <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
-                This will be the default currency for rent, expenses, and
-                payments
+                All financial data uses this currency. Changing it affects all existing records.
               </p>
             </div>
           </div>
@@ -245,6 +255,15 @@ export const TeamPreferencesSection = () => {
           </div>
         </div>
       </div>
+
+      {showCurrencyChange && team && (
+        <CurrencyChangeModal
+          teamIdentifier={team.identifier}
+          currentCurrency={preferences.defaultCurrency || 'EUR'}
+          onClose={() => setShowCurrencyChange(false)}
+          onSuccess={() => setShowCurrencyChange(false)}
+        />
+      )}
     </div>
   );
 };

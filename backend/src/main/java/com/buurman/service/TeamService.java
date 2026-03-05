@@ -470,7 +470,7 @@ public class TeamService {
         .regional()
         .ifPresent(
             regional -> {
-              regional.defaultCurrency().ifPresent(c -> prefs.setDefaultCurrency(Optional.of(c)));
+              regional.defaultCurrency().ifPresent(prefs::setDefaultCurrency);
               regional.defaultCountry().ifPresent(prefs::setDefaultCountry);
               regional.timezone().ifPresent(prefs::setTimezone);
               regional.dateFormat().ifPresent(prefs::setDateFormat);
@@ -493,11 +493,12 @@ public class TeamService {
     return toPreferencesResponse(prefs);
   }
 
-  /** Returns the team's configured default currency, or empty if not configured. */
-  public Optional<String> getDefaultCurrency(UUID teamId) {
+  /** Returns the team's configured default currency. Always returns a value (defaults to EUR). */
+  public String getDefaultCurrency(UUID teamId) {
     return teamPreferencesRepository
         .findByTeamId(teamId)
-        .flatMap(TeamPreferences::getDefaultCurrency);
+        .map(TeamPreferences::getDefaultCurrency)
+        .orElse("EUR");
   }
 
   private TeamPreferencesResponse toPreferencesResponse(TeamPreferences prefs) {

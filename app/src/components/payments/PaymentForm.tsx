@@ -127,9 +127,6 @@ export const PaymentForm = ({
     (!currentRentPeriod ||
       rentPeriodForDate.identifier !== currentRentPeriod.identifier);
 
-  const handleCurrencyChange = (newCurrency: string) => {
-    setFormData({ ...formData, currency: newCurrency });
-  };
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -182,7 +179,6 @@ export const PaymentForm = ({
           value={formData.amount ?? undefined}
           onChange={(val) => setFormData({ ...formData, amount: val ?? 0 })}
           currency={currency}
-          onCurrencyChange={handleCurrencyChange}
           disabled={isLoading}
           error={!!errors.amount || !!errors.currency}
         />

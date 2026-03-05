@@ -93,7 +93,7 @@ public class BackofficeTeamService {
     Optional<String> currency =
         activeRent.getValue() != null
             ? Optional.of(activeRent.getValue())
-            : prefs.getDefaultCurrency();
+            : Optional.of(prefs.getDefaultCurrency());
 
     FinancialSnapshot financialSnapshot =
         new FinancialSnapshot(

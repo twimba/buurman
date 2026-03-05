@@ -169,7 +169,6 @@ export const InsuranceFormModal = ({
                 currency={
                   formData.coverageAmountCurrency ?? defaultCurrency ?? 'EUR'
                 }
-                onCurrencyChange={(c) => update('coverageAmountCurrency', c)}
               />
             </div>
 
@@ -183,7 +182,6 @@ export const InsuranceFormModal = ({
                 currency={
                   formData.annualPremiumCurrency ?? defaultCurrency ?? 'EUR'
                 }
-                onCurrencyChange={(c) => update('annualPremiumCurrency', c)}
               />
             </div>
 

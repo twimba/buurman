@@ -158,9 +158,6 @@ export const ValuationFormModal = ({
               value={formData.amount ?? undefined}
               onChange={(v) => setFormData({ ...formData, amount: v ?? 0 })}
               currency={formData.currency}
-              onCurrencyChange={(c) =>
-                setFormData({ ...formData, currency: c })
-              }
             />
           </div>
 

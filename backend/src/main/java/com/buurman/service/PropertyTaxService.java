@@ -33,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class PropertyTaxService {
 
+  private final CurrencyEnforcementService currencyEnforcement;
   private final PropertyTaxRepository taxRepository;
   private final PropertyRepository propertyRepository;
   private final PropertyTaxMapper taxMapper;
@@ -60,6 +61,7 @@ public class PropertyTaxService {
     if (tax.getStatus() == null) {
       tax.setStatus(PropertyTax.TaxStatus.ACTIVE);
     }
+    currencyEnforcement.validateCurrency(request.currency(), teamId);
 
     PropertyTax saved = taxRepository.save(tax);
 
@@ -100,6 +102,7 @@ public class PropertyTaxService {
     taxMapper.updateEntity(tax, request);
     tax.setUpdatedBy(principal.getUserId());
     tax.setUpdatedAt(clock.instant());
+    request.currency().ifPresent(c -> currencyEnforcement.validateCurrency(c, teamId));
 
     PropertyTax updated = taxRepository.save(tax);
 

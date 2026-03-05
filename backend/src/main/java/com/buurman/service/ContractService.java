@@ -91,6 +91,7 @@ public class ContractService {
   private final ContractRentPeriodService contractRentPeriodService;
   private final CountryMetadataSerializer countryMetadataSerializer;
   private final CountryMetadataValidator countryMetadataValidator;
+  private final CurrencyEnforcementService currencyEnforcement;
   private final AppProperties appProperties;
   private final Clock clock;
 
@@ -155,6 +156,15 @@ public class ContractService {
     validateCurrencyRequired(
         contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::currency).orElse(null),
         contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::value).orElse(null));
+
+    // Enforce team currency
+    currencyEnforcement.validateCurrency(contract.getRentAmount().currency(), teamId);
+    contract
+        .getDepositAmount()
+        .ifPresent(d -> currencyEnforcement.validateCurrency(d.currency(), teamId));
+    contract
+        .getSecurityDeposit()
+        .ifPresent(d -> currencyEnforcement.validateCurrency(d.currency(), teamId));
 
     Contract savedContract = contractRepository.save(contract);
 
@@ -355,6 +365,15 @@ public class ContractService {
     validateCurrencyRequired(
         contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::currency).orElse(null),
         contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::value).orElse(null));
+
+    // Enforce team currency
+    currencyEnforcement.validateCurrency(contract.getRentAmount().currency(), teamId);
+    contract
+        .getDepositAmount()
+        .ifPresent(d -> currencyEnforcement.validateCurrency(d.currency(), teamId));
+    contract
+        .getSecurityDeposit()
+        .ifPresent(d -> currencyEnforcement.validateCurrency(d.currency(), teamId));
 
     Contract updatedContract = contractRepository.save(contract);
 

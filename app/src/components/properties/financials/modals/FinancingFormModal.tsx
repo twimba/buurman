@@ -257,7 +257,6 @@ export const FinancingFormModal = ({
                 currency={
                   formData.originalAmountCurrency ?? defaultCurrency ?? 'EUR'
                 }
-                onCurrencyChange={(c) => update('originalAmountCurrency', c)}
               />
             </div>
 
@@ -269,7 +268,6 @@ export const FinancingFormModal = ({
                 currency={
                   formData.currentBalanceCurrency ?? defaultCurrency ?? 'EUR'
                 }
-                onCurrencyChange={(c) => update('currentBalanceCurrency', c)}
               />
             </div>
 
@@ -306,7 +304,6 @@ export const FinancingFormModal = ({
                 currency={
                   formData.monthlyPaymentCurrency ?? defaultCurrency ?? 'EUR'
                 }
-                onCurrencyChange={(c) => update('monthlyPaymentCurrency', c)}
               />
             </div>
 

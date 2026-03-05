@@ -265,9 +265,6 @@ export const TaxFormModal = ({
                   setFormData({ ...formData, annualAmount: v ?? 0 })
                 }
                 currency={formData.currency ?? currency}
-                onCurrencyChange={(c) =>
-                  setFormData({ ...formData, currency: c })
-                }
               />
             </div>
 

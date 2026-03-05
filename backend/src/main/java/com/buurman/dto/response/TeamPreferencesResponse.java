@@ -7,7 +7,7 @@ public record TeamPreferencesResponse(PaymentSettings payments, RegionalSettings
   public record PaymentSettings(int paymentsAheadCount, boolean autoGenerationEnabled) {}
 
   public record RegionalSettings(
-      Optional<String> defaultCurrency,
+      String defaultCurrency,
       Optional<String> defaultCountry,
       Optional<String> timezone,
       Optional<String> dateFormat,

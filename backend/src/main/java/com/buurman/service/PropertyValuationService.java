@@ -30,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class PropertyValuationService {
 
+  private final CurrencyEnforcementService currencyEnforcement;
   private final PropertyValuationRepository valuationRepository;
   private final PropertyRepository propertyRepository;
   private final PropertyValuationMapper valuationMapper;
@@ -52,6 +53,7 @@ public class PropertyValuationService {
     valuation.setUpdatedBy(principal.getUserId());
     valuation.setCreatedAt(clock.instant());
     valuation.setUpdatedAt(clock.instant());
+    currencyEnforcement.validateCurrency(request.currency(), principal.requireTeamId());
 
     PropertyValuation saved = valuationRepository.save(valuation);
 
@@ -76,6 +78,9 @@ public class PropertyValuationService {
     valuationMapper.updateEntity(valuation, request);
     valuation.setUpdatedBy(principal.getUserId());
     valuation.setUpdatedAt(clock.instant());
+    request
+        .currency()
+        .ifPresent(c -> currencyEnforcement.validateCurrency(c, principal.requireTeamId()));
 
     PropertyValuation saved = valuationRepository.save(valuation);
 
