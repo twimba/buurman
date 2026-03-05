@@ -1,4 +1,3 @@
-import axios from 'axios';
 import client from './client';
 
 export interface RegisterRequest {
@@ -60,10 +59,7 @@ export const verifyEmail = async (code: string): Promise<UserResponse> => {
 };
 
 export const verifyEmailByToken = async (token: string): Promise<void> => {
-  const apiBaseUrl = `${window.location.protocol}//api.${window.location.hostname.replace(/^app\./, '')}`;
-  await axios.get(`${apiBaseUrl}/auth/verify-email-token`, {
-    params: { token },
-  });
+  await client.get('/auth/verify-email-token', { params: { token } });
 };
 
 export const resendVerificationCode = async (): Promise<void> => {
