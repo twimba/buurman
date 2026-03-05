@@ -58,7 +58,7 @@ Ensure the **app** router has a **lower** priority than 200. If the app router d
 ### 5. Deploy and Verify
 
 1. Save the Traefik configuration changes in Dokploy
-2. Deploy the backend with the new code (`make deploy-prod`)
+2. Deploy all services via `make deploy-prod` (tags `main` as `prod`, triggers CI for backend + app + backoffice)
 3. Wait for the deployment to complete
 
 ### 6. Post-Deployment Verification
