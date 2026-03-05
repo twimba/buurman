@@ -256,8 +256,12 @@ public class AuthService {
   public UserResponse verifyEmail(UUID userId, String code) {
     User user = userRepository.getById(userId);
 
+    // Idempotent: if already verified, return current user (consistent with token path)
     if (user.getEmailVerifiedAt().isPresent()) {
-      throw new VerificationCodeException("Email is already verified");
+      Optional<TeamMember> member = getActiveMembership(user);
+      String teamIdentifier = resolveTeamIdentifier(member).orElse(null);
+      return userMapper.toResponse(
+          user, teamIdentifier, member.map(m -> m.getRole().name()).orElse(null));
     }
 
     EmailVerificationCode validCode =
@@ -268,6 +272,7 @@ public class AuthService {
 
     verificationCodeRepository.markUsed(validCode.getId());
     userRepository.updateEmailVerifiedAt(userId);
+    syncKeycloakEmailVerified(user);
 
     user.setEmailVerifiedAt(Optional.of(clock.instant()));
     sendWelcomeNotification(user);
@@ -309,7 +314,10 @@ public class AuthService {
     verificationCode.setExpiresAt(clock.instant().plus(VERIFICATION_CODE_EXPIRY_MINUTES, MINUTES));
     verificationCodeRepository.save(verificationCode);
 
-    String verifyUrl = baseUrl + "/verify-email?token=" + token;
+    String verifyUrl =
+        baseUrl
+            + "/verify-email?token="
+            + java.net.URLEncoder.encode(token, java.nio.charset.StandardCharsets.UTF_8);
 
     user.getActiveTeamId()
         .ifPresent(
@@ -439,12 +447,27 @@ public class AuthService {
       throw new VerificationCodeException("This verification link has expired");
     }
 
-    verificationCodeRepository.markUsed(code.getId());
+    // Atomically mark used — if 0 rows affected, another thread already consumed it
+    int updated = verificationCodeRepository.markUsed(code.getId());
+    if (updated == 0) {
+      return;
+    }
+
     userRepository.updateEmailVerifiedAt(code.getUserId());
+    syncKeycloakEmailVerified(user);
 
     user.setEmailVerifiedAt(Optional.of(clock.instant()));
     sendWelcomeNotification(user);
     log.info("Email verified via token for userId={}", code.getUserId());
+  }
+
+  private void syncKeycloakEmailVerified(User user) {
+    try {
+      keycloakService.verifyAppUser(user.getKeycloakId());
+    } catch (Exception e) {
+      // App DB is the source of truth — log but don't fail verification
+      log.warn("Failed to sync emailVerified to Keycloak for userId={}", user.getId(), e);
+    }
   }
 
   private void sendWelcomeNotification(User user) {

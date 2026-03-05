@@ -63,18 +63,6 @@ public class EmailVerificationCodeRepository {
         .map(this::mapRecord);
   }
 
-  public Optional<EmailVerificationCode> findValidToken(String token) {
-    LocalDateTime now = LocalDateTime.now(clock);
-
-    return dsl.selectFrom(EMAIL_VERIFICATION_CODES)
-        .where(EMAIL_VERIFICATION_CODES.TOKEN.eq(token))
-        .and(EMAIL_VERIFICATION_CODES.USED_AT.isNull())
-        .and(EMAIL_VERIFICATION_CODES.EXPIRES_AT.gt(now))
-        .limit(1)
-        .fetchOptional()
-        .map(this::mapRecord);
-  }
-
   public void invalidateAllForUser(UUID userId) {
     LocalDateTime now = LocalDateTime.now(clock);
 
@@ -110,10 +98,10 @@ public class EmailVerificationCodeRepository {
         .execute();
   }
 
-  public void markUsed(UUID id) {
+  public int markUsed(UUID id) {
     LocalDateTime now = LocalDateTime.now(clock);
 
-    dsl.update(EMAIL_VERIFICATION_CODES)
+    return dsl.update(EMAIL_VERIFICATION_CODES)
         .set(EMAIL_VERIFICATION_CODES.USED_AT, now)
         .where(EMAIL_VERIFICATION_CODES.ID.eq(id))
         .and(EMAIL_VERIFICATION_CODES.USED_AT.isNull())
