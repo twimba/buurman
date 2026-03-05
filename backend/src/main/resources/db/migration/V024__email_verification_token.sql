@@ -21,4 +21,5 @@ VALUES
         'Rate limit for GET /auth/verify-email-token per client IP',
         10,
         60
-    );
+    )
+ON CONFLICT (key) DO NOTHING;
