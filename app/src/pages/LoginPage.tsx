@@ -19,7 +19,12 @@ const DEMO_EMAIL = 'demo.user@demo.buurman.io';
 const DEMO_PASSWORD = 'buurman';
 
 const sanitizeRedirect = (url: string | null): string | null => {
-  if (!url || !url.startsWith('/') || url.startsWith('//') || url.includes('@')) {
+  if (
+    !url ||
+    !url.startsWith('/') ||
+    url.startsWith('//') ||
+    url.includes('@')
+  ) {
     return null;
   }
   return url;
