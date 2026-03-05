@@ -5,7 +5,7 @@ ARG GIT_COMMIT=""
 ARG GIT_COMMIT_SHORT=""
 ARG GIT_BRANCH=""
 
-RUN corepack enable
+RUN npm install -g --force corepack && corepack enable
 
 # Copy workspace files
 COPY package.json .yarnrc.yml ./
