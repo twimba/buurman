@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import {
   Pause,
   Play,
-  Zap,
+  PlayCircle,
   Timer,
   Clock,
   Check,
@@ -389,10 +389,10 @@ export const SchedulerPage = () => {
       variant: "default" as const,
     },
     trigger: {
-      title: "Trigger Job Now",
+      title: "Run Job Now",
       message:
-        "This will immediately trigger the job execution outside of its normal schedule.",
-      confirmLabel: "Trigger",
+        "This will immediately run the job outside of its normal schedule.",
+      confirmLabel: "Run now",
       variant: "default" as const,
     },
   };
@@ -607,9 +607,9 @@ export const SchedulerPage = () => {
                             })
                           }
                           className="p-2 rounded-lg text-[#6b7194] dark:text-[#8b90a8] hover:text-[#5c7cfa] dark:hover:text-[#91a7ff] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
-                          title="Trigger now"
+                          title="Run now"
                         >
-                          <Zap className="h-4 w-4" />
+                          <PlayCircle className="h-4 w-4" />
                         </button>
                         {job.triggerType === "cron" && (
                           <button
