@@ -77,6 +77,7 @@ public class BackofficeConfigInspector {
 
   private void addAppConfig(List<ConfigEntry> entries) {
     addEntry(entries, "App", "version", appProperties.version());
+    addEntry(entries, "App", "publicUrl", appProperties.publicUrl());
     if (appProperties.email() != null) {
       addEntry(entries, "App", "email.from", appProperties.email().from());
       addEntry(entries, "App", "email.fromName", appProperties.email().fromName());
