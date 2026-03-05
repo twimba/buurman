@@ -113,7 +113,7 @@ app:
   email:
     from: ${EMAIL_FROM:noreply@buurman.io}
     from-name: ${EMAIL_FROM_NAME:Buurman}
-    base-url: ${app.public-url}
+    base-url: ${app.public-url} # Derived from app.public-url — do not override independently
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000,https://app.local.buurman.io}
     backoffice-allowed-origins: ${CORS_BACKOFFICE_ALLOWED_ORIGINS:http://localhost:5174,https://backoffice.local.buurman.io}
