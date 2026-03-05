@@ -100,6 +100,7 @@ flagsmith:
 # Application Configuration
 app:
   version: @project.version@
+  public-url: ${APP_BASE_URL:https://app.local.buurman.io}
   api:
     base-url: ${API_BASE_URL:https://api.local.buurman.io}
   documents:

@@ -40,6 +40,7 @@ flagsmith:
   environment-name: Production
 
 app:
+  public-url: https://app.buurman.io
   api:
     base-url: https://api.buurman.io
   email:

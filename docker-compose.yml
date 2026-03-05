@@ -352,6 +352,7 @@ services:
       - "traefik.http.routers.backend-calendar.entrypoints=websecure"
       - "traefik.http.routers.backend-calendar.tls=true"
       - "traefik.http.routers.backend-calendar.priority=200"
+      - "traefik.http.routers.backend-calendar.service=backend"
       - "traefik.http.services.backend.loadbalancer.server.port=8081"
     depends_on:
       postgres:

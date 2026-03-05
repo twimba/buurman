@@ -507,7 +507,7 @@ public class CalendarFeedService {
       entityLabel = "All Payment Due Dates";
     }
 
-    String feedUrl = appProperties.email().baseUrl() + "/calendar/ical/" + feed.getFeedToken();
+    String feedUrl = appProperties.publicUrl() + "/calendar/ical/" + feed.getFeedToken();
 
     return new CalendarFeedResponse(
         feed.getIdentifier().orElseThrow(),
