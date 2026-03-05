@@ -32,7 +32,9 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
   /** Map of "METHOD:path" → rate limit config key. Add new entries to rate-limit more endpoints. */
   private static final Map<String, String> RATE_LIMITED_ENDPOINTS =
-      Map.of("POST:/registration-invitations/validate", "registration-validation");
+      Map.of(
+          "POST:/registration-invitations/validate", "registration-validation",
+          "GET:/auth/verify-email-token", "email-token-verification");
 
   private final ProxyManager<String> proxyManager;
   private final RateLimitConfigService rateLimitConfigService;
