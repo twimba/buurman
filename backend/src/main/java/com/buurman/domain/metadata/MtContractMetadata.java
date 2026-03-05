@@ -1,15 +1,15 @@
 package com.buurman.domain.metadata;
 
-import java.math.BigDecimal;
-
 import org.jspecify.annotations.Nullable;
+
+import com.buurman.util.MoneyAmount;
 
 public record MtContractMetadata(
     @Nullable String tenancyType,
     @Nullable String epcRating,
-    @Nullable BigDecimal depositAmount,
+    @Nullable MoneyAmount depositAmount,
     @Nullable Integer depositMonths,
     @Nullable Boolean housingAuthorityRegistered,
-    @Nullable BigDecimal groundRent,
+    @Nullable MoneyAmount groundRent,
     @Nullable String rentalAgreementNumber)
     implements ContractCountryMetadata {}

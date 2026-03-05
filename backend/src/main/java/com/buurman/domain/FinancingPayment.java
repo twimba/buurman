@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.buurman.util.MoneyAmount;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,12 +32,11 @@ public class FinancingPayment {
   private UUID financingId;
   private UUID teamId;
   private LocalDate paymentDate;
-  private BigDecimal totalAmount;
+  private MoneyAmount totalAmount;
   @Builder.Default private Optional<BigDecimal> principalAmount = Optional.empty();
   @Builder.Default private Optional<BigDecimal> interestAmount = Optional.empty();
   @Builder.Default private Optional<BigDecimal> escrowAmount = Optional.empty();
   @Builder.Default private Optional<BigDecimal> extraPayment = Optional.empty();
-  private String currency;
   private PaymentStatus status;
   @Builder.Default private Optional<String> notes = Optional.empty();
   private boolean balanceDeducted;

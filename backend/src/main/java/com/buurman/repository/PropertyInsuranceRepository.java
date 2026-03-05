@@ -16,7 +16,7 @@ import com.buurman.domain.PropertyInsurance;
 import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.PropertyInsuranceRecordMapper;
-import com.buurman.util.CurrencyUtils;
+import com.buurman.util.MoneyAmount;
 
 import lombok.RequiredArgsConstructor;
 
@@ -95,7 +95,6 @@ public class PropertyInsuranceRepository {
               ? LocalDateTime.ofInstant(insurance.getUpdatedAt(), UTC)
               : now;
 
-      String premiumCurrency = insurance.getAnnualPremiumCurrency();
       dsl.insertInto(PROPERTY_INSURANCES)
           .set(PROPERTY_INSURANCES.ID, id)
           .set(PROPERTY_INSURANCES.IDENTIFIER, insurance.getIdentifier().orElseThrow())
@@ -106,21 +105,12 @@ public class PropertyInsuranceRepository {
           .set(PROPERTY_INSURANCES.POLICY_NUMBER, insurance.getPolicyNumber().orElse(null))
           .set(
               PROPERTY_INSURANCES.COVERAGE_AMOUNT,
-              insurance
-                  .getCoverageAmount()
-                  .map(
-                      amount ->
-                          CurrencyUtils.toMinorUnits(
-                              amount,
-                              insurance.getCoverageAmountCurrency().orElse(premiumCurrency)))
-                  .orElse(null))
+              insurance.getCoverageAmount().map(MoneyAmount::value).orElse(null))
           .set(
               PROPERTY_INSURANCES.COVERAGE_AMOUNT_CURRENCY,
-              insurance.getCoverageAmountCurrency().orElse(null))
-          .set(
-              PROPERTY_INSURANCES.ANNUAL_PREMIUM,
-              CurrencyUtils.toMinorUnits(insurance.getAnnualPremium(), premiumCurrency))
-          .set(PROPERTY_INSURANCES.ANNUAL_PREMIUM_CURRENCY, premiumCurrency)
+              insurance.getCoverageAmount().map(MoneyAmount::currency).orElse(null))
+          .set(PROPERTY_INSURANCES.ANNUAL_PREMIUM, insurance.getAnnualPremium().value())
+          .set(PROPERTY_INSURANCES.ANNUAL_PREMIUM_CURRENCY, insurance.getAnnualPremium().currency())
           .set(PROPERTY_INSURANCES.PAYMENT_FREQUENCY, insurance.getPaymentFrequency())
           .set(PROPERTY_INSURANCES.START_DATE, insurance.getStartDate().orElse(null))
           .set(PROPERTY_INSURANCES.END_DATE, insurance.getEndDate().orElse(null))
@@ -142,28 +132,18 @@ public class PropertyInsuranceRepository {
               ? LocalDateTime.ofInstant(insurance.getUpdatedAt(), UTC)
               : now;
 
-      String premiumCurrency = insurance.getAnnualPremiumCurrency();
       dsl.update(PROPERTY_INSURANCES)
           .set(PROPERTY_INSURANCES.INSURANCE_TYPE, insurance.getInsuranceType().name())
           .set(PROPERTY_INSURANCES.PROVIDER, insurance.getProvider().orElse(null))
           .set(PROPERTY_INSURANCES.POLICY_NUMBER, insurance.getPolicyNumber().orElse(null))
           .set(
               PROPERTY_INSURANCES.COVERAGE_AMOUNT,
-              insurance
-                  .getCoverageAmount()
-                  .map(
-                      amount ->
-                          CurrencyUtils.toMinorUnits(
-                              amount,
-                              insurance.getCoverageAmountCurrency().orElse(premiumCurrency)))
-                  .orElse(null))
+              insurance.getCoverageAmount().map(MoneyAmount::value).orElse(null))
           .set(
               PROPERTY_INSURANCES.COVERAGE_AMOUNT_CURRENCY,
-              insurance.getCoverageAmountCurrency().orElse(null))
-          .set(
-              PROPERTY_INSURANCES.ANNUAL_PREMIUM,
-              CurrencyUtils.toMinorUnits(insurance.getAnnualPremium(), premiumCurrency))
-          .set(PROPERTY_INSURANCES.ANNUAL_PREMIUM_CURRENCY, premiumCurrency)
+              insurance.getCoverageAmount().map(MoneyAmount::currency).orElse(null))
+          .set(PROPERTY_INSURANCES.ANNUAL_PREMIUM, insurance.getAnnualPremium().value())
+          .set(PROPERTY_INSURANCES.ANNUAL_PREMIUM_CURRENCY, insurance.getAnnualPremium().currency())
           .set(PROPERTY_INSURANCES.PAYMENT_FREQUENCY, insurance.getPaymentFrequency())
           .set(PROPERTY_INSURANCES.START_DATE, insurance.getStartDate().orElse(null))
           .set(PROPERTY_INSURANCES.END_DATE, insurance.getEndDate().orElse(null))

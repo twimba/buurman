@@ -1,13 +1,13 @@
 package com.buurman.domain.metadata;
 
-import java.math.BigDecimal;
-
 import org.jspecify.annotations.Nullable;
+
+import com.buurman.util.MoneyAmount;
 
 public record NoContractMetadata(
     @Nullable String husleielovType,
     @Nullable String energyLabel,
-    @Nullable BigDecimal depositumskontoAmount,
+    @Nullable MoneyAmount depositumskontoAmount,
     @Nullable Integer depositumskontoMonths,
     @Nullable Boolean husleietvistnemnda,
     @Nullable Boolean kommunalBolig)

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.buurman.domain.FinancingPayment;
 import com.buurman.jooq.generated.tables.records.FinancingPaymentsRecord;
-import com.buurman.util.CurrencyUtils;
+import com.buurman.util.MoneyAmount;
 
 @Component
 public class FinancingPaymentRecordMapper {
@@ -19,26 +19,17 @@ public class FinancingPaymentRecordMapper {
       return Optional.empty();
     }
 
-    String currency = record.getCurrency();
-
     FinancingPayment payment = new FinancingPayment();
     payment.setId(record.getId());
     payment.setIdentifier(java.util.Optional.of(record.getIdentifier()));
     payment.setFinancingId(record.getFinancingId());
     payment.setTeamId(record.getTeamId());
     payment.setPaymentDate(record.getPaymentDate());
-    payment.setTotalAmount(CurrencyUtils.toMajorUnits(record.getTotalAmount(), currency));
-    payment.setPrincipalAmount(
-        Optional.ofNullable(
-            CurrencyUtils.toMajorUnitsOrNull(record.getPrincipalAmount(), currency)));
-    payment.setInterestAmount(
-        Optional.ofNullable(
-            CurrencyUtils.toMajorUnitsOrNull(record.getInterestAmount(), currency)));
-    payment.setEscrowAmount(
-        Optional.ofNullable(CurrencyUtils.toMajorUnitsOrNull(record.getEscrowAmount(), currency)));
-    payment.setExtraPayment(
-        Optional.ofNullable(CurrencyUtils.toMajorUnitsOrNull(record.getExtraPayment(), currency)));
-    payment.setCurrency(currency);
+    payment.setTotalAmount(MoneyAmount.of(record.getTotalAmount(), record.getCurrency()));
+    payment.setPrincipalAmount(Optional.ofNullable(record.getPrincipalAmount()));
+    payment.setInterestAmount(Optional.ofNullable(record.getInterestAmount()));
+    payment.setEscrowAmount(Optional.ofNullable(record.getEscrowAmount()));
+    payment.setExtraPayment(Optional.ofNullable(record.getExtraPayment()));
     payment.setStatus(FinancingPayment.PaymentStatus.valueOf(record.getStatus()));
     payment.setNotes(Optional.ofNullable(record.getNotes()));
     payment.setBalanceDeducted(record.getBalanceDeducted());

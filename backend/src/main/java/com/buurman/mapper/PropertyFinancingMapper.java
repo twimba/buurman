@@ -28,9 +28,30 @@ public interface PropertyFinancingMapper {
       target = "status",
       expression =
           "java(request.status().orElse(com.buurman.domain.PropertyFinancing.FinancingStatus.ACTIVE))")
+  @Mapping(
+      target = "originalAmount",
+      expression =
+          "java(com.buurman.util.MoneyAmount.of(request.originalAmount(),"
+              + " request.originalAmountCurrency()))")
   PropertyFinancing toEntity(CreatePropertyFinancingRequest request);
 
   @Mapping(target = "propertyIdentifier", ignore = true)
+  @Mapping(target = "originalAmount", expression = "java(financing.getOriginalAmount().value())")
+  @Mapping(
+      target = "originalAmountCurrency",
+      expression = "java(financing.getOriginalAmount().currency())")
+  @Mapping(
+      target = "currentBalanceCurrency",
+      expression =
+          "java(financing.getCurrentBalance().isPresent() ?"
+              + " java.util.Optional.of(financing.getOriginalAmount().currency()) :"
+              + " java.util.Optional.empty())")
+  @Mapping(
+      target = "monthlyPaymentCurrency",
+      expression =
+          "java(financing.getMonthlyPayment().isPresent() ?"
+              + " java.util.Optional.of(financing.getOriginalAmount().currency()) :"
+              + " java.util.Optional.empty())")
   PropertyFinancingResponse toResponse(PropertyFinancing financing);
 
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -43,6 +64,11 @@ public interface PropertyFinancingMapper {
   @Mapping(target = "createdBy", ignore = true)
   @Mapping(target = "updatedBy", ignore = true)
   @Mapping(target = "deletedAt", ignore = true)
+  @Mapping(
+      target = "originalAmount",
+      expression =
+          "java(com.buurman.util.MoneyAmount.of(request.originalAmount().orElse(financing.getOriginalAmount().value()),"
+              + " request.originalAmountCurrency().orElse(financing.getOriginalAmount().currency())))")
   void updateEntity(
       @MappingTarget PropertyFinancing financing, UpdatePropertyFinancingRequest request);
 }

@@ -1,10 +1,11 @@
 package com.buurman.domain;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
+
+import com.buurman.util.MoneyAmount;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,8 +31,7 @@ public class Payment {
   @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private UUID teamId;
   private UUID contractId;
-  private BigDecimal amount;
-  private String currency;
+  private MoneyAmount amount;
   @Builder.Default private Optional<LocalDate> paymentDate = Optional.empty();
   private LocalDate dueDate;
   private PaymentStatus status;

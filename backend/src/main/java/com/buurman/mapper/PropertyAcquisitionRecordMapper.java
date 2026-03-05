@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.buurman.domain.PropertyAcquisition;
 import com.buurman.jooq.generated.tables.records.PropertyAcquisitionsRecord;
-import com.buurman.util.CurrencyUtils;
+import com.buurman.util.MoneyAmount;
 
 @Component
 public class PropertyAcquisitionRecordMapper {
@@ -28,25 +28,12 @@ public class PropertyAcquisitionRecordMapper {
         PropertyAcquisition.AcquisitionType.valueOf(record.getAcquisitionType()));
     acq.setAcquisitionDate(Optional.ofNullable(record.getAcquisitionDate()));
     acq.setPurchasePrice(
-        Optional.ofNullable(
-            CurrencyUtils.toMajorUnitsOrNull(
-                record.getPurchasePrice(), record.getPurchasePriceCurrency())));
-    acq.setPurchasePriceCurrency(Optional.ofNullable(record.getPurchasePriceCurrency()));
+        MoneyAmount.ofNullable(record.getPurchasePrice(), record.getPurchasePriceCurrency()));
     acq.setClosingCosts(
-        Optional.ofNullable(
-            CurrencyUtils.toMajorUnitsOrNull(
-                record.getClosingCosts(), record.getClosingCostsCurrency())));
-    acq.setClosingCostsCurrency(Optional.ofNullable(record.getClosingCostsCurrency()));
+        MoneyAmount.ofNullable(record.getClosingCosts(), record.getClosingCostsCurrency()));
     acq.setRenovationCosts(
-        Optional.ofNullable(
-            CurrencyUtils.toMajorUnitsOrNull(
-                record.getRenovationCosts(), record.getRenovationCostsCurrency())));
-    acq.setRenovationCostsCurrency(Optional.ofNullable(record.getRenovationCostsCurrency()));
-    acq.setLandValue(
-        Optional.ofNullable(
-            CurrencyUtils.toMajorUnitsOrNull(
-                record.getLandValue(), record.getLandValueCurrency())));
-    acq.setLandValueCurrency(Optional.ofNullable(record.getLandValueCurrency()));
+        MoneyAmount.ofNullable(record.getRenovationCosts(), record.getRenovationCostsCurrency()));
+    acq.setLandValue(MoneyAmount.ofNullable(record.getLandValue(), record.getLandValueCurrency()));
     acq.setDepreciationMethod(
         Optional.ofNullable(record.getDepreciationMethod())
             .map(PropertyAcquisition.DepreciationMethod::valueOf));

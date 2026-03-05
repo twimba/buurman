@@ -27,6 +27,7 @@ import com.buurman.domain.PaymentReceival;
 import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 import com.buurman.util.CurrencyUtils;
+import com.buurman.util.MoneyAmount;
 
 import lombok.RequiredArgsConstructor;
 
@@ -106,15 +107,11 @@ public class PaymentReceivalRepository {
             .from(TABLE)
             .where(PAYMENT_ID.eq(paymentId).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
             .fetchOneInto(BigDecimal.class);
-    if (currency == null) {
-      return sum != null ? sum : BigDecimal.ZERO;
-    }
-    return CurrencyUtils.sumToMajorUnits(sum, currency);
+    return MoneyAmount.sumToMajorUnits(sum, currency);
   }
 
   public void save(PaymentReceival receival) {
     LocalDateTime now = LocalDateTime.now(clock);
-    String currency = receival.getCurrency();
 
     UUID id = UUID.randomUUID();
     LocalDateTime createdAt = now;
@@ -125,8 +122,8 @@ public class PaymentReceivalRepository {
         .set(IDENTIFIER, receival.getIdentifier().orElseThrow().value())
         .set(TEAM_ID, receival.getTeamId())
         .set(PAYMENT_ID, receival.getPaymentId())
-        .set(AMOUNT, CurrencyUtils.toMinorUnits(receival.getAmount(), currency))
-        .set(CURRENCY, currency)
+        .set(AMOUNT, receival.getAmount().toMinorUnits())
+        .set(CURRENCY, receival.getAmount().currency())
         .set(RECEIVAL_DATE, receival.getReceivalDate())
         .set(NOTES, receival.getNotes().orElse(null))
         .set(CREATED_AT, createdAt)
@@ -150,7 +147,7 @@ public class PaymentReceivalRepository {
       String currency) {
     LocalDateTime now = LocalDateTime.now(clock);
     dsl.update(TABLE)
-        .set(AMOUNT, CurrencyUtils.toMinorUnits(amount, currency))
+        .set(AMOUNT, MoneyAmount.of(amount, currency).toMinorUnits())
         .set(RECEIVAL_DATE, receivalDate)
         .set(NOTES, notes)
         .set(UPDATED_AT, now)
@@ -180,8 +177,11 @@ public class PaymentReceivalRepository {
         java.util.Optional.of(com.buurman.domain.Sid.of(record.get(IDENTIFIER))));
     receival.setTeamId(record.get(TEAM_ID));
     receival.setPaymentId(record.get(PAYMENT_ID));
-    receival.setAmount(CurrencyUtils.toMajorUnits(record.get(AMOUNT), currency));
-    receival.setCurrency(currency);
+    Long minorUnits = record.get(AMOUNT);
+    int digits = CurrencyUtils.getFractionalDigits(currency);
+    BigDecimal majorUnits =
+        minorUnits != null ? BigDecimal.valueOf(minorUnits, digits) : BigDecimal.ZERO;
+    receival.setAmount(MoneyAmount.of(majorUnits, currency));
     LocalDate receivalDate = toLocalDate(record.get("receival_date"));
     if (receivalDate != null) {
       receival.setReceivalDate(receivalDate);

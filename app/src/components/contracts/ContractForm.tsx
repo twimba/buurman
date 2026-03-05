@@ -1149,6 +1149,7 @@ export const ContractForm = ({
                   Object.keys(metadata).length > 0 ? metadata : undefined,
               }))
             }
+            currency={formData.rentAmountCurrency || defaultCurrency || 'EUR'}
             disabled={isEditing && contract?.status !== 'DRAFT'}
           />
         </div>

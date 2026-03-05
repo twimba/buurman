@@ -171,21 +171,20 @@ public class PaymentSchedulingService {
 
       try {
         // Use rent period amount for the due date, falling back to contract rent amount
-        java.math.BigDecimal paymentAmount = contract.getRentAmount();
+        java.math.BigDecimal paymentAmount = contract.getRentAmount().value();
         var rentPeriod =
             rentPeriodRepository.findAtDateByContractIdAndTeamId(contractId, teamId, nextDueDate);
         if (rentPeriod.isPresent()) {
-          paymentAmount = rentPeriod.get().getRentAmount();
+          paymentAmount = rentPeriod.get().getRentAmount().value();
         }
 
-        String currency = contract.getRentAmountCurrency();
+        String currency = contract.getRentAmount().currency();
 
         Payment payment = new Payment();
         payment.setIdentifier(Optional.of(newPaymentId()));
         payment.setTeamId(teamId);
         payment.setContractId(contractId);
-        payment.setAmount(paymentAmount);
-        payment.setCurrency(currency);
+        payment.setAmount(com.buurman.util.MoneyAmount.of(paymentAmount, currency));
         payment.setDueDate(nextDueDate);
         payment.setStatus(markAsPaid ? PAID : PENDING);
         payment.setNotes(Optional.of(notes));
@@ -208,8 +207,7 @@ public class PaymentSchedulingService {
           receival.setIdentifier(Optional.of(newPaymentReceivalId()));
           receival.setTeamId(teamId);
           receival.setPaymentId(payment.getId());
-          receival.setAmount(paymentAmount);
-          receival.setCurrency(currency);
+          receival.setAmount(com.buurman.util.MoneyAmount.of(paymentAmount, currency));
           receival.setReceivalDate(paymentDate != null ? paymentDate : nextDueDate);
           receival.setCreatedBy(userId);
           receival.setUpdatedBy(userId);

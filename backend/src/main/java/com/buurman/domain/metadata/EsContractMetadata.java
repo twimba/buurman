@@ -4,13 +4,15 @@ import java.math.BigDecimal;
 
 import org.jspecify.annotations.Nullable;
 
+import com.buurman.util.MoneyAmount;
+
 public record EsContractMetadata(
     @Nullable Boolean viviendaHabitual,
     @Nullable Boolean zonaTensionada,
     @Nullable BigDecimal referencePriceIndex,
-    @Nullable BigDecimal fianzaAmount,
+    @Nullable MoneyAmount fianzaAmount,
     @Nullable Integer fianzaMonths,
     @Nullable String energyCertificateRating,
-    @Nullable BigDecimal garantiaAdicionalAmount,
+    @Nullable MoneyAmount garantiaAdicionalAmount,
     @Nullable Integer garantiaAdicionalMonths)
     implements ContractCountryMetadata {}

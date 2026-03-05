@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.buurman.domain.PropertyTax;
 import com.buurman.jooq.generated.tables.records.PropertyTaxesRecord;
-import com.buurman.util.CurrencyUtils;
+import com.buurman.util.MoneyAmount;
 
 @Component
 public class PropertyTaxRecordMapper {
@@ -26,8 +26,7 @@ public class PropertyTaxRecordMapper {
     tax.setTeamId(record.getTeamId());
     tax.setTaxType(PropertyTax.TaxType.valueOf(record.getTaxType()));
     tax.setAuthority(Optional.ofNullable(record.getAuthority()));
-    tax.setAnnualAmount(CurrencyUtils.toMajorUnits(record.getAnnualAmount(), record.getCurrency()));
-    tax.setCurrency(record.getCurrency());
+    tax.setAnnualAmount(MoneyAmount.of(record.getAnnualAmount(), record.getCurrency()));
     tax.setPaymentFrequency(record.getPaymentFrequency());
     tax.setDueMonths(Optional.ofNullable(record.getDueMonths()));
     tax.setTaxYear(Optional.ofNullable(record.getTaxYear()));

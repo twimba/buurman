@@ -27,7 +27,6 @@ import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.repository.AuditLogRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyRepository;
-import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -155,8 +154,7 @@ public class DashboardService {
 
     for (var contract : activeContracts) {
       String currency = contract.rentAmountCurrency();
-      BigDecimal rentAmount =
-          CurrencyUtils.toMajorUnits(contract.rentAmount().longValueExact(), currency);
+      BigDecimal rentAmount = contract.rentAmount();
       String paymentFrequency = contract.paymentFrequency();
 
       // Convert to monthly amount based on payment frequency

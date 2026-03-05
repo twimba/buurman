@@ -1,10 +1,13 @@
 import { useContractMetadataSchema } from '../../hooks/useContractHooks';
+import { useCurrencies, getFractionalDigits } from '../../hooks/useCurrencies';
 import type { MetadataFieldSchema } from '../../types/contract';
+import { MoneyInput } from '../common/MoneyInput';
 
 interface CountryMetadataFormProps {
   countryCode: string;
   value: Record<string, unknown>;
   onChange: (metadata: Record<string, unknown>) => void;
+  currency: string;
   disabled?: boolean;
 }
 
@@ -12,9 +15,12 @@ export default function CountryMetadataForm({
   countryCode,
   value,
   onChange,
+  currency,
   disabled = false,
 }: CountryMetadataFormProps) {
   const { data: schema, isLoading } = useContractMetadataSchema(countryCode);
+  const { data: currencies } = useCurrencies();
+  const digits = getFractionalDigits(currencies, currency);
 
   if (isLoading) {
     return (
@@ -72,6 +78,8 @@ export default function CountryMetadataForm({
                   field={field}
                   value={value[field.name]}
                   onChange={(v) => handleFieldChange(field.name, v)}
+                  currency={currency}
+                  fractionalDigits={digits}
                   disabled={disabled}
                 />
               ))}
@@ -93,6 +101,8 @@ interface MetadataFieldProps {
   field: MetadataFieldSchema;
   value: unknown;
   onChange: (value: unknown) => void;
+  currency: string;
+  fractionalDigits: number;
   disabled: boolean;
 }
 
@@ -127,16 +137,70 @@ function FieldLabel({
   );
 }
 
+/** Extract major-unit amount from a minor-unit MoneyAmount object. */
+function moneyValueToMajor(val: unknown, digits: number): number | undefined {
+  if (val == null) {
+    return undefined;
+  }
+  if (typeof val === 'object' && 'value' in (val as Record<string, unknown>)) {
+    const minor = (val as { value: number }).value;
+    return minor / 10 ** digits;
+  }
+  // Legacy: plain number (already major units)
+  if (typeof val === 'number') {
+    return val;
+  }
+  return undefined;
+}
+
+/** Build a minor-unit MoneyAmount object from a major-unit amount. */
+function majorToMoneyValue(
+  majorUnits: number | undefined,
+  currency: string,
+  digits: number
+): { value: number; currency: string } | undefined {
+  if (majorUnits === undefined) {
+    return undefined;
+  }
+  return { value: Math.round(majorUnits * 10 ** digits), currency };
+}
+
 function MetadataField({
   field,
   value,
   onChange,
+  currency,
+  fractionalDigits,
   disabled,
 }: MetadataFieldProps) {
   const inputClasses =
     'block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed';
 
   switch (field.type) {
+    case 'MONEY': {
+      const moneyObj = value as
+        | { value: number; currency: string }
+        | null
+        | undefined;
+      const fieldCurrency = moneyObj?.currency || currency;
+      const majorAmount = moneyValueToMajor(value, fractionalDigits);
+
+      return (
+        <div>
+          <FieldLabel label={field.label} required={field.required} />
+          <MoneyInput
+            value={majorAmount}
+            onChange={(v) =>
+              onChange(majorToMoneyValue(v, fieldCurrency, fractionalDigits))
+            }
+            currency={fieldCurrency}
+            disabled={disabled}
+          />
+          <HelpText text={field.helpText} />
+        </div>
+      );
+    }
+
     case 'BOOLEAN':
       return (
         <div>

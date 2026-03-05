@@ -56,6 +56,7 @@ import com.buurman.domain.metadata.UsContractMetadata;
 import com.buurman.domain.metadata.UyContractMetadata;
 import com.buurman.domain.metadata.XkContractMetadata;
 import com.buurman.exception.BadRequestException;
+import com.buurman.util.MoneyAmount;
 
 @Component
 public class CountryMetadataValidator {
@@ -199,7 +200,7 @@ public class CountryMetadataValidator {
     requireRange(de.kautionMonths(), 0, 3, "Kaution Months", errors);
     requireNonNegative(de.nebenkostenAmount(), "Nebenkosten Amount", errors);
     requireNonNegative(de.kautionAmount(), "Kaution Amount", errors);
-    requireNonNegative(de.energyCertificateValue(), "Energy Certificate Value", errors);
+    requireNonNegativeDecimal(de.energyCertificateValue(), "Energy Certificate Value", errors);
     requireMaxDecimal(
         de.energyCertificateValue(), new BigDecimal("500"), "Energy Certificate Value", errors);
   }
@@ -220,8 +221,8 @@ public class CountryMetadataValidator {
         errors);
     validateEnum(it.apeRating(), IT_APE_RATINGS, "APE Rating", errors);
     if (it.cedolareRate() != null) {
-      BigDecimal rate = it.cedolareRate();
-      if (rate.compareTo(BigDecimal.ZERO) < 0 || rate.compareTo(HUNDRED) > 0) {
+      if (it.cedolareRate().compareTo(BigDecimal.ZERO) < 0
+          || it.cedolareRate().compareTo(HUNDRED) > 0) {
         errors.add("Cedolare Rate must be between 0 and 100");
       }
     }
@@ -265,7 +266,7 @@ public class CountryMetadataValidator {
         Set.of("BLOCKED_ACCOUNT", "BANK_GUARANTEE", "OCMW_GUARANTEE"),
         "Deposit Type",
         errors);
-    requireNonNegative(be.indexationBase(), "Indexation Base", errors);
+    requireNonNegativeDecimal(be.indexationBase(), "Indexation Base", errors);
     requireRange(be.depositMonths(), 0, 3, "Deposit Months", errors);
   }
 
@@ -274,7 +275,7 @@ public class CountryMetadataValidator {
         es.energyCertificateRating(), ENERGY_RATINGS_A_G, "Energy Certificate Rating", errors);
     requireRange(es.fianzaMonths(), 0, 2, "Fianza Months", errors);
     requireNonNegative(es.fianzaAmount(), "Fianza Amount", errors);
-    requireNonNegative(es.referencePriceIndex(), "Reference Price Index", errors);
+    requireNonNegativeDecimal(es.referencePriceIndex(), "Reference Price Index", errors);
     requireNonNegative(es.garantiaAdicionalAmount(), "Garantia Adicional Amount", errors);
     requireRange(es.garantiaAdicionalMonths(), 0, 2, "Garantia Adicional Months", errors);
   }
@@ -283,13 +284,13 @@ public class CountryMetadataValidator {
     validateEnum(pt.nrauRegime(), Set.of("NRAU", "VINCULISTICO", "RAU"), "NRAU Regime", errors);
     validateEnum(
         pt.energyCertificateRating(), PT_ENERGY_RATINGS, "Energy Certificate Rating", errors);
-    requireNonNegative(pt.updateCoefficient(), "Update Coefficient", errors);
+    requireNonNegativeDecimal(pt.updateCoefficient(), "Update Coefficient", errors);
   }
 
   private void validateGeneric(GenericContractMetadata gen, List<String> errors) {
     validateEnum(
         gen.energyCertificateRating(), ENERGY_RATINGS_A_G, "Energy Certificate Rating", errors);
-    requireNonNegative(gen.maxDepositMonths(), "Max Deposit Months", errors);
+    requireNonNegativeInt(gen.maxDepositMonths(), "Max Deposit Months", errors);
   }
 
   // --- DACH + Nordics + Ireland ---
@@ -312,7 +313,7 @@ public class CountryMetadataValidator {
     requireNonNegative(ch.nebenkostenAmount(), "Nebenkosten Amount", errors);
     requireRange(ch.kautionMonths(), 0, 3, "Kaution Months", errors);
     requireNonNegative(ch.kautionAmount(), "Kaution Amount", errors);
-    requireNonNegative(ch.referenzzinssatz(), "Referenzzinssatz", errors);
+    requireNonNegativeDecimal(ch.referenzzinssatz(), "Referenzzinssatz", errors);
   }
 
   private void validateDk(DkContractMetadata dk, List<String> errors) {
@@ -647,8 +648,22 @@ public class CountryMetadataValidator {
   }
 
   private static void requireNonNegative(
+      @Nullable MoneyAmount value, String fieldLabel, List<String> errors) {
+    if (value != null && value.value().compareTo(BigDecimal.ZERO) < 0) {
+      errors.add(fieldLabel + " must be >= 0");
+    }
+  }
+
+  private static void requireNonNegativeDecimal(
       @Nullable BigDecimal value, String fieldLabel, List<String> errors) {
     if (value != null && value.compareTo(BigDecimal.ZERO) < 0) {
+      errors.add(fieldLabel + " must be >= 0");
+    }
+  }
+
+  private static void requireNonNegativeInt(
+      @Nullable Integer value, String fieldLabel, List<String> errors) {
+    if (value != null && value < 0) {
       errors.add(fieldLabel + " must be >= 0");
     }
   }

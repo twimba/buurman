@@ -1,8 +1,8 @@
 package com.buurman.domain.metadata;
 
-import java.math.BigDecimal;
-
 import org.jspecify.annotations.Nullable;
+
+import com.buurman.util.MoneyAmount;
 
 public record NlContractMetadata(
     @Nullable String sectorClassification,
@@ -14,8 +14,8 @@ public record NlContractMetadata(
     @Nullable Boolean serviceElectricity,
     @Nullable Boolean serviceInternet,
     @Nullable Boolean serviceCleaning,
-    @Nullable BigDecimal totalServiceCostsAmount,
+    @Nullable MoneyAmount totalServiceCostsAmount,
     @Nullable Boolean huurtoeslagEligible,
-    @Nullable BigDecimal liberalizationThreshold,
+    @Nullable MoneyAmount liberalizationThreshold,
     @Nullable String energyLabel)
     implements ContractCountryMetadata {}

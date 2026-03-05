@@ -116,7 +116,7 @@ public class ContractBookletExporter {
             : paymentReceivalRepository.findByPaymentIdsAndTeamId(paymentIds, teamId);
     Map<UUID, BigDecimal> receivedByPayment = new HashMap<>();
     for (PaymentReceival r : allReceivals) {
-      receivedByPayment.merge(r.getPaymentId(), r.getAmount(), BigDecimal::add);
+      receivedByPayment.merge(r.getPaymentId(), r.getAmount().value(), BigDecimal::add);
     }
 
     // Load rent periods
@@ -167,7 +167,7 @@ public class ContractBookletExporter {
       Map<UUID, PaymentInstruction> piMap) {
     DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH);
     String generatedDate = LocalDate.now(clock).format(dateFmt);
-    String ccy = contract.getRentAmountCurrency();
+    String ccy = contract.getRentAmount().currency();
 
     String primaryName =
         findPrimaryTenant(parties, tenantMap)
@@ -228,7 +228,7 @@ public class ContractBookletExporter {
     appendCoverCell(html, "Primary Tenant", primaryName);
     html.append("</tr><tr>");
     appendCoverCell(
-        html, "Current Rent", CurrencyUtils.formatCurrency(contract.getRentAmount(), ccy));
+        html, "Current Rent", CurrencyUtils.formatCurrency(contract.getRentAmount().value(), ccy));
     String period =
         formatDate(contract.getStartDate(), dateFmt)
             + " — "
@@ -285,16 +285,21 @@ public class ContractBookletExporter {
         "End Date",
         contract.getEndDate().map(d -> formatDate(d, dateFmt)).orElse("Indefinite"));
     html.append("</tr><tr>");
-    appendField(html, "Current Rent", CurrencyUtils.formatCurrency(contract.getRentAmount(), ccy));
+    appendField(
+        html, "Current Rent", CurrencyUtils.formatCurrency(contract.getRentAmount().value(), ccy));
     appendField(
         html,
         "Deposit Amount",
-        CurrencyUtils.formatCurrency(contract.getDepositAmount().orElse(null), ccy));
+        CurrencyUtils.formatCurrency(
+            contract.getDepositAmount().map(com.buurman.util.MoneyAmount::value).orElse(null),
+            ccy));
     html.append("</tr><tr>");
     appendField(
         html,
         "Security Deposit",
-        CurrencyUtils.formatCurrency(contract.getSecurityDeposit().orElse(null), ccy));
+        CurrencyUtils.formatCurrency(
+            contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::value).orElse(null),
+            ccy));
     appendField(html, "Currency", CurrencyUtils.getCurrencySymbol(ccy) + " (" + ccy + ")");
     html.append("</tr><tr>");
     appendField(
@@ -510,17 +515,18 @@ public class ContractBookletExporter {
       html.append("<td style='text-align:right;font-variant-numeric:tabular-nums;")
           .append(isCurrent ? "font-weight:600;" : "")
           .append("'>")
-          .append(CurrencyUtils.formatCurrency(period.getRentAmount(), ccy))
+          .append(CurrencyUtils.formatCurrency(period.getRentAmount().value(), ccy))
           .append("</td>");
 
       // Percentage change vs next older period
       html.append("<td style='text-align:right;'>");
       if (i < sorted.size() - 1) {
-        BigDecimal previousAmount = sorted.get(i + 1).getRentAmount();
+        BigDecimal previousAmount = sorted.get(i + 1).getRentAmount().value();
         if (previousAmount.compareTo(BigDecimal.ZERO) > 0) {
           BigDecimal change =
               period
                   .getRentAmount()
+                  .value()
                   .subtract(previousAmount)
                   .multiply(new BigDecimal("100"))
                   .divide(previousAmount, 1, java.math.RoundingMode.HALF_UP);
@@ -745,7 +751,7 @@ public class ContractBookletExporter {
         CurrencyUtils.formatCurrency(
             payments.stream()
                 .filter(p -> p.getStatus() == PARTIALLY_PAID)
-                .map(Payment::getAmount)
+                .map(p -> p.getAmount().value())
                 .reduce(BigDecimal.ZERO, BigDecimal::add),
             ccy),
         "#eff6ff",
@@ -784,22 +790,23 @@ public class ContractBookletExporter {
 
       for (Payment payment : sortedPayments) {
         BigDecimal received = receivedByPayment.getOrDefault(payment.getId(), BigDecimal.ZERO);
-        BigDecimal balance = payment.getAmount().subtract(received);
+        BigDecimal balance = payment.getAmount().value().subtract(received);
+        String paymentCcy = payment.getAmount().currency();
         html.append("<tr>");
         html.append("<td>").append(formatDate(payment.getDueDate(), dateFmt)).append("</td>");
         html.append("<td style='text-align:right;font-variant-numeric:tabular-nums;'>")
-            .append(CurrencyUtils.formatCurrency(payment.getAmount(), payment.getCurrency()))
+            .append(CurrencyUtils.formatCurrency(payment.getAmount().value(), paymentCcy))
             .append("</td>");
         html.append("<td style='text-align:right;font-variant-numeric:tabular-nums;'>")
             .append(
                 received.compareTo(BigDecimal.ZERO) > 0
-                    ? CurrencyUtils.formatCurrency(received, payment.getCurrency())
+                    ? CurrencyUtils.formatCurrency(received, paymentCcy)
                     : "—")
             .append("</td>");
         html.append("<td style='text-align:right;font-variant-numeric:tabular-nums;'>")
             .append(
                 balance.compareTo(BigDecimal.ZERO) > 0 && payment.getStatus() != PAID
-                    ? CurrencyUtils.formatCurrency(balance, payment.getCurrency())
+                    ? CurrencyUtils.formatCurrency(balance, paymentCcy)
                     : "—")
             .append("</td>");
         html.append("<td>");
@@ -837,24 +844,24 @@ public class ContractBookletExporter {
       BigDecimal received = receivedByPayment.getOrDefault(p.getId(), BigDecimal.ZERO);
       switch (p.getStatus()) {
         case PAID -> {
-          agg.totalPaid = agg.totalPaid.add(p.getAmount());
+          agg.totalPaid = agg.totalPaid.add(p.getAmount().value());
           agg.countPaid++;
         }
         case PENDING -> {
-          agg.totalPending = agg.totalPending.add(p.getAmount());
+          agg.totalPending = agg.totalPending.add(p.getAmount().value());
           agg.countPending++;
         }
         case OVERDUE -> {
-          agg.totalOverdue = agg.totalOverdue.add(p.getAmount());
+          agg.totalOverdue = agg.totalOverdue.add(p.getAmount().value());
           agg.countOverdue++;
         }
         case CANCELLED -> {
-          agg.totalCancelled = agg.totalCancelled.add(p.getAmount());
+          agg.totalCancelled = agg.totalCancelled.add(p.getAmount().value());
           agg.countCancelled++;
         }
         case PARTIALLY_PAID -> {
           agg.totalPaid = agg.totalPaid.add(received);
-          agg.totalPending = agg.totalPending.add(p.getAmount().subtract(received));
+          agg.totalPending = agg.totalPending.add(p.getAmount().value().subtract(received));
           agg.countPartial++;
         }
       }

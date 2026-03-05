@@ -291,8 +291,8 @@ public class OccupancyPeriodService {
                         f.getFinancingType().name(),
                         f.getStatus().name(),
                         f.getLenderName(),
-                        f.getOriginalAmount(),
-                        f.getOriginalAmountCurrency(),
+                        f.getOriginalAmount().value(),
+                        f.getOriginalAmount().currency(),
                         f.getInterestRate()))
             .toList();
 

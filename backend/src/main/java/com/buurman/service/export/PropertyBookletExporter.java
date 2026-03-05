@@ -1193,7 +1193,7 @@ public class PropertyBookletExporter {
       html.append("<td>")
           .append(
               CurrencyUtils.formatCurrency(
-                  contract.getRentAmount(), contract.getRentAmountCurrency()))
+                  contract.getRentAmount().value(), contract.getRentAmount().currency()))
           .append("</td>");
       html.append("<td>")
           .append(
@@ -1381,14 +1381,14 @@ public class PropertyBookletExporter {
                 paymentDate -> {
                   int year = paymentDate.getYear();
                   summaries.computeIfAbsent(year, FinancialYearSummary::new);
-                  summaries.get(year).addIncome(payment.getAmount());
+                  summaries.get(year).addIncome(payment.getAmount().value());
                 });
       }
     }
     for (Expense expense : expenses) {
       int year = expense.getExpenseDate().getYear();
       summaries.computeIfAbsent(year, FinancialYearSummary::new);
-      summaries.get(year).addExpense(expense.getAmount());
+      summaries.get(year).addExpense(expense.getAmount().value());
     }
     return summaries;
   }

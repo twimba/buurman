@@ -1,10 +1,11 @@
 package com.buurman.domain;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
+
+import com.buurman.util.MoneyAmount;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,14 +40,10 @@ public class PropertyAcquisition {
   private UUID teamId;
   private AcquisitionType acquisitionType;
   @Builder.Default private Optional<LocalDate> acquisitionDate = Optional.empty();
-  @Builder.Default private Optional<BigDecimal> purchasePrice = Optional.empty();
-  @Builder.Default private Optional<String> purchasePriceCurrency = Optional.empty();
-  @Builder.Default private Optional<BigDecimal> closingCosts = Optional.empty();
-  @Builder.Default private Optional<String> closingCostsCurrency = Optional.empty();
-  @Builder.Default private Optional<BigDecimal> renovationCosts = Optional.empty();
-  @Builder.Default private Optional<String> renovationCostsCurrency = Optional.empty();
-  @Builder.Default private Optional<BigDecimal> landValue = Optional.empty();
-  @Builder.Default private Optional<String> landValueCurrency = Optional.empty();
+  @Builder.Default private Optional<MoneyAmount> purchasePrice = Optional.empty();
+  @Builder.Default private Optional<MoneyAmount> closingCosts = Optional.empty();
+  @Builder.Default private Optional<MoneyAmount> renovationCosts = Optional.empty();
+  @Builder.Default private Optional<MoneyAmount> landValue = Optional.empty();
   @Builder.Default private Optional<DepreciationMethod> depreciationMethod = Optional.empty();
   @Builder.Default private Optional<Integer> depreciationYears = Optional.empty();
   @Builder.Default private Optional<String> notes = Optional.empty();

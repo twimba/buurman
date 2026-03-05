@@ -4,6 +4,7 @@ import static com.buurman.dto.response.CountryMetadataSchemaResponse.FieldType.B
 import static com.buurman.dto.response.CountryMetadataSchemaResponse.FieldType.DECIMAL;
 import static com.buurman.dto.response.CountryMetadataSchemaResponse.FieldType.ENUM;
 import static com.buurman.dto.response.CountryMetadataSchemaResponse.FieldType.INTEGER;
+import static com.buurman.dto.response.CountryMetadataSchemaResponse.FieldType.MONEY;
 import static com.buurman.dto.response.CountryMetadataSchemaResponse.FieldType.STRING;
 
 import java.lang.reflect.RecordComponent;
@@ -393,7 +394,7 @@ public class CountryMetadataSchemaService {
         field(
             "liberalizationThreshold",
             "Liberalization Threshold",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -413,7 +414,7 @@ public class CountryMetadataSchemaService {
         field(
             "totalServiceCostsAmount",
             "Total Service Costs Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -541,7 +542,7 @@ public class CountryMetadataSchemaService {
         field(
             "nebenkostenAmount",
             "Nebenkosten Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -551,7 +552,7 @@ public class CountryMetadataSchemaService {
         field(
             "kautionAmount",
             "Kaution Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -615,7 +616,7 @@ public class CountryMetadataSchemaService {
         field(
             "referenceRentPrice",
             "Reference Rent Price",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -625,7 +626,7 @@ public class CountryMetadataSchemaService {
         field(
             "maxRentPrice",
             "Maximum Rent Price",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -730,7 +731,7 @@ public class CountryMetadataSchemaService {
         field(
             "cautionAmount",
             "Caution Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -774,8 +775,8 @@ public class CountryMetadataSchemaService {
             null,
             validation(0, null, null),
             "general",
-            "Base amount used for annual rent indexation calculation",
-            "EUR"),
+            "Base index value used for annual rent indexation calculation",
+            null),
         field(
             "energyCertificateRating",
             "Energy Certificate Rating",
@@ -949,11 +950,11 @@ public class CountryMetadataSchemaService {
             validation(0, null, null),
             "classification",
             "Official reference price index for the area",
-            "EUR/m\u00b2"),
+            null),
         field(
             "fianzaAmount",
             "Fianza Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -984,7 +985,7 @@ public class CountryMetadataSchemaService {
         field(
             "garantiaAdicionalAmount",
             "Garant\u00eda Adicional Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -1075,7 +1076,7 @@ public class CountryMetadataSchemaService {
         field(
             "depositoAmount",
             "Deposito Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -1168,7 +1169,7 @@ public class CountryMetadataSchemaService {
         field(
             "depositAmount",
             "Deposit Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -1286,7 +1287,7 @@ public class CountryMetadataSchemaService {
         field(
             "securityDepositLimit",
             "Security Deposit Limit",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -1343,7 +1344,7 @@ public class CountryMetadataSchemaService {
         field(
             "betriebskostenAmount",
             "Betriebskosten Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -1363,7 +1364,7 @@ public class CountryMetadataSchemaService {
         field(
             "kautionAmount",
             "Kaution Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -1383,7 +1384,7 @@ public class CountryMetadataSchemaService {
         field(
             "richtwertmiete",
             "Richtwertmiete",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -1428,7 +1429,7 @@ public class CountryMetadataSchemaService {
         field(
             "nebenkostenAmount",
             "Nebenkosten Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -1448,7 +1449,7 @@ public class CountryMetadataSchemaService {
         field(
             "kautionAmount",
             "Kaution Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -1513,7 +1514,7 @@ public class CountryMetadataSchemaService {
         field(
             "depositumAmount",
             "Depositum Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -1533,7 +1534,7 @@ public class CountryMetadataSchemaService {
         field(
             "forudbetalingAmount",
             "Forudbetaling Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -1598,7 +1599,7 @@ public class CountryMetadataSchemaService {
         field(
             "depositAmount",
             "Deposit Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -1655,7 +1656,7 @@ public class CountryMetadataSchemaService {
         field(
             "vakuusAmount",
             "Vakuus Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -1711,7 +1712,7 @@ public class CountryMetadataSchemaService {
         field(
             "depositumskontoAmount",
             "Depositumskonto Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -1794,7 +1795,7 @@ public class CountryMetadataSchemaService {
         field(
             "depositAmount",
             "Deposit Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -1834,7 +1835,7 @@ public class CountryMetadataSchemaService {
         field(
             "marketRentAmount",
             "Market Rent Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -1882,7 +1883,7 @@ public class CountryMetadataSchemaService {
         field(
             "kaucjaAmount",
             "Kaucja Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -1957,7 +1958,7 @@ public class CountryMetadataSchemaService {
         field(
             "kauceAmount",
             "Kauce Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -1977,7 +1978,7 @@ public class CountryMetadataSchemaService {
         field(
             "sluzbyAmount",
             "Slu\u017eby Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2034,7 +2035,7 @@ public class CountryMetadataSchemaService {
         field(
             "kaucioAmount",
             "Kauci\u00f3 Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2054,7 +2055,7 @@ public class CountryMetadataSchemaService {
         field(
             "kozosKoltsegAmount",
             "K\u00f6z\u00f6s K\u00f6lts\u00e9g Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2099,7 +2100,7 @@ public class CountryMetadataSchemaService {
         field(
             "garantieAmount",
             "Garan\u021bie Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2129,7 +2130,7 @@ public class CountryMetadataSchemaService {
         field(
             "intretinereAmount",
             "\u00centre\u021binere Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2167,7 +2168,7 @@ public class CountryMetadataSchemaService {
         field(
             "depozitAmount",
             "Depozit Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2197,7 +2198,7 @@ public class CountryMetadataSchemaService {
         field(
             "obshtiRazhodiAmount",
             "\u041e\u0431\u0449\u0438 \u0420\u0430\u0437\u0445\u043e\u0434\u0438 Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2240,7 +2241,7 @@ public class CountryMetadataSchemaService {
         field(
             "kauciaAmount",
             "Kaucia Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2260,7 +2261,7 @@ public class CountryMetadataSchemaService {
         field(
             "poplatkyAmount",
             "Poplatky Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2317,7 +2318,7 @@ public class CountryMetadataSchemaService {
         field(
             "varscinsAmount",
             "Var\u0161\u010dina Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2347,7 +2348,7 @@ public class CountryMetadataSchemaService {
         field(
             "rezervniFondAmount",
             "Rezervni Fond Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2390,7 +2391,7 @@ public class CountryMetadataSchemaService {
         field(
             "jamcevinaAmount",
             "Jam\u010devina Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2420,7 +2421,7 @@ public class CountryMetadataSchemaService {
         field(
             "pricuvaAmount",
             "Pri\u010duva Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2464,7 +2465,7 @@ public class CountryMetadataSchemaService {
         field(
             "uzstatasAmount",
             "U\u017estatas Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2494,7 +2495,7 @@ public class CountryMetadataSchemaService {
         field(
             "komunaliniaiAmount",
             "Komunaliniai Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2529,7 +2530,7 @@ public class CountryMetadataSchemaService {
         field(
             "drosibaNaudaAmount",
             "Dro\u0161\u012bbas Nauda Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2559,7 +2560,7 @@ public class CountryMetadataSchemaService {
         field(
             "komunalieAmount",
             "Komun\u0101lie Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2602,7 +2603,7 @@ public class CountryMetadataSchemaService {
         field(
             "tagatisrahaAmount",
             "Tagatisraha Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2632,7 +2633,7 @@ public class CountryMetadataSchemaService {
         field(
             "kommunaalkuludAmount",
             "Kommunaalkulud Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2682,7 +2683,7 @@ public class CountryMetadataSchemaService {
         field(
             "eggysisAmount",
             "\u0395\u03b3\u03b3\u03cd\u03b7\u03c3\u03b7 Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2713,7 +2714,7 @@ public class CountryMetadataSchemaService {
         field(
             "koinochristaAmount",
             "\u039a\u03bf\u03b9\u03bd\u03cc\u03c7\u03c1\u03b7\u03c3\u03c4\u03b1 Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2762,7 +2763,7 @@ public class CountryMetadataSchemaService {
         field(
             "depositAmount",
             "Deposit Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2792,7 +2793,7 @@ public class CountryMetadataSchemaService {
         field(
             "groundRent",
             "Ground Rent",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2838,7 +2839,7 @@ public class CountryMetadataSchemaService {
         field(
             "depositAmount",
             "Deposit Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2868,7 +2869,7 @@ public class CountryMetadataSchemaService {
         field(
             "commonExpensesAmount",
             "Common Expenses Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2925,7 +2926,7 @@ public class CountryMetadataSchemaService {
         field(
             "cautionAmount",
             "Caution Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -2955,7 +2956,7 @@ public class CountryMetadataSchemaService {
         field(
             "chargesAmount",
             "Charges Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3000,7 +3001,7 @@ public class CountryMetadataSchemaService {
         field(
             "depozitAmount",
             "Depozit Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3030,7 +3031,7 @@ public class CountryMetadataSchemaService {
         field(
             "komunalniTroskoviAmount",
             "Komunalni Tro\u0161kovi Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3068,7 +3069,7 @@ public class CountryMetadataSchemaService {
         field(
             "depozitAmount",
             "Depozit Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3098,7 +3099,7 @@ public class CountryMetadataSchemaService {
         field(
             "rezijeAmount",
             "Re\u017eije Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3133,7 +3134,7 @@ public class CountryMetadataSchemaService {
         field(
             "garanciaAmount",
             "Garancia Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3163,7 +3164,7 @@ public class CountryMetadataSchemaService {
         field(
             "shpenzimet",
             "Shpenzimet",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3198,7 +3199,7 @@ public class CountryMetadataSchemaService {
         field(
             "depozitAmount",
             "Depozit Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3228,7 +3229,7 @@ public class CountryMetadataSchemaService {
         field(
             "komunalijeAmount",
             "Komunalije Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3263,7 +3264,7 @@ public class CountryMetadataSchemaService {
         field(
             "depozitAmount",
             "Depozit Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3293,7 +3294,7 @@ public class CountryMetadataSchemaService {
         field(
             "rezhiskiTroskoviAmount",
             "Re\u017eiski Tro\u0161kovi Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3318,7 +3319,7 @@ public class CountryMetadataSchemaService {
         field(
             "depozitAmount",
             "Depozit Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3348,7 +3349,7 @@ public class CountryMetadataSchemaService {
         field(
             "shpenzimetKomunale",
             "Shpenzimet Komunale",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3406,7 +3407,7 @@ public class CountryMetadataSchemaService {
         field(
             "securityDepositAmount",
             "Security Deposit Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3473,7 +3474,7 @@ public class CountryMetadataSchemaService {
         field(
             "depositoAmount",
             "Dep\u00f3sito Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3503,7 +3504,7 @@ public class CountryMetadataSchemaService {
         field(
             "mantenimientoAmount",
             "Mantenimiento Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3531,7 +3532,7 @@ public class CountryMetadataSchemaService {
         field(
             "caucaoAmount",
             "Cau\u00e7\u00e3o Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3561,7 +3562,7 @@ public class CountryMetadataSchemaService {
         field(
             "condominioAmount",
             "Condom\u00ednio Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3607,7 +3608,7 @@ public class CountryMetadataSchemaService {
         field(
             "depositoAmount",
             "Dep\u00f3sito Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3637,7 +3638,7 @@ public class CountryMetadataSchemaService {
         field(
             "expensasAmount",
             "Expensas Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3682,7 +3683,7 @@ public class CountryMetadataSchemaService {
         field(
             "garantiaAmount",
             "Garant\u00eda Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3712,7 +3713,7 @@ public class CountryMetadataSchemaService {
         field(
             "gastosComunes",
             "Gastos Comunes",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3758,7 +3759,7 @@ public class CountryMetadataSchemaService {
         field(
             "depositoAmount",
             "Dep\u00f3sito Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3788,7 +3789,7 @@ public class CountryMetadataSchemaService {
         field(
             "administracionAmount",
             "Administraci\u00f3n Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3835,7 +3836,7 @@ public class CountryMetadataSchemaService {
         field(
             "garantiaAmount",
             "Garant\u00eda Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3865,7 +3866,7 @@ public class CountryMetadataSchemaService {
         field(
             "mantenimientoAmount",
             "Mantenimiento Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3915,7 +3916,7 @@ public class CountryMetadataSchemaService {
         field(
             "depositoAmount",
             "Dep\u00f3sito Amount",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -3945,7 +3946,7 @@ public class CountryMetadataSchemaService {
         field(
             "gastosComunes",
             "Gastos Comunes",
-            DECIMAL,
+            MONEY,
             false,
             null,
             validation(0, null, null),
@@ -4000,7 +4001,7 @@ public class CountryMetadataSchemaService {
         field(
             "maxDepositMonths",
             "Max Deposit (Months)",
-            DECIMAL,
+            INTEGER,
             false,
             null,
             null,

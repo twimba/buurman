@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.buurman.domain.metadata.ContractCountryMetadata;
+import com.buurman.util.MoneyAmount;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -49,12 +50,9 @@ public class Contract {
   private LocalDate startDate;
   @Builder.Default private Optional<LocalDate> endDate = Optional.empty();
   @Builder.Default private Optional<LocalDate> signedDate = Optional.empty();
-  private BigDecimal rentAmount;
-  @Builder.Default private Optional<BigDecimal> depositAmount = Optional.empty();
-  @Builder.Default private Optional<BigDecimal> securityDeposit = Optional.empty();
-  private String rentAmountCurrency;
-  @Builder.Default private Optional<String> depositAmountCurrency = Optional.empty();
-  @Builder.Default private Optional<String> securityDepositCurrency = Optional.empty();
+  private MoneyAmount rentAmount;
+  @Builder.Default private Optional<MoneyAmount> depositAmount = Optional.empty();
+  @Builder.Default private Optional<MoneyAmount> securityDeposit = Optional.empty();
   private PaymentFrequency paymentFrequency;
   @Builder.Default private Optional<Integer> paymentDueDay = Optional.empty();
   @Builder.Default private Boolean autoRenewal = false;

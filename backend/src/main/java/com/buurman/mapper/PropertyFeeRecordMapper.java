@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.buurman.domain.PropertyFee;
 import com.buurman.jooq.generated.tables.records.PropertyFeesRecord;
-import com.buurman.util.CurrencyUtils;
+import com.buurman.util.MoneyAmount;
 
 @Component
 public class PropertyFeeRecordMapper {
@@ -26,8 +26,7 @@ public class PropertyFeeRecordMapper {
     fee.setTeamId(record.getTeamId());
     fee.setFeeType(PropertyFee.FeeType.valueOf(record.getFeeType()));
     fee.setName(Optional.ofNullable(record.getName()));
-    fee.setAnnualAmount(CurrencyUtils.toMajorUnits(record.getAnnualAmount(), record.getCurrency()));
-    fee.setCurrency(record.getCurrency());
+    fee.setAnnualAmount(MoneyAmount.of(record.getAnnualAmount(), record.getCurrency()));
     fee.setPaymentFrequency(record.getPaymentFrequency());
     fee.setDueMonths(Optional.ofNullable(record.getDueMonths()));
     fee.setStartDate(Optional.ofNullable(record.getStartDate()));

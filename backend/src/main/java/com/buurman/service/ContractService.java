@@ -148,12 +148,13 @@ public class ContractService {
     }
 
     // Validate currencies
-    validateCurrencyRequired(contract.getRentAmountCurrency(), contract.getRentAmount());
+    validateCurrencyRequired(contract.getRentAmount().currency(), contract.getRentAmount().value());
     validateCurrencyRequired(
-        contract.getDepositAmountCurrency().orElse(null), contract.getDepositAmount().orElse(null));
+        contract.getDepositAmount().map(com.buurman.util.MoneyAmount::currency).orElse(null),
+        contract.getDepositAmount().map(com.buurman.util.MoneyAmount::value).orElse(null));
     validateCurrencyRequired(
-        contract.getSecurityDepositCurrency().orElse(null),
-        contract.getSecurityDeposit().orElse(null));
+        contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::currency).orElse(null),
+        contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::value).orElse(null));
 
     Contract savedContract = contractRepository.save(contract);
 
@@ -167,9 +168,9 @@ public class ContractService {
     metricsService.incrementCounter("contract.total");
     metricsService.recordHistogram(
         "contract.rent.amount",
-        savedContract.getRentAmount().doubleValue(),
+        savedContract.getRentAmount().value().doubleValue(),
         "currency",
-        savedContract.getRentAmountCurrency());
+        savedContract.getRentAmount().currency());
 
     log.info(
         "Contract created: {} for property {} in team {}",
@@ -192,7 +193,8 @@ public class ContractService {
     contractVars.put("propertyName", propertyName);
     contractVars.put("tenantName", tenantName);
     contractVars.put(
-        "rentAmount", savedContract.getRentAmountCurrency() + " " + savedContract.getRentAmount());
+        "rentAmount",
+        savedContract.getRentAmount().currency() + " " + savedContract.getRentAmount().value());
     contractVars.put("startDate", savedContract.getStartDate().toString());
     contractVars.put("endDate", savedContract.getEndDate().map(LocalDate::toString).orElse(""));
     contractVars.put("baseUrl", appProperties.email().baseUrl());
@@ -298,9 +300,6 @@ public class ContractService {
             contract.getRentAmount(),
             contract.getDepositAmount(),
             contract.getSecurityDeposit(),
-            contract.getRentAmountCurrency(),
-            contract.getDepositAmountCurrency(),
-            contract.getSecurityDepositCurrency(),
             contract.getPaymentFrequency(),
             contract.getPaymentDueDay(),
             contract.getAutoRenewal(),
@@ -349,17 +348,18 @@ public class ContractService {
     }
 
     // Validate currencies
-    validateCurrencyRequired(contract.getRentAmountCurrency(), contract.getRentAmount());
+    validateCurrencyRequired(contract.getRentAmount().currency(), contract.getRentAmount().value());
     validateCurrencyRequired(
-        contract.getDepositAmountCurrency().orElse(null), contract.getDepositAmount().orElse(null));
+        contract.getDepositAmount().map(com.buurman.util.MoneyAmount::currency).orElse(null),
+        contract.getDepositAmount().map(com.buurman.util.MoneyAmount::value).orElse(null));
     validateCurrencyRequired(
-        contract.getSecurityDepositCurrency().orElse(null),
-        contract.getSecurityDeposit().orElse(null));
+        contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::currency).orElse(null),
+        contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::value).orElse(null));
 
     Contract updatedContract = contractRepository.save(contract);
 
     // Update initial rent period if rent or start date changed on DRAFT
-    if (oldContract.getRentAmount().compareTo(updatedContract.getRentAmount()) != 0
+    if (!oldContract.getRentAmount().equals(updatedContract.getRentAmount())
         || !oldContract.getStartDate().equals(updatedContract.getStartDate())) {
       contractRentPeriodService.updateInitialRentPeriod(updatedContract, principal);
     }
@@ -383,32 +383,34 @@ public class ContractService {
     if (!oldContract.getSignedDate().equals(updatedContract.getSignedDate())) {
       changedFields.put("signedDate", updatedContract.getSignedDate().orElse(null));
     }
-    if (oldContract.getRentAmount().compareTo(updatedContract.getRentAmount()) != 0) {
-      changedFields.put("rentAmount", updatedContract.getRentAmount());
+    if (!oldContract.getRentAmount().equals(updatedContract.getRentAmount())) {
+      changedFields.put("rentAmount", updatedContract.getRentAmount().value());
+      changedFields.put("rentAmountCurrency", updatedContract.getRentAmount().currency());
     }
-    if (optionalBigDecimalNotEquals(
-        oldContract.getDepositAmount(), updatedContract.getDepositAmount())) {
-      changedFields.put("depositAmount", updatedContract.getDepositAmount().orElse(null));
-    }
-    if (optionalBigDecimalNotEquals(
-        oldContract.getSecurityDeposit(), updatedContract.getSecurityDeposit())) {
-      changedFields.put("securityDeposit", updatedContract.getSecurityDeposit().orElse(null));
-    }
-    if (!java.util.Objects.equals(
-        oldContract.getRentAmountCurrency(), updatedContract.getRentAmountCurrency())) {
-      changedFields.put("rentAmountCurrency", updatedContract.getRentAmountCurrency());
-    }
-    if (!oldContract
-        .getDepositAmountCurrency()
-        .equals(updatedContract.getDepositAmountCurrency())) {
+    if (!oldContract.getDepositAmount().equals(updatedContract.getDepositAmount())) {
       changedFields.put(
-          "depositAmountCurrency", updatedContract.getDepositAmountCurrency().orElse(null));
-    }
-    if (!oldContract
-        .getSecurityDepositCurrency()
-        .equals(updatedContract.getSecurityDepositCurrency())) {
+          "depositAmount",
+          updatedContract.getDepositAmount().map(com.buurman.util.MoneyAmount::value).orElse(null));
       changedFields.put(
-          "securityDepositCurrency", updatedContract.getSecurityDepositCurrency().orElse(null));
+          "depositAmountCurrency",
+          updatedContract
+              .getDepositAmount()
+              .map(com.buurman.util.MoneyAmount::currency)
+              .orElse(null));
+    }
+    if (!oldContract.getSecurityDeposit().equals(updatedContract.getSecurityDeposit())) {
+      changedFields.put(
+          "securityDeposit",
+          updatedContract
+              .getSecurityDeposit()
+              .map(com.buurman.util.MoneyAmount::value)
+              .orElse(null));
+      changedFields.put(
+          "securityDepositCurrency",
+          updatedContract
+              .getSecurityDeposit()
+              .map(com.buurman.util.MoneyAmount::currency)
+              .orElse(null));
     }
     if (!oldContract.getPaymentFrequency().equals(updatedContract.getPaymentFrequency())) {
       changedFields.put("paymentFrequency", updatedContract.getPaymentFrequency());
@@ -515,9 +517,6 @@ public class ContractService {
             contract.getRentAmount(),
             contract.getDepositAmount(),
             contract.getSecurityDeposit(),
-            contract.getRentAmountCurrency(),
-            contract.getDepositAmountCurrency(),
-            contract.getSecurityDepositCurrency(),
             contract.getPaymentFrequency(),
             contract.getPaymentDueDay(),
             contract.getAutoRenewal(),
@@ -635,9 +634,6 @@ public class ContractService {
             contract.getRentAmount(),
             contract.getDepositAmount(),
             contract.getSecurityDeposit(),
-            contract.getRentAmountCurrency(),
-            contract.getDepositAmountCurrency(),
-            contract.getSecurityDepositCurrency(),
             contract.getPaymentFrequency(),
             contract.getPaymentDueDay(),
             contract.getAutoRenewal(),
@@ -733,9 +729,6 @@ public class ContractService {
             sourceContract.getRentAmount(),
             sourceContract.getDepositAmount(),
             sourceContract.getSecurityDeposit(),
-            sourceContract.getRentAmountCurrency(),
-            sourceContract.getDepositAmountCurrency(),
-            sourceContract.getSecurityDepositCurrency(),
             sourceContract.getPaymentFrequency(),
             sourceContract.getPaymentDueDay(),
             sourceContract.getAutoRenewal(),
@@ -895,12 +888,12 @@ public class ContractService {
         contract.getStartDate(),
         contract.getEndDate(),
         contract.getSignedDate(),
-        contract.getRentAmount(),
-        contract.getDepositAmount(),
-        contract.getSecurityDeposit(),
-        contract.getRentAmountCurrency(),
-        contract.getDepositAmountCurrency(),
-        contract.getSecurityDepositCurrency(),
+        contract.getRentAmount().value(),
+        contract.getDepositAmount().map(com.buurman.util.MoneyAmount::value),
+        contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::value),
+        contract.getRentAmount().currency(),
+        contract.getDepositAmount().map(com.buurman.util.MoneyAmount::currency),
+        contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::currency),
         contract.getPaymentFrequency(),
         contract.getPaymentDueDay(),
         contract.getAutoRenewal(),
@@ -981,12 +974,12 @@ public class ContractService {
                   contract.getStartDate(),
                   contract.getEndDate(),
                   contract.getSignedDate(),
-                  contract.getRentAmount(),
-                  contract.getDepositAmount(),
-                  contract.getSecurityDeposit(),
-                  contract.getRentAmountCurrency(),
-                  contract.getDepositAmountCurrency(),
-                  contract.getSecurityDepositCurrency(),
+                  contract.getRentAmount().value(),
+                  contract.getDepositAmount().map(com.buurman.util.MoneyAmount::value),
+                  contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::value),
+                  contract.getRentAmount().currency(),
+                  contract.getDepositAmount().map(com.buurman.util.MoneyAmount::currency),
+                  contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::currency),
                   contract.getPaymentFrequency(),
                   contract.getPaymentDueDay(),
                   contract.getAutoRenewal(),

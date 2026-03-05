@@ -15,13 +15,13 @@ public class ContractRentPeriodMapper {
 
   public RentPeriodResponse toResponse(
       ContractRentPeriod period, Optional<BigDecimal> previousRentAmount) {
+    BigDecimal rentValue = period.getRentAmount().value();
     Optional<BigDecimal> percentageChange =
         previousRentAmount
             .filter(p -> p.compareTo(BigDecimal.ZERO) > 0)
             .map(
                 p ->
-                    period
-                        .getRentAmount()
+                    rentValue
                         .subtract(p)
                         .divide(p, 4, RoundingMode.HALF_UP)
                         .multiply(BigDecimal.valueOf(100))
@@ -29,8 +29,8 @@ public class ContractRentPeriodMapper {
 
     return new RentPeriodResponse(
         period.getIdentifier().orElseThrow(),
-        period.getRentAmount(),
-        period.getCurrency(),
+        rentValue,
+        period.getRentAmount().currency(),
         period.getEffectiveFrom(),
         period.getEffectiveTo(),
         period.getNotes(),
@@ -48,7 +48,7 @@ public class ContractRentPeriodMapper {
               // The "previous" period is the next item in the list (since list is DESC)
               Optional<BigDecimal> previousAmount =
                   (i + 1 < periods.size())
-                      ? Optional.of(periods.get(i + 1).getRentAmount())
+                      ? Optional.of(periods.get(i + 1).getRentAmount().value())
                       : Optional.empty();
               return toResponse(current, previousAmount);
             })

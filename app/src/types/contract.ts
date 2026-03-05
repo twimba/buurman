@@ -152,7 +152,7 @@ export interface RentPeriodResponse {
 export interface MetadataFieldSchema {
   name: string;
   label: string;
-  type: 'STRING' | 'INTEGER' | 'DECIMAL' | 'BOOLEAN' | 'ENUM';
+  type: 'STRING' | 'INTEGER' | 'DECIMAL' | 'MONEY' | 'BOOLEAN' | 'ENUM';
   required: boolean;
   enumValues: { value: string; label: string }[];
   validation: { min?: number; max?: number; pattern?: string };

@@ -32,7 +32,6 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.buurman.config.models.AppProperties;
-import com.buurman.util.CurrencyUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -193,8 +192,7 @@ public class DemoNotificationGenerator {
             contract.get(CONTRACTS.RENT_AMOUNT_CURRENCY) != null
                 ? contract.get(CONTRACTS.RENT_AMOUNT_CURRENCY)
                 : teamCurrency;
-        BigDecimal rentAmount =
-            CurrencyUtils.toMajorUnits(contract.get(CONTRACTS.RENT_AMOUNT), currency);
+        BigDecimal rentAmount = contract.get(CONTRACTS.RENT_AMOUNT);
 
         Map<String, Object> contractVars = new HashMap<>();
         contractVars.put("propertyName", propertyName);
@@ -292,11 +290,7 @@ public class DemoNotificationGenerator {
                 payment.get(PAYMENTS.CURRENCY) != null
                     ? payment.get(PAYMENTS.CURRENCY)
                     : teamCurrency;
-            String amount =
-                payCurrency
-                    + " "
-                    + CurrencyUtils.toMajorUnits(payment.get(PAYMENTS.AMOUNT), payCurrency)
-                        .toPlainString();
+            String amount = payCurrency + " " + payment.get(PAYMENTS.AMOUNT).toPlainString();
             String dueDate = payment.get(PAYMENTS.DUE_DATE).toString();
 
             Map<String, Object> vars =
@@ -389,11 +383,7 @@ public class DemoNotificationGenerator {
               payment.get(PAYMENTS.CURRENCY) != null
                   ? payment.get(PAYMENTS.CURRENCY)
                   : teamCurrency;
-          String amount =
-              rcptCurrency
-                  + " "
-                  + CurrencyUtils.toMajorUnits(payment.get(PAYMENTS.AMOUNT), rcptCurrency)
-                      .toPlainString();
+          String amount = rcptCurrency + " " + payment.get(PAYMENTS.AMOUNT).toPlainString();
           var paymentDate = payment.get(PAYMENTS.PAYMENT_DATE);
           Record admin = dsl.selectFrom(USERS).where(USERS.ID.eq(createdBy)).fetchOne();
           String adminEmail = admin != null ? admin.get(USERS.EMAIL) : "admin@demo.buurman.io";

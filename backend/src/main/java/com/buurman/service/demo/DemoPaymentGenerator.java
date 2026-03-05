@@ -6,6 +6,7 @@ import static com.buurman.jooq.generated.Tables.PAYMENT_RECEIVALS;
 import static com.buurman.util.SidGenerator.newPaymentId;
 import static com.buurman.util.SidGenerator.newPaymentReceivalId;
 
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -61,7 +62,7 @@ public class DemoPaymentGenerator {
         }
 
         LocalDate startDate = contract.get(CONTRACTS.START_DATE);
-        Long rentAmount = contract.get(CONTRACTS.RENT_AMOUNT);
+        BigDecimal rentAmount = contract.get(CONTRACTS.RENT_AMOUNT);
         String frequency = contract.get(CONTRACTS.PAYMENT_FREQUENCY);
         int periodMonths = periodMonthsForFrequency(frequency);
 
@@ -161,7 +162,10 @@ public class DemoPaymentGenerator {
                 .set(PAYMENT_RECEIVALS.UPDATED_BY, createdBy)
                 .execute();
           } else if ("PARTIALLY_PAID".equals(paymentStatus)) {
-            long partialAmount = (long) (rentAmount * 0.6);
+            BigDecimal partialAmount =
+                rentAmount
+                    .multiply(new BigDecimal("0.6"))
+                    .setScale(0, java.math.RoundingMode.HALF_UP);
             dsl.insertInto(PAYMENT_RECEIVALS)
                 .set(PAYMENT_RECEIVALS.ID, UUID.randomUUID())
                 .set(PAYMENT_RECEIVALS.IDENTIFIER, newPaymentReceivalId())

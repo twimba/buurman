@@ -126,7 +126,7 @@ public class ReportService {
 
     // Calculate total income
     BigDecimal totalIncome =
-        payments.stream().map(Payment::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        payments.stream().map(p -> p.getAmount().value()).reduce(BigDecimal.ZERO, BigDecimal::add);
 
     // Calculate income by property
     Map<UUID, BigDecimal> incomeByProperty =
@@ -139,11 +139,11 @@ public class ReportService {
                             .orElseThrow(
                                 () ->
                                     new IllegalStateException("Property ID missing after filter")),
-                    reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)));
+                    reducing(BigDecimal.ZERO, p -> p.getAmount().value(), BigDecimal::add)));
 
     // Calculate total expenses
     BigDecimal totalExpenses =
-        expenses.stream().map(Expense::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        expenses.stream().map(e -> e.getAmount().value()).reduce(BigDecimal.ZERO, BigDecimal::add);
 
     // Calculate expenses by category
     List<CategoryExpenseSummary> expensesByCategory =
@@ -155,7 +155,7 @@ public class ReportService {
             .collect(
                 groupingBy(
                     Expense::getPropertyId,
-                    reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add)));
+                    reducing(BigDecimal.ZERO, e -> e.getAmount().value(), BigDecimal::add)));
 
     // Combine property data
     Set<UUID> allPropertyIds = new HashSet<>();
@@ -264,13 +264,13 @@ public class ReportService {
             .collect(
                 groupingBy(
                     p -> YearMonth.from(p.getPaymentDate().orElse(p.getDueDate())),
-                    reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)));
+                    reducing(BigDecimal.ZERO, p -> p.getAmount().value(), BigDecimal::add)));
     Map<YearMonth, BigDecimal> expensesByMonth =
         allExpenses.stream()
             .collect(
                 groupingBy(
                     e -> YearMonth.from(e.getExpenseDate()),
-                    reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add)));
+                    reducing(BigDecimal.ZERO, e -> e.getAmount().value(), BigDecimal::add)));
 
     List<IncomeTrendResponse.DataPoint> dataPoints = new ArrayList<>();
 
@@ -319,13 +319,13 @@ public class ReportService {
             .collect(
                 groupingBy(
                     p -> YearMonth.from(p.getPaymentDate().orElse(p.getDueDate())),
-                    reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)));
+                    reducing(BigDecimal.ZERO, p -> p.getAmount().value(), BigDecimal::add)));
     Map<YearMonth, BigDecimal> expensesByMonth =
         allExpenses.stream()
             .collect(
                 groupingBy(
                     e -> YearMonth.from(e.getExpenseDate()),
-                    reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add)));
+                    reducing(BigDecimal.ZERO, e -> e.getAmount().value(), BigDecimal::add)));
 
     List<IncomeTrendResponse.DataPoint> dataPoints = new ArrayList<>();
     YearMonth start = YearMonth.from(rangeStart);
@@ -360,14 +360,14 @@ public class ReportService {
             .toList();
 
     BigDecimal total =
-        expenses.stream().map(Expense::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        expenses.stream().map(e -> e.getAmount().value()).reduce(BigDecimal.ZERO, BigDecimal::add);
 
     Map<Expense.ExpenseCategory, BigDecimal> expensesByCategory =
         expenses.stream()
             .collect(
                 groupingBy(
                     Expense::getCategory,
-                    reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add)));
+                    reducing(BigDecimal.ZERO, e -> e.getAmount().value(), BigDecimal::add)));
 
     List<ExpenseBreakdownResponse.Category> categories =
         expensesByCategory.entrySet().stream()
@@ -421,14 +421,14 @@ public class ReportService {
                             .orElseThrow(
                                 () ->
                                     new IllegalStateException("Property ID missing after filter")),
-                    reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)));
+                    reducing(BigDecimal.ZERO, p -> p.getAmount().value(), BigDecimal::add)));
 
     Map<UUID, BigDecimal> expensesByProperty =
         expenses.stream()
             .collect(
                 groupingBy(
                     Expense::getPropertyId,
-                    reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add)));
+                    reducing(BigDecimal.ZERO, e -> e.getAmount().value(), BigDecimal::add)));
 
     Set<UUID> allPropertyIds = new HashSet<>();
     allPropertyIds.addAll(incomeByProperty.keySet());
@@ -572,13 +572,13 @@ public class ReportService {
             .toList();
 
     BigDecimal totalIncome =
-        payments.stream().map(Payment::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        payments.stream().map(p -> p.getAmount().value()).reduce(BigDecimal.ZERO, BigDecimal::add);
 
     // Get all expenses for the year
     List<Expense> expenses = expenseRepository.findByDateRange(startDate, endDate, teamId);
 
     BigDecimal totalExpenses =
-        expenses.stream().map(Expense::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        expenses.stream().map(e -> e.getAmount().value()).reduce(BigDecimal.ZERO, BigDecimal::add);
 
     BigDecimal netIncome = totalIncome.subtract(totalExpenses);
 
@@ -597,14 +597,14 @@ public class ReportService {
                             .orElseThrow(
                                 () ->
                                     new IllegalStateException("Property ID missing after filter")),
-                    reducing(BigDecimal.ZERO, Payment::getAmount, BigDecimal::add)));
+                    reducing(BigDecimal.ZERO, p -> p.getAmount().value(), BigDecimal::add)));
 
     Map<UUID, BigDecimal> expensesByProperty =
         expenses.stream()
             .collect(
                 groupingBy(
                     Expense::getPropertyId,
-                    reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add)));
+                    reducing(BigDecimal.ZERO, e -> e.getAmount().value(), BigDecimal::add)));
 
     Set<UUID> allPropertyIds = new HashSet<>();
     allPropertyIds.addAll(incomeByProperty.keySet());
@@ -689,7 +689,7 @@ public class ReportService {
             .collect(
                 groupingBy(
                     Expense::getCategory,
-                    reducing(BigDecimal.ZERO, Expense::getAmount, BigDecimal::add)));
+                    reducing(BigDecimal.ZERO, e -> e.getAmount().value(), BigDecimal::add)));
 
     Map<Expense.ExpenseCategory, Long> countsByCategory =
         expenses.stream().collect(groupingBy(Expense::getCategory, counting()));

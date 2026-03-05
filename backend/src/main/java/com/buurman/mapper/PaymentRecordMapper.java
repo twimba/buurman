@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Payment;
 import com.buurman.jooq.generated.tables.records.PaymentsRecord;
-import com.buurman.util.CurrencyUtils;
+import com.buurman.util.MoneyAmount;
 
 @Component
 public class PaymentRecordMapper {
@@ -24,8 +24,7 @@ public class PaymentRecordMapper {
     payment.setIdentifier(java.util.Optional.of(record.getIdentifier()));
     payment.setTeamId(record.getTeamId());
     payment.setContractId(record.getContractId());
-    payment.setAmount(CurrencyUtils.toMajorUnits(record.getAmount(), record.getCurrency()));
-    payment.setCurrency(record.getCurrency());
+    payment.setAmount(MoneyAmount.of(record.getAmount(), record.getCurrency()));
     payment.setPaymentDate(Optional.ofNullable(record.getPaymentDate()));
     payment.setDueDate(record.getDueDate());
     payment.setStatus(Payment.PaymentStatus.valueOf(record.getStatus()));
