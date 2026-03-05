@@ -55,7 +55,8 @@ export const VerifyEmailPage: React.FC = () => {
         );
       },
     });
-  }, [token, verifyTokenMutation, navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, navigate]);
 
   // Cooldown timer
   useEffect(() => {
