@@ -18,12 +18,19 @@ import { PublicBroadcastBanner } from '../components/common/BroadcastBanner';
 const DEMO_EMAIL = 'demo.user@demo.buurman.io';
 const DEMO_PASSWORD = 'buurman';
 
+const sanitizeRedirect = (url: string | null): string | null => {
+  if (!url || !url.startsWith('/') || url.startsWith('//') || url.includes('@')) {
+    return null;
+  }
+  return url;
+};
+
 const LoginPage: React.FC = () => {
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const isDemo = searchParams.get('demo') === 'true';
-  const redirect = searchParams.get('redirect');
+  const redirect = sanitizeRedirect(searchParams.get('redirect'));
   const [showPassword, setShowPassword] = React.useState(false);
 
   React.useEffect(() => {
