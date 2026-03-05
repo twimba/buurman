@@ -269,23 +269,9 @@ public class AuthService {
     verificationCodeRepository.markUsed(validCode.getId());
     userRepository.updateEmailVerifiedAt(userId);
 
-    // Send welcome notification now that email is verified
     user.setEmailVerifiedAt(Optional.of(clock.instant()));
-    user.getActiveTeamId()
-        .ifPresent(
-            welcomeTeamId ->
-                notificationService.send(
-                    SendNotificationRequest.builder()
-                        .teamId(welcomeTeamId)
-                        .notificationType(NotificationType.WELCOME)
-                        .recipientUserId(user.getId())
-                        .recipientEmail(user.getEmail())
-                        .recipientPhone(user.getPhone().orElse(null))
-                        .createdBy(user.getId())
-                        .templateName("welcome")
-                        .templateVariables(
-                            Map.of("userName", user.getFirstName(), "baseUrl", baseUrl))
-                        .build()));
+    sendWelcomeNotification(user);
+    log.info("Email verified via code for userId={}", userId);
 
     Optional<TeamMember> member = getActiveMembership(user);
     String teamIdentifier = resolveTeamIdentifier(member).orElse(null);
@@ -414,26 +400,54 @@ public class AuthService {
     }
   }
 
+  /**
+   * Verify email via one-click token link.
+   *
+   * <p>Note: email security scanners (e.g. Microsoft SafeLinks, Barracuda) may pre-fetch the
+   * verification link, consuming the one-time token before the user clicks it. The 6-digit code
+   * fallback in the same email mitigates this — users can always verify manually.
+   *
+   * <p>Timing attack note: token lookup is not constant-time, but the 256-bit (32-byte) token
+   * entropy makes brute-force infeasible regardless of timing side-channels.
+   */
   @Transactional
   public void verifyEmailByToken(String token) {
-    EmailVerificationCode validCode =
+    // Input validation: tokens are Base64url-encoded 32 bytes → max 43 chars (without padding)
+    if (token.length() > 64 || !token.matches("^[A-Za-z0-9_-]+$")) {
+      throw new VerificationCodeException("Invalid verification token format");
+    }
+
+    // Look up by token without validity constraints for idempotent double-click handling
+    EmailVerificationCode code =
         verificationCodeRepository
-            .findValidToken(token)
+            .findByToken(token)
             .orElseThrow(
                 () -> new VerificationCodeException("Invalid or expired verification link"));
 
-    User user = userRepository.getById(validCode.getUserId());
+    User user = userRepository.getById(code.getUserId());
 
+    // Idempotent: if already verified, silently succeed (double-click safe)
     if (user.getEmailVerifiedAt().isPresent()) {
-      // Already verified — silently succeed
       return;
     }
 
-    verificationCodeRepository.markUsed(validCode.getId());
-    userRepository.updateEmailVerifiedAt(validCode.getUserId());
+    // Token exists but is used or expired — reject
+    if (code.getUsedAt().isPresent()) {
+      throw new VerificationCodeException("This verification link has already been used");
+    }
+    if (code.getExpiresAt().isBefore(clock.instant())) {
+      throw new VerificationCodeException("This verification link has expired");
+    }
 
-    // Send welcome notification
+    verificationCodeRepository.markUsed(code.getId());
+    userRepository.updateEmailVerifiedAt(code.getUserId());
+
     user.setEmailVerifiedAt(Optional.of(clock.instant()));
+    sendWelcomeNotification(user);
+    log.info("Email verified via token for userId={}", code.getUserId());
+  }
+
+  private void sendWelcomeNotification(User user) {
     user.getActiveTeamId()
         .ifPresent(
             welcomeTeamId ->
