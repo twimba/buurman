@@ -9,6 +9,7 @@ import static java.time.temporal.ChronoUnit.MINUTES;
 
 import java.security.SecureRandom;
 import java.time.Clock;
+import java.util.Base64;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -255,8 +256,12 @@ public class AuthService {
   public UserResponse verifyEmail(UUID userId, String code) {
     User user = userRepository.getById(userId);
 
+    // Idempotent: if already verified, return current user (consistent with token path)
     if (user.getEmailVerifiedAt().isPresent()) {
-      throw new VerificationCodeException("Email is already verified");
+      Optional<TeamMember> member = getActiveMembership(user);
+      String teamIdentifier = resolveTeamIdentifier(member).orElse(null);
+      return userMapper.toResponse(
+          user, teamIdentifier, member.map(m -> m.getRole().name()).orElse(null));
     }
 
     EmailVerificationCode validCode =
@@ -267,24 +272,11 @@ public class AuthService {
 
     verificationCodeRepository.markUsed(validCode.getId());
     userRepository.updateEmailVerifiedAt(userId);
+    syncKeycloakEmailVerified(user);
 
-    // Send welcome notification now that email is verified
     user.setEmailVerifiedAt(Optional.of(clock.instant()));
-    user.getActiveTeamId()
-        .ifPresent(
-            welcomeTeamId ->
-                notificationService.send(
-                    SendNotificationRequest.builder()
-                        .teamId(welcomeTeamId)
-                        .notificationType(NotificationType.WELCOME)
-                        .recipientUserId(user.getId())
-                        .recipientEmail(user.getEmail())
-                        .recipientPhone(user.getPhone().orElse(null))
-                        .createdBy(user.getId())
-                        .templateName("welcome")
-                        .templateVariables(
-                            Map.of("userName", user.getFirstName(), "baseUrl", baseUrl))
-                        .build()));
+    sendWelcomeNotification(user);
+    log.info("Email verified via code for userId={}", userId);
 
     Optional<TeamMember> member = getActiveMembership(user);
     String teamIdentifier = resolveTeamIdentifier(member).orElse(null);
@@ -313,11 +305,19 @@ public class AuthService {
   }
 
   private void createAndSendVerificationCode(User user, String code) {
+    String token = generateVerificationToken();
+
     EmailVerificationCode verificationCode = new EmailVerificationCode();
     verificationCode.setUserId(user.getId());
     verificationCode.setCode(code);
+    verificationCode.setToken(Optional.of(token));
     verificationCode.setExpiresAt(clock.instant().plus(VERIFICATION_CODE_EXPIRY_MINUTES, MINUTES));
     verificationCodeRepository.save(verificationCode);
+
+    String verifyUrl =
+        baseUrl
+            + "/verify-email?token="
+            + java.net.URLEncoder.encode(token, java.nio.charset.StandardCharsets.UTF_8);
 
     user.getActiveTeamId()
         .ifPresent(
@@ -337,6 +337,8 @@ public class AuthService {
                                 user.getFirstName(),
                                 "verificationCode",
                                 code,
+                                "verifyUrl",
+                                verifyUrl,
                                 "expiresMinutes",
                                 15))
                         .build()));
@@ -406,8 +408,94 @@ public class AuthService {
     }
   }
 
+  /**
+   * Verify email via one-click token link.
+   *
+   * <p>Note: email security scanners (e.g. Microsoft SafeLinks, Barracuda) may pre-fetch the
+   * verification link, consuming the one-time token before the user clicks it. The 6-digit code
+   * fallback in the same email mitigates this — users can always verify manually.
+   *
+   * <p>Timing attack note: token lookup is not constant-time, but the 256-bit (32-byte) token
+   * entropy makes brute-force infeasible regardless of timing side-channels.
+   */
+  @Transactional
+  public void verifyEmailByToken(String token) {
+    // Input validation: tokens are Base64url-encoded 32 bytes → max 43 chars (without padding)
+    if (token.length() > 64 || !token.matches("^[A-Za-z0-9_-]+$")) {
+      throw new VerificationCodeException("Invalid verification token format");
+    }
+
+    // Look up by token without validity constraints for idempotent double-click handling
+    EmailVerificationCode code =
+        verificationCodeRepository
+            .findByToken(token)
+            .orElseThrow(
+                () -> new VerificationCodeException("Invalid or expired verification link"));
+
+    User user = userRepository.getById(code.getUserId());
+
+    // Idempotent: if already verified, silently succeed (double-click safe)
+    if (user.getEmailVerifiedAt().isPresent()) {
+      return;
+    }
+
+    // Token exists but is used or expired — reject
+    if (code.getUsedAt().isPresent()) {
+      throw new VerificationCodeException("This verification link has already been used");
+    }
+    if (code.getExpiresAt().isBefore(clock.instant())) {
+      throw new VerificationCodeException("This verification link has expired");
+    }
+
+    // Atomically mark used — if 0 rows affected, another thread already consumed it
+    int updated = verificationCodeRepository.markUsed(code.getId());
+    if (updated == 0) {
+      return;
+    }
+
+    userRepository.updateEmailVerifiedAt(code.getUserId());
+    syncKeycloakEmailVerified(user);
+
+    user.setEmailVerifiedAt(Optional.of(clock.instant()));
+    sendWelcomeNotification(user);
+    log.info("Email verified via token for userId={}", code.getUserId());
+  }
+
+  private void syncKeycloakEmailVerified(User user) {
+    try {
+      keycloakService.verifyAppUser(user.getKeycloakId());
+    } catch (Exception e) {
+      // App DB is the source of truth — log but don't fail verification
+      log.warn("Failed to sync emailVerified to Keycloak for userId={}", user.getId(), e);
+    }
+  }
+
+  private void sendWelcomeNotification(User user) {
+    user.getActiveTeamId()
+        .ifPresent(
+            welcomeTeamId ->
+                notificationService.send(
+                    SendNotificationRequest.builder()
+                        .teamId(welcomeTeamId)
+                        .notificationType(NotificationType.WELCOME)
+                        .recipientUserId(user.getId())
+                        .recipientEmail(user.getEmail())
+                        .recipientPhone(user.getPhone().orElse(null))
+                        .createdBy(user.getId())
+                        .templateName("welcome")
+                        .templateVariables(
+                            Map.of("userName", user.getFirstName(), "baseUrl", baseUrl))
+                        .build()));
+  }
+
   private String generateVerificationCode() {
     return String.format("%06d", SECURE_RANDOM.nextInt(1_000_000));
+  }
+
+  private String generateVerificationToken() {
+    byte[] bytes = new byte[32];
+    SECURE_RANDOM.nextBytes(bytes);
+    return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
   }
 
   /**

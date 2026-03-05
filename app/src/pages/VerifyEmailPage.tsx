@@ -1,25 +1,34 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   useVerifyEmail,
+  useVerifyEmailByToken,
   useResendVerification,
   useCurrentUser,
 } from '../hooks/useAuthHooks';
-import { Mail, CheckCircle, AlertCircle } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { Mail, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 
 const RESEND_COOLDOWN_SECONDS = 60;
 
 export const VerifyEmailPage: React.FC = () => {
   const navigate = useNavigate();
-  const { data: user } = useCurrentUser();
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get('token');
+
+  const { isAuthenticated } = useAuth();
+  const { data: user } = useCurrentUser(isAuthenticated);
   const verifyMutation = useVerifyEmail();
+  const verifyTokenMutation = useVerifyEmailByToken();
   const resendMutation = useResendVerification();
 
   const [digits, setDigits] = useState<string[]>(['', '', '', '', '', '']);
   const [error, setError] = useState('');
   const [verified, setVerified] = useState(false);
+  const [tokenVerifying, setTokenVerifying] = useState(!!token);
   const [cooldown, setCooldown] = useState(0);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const tokenVerifiedRef = useRef(false);
 
   // Redirect if already verified
   useEffect(() => {
@@ -27,6 +36,32 @@ export const VerifyEmailPage: React.FC = () => {
       navigate('/dashboard', { replace: true });
     }
   }, [user, navigate]);
+
+  // Auto-verify via token
+  useEffect(() => {
+    if (!token || tokenVerifiedRef.current) {
+      return;
+    }
+    tokenVerifiedRef.current = true;
+
+    verifyTokenMutation.mutate(token, {
+      onSuccess: () => {
+        setVerified(true);
+        setTokenVerifying(false);
+        setTimeout(() => navigate('/dashboard', { replace: true }), 2000);
+      },
+      onError: (err: unknown) => {
+        setTokenVerifying(false);
+        const error = err as { response?: { data?: { message?: string } } };
+        setError(
+          error.response?.data?.message ||
+            'This verification link is invalid or has expired. Please enter the code manually or request a new one.'
+        );
+      },
+    });
+    // verifyTokenMutation excluded — not referentially stable, tokenVerifiedRef guards double-fire
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, navigate]);
 
   // Cooldown timer
   useEffect(() => {
@@ -110,6 +145,22 @@ export const VerifyEmailPage: React.FC = () => {
       // Error handled by hook
     }
   };
+
+  if (tokenVerifying) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-50">
+        <div className="w-full max-w-md p-8">
+          <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+            <Loader2 className="h-12 w-12 text-blue-600 animate-spin mx-auto mb-5" />
+            <h2 className="text-2xl font-bold text-[#1a1d2e] mb-2">
+              Verifying your email...
+            </h2>
+            <p className="text-[#6b7194]">Please wait a moment.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (verified) {
     return (

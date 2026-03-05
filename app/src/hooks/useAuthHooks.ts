@@ -46,6 +46,16 @@ export const useVerifyEmail = () => {
   });
 };
 
+export const useVerifyEmailByToken = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: authApi.verifyEmailByToken,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+    },
+  });
+};
+
 export const useResendVerification = () => {
   const { showToast } = useToast();
   return useMutation({

@@ -32,6 +32,7 @@ public class EmailVerificationCodeRepository {
         .set(EMAIL_VERIFICATION_CODES.ID, id)
         .set(EMAIL_VERIFICATION_CODES.USER_ID, code.getUserId())
         .set(EMAIL_VERIFICATION_CODES.CODE, code.getCode())
+        .set(EMAIL_VERIFICATION_CODES.TOKEN, code.getToken().orElse(null))
         .set(EMAIL_VERIFICATION_CODES.EXPIRES_AT, LocalDateTime.ofInstant(code.getExpiresAt(), UTC))
         .set(EMAIL_VERIFICATION_CODES.CREATED_AT, createdAt)
         .execute();
@@ -51,17 +52,15 @@ public class EmailVerificationCodeRepository {
         .orderBy(EMAIL_VERIFICATION_CODES.CREATED_AT.desc())
         .limit(1)
         .fetchOptional()
-        .map(
-            record -> {
-              EmailVerificationCode evc = new EmailVerificationCode();
-              evc.setId(record.getId());
-              evc.setUserId(record.getUserId());
-              evc.setCode(record.getCode());
-              evc.setExpiresAt(record.getExpiresAt().toInstant(UTC));
-              evc.setUsedAt(Optional.ofNullable(record.getUsedAt()).map(v -> v.toInstant(UTC)));
-              evc.setCreatedAt(record.getCreatedAt().toInstant(UTC));
-              return evc;
-            });
+        .map(this::mapRecord);
+  }
+
+  public Optional<EmailVerificationCode> findByToken(String token) {
+    return dsl.selectFrom(EMAIL_VERIFICATION_CODES)
+        .where(EMAIL_VERIFICATION_CODES.TOKEN.eq(token))
+        .limit(1)
+        .fetchOptional()
+        .map(this::mapRecord);
   }
 
   public void invalidateAllForUser(UUID userId) {
@@ -99,13 +98,26 @@ public class EmailVerificationCodeRepository {
         .execute();
   }
 
-  public void markUsed(UUID id) {
+  public int markUsed(UUID id) {
     LocalDateTime now = LocalDateTime.now(clock);
 
-    dsl.update(EMAIL_VERIFICATION_CODES)
+    return dsl.update(EMAIL_VERIFICATION_CODES)
         .set(EMAIL_VERIFICATION_CODES.USED_AT, now)
         .where(EMAIL_VERIFICATION_CODES.ID.eq(id))
         .and(EMAIL_VERIFICATION_CODES.USED_AT.isNull())
         .execute();
+  }
+
+  private EmailVerificationCode mapRecord(
+      com.buurman.jooq.generated.tables.records.EmailVerificationCodesRecord record) {
+    EmailVerificationCode evc = new EmailVerificationCode();
+    evc.setId(record.getId());
+    evc.setUserId(record.getUserId());
+    evc.setCode(record.getCode());
+    evc.setToken(Optional.ofNullable(record.getToken()));
+    evc.setExpiresAt(record.getExpiresAt().toInstant(UTC));
+    evc.setUsedAt(Optional.ofNullable(record.getUsedAt()).map(v -> v.toInstant(UTC)));
+    evc.setCreatedAt(record.getCreatedAt().toInstant(UTC));
+    return evc;
   }
 }

@@ -48,4 +48,9 @@ public class AuthController implements AuthenticationApi {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     authService.resendVerificationCode(principal.getUserId());
   }
+
+  @Override
+  public void verifyEmailByToken(String token) {
+    authService.verifyEmailByToken(token);
+  }
 }

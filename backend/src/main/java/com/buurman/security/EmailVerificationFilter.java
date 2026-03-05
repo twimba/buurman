@@ -23,7 +23,11 @@ import lombok.RequiredArgsConstructor;
 public class EmailVerificationFilter extends OncePerRequestFilter {
 
   private static final Set<String> ALLOWED_PATHS =
-      Set.of("/auth/me", "/auth/verify-email", "/auth/resend-verification");
+      Set.of(
+          "/auth/me",
+          "/auth/verify-email",
+          "/auth/verify-email-token",
+          "/auth/resend-verification");
 
   private final ObjectMapper objectMapper;
   private final Clock clock;

@@ -18,18 +18,31 @@ import { PublicBroadcastBanner } from '../components/common/BroadcastBanner';
 const DEMO_EMAIL = 'demo.user@demo.buurman.io';
 const DEMO_PASSWORD = 'buurman';
 
+const sanitizeRedirect = (url: string | null): string | null => {
+  if (
+    !url ||
+    !url.startsWith('/') ||
+    url.startsWith('//') ||
+    url.includes('@')
+  ) {
+    return null;
+  }
+  return url;
+};
+
 const LoginPage: React.FC = () => {
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const isDemo = searchParams.get('demo') === 'true';
+  const redirect = sanitizeRedirect(searchParams.get('redirect'));
   const [showPassword, setShowPassword] = React.useState(false);
 
   React.useEffect(() => {
     if (isAuthenticated) {
-      navigate('/dashboard');
+      navigate(redirect || '/dashboard');
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, redirect]);
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-[#f0f4ff] via-white to-[#f8f9fc]">
@@ -236,7 +249,13 @@ const LoginPage: React.FC = () => {
                 </div>
 
                 <button
-                  onClick={() => login()}
+                  onClick={() =>
+                    login(
+                      redirect
+                        ? `${window.location.origin}${redirect}`
+                        : undefined
+                    )
+                  }
                   className="group w-full bg-gradient-to-r from-[#4263eb] to-[#5c7cfa] text-white py-3.5 px-6 rounded-xl hover:from-[#3b5bdb] hover:to-[#4c6ef5] transition-all duration-200 font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                 >
                   <LogIn className="h-5 w-5" />

@@ -125,6 +125,8 @@ public class SecurityConfig {
                     .permitAll()
                     .requestMatchers(GET, "/invitations/*")
                     .permitAll()
+                    .requestMatchers(GET, "/auth/verify-email-token")
+                    .permitAll()
                     .requestMatchers(GET, "/calendar/ical/*")
                     .permitAll()
                     .requestMatchers("/webhooks/**")

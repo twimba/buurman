@@ -228,6 +228,10 @@ public class KeycloakService {
     deleteUserInRealm(keycloakUserId, backofficeRealm);
   }
 
+  public void verifyAppUser(String keycloakUserId) {
+    setEmailVerified(keycloakUserId, realm, true);
+  }
+
   public void verifyBackofficeUser(String keycloakUserId) {
     setEmailVerified(keycloakUserId, backofficeRealm, true);
   }

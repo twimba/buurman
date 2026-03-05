@@ -58,6 +58,10 @@ export const verifyEmail = async (code: string): Promise<UserResponse> => {
   return response.data;
 };
 
+export const verifyEmailByToken = async (token: string): Promise<void> => {
+  await client.get('/auth/verify-email-token', { params: { token } });
+};
+
 export const resendVerificationCode = async (): Promise<void> => {
   await client.post('/auth/resend-verification');
 };
