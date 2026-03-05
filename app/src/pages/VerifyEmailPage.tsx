@@ -6,6 +6,7 @@ import {
   useResendVerification,
   useCurrentUser,
 } from '../hooks/useAuthHooks';
+import { useAuth } from '../contexts/AuthContext';
 import { Mail, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 
 const RESEND_COOLDOWN_SECONDS = 60;
@@ -15,7 +16,8 @@ export const VerifyEmailPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
 
-  const { data: user } = useCurrentUser();
+  const { isAuthenticated } = useAuth();
+  const { data: user } = useCurrentUser(isAuthenticated);
   const verifyMutation = useVerifyEmail();
   const verifyTokenMutation = useVerifyEmailByToken();
   const resendMutation = useResendVerification();
@@ -48,13 +50,16 @@ export const VerifyEmailPage: React.FC = () => {
         setTokenVerifying(false);
         setTimeout(() => navigate('/dashboard', { replace: true }), 2000);
       },
-      onError: () => {
+      onError: (err: unknown) => {
         setTokenVerifying(false);
+        const error = err as { response?: { data?: { message?: string } } };
         setError(
-          'This verification link is invalid or has expired. Please enter the code manually or request a new one.'
+          error.response?.data?.message ||
+            'This verification link is invalid or has expired. Please enter the code manually or request a new one.'
         );
       },
     });
+    // verifyTokenMutation excluded — not referentially stable, tokenVerifiedRef guards double-fire
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, navigate]);
 
