@@ -348,6 +348,11 @@ services:
       - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.routers.backend.tls=true"
       - "traefik.http.routers.backend.priority=100"
+      - "traefik.http.routers.backend-calendar.rule=Host(`app.local.buurman.io`) && PathPrefix(`/calendar/`)"
+      - "traefik.http.routers.backend-calendar.entrypoints=websecure"
+      - "traefik.http.routers.backend-calendar.tls=true"
+      - "traefik.http.routers.backend-calendar.priority=200"
+      - "traefik.http.routers.backend-calendar.service=backend"
       - "traefik.http.services.backend.loadbalancer.server.port=8081"
     depends_on:
       postgres:
