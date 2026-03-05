@@ -16,8 +16,6 @@ import java.util.UUID;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Component;
 
-import com.buurman.util.CurrencyUtils;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.datafaker.Faker;
@@ -132,7 +130,7 @@ public class DemoExpenseGenerator {
               .set(EXPENSES.TEAM_ID, teamId)
               .set(EXPENSES.PROPERTY_ID, propertyId)
               .set(EXPENSES.CATEGORY, category)
-              .set(EXPENSES.AMOUNT, CurrencyUtils.toMinorUnits(amount, currency))
+              .set(EXPENSES.AMOUNT, amount)
               .set(EXPENSES.CURRENCY, currency)
               .set(EXPENSES.EXPENSE_DATE, expenseDate)
               .set(EXPENSES.DESCRIPTION, description)

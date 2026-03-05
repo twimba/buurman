@@ -165,7 +165,7 @@ public class NotificationSchedulerService {
                                   Map.of(
                                       "userName", user.getFirstName(),
                                       "propertyName", propertyName,
-                                      "amount", formatCurrency(payment.getAmount()),
+                                      "amount", formatCurrency(payment.getAmount().value()),
                                       "dueDate", formatDate(payment.getDueDate()),
                                       "baseUrl", appProperties.email().baseUrl()))
                               .createdBy(SYSTEM_USER_ID)

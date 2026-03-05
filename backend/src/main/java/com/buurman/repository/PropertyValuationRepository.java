@@ -16,7 +16,6 @@ import com.buurman.domain.PropertyValuation;
 import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.PropertyValuationRecordMapper;
-import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -87,7 +86,6 @@ public class PropertyValuationRepository {
       LocalDateTime updatedAt =
           val.getUpdatedAt() != null ? LocalDateTime.ofInstant(val.getUpdatedAt(), UTC) : now;
 
-      String currency = val.getCurrency();
       dsl.insertInto(PROPERTY_VALUATIONS)
           .set(PROPERTY_VALUATIONS.ID, id)
           .set(PROPERTY_VALUATIONS.IDENTIFIER, val.getIdentifier().orElseThrow())
@@ -95,8 +93,8 @@ public class PropertyValuationRepository {
           .set(PROPERTY_VALUATIONS.TEAM_ID, val.getTeamId())
           .set(PROPERTY_VALUATIONS.VALUATION_TYPE, val.getValuationType().name())
           .set(PROPERTY_VALUATIONS.VALUATION_DATE, val.getValuationDate())
-          .set(PROPERTY_VALUATIONS.AMOUNT, CurrencyUtils.toMinorUnits(val.getAmount(), currency))
-          .set(PROPERTY_VALUATIONS.CURRENCY, currency)
+          .set(PROPERTY_VALUATIONS.AMOUNT, val.getAmount().value())
+          .set(PROPERTY_VALUATIONS.CURRENCY, val.getAmount().currency())
           .set(PROPERTY_VALUATIONS.SOURCE, val.getSource().orElse(null))
           .set(PROPERTY_VALUATIONS.NOTES, val.getNotes().orElse(null))
           .set(PROPERTY_VALUATIONS.CREATED_AT, createdAt)
@@ -113,12 +111,11 @@ public class PropertyValuationRepository {
       LocalDateTime updatedAt =
           val.getUpdatedAt() != null ? LocalDateTime.ofInstant(val.getUpdatedAt(), UTC) : now;
 
-      String currency = val.getCurrency();
       dsl.update(PROPERTY_VALUATIONS)
           .set(PROPERTY_VALUATIONS.VALUATION_TYPE, val.getValuationType().name())
           .set(PROPERTY_VALUATIONS.VALUATION_DATE, val.getValuationDate())
-          .set(PROPERTY_VALUATIONS.AMOUNT, CurrencyUtils.toMinorUnits(val.getAmount(), currency))
-          .set(PROPERTY_VALUATIONS.CURRENCY, currency)
+          .set(PROPERTY_VALUATIONS.AMOUNT, val.getAmount().value())
+          .set(PROPERTY_VALUATIONS.CURRENCY, val.getAmount().currency())
           .set(PROPERTY_VALUATIONS.SOURCE, val.getSource().orElse(null))
           .set(PROPERTY_VALUATIONS.NOTES, val.getNotes().orElse(null))
           .set(PROPERTY_VALUATIONS.UPDATED_AT, updatedAt)

@@ -428,11 +428,11 @@ public class CalendarFeedService {
       @Nullable Property property,
       @Nullable Tenant tenant) {
     StringBuilder desc = new StringBuilder();
-    String currency = payment.getCurrency();
+    String currency = payment.getAmount().currency();
     desc.append("Amount: ")
         .append(currency)
         .append(" ")
-        .append(payment.getAmount().toPlainString());
+        .append(payment.getAmount().value().toPlainString());
     if (tenant != null) {
       desc.append("\\nTenant: ").append(tenant.getFirstName());
       tenant.getLastName().ifPresent(n -> desc.append(" ").append(n));

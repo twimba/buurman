@@ -23,10 +23,15 @@ public interface ExpenseMapper {
   @Mapping(target = "createdBy", ignore = true)
   @Mapping(target = "updatedBy", ignore = true)
   @Mapping(target = "deletedAt", ignore = true)
+  @Mapping(
+      target = "amount",
+      expression = "java(com.buurman.util.MoneyAmount.of(request.amount(), request.currency()))")
   Expense toEntity(CreateExpenseRequest request);
 
   @Mapping(target = "property", ignore = true)
   @Mapping(target = "documents", ignore = true)
+  @Mapping(target = "amount", expression = "java(expense.getAmount().value())")
+  @Mapping(target = "currency", expression = "java(expense.getAmount().currency())")
   ExpenseResponse toResponse(Expense expense);
 
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -39,5 +44,10 @@ public interface ExpenseMapper {
   @Mapping(target = "createdBy", ignore = true)
   @Mapping(target = "updatedBy", ignore = true)
   @Mapping(target = "deletedAt", ignore = true)
+  @Mapping(
+      target = "amount",
+      expression =
+          "java(com.buurman.util.MoneyAmount.of(request.amount().orElse(expense.getAmount().value()),"
+              + " request.currency().orElse(expense.getAmount().currency())))")
   void updateEntity(@MappingTarget Expense expense, UpdateExpenseRequest request);
 }

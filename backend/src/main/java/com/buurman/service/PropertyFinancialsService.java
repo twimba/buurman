@@ -16,7 +16,6 @@ import com.buurman.domain.PropertyFee;
 import com.buurman.domain.PropertyFinancing;
 import com.buurman.domain.PropertyInsurance;
 import com.buurman.domain.PropertyTax;
-import com.buurman.domain.PropertyValuation;
 import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.response.PropertyFinancialSummaryResponse;
 import com.buurman.repository.PropertyAcquisitionRepository;
@@ -115,7 +114,7 @@ public class PropertyFinancialsService {
     }
     return Optional.of(
         active.stream()
-            .map(f -> f.getCurrentBalance().orElse(f.getOriginalAmount()))
+            .map(f -> f.getCurrentBalance().orElse(f.getOriginalAmount().value()))
             .reduce(ZERO, BigDecimal::add));
   }
 
@@ -145,7 +144,7 @@ public class PropertyFinancialsService {
       return Optional.empty();
     }
     return Optional.of(
-        active.stream().map(PropertyInsurance::getAnnualPremium).reduce(ZERO, BigDecimal::add));
+        active.stream().map(i -> i.getAnnualPremium().value()).reduce(ZERO, BigDecimal::add));
   }
 
   public Optional<BigDecimal> sumActiveAnnualTaxes(UUID propertyId, UUID teamId) {
@@ -154,7 +153,7 @@ public class PropertyFinancialsService {
       return Optional.empty();
     }
     return Optional.of(
-        active.stream().map(PropertyTax::getAnnualAmount).reduce(ZERO, BigDecimal::add));
+        active.stream().map(t -> t.getAnnualAmount().value()).reduce(ZERO, BigDecimal::add));
   }
 
   public Optional<BigDecimal> sumActiveAnnualFees(UUID propertyId, UUID teamId) {
@@ -163,13 +162,13 @@ public class PropertyFinancialsService {
       return Optional.empty();
     }
     return Optional.of(
-        active.stream().map(PropertyFee::getAnnualAmount).reduce(ZERO, BigDecimal::add));
+        active.stream().map(f -> f.getAnnualAmount().value()).reduce(ZERO, BigDecimal::add));
   }
 
   public Optional<BigDecimal> getLatestValuationAmount(UUID propertyId, UUID teamId) {
     return valuationRepository
         .findLatestByPropertyIdAndTeamId(propertyId, teamId)
-        .map(PropertyValuation::getAmount);
+        .map(v -> v.getAmount().value());
   }
 
   /**
@@ -181,18 +180,20 @@ public class PropertyFinancialsService {
 
     // Taxes
     for (PropertyTax tax : taxRepository.findActiveByPropertyIdAndTeamId(propertyId, teamId)) {
-      distributeAnnualCost(monthMap, tax.getAnnualAmount(), tax.getDueMonths().orElse(null));
+      distributeAnnualCost(
+          monthMap, tax.getAnnualAmount().value(), tax.getDueMonths().orElse(null));
     }
 
     // Insurances
     for (PropertyInsurance ins :
         insuranceRepository.findActiveByPropertyIdAndTeamId(propertyId, teamId)) {
-      distributeAnnualCost(monthMap, ins.getAnnualPremium(), null);
+      distributeAnnualCost(monthMap, ins.getAnnualPremium().value(), null);
     }
 
     // Fees
     for (PropertyFee fee : feeRepository.findActiveByPropertyIdAndTeamId(propertyId, teamId)) {
-      distributeAnnualCost(monthMap, fee.getAnnualAmount(), fee.getDueMonths().orElse(null));
+      distributeAnnualCost(
+          monthMap, fee.getAnnualAmount().value(), fee.getDueMonths().orElse(null));
     }
 
     return monthMap;

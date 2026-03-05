@@ -74,8 +74,7 @@ public class ContractRentPeriodService {
     var previousPeriod =
         rentPeriodRepository.findPreviousPeriod(
             contract.getId(), teamId, request.effectiveFrom().plusDays(1));
-    BigDecimal previousRentAmount =
-        previousPeriod.map(ContractRentPeriod::getRentAmount).orElse(null);
+    BigDecimal previousRentAmount = previousPeriod.map(p -> p.getRentAmount().value()).orElse(null);
     previousPeriod.ifPresent(
         prev ->
             rentPeriodRepository.setEffectiveTo(
@@ -86,8 +85,8 @@ public class ContractRentPeriodService {
     period.setIdentifier(Optional.of(newContractRentPeriodId()));
     period.setTeamId(teamId);
     period.setContractId(contract.getId());
-    period.setRentAmount(request.rentAmount());
-    period.setCurrency(contract.getRentAmountCurrency());
+    period.setRentAmount(
+        com.buurman.util.MoneyAmount.of(request.rentAmount(), contract.getRentAmount().currency()));
     period.setEffectiveFrom(request.effectiveFrom());
     period.setEffectiveTo(Optional.empty());
     period.setNotes(request.notes());
@@ -177,10 +176,11 @@ public class ContractRentPeriodService {
     validateEffectiveFrom(contract, request.effectiveFrom());
 
     // Store old values for audit
-    BigDecimal oldRentAmount = period.getRentAmount();
+    BigDecimal oldRentAmount = period.getRentAmount().value();
     LocalDate oldEffectiveFrom = period.getEffectiveFrom();
 
-    period.setRentAmount(request.rentAmount());
+    period.setRentAmount(
+        com.buurman.util.MoneyAmount.of(request.rentAmount(), period.getRentAmount().currency()));
     period.setEffectiveFrom(request.effectiveFrom());
     period.setNotes(request.notes());
     period.setUpdatedBy(principal.getUserId());
@@ -222,7 +222,7 @@ public class ContractRentPeriodService {
 
     log.info("Rent period updated: {} in contract {}", periodIdentifier, contractIdentifier);
 
-    Optional<BigDecimal> prevAmount = previousPeriod.map(ContractRentPeriod::getRentAmount);
+    Optional<BigDecimal> prevAmount = previousPeriod.map(p -> p.getRentAmount().value());
     return rentPeriodMapper.toResponse(period, prevAmount);
   }
 
@@ -263,7 +263,7 @@ public class ContractRentPeriodService {
                 contract.getId(),
                 teamId,
                 period.getEffectiveFrom(),
-                contractRentPeriod.getRentAmount(),
+                contractRentPeriod.getRentAmount().value(),
                 principal.getUserId()));
 
     // Audit
@@ -280,7 +280,6 @@ public class ContractRentPeriodService {
     period.setTeamId(contract.getTeamId());
     period.setContractId(contract.getId());
     period.setRentAmount(contract.getRentAmount());
-    period.setCurrency(contract.getRentAmountCurrency());
     period.setEffectiveFrom(contract.getStartDate());
     period.setEffectiveTo(Optional.empty());
     period.setCreatedBy(principal.getUserId());
@@ -345,9 +344,10 @@ public class ContractRentPeriodService {
         rentPeriodRepository.findCurrentByContractIdAndTeamId(contract.getId(), teamId);
     currentPeriod.ifPresent(
         period -> {
-          BigDecimal currentRent = period.getRentAmount();
-          if (contract.getRentAmount().compareTo(currentRent) != 0) {
-            contract.setRentAmount(currentRent);
+          BigDecimal currentRent = period.getRentAmount().value();
+          if (contract.getRentAmount().value().compareTo(currentRent) != 0) {
+            contract.setRentAmount(
+                com.buurman.util.MoneyAmount.of(currentRent, contract.getRentAmount().currency()));
             contract.setUpdatedBy(userId);
             contract.setUpdatedAt(clock.instant());
             contractRepository.save(contract);
@@ -364,9 +364,10 @@ public class ContractRentPeriodService {
     List<Payment> pendingPayments =
         paymentRepository.findPendingByContractIdFromDate(contractId, teamId, fromDate);
     for (Payment payment : pendingPayments) {
-      if (payment.getAmount().compareTo(newAmount) != 0) {
-        BigDecimal oldAmount = payment.getAmount();
-        payment.setAmount(newAmount);
+      if (payment.getAmount().value().compareTo(newAmount) != 0) {
+        BigDecimal oldAmount = payment.getAmount().value();
+        payment.setAmount(
+            com.buurman.util.MoneyAmount.of(newAmount, payment.getAmount().currency()));
         payment.setUpdatedBy(userId);
         paymentRepository.save(payment);
 
@@ -411,8 +412,10 @@ public class ContractRentPeriodService {
       vars.put("tenantName", tenantName);
       vars.put(
           "oldRentAmount",
-          oldRentAmount != null ? contract.getRentAmountCurrency() + " " + oldRentAmount : "N/A");
-      vars.put("newRentAmount", contract.getRentAmountCurrency() + " " + newRentAmount);
+          oldRentAmount != null
+              ? contract.getRentAmount().currency() + " " + oldRentAmount
+              : "N/A");
+      vars.put("newRentAmount", contract.getRentAmount().currency() + " " + newRentAmount);
       vars.put("effectiveFrom", effectiveFrom.toString());
       vars.put("baseUrl", appProperties.email().baseUrl());
 

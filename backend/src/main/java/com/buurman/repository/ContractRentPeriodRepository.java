@@ -3,6 +3,7 @@ package com.buurman.repository;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Clock;
@@ -23,6 +24,7 @@ import com.buurman.domain.ContractRentPeriod;
 import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 import com.buurman.util.CurrencyUtils;
+import com.buurman.util.MoneyAmount;
 
 import lombok.RequiredArgsConstructor;
 
@@ -51,7 +53,6 @@ public class ContractRentPeriodRepository {
 
   public ContractRentPeriod save(ContractRentPeriod period) {
     LocalDateTime now = LocalDateTime.now(clock);
-    String currency = period.getCurrency();
     Timestamp createdAt = Timestamp.from(period.getCreatedAt());
     Timestamp updatedAt = Timestamp.from(period.getUpdatedAt());
 
@@ -62,8 +63,8 @@ public class ContractRentPeriodRepository {
           .set(IDENTIFIER, period.getIdentifier().orElseThrow().value())
           .set(TEAM_ID, period.getTeamId())
           .set(CONTRACT_ID, period.getContractId())
-          .set(RENT_AMOUNT, CurrencyUtils.toMinorUnits(period.getRentAmount(), currency))
-          .set(CURRENCY, currency)
+          .set(RENT_AMOUNT, period.getRentAmount().toMinorUnits())
+          .set(CURRENCY, period.getRentAmount().currency())
           .set(EFFECTIVE_FROM, Date.valueOf(period.getEffectiveFrom()))
           .set(EFFECTIVE_TO, period.getEffectiveTo().map(Date::valueOf).orElse(null))
           .set(NOTES, period.getNotes().orElse(null))
@@ -78,7 +79,7 @@ public class ContractRentPeriodRepository {
       period.setUpdatedAt(updatedAt.toInstant());
     } else {
       dsl.update(TABLE)
-          .set(RENT_AMOUNT, CurrencyUtils.toMinorUnits(period.getRentAmount(), currency))
+          .set(RENT_AMOUNT, period.getRentAmount().toMinorUnits())
           .set(EFFECTIVE_FROM, Date.valueOf(period.getEffectiveFrom()))
           .set(EFFECTIVE_TO, period.getEffectiveTo().map(Date::valueOf).orElse(null))
           .set(NOTES, period.getNotes().orElse(null))
@@ -193,8 +194,11 @@ public class ContractRentPeriodRepository {
     period.setIdentifier(java.util.Optional.of(com.buurman.domain.Sid.of(record.get(IDENTIFIER))));
     period.setTeamId(record.get(TEAM_ID));
     period.setContractId(record.get(CONTRACT_ID));
-    period.setRentAmount(CurrencyUtils.toMajorUnits(record.get(RENT_AMOUNT), currency));
-    period.setCurrency(currency);
+    Long minorUnits = record.get(RENT_AMOUNT);
+    int digits = CurrencyUtils.getFractionalDigits(currency);
+    BigDecimal majorUnits =
+        minorUnits != null ? BigDecimal.valueOf(minorUnits, digits) : BigDecimal.ZERO;
+    period.setRentAmount(MoneyAmount.of(majorUnits, currency));
 
     Date effectiveFromVal = record.get(EFFECTIVE_FROM);
     if (effectiveFromVal != null) {

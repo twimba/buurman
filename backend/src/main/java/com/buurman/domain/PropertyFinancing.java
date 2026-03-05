@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.buurman.util.MoneyAmount;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -49,13 +51,10 @@ public class PropertyFinancing {
   private RateType rateType;
   @Builder.Default private Optional<String> lenderName = Optional.empty();
   @Builder.Default private Optional<String> loanNumber = Optional.empty();
-  private BigDecimal originalAmount;
-  private String originalAmountCurrency;
+  private MoneyAmount originalAmount;
   @Builder.Default private Optional<BigDecimal> currentBalance = Optional.empty();
-  @Builder.Default private Optional<String> currentBalanceCurrency = Optional.empty();
   @Builder.Default private Optional<BigDecimal> interestRate = Optional.empty();
   @Builder.Default private Optional<BigDecimal> monthlyPayment = Optional.empty();
-  @Builder.Default private Optional<String> monthlyPaymentCurrency = Optional.empty();
   private boolean paymentVariable;
   private LocalDate startDate;
   @Builder.Default private Optional<LocalDate> endDate = Optional.empty();

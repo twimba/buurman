@@ -23,8 +23,13 @@ public interface PropertyValuationMapper {
   @Mapping(target = "createdBy", ignore = true)
   @Mapping(target = "updatedBy", ignore = true)
   @Mapping(target = "deletedAt", ignore = true)
+  @Mapping(
+      target = "amount",
+      expression = "java(com.buurman.util.MoneyAmount.of(request.amount(), request.currency()))")
   PropertyValuation toEntity(CreatePropertyValuationRequest request);
 
+  @Mapping(target = "amount", expression = "java(valuation.getAmount().value())")
+  @Mapping(target = "currency", expression = "java(valuation.getAmount().currency())")
   PropertyValuationResponse toResponse(PropertyValuation valuation);
 
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -37,6 +42,11 @@ public interface PropertyValuationMapper {
   @Mapping(target = "createdBy", ignore = true)
   @Mapping(target = "updatedBy", ignore = true)
   @Mapping(target = "deletedAt", ignore = true)
+  @Mapping(
+      target = "amount",
+      expression =
+          "java(com.buurman.util.MoneyAmount.of(request.amount().orElse(valuation.getAmount().value()),"
+              + " request.currency().orElse(valuation.getAmount().currency())))")
   void updateEntity(
       @MappingTarget PropertyValuation valuation, UpdatePropertyValuationRequest request);
 }

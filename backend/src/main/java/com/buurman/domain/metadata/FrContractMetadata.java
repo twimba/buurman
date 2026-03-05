@@ -1,12 +1,12 @@
 package com.buurman.domain.metadata;
 
-import java.math.BigDecimal;
-
 import org.jspecify.annotations.Nullable;
 
+import com.buurman.util.MoneyAmount;
+
 public record FrContractMetadata(
-    @Nullable BigDecimal referenceRentPrice,
-    @Nullable BigDecimal maxRentPrice,
+    @Nullable MoneyAmount referenceRentPrice,
+    @Nullable MoneyAmount maxRentPrice,
     @Nullable Boolean zoneTendue,
     @Nullable Boolean loiAlurCompliant,
     @Nullable String diagnosticDpe,
@@ -16,6 +16,6 @@ public record FrContractMetadata(
     @Nullable Boolean electricityDiagnostic,
     @Nullable Boolean erpDiagnostic,
     @Nullable Boolean furnishedLease,
-    @Nullable BigDecimal cautionAmount,
+    @Nullable MoneyAmount cautionAmount,
     @Nullable Integer cautionMonths)
     implements ContractCountryMetadata {}

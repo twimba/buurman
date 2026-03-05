@@ -16,7 +16,6 @@ import com.buurman.domain.PropertyTax;
 import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.PropertyTaxRecordMapper;
-import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -91,7 +90,6 @@ public class PropertyTaxRepository {
       LocalDateTime updatedAt =
           tax.getUpdatedAt() != null ? LocalDateTime.ofInstant(tax.getUpdatedAt(), UTC) : now;
 
-      String currency = tax.getCurrency();
       dsl.insertInto(PROPERTY_TAXES)
           .set(PROPERTY_TAXES.ID, id)
           .set(PROPERTY_TAXES.IDENTIFIER, tax.getIdentifier().orElseThrow())
@@ -99,10 +97,8 @@ public class PropertyTaxRepository {
           .set(PROPERTY_TAXES.TEAM_ID, tax.getTeamId())
           .set(PROPERTY_TAXES.TAX_TYPE, tax.getTaxType().name())
           .set(PROPERTY_TAXES.AUTHORITY, tax.getAuthority().orElse(null))
-          .set(
-              PROPERTY_TAXES.ANNUAL_AMOUNT,
-              CurrencyUtils.toMinorUnits(tax.getAnnualAmount(), currency))
-          .set(PROPERTY_TAXES.CURRENCY, currency)
+          .set(PROPERTY_TAXES.ANNUAL_AMOUNT, tax.getAnnualAmount().value())
+          .set(PROPERTY_TAXES.CURRENCY, tax.getAnnualAmount().currency())
           .set(PROPERTY_TAXES.PAYMENT_FREQUENCY, tax.getPaymentFrequency())
           .set(PROPERTY_TAXES.DUE_MONTHS, tax.getDueMonths().orElse(null))
           .set(PROPERTY_TAXES.TAX_YEAR, tax.getTaxYear().orElse(null))
@@ -124,14 +120,11 @@ public class PropertyTaxRepository {
       LocalDateTime updatedAt =
           tax.getUpdatedAt() != null ? LocalDateTime.ofInstant(tax.getUpdatedAt(), UTC) : now;
 
-      String currency = tax.getCurrency();
       dsl.update(PROPERTY_TAXES)
           .set(PROPERTY_TAXES.TAX_TYPE, tax.getTaxType().name())
           .set(PROPERTY_TAXES.AUTHORITY, tax.getAuthority().orElse(null))
-          .set(
-              PROPERTY_TAXES.ANNUAL_AMOUNT,
-              CurrencyUtils.toMinorUnits(tax.getAnnualAmount(), currency))
-          .set(PROPERTY_TAXES.CURRENCY, currency)
+          .set(PROPERTY_TAXES.ANNUAL_AMOUNT, tax.getAnnualAmount().value())
+          .set(PROPERTY_TAXES.CURRENCY, tax.getAnnualAmount().currency())
           .set(PROPERTY_TAXES.PAYMENT_FREQUENCY, tax.getPaymentFrequency())
           .set(PROPERTY_TAXES.DUE_MONTHS, tax.getDueMonths().orElse(null))
           .set(PROPERTY_TAXES.TAX_YEAR, tax.getTaxYear().orElse(null))

@@ -23,9 +23,15 @@ public interface PropertyFeeMapper {
   @Mapping(target = "createdBy", ignore = true)
   @Mapping(target = "updatedBy", ignore = true)
   @Mapping(target = "deletedAt", ignore = true)
+  @Mapping(
+      target = "annualAmount",
+      expression =
+          "java(com.buurman.util.MoneyAmount.of(request.annualAmount(), request.currency()))")
   PropertyFee toEntity(CreatePropertyFeeRequest request);
 
   @Mapping(target = "property", ignore = true)
+  @Mapping(target = "annualAmount", expression = "java(fee.getAnnualAmount().value())")
+  @Mapping(target = "currency", expression = "java(fee.getAnnualAmount().currency())")
   PropertyFeeResponse toResponse(PropertyFee fee);
 
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -38,5 +44,10 @@ public interface PropertyFeeMapper {
   @Mapping(target = "createdBy", ignore = true)
   @Mapping(target = "updatedBy", ignore = true)
   @Mapping(target = "deletedAt", ignore = true)
+  @Mapping(
+      target = "annualAmount",
+      expression =
+          "java(com.buurman.util.MoneyAmount.of(request.annualAmount().orElse(fee.getAnnualAmount().value()),"
+              + " request.currency().orElse(fee.getAnnualAmount().currency())))")
   void updateEntity(@MappingTarget PropertyFee fee, UpdatePropertyFeeRequest request);
 }

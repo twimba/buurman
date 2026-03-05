@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.buurman.domain.PropertyFinancing;
 import com.buurman.jooq.generated.tables.records.PropertyFinancingsRecord;
-import com.buurman.util.CurrencyUtils;
+import com.buurman.util.MoneyAmount;
 
 @Component
 public class PropertyFinancingRecordMapper {
@@ -29,19 +29,10 @@ public class PropertyFinancingRecordMapper {
     financing.setLenderName(Optional.ofNullable(record.getLenderName()));
     financing.setLoanNumber(Optional.ofNullable(record.getLoanNumber()));
     financing.setOriginalAmount(
-        CurrencyUtils.toMajorUnits(record.getOriginalAmount(), record.getOriginalAmountCurrency()));
-    financing.setOriginalAmountCurrency(record.getOriginalAmountCurrency());
-    financing.setCurrentBalance(
-        Optional.ofNullable(
-            CurrencyUtils.toMajorUnitsOrNull(
-                record.getCurrentBalance(), record.getCurrentBalanceCurrency())));
-    financing.setCurrentBalanceCurrency(Optional.ofNullable(record.getCurrentBalanceCurrency()));
+        MoneyAmount.of(record.getOriginalAmount(), record.getOriginalAmountCurrency()));
+    financing.setCurrentBalance(Optional.ofNullable(record.getCurrentBalance()));
     financing.setInterestRate(Optional.ofNullable(record.getInterestRate()));
-    financing.setMonthlyPayment(
-        Optional.ofNullable(
-            CurrencyUtils.toMajorUnitsOrNull(
-                record.getMonthlyPayment(), record.getMonthlyPaymentCurrency())));
-    financing.setMonthlyPaymentCurrency(Optional.ofNullable(record.getMonthlyPaymentCurrency()));
+    financing.setMonthlyPayment(Optional.ofNullable(record.getMonthlyPayment()));
     financing.setPaymentVariable(Boolean.TRUE.equals(record.getPaymentVariable()));
     financing.setStartDate(record.getStartDate());
     financing.setEndDate(Optional.ofNullable(record.getEndDate()));

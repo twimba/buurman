@@ -16,7 +16,6 @@ import com.buurman.domain.PropertyFee;
 import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.PropertyFeeRecordMapper;
-import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -91,7 +90,6 @@ public class PropertyFeeRepository {
       LocalDateTime updatedAt =
           fee.getUpdatedAt() != null ? LocalDateTime.ofInstant(fee.getUpdatedAt(), UTC) : now;
 
-      String currency = fee.getCurrency();
       dsl.insertInto(PROPERTY_FEES)
           .set(PROPERTY_FEES.ID, id)
           .set(PROPERTY_FEES.IDENTIFIER, fee.getIdentifier().orElseThrow())
@@ -99,10 +97,8 @@ public class PropertyFeeRepository {
           .set(PROPERTY_FEES.TEAM_ID, fee.getTeamId())
           .set(PROPERTY_FEES.FEE_TYPE, fee.getFeeType().name())
           .set(PROPERTY_FEES.NAME, fee.getName().orElse(null))
-          .set(
-              PROPERTY_FEES.ANNUAL_AMOUNT,
-              CurrencyUtils.toMinorUnits(fee.getAnnualAmount(), currency))
-          .set(PROPERTY_FEES.CURRENCY, currency)
+          .set(PROPERTY_FEES.ANNUAL_AMOUNT, fee.getAnnualAmount().value())
+          .set(PROPERTY_FEES.CURRENCY, fee.getAnnualAmount().currency())
           .set(PROPERTY_FEES.PAYMENT_FREQUENCY, fee.getPaymentFrequency())
           .set(PROPERTY_FEES.DUE_MONTHS, fee.getDueMonths().orElse(null))
           .set(PROPERTY_FEES.START_DATE, fee.getStartDate().orElse(null))
@@ -123,14 +119,11 @@ public class PropertyFeeRepository {
       LocalDateTime updatedAt =
           fee.getUpdatedAt() != null ? LocalDateTime.ofInstant(fee.getUpdatedAt(), UTC) : now;
 
-      String currency = fee.getCurrency();
       dsl.update(PROPERTY_FEES)
           .set(PROPERTY_FEES.FEE_TYPE, fee.getFeeType().name())
           .set(PROPERTY_FEES.NAME, fee.getName().orElse(null))
-          .set(
-              PROPERTY_FEES.ANNUAL_AMOUNT,
-              CurrencyUtils.toMinorUnits(fee.getAnnualAmount(), currency))
-          .set(PROPERTY_FEES.CURRENCY, currency)
+          .set(PROPERTY_FEES.ANNUAL_AMOUNT, fee.getAnnualAmount().value())
+          .set(PROPERTY_FEES.CURRENCY, fee.getAnnualAmount().currency())
           .set(PROPERTY_FEES.PAYMENT_FREQUENCY, fee.getPaymentFrequency())
           .set(PROPERTY_FEES.DUE_MONTHS, fee.getDueMonths().orElse(null))
           .set(PROPERTY_FEES.START_DATE, fee.getStartDate().orElse(null))

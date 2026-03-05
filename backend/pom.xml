@@ -837,6 +837,12 @@
                                                 <includeExpression>.*\.IDENTIFIER</includeExpression>
                                                 <includeTypes>VARCHAR</includeTypes>
                                             </forcedType>
+                                            <forcedType>
+                                                <userType>java.math.BigDecimal</userType>
+                                                <converter>com.buurman.config.jooq.MoneyMinorUnitConverter</converter>
+                                                <includeExpression>.*\.(RENT_AMOUNT|DEPOSIT_AMOUNT|SECURITY_DEPOSIT|AMOUNT|TOTAL_AMOUNT|PRINCIPAL_AMOUNT|INTEREST_AMOUNT|ESCROW_AMOUNT|EXTRA_PAYMENT|ANNUAL_AMOUNT|ANNUAL_PREMIUM|COVERAGE_AMOUNT|ORIGINAL_AMOUNT|CURRENT_BALANCE|MONTHLY_PAYMENT|PURCHASE_PRICE|CLOSING_COSTS|RENOVATION_COSTS|LAND_VALUE)</includeExpression>
+                                                <includeTypes>BIGINT</includeTypes>
+                                            </forcedType>
                                         </forcedTypes>
                                     </database>
                                     <target>
@@ -934,6 +940,14 @@
                                     <inputSchema>public</inputSchema>
                                     <catalogVersionProvider>SELECT CAST(MAX(installed_rank) AS VARCHAR) FROM flyway_schema_history</catalogVersionProvider>
                                     <schemaVersionProvider>SELECT CAST(MAX(installed_rank) AS VARCHAR) FROM flyway_schema_history</schemaVersionProvider>
+                                    <forcedTypes>
+                                        <forcedType>
+                                            <userType>java.math.BigDecimal</userType>
+                                            <converter>com.buurman.config.jooq.MoneyMinorUnitConverter</converter>
+                                            <includeExpression>.*\.(RENT_AMOUNT|DEPOSIT_AMOUNT|SECURITY_DEPOSIT|AMOUNT|TOTAL_AMOUNT|PRINCIPAL_AMOUNT|INTEREST_AMOUNT|ESCROW_AMOUNT|EXTRA_PAYMENT|ANNUAL_AMOUNT|ANNUAL_PREMIUM|COVERAGE_AMOUNT|ORIGINAL_AMOUNT|CURRENT_BALANCE|MONTHLY_PAYMENT|PURCHASE_PRICE|CLOSING_COSTS|RENOVATION_COSTS|LAND_VALUE)</includeExpression>
+                                            <includeTypes>BIGINT</includeTypes>
+                                        </forcedType>
+                                    </forcedTypes>
                                 </database>
                                 <target>
                                     <packageName>com.buurman.jooq.generated</packageName>

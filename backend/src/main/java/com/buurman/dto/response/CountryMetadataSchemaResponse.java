@@ -32,6 +32,7 @@ public record CountryMetadataSchemaResponse(
     STRING,
     INTEGER,
     DECIMAL,
+    MONEY,
     BOOLEAN,
     ENUM
   }

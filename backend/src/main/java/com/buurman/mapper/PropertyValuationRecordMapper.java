@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.buurman.domain.PropertyValuation;
 import com.buurman.jooq.generated.tables.records.PropertyValuationsRecord;
-import com.buurman.util.CurrencyUtils;
+import com.buurman.util.MoneyAmount;
 
 @Component
 public class PropertyValuationRecordMapper {
@@ -26,8 +26,7 @@ public class PropertyValuationRecordMapper {
     val.setTeamId(record.getTeamId());
     val.setValuationType(PropertyValuation.ValuationType.valueOf(record.getValuationType()));
     val.setValuationDate(record.getValuationDate());
-    val.setAmount(CurrencyUtils.toMajorUnits(record.getAmount(), record.getCurrency()));
-    val.setCurrency(record.getCurrency());
+    val.setAmount(MoneyAmount.of(record.getAmount(), record.getCurrency()));
     val.setSource(Optional.ofNullable(record.getSource()));
     val.setNotes(Optional.ofNullable(record.getNotes()));
     val.setCreatedAt(record.getCreatedAt().toInstant(UTC));

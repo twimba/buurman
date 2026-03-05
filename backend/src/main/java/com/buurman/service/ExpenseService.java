@@ -48,7 +48,7 @@ import com.buurman.repository.PropertyRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
-import com.buurman.util.CurrencyUtils;
+import com.buurman.util.MoneyAmount;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
 import jakarta.validation.ConstraintViolation;
@@ -146,7 +146,9 @@ public class ExpenseService {
     expense.setCreatedAt(clock.instant());
     expense.setUpdatedAt(clock.instant());
 
-    if (expense.getCurrency() == null || expense.getCurrency().isBlank()) {
+    if (expense.getAmount() == null
+        || expense.getAmount().currency() == null
+        || expense.getAmount().currency().isBlank()) {
       throw new BadRequestException("Currency is required for expenses");
     }
 
@@ -220,7 +222,7 @@ public class ExpenseService {
                 r ->
                     new ExpenseStatsResponse.CategoryTotal(
                         r.category(),
-                        CurrencyUtils.sumToMajorUnits(r.total().orElse(null), currency),
+                        MoneyAmount.sumToMajorUnits(r.total().orElse(null), currency),
                         r.count()))
             .toList();
 
@@ -229,15 +231,13 @@ public class ExpenseService {
             .map(
                 r ->
                     new ExpenseStatsResponse.MonthlyTrend(
-                        r.month(),
-                        CurrencyUtils.sumToMajorUnits(r.amount().orElse(null), currency)))
+                        r.month(), MoneyAmount.sumToMajorUnits(r.amount().orElse(null), currency)))
             .toList();
 
     String effectiveCurrency = java.util.Objects.requireNonNullElse(currency, "EUR");
     return new ExpenseStatsResponse(
-        totalStats
-            .map(s -> CurrencyUtils.sumToMajorUnits(s.total().orElse(null), effectiveCurrency))
-            .orElse(BigDecimal.ZERO),
+        MoneyAmount.sumToMajorUnits(
+            totalStats.flatMap(AmountStats::total).orElse(null), effectiveCurrency),
         effectiveCurrency,
         topCategories,
         monthlyTrend);

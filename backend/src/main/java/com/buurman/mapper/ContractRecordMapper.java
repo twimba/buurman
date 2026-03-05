@@ -11,7 +11,7 @@ import com.buurman.domain.Contract;
 import com.buurman.domain.metadata.ContractCountryMetadata;
 import com.buurman.domain.metadata.CountryMetadataSerializer;
 import com.buurman.jooq.generated.tables.records.ContractsRecord;
-import com.buurman.util.CurrencyUtils;
+import com.buurman.util.MoneyAmount;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,23 +35,11 @@ public class ContractRecordMapper {
     contract.setStartDate(record.getStartDate());
     contract.setEndDate(Optional.ofNullable(record.getEndDate()));
     contract.setSignedDate(Optional.ofNullable(record.getSignedDate()));
-    contract.setRentAmount(
-        CurrencyUtils.toMajorUnits(record.getRentAmount(), record.getRentAmountCurrency()));
-    contract.setRentAmountCurrency(record.getRentAmountCurrency());
-    Long depositAmount = record.getDepositAmount();
-    String depositCurrency = record.getDepositAmountCurrency();
-    if (depositAmount != null && depositCurrency != null) {
-      contract.setDepositAmount(
-          Optional.of(CurrencyUtils.toMajorUnits(depositAmount, depositCurrency)));
-    }
-    contract.setDepositAmountCurrency(Optional.ofNullable(depositCurrency));
-    Long securityDeposit = record.getSecurityDeposit();
-    String securityDepositCurrency = record.getSecurityDepositCurrency();
-    if (securityDeposit != null && securityDepositCurrency != null) {
-      contract.setSecurityDeposit(
-          Optional.of(CurrencyUtils.toMajorUnits(securityDeposit, securityDepositCurrency)));
-    }
-    contract.setSecurityDepositCurrency(Optional.ofNullable(record.getSecurityDepositCurrency()));
+    contract.setRentAmount(MoneyAmount.of(record.getRentAmount(), record.getRentAmountCurrency()));
+    contract.setDepositAmount(
+        MoneyAmount.ofNullable(record.getDepositAmount(), record.getDepositAmountCurrency()));
+    contract.setSecurityDeposit(
+        MoneyAmount.ofNullable(record.getSecurityDeposit(), record.getSecurityDepositCurrency()));
     contract.setPaymentFrequency(Contract.PaymentFrequency.valueOf(record.getPaymentFrequency()));
     contract.setPaymentDueDay(Optional.ofNullable(record.getPaymentDueDay()));
     contract.setAutoRenewal(record.getAutoRenewal() != null ? record.getAutoRenewal() : false);

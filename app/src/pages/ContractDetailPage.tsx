@@ -687,6 +687,7 @@ export const ContractDetailPage = () => {
                     countryCode={contract.countryCode}
                     value={contract.countryMetadata}
                     onChange={() => {}}
+                    currency={contract.rentAmountCurrency}
                     disabled={true}
                   />
                 </div>

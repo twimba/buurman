@@ -1,14 +1,14 @@
 package com.buurman.domain.metadata;
 
-import java.math.BigDecimal;
-
 import org.jspecify.annotations.Nullable;
+
+import com.buurman.util.MoneyAmount;
 
 public record MxContractMetadata(
     @Nullable String estadoCode,
     @Nullable String contratoType,
-    @Nullable BigDecimal depositoAmount,
+    @Nullable MoneyAmount depositoAmount,
     @Nullable Integer depositoMonths,
     @Nullable Boolean profecoRegistered,
-    @Nullable BigDecimal mantenimientoAmount)
+    @Nullable MoneyAmount mantenimientoAmount)
     implements ContractCountryMetadata {}

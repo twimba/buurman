@@ -16,7 +16,6 @@ import com.buurman.domain.PropertyFinancing;
 import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.PropertyFinancingRecordMapper;
-import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -107,7 +106,6 @@ public class PropertyFinancingRepository {
               ? LocalDateTime.ofInstant(financing.getUpdatedAt(), UTC)
               : now;
 
-      String origCurrency = financing.getOriginalAmountCurrency();
       dsl.insertInto(PROPERTY_FINANCINGS)
           .set(PROPERTY_FINANCINGS.ID, id)
           .set(PROPERTY_FINANCINGS.IDENTIFIER, financing.getIdentifier().orElseThrow())
@@ -117,27 +115,23 @@ public class PropertyFinancingRepository {
           .set(PROPERTY_FINANCINGS.RATE_TYPE, financing.getRateType().name())
           .set(PROPERTY_FINANCINGS.LENDER_NAME, financing.getLenderName().orElse(null))
           .set(PROPERTY_FINANCINGS.LOAN_NUMBER, financing.getLoanNumber().orElse(null))
+          .set(PROPERTY_FINANCINGS.ORIGINAL_AMOUNT, financing.getOriginalAmount().value())
           .set(
-              PROPERTY_FINANCINGS.ORIGINAL_AMOUNT,
-              CurrencyUtils.toMinorUnits(financing.getOriginalAmount(), origCurrency))
-          .set(PROPERTY_FINANCINGS.ORIGINAL_AMOUNT_CURRENCY, origCurrency)
-          .set(
-              PROPERTY_FINANCINGS.CURRENT_BALANCE,
-              CurrencyUtils.toMinorUnitsOrNull(
-                  financing.getCurrentBalance().orElse(null),
-                  financing.getCurrentBalanceCurrency().orElse(null)))
+              PROPERTY_FINANCINGS.ORIGINAL_AMOUNT_CURRENCY,
+              financing.getOriginalAmount().currency())
+          .set(PROPERTY_FINANCINGS.CURRENT_BALANCE, financing.getCurrentBalance().orElse(null))
           .set(
               PROPERTY_FINANCINGS.CURRENT_BALANCE_CURRENCY,
-              financing.getCurrentBalanceCurrency().orElse(null))
+              financing.getCurrentBalance().isPresent()
+                  ? financing.getOriginalAmount().currency()
+                  : null)
           .set(PROPERTY_FINANCINGS.INTEREST_RATE, financing.getInterestRate().orElse(null))
-          .set(
-              PROPERTY_FINANCINGS.MONTHLY_PAYMENT,
-              CurrencyUtils.toMinorUnitsOrNull(
-                  financing.getMonthlyPayment().orElse(null),
-                  financing.getMonthlyPaymentCurrency().orElse(null)))
+          .set(PROPERTY_FINANCINGS.MONTHLY_PAYMENT, financing.getMonthlyPayment().orElse(null))
           .set(
               PROPERTY_FINANCINGS.MONTHLY_PAYMENT_CURRENCY,
-              financing.getMonthlyPaymentCurrency().orElse(null))
+              financing.getMonthlyPayment().isPresent()
+                  ? financing.getOriginalAmount().currency()
+                  : null)
           .set(PROPERTY_FINANCINGS.PAYMENT_VARIABLE, financing.isPaymentVariable())
           .set(PROPERTY_FINANCINGS.START_DATE, financing.getStartDate())
           .set(PROPERTY_FINANCINGS.END_DATE, financing.getEndDate().orElse(null))
@@ -160,33 +154,28 @@ public class PropertyFinancingRepository {
               ? LocalDateTime.ofInstant(financing.getUpdatedAt(), UTC)
               : now;
 
-      String origCurrency = financing.getOriginalAmountCurrency();
       dsl.update(PROPERTY_FINANCINGS)
           .set(PROPERTY_FINANCINGS.FINANCING_TYPE, financing.getFinancingType().name())
           .set(PROPERTY_FINANCINGS.RATE_TYPE, financing.getRateType().name())
           .set(PROPERTY_FINANCINGS.LENDER_NAME, financing.getLenderName().orElse(null))
           .set(PROPERTY_FINANCINGS.LOAN_NUMBER, financing.getLoanNumber().orElse(null))
+          .set(PROPERTY_FINANCINGS.ORIGINAL_AMOUNT, financing.getOriginalAmount().value())
           .set(
-              PROPERTY_FINANCINGS.ORIGINAL_AMOUNT,
-              CurrencyUtils.toMinorUnits(financing.getOriginalAmount(), origCurrency))
-          .set(PROPERTY_FINANCINGS.ORIGINAL_AMOUNT_CURRENCY, origCurrency)
-          .set(
-              PROPERTY_FINANCINGS.CURRENT_BALANCE,
-              CurrencyUtils.toMinorUnitsOrNull(
-                  financing.getCurrentBalance().orElse(null),
-                  financing.getCurrentBalanceCurrency().orElse(null)))
+              PROPERTY_FINANCINGS.ORIGINAL_AMOUNT_CURRENCY,
+              financing.getOriginalAmount().currency())
+          .set(PROPERTY_FINANCINGS.CURRENT_BALANCE, financing.getCurrentBalance().orElse(null))
           .set(
               PROPERTY_FINANCINGS.CURRENT_BALANCE_CURRENCY,
-              financing.getCurrentBalanceCurrency().orElse(null))
+              financing.getCurrentBalance().isPresent()
+                  ? financing.getOriginalAmount().currency()
+                  : null)
           .set(PROPERTY_FINANCINGS.INTEREST_RATE, financing.getInterestRate().orElse(null))
-          .set(
-              PROPERTY_FINANCINGS.MONTHLY_PAYMENT,
-              CurrencyUtils.toMinorUnitsOrNull(
-                  financing.getMonthlyPayment().orElse(null),
-                  financing.getMonthlyPaymentCurrency().orElse(null)))
+          .set(PROPERTY_FINANCINGS.MONTHLY_PAYMENT, financing.getMonthlyPayment().orElse(null))
           .set(
               PROPERTY_FINANCINGS.MONTHLY_PAYMENT_CURRENCY,
-              financing.getMonthlyPaymentCurrency().orElse(null))
+              financing.getMonthlyPayment().isPresent()
+                  ? financing.getOriginalAmount().currency()
+                  : null)
           .set(PROPERTY_FINANCINGS.PAYMENT_VARIABLE, financing.isPaymentVariable())
           .set(PROPERTY_FINANCINGS.START_DATE, financing.getStartDate())
           .set(PROPERTY_FINANCINGS.END_DATE, financing.getEndDate().orElse(null))

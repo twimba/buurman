@@ -15,7 +15,7 @@ import com.buurman.domain.PropertyAcquisition;
 import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.PropertyAcquisitionRecordMapper;
-import com.buurman.util.CurrencyUtils;
+import com.buurman.util.MoneyAmount;
 
 import lombok.RequiredArgsConstructor;
 
@@ -76,31 +76,28 @@ public class PropertyAcquisitionRepository {
           .set(PROPERTY_ACQUISITIONS.ACQUISITION_DATE, acq.getAcquisitionDate().orElse(null))
           .set(
               PROPERTY_ACQUISITIONS.PURCHASE_PRICE,
-              CurrencyUtils.toMinorUnitsOrNull(
-                  acq.getPurchasePrice().orElse(null), acq.getPurchasePriceCurrency().orElse(null)))
+              acq.getPurchasePrice().map(MoneyAmount::value).orElse(null))
           .set(
               PROPERTY_ACQUISITIONS.PURCHASE_PRICE_CURRENCY,
-              acq.getPurchasePriceCurrency().orElse(null))
+              acq.getPurchasePrice().map(MoneyAmount::currency).orElse(null))
           .set(
               PROPERTY_ACQUISITIONS.CLOSING_COSTS,
-              CurrencyUtils.toMinorUnitsOrNull(
-                  acq.getClosingCosts().orElse(null), acq.getClosingCostsCurrency().orElse(null)))
+              acq.getClosingCosts().map(MoneyAmount::value).orElse(null))
           .set(
               PROPERTY_ACQUISITIONS.CLOSING_COSTS_CURRENCY,
-              acq.getClosingCostsCurrency().orElse(null))
+              acq.getClosingCosts().map(MoneyAmount::currency).orElse(null))
           .set(
               PROPERTY_ACQUISITIONS.RENOVATION_COSTS,
-              CurrencyUtils.toMinorUnitsOrNull(
-                  acq.getRenovationCosts().orElse(null),
-                  acq.getRenovationCostsCurrency().orElse(null)))
+              acq.getRenovationCosts().map(MoneyAmount::value).orElse(null))
           .set(
               PROPERTY_ACQUISITIONS.RENOVATION_COSTS_CURRENCY,
-              acq.getRenovationCostsCurrency().orElse(null))
+              acq.getRenovationCosts().map(MoneyAmount::currency).orElse(null))
           .set(
               PROPERTY_ACQUISITIONS.LAND_VALUE,
-              CurrencyUtils.toMinorUnitsOrNull(
-                  acq.getLandValue().orElse(null), acq.getLandValueCurrency().orElse(null)))
-          .set(PROPERTY_ACQUISITIONS.LAND_VALUE_CURRENCY, acq.getLandValueCurrency().orElse(null))
+              acq.getLandValue().map(MoneyAmount::value).orElse(null))
+          .set(
+              PROPERTY_ACQUISITIONS.LAND_VALUE_CURRENCY,
+              acq.getLandValue().map(MoneyAmount::currency).orElse(null))
           .set(
               PROPERTY_ACQUISITIONS.DEPRECIATION_METHOD,
               acq.getDepreciationMethod().map(Enum::name).orElse(null))
@@ -125,31 +122,28 @@ public class PropertyAcquisitionRepository {
           .set(PROPERTY_ACQUISITIONS.ACQUISITION_DATE, acq.getAcquisitionDate().orElse(null))
           .set(
               PROPERTY_ACQUISITIONS.PURCHASE_PRICE,
-              CurrencyUtils.toMinorUnitsOrNull(
-                  acq.getPurchasePrice().orElse(null), acq.getPurchasePriceCurrency().orElse(null)))
+              acq.getPurchasePrice().map(MoneyAmount::value).orElse(null))
           .set(
               PROPERTY_ACQUISITIONS.PURCHASE_PRICE_CURRENCY,
-              acq.getPurchasePriceCurrency().orElse(null))
+              acq.getPurchasePrice().map(MoneyAmount::currency).orElse(null))
           .set(
               PROPERTY_ACQUISITIONS.CLOSING_COSTS,
-              CurrencyUtils.toMinorUnitsOrNull(
-                  acq.getClosingCosts().orElse(null), acq.getClosingCostsCurrency().orElse(null)))
+              acq.getClosingCosts().map(MoneyAmount::value).orElse(null))
           .set(
               PROPERTY_ACQUISITIONS.CLOSING_COSTS_CURRENCY,
-              acq.getClosingCostsCurrency().orElse(null))
+              acq.getClosingCosts().map(MoneyAmount::currency).orElse(null))
           .set(
               PROPERTY_ACQUISITIONS.RENOVATION_COSTS,
-              CurrencyUtils.toMinorUnitsOrNull(
-                  acq.getRenovationCosts().orElse(null),
-                  acq.getRenovationCostsCurrency().orElse(null)))
+              acq.getRenovationCosts().map(MoneyAmount::value).orElse(null))
           .set(
               PROPERTY_ACQUISITIONS.RENOVATION_COSTS_CURRENCY,
-              acq.getRenovationCostsCurrency().orElse(null))
+              acq.getRenovationCosts().map(MoneyAmount::currency).orElse(null))
           .set(
               PROPERTY_ACQUISITIONS.LAND_VALUE,
-              CurrencyUtils.toMinorUnitsOrNull(
-                  acq.getLandValue().orElse(null), acq.getLandValueCurrency().orElse(null)))
-          .set(PROPERTY_ACQUISITIONS.LAND_VALUE_CURRENCY, acq.getLandValueCurrency().orElse(null))
+              acq.getLandValue().map(MoneyAmount::value).orElse(null))
+          .set(
+              PROPERTY_ACQUISITIONS.LAND_VALUE_CURRENCY,
+              acq.getLandValue().map(MoneyAmount::currency).orElse(null))
           .set(
               PROPERTY_ACQUISITIONS.DEPRECIATION_METHOD,
               acq.getDepreciationMethod().map(Enum::name).orElse(null))

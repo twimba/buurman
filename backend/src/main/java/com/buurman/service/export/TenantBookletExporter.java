@@ -116,12 +116,12 @@ public class TenantBookletExporter {
     BigDecimal totalPaid =
         allPayments.stream()
             .filter(p -> p.getStatus() == PAID)
-            .map(Payment::getAmount)
+            .map(p -> p.getAmount().value())
             .reduce(BigDecimal.ZERO, BigDecimal::add);
     BigDecimal totalPending =
         allPayments.stream()
             .filter(p -> p.getStatus() == PENDING || p.getStatus() == OVERDUE)
-            .map(Payment::getAmount)
+            .map(p -> p.getAmount().value())
             .reduce(BigDecimal.ZERO, BigDecimal::add);
     long activeContracts =
         contracts.stream()
@@ -405,7 +405,8 @@ public class TenantBookletExporter {
       appendField(
           html,
           "Rent Amount",
-          CurrencyUtils.formatCurrency(contract.getRentAmount(), contract.getRentAmountCurrency()));
+          CurrencyUtils.formatCurrency(
+              contract.getRentAmount().value(), contract.getRentAmount().currency()));
       appendField(
           html,
           "Payment Frequency",
@@ -441,9 +442,9 @@ public class TenantBookletExporter {
       yearPayments.computeIfAbsent(year, k -> new BigDecimal[] {BigDecimal.ZERO, BigDecimal.ZERO});
       BigDecimal[] amounts = yearPayments.get(year);
       if (payment.getStatus() == PAID) {
-        amounts[0] = amounts[0].add(payment.getAmount());
+        amounts[0] = amounts[0].add(payment.getAmount().value());
       } else {
-        amounts[1] = amounts[1].add(payment.getAmount());
+        amounts[1] = amounts[1].add(payment.getAmount().value());
       }
     }
 
@@ -505,7 +506,9 @@ public class TenantBookletExporter {
           .append(payment.getDueDate() != null ? payment.getDueDate().format(shortFmt) : "—")
           .append("</td>");
       html.append("<td style='font-variant-numeric:tabular-nums;'>")
-          .append(CurrencyUtils.formatCurrency(payment.getAmount(), payment.getCurrency()))
+          .append(
+              CurrencyUtils.formatCurrency(
+                  payment.getAmount().value(), payment.getAmount().currency()))
           .append("</td>");
       html.append("<td>")
           .append(payment.getPaymentDate().map(d -> d.format(shortFmt)).orElse("—"))

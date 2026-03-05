@@ -65,8 +65,8 @@ class TransactionDataLoader {
                 "Rent payment - " + propertyName,
                 propertyName,
                 Optional.empty(),
-                payment.getAmount(),
-                payment.getCurrency()));
+                payment.getAmount().value(),
+                payment.getAmount().currency()));
       }
     }
   }
@@ -95,8 +95,8 @@ class TransactionDataLoader {
               expense.getDescription(),
               propertyName,
               Optional.ofNullable(expense.getCategory()).map(Enum::name),
-              expense.getAmount(),
-              expense.getCurrency()));
+              expense.getAmount().value(),
+              expense.getAmount().currency()));
     }
   }
 

@@ -28,9 +28,15 @@ public interface FinancingPaymentMapper {
       target = "status",
       expression =
           "java(request.status().orElse(com.buurman.domain.FinancingPayment.PaymentStatus.COMPLETED))")
+  @Mapping(
+      target = "totalAmount",
+      expression =
+          "java(com.buurman.util.MoneyAmount.of(request.totalAmount(), request.currency()))")
   FinancingPayment toEntity(CreateFinancingPaymentRequest request);
 
   @Mapping(target = "financingIdentifier", ignore = true)
+  @Mapping(target = "totalAmount", expression = "java(payment.getTotalAmount().value())")
+  @Mapping(target = "currency", expression = "java(payment.getTotalAmount().currency())")
   FinancingPaymentResponse toResponse(FinancingPayment payment);
 
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -44,5 +50,10 @@ public interface FinancingPaymentMapper {
   @Mapping(target = "updatedBy", ignore = true)
   @Mapping(target = "deletedAt", ignore = true)
   @Mapping(target = "balanceDeducted", ignore = true)
+  @Mapping(
+      target = "totalAmount",
+      expression =
+          "java(com.buurman.util.MoneyAmount.of(request.totalAmount().orElse(payment.getTotalAmount().value()),"
+              + " request.currency().orElse(payment.getTotalAmount().currency())))")
   void updateEntity(@MappingTarget FinancingPayment payment, UpdateFinancingPaymentRequest request);
 }

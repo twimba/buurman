@@ -1,10 +1,11 @@
 package com.buurman.domain;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
+
+import com.buurman.util.MoneyAmount;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,8 +34,7 @@ public class PropertyValuation {
   private UUID teamId;
   private ValuationType valuationType;
   private LocalDate valuationDate;
-  private BigDecimal amount;
-  private String currency;
+  private MoneyAmount amount;
   @Builder.Default private Optional<String> source = Optional.empty();
   @Builder.Default private Optional<String> notes = Optional.empty();
   private Instant createdAt;

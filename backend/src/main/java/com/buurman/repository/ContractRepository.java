@@ -5,7 +5,6 @@ import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static java.time.ZoneOffset.UTC;
 import static org.jooq.impl.DSL.min;
 
-import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,7 +28,7 @@ import com.buurman.domain.metadata.CountryMetadataSerializer;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.ContractRecordMapper;
-import com.buurman.util.CurrencyUtils;
+import com.buurman.util.MoneyAmount;
 import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
@@ -208,25 +207,20 @@ public class ContractRepository {
           .set(CONTRACTS.START_DATE, contract.getStartDate())
           .set(CONTRACTS.END_DATE, contract.getEndDate().orElse(null))
           .set(CONTRACTS.SIGNED_DATE, contract.getSignedDate().orElse(null))
-          .set(
-              CONTRACTS.RENT_AMOUNT,
-              CurrencyUtils.toMinorUnits(
-                  contract.getRentAmount(), contract.getRentAmountCurrency()))
-          .set(CONTRACTS.RENT_AMOUNT_CURRENCY, contract.getRentAmountCurrency())
+          .set(CONTRACTS.RENT_AMOUNT, contract.getRentAmount().value())
+          .set(CONTRACTS.RENT_AMOUNT_CURRENCY, contract.getRentAmount().currency())
           .set(
               CONTRACTS.DEPOSIT_AMOUNT,
-              CurrencyUtils.toMinorUnitsOrNull(
-                  contract.getDepositAmount().orElse(null),
-                  contract.getDepositAmountCurrency().orElse(null)))
-          .set(CONTRACTS.DEPOSIT_AMOUNT_CURRENCY, contract.getDepositAmountCurrency().orElse(null))
+              contract.getDepositAmount().map(MoneyAmount::value).orElse(null))
+          .set(
+              CONTRACTS.DEPOSIT_AMOUNT_CURRENCY,
+              contract.getDepositAmount().map(MoneyAmount::currency).orElse(null))
           .set(
               CONTRACTS.SECURITY_DEPOSIT,
-              CurrencyUtils.toMinorUnitsOrNull(
-                  contract.getSecurityDeposit().orElse(null),
-                  contract.getSecurityDepositCurrency().orElse(null)))
+              contract.getSecurityDeposit().map(MoneyAmount::value).orElse(null))
           .set(
               CONTRACTS.SECURITY_DEPOSIT_CURRENCY,
-              contract.getSecurityDepositCurrency().orElse(null))
+              contract.getSecurityDeposit().map(MoneyAmount::currency).orElse(null))
           .set(CONTRACTS.PAYMENT_FREQUENCY, contract.getPaymentFrequency().name())
           .set(CONTRACTS.PAYMENT_DUE_DAY, contract.getPaymentDueDay().orElse(null))
           .set(CONTRACTS.AUTO_RENEWAL, contract.getAutoRenewal())
@@ -263,27 +257,20 @@ public class ContractRepository {
               .set(CONTRACTS.START_DATE, contract.getStartDate())
               .set(CONTRACTS.END_DATE, contract.getEndDate().orElse(null))
               .set(CONTRACTS.SIGNED_DATE, contract.getSignedDate().orElse(null))
-              .set(
-                  CONTRACTS.RENT_AMOUNT,
-                  CurrencyUtils.toMinorUnits(
-                      contract.getRentAmount(), contract.getRentAmountCurrency()))
-              .set(CONTRACTS.RENT_AMOUNT_CURRENCY, contract.getRentAmountCurrency())
+              .set(CONTRACTS.RENT_AMOUNT, contract.getRentAmount().value())
+              .set(CONTRACTS.RENT_AMOUNT_CURRENCY, contract.getRentAmount().currency())
               .set(
                   CONTRACTS.DEPOSIT_AMOUNT,
-                  CurrencyUtils.toMinorUnitsOrNull(
-                      contract.getDepositAmount().orElse(null),
-                      contract.getDepositAmountCurrency().orElse(null)))
+                  contract.getDepositAmount().map(MoneyAmount::value).orElse(null))
               .set(
                   CONTRACTS.DEPOSIT_AMOUNT_CURRENCY,
-                  contract.getDepositAmountCurrency().orElse(null))
+                  contract.getDepositAmount().map(MoneyAmount::currency).orElse(null))
               .set(
                   CONTRACTS.SECURITY_DEPOSIT,
-                  CurrencyUtils.toMinorUnitsOrNull(
-                      contract.getSecurityDeposit().orElse(null),
-                      contract.getSecurityDepositCurrency().orElse(null)))
+                  contract.getSecurityDeposit().map(MoneyAmount::value).orElse(null))
               .set(
                   CONTRACTS.SECURITY_DEPOSIT_CURRENCY,
-                  contract.getSecurityDepositCurrency().orElse(null))
+                  contract.getSecurityDeposit().map(MoneyAmount::currency).orElse(null))
               .set(CONTRACTS.PAYMENT_FREQUENCY, contract.getPaymentFrequency().name())
               .set(CONTRACTS.PAYMENT_DUE_DAY, contract.getPaymentDueDay().orElse(null))
               .set(CONTRACTS.AUTO_RENEWAL, contract.getAutoRenewal())
@@ -401,7 +388,7 @@ public class ContractRepository {
         .map(
             r ->
                 new ContractIncomeEntry(
-                    BigDecimal.valueOf(r.get(CONTRACTS.RENT_AMOUNT)),
+                    r.get(CONTRACTS.RENT_AMOUNT),
                     r.get(CONTRACTS.RENT_AMOUNT_CURRENCY),
                     r.get(CONTRACTS.PAYMENT_FREQUENCY)));
   }

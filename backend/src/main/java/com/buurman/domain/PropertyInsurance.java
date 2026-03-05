@@ -1,10 +1,11 @@
 package com.buurman.domain;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
+
+import com.buurman.util.MoneyAmount;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,10 +43,8 @@ public class PropertyInsurance {
   private InsuranceType insuranceType;
   @Builder.Default private Optional<String> provider = Optional.empty();
   @Builder.Default private Optional<String> policyNumber = Optional.empty();
-  @Builder.Default private Optional<BigDecimal> coverageAmount = Optional.empty();
-  @Builder.Default private Optional<String> coverageAmountCurrency = Optional.empty();
-  private BigDecimal annualPremium;
-  private String annualPremiumCurrency;
+  @Builder.Default private Optional<MoneyAmount> coverageAmount = Optional.empty();
+  private MoneyAmount annualPremium;
   private String paymentFrequency;
   @Builder.Default private Optional<LocalDate> startDate = Optional.empty();
   @Builder.Default private Optional<LocalDate> endDate = Optional.empty();

@@ -17,7 +17,6 @@ import com.buurman.domain.FinancingPayment;
 import com.buurman.domain.Sid;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.FinancingPaymentRecordMapper;
-import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -113,29 +112,18 @@ public class FinancingPaymentRepository {
               ? LocalDateTime.ofInstant(payment.getUpdatedAt(), UTC)
               : now;
 
-      String currency = payment.getCurrency();
       dsl.insertInto(FINANCING_PAYMENTS)
           .set(FINANCING_PAYMENTS.ID, id)
           .set(FINANCING_PAYMENTS.IDENTIFIER, payment.getIdentifier().orElseThrow())
           .set(FINANCING_PAYMENTS.FINANCING_ID, payment.getFinancingId())
           .set(FINANCING_PAYMENTS.TEAM_ID, payment.getTeamId())
           .set(FINANCING_PAYMENTS.PAYMENT_DATE, payment.getPaymentDate())
-          .set(
-              FINANCING_PAYMENTS.TOTAL_AMOUNT,
-              CurrencyUtils.toMinorUnits(payment.getTotalAmount(), currency))
-          .set(
-              FINANCING_PAYMENTS.PRINCIPAL_AMOUNT,
-              CurrencyUtils.toMinorUnitsOrNull(payment.getPrincipalAmount().orElse(null), currency))
-          .set(
-              FINANCING_PAYMENTS.INTEREST_AMOUNT,
-              CurrencyUtils.toMinorUnitsOrNull(payment.getInterestAmount().orElse(null), currency))
-          .set(
-              FINANCING_PAYMENTS.ESCROW_AMOUNT,
-              CurrencyUtils.toMinorUnitsOrNull(payment.getEscrowAmount().orElse(null), currency))
-          .set(
-              FINANCING_PAYMENTS.EXTRA_PAYMENT,
-              CurrencyUtils.toMinorUnitsOrNull(payment.getExtraPayment().orElse(null), currency))
-          .set(FINANCING_PAYMENTS.CURRENCY, currency)
+          .set(FINANCING_PAYMENTS.TOTAL_AMOUNT, payment.getTotalAmount().value())
+          .set(FINANCING_PAYMENTS.PRINCIPAL_AMOUNT, payment.getPrincipalAmount().orElse(null))
+          .set(FINANCING_PAYMENTS.INTEREST_AMOUNT, payment.getInterestAmount().orElse(null))
+          .set(FINANCING_PAYMENTS.ESCROW_AMOUNT, payment.getEscrowAmount().orElse(null))
+          .set(FINANCING_PAYMENTS.EXTRA_PAYMENT, payment.getExtraPayment().orElse(null))
+          .set(FINANCING_PAYMENTS.CURRENCY, payment.getTotalAmount().currency())
           .set(FINANCING_PAYMENTS.STATUS, payment.getStatus().name())
           .set(FINANCING_PAYMENTS.NOTES, payment.getNotes().orElse(null))
           .set(FINANCING_PAYMENTS.BALANCE_DEDUCTED, payment.isBalanceDeducted())
@@ -155,25 +143,14 @@ public class FinancingPaymentRepository {
               ? LocalDateTime.ofInstant(payment.getUpdatedAt(), UTC)
               : now;
 
-      String currency = payment.getCurrency();
       dsl.update(FINANCING_PAYMENTS)
           .set(FINANCING_PAYMENTS.PAYMENT_DATE, payment.getPaymentDate())
-          .set(
-              FINANCING_PAYMENTS.TOTAL_AMOUNT,
-              CurrencyUtils.toMinorUnits(payment.getTotalAmount(), currency))
-          .set(
-              FINANCING_PAYMENTS.PRINCIPAL_AMOUNT,
-              CurrencyUtils.toMinorUnitsOrNull(payment.getPrincipalAmount().orElse(null), currency))
-          .set(
-              FINANCING_PAYMENTS.INTEREST_AMOUNT,
-              CurrencyUtils.toMinorUnitsOrNull(payment.getInterestAmount().orElse(null), currency))
-          .set(
-              FINANCING_PAYMENTS.ESCROW_AMOUNT,
-              CurrencyUtils.toMinorUnitsOrNull(payment.getEscrowAmount().orElse(null), currency))
-          .set(
-              FINANCING_PAYMENTS.EXTRA_PAYMENT,
-              CurrencyUtils.toMinorUnitsOrNull(payment.getExtraPayment().orElse(null), currency))
-          .set(FINANCING_PAYMENTS.CURRENCY, currency)
+          .set(FINANCING_PAYMENTS.TOTAL_AMOUNT, payment.getTotalAmount().value())
+          .set(FINANCING_PAYMENTS.PRINCIPAL_AMOUNT, payment.getPrincipalAmount().orElse(null))
+          .set(FINANCING_PAYMENTS.INTEREST_AMOUNT, payment.getInterestAmount().orElse(null))
+          .set(FINANCING_PAYMENTS.ESCROW_AMOUNT, payment.getEscrowAmount().orElse(null))
+          .set(FINANCING_PAYMENTS.EXTRA_PAYMENT, payment.getExtraPayment().orElse(null))
+          .set(FINANCING_PAYMENTS.CURRENCY, payment.getTotalAmount().currency())
           .set(FINANCING_PAYMENTS.STATUS, payment.getStatus().name())
           .set(FINANCING_PAYMENTS.NOTES, payment.getNotes().orElse(null))
           .set(FINANCING_PAYMENTS.BALANCE_DEDUCTED, payment.isBalanceDeducted())

@@ -29,7 +29,6 @@ import com.buurman.domain.Sid;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.ExpenseRecordMapper;
-import com.buurman.util.CurrencyUtils;
 import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
@@ -146,15 +145,14 @@ public class ExpenseRepository {
               ? LocalDateTime.ofInstant(expense.getUpdatedAt(), UTC)
               : now;
 
-      String currency = expense.getCurrency();
       dsl.insertInto(EXPENSES)
           .set(EXPENSES.ID, id)
           .set(EXPENSES.IDENTIFIER, expense.getIdentifier().orElseThrow())
           .set(EXPENSES.TEAM_ID, expense.getTeamId())
           .set(EXPENSES.PROPERTY_ID, expense.getPropertyId())
           .set(EXPENSES.CATEGORY, expense.getCategory().name())
-          .set(EXPENSES.AMOUNT, CurrencyUtils.toMinorUnits(expense.getAmount(), currency))
-          .set(EXPENSES.CURRENCY, currency)
+          .set(EXPENSES.AMOUNT, expense.getAmount().value())
+          .set(EXPENSES.CURRENCY, expense.getAmount().currency())
           .set(EXPENSES.EXPENSE_DATE, expense.getExpenseDate())
           .set(EXPENSES.DESCRIPTION, expense.getDescription())
           .set(EXPENSES.NOTES, expense.getNotes().orElse(null))
@@ -174,11 +172,10 @@ public class ExpenseRepository {
               ? LocalDateTime.ofInstant(expense.getUpdatedAt(), UTC)
               : now;
 
-      String currency = expense.getCurrency();
       dsl.update(EXPENSES)
           .set(EXPENSES.CATEGORY, expense.getCategory().name())
-          .set(EXPENSES.AMOUNT, CurrencyUtils.toMinorUnits(expense.getAmount(), currency))
-          .set(EXPENSES.CURRENCY, currency)
+          .set(EXPENSES.AMOUNT, expense.getAmount().value())
+          .set(EXPENSES.CURRENCY, expense.getAmount().currency())
           .set(EXPENSES.EXPENSE_DATE, expense.getExpenseDate())
           .set(EXPENSES.DESCRIPTION, expense.getDescription())
           .set(EXPENSES.NOTES, expense.getNotes().orElse(null))

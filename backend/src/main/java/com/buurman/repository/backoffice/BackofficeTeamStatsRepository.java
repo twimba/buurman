@@ -19,7 +19,7 @@ import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.dto.response.backoffice.BackofficeTeamDetailResponse.DataCounts;
-import com.buurman.util.CurrencyUtils;
+import com.buurman.util.MoneyAmount;
 
 import lombok.RequiredArgsConstructor;
 
@@ -95,14 +95,14 @@ public class BackofficeTeamStatsRepository {
     BigDecimal bestSum = BigDecimal.ZERO;
     for (var row : rows) {
       String cur = row.value1();
-      BigDecimal raw = row.value2() != null ? row.value2() : BigDecimal.ZERO;
-      BigDecimal major = CurrencyUtils.sumToMajorUnits(raw, cur);
-      if (major.compareTo(bestSum) > 0) {
-        bestSum = major;
+      BigDecimal total = row.value2() != null ? row.value2() : BigDecimal.ZERO;
+      if (total.compareTo(bestSum) > 0) {
+        bestSum = total;
         bestCurrency = cur;
       }
     }
-    return new AbstractMap.SimpleEntry<>(bestSum, bestCurrency);
+    return new AbstractMap.SimpleEntry<>(
+        MoneyAmount.sumToMajorUnits(bestSum, bestCurrency), bestCurrency);
   }
 
   public Map<String, Long> propertyStatusDistribution(UUID teamId) {

@@ -1,15 +1,15 @@
 package com.buurman.domain.metadata;
 
-import java.math.BigDecimal;
-
 import org.jspecify.annotations.Nullable;
+
+import com.buurman.util.MoneyAmount;
 
 public record ClContractMetadata(
     @Nullable String tipoArriendo,
-    @Nullable BigDecimal garantiaAmount,
+    @Nullable MoneyAmount garantiaAmount,
     @Nullable Integer garantiaMonths,
     @Nullable Boolean siiRegistered,
-    @Nullable BigDecimal gastosComunes,
+    @Nullable MoneyAmount gastosComunes,
     @Nullable String rolPropiedad,
     @Nullable Boolean reajusteIpcApplicable)
     implements ContractCountryMetadata {}

@@ -274,15 +274,13 @@ public class FinancingPaymentService {
   }
 
   private void adjustFinancingBalance(PropertyFinancing financing, BigDecimal amount, UUID userId) {
-    BigDecimal current = financing.getCurrentBalance().orElse(financing.getOriginalAmount());
+    BigDecimal current =
+        financing.getCurrentBalance().orElse(financing.getOriginalAmount().value());
     BigDecimal newBalance = current.subtract(amount);
     if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
       newBalance = BigDecimal.ZERO;
     }
     financing.setCurrentBalance(Optional.of(newBalance));
-    if (financing.getCurrentBalanceCurrency().isEmpty()) {
-      financing.setCurrentBalanceCurrency(Optional.of(financing.getOriginalAmountCurrency()));
-    }
     financing.setUpdatedBy(userId);
     financing.setUpdatedAt(clock.instant());
     financingRepository.save(financing);
