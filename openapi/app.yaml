@@ -10239,6 +10239,7 @@ paths:
       summary: Verify email by token
       description: Verify email address via one-click link token (no authentication required)
       operationId: verifyEmailByToken
+      security: []
       parameters:
         - name: token
           in: query
