@@ -1703,12 +1703,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-text-align@npm:3.20.0":
-  version: 3.20.0
-  resolution: "@tiptap/extension-text-align@npm:3.20.0"
+"@tiptap/extension-text-align@npm:3.20.1":
+  version: 3.20.1
+  resolution: "@tiptap/extension-text-align@npm:3.20.1"
   peerDependencies:
-    "@tiptap/core": ^3.20.0
-  checksum: 10c0/e8d15ed474b467d519c5ed3a60edd77e80e0b7d48605afab30613e5d66e123b6afdcb495f19a155b4fd38e5def774e4ef592fba7aec121b1ba859bdc9ace615b
+    "@tiptap/core": ^3.20.1
+  checksum: 10c0/9388548880db3cf35dbfb1640e12237fc820cc4161c85b3ac52f53130da6d56e1c779713b5eafe8b0e9dcc0dea73bea7d397ca61649799065ba59345b44b667f
   languageName: node
   linkType: hard
 
@@ -2560,7 +2560,7 @@ __metadata:
     "@tiptap/extension-highlight": "npm:3.20.0"
     "@tiptap/extension-link": "npm:3.20.0"
     "@tiptap/extension-placeholder": "npm:3.20.0"
-    "@tiptap/extension-text-align": "npm:3.20.0"
+    "@tiptap/extension-text-align": "npm:3.20.1"
     "@tiptap/extension-text-style": "npm:3.20.0"
     "@tiptap/extension-underline": "npm:3.20.0"
     "@tiptap/extensions": "npm:3.20.0"
@@ -2608,7 +2608,7 @@ __metadata:
     "@tiptap/extension-highlight": "npm:3.20.0"
     "@tiptap/extension-link": "npm:3.20.0"
     "@tiptap/extension-placeholder": "npm:3.20.0"
-    "@tiptap/extension-text-align": "npm:3.20.0"
+    "@tiptap/extension-text-align": "npm:3.20.1"
     "@tiptap/extension-underline": "npm:3.20.0"
     "@tiptap/extensions": "npm:3.20.0"
     "@tiptap/pm": "npm:3.20.0"
