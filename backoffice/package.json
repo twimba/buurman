@@ -12,7 +12,7 @@
   "dependencies": {
     "@buurman/ui": "workspace:*",
     "@tanstack/react-query": "5.90.21",
-    "@tiptap/core": "3.20.0",
+    "@tiptap/core": "3.20.1",
     "@tiptap/extension-highlight": "3.20.0",
     "@tiptap/extension-link": "3.20.0",
     "@tiptap/extension-placeholder": "3.20.0",
