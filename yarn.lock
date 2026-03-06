@@ -1563,12 +1563,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-font-family@npm:3.20.0":
-  version: 3.20.0
-  resolution: "@tiptap/extension-font-family@npm:3.20.0"
+"@tiptap/extension-font-family@npm:3.20.1":
+  version: 3.20.1
+  resolution: "@tiptap/extension-font-family@npm:3.20.1"
   peerDependencies:
-    "@tiptap/extension-text-style": ^3.20.0
-  checksum: 10c0/0fcc1c5ebe940059e08229e9a685a5cd8377fd8a80a5ee2e85aba93bb998b4f3b3b69e694b2637742175987c76edb8ba01d901cf3705bb4a18cf41fcdbb6f986
+    "@tiptap/extension-text-style": ^3.20.1
+  checksum: 10c0/103a3477e70ad9bb1cf754127f7104913b88e690c50c37faff0a3c2c0867365e796b02585815535a9fa165f6390d75bb4060fdb367a598bf291ed5af3e0f6b08
   languageName: node
   linkType: hard
 
@@ -2556,7 +2556,7 @@ __metadata:
     "@tailwindcss/postcss": "npm:4.2.1"
     "@tanstack/react-query": "npm:5.90.21"
     "@tiptap/core": "npm:3.20.0"
-    "@tiptap/extension-font-family": "npm:3.20.0"
+    "@tiptap/extension-font-family": "npm:3.20.1"
     "@tiptap/extension-highlight": "npm:3.20.0"
     "@tiptap/extension-link": "npm:3.20.0"
     "@tiptap/extension-placeholder": "npm:3.20.0"
