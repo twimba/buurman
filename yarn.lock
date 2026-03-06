@@ -1467,7 +1467,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/core@npm:3.20.0, @tiptap/core@npm:^3.20.0":
+"@tiptap/core@npm:3.20.1":
+  version: 3.20.1
+  resolution: "@tiptap/core@npm:3.20.1"
+  peerDependencies:
+    "@tiptap/pm": ^3.20.1
+  checksum: 10c0/9b6062d1e9c5f9780578745eb338e167d53de1a6160a6a1aadba201438775a4dc49555f5c04ef92ef440c5aafae78ea6d40091fce1f56183eacb202045a45378
+  languageName: node
+  linkType: hard
+
+"@tiptap/core@npm:^3.20.0":
   version: 3.20.0
   resolution: "@tiptap/core@npm:3.20.0"
   peerDependencies:
@@ -2555,7 +2564,7 @@ __metadata:
     "@react-keycloak/web": "npm:3.4.0"
     "@tailwindcss/postcss": "npm:4.2.1"
     "@tanstack/react-query": "npm:5.90.21"
-    "@tiptap/core": "npm:3.20.0"
+    "@tiptap/core": "npm:3.20.1"
     "@tiptap/extension-font-family": "npm:3.20.0"
     "@tiptap/extension-highlight": "npm:3.20.0"
     "@tiptap/extension-link": "npm:3.20.0"
@@ -2604,7 +2613,7 @@ __metadata:
     "@eslint/js": "npm:10.0.1"
     "@tailwindcss/postcss": "npm:4.2.1"
     "@tanstack/react-query": "npm:5.90.21"
-    "@tiptap/core": "npm:3.20.0"
+    "@tiptap/core": "npm:3.20.1"
     "@tiptap/extension-highlight": "npm:3.20.0"
     "@tiptap/extension-link": "npm:3.20.0"
     "@tiptap/extension-placeholder": "npm:3.20.0"
