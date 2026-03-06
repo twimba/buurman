@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:3.6.9
+    image: traefik:v3.6.10
     container_name: buurman-traefik
     extra_hosts:
       - "host.docker.internal:host-gateway"
