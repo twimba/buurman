@@ -4,6 +4,7 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -54,24 +55,31 @@ public class ExpenseController implements ExpensesApi {
   @Override
   @SuppressWarnings("rawtypes")
   public PageResponse getExpenses(
-      String category,
-      String propertyIdentifier,
-      LocalDate dateFrom,
-      LocalDate dateTo,
-      Integer page,
-      Integer size,
-      String sort,
-      String direction) {
+      Optional<String> category,
+      Optional<String> propertyIdentifier,
+      Optional<LocalDate> dateFrom,
+      Optional<LocalDate> dateTo,
+      Optional<Integer> page,
+      Optional<Integer> size,
+      Optional<String> sort,
+      Optional<String> direction) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
+    PageRequest pageRequest =
+        PageRequest.of(
+            page.orElse(null), size.orElse(null), sort.orElse(null), direction.orElse(null));
     UUID propertyId = null;
-    if (propertyIdentifier != null) {
+    if (propertyIdentifier.isPresent()) {
       propertyId =
           expenseService.resolvePropertyId(
-              PropertyIdentifier.of(propertyIdentifier), principal.requireTeamId());
+              PropertyIdentifier.of(propertyIdentifier.get()), principal.requireTeamId());
     }
     return expenseService.getExpensesPaginated(
-        principal, category, propertyId, dateFrom, dateTo, pageRequest);
+        principal,
+        category.orElse(null),
+        propertyId,
+        dateFrom.orElse(null),
+        dateTo.orElse(null),
+        pageRequest);
   }
 
   @Override
@@ -103,12 +111,13 @@ public class ExpenseController implements ExpensesApi {
   @SuppressWarnings("NullAway")
   public DocumentResponse uploadExpenseDocument(
       ExpenseIdentifier identifier,
-      String title,
-      String notes,
-      UploadPhotoRequest uploadPhotoRequest) {
+      Optional<String> title,
+      Optional<String> notes,
+      Optional<UploadPhotoRequest> uploadPhotoRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     // Generated interface mismodels multipart upload as JSON body
-    return expenseService.uploadExpenseDocument(identifier, null, title, notes, principal);
+    return expenseService.uploadExpenseDocument(
+        identifier, null, title.orElse(null), notes.orElse(null), principal);
   }
 
   @Override

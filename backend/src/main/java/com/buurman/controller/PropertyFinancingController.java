@@ -3,6 +3,7 @@ package com.buurman.controller;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.web.bind.annotation.RestController;
 
@@ -134,11 +135,12 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
       PropertyIdentifier propertyIdentifier,
       PropertyFinancingIdentifier financingIdentifier,
       FinancingPaymentIdentifier paymentIdentifier,
-      String title,
-      String notes,
-      UploadPhotoRequest uploadPhotoRequest) {
+      Optional<String> title,
+      Optional<String> notes,
+      Optional<UploadPhotoRequest> uploadPhotoRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return paymentService.uploadPaymentDocument(paymentIdentifier, null, title, notes, principal);
+    return paymentService.uploadPaymentDocument(
+        paymentIdentifier, null, title.orElse(null), notes.orElse(null), principal);
   }
 
   @Override

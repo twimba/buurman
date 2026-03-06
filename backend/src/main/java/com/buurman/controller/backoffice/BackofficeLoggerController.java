@@ -1,6 +1,7 @@
 package com.buurman.controller.backoffice;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,8 +19,8 @@ public class BackofficeLoggerController implements BackofficeLoggersApi {
   private final BackofficeLoggerService loggerService;
 
   @Override
-  public List<LoggerConfigurationResponse> listLoggers(String search) {
-    return loggerService.listLoggers(search);
+  public List<LoggerConfigurationResponse> listLoggers(Optional<String> search) {
+    return loggerService.listLoggers(search.orElse(null));
   }
 
   @Override

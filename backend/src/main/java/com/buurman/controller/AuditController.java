@@ -1,5 +1,7 @@
 package com.buurman.controller;
 
+import java.util.Optional;
+
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buurman.dto.request.PageRequest;
@@ -20,16 +22,22 @@ public class AuditController implements AuditLogsApi {
   @SuppressWarnings("unchecked")
   @Override
   public PageResponse getAllAuditLogs(
-      String entityType,
-      String action,
-      String search,
-      Integer page,
-      Integer size,
-      String sort,
-      String direction) {
+      Optional<String> entityType,
+      Optional<String> action,
+      Optional<String> search,
+      Optional<Integer> page,
+      Optional<Integer> size,
+      Optional<String> sort,
+      Optional<String> direction) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
+    PageRequest pageRequest =
+        PageRequest.of(
+            page.orElse(null), size.orElse(null), sort.orElse(null), direction.orElse(null));
     return auditService.getAllAuditLogsPaginated(
-        principal.requireTeamId(), entityType, action, search, pageRequest);
+        principal.requireTeamId(),
+        entityType.orElse(null),
+        action.orElse(null),
+        search.orElse(null),
+        pageRequest);
   }
 }
