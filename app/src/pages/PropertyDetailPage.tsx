@@ -26,6 +26,8 @@ import { useFinancings } from '@/hooks/usePropertyFinancialsHooks';
 import { FinancingFormModal } from '@/components/properties/financials/modals/FinancingFormModal';
 import { OCCUPANCY_TYPE_LABELS } from '@/types/occupancyPeriod';
 import { SelfOccupancyModal } from '@/components/properties/SelfOccupancyModal';
+import { WwsCalculatorModal } from '@/components/wws/WwsCalculatorModal';
+import { useLatestWwsCalculation } from '@/hooks/useWwsHooks';
 import { EndSelfOccupancyModal } from '@/components/properties/EndSelfOccupancyModal';
 import { EditSelfOccupancyModal } from '@/components/properties/EditSelfOccupancyModal';
 import { SelfOccupancyCard } from '@/components/properties/SelfOccupancyCard';
@@ -72,6 +74,7 @@ import {
   BarChart3,
   Wallet,
   Home,
+  Calculator,
 } from 'lucide-react';
 import DOMPurify from 'dompurify';
 import { formatDistanceToNow } from 'date-fns';
@@ -124,6 +127,7 @@ export const PropertyDetailPage = () => {
     string | null
   >(null);
   const [editFinancingId, setEditFinancingId] = useState<string | null>(null);
+  const [showWwsModal, setShowWwsModal] = useState(false);
   const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
     new Set()
   );
@@ -152,6 +156,10 @@ export const PropertyDetailPage = () => {
   const expensesPerPage = 10;
 
   const { data: property, isLoading, error } = useProperty(id);
+  const isNlProperty = property?.country === 'NL';
+  const { data: latestWws } = useLatestWwsCalculation(
+    isNlProperty ? id : undefined
+  );
   const {
     data: allDocuments = [],
     isLoading: docsLoading,
@@ -1422,6 +1430,79 @@ export const PropertyDetailPage = () => {
 
             {/* Investment & Financial panel removed — data now in Financials tab */}
 
+            {/* WWS Points Calculator — NL properties only */}
+            {isNlProperty && (
+              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                    WWS Points (Woningwaarderingsstelsel)
+                  </h2>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => setShowWwsModal(true)}
+                  >
+                    <Calculator className="h-4 w-4 mr-1" />
+                    Calculate WWS Points
+                  </Button>
+                </div>
+                {latestWws ? (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Total Points
+                      </div>
+                      <div className="text-lg font-bold text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                        {latestWws.totalPoints}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Classification
+                      </div>
+                      <div className="mt-1">
+                        <span
+                          className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${
+                            latestWws.sectorClassification === 'REGULATED'
+                              ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                              : latestWws.sectorClassification === 'MID_SEGMENT'
+                                ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300'
+                                : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
+                          }`}
+                        >
+                          {latestWws.sectorClassification === 'REGULATED' && 'Regulated'}
+                          {latestWws.sectorClassification === 'MID_SEGMENT' && 'Mid-Segment'}
+                          {latestWws.sectorClassification === 'FREE_SECTOR' && 'Free Sector'}
+                        </span>
+                      </div>
+                    </div>
+                    {latestWws.maxRentIndication != null && (
+                      <div>
+                        <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                          Max Rent
+                        </div>
+                        <div className="text-lg font-bold text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                          EUR {latestWws.maxRentIndication.toFixed(2)}
+                        </div>
+                      </div>
+                    )}
+                    <div>
+                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        Calculated
+                      </div>
+                      <div className="text-sm text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                        {new Date(latestWws.calculationDate).toLocaleDateString()}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                    No WWS calculation yet. Use the calculator to determine the points for this property.
+                  </p>
+                )}
+              </div>
+            )}
+
             {/* Metadata */}
             <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
               <button
@@ -2434,6 +2515,14 @@ export const PropertyDetailPage = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {isNlProperty && (
+        <WwsCalculatorModal
+          propertyIdentifier={id}
+          isOpen={showWwsModal}
+          onClose={() => setShowWwsModal(false)}
+        />
       )}
 
       {showDeleteModal && (
