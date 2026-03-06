@@ -40,11 +40,13 @@ public class WebhookController implements WebhooksApi {
   @Override
   public void handleSendGridEvents(
       String body,
-      String xTwilioEmailEventWebhookSignature,
-      String xTwilioEmailEventWebhookTimestamp) {
+      Optional<String> xTwilioEmailEventWebhookSignature,
+      Optional<String> xTwilioEmailEventWebhookTimestamp) {
     try {
       if (!verifySendGridSignature(
-          body, xTwilioEmailEventWebhookSignature, xTwilioEmailEventWebhookTimestamp)) {
+          body,
+          xTwilioEmailEventWebhookSignature.orElse(null),
+          xTwilioEmailEventWebhookTimestamp.orElse(null))) {
         log.warn("SendGrid webhook signature verification failed");
         throw new ForbiddenException("SendGrid webhook signature verification failed");
       }
@@ -57,9 +59,9 @@ public class WebhookController implements WebhooksApi {
   }
 
   @Override
-  public String handleTwilioStatus(Map<String, String> params, String xTwilioSignature) {
+  public String handleTwilioStatus(Map<String, String> params, Optional<String> xTwilioSignature) {
     try {
-      if (!verifyTwilioSignature(httpServletRequest, params, xTwilioSignature)) {
+      if (!verifyTwilioSignature(httpServletRequest, params, xTwilioSignature.orElse(null))) {
         log.warn("Twilio webhook signature verification failed");
         throw new ForbiddenException("Twilio webhook signature verification failed");
       }

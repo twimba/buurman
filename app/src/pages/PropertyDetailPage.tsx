@@ -27,7 +27,11 @@ import { FinancingFormModal } from '@/components/properties/financials/modals/Fi
 import { OCCUPANCY_TYPE_LABELS } from '@/types/occupancyPeriod';
 import { SelfOccupancyModal } from '@/components/properties/SelfOccupancyModal';
 import { WwsCalculatorModal } from '@/components/wws/WwsCalculatorModal';
-import { useLatestWwsCalculation } from '@/hooks/useWwsHooks';
+import {
+  useLatestWwsCalculation,
+  useWwsCalculations,
+  useDeleteWwsCalculation,
+} from '@/hooks/useWwsHooks';
 import { EndSelfOccupancyModal } from '@/components/properties/EndSelfOccupancyModal';
 import { EditSelfOccupancyModal } from '@/components/properties/EditSelfOccupancyModal';
 import { SelfOccupancyCard } from '@/components/properties/SelfOccupancyCard';
@@ -75,6 +79,7 @@ import {
   Wallet,
   Home,
   Calculator,
+  X,
 } from 'lucide-react';
 import DOMPurify from 'dompurify';
 import { formatDistanceToNow } from 'date-fns';
@@ -128,6 +133,11 @@ export const PropertyDetailPage = () => {
   >(null);
   const [editFinancingId, setEditFinancingId] = useState<string | null>(null);
   const [showWwsModal, setShowWwsModal] = useState(false);
+  const [showDeleteWwsConfirm, setShowDeleteWwsConfirm] = useState(false);
+  const [deleteWwsHistoryId, setDeleteWwsHistoryId] = useState<string | null>(
+    null
+  );
+  const [showWwsHistory, setShowWwsHistory] = useState(false);
   const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
     new Set()
   );
@@ -156,10 +166,14 @@ export const PropertyDetailPage = () => {
   const expensesPerPage = 10;
 
   const { data: property, isLoading, error } = useProperty(id);
-  const isNlProperty = property?.country === 'NL';
+  const isNlProperty = property?.country === 'Netherlands';
   const { data: latestWws } = useLatestWwsCalculation(
     isNlProperty ? id : undefined
   );
+  const { data: wwsHistory = [] } = useWwsCalculations(
+    isNlProperty && showWwsHistory ? id : undefined
+  );
+  const deleteWwsMutation = useDeleteWwsCalculation(id);
   const {
     data: allDocuments = [],
     isLoading: docsLoading,
@@ -1434,71 +1448,170 @@ export const PropertyDetailPage = () => {
             {isNlProperty && (
               <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                    WWS Points (Woningwaarderingsstelsel)
-                  </h2>
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={() => setShowWwsModal(true)}
-                  >
-                    <Calculator className="h-4 w-4 mr-1" />
-                    Calculate WWS Points
-                  </Button>
+                  <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide">
+                    WWS Points
+                  </h3>
+                  <div className="flex items-center gap-3">
+                    {latestWws?.identifier && (
+                      <button
+                        onClick={() => setShowDeleteWwsConfirm(true)}
+                        className="inline-flex items-center gap-1.5 text-xs font-medium text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+                      >
+                        Delete
+                      </button>
+                    )}
+                    <button
+                      onClick={() => setShowWwsModal(true)}
+                      className="inline-flex items-center gap-1.5 text-xs font-medium text-[#5c7cfa] hover:text-[#4263d8] transition-colors"
+                    >
+                      <Calculator className="h-3.5 w-3.5" />
+                      {latestWws ? 'Recalculate' : 'Calculate'}
+                    </button>
+                  </div>
                 </div>
                 {latestWws ? (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                        Total Points
-                      </div>
-                      <div className="text-lg font-bold text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                  <div className="space-y-4">
+                    <div className="flex items-baseline justify-between">
+                      <div className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
                         {latestWws.totalPoints}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                        Classification
-                      </div>
-                      <div className="mt-1">
-                        <span
-                          className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${
-                            latestWws.sectorClassification === 'REGULATED'
-                              ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
-                              : latestWws.sectorClassification === 'MID_SEGMENT'
-                                ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300'
-                                : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
-                          }`}
-                        >
-                          {latestWws.sectorClassification === 'REGULATED' && 'Regulated'}
-                          {latestWws.sectorClassification === 'MID_SEGMENT' && 'Mid-Segment'}
-                          {latestWws.sectorClassification === 'FREE_SECTOR' && 'Free Sector'}
+                        <span className="text-sm font-normal text-[#6b7194] dark:text-[#8b90a8] ml-1.5">
+                          points
                         </span>
                       </div>
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                          latestWws.sectorClassification === 'REGULATED'
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                            : latestWws.sectorClassification === 'MID_SEGMENT'
+                              ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300'
+                              : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
+                        }`}
+                      >
+                        {latestWws.sectorClassification === 'REGULATED' &&
+                          'Regulated'}
+                        {latestWws.sectorClassification === 'MID_SEGMENT' &&
+                          'Mid-Segment'}
+                        {latestWws.sectorClassification === 'FREE_SECTOR' &&
+                          'Free Sector'}
+                      </span>
                     </div>
-                    {latestWws.maxRentIndication != null && (
+                    <div className="grid grid-cols-2 gap-4">
+                      {latestWws.maxRentIndication != null && (
+                        <div>
+                          <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                            Max Rent
+                          </div>
+                          <div className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mt-0.5">
+                            EUR {latestWws.maxRentIndication.toFixed(2)}
+                          </div>
+                        </div>
+                      )}
                       <div>
                         <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                          Max Rent
+                          Calculated
                         </div>
-                        <div className="text-lg font-bold text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                          EUR {latestWws.maxRentIndication.toFixed(2)}
+                        <div className="text-sm text-[#1a1d2e] dark:text-[#eef0f6] mt-0.5">
+                          {new Date(
+                            latestWws.calculationDate
+                          ).toLocaleDateString()}
                         </div>
-                      </div>
-                    )}
-                    <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
-                        Calculated
-                      </div>
-                      <div className="text-sm text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                        {new Date(latestWws.calculationDate).toLocaleDateString()}
                       </div>
                     </div>
+
+                    {/* History toggle */}
+                    <button
+                      onClick={() => setShowWwsHistory(!showWwsHistory)}
+                      className="flex items-center gap-1.5 text-xs text-[#6b7194] dark:text-[#8b90a8] hover:text-[#3d4463] dark:hover:text-[#c4c8db] transition-colors mt-1"
+                    >
+                      <History className="h-3 w-3" />
+                      History
+                      <ChevronDown
+                        className={`h-3 w-3 transition-transform ${showWwsHistory ? 'rotate-180' : ''}`}
+                      />
+                    </button>
+
+                    {showWwsHistory && wwsHistory.length > 1 && (
+                      <div className="mt-3 space-y-2">
+                        {wwsHistory
+                          .filter((c) => c.identifier !== latestWws?.identifier)
+                          .map((calc) => (
+                            <div
+                              key={calc.identifier}
+                              className="flex items-center justify-between px-3 py-2 rounded-lg bg-[#f7f8fb] dark:bg-[#1a1c28] border border-[#e2e6f0] dark:border-[#2a2e3f]"
+                            >
+                              <div className="flex items-baseline gap-2">
+                                <span className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                                  {calc.totalPoints} pts
+                                </span>
+                                <span
+                                  className={`text-xs font-medium ${
+                                    calc.sectorClassification === 'REGULATED'
+                                      ? 'text-green-700 dark:text-green-400'
+                                      : calc.sectorClassification ===
+                                          'MID_SEGMENT'
+                                        ? 'text-amber-700 dark:text-amber-400'
+                                        : 'text-red-700 dark:text-red-400'
+                                  }`}
+                                >
+                                  {calc.sectorClassification === 'REGULATED' &&
+                                    'Regulated'}
+                                  {calc.sectorClassification ===
+                                    'MID_SEGMENT' && 'Mid-Segment'}
+                                  {calc.sectorClassification ===
+                                    'FREE_SECTOR' && 'Free Sector'}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                                  v{calc.systemVersion} &middot;{' '}
+                                  {new Date(
+                                    calc.calculationDate
+                                  ).toLocaleDateString()}
+                                </span>
+                                {calc.identifier && (
+                                  <button
+                                    onClick={() =>
+                                      setDeleteWwsHistoryId(
+                                        calc.identifier ?? null
+                                      )
+                                    }
+                                    className="text-[#6b7194] hover:text-red-500 dark:text-[#8b90a8] dark:hover:text-red-400 transition-colors"
+                                  >
+                                    <X className="h-3.5 w-3.5" />
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        {wwsHistory.filter(
+                          (c) => c.identifier !== latestWws?.identifier
+                        ).length === 0 && (
+                          <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                            No previous calculations.
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {showWwsHistory && wwsHistory.length <= 1 && (
+                      <p className="mt-3 text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                        No previous calculations.
+                      </p>
+                    )}
                   </div>
                 ) : (
-                  <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                    No WWS calculation yet. Use the calculator to determine the points for this property.
-                  </p>
+                  <div className="text-center py-4">
+                    <div className="w-10 h-10 rounded-lg bg-[#f1f3f9] dark:bg-[#1e2130] flex items-center justify-center mx-auto mb-3">
+                      <Calculator className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
+                    </div>
+                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      No calculation yet
+                    </p>
+                    <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                      Calculate the WWS points to determine the maximum
+                      regulated rent for this property.
+                    </p>
+                  </div>
                 )}
               </div>
             )}
@@ -2523,6 +2636,76 @@ export const PropertyDetailPage = () => {
           isOpen={showWwsModal}
           onClose={() => setShowWwsModal(false)}
         />
+      )}
+
+      {showDeleteWwsConfirm && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-[#14161f] rounded-xl p-6 max-w-sm w-full mx-4">
+            <h3 className="text-base font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
+              Delete WWS calculation?
+            </h3>
+            <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-5">
+              This will permanently remove the saved calculation from this
+              property.
+            </p>
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="ghost"
+                onClick={() => setShowDeleteWwsConfirm(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  const calcId = latestWws?.identifier;
+                  if (calcId) {
+                    deleteWwsMutation.mutate(calcId, {
+                      onSuccess: () => setShowDeleteWwsConfirm(false),
+                    });
+                  }
+                }}
+                isLoading={deleteWwsMutation.isPending}
+                className="bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deleteWwsHistoryId && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-[#14161f] rounded-xl p-6 max-w-sm w-full mx-4">
+            <h3 className="text-base font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
+              Delete WWS calculation?
+            </h3>
+            <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-5">
+              This will permanently remove this historic calculation.
+            </p>
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="ghost"
+                onClick={() => setDeleteWwsHistoryId(null)}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  deleteWwsMutation.mutate(deleteWwsHistoryId, {
+                    onSuccess: () => setDeleteWwsHistoryId(null),
+                  });
+                }}
+                isLoading={deleteWwsMutation.isPending}
+                className="bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
 
       {showDeleteModal && (

@@ -9,7 +9,6 @@ import com.buurman.domain.identifier.ContractPartyIdentifier;
 import com.buurman.domain.identifier.ContractPaymentInstructionIdentifier;
 import com.buurman.domain.identifier.ContractRentPeriodIdentifier;
 import com.buurman.domain.identifier.DataTakeoutIdentifier;
-import com.buurman.domain.identifier.WwsCalculationIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.ExpenseIdentifier;
 import com.buurman.domain.identifier.FinancingPaymentIdentifier;
@@ -33,6 +32,7 @@ import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.domain.identifier.TenantAddressIdentifier;
 import com.buurman.domain.identifier.TenantIdentifier;
 import com.buurman.domain.identifier.UserIdentifier;
+import com.buurman.domain.identifier.WwsCalculationIdentifier;
 
 import de.huxhorn.sulky.ulid.ULID;
 

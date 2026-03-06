@@ -4,6 +4,7 @@ import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,29 +29,31 @@ public class BackofficeNotificationController implements BackofficeNotifications
 
   @Override
   public PageResponse<BackofficeNotificationResponse> listNotifications(
-      String teamIdentifier,
-      String type,
-      String channel,
-      String status,
-      String recipientEmail,
-      String dateFrom,
-      String dateTo,
-      Integer page,
-      Integer size,
-      String sort,
-      String direction) {
+      Optional<String> teamIdentifier,
+      Optional<String> type,
+      Optional<String> channel,
+      Optional<String> status,
+      Optional<String> recipientEmail,
+      Optional<String> dateFrom,
+      Optional<String> dateTo,
+      Optional<Integer> page,
+      Optional<Integer> size,
+      Optional<String> sort,
+      Optional<String> direction) {
 
-    LocalDateTime from = parseDateTime(dateFrom);
-    LocalDateTime to = parseDateTime(dateTo);
+    LocalDateTime from = parseDateTime(dateFrom.orElse(null));
+    LocalDateTime to = parseDateTime(dateTo.orElse(null));
 
-    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
+    PageRequest pageRequest =
+        PageRequest.of(
+            page.orElse(null), size.orElse(null), sort.orElse(null), direction.orElse(null));
     return backofficeNotificationService.listNotifications(
         pageRequest,
-        teamIdentifier != null ? TeamIdentifier.of(teamIdentifier) : null,
-        type,
-        channel,
-        status,
-        recipientEmail,
+        teamIdentifier.map(TeamIdentifier::of).orElse(null),
+        type.orElse(null),
+        channel.orElse(null),
+        status.orElse(null),
+        recipientEmail.orElse(null),
         from,
         to);
   }

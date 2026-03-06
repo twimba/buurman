@@ -45,3 +45,9 @@ export const getLatestWwsCalculation = async (
   );
   return response.data;
 };
+
+export const deleteWwsCalculation = async (
+  calculationIdentifier: string
+): Promise<void> => {
+  await client.delete(`/wws/calculations/${calculationIdentifier}`);
+};

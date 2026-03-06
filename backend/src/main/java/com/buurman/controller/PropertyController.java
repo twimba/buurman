@@ -2,6 +2,7 @@ package com.buurman.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,16 +40,19 @@ public class PropertyController implements PropertiesApi {
   @Override
   @SuppressWarnings("rawtypes")
   public PageResponse getProperties(
-      String status,
-      String category,
-      String query,
-      Integer page,
-      Integer size,
-      String sort,
-      String direction) {
+      Optional<String> status,
+      Optional<String> category,
+      Optional<String> query,
+      Optional<Integer> page,
+      Optional<Integer> size,
+      Optional<String> sort,
+      Optional<String> direction) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
-    return propertyService.getPropertiesPaginated(principal, status, category, query, pageRequest);
+    PageRequest pageRequest =
+        PageRequest.of(
+            page.orElse(null), size.orElse(null), sort.orElse(null), direction.orElse(null));
+    return propertyService.getPropertiesPaginated(
+        principal, status.orElse(null), category.orElse(null), query.orElse(null), pageRequest);
   }
 
   @Override
@@ -75,11 +79,12 @@ public class PropertyController implements PropertiesApi {
       "NullAway") // Generated interface uses UploadPhotoRequest instead of MultipartFile
   public DocumentResponse uploadPropertyDocument(
       PropertyIdentifier identifier,
-      String title,
-      String notes,
-      UploadPhotoRequest uploadPhotoRequest) {
+      Optional<String> title,
+      Optional<String> notes,
+      Optional<UploadPhotoRequest> uploadPhotoRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return propertyService.uploadDocument(identifier, null, title, notes, principal);
+    return propertyService.uploadDocument(
+        identifier, null, title.orElse(null), notes.orElse(null), principal);
   }
 
   @Override
@@ -117,11 +122,12 @@ public class PropertyController implements PropertiesApi {
       "NullAway") // Generated interface uses UploadPhotoRequest instead of MultipartFile
   public PhotoResponse uploadPropertyPhoto(
       PropertyIdentifier identifier,
-      String title,
-      String notes,
-      UploadPhotoRequest uploadPhotoRequest) {
+      Optional<String> title,
+      Optional<String> notes,
+      Optional<UploadPhotoRequest> uploadPhotoRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return propertyService.uploadPhoto(identifier, null, title, notes, principal);
+    return propertyService.uploadPhoto(
+        identifier, null, title.orElse(null), notes.orElse(null), principal);
   }
 
   @Override

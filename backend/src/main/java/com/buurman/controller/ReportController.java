@@ -6,8 +6,10 @@ import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -57,51 +59,59 @@ public class ReportController implements ReportsApi {
 
   @Override
   public FinancialOverviewResponse getFinancialOverview(
-      LocalDate startDate, LocalDate endDate, List<String> propertyIdentifiers, String currency) {
+      LocalDate startDate,
+      LocalDate endDate,
+      Optional<List<String>> propertyIdentifiers,
+      Optional<String> currency) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     List<UUID> propertyIds =
-        resolvePropertyIdentifiers(propertyIdentifiers, principal.requireTeamId());
-    return reportService.getFinancialOverview(startDate, endDate, propertyIds, currency, principal);
+        resolvePropertyIdentifiers(propertyIdentifiers.orElse(null), principal.requireTeamId());
+    return reportService.getFinancialOverview(
+        startDate, endDate, propertyIds, currency.orElse(null), principal);
   }
 
   @Override
   public IncomeTrendResponse getIncomeTrend(
-      Integer months, LocalDate startDate, LocalDate endDate, List<String> propertyIdentifiers) {
+      Optional<Integer> months,
+      Optional<LocalDate> startDate,
+      Optional<LocalDate> endDate,
+      Optional<List<String>> propertyIdentifiers) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     List<UUID> propertyIds =
-        resolvePropertyIdentifiers(propertyIdentifiers, principal.requireTeamId());
-    if (startDate != null && endDate != null) {
-      return reportService.getIncomeTrendByDateRange(startDate, endDate, propertyIds, principal);
+        resolvePropertyIdentifiers(propertyIdentifiers.orElse(null), principal.requireTeamId());
+    if (startDate.isPresent() && endDate.isPresent()) {
+      return reportService.getIncomeTrendByDateRange(
+          startDate.get(), endDate.get(), propertyIds, principal);
     }
-    return reportService.getIncomeTrend(months, propertyIds, principal);
+    return reportService.getIncomeTrend(months.orElse(12), propertyIds, principal);
   }
 
   @Override
   public ExpenseBreakdownResponse getExpenseBreakdown(
-      LocalDate startDate, LocalDate endDate, List<String> propertyIdentifiers) {
+      LocalDate startDate, LocalDate endDate, Optional<List<String>> propertyIdentifiers) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     List<UUID> propertyIds =
-        resolvePropertyIdentifiers(propertyIdentifiers, principal.requireTeamId());
+        resolvePropertyIdentifiers(propertyIdentifiers.orElse(null), principal.requireTeamId());
     return reportService.getExpenseBreakdown(startDate, endDate, propertyIds, principal);
   }
 
   @Override
   public PropertyComparisonResponse getPropertyComparison(
-      LocalDate startDate, LocalDate endDate, List<String> propertyIdentifiers) {
+      LocalDate startDate, LocalDate endDate, Optional<List<String>> propertyIdentifiers) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     List<UUID> propertyIds =
-        resolvePropertyIdentifiers(propertyIdentifiers, principal.requireTeamId());
+        resolvePropertyIdentifiers(propertyIdentifiers.orElse(null), principal.requireTeamId());
     return reportService.getPropertyComparison(startDate, endDate, propertyIds, principal);
   }
 
   @Override
   public OccupancyTrendResponse getOccupancyTrend(
-      Integer months, LocalDate startDate, LocalDate endDate) {
+      Optional<Integer> months, Optional<LocalDate> startDate, Optional<LocalDate> endDate) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    if (startDate != null && endDate != null) {
-      return reportService.getOccupancyTrendByDateRange(startDate, endDate, principal);
+    if (startDate.isPresent() && endDate.isPresent()) {
+      return reportService.getOccupancyTrendByDateRange(startDate.get(), endDate.get(), principal);
     }
-    return reportService.getOccupancyTrend(months, principal);
+    return reportService.getOccupancyTrend(months.orElse(12), principal);
   }
 
   @Override
@@ -111,26 +121,28 @@ public class ReportController implements ReportsApi {
   }
 
   @Override
-  public byte[] exportTransactionHistoryCSV(LocalDate startDate, LocalDate endDate) {
+  public byte[] exportTransactionHistoryCSV(
+      Optional<LocalDate> startDate, Optional<LocalDate> endDate) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     httpServletResponse.setHeader(CONTENT_DISPOSITION, "attachment; filename=transactions.csv");
     httpServletResponse.setContentType("text/csv");
     return exportService.generateTransactionHistoryCSV(
-        startDate, endDate, principal.requireTeamId());
+        startDate.orElse(null), endDate.orElse(null), principal.requireTeamId());
   }
 
   @Override
-  public byte[] exportTransactionHistoryPDF(LocalDate startDate, LocalDate endDate) {
+  public byte[] exportTransactionHistoryPDF(
+      Optional<LocalDate> startDate, Optional<LocalDate> endDate) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     httpServletResponse.setHeader(
         CONTENT_DISPOSITION, "attachment; filename=transaction-history.pdf");
     httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
     return exportService.generateTransactionHistoryPDF(
-        startDate, endDate, principal.requireTeamId());
+        startDate.orElse(null), endDate.orElse(null), principal.requireTeamId());
   }
 
-  @SuppressWarnings("NullAway")
-  private List<UUID> resolvePropertyIdentifiers(List<String> identifiers, UUID teamId) {
+  private @Nullable List<UUID> resolvePropertyIdentifiers(
+      @Nullable List<String> identifiers, UUID teamId) {
     if (identifiers == null || identifiers.isEmpty()) {
       return null;
     }

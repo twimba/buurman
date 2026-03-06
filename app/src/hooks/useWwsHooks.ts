@@ -12,9 +12,7 @@ export const useWwsPreFill = (propertyIdentifier: string | undefined) => {
   });
 };
 
-export const useWwsCalculations = (
-  propertyIdentifier: string | undefined
-) => {
+export const useWwsCalculations = (propertyIdentifier: string | undefined) => {
   return useQuery({
     queryKey: ['wwsCalculations', propertyIdentifier],
     queryFn: () => wwsApi.getWwsCalculations(propertyIdentifier ?? ''),
@@ -29,6 +27,7 @@ export const useLatestWwsCalculation = (
     queryKey: ['wwsLatest', propertyIdentifier],
     queryFn: () => wwsApi.getLatestWwsCalculation(propertyIdentifier ?? ''),
     enabled: !!propertyIdentifier,
+    retry: false,
   });
 };
 
@@ -56,6 +55,27 @@ export const useCalculateAndSaveWws = () => {
         queryKey: ['wwsLatest', variables.propertyIdentifier],
       });
       showToast('WWS calculation saved', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const useDeleteWwsCalculation = (propertyIdentifier: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (calculationIdentifier: string) =>
+      wwsApi.deleteWwsCalculation(calculationIdentifier),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['wwsCalculations', propertyIdentifier],
+      });
+      queryClient.removeQueries({
+        queryKey: ['wwsLatest', propertyIdentifier],
+      });
+      showToast('Calculation deleted', 'success');
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');

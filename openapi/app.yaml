@@ -12317,6 +12317,36 @@ paths:
                 $ref: "#/components/schemas/ProblemDetail"
       security:
         - bearer-jwt: []
+  /wws/calculations/{calculationIdentifier}:
+    delete:
+      tags:
+        - WWS Calculator
+      summary: Delete a WWS calculation
+      description: Soft delete a saved WWS calculation (Admin/Editor)
+      operationId: deleteWwsCalculation
+      parameters:
+        - name: calculationIdentifier
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/WwsCalculationIdentifier"
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Calculation not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
   /properties/{identifier}/audit-log:
     get:
       tags:
@@ -15182,6 +15212,10 @@ components:
     UserIdentifier:
       type: string
       description: User identifier
+    WwsCalculationIdentifier:
+      type: string
+      description: WWS calculation identifier
+      example: "wws_01JGRM5N7GWRR8PQZRVP8T4M1H"
     Entry:
       type: object
       properties:
@@ -21509,6 +21543,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/WwsCategoryBreakdown"
+        inputData:
+          $ref: "#/components/schemas/WwsCalculationRequest"
       required:
         - totalPoints
         - sectorClassification

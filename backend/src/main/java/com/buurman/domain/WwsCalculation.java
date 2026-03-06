@@ -40,9 +40,5 @@ public class WwsCalculation {
   @Builder.Default private Optional<Instant> deletedAt = Optional.empty();
 
   public record CategoryBreakdown(
-      String key,
-      String name,
-      String nameNl,
-      BigDecimal points,
-      String explanation) {}
+      String key, String name, String nameNl, BigDecimal points, String explanation) {}
 }

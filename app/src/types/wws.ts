@@ -26,6 +26,7 @@ export interface WwsCalculationResponse {
   systemVersion: string;
   calculationDate: string;
   breakdown: WwsCategoryBreakdown[];
+  inputData?: WwsCalculationRequest;
 }
 
 export interface WwsCategoryBreakdown {

@@ -75,8 +75,7 @@ public class WwsCalculationRepository {
   }
 
   public Optional<WwsCalculation> findLatestByPropertyId(UUID propertyId, UUID teamId) {
-    return dsl
-        .selectFrom(WWS_CALCULATIONS)
+    return dsl.selectFrom(WWS_CALCULATIONS)
         .where(
             WWS_CALCULATIONS
                 .PROPERTY_ID
@@ -90,8 +89,7 @@ public class WwsCalculationRepository {
   }
 
   public Optional<WwsCalculation> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
-    return dsl
-        .selectFrom(WWS_CALCULATIONS)
+    return dsl.selectFrom(WWS_CALCULATIONS)
         .where(
             WWS_CALCULATIONS
                 .IDENTIFIER
@@ -100,5 +98,21 @@ public class WwsCalculationRepository {
                 .and(WWS_CALCULATIONS.DELETED_AT.isNull()))
         .fetchOptional()
         .flatMap(mapper::toDomain);
+  }
+
+  public boolean softDelete(Sid identifier, UUID teamId, UUID deletedBy) {
+    LocalDateTime now = LocalDateTime.now(clock);
+    return dsl.update(WWS_CALCULATIONS)
+            .set(WWS_CALCULATIONS.DELETED_AT, now)
+            .set(WWS_CALCULATIONS.UPDATED_AT, now)
+            .set(WWS_CALCULATIONS.UPDATED_BY, deletedBy)
+            .where(
+                WWS_CALCULATIONS
+                    .IDENTIFIER
+                    .eq(identifier)
+                    .and(WWS_CALCULATIONS.TEAM_ID.eq(teamId))
+                    .and(WWS_CALCULATIONS.DELETED_AT.isNull()))
+            .execute()
+        > 0;
   }
 }

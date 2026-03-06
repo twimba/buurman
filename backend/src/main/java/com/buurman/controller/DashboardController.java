@@ -1,6 +1,7 @@
 package com.buurman.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,8 +27,8 @@ public class DashboardController implements DashboardApi {
   }
 
   @Override
-  public List<RecentActivityResponse> getRecentActivities(Integer limit) {
+  public List<RecentActivityResponse> getRecentActivities(Optional<Integer> limit) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return dashboardService.getRecentActivities(principal.requireTeamId(), limit);
+    return dashboardService.getRecentActivities(principal.requireTeamId(), limit.orElse(10));
   }
 }

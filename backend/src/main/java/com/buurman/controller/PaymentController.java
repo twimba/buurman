@@ -4,6 +4,7 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.web.bind.annotation.RestController;
 
@@ -65,24 +66,26 @@ public class PaymentController implements PaymentsApi {
   @Override
   @SuppressWarnings("rawtypes")
   public PageResponse getPayments(
-      String status,
-      String contractIdentifier,
-      String propertyIdentifier,
-      LocalDate dateFrom,
-      LocalDate dateTo,
-      Integer page,
-      Integer size,
-      String sort,
-      String direction) {
+      Optional<String> status,
+      Optional<String> contractIdentifier,
+      Optional<String> propertyIdentifier,
+      Optional<LocalDate> dateFrom,
+      Optional<LocalDate> dateTo,
+      Optional<Integer> page,
+      Optional<Integer> size,
+      Optional<String> sort,
+      Optional<String> direction) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
+    PageRequest pageRequest =
+        PageRequest.of(
+            page.orElse(null), size.orElse(null), sort.orElse(null), direction.orElse(null));
     return paymentService.getPaymentsPaginated(
         principal,
-        status,
-        contractIdentifier != null ? ContractIdentifier.of(contractIdentifier) : null,
-        propertyIdentifier != null ? PropertyIdentifier.of(propertyIdentifier) : null,
-        dateFrom,
-        dateTo,
+        status.orElse(null),
+        contractIdentifier.map(ContractIdentifier::of).orElse(null),
+        propertyIdentifier.map(PropertyIdentifier::of).orElse(null),
+        dateFrom.orElse(null),
+        dateTo.orElse(null),
         pageRequest);
   }
 
@@ -158,12 +161,13 @@ public class PaymentController implements PaymentsApi {
   @SuppressWarnings("NullAway")
   public DocumentResponse uploadPaymentDocument(
       PaymentIdentifier identifier,
-      String title,
-      String notes,
-      UploadPhotoRequest uploadPhotoRequest) {
+      Optional<String> title,
+      Optional<String> notes,
+      Optional<UploadPhotoRequest> uploadPhotoRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     // Generated interface mismodels multipart upload as JSON body
-    return paymentService.uploadDocument(identifier, null, title, notes, principal);
+    return paymentService.uploadDocument(
+        identifier, null, title.orElse(null), notes.orElse(null), principal);
   }
 
   @Override

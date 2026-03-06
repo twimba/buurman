@@ -1,6 +1,7 @@
 package com.buurman.controller;
 
 import java.net.URL;
+import java.util.Optional;
 
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -30,10 +31,18 @@ public class DocumentController implements DocumentsApi {
   @Override
   @SuppressWarnings("rawtypes")
   public PageResponse getAllDocuments(
-      String search, String entityType, Integer page, Integer size, String sort, String direction) {
+      Optional<String> search,
+      Optional<String> entityType,
+      Optional<Integer> page,
+      Optional<Integer> size,
+      Optional<String> sort,
+      Optional<String> direction) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
-    return documentService.searchDocumentsPaginated(search, entityType, principal, pageRequest);
+    PageRequest pageRequest =
+        PageRequest.of(
+            page.orElse(null), size.orElse(null), sort.orElse(null), direction.orElse(null));
+    return documentService.searchDocumentsPaginated(
+        search.orElse(null), entityType.orElse(null), principal, pageRequest);
   }
 
   @Override

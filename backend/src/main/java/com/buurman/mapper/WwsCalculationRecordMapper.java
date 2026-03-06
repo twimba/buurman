@@ -54,8 +54,7 @@ public class WwsCalculationRecordMapper {
     calc.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     calc.setCreatedBy(record.getCreatedBy());
     calc.setUpdatedBy(record.getUpdatedBy());
-    calc.setDeletedAt(
-        Optional.ofNullable(record.getDeletedAt()).map(dt -> dt.toInstant(UTC)));
+    calc.setDeletedAt(Optional.ofNullable(record.getDeletedAt()).map(dt -> dt.toInstant(UTC)));
 
     return Optional.of(calc);
   }

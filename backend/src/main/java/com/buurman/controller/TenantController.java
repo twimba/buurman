@@ -2,6 +2,7 @@ package com.buurman.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.web.bind.annotation.RestController;
 
@@ -45,10 +46,16 @@ public class TenantController implements TenantsApi {
   @Override
   @SuppressWarnings("rawtypes")
   public PageResponse getTenants(
-      String search, Integer page, Integer size, String sort, String direction) {
+      Optional<String> search,
+      Optional<Integer> page,
+      Optional<Integer> size,
+      Optional<String> sort,
+      Optional<String> direction) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
-    return tenantService.getTenantsPaginated(principal, search, pageRequest);
+    PageRequest pageRequest =
+        PageRequest.of(
+            page.orElse(null), size.orElse(null), sort.orElse(null), direction.orElse(null));
+    return tenantService.getTenantsPaginated(principal, search.orElse(null), pageRequest);
   }
 
   @Override
@@ -99,12 +106,13 @@ public class TenantController implements TenantsApi {
   @SuppressWarnings("NullAway")
   public DocumentResponse uploadDocument(
       TenantIdentifier identifier,
-      String title,
-      String notes,
-      UploadPhotoRequest uploadPhotoRequest) {
+      Optional<String> title,
+      Optional<String> notes,
+      Optional<UploadPhotoRequest> uploadPhotoRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     // Generated interface mismodels multipart upload as JSON body
-    return tenantService.uploadDocument(identifier, null, title, notes, principal);
+    return tenantService.uploadDocument(
+        identifier, null, title.orElse(null), notes.orElse(null), principal);
   }
 
   @Override
@@ -135,12 +143,13 @@ public class TenantController implements TenantsApi {
   @SuppressWarnings("NullAway")
   public PhotoResponse uploadPhoto(
       TenantIdentifier identifier,
-      String title,
-      String notes,
-      UploadPhotoRequest uploadPhotoRequest) {
+      Optional<String> title,
+      Optional<String> notes,
+      Optional<UploadPhotoRequest> uploadPhotoRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     // Generated interface mismodels multipart upload as JSON body
-    return tenantService.uploadPhoto(identifier, null, title, notes, principal);
+    return tenantService.uploadPhoto(
+        identifier, null, title.orElse(null), notes.orElse(null), principal);
   }
 
   @Override

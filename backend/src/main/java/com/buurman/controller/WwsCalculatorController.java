@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buurman.domain.identifier.PropertyIdentifier;
+import com.buurman.domain.identifier.WwsCalculationIdentifier;
 import com.buurman.dto.request.WwsCalculationRequest;
 import com.buurman.dto.response.WwsCalculationResponse;
 import com.buurman.dto.response.WwsPreFillResponse;
@@ -23,8 +24,7 @@ public class WwsCalculatorController implements WwsCalculatorApi {
   private final WwsPointsCalculatorService wwsService;
 
   @Override
-  public WwsCalculationResponse calculateWws(
-      @Valid WwsCalculationRequest wwsCalculationRequest) {
+  public WwsCalculationResponse calculateWws(@Valid WwsCalculationRequest wwsCalculationRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return wwsService.calculate(wwsCalculationRequest, principal);
   }
@@ -43,16 +43,20 @@ public class WwsCalculatorController implements WwsCalculatorApi {
   }
 
   @Override
-  public List<WwsCalculationResponse> getWwsCalculations(
-      PropertyIdentifier propertyIdentifier) {
+  public List<WwsCalculationResponse> getWwsCalculations(PropertyIdentifier propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return wwsService.getCalculationHistory(propertyIdentifier, principal);
   }
 
   @Override
-  public WwsCalculationResponse getLatestWwsCalculation(
-      PropertyIdentifier propertyIdentifier) {
+  public WwsCalculationResponse getLatestWwsCalculation(PropertyIdentifier propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return wwsService.getLatestCalculation(propertyIdentifier, principal);
+  }
+
+  @Override
+  public void deleteWwsCalculation(WwsCalculationIdentifier calculationIdentifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    wwsService.deleteCalculation(calculationIdentifier, principal);
   }
 }
