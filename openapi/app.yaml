@@ -12,6 +12,8 @@ servers:
 security:
   - bearer-jwt: []
 tags:
+  - name: WWS Calculator
+    description: Netherlands WWS (Woningwaarderingsstelsel) points calculator
   - name: Reference
     description: Technical reference data for integrators and developers
   - name: Property Taxes
@@ -12152,6 +12154,169 @@ paths:
                 $ref: "#/components/schemas/ProblemDetail"
       security:
         - bearer-jwt: []
+  /wws/calculate:
+    post:
+      tags:
+        - WWS Calculator
+      summary: Calculate WWS points (dry run)
+      description: Calculates WWS points without saving. Returns full breakdown.
+      operationId: calculateWws
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WwsCalculationRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WwsCalculationResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /wws/calculate-and-save:
+    post:
+      tags:
+        - WWS Calculator
+      summary: Calculate and save WWS points
+      description: Calculates WWS points and persists to calculation history.
+      operationId: calculateAndSaveWws
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WwsCalculationRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WwsCalculationResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /wws/properties/{propertyIdentifier}/pre-fill:
+    get:
+      tags:
+        - WWS Calculator
+      summary: Get pre-filled WWS data from property
+      operationId: getWwsPreFill
+      parameters:
+        - name: propertyIdentifier
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/PropertyIdentifier"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WwsPreFillResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Property not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /wws/properties/{propertyIdentifier}/calculations:
+    get:
+      tags:
+        - WWS Calculator
+      summary: Get WWS calculation history for property
+      operationId: getWwsCalculations
+      parameters:
+        - name: propertyIdentifier
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/PropertyIdentifier"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WwsCalculationResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /wws/properties/{propertyIdentifier}/latest:
+    get:
+      tags:
+        - WWS Calculator
+      summary: Get latest WWS calculation for property
+      operationId: getLatestWwsCalculation
+      parameters:
+        - name: propertyIdentifier
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/PropertyIdentifier"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WwsCalculationResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: No calculation found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
   /properties/{identifier}/audit-log:
     get:
       tags:
@@ -21271,6 +21436,128 @@ components:
         title:
           type: string
           description: Short human-readable summary
+    WwsCalculationRequest:
+      type: object
+      properties:
+        systemVersion:
+          type: string
+          description: "Scoring system version: 2024 or PRE_2024"
+          example: "2024"
+        propertyIdentifier:
+          $ref: "#/components/schemas/PropertyIdentifier"
+        contractIdentifier:
+          type: string
+          description: Optional contract to link calculation to
+        surfaceAreaSqm:
+          type: number
+        numberOfRooms:
+          type: integer
+          format: int32
+        numberOfHeatedRooms:
+          type: integer
+          format: int32
+        energyLabel:
+          type: string
+        kitchenQualityPoints:
+          type: number
+        bathroomQualityPoints:
+          type: number
+        wozValue:
+          type: number
+          description: WOZ property tax assessment value
+        outdoorSpaceSqm:
+          type: number
+        parkingType:
+          type: string
+          description: "GARAGE, CARPORT, DESIGNATED_SPOT, STREET, NONE"
+        parkingSpaces:
+          type: integer
+          format: int32
+        locationBonus:
+          type: number
+          description: Location bonus/penalty points (-10 to +15)
+        renovationInvestment:
+          type: number
+          description: Renovation investment amount in EUR
+        accessibilityFeatures:
+          type: integer
+          format: int32
+          description: Number of accessibility features (wheelchair, elevator, etc.)
+        commonAreaSqm:
+          type: number
+      required:
+        - systemVersion
+        - propertyIdentifier
+    WwsCalculationResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        totalPoints:
+          type: number
+        sectorClassification:
+          type: string
+          description: "REGULATED, MID_SEGMENT, FREE_SECTOR"
+        maxRentIndication:
+          type: number
+        systemVersion:
+          type: string
+        calculationDate:
+          type: string
+          format: date
+        breakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/WwsCategoryBreakdown"
+      required:
+        - totalPoints
+        - sectorClassification
+        - systemVersion
+        - calculationDate
+        - breakdown
+    WwsCategoryBreakdown:
+      type: object
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        nameNl:
+          type: string
+        points:
+          type: number
+        explanation:
+          type: string
+      required:
+        - key
+        - name
+        - nameNl
+        - points
+    WwsPreFillResponse:
+      type: object
+      properties:
+        surfaceAreaSqm:
+          type: number
+        numberOfRooms:
+          type: integer
+          format: int32
+        numberOfHeatedRooms:
+          type: integer
+          format: int32
+        energyLabel:
+          type: string
+        outdoorSpaceSqm:
+          type: number
+        parkingType:
+          type: string
+        parkingSpaces:
+          type: integer
+          format: int32
+        accessibilityFeatures:
+          type: integer
+          format: int32
+        propertyAddress:
+          type: string
   securitySchemes:
     bearer-jwt:
       type: http

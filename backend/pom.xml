@@ -533,6 +533,9 @@
                                 <importMapping>UserResponse=com.buurman.dto.response.UserResponse</importMapping>
                                 <importMapping>UserTeamResponse=com.buurman.dto.response.UserTeamResponse</importMapping>
                                 <importMapping>ValidateInvitationCodeResponse=com.buurman.dto.response.ValidateInvitationCodeResponse</importMapping>
+                                <importMapping>WwsCalculationResponse=com.buurman.dto.response.WwsCalculationResponse</importMapping>
+                                <importMapping>WwsCategoryBreakdown=com.buurman.dto.response.WwsCategoryBreakdown</importMapping>
+                                <importMapping>WwsPreFillResponse=com.buurman.dto.response.WwsPreFillResponse</importMapping>
                                 <!-- Request DTOs -->
                                 <importMapping>AddContractPartyRequest=com.buurman.dto.request.AddContractPartyRequest</importMapping>
                                 <importMapping>AgriculturalDetailsRequest=com.buurman.dto.request.AgriculturalDetailsRequest</importMapping>
@@ -611,6 +614,7 @@
                                 <importMapping>UpsertPropertyAcquisitionRequest=com.buurman.dto.request.UpsertPropertyAcquisitionRequest</importMapping>
                                 <importMapping>VerifyEmailRequest=com.buurman.dto.request.VerifyEmailRequest</importMapping>
                                 <importMapping>VerifyPhoneRequest=com.buurman.dto.request.VerifyPhoneRequest</importMapping>
+                                <importMapping>WwsCalculationRequest=com.buurman.dto.request.WwsCalculationRequest</importMapping>
                             </importMappings>
                         </configuration>
                     </execution>

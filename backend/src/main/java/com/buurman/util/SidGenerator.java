@@ -9,6 +9,7 @@ import com.buurman.domain.identifier.ContractPartyIdentifier;
 import com.buurman.domain.identifier.ContractPaymentInstructionIdentifier;
 import com.buurman.domain.identifier.ContractRentPeriodIdentifier;
 import com.buurman.domain.identifier.DataTakeoutIdentifier;
+import com.buurman.domain.identifier.WwsCalculationIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.ExpenseIdentifier;
 import com.buurman.domain.identifier.FinancingPaymentIdentifier;
@@ -175,5 +176,9 @@ public class SidGenerator {
 
   public static DataTakeoutIdentifier newTakeoutId() {
     return DataTakeoutIdentifier.of(generateRaw(EntityPrefix.TKO));
+  }
+
+  public static WwsCalculationIdentifier newWwsCalculationId() {
+    return WwsCalculationIdentifier.of(generateRaw(EntityPrefix.WWS));
   }
 }
