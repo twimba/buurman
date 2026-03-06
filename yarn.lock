@@ -1730,7 +1730,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-underline@npm:3.20.0, @tiptap/extension-underline@npm:^3.20.0":
+"@tiptap/extension-underline@npm:3.20.1":
+  version: 3.20.1
+  resolution: "@tiptap/extension-underline@npm:3.20.1"
+  peerDependencies:
+    "@tiptap/core": ^3.20.1
+  checksum: 10c0/0dd97558c3f9804a13a0125dcffe7e5b10cfc451a9b5ff7dbcf3b3c0cc40b5e5035a96a8f180e1a503aa68c2f50f0c1e27aa7c8fc8a5c9f2a92f3852db5dac28
+  languageName: node
+  linkType: hard
+
+"@tiptap/extension-underline@npm:^3.20.0":
   version: 3.20.0
   resolution: "@tiptap/extension-underline@npm:3.20.0"
   peerDependencies:
@@ -2562,7 +2571,7 @@ __metadata:
     "@tiptap/extension-placeholder": "npm:3.20.0"
     "@tiptap/extension-text-align": "npm:3.20.0"
     "@tiptap/extension-text-style": "npm:3.20.0"
-    "@tiptap/extension-underline": "npm:3.20.0"
+    "@tiptap/extension-underline": "npm:3.20.1"
     "@tiptap/extensions": "npm:3.20.0"
     "@tiptap/pm": "npm:3.20.0"
     "@tiptap/react": "npm:3.20.0"
@@ -2609,7 +2618,7 @@ __metadata:
     "@tiptap/extension-link": "npm:3.20.0"
     "@tiptap/extension-placeholder": "npm:3.20.0"
     "@tiptap/extension-text-align": "npm:3.20.0"
-    "@tiptap/extension-underline": "npm:3.20.0"
+    "@tiptap/extension-underline": "npm:3.20.1"
     "@tiptap/extensions": "npm:3.20.0"
     "@tiptap/pm": "npm:3.20.0"
     "@tiptap/react": "npm:3.20.0"
