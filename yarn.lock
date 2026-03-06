@@ -1627,7 +1627,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-link@npm:3.20.0, @tiptap/extension-link@npm:^3.20.0":
+"@tiptap/extension-link@npm:3.20.1":
+  version: 3.20.1
+  resolution: "@tiptap/extension-link@npm:3.20.1"
+  dependencies:
+    linkifyjs: "npm:^4.3.2"
+  peerDependencies:
+    "@tiptap/core": ^3.20.1
+    "@tiptap/pm": ^3.20.1
+  checksum: 10c0/fad3f26ef6066e69946314840242c93f3fc5eaaecce878be6c986a8ec903981ee18ccfae848813b84ab4df1658781bbd4a9c7b6782bd8fe0b2164ea4417fd7a4
+  languageName: node
+  linkType: hard
+
+"@tiptap/extension-link@npm:^3.20.0":
   version: 3.20.0
   resolution: "@tiptap/extension-link@npm:3.20.0"
   dependencies:
@@ -2558,7 +2570,7 @@ __metadata:
     "@tiptap/core": "npm:3.20.0"
     "@tiptap/extension-font-family": "npm:3.20.0"
     "@tiptap/extension-highlight": "npm:3.20.0"
-    "@tiptap/extension-link": "npm:3.20.0"
+    "@tiptap/extension-link": "npm:3.20.1"
     "@tiptap/extension-placeholder": "npm:3.20.0"
     "@tiptap/extension-text-align": "npm:3.20.0"
     "@tiptap/extension-text-style": "npm:3.20.0"
@@ -2606,7 +2618,7 @@ __metadata:
     "@tanstack/react-query": "npm:5.90.21"
     "@tiptap/core": "npm:3.20.0"
     "@tiptap/extension-highlight": "npm:3.20.0"
-    "@tiptap/extension-link": "npm:3.20.0"
+    "@tiptap/extension-link": "npm:3.20.1"
     "@tiptap/extension-placeholder": "npm:3.20.0"
     "@tiptap/extension-text-align": "npm:3.20.0"
     "@tiptap/extension-underline": "npm:3.20.0"
