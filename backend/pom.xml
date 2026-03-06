@@ -501,6 +501,7 @@
                                 <importMapping>PropertyAcquisitionResponse=com.buurman.dto.response.PropertyAcquisitionResponse</importMapping>
                                 <importMapping>PropertyAmenityResponse=com.buurman.dto.response.PropertyAmenityResponse</importMapping>
                                 <importMapping>PropertyComparisonResponse=com.buurman.dto.response.PropertyComparisonResponse</importMapping>
+                                <importMapping>PortfolioDashboardResponse=com.buurman.dto.response.PortfolioDashboardResponse</importMapping>
                                 <importMapping>PropertyDashboardResponse=com.buurman.dto.response.PropertyDashboardResponse</importMapping>
                                 <importMapping>PropertyFeeResponse=com.buurman.dto.response.PropertyFeeResponse</importMapping>
                                 <importMapping>PropertyFinancialSummary=com.buurman.dto.response.PropertyFinancialSummary</importMapping>

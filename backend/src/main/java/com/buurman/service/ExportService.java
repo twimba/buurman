@@ -13,8 +13,11 @@ import org.springframework.stereotype.Service;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.domain.identifier.TenantIdentifier;
+import com.buurman.dto.response.PortfolioDashboardResponse;
 import com.buurman.dto.response.PropertyDashboardResponse;
 import com.buurman.service.export.ContractBookletExporter;
+import com.buurman.service.export.PortfolioDashboardCsvExporter;
+import com.buurman.service.export.PortfolioDashboardPdfExporter;
 import com.buurman.service.export.PropertyBookletExporter;
 import com.buurman.service.export.PropertyDashboardCsvExporter;
 import com.buurman.service.export.PropertyDashboardPdfExporter;
@@ -35,6 +38,8 @@ public class ExportService {
   private final TenantBookletExporter tenantBookletExporter;
   private final PropertyDashboardPdfExporter propertyDashboardPdfExporter;
   private final PropertyDashboardCsvExporter propertyDashboardCsvExporter;
+  private final PortfolioDashboardPdfExporter portfolioDashboardPdfExporter;
+  private final PortfolioDashboardCsvExporter portfolioDashboardCsvExporter;
   private final MetricsService metricsService;
   private final Clock clock;
 
@@ -73,6 +78,16 @@ public class ExportService {
   public byte[] generatePropertyDashboardCSV(PropertyDashboardResponse dashboard) {
     return withMetrics(
         "property_dashboard_csv", () -> propertyDashboardCsvExporter.generate(dashboard));
+  }
+
+  public byte[] generatePortfolioDashboardPDF(PortfolioDashboardResponse dashboard) {
+    return withMetrics(
+        "portfolio_dashboard_pdf", () -> portfolioDashboardPdfExporter.generate(dashboard));
+  }
+
+  public byte[] generatePortfolioDashboardCSV(PortfolioDashboardResponse dashboard) {
+    return withMetrics(
+        "portfolio_dashboard_csv", () -> portfolioDashboardCsvExporter.generate(dashboard));
   }
 
   private byte[] withMetrics(String exportType, Supplier<byte[]> generator) {
