@@ -14,7 +14,6 @@ import com.buurman.security.UserPrincipal;
 import com.buurman.service.CalendarFeedService;
 
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -45,8 +44,7 @@ public class CalendarFeedController implements CalendarFeedsApi {
   }
 
   @Override
-  public CalendarFeedResponse createFeed(
-      @Valid CreateCalendarFeedRequest createCalendarFeedRequest) {
+  public CalendarFeedResponse createFeed(CreateCalendarFeedRequest createCalendarFeedRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return calendarFeedService.createFeed(createCalendarFeedRequest, principal);
   }

@@ -17,7 +17,6 @@ import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.PropertyAmenityService;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -39,7 +38,7 @@ public class AmenityController implements AmenitiesApi, PropertyAmenitiesApi {
 
   @Override
   public PropertyAmenityResponse addAmenity(
-      PropertyIdentifier propertyIdentifier, @Valid PropertyAmenityRequest propertyAmenityRequest) {
+      PropertyIdentifier propertyIdentifier, PropertyAmenityRequest propertyAmenityRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return propertyAmenityService.addAmenity(propertyIdentifier, propertyAmenityRequest, principal);
   }

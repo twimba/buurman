@@ -14,7 +14,6 @@ import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.WwsPointsCalculatorService;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -24,14 +23,13 @@ public class WwsCalculatorController implements WwsCalculatorApi {
   private final WwsPointsCalculatorService wwsService;
 
   @Override
-  public WwsCalculationResponse calculateWws(@Valid WwsCalculationRequest wwsCalculationRequest) {
+  public WwsCalculationResponse calculateWws(WwsCalculationRequest wwsCalculationRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return wwsService.calculate(wwsCalculationRequest, principal);
   }
 
   @Override
-  public WwsCalculationResponse calculateAndSaveWws(
-      @Valid WwsCalculationRequest wwsCalculationRequest) {
+  public WwsCalculationResponse calculateAndSaveWws(WwsCalculationRequest wwsCalculationRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return wwsService.calculateAndSave(wwsCalculationRequest, principal);
   }
