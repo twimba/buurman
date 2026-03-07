@@ -519,7 +519,7 @@ export const PropertyForm = ({
                 }
                 className={selectCls}
               >
-                <option value="">— No region —</option>
+                <option value="">Other</option>
                 {availableRegions.map((r) => (
                   <option key={r.regionCode} value={r.regionCode}>
                     {r.regionName}
