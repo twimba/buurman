@@ -39,7 +39,9 @@ public class CurrencyChangeRepository {
     var update = dsl.update(CONTRACTS).set(CONTRACTS.RENT_AMOUNT_CURRENCY, newCurrency);
 
     if (conversionRate.isPresent()) {
-      BigDecimal rate = conversionRate.get();
+      // Use DSL.val(rate) to avoid the MoneyMinorUnitConverter being applied to the rate.
+      // Without this, JOOQ converts 0.1 → 10 (minor units) via the field's converter.
+      Field<BigDecimal> rate = DSL.val(conversionRate.get());
       update =
           update.set(
               CONTRACTS.RENT_AMOUNT,
@@ -138,7 +140,7 @@ public class CurrencyChangeRepository {
                     .otherwise(PROPERTY_ACQUISITIONS.LAND_VALUE_CURRENCY));
 
     if (conversionRate.isPresent()) {
-      BigDecimal rate = conversionRate.get();
+      Field<BigDecimal> rate = DSL.val(conversionRate.get());
       acqUpdate =
           acqUpdate
               .set(
@@ -295,7 +297,7 @@ public class CurrencyChangeRepository {
     var update = dsl.update(table).set(currencyField, newCurrency);
 
     if (conversionRate.isPresent() && amountField.isPresent()) {
-      BigDecimal rate = conversionRate.get();
+      Field<BigDecimal> rate = DSL.val(conversionRate.get());
       Field<BigDecimal> field = amountField.get();
       update =
           update.set(field, DSL.round(field.mul(rate), MINOR_UNIT_SCALE).cast(field.getDataType()));
