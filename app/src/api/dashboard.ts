@@ -1,4 +1,5 @@
 import client from './client';
+import type { PortfolioDashboardResponse } from '../types/portfolio';
 
 export interface DashboardStats {
   totalProperties: number;
@@ -58,6 +59,35 @@ export const getAllAuditLogs = async (
 ): Promise<PageResponse<RecentActivity>> => {
   const response = await client.get('/audit-logs', {
     params: filters,
+  });
+  return response.data;
+};
+
+export const getPortfolioDashboard = async (
+  months?: number
+): Promise<PortfolioDashboardResponse> => {
+  const response = await client.get('/portfolio/dashboard', {
+    params: months != null ? { months } : undefined,
+  });
+  return response.data;
+};
+
+export const exportPortfolioDashboardPDF = async (
+  months?: number
+): Promise<Blob> => {
+  const response = await client.get('/portfolio/dashboard/export/pdf', {
+    params: months != null ? { months } : undefined,
+    responseType: 'blob',
+  });
+  return response.data;
+};
+
+export const exportPortfolioDashboardCSV = async (
+  months?: number
+): Promise<Blob> => {
+  const response = await client.get('/portfolio/dashboard/export/csv', {
+    params: months != null ? { months } : undefined,
+    responseType: 'blob',
   });
   return response.data;
 };

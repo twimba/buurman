@@ -7,6 +7,7 @@ import { MetricHint } from '@/components/common/MetricHint';
 import { ErrorMessage } from './ErrorMessage';
 import { PropertyStatusChart } from './PropertyStatusChart';
 import { PendingInvitationsPanel } from './dashboard/PendingInvitationsPanel';
+import { PortfolioDashboard } from './dashboard/PortfolioDashboard';
 import {
   Home,
   Users,
@@ -85,6 +86,9 @@ export const DashboardPage = () => {
     <div className="space-y-8">
       {/* Pending Invitations */}
       <PendingInvitationsPanel />
+
+      {/* Portfolio Dashboard */}
+      <PortfolioDashboard />
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

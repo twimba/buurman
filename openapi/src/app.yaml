@@ -54,6 +54,8 @@ tags:
     description: Photo management endpoints
   - name: Audit Logs
     description: Activity log management
+  - name: Portfolio Dashboard
+    description: Portfolio-level investment analytics
   - name: Property Dashboard
     description: Property-level investment analytics
   - name: Amenities
@@ -341,6 +343,12 @@ paths:
     $ref: 'paths/properties.yaml#/dashboard-export-pdf'
   /properties/{identifier}/dashboard/export/csv:
     $ref: 'paths/properties.yaml#/dashboard-export-csv'
+  /portfolio/dashboard:
+    $ref: 'paths/portfolio-dashboard.yaml#/portfolio-dashboard'
+  /portfolio/dashboard/export/pdf:
+    $ref: 'paths/portfolio-dashboard.yaml#/portfolio-dashboard-export-pdf'
+  /portfolio/dashboard/export/csv:
+    $ref: 'paths/portfolio-dashboard.yaml#/portfolio-dashboard-export-csv'
   /wws/calculate:
     $ref: 'paths/reference.yaml#/wws-calculate'
   /wws/calculate-and-save:
@@ -6224,6 +6232,149 @@ components:
         - month
         - selfOccupancyPercent
         - tenantOccupancyPercent
+    PortfolioDashboardResponse:
+      type: object
+      properties:
+        summary:
+          $ref: '#/components/schemas/PortfolioSummary'
+        cashFlow:
+          $ref: '#/components/schemas/CashFlowChartData'
+        propertyComparison:
+          type: array
+          items:
+            $ref: '#/components/schemas/PropertyPerformance'
+        allocation:
+          $ref: '#/components/schemas/AllocationData'
+        occupancy:
+          $ref: '#/components/schemas/OccupancyChartData'
+        equityComposition:
+          $ref: '#/components/schemas/EquityCompositionData'
+        propertiesWithFinancialData:
+          type: integer
+          format: int32
+        totalProperties:
+          type: integer
+          format: int32
+        currency:
+          type: string
+      required:
+        - summary
+        - cashFlow
+        - propertyComparison
+        - allocation
+        - occupancy
+        - equityComposition
+        - propertiesWithFinancialData
+        - totalProperties
+    PortfolioSummary:
+      type: object
+      properties:
+        totalPortfolioValue:
+          type: number
+        totalEquity:
+          type: number
+        monthlyCashFlow:
+          type: number
+        annualNoi:
+          type: number
+        weightedCapRate:
+          type: number
+        weightedCashOnCash:
+          type: number
+        portfolioOccupancy:
+          type: number
+        debtToEquity:
+          type: number
+        portfolioDscr:
+          type: number
+        incomeConcentration:
+          type: number
+        dataCompleteness:
+          type: number
+    PropertyPerformance:
+      type: object
+      properties:
+        identifier:
+          type: string
+        address:
+          type: string
+        category:
+          type: string
+        monthlyCashFlow:
+          type: number
+        annualNoi:
+          type: number
+        capRate:
+          type: number
+        cashOnCash:
+          type: number
+        occupancyRate:
+          type: number
+        completenessPercent:
+          type: integer
+          format: int32
+        currency:
+          type: string
+        currencyMismatch:
+          type: boolean
+      required:
+        - identifier
+        - address
+        - category
+        - completenessPercent
+        - currencyMismatch
+    AllocationData:
+      type: object
+      properties:
+        byCategory:
+          type: array
+          items:
+            $ref: '#/components/schemas/AllocationSlice'
+        byCountry:
+          type: array
+          items:
+            $ref: '#/components/schemas/AllocationSlice'
+      required:
+        - byCategory
+        - byCountry
+    AllocationSlice:
+      type: object
+      properties:
+        label:
+          type: string
+        value:
+          type: number
+        percentage:
+          type: number
+      required:
+        - label
+        - percentage
+        - value
+    EquityCompositionData:
+      type: object
+      properties:
+        properties:
+          type: array
+          items:
+            $ref: '#/components/schemas/PropertyEquity'
+      required:
+        - properties
+    PropertyEquity:
+      type: object
+      properties:
+        identifier:
+          type: string
+        address:
+          type: string
+        equity:
+          type: number
+        mortgage:
+          type: number
+        marketValue:
+          type: number
+      required:
+        - identifier
+        - address
     PropertyDashboardResponse:
       type: object
       properties:

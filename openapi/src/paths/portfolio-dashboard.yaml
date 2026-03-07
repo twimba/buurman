@@ -1,0 +1,131 @@
+portfolio-dashboard:
+  get:
+    tags:
+      - Portfolio Dashboard
+    summary: Get portfolio investment dashboard
+    description: Returns aggregated financial metrics across all properties
+    operationId: getPortfolioDashboard
+    parameters:
+      - name: months
+        in: query
+        description: Number of months to include (0 for all-time)
+        required: false
+        schema:
+          type: integer
+          format: int32
+        example: 12
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PortfolioDashboardResponse'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions or feature disabled
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+portfolio-dashboard-export-pdf:
+  get:
+    tags:
+      - Portfolio Dashboard
+    summary: Export portfolio dashboard as PDF
+    operationId: exportPortfolioPdf
+    parameters:
+      - name: months
+        in: query
+        description: Number of months to include
+        required: false
+        schema:
+          type: integer
+          format: int32
+        example: 12
+    responses:
+      "200":
+        description: OK
+        content:
+          "*/*":
+            schema:
+              type: string
+              format: byte
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions or feature disabled
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+portfolio-dashboard-export-csv:
+  get:
+    tags:
+      - Portfolio Dashboard
+    summary: Export portfolio dashboard as CSV
+    operationId: exportPortfolioCsv
+    parameters:
+      - name: months
+        in: query
+        description: Number of months to include
+        required: false
+        schema:
+          type: integer
+          format: int32
+        example: 12
+    responses:
+      "200":
+        description: OK
+        content:
+          "*/*":
+            schema:
+              type: string
+              format: byte
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions or feature disabled
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
