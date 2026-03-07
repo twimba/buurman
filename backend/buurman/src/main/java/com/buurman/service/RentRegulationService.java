@@ -78,9 +78,7 @@ public class RentRegulationService {
             .findCountryByCode(countryCode)
             .orElseThrow(() -> new NotFoundException("Country not found: " + countryCode));
 
-    return rentRegulationRepository
-        .findCurrentRules(country.getId(), Optional.empty())
-        .stream()
+    return rentRegulationRepository.findCurrentRules(country.getId(), Optional.empty()).stream()
         .map(this::toRuleResponse)
         .toList();
   }

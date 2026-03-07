@@ -1,6 +1,5 @@
 package com.buurman.repository;
 
-import static org.jooq.impl.DSL.currentTimestamp;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
@@ -25,6 +24,7 @@ import com.buurman.domain.RentRegulationCountry;
 import com.buurman.domain.RentRegulationRegion;
 import com.buurman.domain.RentRegulationRule;
 import com.buurman.domain.Sid;
+import com.buurman.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -97,10 +97,7 @@ public class RentRegulationRepository {
 
   public List<RentRegulationCountry> findAllCountries() {
     return List.copyOf(
-        dsl.select()
-            .from(COUNTRIES)
-            .orderBy(C_COUNTRY_NAME.asc())
-            .fetch(this::toCountryDomain));
+        dsl.select().from(COUNTRIES).orderBy(C_COUNTRY_NAME.asc()).fetch(this::toCountryDomain));
   }
 
   public Optional<RentRegulationCountry> findCountryByCode(String countryCode) {
@@ -111,10 +108,7 @@ public class RentRegulationRepository {
   }
 
   public Optional<RentRegulationCountry> findCountryById(UUID id) {
-    return dsl.select()
-        .from(COUNTRIES)
-        .where(C_ID.eq(id))
-        .fetchOptional(this::toCountryDomain);
+    return dsl.select().from(COUNTRIES).where(C_ID.eq(id)).fetchOptional(this::toCountryDomain);
   }
 
   public RentRegulationCountry saveCountry(RentRegulationCountry country) {
@@ -129,9 +123,7 @@ public class RentRegulationRepository {
           .set(C_COUNTRY_NAME, country.getCountryName())
           .set(C_HAS_REGIONAL, country.isHasRegionalRegulations())
           .set(C_SUMMARY, country.getSummary().orElse(null))
-          .set(
-              C_LAST_REVIEWED_AT,
-              country.getLastReviewedAt().map(Timestamp::from).orElse(null))
+          .set(C_LAST_REVIEWED_AT, country.getLastReviewedAt().map(Timestamp::from).orElse(null))
           .set(C_CREATED_AT, now)
           .set(C_UPDATED_AT, now)
           .set(C_CREATED_BY, country.getCreatedBy().orElse(null))
@@ -147,9 +139,7 @@ public class RentRegulationRepository {
           .set(C_COUNTRY_NAME, country.getCountryName())
           .set(C_HAS_REGIONAL, country.isHasRegionalRegulations())
           .set(C_SUMMARY, country.getSummary().orElse(null))
-          .set(
-              C_LAST_REVIEWED_AT,
-              country.getLastReviewedAt().map(Timestamp::from).orElse(null))
+          .set(C_LAST_REVIEWED_AT, country.getLastReviewedAt().map(Timestamp::from).orElse(null))
           .set(C_UPDATED_AT, now)
           .set(C_UPDATED_BY, country.getUpdatedBy().orElse(null))
           .where(C_ID.eq(country.getId()))
@@ -158,6 +148,16 @@ public class RentRegulationRepository {
       country.setUpdatedAt(now.toInstant());
     }
     return country;
+  }
+
+  public RentRegulationCountry getCountryByCode(String countryCode) {
+    return findCountryByCode(countryCode)
+        .orElseThrow(
+            () -> new NotFoundException("Rent regulation country not found: " + countryCode));
+  }
+
+  public RentRegulationCountry updateCountry(RentRegulationCountry country) {
+    return saveCountry(country);
   }
 
   public void deleteCountry(UUID id) {
@@ -216,6 +216,16 @@ public class RentRegulationRepository {
       region.setUpdatedAt(now.toInstant());
     }
     return region;
+  }
+
+  public RentRegulationRegion getRegionByCountryIdAndCode(UUID countryId, String regionCode) {
+    return findRegionByCode(countryId, regionCode)
+        .orElseThrow(
+            () -> new NotFoundException("Rent regulation region not found: " + regionCode));
+  }
+
+  public RentRegulationRegion updateRegion(RentRegulationRegion region) {
+    return saveRegion(region);
   }
 
   public void deleteRegion(UUID id) {
@@ -283,9 +293,7 @@ public class RentRegulationRepository {
           .set(RL_MAX_INCREASE_TYPE, rule.getMaxIncreaseType().name())
           .set(RL_INDEX_NAME, rule.getIndexName().orElse(null))
           .set(RL_INDEX_VALUE, rule.getIndexValue().orElse(null))
-          .set(
-              RL_EFFECTIVE_DATE,
-              rule.getEffectiveDate().map(Date::valueOf).orElse(null))
+          .set(RL_EFFECTIVE_DATE, rule.getEffectiveDate().map(Date::valueOf).orElse(null))
           .set(RL_NOTICE_PERIOD_DAYS, rule.getNoticePeriodDays().orElse(null))
           .set(RL_FREQUENCY, rule.getFrequency().name())
           .set(RL_ADDITIONAL_CONDITIONS, rule.getAdditionalConditions().orElse(null))
@@ -311,9 +319,7 @@ public class RentRegulationRepository {
           .set(RL_MAX_INCREASE_TYPE, rule.getMaxIncreaseType().name())
           .set(RL_INDEX_NAME, rule.getIndexName().orElse(null))
           .set(RL_INDEX_VALUE, rule.getIndexValue().orElse(null))
-          .set(
-              RL_EFFECTIVE_DATE,
-              rule.getEffectiveDate().map(Date::valueOf).orElse(null))
+          .set(RL_EFFECTIVE_DATE, rule.getEffectiveDate().map(Date::valueOf).orElse(null))
           .set(RL_NOTICE_PERIOD_DAYS, rule.getNoticePeriodDays().orElse(null))
           .set(RL_FREQUENCY, rule.getFrequency().name())
           .set(RL_ADDITIONAL_CONDITIONS, rule.getAdditionalConditions().orElse(null))
@@ -327,6 +333,16 @@ public class RentRegulationRepository {
       rule.setUpdatedAt(now.toInstant());
     }
     return rule;
+  }
+
+  public RentRegulationRule getRuleByIdentifier(Sid identifier) {
+    return findRuleByIdentifier(identifier)
+        .orElseThrow(
+            () -> new NotFoundException("Rent regulation rule not found: " + identifier.value()));
+  }
+
+  public RentRegulationRule updateRule(RentRegulationRule rule) {
+    return saveRule(rule);
   }
 
   public void deleteRule(UUID id) {
@@ -344,8 +360,7 @@ public class RentRegulationRepository {
   private RentRegulationCountry toCountryDomain(Record record) {
     RentRegulationCountry country = new RentRegulationCountry();
     country.setId(record.get(C_ID));
-    country.setIdentifier(
-        Optional.of(Sid.of(record.get(C_IDENTIFIER))));
+    country.setIdentifier(Optional.of(Sid.of(record.get(C_IDENTIFIER))));
     country.setCountryCode(record.get(C_COUNTRY_CODE));
     country.setCountryName(record.get(C_COUNTRY_NAME));
     Boolean hasRegional = record.get(C_HAS_REGIONAL);
@@ -369,8 +384,7 @@ public class RentRegulationRepository {
   private RentRegulationRegion toRegionDomain(Record record) {
     RentRegulationRegion region = new RentRegulationRegion();
     region.setId(record.get(R_ID));
-    region.setIdentifier(
-        Optional.of(Sid.of(record.get(R_IDENTIFIER))));
+    region.setIdentifier(Optional.of(Sid.of(record.get(R_IDENTIFIER))));
     region.setCountryId(record.get(R_COUNTRY_ID));
     region.setRegionCode(record.get(R_REGION_CODE));
     region.setRegionName(record.get(R_REGION_NAME));
@@ -391,8 +405,7 @@ public class RentRegulationRepository {
   private RentRegulationRule toRuleDomain(Record record) {
     RentRegulationRule rule = new RentRegulationRule();
     rule.setId(record.get(RL_ID));
-    rule.setIdentifier(
-        Optional.of(Sid.of(record.get(RL_IDENTIFIER))));
+    rule.setIdentifier(Optional.of(Sid.of(record.get(RL_IDENTIFIER))));
     rule.setCountryId(record.get(RL_COUNTRY_ID));
     rule.setRegionId(Optional.ofNullable(record.get(RL_REGION_ID)));
     rule.setYear(record.get(RL_YEAR));

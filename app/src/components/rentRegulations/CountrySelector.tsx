@@ -32,7 +32,9 @@ export const CountrySelector = ({
           }`}
         >
           <div className="flex items-center gap-3 mb-2">
-            <span className="text-2xl">{countryCodeToFlag(country.countryCode)}</span>
+            <span className="text-2xl">
+              {countryCodeToFlag(country.countryCode)}
+            </span>
             <span className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
               {country.countryName}
             </span>

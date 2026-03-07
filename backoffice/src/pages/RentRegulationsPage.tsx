@@ -299,7 +299,9 @@ function CountryRow({
     >
       <td className="px-4 py-3">
         <div className="flex items-center gap-2">
-          <span className="text-base">{countryCodeToFlag(country.countryCode)}</span>
+          <span className="text-base">
+            {countryCodeToFlag(country.countryCode)}
+          </span>
           <span className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
             {country.countryName}
           </span>

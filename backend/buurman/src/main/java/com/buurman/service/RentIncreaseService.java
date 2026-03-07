@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -171,7 +170,8 @@ public class RentIncreaseService {
         BigDecimal currentRent = contract.getRentAmount().value();
         BigDecimal multiplier =
             BigDecimal.ONE.add(
-                item.increasePercentage().divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP));
+                item.increasePercentage()
+                    .divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP));
         BigDecimal newRent = currentRent.multiply(multiplier).setScale(2, RoundingMode.HALF_UP);
 
         // Delegate to ContractRentPeriodService.addRentPeriod
@@ -233,8 +233,7 @@ public class RentIncreaseService {
 
   // --- Private helpers ---
 
-  private RentIncreaseResult errorResult(
-      RentIncreaseItem item, Contract contract, String error) {
+  private RentIncreaseResult errorResult(RentIncreaseItem item, Contract contract, String error) {
     return new RentIncreaseResult(
         item.contractIdentifier(),
         "Unknown",

@@ -8,9 +8,7 @@ export const useRentRegulationCountries = () => {
   });
 };
 
-export const useRentRegulationCountryDetail = (
-  code: string | undefined
-) => {
+export const useRentRegulationCountryDetail = (code: string | undefined) => {
   return useQuery({
     queryKey: ['rentRegulationCountry', code],
     queryFn: () => rentRegulationsApi.getCountryDetail(code ?? ''),
@@ -18,9 +16,7 @@ export const useRentRegulationCountryDetail = (
   });
 };
 
-export const useRentRegulationCurrentRules = (
-  code: string | undefined
-) => {
+export const useRentRegulationCurrentRules = (code: string | undefined) => {
   return useQuery({
     queryKey: ['rentRegulationCurrentRules', code],
     queryFn: () => rentRegulationsApi.getCurrentRules(code ?? ''),
@@ -34,8 +30,7 @@ export const useRentRegulationRulesByYear = (
 ) => {
   return useQuery({
     queryKey: ['rentRegulationRules', code, year],
-    queryFn: () =>
-      rentRegulationsApi.getRulesByYear(code ?? '', year ?? 0),
+    queryFn: () => rentRegulationsApi.getRulesByYear(code ?? '', year ?? 0),
     enabled: !!code && !!year,
   });
 };

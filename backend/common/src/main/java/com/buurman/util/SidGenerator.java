@@ -28,13 +28,13 @@ import com.buurman.domain.identifier.PropertyOutdoorAreaIdentifier;
 import com.buurman.domain.identifier.PropertyTaxIdentifier;
 import com.buurman.domain.identifier.PropertyValuationIdentifier;
 import com.buurman.domain.identifier.RegistrationInvitationIdentifier;
+import com.buurman.domain.identifier.RentRegulationCountryIdentifier;
+import com.buurman.domain.identifier.RentRegulationRegionIdentifier;
+import com.buurman.domain.identifier.RentRegulationRuleIdentifier;
 import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.domain.identifier.TenantAddressIdentifier;
 import com.buurman.domain.identifier.TenantIdentifier;
 import com.buurman.domain.identifier.UserIdentifier;
-import com.buurman.domain.identifier.RentRegulationCountryIdentifier;
-import com.buurman.domain.identifier.RentRegulationRegionIdentifier;
-import com.buurman.domain.identifier.RentRegulationRuleIdentifier;
 import com.buurman.domain.identifier.WwsCalculationIdentifier;
 
 import de.huxhorn.sulky.ulid.ULID;

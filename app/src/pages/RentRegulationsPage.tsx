@@ -51,7 +51,8 @@ export const RentRegulationsPage = () => {
     );
   }
 
-  const displayRules = selectedRegion && regionRules ? regionRules : countryDetail?.rules;
+  const displayRules =
+    selectedRegion && regionRules ? regionRules : countryDetail?.rules;
 
   return (
     <div className="min-h-screen bg-background">

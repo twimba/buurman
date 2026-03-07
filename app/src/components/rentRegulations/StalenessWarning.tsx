@@ -21,7 +21,8 @@ export const StalenessWarning = ({ lastReviewedAt }: StalenessWarningProps) => {
           Regulation data may be outdated
         </p>
         <p className="text-sm text-amber-700 dark:text-amber-400 mt-1">
-          Last reviewed: {formattedDate}. Please verify with official sources before applying rent increases.
+          Last reviewed: {formattedDate}. Please verify with official sources
+          before applying rent increases.
         </p>
       </div>
     </div>

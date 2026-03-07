@@ -1,19 +1,7 @@
 import { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  Pencil,
-  Trash2,
-  Plus,
-  X,
-  CheckCircle,
-  Layers,
-} from "lucide-react";
-import {
-  PageHeader,
-  Button,
-  ConfirmDialog,
-  RefreshButton,
-} from "@buurman/ui";
+import { Pencil, Trash2, Plus, X, CheckCircle, Layers } from "lucide-react";
+import { PageHeader, Button, ConfirmDialog, RefreshButton } from "@buurman/ui";
 import { format } from "date-fns";
 import {
   useRentRegulationCountries,
@@ -79,9 +67,7 @@ export const RentRegulationCountryDetailPage = () => {
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  const country = countries?.find(
-    (c) => c.countryCode === countryCode,
-  );
+  const country = countries?.find((c) => c.countryCode === countryCode);
 
   if (countriesLoading) {
     return <LoadingSpinner message="Loading country..." />;
@@ -116,7 +102,11 @@ export const RentRegulationCountryDetailPage = () => {
       <PageHeader
         title={country.countryName}
         subtitle={country.countryCode}
-        avatar={<span className="text-2xl">{countryCodeToFlag(country.countryCode)}</span>}
+        avatar={
+          <span className="text-2xl">
+            {countryCodeToFlag(country.countryCode)}
+          </span>
+        }
         backTo="/rent-regulations"
         actions={
           <div className="flex items-center gap-2">
@@ -898,9 +888,7 @@ function RulesTab({ countryCode }: { countryCode: string }) {
                   <tr
                     key={row.year}
                     className={`border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0 ${
-                      row.year === CURRENT_YEAR
-                        ? "bg-[#5c7cfa]/5"
-                        : ""
+                      row.year === CURRENT_YEAR ? "bg-[#5c7cfa]/5" : ""
                     }`}
                   >
                     <td className="px-4 py-2">

@@ -13,10 +13,7 @@ interface PropertyAdjustmentStepProps {
   onBack: () => void;
 }
 
-function computeNewRent(
-  currentRent: number,
-  percentage: number
-): number {
+function computeNewRent(currentRent: number, percentage: number): number {
   return Math.round(currentRent * (1 + percentage / 100) * 100) / 100;
 }
 
@@ -80,9 +77,7 @@ export const PropertyAdjustmentStep = ({
     field: 'increasePercentage' | 'effectiveDate',
     value: string
   ) => {
-    const contract = contracts.find(
-      (c) => c.contractIdentifier === contractId
-    );
+    const contract = contracts.find((c) => c.contractIdentifier === contractId);
     if (!contract) {
       return;
     }
@@ -247,13 +242,12 @@ export const PropertyAdjustmentStep = ({
                     </td>
                     <td className="px-4 py-3 text-right font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
                       {contract.currency}{' '}
-                      {(inc?.newRentAmount ?? contract.currentRentAmount).toLocaleString(
-                        undefined,
-                        {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        }
-                      )}
+                      {(
+                        inc?.newRentAmount ?? contract.currentRentAmount
+                      ).toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
                     </td>
                     <td className="px-4 py-3">
                       <input

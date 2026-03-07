@@ -299,6 +299,9 @@
                                 <schemaMapping>TenantIdentifier=com.buurman.domain.identifier.TenantIdentifier</schemaMapping>
                                 <schemaMapping>UserIdentifier=com.buurman.domain.identifier.UserIdentifier</schemaMapping>
                                 <schemaMapping>WwsCalculationIdentifier=com.buurman.domain.identifier.WwsCalculationIdentifier</schemaMapping>
+                                <schemaMapping>RentRegulationCountryIdentifier=com.buurman.domain.identifier.RentRegulationCountryIdentifier</schemaMapping>
+                                <schemaMapping>RentRegulationRegionIdentifier=com.buurman.domain.identifier.RentRegulationRegionIdentifier</schemaMapping>
+                                <schemaMapping>RentRegulationRuleIdentifier=com.buurman.domain.identifier.RentRegulationRuleIdentifier</schemaMapping>
                             </schemaMappings>
                             <importMappings>
                                 <importMapping>Instant=java.time.Instant</importMapping>
@@ -387,6 +390,21 @@
                                 <importMapping>WwsCalculationResponse=com.buurman.dto.response.WwsCalculationResponse</importMapping>
                                 <importMapping>WwsCategoryBreakdown=com.buurman.dto.response.WwsCategoryBreakdown</importMapping>
                                 <importMapping>WwsPreFillResponse=com.buurman.dto.response.WwsPreFillResponse</importMapping>
+                                <importMapping>RentRegulationCountryResponse=com.buurman.dto.response.RentRegulationCountryResponse</importMapping>
+                                <importMapping>RentRegulationCountryDetailResponse=com.buurman.dto.response.RentRegulationCountryDetailResponse</importMapping>
+                                <importMapping>RentRegulationRegionResponse=com.buurman.dto.response.RentRegulationRegionResponse</importMapping>
+                                <importMapping>RentRegulationRuleResponse=com.buurman.dto.response.RentRegulationRuleResponse</importMapping>
+                                <importMapping>RentIncreasePreviewResponse=com.buurman.dto.response.RentIncreasePreviewResponse</importMapping>
+                                <importMapping>RentIncreaseCountrySummary=com.buurman.dto.response.RentIncreaseCountrySummary</importMapping>
+                                <importMapping>RentIncreaseContractPreview=com.buurman.dto.response.RentIncreaseContractPreview</importMapping>
+                                <importMapping>ApplyRentIncreasesResponse=com.buurman.dto.response.ApplyRentIncreasesResponse</importMapping>
+                                <importMapping>RentIncreaseResult=com.buurman.dto.response.RentIncreaseResult</importMapping>
+                                <importMapping>RentIncreaseSummary=com.buurman.dto.response.RentIncreaseSummary</importMapping>
+                                <importMapping>RentIncreasePreviewRequest=com.buurman.dto.request.RentIncreasePreviewRequest</importMapping>
+                                <importMapping>ApplyRentIncreasesRequest=com.buurman.dto.request.ApplyRentIncreasesRequest</importMapping>
+                                <importMapping>RentIncreaseItem=com.buurman.dto.request.RentIncreaseItem</importMapping>
+                                <importMapping>MaxIncreaseType=com.buurman.domain.MaxIncreaseType</importMapping>
+                                <importMapping>RentFrequency=com.buurman.domain.RentFrequency</importMapping>
                                 <importMapping>AddContractPartyRequest=com.buurman.dto.request.AddContractPartyRequest</importMapping>
                                 <importMapping>AgriculturalDetailsRequest=com.buurman.dto.request.AgriculturalDetailsRequest</importMapping>
                                 <importMapping>BulkCreateExpensesRequest=com.buurman.dto.request.BulkCreateExpensesRequest</importMapping>

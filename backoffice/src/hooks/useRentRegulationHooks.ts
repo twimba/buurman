@@ -25,7 +25,9 @@ export const useCreateCountry = () => {
     mutationFn: (data: CreateCountryRequest) =>
       rentRegulationsApi.createCountry(data).then((res) => res.data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["rent-regulation-countries"] });
+      queryClient.invalidateQueries({
+        queryKey: ["rent-regulation-countries"],
+      });
     },
   });
 };
@@ -33,10 +35,17 @@ export const useCreateCountry = () => {
 export const useUpdateCountry = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ code, data }: { code: string; data: UpdateCountryRequest }) =>
-      rentRegulationsApi.updateCountry(code, data).then((res) => res.data),
+    mutationFn: ({
+      code,
+      data,
+    }: {
+      code: string;
+      data: UpdateCountryRequest;
+    }) => rentRegulationsApi.updateCountry(code, data).then((res) => res.data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["rent-regulation-countries"] });
+      queryClient.invalidateQueries({
+        queryKey: ["rent-regulation-countries"],
+      });
     },
   });
 };
@@ -46,7 +55,9 @@ export const useDeleteCountry = () => {
   return useMutation({
     mutationFn: (code: string) => rentRegulationsApi.deleteCountry(code),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["rent-regulation-countries"] });
+      queryClient.invalidateQueries({
+        queryKey: ["rent-regulation-countries"],
+      });
     },
   });
 };
@@ -56,7 +67,9 @@ export const useReviewCountry = () => {
   return useMutation({
     mutationFn: (code: string) => rentRegulationsApi.reviewCountry(code),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["rent-regulation-countries"] });
+      queryClient.invalidateQueries({
+        queryKey: ["rent-regulation-countries"],
+      });
     },
   });
 };
@@ -81,7 +94,10 @@ export const useCreateRegion = () => {
     }: {
       countryCode: string;
       data: CreateRegionRequest;
-    }) => rentRegulationsApi.createRegion(countryCode, data).then((res) => res.data),
+    }) =>
+      rentRegulationsApi
+        .createRegion(countryCode, data)
+        .then((res) => res.data),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["rent-regulation-regions", variables.countryCode],
@@ -151,7 +167,8 @@ export const useCreateRule = () => {
     }: {
       countryCode: string;
       data: CreateRuleRequest;
-    }) => rentRegulationsApi.createRule(countryCode, data).then((res) => res.data),
+    }) =>
+      rentRegulationsApi.createRule(countryCode, data).then((res) => res.data),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["rent-regulation-rules", variables.countryCode],
@@ -170,7 +187,9 @@ export const useBulkCreateRules = () => {
       countryCode: string;
       data: BulkRuleRequest;
     }) =>
-      rentRegulationsApi.bulkCreateRules(countryCode, data).then((res) => res.data),
+      rentRegulationsApi
+        .bulkCreateRules(countryCode, data)
+        .then((res) => res.data),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["rent-regulation-rules", variables.countryCode],
@@ -188,7 +207,8 @@ export const useUpdateRule = (countryCode: string) => {
     }: {
       identifier: string;
       data: UpdateRuleRequest;
-    }) => rentRegulationsApi.updateRule(identifier, data).then((res) => res.data),
+    }) =>
+      rentRegulationsApi.updateRule(identifier, data).then((res) => res.data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["rent-regulation-rules", countryCode],

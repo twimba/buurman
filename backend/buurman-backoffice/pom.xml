@@ -108,6 +108,9 @@
                                 <schemaMapping>TeamIdentifier=com.buurman.domain.identifier.TeamIdentifier</schemaMapping>
                                 <schemaMapping>UserIdentifier=com.buurman.domain.identifier.UserIdentifier</schemaMapping>
                                 <schemaMapping>WwsCalculationIdentifier=com.buurman.domain.identifier.WwsCalculationIdentifier</schemaMapping>
+                                <schemaMapping>RentRegulationCountryIdentifier=com.buurman.domain.identifier.RentRegulationCountryIdentifier</schemaMapping>
+                                <schemaMapping>RentRegulationRegionIdentifier=com.buurman.domain.identifier.RentRegulationRegionIdentifier</schemaMapping>
+                                <schemaMapping>RentRegulationRuleIdentifier=com.buurman.domain.identifier.RentRegulationRuleIdentifier</schemaMapping>
                             </schemaMappings>
                             <importMappings>
                                 <importMapping>Instant=java.time.Instant</importMapping>
@@ -139,6 +142,19 @@
                                 <importMapping>UpdateRateLimitConfigRequest=com.buurman.dto.request.backoffice.UpdateRateLimitConfigRequest</importMapping>
                                 <importMapping>UpdateRegistrationInvitationNoteRequest=com.buurman.dto.request.backoffice.UpdateRegistrationInvitationNoteRequest</importMapping>
                                 <importMapping>UpdateTeamNameRequest=com.buurman.dto.request.backoffice.UpdateTeamNameRequest</importMapping>
+                                <importMapping>RentRegulationCountryResponse=com.buurman.dto.response.RentRegulationCountryResponse</importMapping>
+                                <importMapping>RentRegulationRegionResponse=com.buurman.dto.response.RentRegulationRegionResponse</importMapping>
+                                <importMapping>RentRegulationRuleResponse=com.buurman.dto.response.RentRegulationRuleResponse</importMapping>
+                                <importMapping>BulkImportResult=com.buurman.dto.response.BulkImportResult</importMapping>
+                                <importMapping>CreateRentRegulationCountryRequest=com.buurman.dto.request.CreateRentRegulationCountryRequest</importMapping>
+                                <importMapping>UpdateRentRegulationCountryRequest=com.buurman.dto.request.UpdateRentRegulationCountryRequest</importMapping>
+                                <importMapping>CreateRentRegulationRegionRequest=com.buurman.dto.request.CreateRentRegulationRegionRequest</importMapping>
+                                <importMapping>UpdateRentRegulationRegionRequest=com.buurman.dto.request.UpdateRentRegulationRegionRequest</importMapping>
+                                <importMapping>CreateRentRegulationRuleRequest=com.buurman.dto.request.CreateRentRegulationRuleRequest</importMapping>
+                                <importMapping>UpdateRentRegulationRuleRequest=com.buurman.dto.request.UpdateRentRegulationRuleRequest</importMapping>
+                                <importMapping>BulkCreateRentRegulationRulesRequest=com.buurman.dto.request.BulkCreateRentRegulationRulesRequest</importMapping>
+                                <importMapping>MaxIncreaseType=com.buurman.domain.MaxIncreaseType</importMapping>
+                                <importMapping>RentFrequency=com.buurman.domain.RentFrequency</importMapping>
                             </importMappings>
                         </configuration>
                     </execution>

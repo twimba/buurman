@@ -7,5 +7,4 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 
 public record ApplyRentIncreasesRequest(
-    @Min(1900) int year,
-    @NotEmpty @Valid List<RentIncreaseItem> increases) {}
+    @Min(1900) int year, @NotEmpty @Valid List<RentIncreaseItem> increases) {}

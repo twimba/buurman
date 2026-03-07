@@ -167,7 +167,8 @@ export const ReviewStep = ({
                       </p>
                     </td>
                     <td className="px-4 py-3 text-right text-[#3d4463] dark:text-[#c4c8db]">
-                      {contract.currency} {formatMoney(contract.currentRentAmount)}
+                      {contract.currency}{' '}
+                      {formatMoney(contract.currentRentAmount)}
                     </td>
                     <td className="px-4 py-3 text-right text-green-600 dark:text-green-400">
                       +{inc.increasePercentage}%
@@ -228,7 +229,9 @@ export const ReviewStep = ({
           disabled={isApplying || changedIncreases.length === 0}
           className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isApplying ? 'Applying...' : `Apply ${changedIncreases.length} Increase${changedIncreases.length !== 1 ? 's' : ''}`}
+          {isApplying
+            ? 'Applying...'
+            : `Apply ${changedIncreases.length} Increase${changedIncreases.length !== 1 ? 's' : ''}`}
         </button>
       </div>
     </div>

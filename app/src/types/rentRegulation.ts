@@ -8,8 +8,7 @@ export interface RentRegulationCountryResponse {
   stale: boolean;
 }
 
-export interface RentRegulationCountryDetailResponse
-  extends RentRegulationCountryResponse {
+export interface RentRegulationCountryDetailResponse extends RentRegulationCountryResponse {
   regions: RentRegulationRegionResponse[];
   rules: RentRegulationRuleResponse[];
 }

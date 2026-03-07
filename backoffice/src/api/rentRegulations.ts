@@ -98,29 +98,51 @@ export const rentRegulationsApi = {
   createCountry: (data: CreateCountryRequest) =>
     client.post<RentRegulationCountryResponse>(`${BASE}/countries`, data),
   updateCountry: (code: string, data: UpdateCountryRequest) =>
-    client.put<RentRegulationCountryResponse>(`${BASE}/countries/${code}`, data),
-  deleteCountry: (code: string) =>
-    client.delete(`${BASE}/countries/${code}`),
+    client.put<RentRegulationCountryResponse>(
+      `${BASE}/countries/${code}`,
+      data,
+    ),
+  deleteCountry: (code: string) => client.delete(`${BASE}/countries/${code}`),
   reviewCountry: (code: string) =>
     client.post(`${BASE}/countries/${code}/review`),
 
   // Regions
   listRegions: (countryCode: string) =>
-    client.get<RentRegulationRegionResponse[]>(`${BASE}/countries/${countryCode}/regions`),
+    client.get<RentRegulationRegionResponse[]>(
+      `${BASE}/countries/${countryCode}/regions`,
+    ),
   createRegion: (countryCode: string, data: CreateRegionRequest) =>
-    client.post<RentRegulationRegionResponse>(`${BASE}/countries/${countryCode}/regions`, data),
-  updateRegion: (countryCode: string, regionCode: string, data: UpdateRegionRequest) =>
-    client.put<RentRegulationRegionResponse>(`${BASE}/countries/${countryCode}/regions/${regionCode}`, data),
+    client.post<RentRegulationRegionResponse>(
+      `${BASE}/countries/${countryCode}/regions`,
+      data,
+    ),
+  updateRegion: (
+    countryCode: string,
+    regionCode: string,
+    data: UpdateRegionRequest,
+  ) =>
+    client.put<RentRegulationRegionResponse>(
+      `${BASE}/countries/${countryCode}/regions/${regionCode}`,
+      data,
+    ),
   deleteRegion: (countryCode: string, regionCode: string) =>
     client.delete(`${BASE}/countries/${countryCode}/regions/${regionCode}`),
 
   // Rules
   listRules: (countryCode: string) =>
-    client.get<RentRegulationRuleResponse[]>(`${BASE}/countries/${countryCode}/rules`),
+    client.get<RentRegulationRuleResponse[]>(
+      `${BASE}/countries/${countryCode}/rules`,
+    ),
   createRule: (countryCode: string, data: CreateRuleRequest) =>
-    client.post<RentRegulationRuleResponse>(`${BASE}/countries/${countryCode}/rules`, data),
+    client.post<RentRegulationRuleResponse>(
+      `${BASE}/countries/${countryCode}/rules`,
+      data,
+    ),
   bulkCreateRules: (countryCode: string, data: BulkRuleRequest) =>
-    client.post<BulkImportResult>(`${BASE}/countries/${countryCode}/rules/bulk`, data),
+    client.post<BulkImportResult>(
+      `${BASE}/countries/${countryCode}/rules/bulk`,
+      data,
+    ),
   updateRule: (identifier: string, data: UpdateRuleRequest) =>
     client.put<RentRegulationRuleResponse>(`${BASE}/rules/${identifier}`, data),
   deleteRule: (identifier: string) =>

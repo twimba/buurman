@@ -22,7 +22,9 @@ export const RegulationSummary = ({ country }: RegulationSummaryProps) => {
 
       <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-6">
         <div className="flex items-center gap-3 mb-4">
-          <span className="text-3xl">{countryCodeToFlag(country.countryCode)}</span>
+          <span className="text-3xl">
+            {countryCodeToFlag(country.countryCode)}
+          </span>
           <div>
             <h2 className="text-xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
               {country.countryName}
