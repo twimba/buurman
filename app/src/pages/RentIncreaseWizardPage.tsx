@@ -18,7 +18,7 @@ type WizardStep = 'year' | 'adjust' | 'review' | 'confirmation';
 
 const STEPS: { key: WizardStep; label: string }[] = [
   { key: 'year', label: 'Select Year' },
-  { key: 'adjust', label: 'Adjust Increases' },
+  { key: 'adjust', label: 'Adjust Rents' },
   { key: 'review', label: 'Review' },
   { key: 'confirmation', label: 'Confirmation' },
 ];
@@ -96,11 +96,11 @@ export const RentIncreaseWizardPage = () => {
           <div className="flex items-center gap-3 mb-1">
             <Scale className="h-8 w-8 text-primary-500 dark:text-primary-300" />
             <h1 className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-              Rent Increase Wizard
+              Rent Adjustment Wizard
             </h1>
           </div>
           <p className="text-[#6b7194] dark:text-[#8b90a8] ml-11">
-            Apply regulated rent increases across your portfolio
+            Apply regulated rent adjustments across your portfolio
           </p>
         </div>
 

@@ -63,11 +63,18 @@ export const ReviewStep = ({
     return totals;
   }, [changedIncreases, contracts]);
 
-  const formatMoney = (amount: number) =>
-    amount.toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
+  const formatMoney = (amount: number, currency?: string) =>
+    currency
+      ? amount.toLocaleString(undefined, {
+          style: 'currency',
+          currency,
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      : amount.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
 
   return (
     <div className="space-y-6">
@@ -92,7 +99,7 @@ export const ReviewStep = ({
                     Previous
                   </span>
                   <span className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
-                    {formatMoney(totals.previousTotal)}
+                    {formatMoney(totals.previousTotal, currency)}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -100,7 +107,7 @@ export const ReviewStep = ({
                     New
                   </span>
                   <span className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                    {formatMoney(totals.newTotal)}
+                    {formatMoney(totals.newTotal, currency)}
                   </span>
                 </div>
                 <div className="flex justify-between border-t border-[#e2e6f0] dark:border-[#2a2e3f] pt-1">
@@ -115,7 +122,10 @@ export const ReviewStep = ({
                     }`}
                   >
                     {totals.newTotal >= totals.previousTotal ? '+' : ''}
-                    {formatMoney(totals.newTotal - totals.previousTotal)}
+                    {formatMoney(
+                      totals.newTotal - totals.previousTotal,
+                      currency
+                    )}
                   </span>
                 </div>
               </div>
@@ -174,8 +184,10 @@ export const ReviewStep = ({
                       </p>
                     </td>
                     <td className="px-4 py-3 text-right text-[#3d4463] dark:text-[#c4c8db]">
-                      {contract.currency}{' '}
-                      {formatMoney(contract.currentRentAmount)}
+                      {formatMoney(
+                        contract.currentRentAmount,
+                        contract.currency
+                      )}
                     </td>
                     <td
                       className={`px-4 py-3 text-right font-medium ${
@@ -190,7 +202,7 @@ export const ReviewStep = ({
                       {inc.increasePercentage.toFixed(1)}%
                     </td>
                     <td className="px-4 py-3 text-right font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                      {contract.currency} {formatMoney(inc.newRentAmount)}
+                      {formatMoney(inc.newRentAmount, contract.currency)}
                     </td>
                     <td className="px-4 py-3 text-[#3d4463] dark:text-[#c4c8db]">
                       {inc.effectiveDate}
@@ -224,7 +236,7 @@ export const ReviewStep = ({
                   </p>
                 </div>
                 <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                  {contract.currency} {formatMoney(contract.currentRentAmount)}
+                  {formatMoney(contract.currentRentAmount, contract.currency)}
                 </span>
               </div>
             ))}
@@ -247,7 +259,7 @@ export const ReviewStep = ({
         >
           {isApplying
             ? 'Applying...'
-            : `Apply ${changedIncreases.length} Increase${changedIncreases.length !== 1 ? 's' : ''}`}
+            : `Apply ${changedIncreases.length} Adjustment${changedIncreases.length !== 1 ? 's' : ''}`}
         </button>
       </div>
     </div>

@@ -7,6 +7,10 @@ import {
   ArrowRight,
   CalendarDays,
   Sparkles,
+  ChevronsUp,
+  ChevronsDown,
+  Equal,
+  SlidersHorizontal,
 } from 'lucide-react';
 import type { RentIncreaseContractPreview } from '@/types/rentIncrease';
 import type { RentIncreaseItem } from '@/types/rentIncrease';
@@ -25,8 +29,10 @@ function computeNewRent(currentRent: number, percentage: number): number {
   return Math.round(currentRent * (1 + percentage / 100) * 100) / 100;
 }
 
-const formatMoney = (amount: number) =>
+const formatMoney = (amount: number, currency: string) =>
   amount.toLocaleString(undefined, {
+    style: 'currency',
+    currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
@@ -82,20 +88,33 @@ export const PropertyAdjustmentStep = ({
   const strategies: {
     value: Strategy;
     label: string;
+    icon: React.ReactNode;
     description: string;
   }[] = [
     {
       value: 'maximum',
       label: 'Maximum',
+      icon: <ChevronsUp className="h-3.5 w-3.5" />,
       description: 'Apply max regulated %',
     },
-    { value: 'medium', label: 'Medium', description: 'Average of min & max' },
+    {
+      value: 'medium',
+      label: 'Medium',
+      icon: <Equal className="h-3.5 w-3.5" />,
+      description: 'Average of min & max',
+    },
     {
       value: 'minimum',
       label: 'Minimum',
+      icon: <ChevronsDown className="h-3.5 w-3.5" />,
       description: 'Apply min regulated %',
     },
-    { value: 'custom', label: 'Custom', description: 'Set per property' },
+    {
+      value: 'custom',
+      label: 'Custom',
+      icon: <SlidersHorizontal className="h-3.5 w-3.5" />,
+      description: 'Set per property',
+    },
   ];
 
   const applyStrategy = (s: Strategy) => {
@@ -222,12 +241,13 @@ export const PropertyAdjustmentStep = ({
                   <button
                     key={s.value}
                     onClick={() => applyStrategy(s.value)}
-                    className={`relative px-3 py-2 rounded-md text-xs font-medium transition-all duration-150 ${
+                    className={`relative inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium transition-all duration-150 ${
                       strategy === s.value
                         ? 'bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] shadow-sm ring-1 ring-[#e2e6f0] dark:ring-[#2a2e3f]'
                         : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#3d4463] dark:hover:text-[#c4c8db]'
                     }`}
                   >
+                    {s.icon}
                     {s.label}
                   </button>
                 ))}
@@ -328,8 +348,10 @@ export const PropertyAdjustmentStep = ({
                     {/* Current rent */}
                     <td className="px-5 py-4 text-right">
                       <span className="font-mono text-sm text-[#3d4463] dark:text-[#c4c8db]">
-                        {contract.currency}{' '}
-                        {formatMoney(contract.currentRentAmount)}
+                        {formatMoney(
+                          contract.currentRentAmount,
+                          contract.currency
+                        )}
                       </span>
                     </td>
 
@@ -337,45 +359,48 @@ export const PropertyAdjustmentStep = ({
                     <td className="px-5 py-4 text-center">
                       {contract.regulationMinPercent != null &&
                       contract.regulationMaxPercent != null ? (
-                        <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium bg-[#f1f3f9] dark:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8] ring-1 ring-[#e2e6f0] dark:ring-[#2a2e3f]">
-                          {contract.regulationMinPercent}%
-                          <ArrowRight className="h-3 w-3 text-[#9ca0b8]" />
-                          {contract.regulationMaxPercent}%
+                        <span className="inline-flex items-center justify-center gap-1 w-[120px] rounded-full px-2.5 py-1 text-xs font-medium bg-[#f1f3f9] dark:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8] ring-1 ring-[#e2e6f0] dark:ring-[#2a2e3f]">
+                          <span className="w-[32px] text-right">
+                            {contract.regulationMinPercent}%
+                          </span>
+                          <ArrowRight className="h-3 w-3 flex-shrink-0 text-[#9ca0b8]" />
+                          <span className="w-[32px] text-left">
+                            {contract.regulationMaxPercent}%
+                          </span>
                         </span>
                       ) : (
-                        <span className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
+                        <span className="inline-flex items-center justify-center w-[120px] text-xs text-[#9ca0b8] dark:text-[#5c6180]">
                           No data
                         </span>
                       )}
                     </td>
 
-                    {/* Adjustment input + badge */}
+                    {/* Adjustment — editable pill */}
                     <td className="px-5 py-4">
-                      <div className="flex items-center justify-center gap-2">
-                        <div className="relative">
-                          <input
-                            type="number"
-                            step="0.1"
-                            value={inc?.increasePercentage ?? 0}
-                            onChange={(e) =>
-                              updateIncrease(
-                                contract.contractIdentifier,
-                                'increasePercentage',
-                                e.target.value
-                              )
-                            }
-                            className="w-[72px] h-8 pl-2.5 pr-7 rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#0c0d14] text-right text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] focus:outline-none focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa]/20 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                          />
-                          <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs font-medium text-[#9ca0b8] dark:text-[#5c6180] pointer-events-none">
-                            %
-                          </span>
-                        </div>
-                        <span
-                          className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${pctColor(pct)} ${pctBgColor(pct)}`}
+                      <div className="flex items-center justify-center">
+                        <label
+                          className={`inline-flex items-center gap-1 rounded-full pl-2 pr-1 py-0.5 text-xs font-semibold cursor-text ${pctColor(pct)} ${pctBgColor(pct)}`}
                         >
                           <PctIcon pct={pct} />
-                          {formatPct(pct)}
-                        </span>
+                          <div className="relative">
+                            <input
+                              type="number"
+                              step="0.1"
+                              value={inc?.increasePercentage ?? 0}
+                              onChange={(e) =>
+                                updateIncrease(
+                                  contract.contractIdentifier,
+                                  'increasePercentage',
+                                  e.target.value
+                                )
+                              }
+                              className="w-[48px] h-5 bg-transparent text-right text-xs font-semibold text-inherit focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            />
+                            <span className="pointer-events-none text-xs font-semibold">
+                              %
+                            </span>
+                          </div>
+                        </label>
                       </div>
                     </td>
 
@@ -383,14 +408,14 @@ export const PropertyAdjustmentStep = ({
                     <td className="px-5 py-4 text-right">
                       <div>
                         <span className="font-mono text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                          {contract.currency} {formatMoney(newRent)}
+                          {formatMoney(newRent, contract.currency)}
                         </span>
                         {pct !== 0 && (
                           <p
                             className={`text-xs font-medium mt-0.5 ${pctColor(pct)}`}
                           >
                             {diff > 0 ? '+' : ''}
-                            {formatMoney(diff)}/mo
+                            {formatMoney(diff, contract.currency)}/mo
                           </p>
                         )}
                       </div>

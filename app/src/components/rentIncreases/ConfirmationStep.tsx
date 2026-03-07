@@ -29,8 +29,8 @@ export const ConfirmationStep = ({ response }: ConfirmationStepProps) => {
           <div>
             <h3 className="text-xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
               {summary.failureCount === 0
-                ? 'All rent increases applied successfully'
-                : `${summary.successCount} of ${summary.totalContracts} increases applied`}
+                ? 'All rent adjustments applied successfully'
+                : `${summary.successCount} of ${summary.totalContracts} adjustments applied`}
             </h3>
             {summary.failureCount > 0 && (
               <p className="text-sm text-amber-600 dark:text-amber-400">

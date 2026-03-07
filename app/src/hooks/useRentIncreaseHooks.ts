@@ -25,7 +25,7 @@ export const useApplyRentIncreases = () => {
       queryClient.invalidateQueries({ queryKey: ['rentPeriods'] });
       queryClient.invalidateQueries({ queryKey: ['payments'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      showToast('Rent increases applied successfully', 'success');
+      showToast('Rent adjustments applied successfully', 'success');
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
