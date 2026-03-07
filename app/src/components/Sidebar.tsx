@@ -22,6 +22,7 @@ import {
   ChevronDown,
   ChevronsLeft,
   ChevronsRight,
+  Scale,
 } from 'lucide-react';
 import { useState } from 'react';
 import { SidebarTooltip } from '@buurman/ui';
@@ -36,6 +37,7 @@ const navigation = [
   { name: 'Properties', href: '/properties', icon: Home },
   { name: 'Tenants', href: '/tenants', icon: Users },
   { name: 'Contracts', href: '/contracts', icon: FileText },
+  { name: 'Rent Regulations', href: '/rent-regulations', icon: Scale },
   {
     name: 'Payment Instructions',
     href: '/payment-instructions',

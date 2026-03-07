@@ -133,6 +133,16 @@ const SettingsPage = lazy(() =>
 const AuditLogPage = lazy(() =>
   import('./pages/AuditLogPage').then((m) => ({ default: m.AuditLogPage }))
 );
+const RentRegulationsPage = lazy(() =>
+  import('./pages/RentRegulationsPage').then((m) => ({
+    default: m.RentRegulationsPage,
+  }))
+);
+const RentIncreaseWizardPage = lazy(() =>
+  import('./pages/RentIncreaseWizardPage').then((m) => ({
+    default: m.RentIncreaseWizardPage,
+  }))
+);
 
 // Admin pages
 const AdminTeamMembersPage = lazy(() =>
@@ -323,6 +333,26 @@ function App() {
                           <ProtectedRoute>
                             <Layout>
                               <ContractEditPage />
+                            </Layout>
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/rent-regulations"
+                        element={
+                          <ProtectedRoute>
+                            <Layout>
+                              <RentRegulationsPage />
+                            </Layout>
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/rent-increases/apply"
+                        element={
+                          <ProtectedRoute>
+                            <Layout>
+                              <RentIncreaseWizardPage />
                             </Layout>
                           </ProtectedRoute>
                         }
