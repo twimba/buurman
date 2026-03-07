@@ -98,6 +98,10 @@ tags:
     description: Team onboarding wizard
   - name: Currency
     description: Currency and country-currency mappings
+  - name: Rent Regulations
+    description: Rent regulation data by country and region
+  - name: Rent Increases
+    description: Annual rent increase preview and application
 paths:
   /users/preferences/notifications:
     get:
@@ -15555,6 +15559,378 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
+  /rent-regulations/countries:
+    get:
+      tags:
+        - Rent Regulations
+      summary: List regulation countries
+      description: List all countries with rent regulation data
+      operationId: listRentRegulationCountries
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RentRegulationCountryResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /rent-regulations/countries/{code}:
+    get:
+      tags:
+        - Rent Regulations
+      summary: Get country detail
+      description: Get detailed rent regulation info for a country including regions and rules
+      operationId: getRentRegulationCountryDetail
+      parameters:
+        - name: code
+          in: path
+          description: Country code (ISO 3166-1 alpha-2 or alpha-3)
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RentRegulationCountryDetailResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /rent-regulations/countries/{code}/current:
+    get:
+      tags:
+        - Rent Regulations
+      summary: Get current rules for country
+      description: Get current year rent regulation rules for a country
+      operationId: getCurrentRentRegulationRules
+      parameters:
+        - name: code
+          in: path
+          description: Country code (ISO 3166-1 alpha-2 or alpha-3)
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RentRegulationRuleResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /rent-regulations/countries/{code}/rules:
+    get:
+      tags:
+        - Rent Regulations
+      summary: Get rules by year for country
+      description: Get rent regulation rules for a country filtered by year
+      operationId: getRentRegulationRulesByYear
+      parameters:
+        - name: code
+          in: path
+          description: Country code (ISO 3166-1 alpha-2 or alpha-3)
+          required: true
+          schema:
+            type: string
+        - name: year
+          in: query
+          description: Year to filter rules
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 1900
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RentRegulationRuleResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /rent-regulations/countries/{code}/regions/{regionCode}/current:
+    get:
+      tags:
+        - Rent Regulations
+      summary: Get current rules for region
+      description: Get current year rent regulation rules for a specific region within a country
+      operationId: getCurrentRegionRentRegulationRules
+      parameters:
+        - name: code
+          in: path
+          description: Country code (ISO 3166-1 alpha-2 or alpha-3)
+          required: true
+          schema:
+            type: string
+        - name: regionCode
+          in: path
+          description: Region code
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RentRegulationRuleResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /rent-increases/preview:
+    post:
+      tags:
+        - Rent Increases
+      summary: Preview rent increases
+      description: Preview eligible contracts and applicable regulation rules for a rent increase year
+      operationId: previewRentIncreases
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RentIncreasePreviewRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RentIncreasePreviewResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /rent-increases/apply:
+    post:
+      tags:
+        - Rent Increases
+      summary: Apply rent increases
+      description: Apply rent increases to selected contracts with specified percentages and effective dates
+      operationId: applyRentIncreases
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplyRentIncreasesRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplyRentIncreasesResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
 components:
   schemas:
     AmenityIdentifier:
@@ -22253,6 +22629,316 @@ components:
       required:
         - countryCode
         - currency
+    MaxIncreaseType:
+      type: string
+      enum:
+        - FIXED_PERCENTAGE
+        - CPI_LINKED
+        - INDEX_LINKED
+        - MARKET_RENT
+        - NEGOTIATED
+        - FROZEN
+        - OTHER
+    RentFrequency:
+      type: string
+      enum:
+        - ANNUAL
+        - SEMI_ANNUAL
+        - QUARTERLY
+        - MONTHLY
+    RentRegulationCountryResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        countryCode:
+          type: string
+        countryName:
+          type: string
+        hasRegionalRegulations:
+          type: boolean
+        summary:
+          type: string
+        lastReviewedAt:
+          type: string
+          format: date-time
+        stale:
+          type: boolean
+      required:
+        - identifier
+        - countryCode
+        - countryName
+        - hasRegionalRegulations
+        - stale
+    RentRegulationCountryDetailResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        countryCode:
+          type: string
+        countryName:
+          type: string
+        hasRegionalRegulations:
+          type: boolean
+        summary:
+          type: string
+        lastReviewedAt:
+          type: string
+          format: date-time
+        stale:
+          type: boolean
+        regions:
+          type: array
+          items:
+            $ref: '#/components/schemas/RentRegulationRegionResponse'
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/RentRegulationRuleResponse'
+      required:
+        - identifier
+        - countryCode
+        - countryName
+        - hasRegionalRegulations
+        - stale
+        - regions
+        - rules
+    RentRegulationRegionResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        regionCode:
+          type: string
+        regionName:
+          type: string
+        summary:
+          type: string
+      required:
+        - identifier
+        - regionCode
+        - regionName
+    RentRegulationRuleResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        year:
+          type: integer
+          format: int32
+        propertyCategory:
+          type: string
+        sector:
+          type: string
+        maxIncreasePercentage:
+          type: number
+        maxIncreaseType:
+          $ref: '#/components/schemas/MaxIncreaseType'
+        indexName:
+          type: string
+        indexValue:
+          type: number
+        effectiveDate:
+          type: string
+          format: date
+        noticePeriodDays:
+          type: integer
+          format: int32
+        frequency:
+          $ref: '#/components/schemas/RentFrequency'
+        additionalConditions:
+          type: string
+        sourceUrl:
+          type: string
+        notes:
+          type: string
+      required:
+        - identifier
+        - year
+        - propertyCategory
+        - maxIncreaseType
+        - frequency
+    RentIncreasePreviewRequest:
+      type: object
+      properties:
+        year:
+          type: integer
+          format: int32
+          minimum: 1900
+      required:
+        - year
+    RentIncreasePreviewResponse:
+      type: object
+      properties:
+        year:
+          type: integer
+          format: int32
+        countrySummaries:
+          type: array
+          items:
+            $ref: '#/components/schemas/RentIncreaseCountrySummary'
+        contracts:
+          type: array
+          items:
+            $ref: '#/components/schemas/RentIncreaseContractPreview'
+      required:
+        - year
+        - countrySummaries
+        - contracts
+    RentIncreaseCountrySummary:
+      type: object
+      properties:
+        countryCode:
+          type: string
+        countryName:
+          type: string
+        contractCount:
+          type: integer
+          format: int32
+        hasRegulationData:
+          type: boolean
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/RentRegulationRuleResponse'
+      required:
+        - countryCode
+        - countryName
+        - contractCount
+        - hasRegulationData
+        - rules
+    RentIncreaseContractPreview:
+      type: object
+      properties:
+        contractIdentifier:
+          type: string
+        propertyIdentifier:
+          type: string
+        propertyName:
+          type: string
+        propertyAddress:
+          type: string
+        propertyCountryCode:
+          type: string
+        currentRentAmount:
+          type: number
+        currency:
+          type: string
+        regulationMinPercent:
+          type: number
+        regulationMaxPercent:
+          type: number
+        suggestedEffectiveDate:
+          type: string
+          format: date
+      required:
+        - contractIdentifier
+        - propertyIdentifier
+        - propertyName
+        - propertyAddress
+        - propertyCountryCode
+        - currentRentAmount
+        - currency
+    RentIncreaseItem:
+      type: object
+      properties:
+        contractIdentifier:
+          $ref: '#/components/schemas/ContractIdentifier'
+        increasePercentage:
+          type: number
+          minimum: 0.01
+        effectiveDate:
+          type: string
+          format: date
+      required:
+        - contractIdentifier
+        - increasePercentage
+        - effectiveDate
+    ApplyRentIncreasesRequest:
+      type: object
+      properties:
+        year:
+          type: integer
+          format: int32
+          minimum: 1900
+        increases:
+          type: array
+          items:
+            $ref: '#/components/schemas/RentIncreaseItem'
+          minItems: 1
+      required:
+        - year
+        - increases
+    ApplyRentIncreasesResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/RentIncreaseResult'
+        summary:
+          $ref: '#/components/schemas/RentIncreaseSummary'
+      required:
+        - results
+        - summary
+    RentIncreaseResult:
+      type: object
+      properties:
+        contractIdentifier:
+          type: string
+        propertyName:
+          type: string
+        success:
+          type: boolean
+        previousRentAmount:
+          type: number
+        newRentAmount:
+          type: number
+        effectiveDate:
+          type: string
+          format: date
+        paymentsCancelled:
+          type: integer
+          format: int32
+        paymentsGenerated:
+          type: integer
+          format: int32
+        error:
+          type: string
+      required:
+        - contractIdentifier
+        - propertyName
+        - success
+        - previousRentAmount
+        - newRentAmount
+        - effectiveDate
+        - paymentsCancelled
+        - paymentsGenerated
+    RentIncreaseSummary:
+      type: object
+      properties:
+        totalContractsUpdated:
+          type: integer
+          format: int32
+        totalRentPeriodsCreated:
+          type: integer
+          format: int32
+        totalPaymentsCancelled:
+          type: integer
+          format: int32
+        totalPaymentsGenerated:
+          type: integer
+          format: int32
+        totalFailed:
+          type: integer
+          format: int32
+      required:
+        - totalContractsUpdated
+        - totalRentPeriodsCreated
+        - totalPaymentsCancelled
+        - totalPaymentsGenerated
+        - totalFailed
   securitySchemes:
     bearer-jwt:
       type: http
