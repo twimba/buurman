@@ -60,6 +60,11 @@ public class DemoTeamGenerator {
           .set(TEAM_PREFERENCES.ID, UUID.randomUUID())
           .set(TEAM_PREFERENCES.TEAM_ID, teamId)
           .set(TEAM_PREFERENCES.DEFAULT_CURRENCY, currency)
+          .set(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE, "NL")
+          .set(TEAM_PREFERENCES.TIMEZONE, "Europe/Amsterdam")
+          .set(TEAM_PREFERENCES.DATE_FORMAT, "DD/MM/YYYY")
+          .set(TEAM_PREFERENCES.FISCAL_YEAR_START_MONTH, "01")
+          .set(TEAM_PREFERENCES.ONBOARDING_COMPLETED_AT, now)
           .set(TEAM_PREFERENCES.CREATED_AT, now)
           .set(TEAM_PREFERENCES.UPDATED_AT, now)
           .execute();

@@ -40,8 +40,8 @@ export const RequestCountryCard = () => {
           </span>
         </div>
         <p className="text-sm text-[#9ca0b8] dark:text-[#5c6180] leading-relaxed">
-          Don't see your country listed? Let us know and we'll work on adding
-          it!
+          Don&apos;t see your country listed? Let us know and we&apos;ll work on
+          adding it!
         </p>
       </button>
 
@@ -72,9 +72,9 @@ export const RequestCountryCard = () => {
             {/* Body */}
             <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
               <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] leading-relaxed">
-                We're always expanding our coverage. Tell us which country you'd
-                like regulation data for, and we'll bump it up the priority
-                list!
+                We&apos;re always expanding our coverage. Tell us which country
+                you&apos;d like regulation data for, and we&apos;ll bump it up
+                the priority list!
               </p>
 
               <div>

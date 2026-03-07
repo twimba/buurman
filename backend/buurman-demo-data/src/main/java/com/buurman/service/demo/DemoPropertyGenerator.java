@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -63,7 +64,41 @@ public class DemoPropertyGenerator {
   private static final String[] PARKING_TYPES = {"GARAGE", "STREET", "UNDERGROUND", "NONE"};
   private static final String[] OUTDOOR_TYPES = {"BALCONY", "TERRACE", "GARDEN"};
 
-  public static final int PROPERTIES_PER_TEAM = 6;
+  // Country-specific providers (indexed by property i, 12 countries)
+  private static final String[] INSURANCE_PROVIDERS = {
+    "Nationale-Nederlanden", "Allianz", "Aviva", "AXA France",
+    "Mapfre", "Fidelidade", "AG Insurance", "Generali",
+    "Wiener Städtische", "Helvetia", "State Farm", "Zurich Ireland"
+  };
+  private static final String[] TAX_AUTHORITIES = {
+    "Gemeente Amsterdam",
+    "Finanzamt Berlin",
+    "HM Revenue & Customs",
+    "Centre des Impôts",
+    "Hacienda Pública",
+    "Autoridade Tributária",
+    "SPF Finances",
+    "Agenzia delle Entrate",
+    "Finanzamt Wien",
+    "Kantonale Steuerverwaltung",
+    "County Assessor's Office",
+    "Revenue Commissioners"
+  };
+  private static final String[] APPRAISER_NAMES = {
+    "Makelaardij Van der Berg", "Immobilienbewertung Schmidt",
+    "RICS Chartered Surveyors", "Cabinet d'Expertise Dupont",
+    "Sociedad de Tasación", "Avaliadores Certificados",
+    "Expertise Immobilière", "Perizie Immobiliari",
+    "Immobilienbewertung Wien", "Schweizer Immobiliengutachter",
+    "National Appraisal Group", "Irish Property Valuers"
+  };
+  private static final String[] LENDER_NAMES = {
+    "ABN AMRO", "Deutsche Bank", "Barclays", "BNP Paribas",
+    "Banco Santander", "Millennium BCP", "KBC Bank", "UniCredit",
+    "Erste Bank", "Credit Suisse", "JPMorgan Chase", "Bank of Ireland"
+  };
+
+  public static final int PROPERTIES_PER_TEAM = 12;
 
   // Country data with category-specific street pools
   private static final List<CountryData> COUNTRIES =
@@ -95,7 +130,8 @@ public class DemoPropertyGenerator {
               51.8,
               53.0,
               4.0,
-              6.0),
+              6.0,
+              Map.of()),
           new CountryData(
               "Germany",
               List.of(
@@ -123,7 +159,24 @@ public class DemoPropertyGenerator {
               48.0,
               54.0,
               6.0,
-              14.0),
+              14.0,
+              Map.of(
+                  "Berlin",
+                  "BE",
+                  "Munich",
+                  "BY",
+                  "Hamburg",
+                  "HH",
+                  "Frankfurt",
+                  "BY",
+                  "Cologne",
+                  "BY",
+                  "Stuttgart",
+                  "BY",
+                  "Düsseldorf",
+                  "BY",
+                  "Dresden",
+                  "BE")),
           new CountryData(
               "United Kingdom",
               List.of(
@@ -151,7 +204,24 @@ public class DemoPropertyGenerator {
               51.0,
               56.0,
               -4.0,
-              1.5),
+              1.5,
+              Map.of(
+                  "London",
+                  "ENG",
+                  "Manchester",
+                  "ENG",
+                  "Birmingham",
+                  "ENG",
+                  "Edinburgh",
+                  "SCT",
+                  "Bristol",
+                  "ENG",
+                  "Liverpool",
+                  "ENG",
+                  "Oxford",
+                  "ENG",
+                  "Cambridge",
+                  "ENG")),
           new CountryData(
               "France",
               List.of(
@@ -184,7 +254,8 @@ public class DemoPropertyGenerator {
               43.0,
               49.0,
               -1.0,
-              7.0),
+              7.0,
+              Map.of()),
           new CountryData(
               "Spain",
               List.of(
@@ -224,7 +295,8 @@ public class DemoPropertyGenerator {
               36.0,
               43.5,
               -6.0,
-              3.0),
+              3.0,
+              Map.of()),
           new CountryData(
               "Portugal",
               List.of(
@@ -250,7 +322,201 @@ public class DemoPropertyGenerator {
               37.0,
               42.0,
               -9.5,
-              -6.0));
+              -6.0,
+              Map.of()),
+          new CountryData(
+              "Belgium",
+              List.of(
+                  "Rue de la Loi",
+                  "Avenue Louise",
+                  "Meir",
+                  "Veldstraat",
+                  "Rue Neuve",
+                  "Lange Gasthuisstraat",
+                  "Boulevard Anspach",
+                  "Koningstraat"),
+              List.of("Avenue de Tervueren", "Louizalaan", "Frankrijklei", "Rue de la Régence"),
+              List.of("Industriezone", "Haven van Antwerpen", "Ambachtsstraat", "Zeehavenlaan"),
+              List.of("Polderweg", "Kasteeldreef", "Hoeveland", "Veldweg"),
+              List.of(
+                  "Brussels", "Antwerp", "Ghent", "Bruges", "Liège", "Namur", "Leuven", "Mechelen"),
+              "####",
+              49.5,
+              51.5,
+              2.5,
+              6.4,
+              Map.of(
+                  "Brussels",
+                  "BRU",
+                  "Antwerp",
+                  "VLG",
+                  "Ghent",
+                  "VLG",
+                  "Bruges",
+                  "VLG",
+                  "Liège",
+                  "WAL",
+                  "Namur",
+                  "WAL",
+                  "Leuven",
+                  "VLG",
+                  "Mechelen",
+                  "VLG")),
+          new CountryData(
+              "Italy",
+              List.of(
+                  "Via Roma",
+                  "Via Garibaldi",
+                  "Corso Vittorio Emanuele",
+                  "Via Nazionale",
+                  "Via del Corso",
+                  "Via Manzoni",
+                  "Via Torino",
+                  "Via Dante"),
+              List.of("Piazza degli Affari", "Via Montenapoleone", "Corso Europa", "Via Veneto"),
+              List.of(
+                  "Zona Industriale", "Via dell'Industria", "Strada Provinciale", "Porto Fluviale"),
+              List.of(
+                  "Via dei Campi", "Contrada Vigneto", "Strada del Frantoio", "Podere San Marco"),
+              List.of("Rome", "Milan", "Florence", "Naples", "Venice", "Turin", "Bologna", "Genoa"),
+              "#####",
+              36.6,
+              47.1,
+              6.6,
+              18.5,
+              Map.of()),
+          new CountryData(
+              "Austria",
+              List.of(
+                  "Ringstraße",
+                  "Mariahilfer Straße",
+                  "Kärntner Straße",
+                  "Graben",
+                  "Getreidegasse",
+                  "Landstraße",
+                  "Herrengasse",
+                  "Linzer Gasse"),
+              List.of("Donau City", "Wienerbergstraße", "Lassallestraße", "Europaplatz"),
+              List.of("Industriestraße", "Gewerbepark", "Hafenstraße", "Werkstraße"),
+              List.of("Weinbergweg", "Almstraße", "Hofgasse", "Feldweg"),
+              List.of(
+                  "Vienna",
+                  "Graz",
+                  "Linz",
+                  "Salzburg",
+                  "Innsbruck",
+                  "Klagenfurt",
+                  "Villach",
+                  "Wels"),
+              "####",
+              46.4,
+              48.9,
+              9.5,
+              17.2,
+              Map.of()),
+          new CountryData(
+              "Switzerland",
+              List.of(
+                  "Bahnhofstrasse",
+                  "Rue du Rhône",
+                  "Freie Strasse",
+                  "Kramgasse",
+                  "Limmatquai",
+                  "Marktgasse",
+                  "Spiegelgasse",
+                  "Münstergasse"),
+              List.of("Paradeplatz", "Rue du Marché", "Aeschenvorstadt", "Place de la Fusterie"),
+              List.of("Industriestrasse", "Gewerbepark", "Hafenweg", "Route de l'Usine"),
+              List.of("Rebbergweg", "Weidstrasse", "Alpweg", "Route du Vignoble"),
+              List.of(
+                  "Zurich",
+                  "Geneva",
+                  "Basel",
+                  "Bern",
+                  "Lausanne",
+                  "Lucerne",
+                  "St. Gallen",
+                  "Winterthur"),
+              "####",
+              45.8,
+              47.8,
+              5.9,
+              10.5,
+              Map.of()),
+          new CountryData(
+              "United States",
+              List.of(
+                  "Broadway",
+                  "Main Street",
+                  "Park Avenue",
+                  "Elm Street",
+                  "Oak Drive",
+                  "Maple Avenue",
+                  "Washington Street",
+                  "Lincoln Boulevard"),
+              List.of("Wall Street", "Market Street", "Commerce Drive", "Corporate Boulevard"),
+              List.of("Industrial Boulevard", "Warehouse Row", "Factory Lane", "Port Road"),
+              List.of("Ranch Road", "Farm Lane", "County Road", "Orchard Drive"),
+              List.of(
+                  "New York",
+                  "Los Angeles",
+                  "San Francisco",
+                  "Portland",
+                  "Chicago",
+                  "Houston",
+                  "Miami",
+                  "Seattle"),
+              "#####",
+              25.0,
+              49.0,
+              -125.0,
+              -67.0,
+              Map.of(
+                  "New York",
+                  "NY",
+                  "Los Angeles",
+                  "CA",
+                  "San Francisco",
+                  "CA",
+                  "Portland",
+                  "OR",
+                  "Chicago",
+                  "NY",
+                  "Houston",
+                  "CA",
+                  "Miami",
+                  "NY",
+                  "Seattle",
+                  "OR")),
+          new CountryData(
+              "Ireland",
+              List.of(
+                  "O'Connell Street",
+                  "Grafton Street",
+                  "Patrick Street",
+                  "Shop Street",
+                  "Quay Street",
+                  "Henry Street",
+                  "Dame Street",
+                  "Barrack Street"),
+              List.of("Grand Canal Dock", "IFSC", "Burlington Road", "Mespil Road"),
+              List.of("Industrial Estate", "Business Park", "Dock Road", "Shannon Free Zone"),
+              List.of("Boreen Lane", "Greenfield Road", "Meadow Drive", "Farm Road"),
+              List.of(
+                  "Dublin",
+                  "Cork",
+                  "Galway",
+                  "Limerick",
+                  "Waterford",
+                  "Kilkenny",
+                  "Wexford",
+                  "Dundalk"),
+              "A##_A#A#",
+              51.4,
+              55.4,
+              -10.5,
+              -5.9,
+              Map.of()));
 
   record CountryData(
       String name,
@@ -263,7 +529,8 @@ public class DemoPropertyGenerator {
       double latMin,
       double latMax,
       double lonMin,
-      double lonMax) {}
+      double lonMax,
+      Map<String, String> cityToRegion) {}
 
   private final Clock clock;
 
@@ -326,6 +593,7 @@ public class DemoPropertyGenerator {
             .set(PROPERTIES.CITY, city)
             .set(PROPERTIES.POSTAL_CODE, postalCode)
             .set(PROPERTIES.COUNTRY_CODE, country.name())
+            .set(PROPERTIES.REGION_CODE, country.cityToRegion().get(city))
             .set(PROPERTIES.LATITUDE, BigDecimal.valueOf(lat))
             .set(PROPERTIES.LONGITUDE, BigDecimal.valueOf(lon))
             .set(PROPERTIES.PROPERTY_CATEGORY, propertyCategory)
@@ -415,8 +683,9 @@ public class DemoPropertyGenerator {
             createdBy,
             now);
 
-        // Insert financial data into new dedicated tables (first 4 properties)
-        insertFinancialData(propertyId, teamId, createdBy, currency, propertyCategory, i, now);
+        // Insert financial data into dedicated tables (all properties)
+        insertFinancialData(
+            propertyId, teamId, createdBy, currency, propertyCategory, i, yearBuilt, now, ctx);
 
         propertyIds.add(propertyId);
         ctx.putIdentifier(propertyId, propertyIdentifier);
@@ -624,7 +893,8 @@ public class DemoPropertyGenerator {
         }
       }
       case "COMMERCIAL" -> {
-        BigDecimal usable = area.multiply(BigDecimal.valueOf(0.85));
+        BigDecimal usable =
+            area.multiply(BigDecimal.valueOf(0.85)).setScale(2, java.math.RoundingMode.HALF_UP);
         BigDecimal common = area.subtract(usable);
         dsl.insertInto(PROPERTY_COMMERCIAL_DETAILS)
             .set(PROPERTY_COMMERCIAL_DETAILS.ID, UUID.randomUUID())
@@ -637,7 +907,8 @@ public class DemoPropertyGenerator {
             .set(PROPERTY_COMMERCIAL_DETAILS.FLOOR_LEVEL, random.nextInt(0, 5))
             .set(
                 PROPERTY_COMMERCIAL_DETAILS.CEILING_HEIGHT_VALUE,
-                BigDecimal.valueOf(2.7 + random.nextDouble() * 1.3))
+                BigDecimal.valueOf(2.7 + random.nextDouble() * 1.3)
+                    .setScale(2, java.math.RoundingMode.HALF_UP))
             .set(PROPERTY_COMMERCIAL_DETAILS.CEILING_HEIGHT_UNIT, "m")
             .set(
                 PROPERTY_COMMERCIAL_DETAILS.HAS_STOREFRONT,
@@ -665,7 +936,8 @@ public class DemoPropertyGenerator {
               .set(PROPERTY_INDUSTRIAL_DETAILS.TEAM_ID, teamId)
               .set(
                   PROPERTY_INDUSTRIAL_DETAILS.CLEAR_HEIGHT_VALUE,
-                  BigDecimal.valueOf(4.0 + random.nextDouble() * 8.0))
+                  BigDecimal.valueOf(4.0 + random.nextDouble() * 8.0)
+                      .setScale(2, java.math.RoundingMode.HALF_UP))
               .set(PROPERTY_INDUSTRIAL_DETAILS.CLEAR_HEIGHT_UNIT, "m")
               .set(PROPERTY_INDUSTRIAL_DETAILS.LOADING_DOCKS, random.nextInt(1, 6))
               .set(PROPERTY_INDUSTRIAL_DETAILS.DRIVE_IN_DOORS, random.nextInt(1, 4))
@@ -700,7 +972,9 @@ public class DemoPropertyGenerator {
       case "AGRICULTURAL" -> {
         BigDecimal totalLand = area;
         BigDecimal arableLand =
-            totalLand.multiply(BigDecimal.valueOf(0.6 + random.nextDouble() * 0.3));
+            totalLand
+                .multiply(BigDecimal.valueOf(0.6 + random.nextDouble() * 0.3))
+                .setScale(2, java.math.RoundingMode.HALF_UP);
         String[] soilTypes = {"CLAY", "LOAM", "SANDY", "PEAT", "CHALK"};
         String[] waterSources = {"WELL", "CANAL", "RIVER", "MUNICIPAL"};
         String[] irrigationTypes = {"DRIP", "SPRINKLER", "FLOOD", "NONE"};
@@ -749,51 +1023,129 @@ public class DemoPropertyGenerator {
       String currency,
       String propertyCategory,
       int i,
-      LocalDateTime now) {
+      int yearBuilt,
+      LocalDateTime now,
+      DemoDataContext ctx) {
 
-    // Acquisition (first 4 properties)
-    if (i < 4) {
-      long purchasePrice = purchasePriceForCategory(propertyCategory, i);
-      dsl.insertInto(PROPERTY_ACQUISITIONS)
-          .set(PROPERTY_ACQUISITIONS.ID, UUID.randomUUID())
-          .set(PROPERTY_ACQUISITIONS.IDENTIFIER, newAcquisitionId())
-          .set(PROPERTY_ACQUISITIONS.PROPERTY_ID, propertyId)
-          .set(PROPERTY_ACQUISITIONS.TEAM_ID, teamId)
-          .set(PROPERTY_ACQUISITIONS.ACQUISITION_TYPE, "PURCHASE")
-          .set(PROPERTY_ACQUISITIONS.ACQUISITION_DATE, LocalDate.of(2020 + i, 3, 15))
-          .set(PROPERTY_ACQUISITIONS.PURCHASE_PRICE, BigDecimal.valueOf(purchasePrice))
-          .set(PROPERTY_ACQUISITIONS.PURCHASE_PRICE_CURRENCY, currency)
-          .set(
-              PROPERTY_ACQUISITIONS.CLOSING_COSTS,
-              BigDecimal.valueOf((long) (purchasePrice * 0.03)))
-          .set(PROPERTY_ACQUISITIONS.CLOSING_COSTS_CURRENCY, currency)
-          .set(
-              PROPERTY_ACQUISITIONS.LAND_VALUE,
-              i < 3 ? BigDecimal.valueOf((80_000L + i * 20_000L) * 100L) : null)
-          .set(PROPERTY_ACQUISITIONS.LAND_VALUE_CURRENCY, i < 3 ? currency : null)
-          .set(PROPERTY_ACQUISITIONS.DEPRECIATION_METHOD, i < 3 ? "STRAIGHT_LINE" : null)
-          .set(PROPERTY_ACQUISITIONS.DEPRECIATION_YEARS, i < 3 ? 30 : null)
-          .set(PROPERTY_ACQUISITIONS.CREATED_AT, now)
-          .set(PROPERTY_ACQUISITIONS.UPDATED_AT, now)
-          .set(PROPERTY_ACQUISITIONS.CREATED_BY, createdBy)
-          .set(PROPERTY_ACQUISITIONS.UPDATED_BY, createdBy)
-          .execute();
+    long purchasePrice = purchasePriceForCategory(propertyCategory, i);
+    long marketValue = marketValueForCategory(propertyCategory, i);
+    LocalDate acquisitionDate = LocalDate.of(2015 + (i % 9), 1 + (i % 12), 15);
+
+    // === ACQUISITION (all 12 properties) ===
+    String acquisitionType = i == 10 ? "INHERITANCE" : i == 11 ? "AUCTION" : "PURCHASE";
+    Long renovationCosts = null;
+    String renovationCurrency = null;
+    if (yearBuilt < 2000 && random.nextInt(10) < 4) {
+      renovationCosts = (long) (purchasePrice * (0.05 + random.nextDouble() * 0.10));
+      renovationCurrency = currency;
     }
+    long closingCosts = (long) (purchasePrice * (0.02 + random.nextDouble() * 0.03));
+    double landPct =
+        "AGRICULTURAL".equals(propertyCategory)
+            ? 0.50 + random.nextDouble() * 0.10
+            : 0.30 + random.nextDouble() * 0.10;
+    long landValue = (long) (purchasePrice * landPct);
+    String depreciationMethod;
+    int depreciationYears;
+    if ("COMMERCIAL".equals(propertyCategory) || "INDUSTRIAL".equals(propertyCategory)) {
+      depreciationMethod = "DECLINING_BALANCE";
+      depreciationYears = "INDUSTRIAL".equals(propertyCategory) ? 20 : 40;
+    } else {
+      depreciationMethod = "STRAIGHT_LINE";
+      depreciationYears = 30;
+    }
+    String acquisitionNotes = null;
+    if (random.nextInt(10) < 3) {
+      acquisitionNotes =
+          switch (acquisitionType) {
+            case "INHERITANCE" -> "Inherited from family estate, no transfer tax applied";
+            case "AUCTION" -> "Won at municipal auction, below market value";
+            default -> "Standard purchase through certified broker";
+          };
+    }
+    dsl.insertInto(PROPERTY_ACQUISITIONS)
+        .set(PROPERTY_ACQUISITIONS.ID, UUID.randomUUID())
+        .set(PROPERTY_ACQUISITIONS.IDENTIFIER, newAcquisitionId())
+        .set(PROPERTY_ACQUISITIONS.PROPERTY_ID, propertyId)
+        .set(PROPERTY_ACQUISITIONS.TEAM_ID, teamId)
+        .set(PROPERTY_ACQUISITIONS.ACQUISITION_TYPE, acquisitionType)
+        .set(PROPERTY_ACQUISITIONS.ACQUISITION_DATE, acquisitionDate)
+        .set(PROPERTY_ACQUISITIONS.PURCHASE_PRICE, BigDecimal.valueOf(purchasePrice))
+        .set(PROPERTY_ACQUISITIONS.PURCHASE_PRICE_CURRENCY, currency)
+        .set(PROPERTY_ACQUISITIONS.CLOSING_COSTS, BigDecimal.valueOf(closingCosts))
+        .set(PROPERTY_ACQUISITIONS.CLOSING_COSTS_CURRENCY, currency)
+        .set(
+            PROPERTY_ACQUISITIONS.RENOVATION_COSTS,
+            renovationCosts != null ? BigDecimal.valueOf(renovationCosts) : null)
+        .set(PROPERTY_ACQUISITIONS.RENOVATION_COSTS_CURRENCY, renovationCurrency)
+        .set(PROPERTY_ACQUISITIONS.LAND_VALUE, BigDecimal.valueOf(landValue))
+        .set(PROPERTY_ACQUISITIONS.LAND_VALUE_CURRENCY, currency)
+        .set(PROPERTY_ACQUISITIONS.DEPRECIATION_METHOD, depreciationMethod)
+        .set(PROPERTY_ACQUISITIONS.DEPRECIATION_YEARS, depreciationYears)
+        .set(PROPERTY_ACQUISITIONS.NOTES, acquisitionNotes)
+        .set(PROPERTY_ACQUISITIONS.CREATED_AT, now)
+        .set(PROPERTY_ACQUISITIONS.UPDATED_AT, now)
+        .set(PROPERTY_ACQUISITIONS.CREATED_BY, createdBy)
+        .set(PROPERTY_ACQUISITIONS.UPDATED_BY, createdBy)
+        .execute();
 
-    // Valuation (first 4 properties)
-    if (i < 4) {
+    // === VALUATIONS (all 12, 2-3 per property) ===
+    // MARKET valuation
+    dsl.insertInto(PROPERTY_VALUATIONS)
+        .set(PROPERTY_VALUATIONS.ID, UUID.randomUUID())
+        .set(PROPERTY_VALUATIONS.IDENTIFIER, newValuationId())
+        .set(PROPERTY_VALUATIONS.PROPERTY_ID, propertyId)
+        .set(PROPERTY_VALUATIONS.TEAM_ID, teamId)
+        .set(PROPERTY_VALUATIONS.VALUATION_TYPE, "MARKET")
+        .set(
+            PROPERTY_VALUATIONS.VALUATION_DATE,
+            LocalDate.now(clock).minusMonths(random.nextInt(1, 12)))
+        .set(PROPERTY_VALUATIONS.AMOUNT, BigDecimal.valueOf(marketValue))
+        .set(PROPERTY_VALUATIONS.CURRENCY, currency)
+        .set(PROPERTY_VALUATIONS.SOURCE, APPRAISER_NAMES[i % APPRAISER_NAMES.length])
+        .set(PROPERTY_VALUATIONS.NOTES, random.nextInt(4) == 0 ? "Annual market assessment" : null)
+        .set(PROPERTY_VALUATIONS.CREATED_AT, now)
+        .set(PROPERTY_VALUATIONS.UPDATED_AT, now)
+        .set(PROPERTY_VALUATIONS.CREATED_BY, createdBy)
+        .set(PROPERTY_VALUATIONS.UPDATED_BY, createdBy)
+        .execute();
+
+    // TAX_ASSESSED valuation (70-85% of market)
+    long taxAssessedValue = (long) (marketValue * (0.70 + random.nextDouble() * 0.15));
+    dsl.insertInto(PROPERTY_VALUATIONS)
+        .set(PROPERTY_VALUATIONS.ID, UUID.randomUUID())
+        .set(PROPERTY_VALUATIONS.IDENTIFIER, newValuationId())
+        .set(PROPERTY_VALUATIONS.PROPERTY_ID, propertyId)
+        .set(PROPERTY_VALUATIONS.TEAM_ID, teamId)
+        .set(PROPERTY_VALUATIONS.VALUATION_TYPE, "TAX_ASSESSED")
+        .set(
+            PROPERTY_VALUATIONS.VALUATION_DATE,
+            LocalDate.now(clock).minusMonths(random.nextInt(4, 10)))
+        .set(PROPERTY_VALUATIONS.AMOUNT, BigDecimal.valueOf(taxAssessedValue))
+        .set(PROPERTY_VALUATIONS.CURRENCY, currency)
+        .set(PROPERTY_VALUATIONS.SOURCE, TAX_AUTHORITIES[i % TAX_AUTHORITIES.length])
+        .set(PROPERTY_VALUATIONS.CREATED_AT, now)
+        .set(PROPERTY_VALUATIONS.UPDATED_AT, now)
+        .set(PROPERTY_VALUATIONS.CREATED_BY, createdBy)
+        .set(PROPERTY_VALUATIONS.UPDATED_BY, createdBy)
+        .execute();
+
+    // APPRAISAL valuation (90-95% of market, first 6 properties)
+    if (i < 6) {
+      long appraisalValue = (long) (marketValue * (0.90 + random.nextDouble() * 0.05));
       dsl.insertInto(PROPERTY_VALUATIONS)
           .set(PROPERTY_VALUATIONS.ID, UUID.randomUUID())
           .set(PROPERTY_VALUATIONS.IDENTIFIER, newValuationId())
           .set(PROPERTY_VALUATIONS.PROPERTY_ID, propertyId)
           .set(PROPERTY_VALUATIONS.TEAM_ID, teamId)
-          .set(PROPERTY_VALUATIONS.VALUATION_TYPE, "MARKET")
-          .set(PROPERTY_VALUATIONS.VALUATION_DATE, LocalDate.of(2025, 12, 1))
+          .set(PROPERTY_VALUATIONS.VALUATION_TYPE, "APPRAISAL")
           .set(
-              PROPERTY_VALUATIONS.AMOUNT,
-              BigDecimal.valueOf(marketValueForCategory(propertyCategory, i)))
+              PROPERTY_VALUATIONS.VALUATION_DATE,
+              LocalDate.now(clock).minusMonths(random.nextInt(12, 24)))
+          .set(PROPERTY_VALUATIONS.AMOUNT, BigDecimal.valueOf(appraisalValue))
           .set(PROPERTY_VALUATIONS.CURRENCY, currency)
-          .set(PROPERTY_VALUATIONS.SOURCE, "Appraiser")
+          .set(PROPERTY_VALUATIONS.SOURCE, APPRAISER_NAMES[i % APPRAISER_NAMES.length])
+          .set(PROPERTY_VALUATIONS.NOTES, "Independent appraisal for refinancing")
           .set(PROPERTY_VALUATIONS.CREATED_AT, now)
           .set(PROPERTY_VALUATIONS.UPDATED_AT, now)
           .set(PROPERTY_VALUATIONS.CREATED_BY, createdBy)
@@ -801,48 +1153,165 @@ public class DemoPropertyGenerator {
           .execute();
     }
 
-    // Financing / Mortgage (properties 1-3, not property 0 which has NONE)
-    if (i > 0 && i < 4) {
+    // === FINANCING (props 1-9, prop 0 = paid off, 10 = inherited, 11 = auction) ===
+    if (i >= 1 && i <= 9) {
+      String rateType;
+      int rateRoll = random.nextInt(10);
+      if (rateRoll < 7) {
+        rateType = "FIXED";
+      } else if (rateRoll < 9) {
+        rateType = "VARIABLE";
+      } else {
+        rateType = "HYBRID";
+      }
+
+      BigDecimal interestRate = BigDecimal.valueOf(random.nextInt(250, 550), 2);
+      int termMonths =
+          "COMMERCIAL".equals(propertyCategory) || "INDUSTRIAL".equals(propertyCategory)
+              ? 240
+              : random.nextBoolean() ? 300 : 360;
+      long originalAmount = (long) (purchasePrice * 0.80);
+      long monthlyPayment =
+          calculateMonthlyPayment(originalAmount, interestRate.doubleValue(), termMonths);
+      long currentBalance = (long) (originalAmount * (0.70 + random.nextDouble() * 0.25));
+      String loanNumber =
+          "MTG-" + (2015 + (i % 9)) + "-" + String.format("%04d", random.nextInt(1000, 9999));
+      String financingNotes = null;
+      if (random.nextInt(10) < 3) {
+        financingNotes = "Fixed rate locked until " + (2025 + random.nextInt(1, 10));
+      }
+
+      UUID financingId = UUID.randomUUID();
+      boolean isRefinanced = (i == 5);
+
       dsl.insertInto(PROPERTY_FINANCINGS)
-          .set(PROPERTY_FINANCINGS.ID, UUID.randomUUID())
+          .set(PROPERTY_FINANCINGS.ID, financingId)
           .set(PROPERTY_FINANCINGS.IDENTIFIER, newFinancingId())
           .set(PROPERTY_FINANCINGS.PROPERTY_ID, propertyId)
           .set(PROPERTY_FINANCINGS.TEAM_ID, teamId)
           .set(PROPERTY_FINANCINGS.FINANCING_TYPE, "MORTGAGE")
-          .set(PROPERTY_FINANCINGS.RATE_TYPE, "FIXED")
-          .set(PROPERTY_FINANCINGS.LENDER_NAME, "Demo Bank " + i)
-          .set(
-              PROPERTY_FINANCINGS.ORIGINAL_AMOUNT,
-              BigDecimal.valueOf((150_000L + i * 50_000L) * 100L))
+          .set(PROPERTY_FINANCINGS.RATE_TYPE, rateType)
+          .set(PROPERTY_FINANCINGS.LENDER_NAME, LENDER_NAMES[i % LENDER_NAMES.length])
+          .set(PROPERTY_FINANCINGS.LOAN_NUMBER, loanNumber)
+          .set(PROPERTY_FINANCINGS.ORIGINAL_AMOUNT, BigDecimal.valueOf(originalAmount))
           .set(PROPERTY_FINANCINGS.ORIGINAL_AMOUNT_CURRENCY, currency)
-          .set(PROPERTY_FINANCINGS.INTEREST_RATE, new BigDecimal("3." + (i * 2) + "50"))
-          .set(PROPERTY_FINANCINGS.MONTHLY_PAYMENT, BigDecimal.valueOf((600L + i * 150L) * 100L))
-          .set(PROPERTY_FINANCINGS.PAYMENT_VARIABLE, false)
-          .set(PROPERTY_FINANCINGS.START_DATE, LocalDate.of(2020 + i, 4, 1))
-          .set(PROPERTY_FINANCINGS.END_DATE, LocalDate.of(2050 + i, 3, 31))
-          .set(PROPERTY_FINANCINGS.TERM_MONTHS, 360)
-          .set(PROPERTY_FINANCINGS.STATUS, "ACTIVE")
+          .set(PROPERTY_FINANCINGS.CURRENT_BALANCE, BigDecimal.valueOf(currentBalance))
+          .set(PROPERTY_FINANCINGS.CURRENT_BALANCE_CURRENCY, currency)
+          .set(PROPERTY_FINANCINGS.INTEREST_RATE, interestRate)
+          .set(PROPERTY_FINANCINGS.MONTHLY_PAYMENT, BigDecimal.valueOf(monthlyPayment))
+          .set(PROPERTY_FINANCINGS.MONTHLY_PAYMENT_CURRENCY, currency)
+          .set(PROPERTY_FINANCINGS.PAYMENT_VARIABLE, "VARIABLE".equals(rateType))
+          .set(PROPERTY_FINANCINGS.START_DATE, acquisitionDate.plusDays(15))
+          .set(PROPERTY_FINANCINGS.END_DATE, acquisitionDate.plusMonths(termMonths))
+          .set(PROPERTY_FINANCINGS.TERM_MONTHS, termMonths)
+          .set(PROPERTY_FINANCINGS.STATUS, isRefinanced ? "REFINANCED" : "ACTIVE")
+          .set(PROPERTY_FINANCINGS.NOTES, financingNotes)
           .set(PROPERTY_FINANCINGS.CREATED_AT, now)
           .set(PROPERTY_FINANCINGS.UPDATED_AT, now)
           .set(PROPERTY_FINANCINGS.CREATED_BY, createdBy)
           .set(PROPERTY_FINANCINGS.UPDATED_BY, createdBy)
           .execute();
+
+      ctx.getFinancingIdsByTeam().computeIfAbsent(teamId, k -> new ArrayList<>()).add(financingId);
+
+      // Prop 5: refinanced — add second financing at lower rate
+      if (isRefinanced) {
+        UUID refinancedId = UUID.randomUUID();
+        BigDecimal lowerRate =
+            interestRate.subtract(BigDecimal.ONE).max(BigDecimal.valueOf(150, 2));
+        long refinancedPayment =
+            calculateMonthlyPayment(currentBalance, lowerRate.doubleValue(), 300);
+
+        dsl.insertInto(PROPERTY_FINANCINGS)
+            .set(PROPERTY_FINANCINGS.ID, refinancedId)
+            .set(PROPERTY_FINANCINGS.IDENTIFIER, newFinancingId())
+            .set(PROPERTY_FINANCINGS.PROPERTY_ID, propertyId)
+            .set(PROPERTY_FINANCINGS.TEAM_ID, teamId)
+            .set(PROPERTY_FINANCINGS.FINANCING_TYPE, "MORTGAGE")
+            .set(PROPERTY_FINANCINGS.RATE_TYPE, "FIXED")
+            .set(PROPERTY_FINANCINGS.LENDER_NAME, LENDER_NAMES[(i + 1) % LENDER_NAMES.length])
+            .set(
+                PROPERTY_FINANCINGS.LOAN_NUMBER,
+                "MTG-REFI-" + String.format("%04d", random.nextInt(1000, 9999)))
+            .set(PROPERTY_FINANCINGS.ORIGINAL_AMOUNT, BigDecimal.valueOf(currentBalance))
+            .set(PROPERTY_FINANCINGS.ORIGINAL_AMOUNT_CURRENCY, currency)
+            .set(
+                PROPERTY_FINANCINGS.CURRENT_BALANCE,
+                BigDecimal.valueOf((long) (currentBalance * 0.95)))
+            .set(PROPERTY_FINANCINGS.CURRENT_BALANCE_CURRENCY, currency)
+            .set(PROPERTY_FINANCINGS.INTEREST_RATE, lowerRate)
+            .set(PROPERTY_FINANCINGS.MONTHLY_PAYMENT, BigDecimal.valueOf(refinancedPayment))
+            .set(PROPERTY_FINANCINGS.MONTHLY_PAYMENT_CURRENCY, currency)
+            .set(PROPERTY_FINANCINGS.PAYMENT_VARIABLE, false)
+            .set(PROPERTY_FINANCINGS.START_DATE, LocalDate.now(clock).minusYears(1))
+            .set(PROPERTY_FINANCINGS.END_DATE, LocalDate.now(clock).minusYears(1).plusMonths(300))
+            .set(PROPERTY_FINANCINGS.TERM_MONTHS, 300)
+            .set(PROPERTY_FINANCINGS.STATUS, "ACTIVE")
+            .set(PROPERTY_FINANCINGS.NOTES, "Refinanced at lower rate")
+            .set(PROPERTY_FINANCINGS.CREATED_AT, now)
+            .set(PROPERTY_FINANCINGS.UPDATED_AT, now)
+            .set(PROPERTY_FINANCINGS.CREATED_BY, createdBy)
+            .set(PROPERTY_FINANCINGS.UPDATED_BY, createdBy)
+            .execute();
+
+        ctx.getFinancingIdsByTeam().get(teamId).add(refinancedId);
+      }
     }
 
-    // Insurance (first 4 properties)
-    if (i < 4) {
+    // === INSURANCE (all 12, 1-3 policies each) ===
+    String provider = INSURANCE_PROVIDERS[i % INSURANCE_PROVIDERS.length];
+    long buildingPremium = (long) (marketValue * 0.002) + random.nextInt(100_00, 300_00);
+    long coverageAmount = (long) (marketValue * (0.80 + random.nextDouble() * 0.20));
+
+    // BUILDING insurance for all
+    dsl.insertInto(PROPERTY_INSURANCES)
+        .set(PROPERTY_INSURANCES.ID, UUID.randomUUID())
+        .set(PROPERTY_INSURANCES.IDENTIFIER, newInsuranceId())
+        .set(PROPERTY_INSURANCES.PROPERTY_ID, propertyId)
+        .set(PROPERTY_INSURANCES.TEAM_ID, teamId)
+        .set(PROPERTY_INSURANCES.INSURANCE_TYPE, "BUILDING")
+        .set(PROPERTY_INSURANCES.PROVIDER, provider)
+        .set(
+            PROPERTY_INSURANCES.POLICY_NUMBER,
+            "BLD-" + String.format("%06d", random.nextInt(100000, 999999)))
+        .set(PROPERTY_INSURANCES.COVERAGE_AMOUNT, BigDecimal.valueOf(coverageAmount))
+        .set(PROPERTY_INSURANCES.COVERAGE_AMOUNT_CURRENCY, currency)
+        .set(PROPERTY_INSURANCES.ANNUAL_PREMIUM, BigDecimal.valueOf(buildingPremium))
+        .set(PROPERTY_INSURANCES.ANNUAL_PREMIUM_CURRENCY, currency)
+        .set(PROPERTY_INSURANCES.PAYMENT_FREQUENCY, "ANNUALLY")
+        .set(PROPERTY_INSURANCES.START_DATE, acquisitionDate)
+        .set(PROPERTY_INSURANCES.END_DATE, acquisitionDate.plusYears(10))
+        .set(PROPERTY_INSURANCES.STATUS, "ACTIVE")
+        .set(
+            PROPERTY_INSURANCES.NOTES,
+            random.nextInt(5) == 0 ? "Comprehensive building coverage" : null)
+        .set(PROPERTY_INSURANCES.CREATED_AT, now)
+        .set(PROPERTY_INSURANCES.UPDATED_AT, now)
+        .set(PROPERTY_INSURANCES.CREATED_BY, createdBy)
+        .set(PROPERTY_INSURANCES.UPDATED_BY, createdBy)
+        .execute();
+
+    // LIABILITY insurance (props 0-7)
+    if (i <= 7) {
       dsl.insertInto(PROPERTY_INSURANCES)
           .set(PROPERTY_INSURANCES.ID, UUID.randomUUID())
           .set(PROPERTY_INSURANCES.IDENTIFIER, newInsuranceId())
           .set(PROPERTY_INSURANCES.PROPERTY_ID, propertyId)
           .set(PROPERTY_INSURANCES.TEAM_ID, teamId)
-          .set(PROPERTY_INSURANCES.INSURANCE_TYPE, "BUILDING")
-          .set(PROPERTY_INSURANCES.PROVIDER, "Demo Insurance Co.")
-          .set(PROPERTY_INSURANCES.ANNUAL_PREMIUM, BigDecimal.valueOf((400L + i * 100L) * 100L))
+          .set(PROPERTY_INSURANCES.INSURANCE_TYPE, "LIABILITY")
+          .set(PROPERTY_INSURANCES.PROVIDER, provider)
+          .set(
+              PROPERTY_INSURANCES.POLICY_NUMBER,
+              "LIB-" + String.format("%06d", random.nextInt(100000, 999999)))
+          .set(PROPERTY_INSURANCES.COVERAGE_AMOUNT, BigDecimal.valueOf(500_000_00L))
+          .set(PROPERTY_INSURANCES.COVERAGE_AMOUNT_CURRENCY, currency)
+          .set(
+              PROPERTY_INSURANCES.ANNUAL_PREMIUM,
+              BigDecimal.valueOf(random.nextInt(200_00, 600_00)))
           .set(PROPERTY_INSURANCES.ANNUAL_PREMIUM_CURRENCY, currency)
           .set(PROPERTY_INSURANCES.PAYMENT_FREQUENCY, "ANNUALLY")
-          .set(PROPERTY_INSURANCES.START_DATE, LocalDate.of(2020 + i, 1, 1))
-          .set(PROPERTY_INSURANCES.END_DATE, LocalDate.of(2026 + i, 12, 31))
+          .set(PROPERTY_INSURANCES.START_DATE, acquisitionDate)
+          .set(PROPERTY_INSURANCES.END_DATE, acquisitionDate.plusYears(5))
           .set(PROPERTY_INSURANCES.STATUS, "ACTIVE")
           .set(PROPERTY_INSURANCES.CREATED_AT, now)
           .set(PROPERTY_INSURANCES.UPDATED_AT, now)
@@ -851,19 +1320,118 @@ public class DemoPropertyGenerator {
           .execute();
     }
 
-    // Property Tax (first 4 properties)
-    if (i < 4) {
-      String taxDueMonth = String.valueOf(new int[] {1, 4, 7, 10}[i % 4]);
+    // RENT_GUARANTEE insurance (props 3-6)
+    if (i >= 3 && i <= 6) {
+      dsl.insertInto(PROPERTY_INSURANCES)
+          .set(PROPERTY_INSURANCES.ID, UUID.randomUUID())
+          .set(PROPERTY_INSURANCES.IDENTIFIER, newInsuranceId())
+          .set(PROPERTY_INSURANCES.PROPERTY_ID, propertyId)
+          .set(PROPERTY_INSURANCES.TEAM_ID, teamId)
+          .set(PROPERTY_INSURANCES.INSURANCE_TYPE, "RENT_GUARANTEE")
+          .set(PROPERTY_INSURANCES.PROVIDER, provider)
+          .set(
+              PROPERTY_INSURANCES.POLICY_NUMBER,
+              "RGT-" + String.format("%06d", random.nextInt(100000, 999999)))
+          .set(
+              PROPERTY_INSURANCES.ANNUAL_PREMIUM,
+              BigDecimal.valueOf(random.nextInt(300_00, 800_00)))
+          .set(PROPERTY_INSURANCES.ANNUAL_PREMIUM_CURRENCY, currency)
+          .set(PROPERTY_INSURANCES.PAYMENT_FREQUENCY, "ANNUALLY")
+          .set(PROPERTY_INSURANCES.START_DATE, acquisitionDate.plusMonths(1))
+          .set(PROPERTY_INSURANCES.END_DATE, acquisitionDate.plusYears(3))
+          .set(PROPERTY_INSURANCES.STATUS, "ACTIVE")
+          .set(PROPERTY_INSURANCES.NOTES, "Covers up to 12 months unpaid rent")
+          .set(PROPERTY_INSURANCES.CREATED_AT, now)
+          .set(PROPERTY_INSURANCES.UPDATED_AT, now)
+          .set(PROPERTY_INSURANCES.CREATED_BY, createdBy)
+          .set(PROPERTY_INSURANCES.UPDATED_BY, createdBy)
+          .execute();
+    }
+
+    // === TAXES (all 12, with full detail fields) ===
+    String authority = TAX_AUTHORITIES[i % TAX_AUTHORITIES.length];
+    String taxFrequency;
+    String dueMonths;
+    if (i % 3 == 0) {
+      taxFrequency = "QUARTERLY";
+      dueMonths = "3,6,9,12";
+    } else if (i % 3 == 1) {
+      taxFrequency = "SEMI_ANNUALLY";
+      dueMonths = "6,12";
+    } else {
+      taxFrequency = "ANNUALLY";
+      dueMonths = String.valueOf(1 + (i % 12));
+    }
+    long taxAmount =
+        switch (propertyCategory) {
+          case "COMMERCIAL" -> random.nextInt(2000_00, 5000_00);
+          case "INDUSTRIAL" -> random.nextInt(3000_00, 8000_00);
+          case "AGRICULTURAL" -> random.nextInt(500_00, 2000_00);
+          case "MIXED_USE" -> random.nextInt(2500_00, 6000_00);
+          default -> random.nextInt(1200_00, 3000_00);
+        };
+
+    dsl.insertInto(PROPERTY_TAXES)
+        .set(PROPERTY_TAXES.ID, UUID.randomUUID())
+        .set(PROPERTY_TAXES.IDENTIFIER, newPropertyTaxId())
+        .set(PROPERTY_TAXES.PROPERTY_ID, propertyId)
+        .set(PROPERTY_TAXES.TEAM_ID, teamId)
+        .set(PROPERTY_TAXES.TAX_TYPE, "PROPERTY")
+        .set(PROPERTY_TAXES.AUTHORITY, authority)
+        .set(PROPERTY_TAXES.ANNUAL_AMOUNT, BigDecimal.valueOf(taxAmount))
+        .set(PROPERTY_TAXES.CURRENCY, currency)
+        .set(PROPERTY_TAXES.PAYMENT_FREQUENCY, taxFrequency)
+        .set(PROPERTY_TAXES.DUE_MONTHS, dueMonths)
+        .set(PROPERTY_TAXES.TAX_YEAR, 2026)
+        .set(PROPERTY_TAXES.START_DATE, LocalDate.of(2026, 1, 1))
+        .set(PROPERTY_TAXES.END_DATE, LocalDate.of(2026, 12, 31))
+        .set(PROPERTY_TAXES.STATUS, "ACTIVE")
+        .set(
+            PROPERTY_TAXES.NOTES,
+            random.nextInt(4) == 0 ? "Assessment based on 2026 property valuation" : null)
+        .set(PROPERTY_TAXES.CREATED_AT, now)
+        .set(PROPERTY_TAXES.UPDATED_AT, now)
+        .set(PROPERTY_TAXES.CREATED_BY, createdBy)
+        .set(PROPERTY_TAXES.UPDATED_BY, createdBy)
+        .execute();
+
+    // Second tax: LAND for agricultural, MUNICIPAL for every 3rd property
+    if ("AGRICULTURAL".equals(propertyCategory)) {
       dsl.insertInto(PROPERTY_TAXES)
           .set(PROPERTY_TAXES.ID, UUID.randomUUID())
           .set(PROPERTY_TAXES.IDENTIFIER, newPropertyTaxId())
           .set(PROPERTY_TAXES.PROPERTY_ID, propertyId)
           .set(PROPERTY_TAXES.TEAM_ID, teamId)
-          .set(PROPERTY_TAXES.TAX_TYPE, "PROPERTY")
-          .set(PROPERTY_TAXES.ANNUAL_AMOUNT, BigDecimal.valueOf((1200L + i * 300L) * 100L))
+          .set(PROPERTY_TAXES.TAX_TYPE, "LAND")
+          .set(PROPERTY_TAXES.AUTHORITY, authority)
+          .set(PROPERTY_TAXES.ANNUAL_AMOUNT, BigDecimal.valueOf(random.nextInt(300_00, 1000_00)))
           .set(PROPERTY_TAXES.CURRENCY, currency)
           .set(PROPERTY_TAXES.PAYMENT_FREQUENCY, "ANNUALLY")
-          .set(PROPERTY_TAXES.DUE_MONTHS, taxDueMonth)
+          .set(PROPERTY_TAXES.DUE_MONTHS, "3")
+          .set(PROPERTY_TAXES.TAX_YEAR, 2026)
+          .set(PROPERTY_TAXES.START_DATE, LocalDate.of(2026, 1, 1))
+          .set(PROPERTY_TAXES.END_DATE, LocalDate.of(2026, 12, 31))
+          .set(PROPERTY_TAXES.STATUS, "ACTIVE")
+          .set(PROPERTY_TAXES.CREATED_AT, now)
+          .set(PROPERTY_TAXES.UPDATED_AT, now)
+          .set(PROPERTY_TAXES.CREATED_BY, createdBy)
+          .set(PROPERTY_TAXES.UPDATED_BY, createdBy)
+          .execute();
+    } else if (i % 3 == 0) {
+      dsl.insertInto(PROPERTY_TAXES)
+          .set(PROPERTY_TAXES.ID, UUID.randomUUID())
+          .set(PROPERTY_TAXES.IDENTIFIER, newPropertyTaxId())
+          .set(PROPERTY_TAXES.PROPERTY_ID, propertyId)
+          .set(PROPERTY_TAXES.TEAM_ID, teamId)
+          .set(PROPERTY_TAXES.TAX_TYPE, "MUNICIPAL")
+          .set(PROPERTY_TAXES.AUTHORITY, authority)
+          .set(PROPERTY_TAXES.ANNUAL_AMOUNT, BigDecimal.valueOf(random.nextInt(200_00, 800_00)))
+          .set(PROPERTY_TAXES.CURRENCY, currency)
+          .set(PROPERTY_TAXES.PAYMENT_FREQUENCY, "ANNUALLY")
+          .set(PROPERTY_TAXES.DUE_MONTHS, "9")
+          .set(PROPERTY_TAXES.TAX_YEAR, 2026)
+          .set(PROPERTY_TAXES.START_DATE, LocalDate.of(2026, 1, 1))
+          .set(PROPERTY_TAXES.END_DATE, LocalDate.of(2026, 12, 31))
           .set(PROPERTY_TAXES.STATUS, "ACTIVE")
           .set(PROPERTY_TAXES.CREATED_AT, now)
           .set(PROPERTY_TAXES.UPDATED_AT, now)
@@ -872,66 +1440,274 @@ public class DemoPropertyGenerator {
           .execute();
     }
 
-    // HOA Fee (first 3 properties)
-    if (i < 3) {
-      dsl.insertInto(PROPERTY_FEES)
-          .set(PROPERTY_FEES.ID, UUID.randomUUID())
-          .set(PROPERTY_FEES.IDENTIFIER, newPropertyFeeId())
-          .set(PROPERTY_FEES.PROPERTY_ID, propertyId)
-          .set(PROPERTY_FEES.TEAM_ID, teamId)
-          .set(PROPERTY_FEES.FEE_TYPE, "HOA")
-          .set(PROPERTY_FEES.ANNUAL_AMOUNT, BigDecimal.valueOf((600L + i * 200L) * 100L))
-          .set(PROPERTY_FEES.CURRENCY, currency)
-          .set(PROPERTY_FEES.PAYMENT_FREQUENCY, "MONTHLY")
-          .set(PROPERTY_FEES.STATUS, "ACTIVE")
-          .set(PROPERTY_FEES.CREATED_AT, now)
-          .set(PROPERTY_FEES.UPDATED_AT, now)
-          .set(PROPERTY_FEES.CREATED_BY, createdBy)
-          .set(PROPERTY_FEES.UPDATED_BY, createdBy)
-          .execute();
+    // === FEES (all 12, category-appropriate, 2-4 each) ===
+    switch (propertyCategory) {
+      case "RESIDENTIAL" -> {
+        if (random.nextInt(3) < 2) {
+          insertFee(
+              propertyId,
+              teamId,
+              createdBy,
+              currency,
+              "HOA",
+              "Monthly HOA Dues",
+              random.nextInt(600_00, 1800_00),
+              "MONTHLY",
+              "1,2,3,4,5,6,7,8,9,10,11,12",
+              acquisitionDate,
+              now);
+        }
+        insertFee(
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "WASTE_MANAGEMENT",
+            "Waste Collection Service",
+            random.nextInt(200_00, 500_00),
+            "QUARTERLY",
+            "3,6,9,12",
+            acquisitionDate,
+            now);
+        insertFee(
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "WATER",
+            "Water & Sewage",
+            random.nextInt(300_00, 800_00),
+            "QUARTERLY",
+            "3,6,9,12",
+            acquisitionDate,
+            now);
+      }
+      case "COMMERCIAL" -> {
+        insertFee(
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "MANAGEMENT",
+            "Commercial Property Management",
+            random.nextInt(2400_00, 6000_00),
+            "MONTHLY",
+            "1,2,3,4,5,6,7,8,9,10,11,12",
+            acquisitionDate,
+            now);
+        insertFee(
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "SECURITY",
+            "Security Service",
+            random.nextInt(1200_00, 3600_00),
+            "MONTHLY",
+            "1,2,3,4,5,6,7,8,9,10,11,12",
+            acquisitionDate,
+            now);
+        insertFee(
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "CLEANING",
+            "Professional Cleaning",
+            random.nextInt(1800_00, 4200_00),
+            "MONTHLY",
+            "1,2,3,4,5,6,7,8,9,10,11,12",
+            acquisitionDate,
+            now);
+        insertFee(
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "WASTE_MANAGEMENT",
+            "Commercial Waste Disposal",
+            random.nextInt(600_00, 1500_00),
+            "QUARTERLY",
+            "3,6,9,12",
+            acquisitionDate,
+            now);
+      }
+      case "INDUSTRIAL" -> {
+        insertFee(
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "MANAGEMENT",
+            "Industrial Site Management",
+            random.nextInt(3600_00, 9000_00),
+            "MONTHLY",
+            "1,2,3,4,5,6,7,8,9,10,11,12",
+            acquisitionDate,
+            now);
+        insertFee(
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "SECURITY",
+            "24/7 Security Service",
+            random.nextInt(2400_00, 6000_00),
+            "MONTHLY",
+            "1,2,3,4,5,6,7,8,9,10,11,12",
+            acquisitionDate,
+            now);
+        insertFee(
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "WASTE_MANAGEMENT",
+            "Industrial Waste Removal",
+            random.nextInt(1200_00, 3000_00),
+            "MONTHLY",
+            "1,2,3,4,5,6,7,8,9,10,11,12",
+            acquisitionDate,
+            now);
+        insertFee(
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "UTILITIES",
+            "Common Area Utilities",
+            random.nextInt(1800_00, 4800_00),
+            "QUARTERLY",
+            "3,6,9,12",
+            acquisitionDate,
+            now);
+      }
+      case "AGRICULTURAL" -> {
+        insertFee(
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "WATER",
+            "Irrigation Water Supply",
+            random.nextInt(400_00, 1200_00),
+            "SEMI_ANNUALLY",
+            "4,10",
+            acquisitionDate,
+            now);
+        insertFee(
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "MAINTENANCE_RESERVE",
+            "Farm Maintenance Reserve",
+            random.nextInt(500_00, 1500_00),
+            "ANNUALLY",
+            "9",
+            acquisitionDate,
+            now);
+      }
+      case "MIXED_USE" -> {
+        if (random.nextBoolean()) {
+          insertFee(
+              propertyId,
+              teamId,
+              createdBy,
+              currency,
+              "HOA",
+              "Building Association Fees",
+              random.nextInt(800_00, 2400_00),
+              "MONTHLY",
+              "1,2,3,4,5,6,7,8,9,10,11,12",
+              acquisitionDate,
+              now);
+        }
+        insertFee(
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "MANAGEMENT",
+            "Mixed-Use Property Management",
+            random.nextInt(2000_00, 5000_00),
+            "MONTHLY",
+            "1,2,3,4,5,6,7,8,9,10,11,12",
+            acquisitionDate,
+            now);
+        insertFee(
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "WASTE_MANAGEMENT",
+            "Waste Collection Service",
+            random.nextInt(400_00, 1000_00),
+            "QUARTERLY",
+            "3,6,9,12",
+            acquisitionDate,
+            now);
+      }
+      default -> {
+        insertFee(
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "MAINTENANCE_RESERVE",
+            "Maintenance Reserve",
+            random.nextInt(500_00, 1000_00),
+            "ANNUALLY",
+            "9",
+            acquisitionDate,
+            now);
+      }
     }
+  }
 
-    // Management Fee (first 2 properties)
-    if (i < 2) {
-      dsl.insertInto(PROPERTY_FEES)
-          .set(PROPERTY_FEES.ID, UUID.randomUUID())
-          .set(PROPERTY_FEES.IDENTIFIER, newPropertyFeeId())
-          .set(PROPERTY_FEES.PROPERTY_ID, propertyId)
-          .set(PROPERTY_FEES.TEAM_ID, teamId)
-          .set(PROPERTY_FEES.FEE_TYPE, "MANAGEMENT")
-          .set(PROPERTY_FEES.NAME, "Property Management")
-          .set(PROPERTY_FEES.ANNUAL_AMOUNT, BigDecimal.valueOf((1800L + i * 600L) * 100L))
-          .set(PROPERTY_FEES.CURRENCY, currency)
-          .set(PROPERTY_FEES.PAYMENT_FREQUENCY, "QUARTERLY")
-          .set(PROPERTY_FEES.DUE_MONTHS, "3,6,9,12")
-          .set(PROPERTY_FEES.STATUS, "ACTIVE")
-          .set(PROPERTY_FEES.CREATED_AT, now)
-          .set(PROPERTY_FEES.UPDATED_AT, now)
-          .set(PROPERTY_FEES.CREATED_BY, createdBy)
-          .set(PROPERTY_FEES.UPDATED_BY, createdBy)
-          .execute();
-    }
+  private void insertFee(
+      UUID propertyId,
+      UUID teamId,
+      @Nullable UUID createdBy,
+      String currency,
+      String feeType,
+      String name,
+      long annualAmount,
+      String frequency,
+      String dueMths,
+      LocalDate startDate,
+      LocalDateTime now) {
+    dsl.insertInto(PROPERTY_FEES)
+        .set(PROPERTY_FEES.ID, UUID.randomUUID())
+        .set(PROPERTY_FEES.IDENTIFIER, newPropertyFeeId())
+        .set(PROPERTY_FEES.PROPERTY_ID, propertyId)
+        .set(PROPERTY_FEES.TEAM_ID, teamId)
+        .set(PROPERTY_FEES.FEE_TYPE, feeType)
+        .set(PROPERTY_FEES.NAME, name)
+        .set(PROPERTY_FEES.ANNUAL_AMOUNT, BigDecimal.valueOf(annualAmount))
+        .set(PROPERTY_FEES.CURRENCY, currency)
+        .set(PROPERTY_FEES.PAYMENT_FREQUENCY, frequency)
+        .set(PROPERTY_FEES.DUE_MONTHS, dueMths)
+        .set(PROPERTY_FEES.START_DATE, startDate)
+        .set(PROPERTY_FEES.STATUS, "ACTIVE")
+        .set(PROPERTY_FEES.NOTES, random.nextInt(5) == 0 ? "Annual rate subject to review" : null)
+        .set(PROPERTY_FEES.CREATED_AT, now)
+        .set(PROPERTY_FEES.UPDATED_AT, now)
+        .set(PROPERTY_FEES.CREATED_BY, createdBy)
+        .set(PROPERTY_FEES.UPDATED_BY, createdBy)
+        .execute();
+  }
 
-    // Maintenance Reserve Fee (first 4 properties)
-    if (i < 4) {
-      dsl.insertInto(PROPERTY_FEES)
-          .set(PROPERTY_FEES.ID, UUID.randomUUID())
-          .set(PROPERTY_FEES.IDENTIFIER, newPropertyFeeId())
-          .set(PROPERTY_FEES.PROPERTY_ID, propertyId)
-          .set(PROPERTY_FEES.TEAM_ID, teamId)
-          .set(PROPERTY_FEES.FEE_TYPE, "MAINTENANCE_RESERVE")
-          .set(PROPERTY_FEES.NAME, "Maintenance Reserve")
-          .set(PROPERTY_FEES.ANNUAL_AMOUNT, BigDecimal.valueOf(500_00L))
-          .set(PROPERTY_FEES.CURRENCY, currency)
-          .set(PROPERTY_FEES.PAYMENT_FREQUENCY, "ANNUALLY")
-          .set(PROPERTY_FEES.DUE_MONTHS, "9")
-          .set(PROPERTY_FEES.STATUS, "ACTIVE")
-          .set(PROPERTY_FEES.CREATED_AT, now)
-          .set(PROPERTY_FEES.UPDATED_AT, now)
-          .set(PROPERTY_FEES.CREATED_BY, createdBy)
-          .set(PROPERTY_FEES.UPDATED_BY, createdBy)
-          .execute();
+  private long calculateMonthlyPayment(long principal, double annualRate, int termMonths) {
+    double monthlyRate = annualRate / 100.0 / 12.0;
+    if (monthlyRate == 0) {
+      return principal / termMonths;
     }
+    double payment =
+        principal
+            * (monthlyRate * Math.pow(1 + monthlyRate, termMonths))
+            / (Math.pow(1 + monthlyRate, termMonths) - 1);
+    return Math.round(payment);
   }
 
   // --- Helpers ---

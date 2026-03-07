@@ -1,6 +1,7 @@
 package com.buurman.service;
 
 import static com.buurman.util.SidGenerator.newExpenseId;
+import static java.math.BigDecimal.ZERO;
 import static java.util.stream.Collectors.joining;
 
 import java.math.BigDecimal;
@@ -400,7 +401,7 @@ public class ExpenseService {
       List<ExpenseResponse> successes, UserPrincipal principal) {
     int count = successes.size();
     BigDecimal totalAmount =
-        successes.stream().map(ExpenseResponse::amount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        successes.stream().map(ExpenseResponse::amount).reduce(ZERO, BigDecimal::add);
     String currency = successes.stream().map(ExpenseResponse::currency).findFirst().orElse("");
     String propertyNames =
         successes.stream()

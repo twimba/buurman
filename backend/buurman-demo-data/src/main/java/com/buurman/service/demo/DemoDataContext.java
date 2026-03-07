@@ -39,6 +39,9 @@ public class DemoDataContext {
   // Contract UUID -> list of payment UUIDs
   private final Map<UUID, List<UUID>> paymentIdsByContract = new LinkedHashMap<>();
 
+  // Team UUID -> list of financing UUIDs (for financing payment generation)
+  private final Map<UUID, List<UUID>> financingIdsByTeam = new LinkedHashMap<>();
+
   // Property UUID -> property category (RESIDENTIAL, COMMERCIAL, INDUSTRIAL, AGRICULTURAL,
   // MIXED_USE)
   private final Map<UUID, String> propertyCategoriesByProperty = new LinkedHashMap<>();
@@ -111,6 +114,10 @@ public class DemoDataContext {
 
   public Map<UUID, List<UUID>> getPaymentIdsByContract() {
     return paymentIdsByContract;
+  }
+
+  public Map<UUID, List<UUID>> getFinancingIdsByTeam() {
+    return financingIdsByTeam;
   }
 
   public void putPropertyCategory(UUID propertyId, String category) {

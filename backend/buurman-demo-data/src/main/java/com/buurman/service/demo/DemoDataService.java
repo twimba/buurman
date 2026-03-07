@@ -76,6 +76,7 @@ public class DemoDataService {
   private final DemoPhotoGenerator photoGenerator;
   private final DemoNotificationGenerator notificationGenerator;
   private final DemoDocumentGenerator documentGenerator;
+  private final DemoFinancingPaymentGenerator financingPaymentGenerator;
   private final DemoAuditLogGenerator auditLogGenerator;
   private final S3StorageService s3StorageService;
   private final Clock clock;
@@ -146,6 +147,7 @@ public class DemoDataService {
     userGenerator.generate(ctx);
     teamMemberGenerator.generate(ctx);
     propertyGenerator.generate(ctx);
+    financingPaymentGenerator.generate(ctx);
     tenantGenerator.generate(ctx);
     contractGenerator.generate(ctx);
     paymentInstructionGenerator.generate(ctx);

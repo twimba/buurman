@@ -8,6 +8,7 @@ import static com.buurman.domain.Payment.PaymentStatus.PARTIALLY_PAID;
 import static com.buurman.domain.Payment.PaymentStatus.PENDING;
 import static com.buurman.util.SidGenerator.newPaymentId;
 import static com.buurman.util.SidGenerator.newPaymentReceivalId;
+import static java.math.BigDecimal.ZERO;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
@@ -404,7 +405,7 @@ public class PaymentService {
         receivalRepository.sumByPaymentIdAndTeamId(payment.getId(), teamId, currency);
     BigDecimal remainingBalance = payment.getAmount().value().subtract(receivedAmount);
 
-    if (remainingBalance.compareTo(BigDecimal.ZERO) > 0) {
+    if (remainingBalance.compareTo(ZERO) > 0) {
       PaymentReceival receival = new PaymentReceival();
       receival.setIdentifier(Optional.of(newPaymentReceivalId()));
       receival.setTeamId(teamId);
@@ -575,7 +576,7 @@ public class PaymentService {
     BigDecimal newBalance =
         payment.getAmount().value().subtract(receivedWithoutThis).subtract(request.amount());
 
-    if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
+    if (newBalance.compareTo(ZERO) < 0) {
       throw new BusinessRuleException(
           "Updated receival amount (" + request.amount() + ") would exceed the payment amount");
     }
@@ -662,7 +663,7 @@ public class PaymentService {
     BigDecimal balance = payment.getAmount().value().subtract(totalReceived);
 
     Payment.PaymentStatus newStatus;
-    if (balance.compareTo(BigDecimal.ZERO) <= 0) {
+    if (balance.compareTo(ZERO) <= 0) {
       newStatus = PAID;
       // Set payment date to the latest receival date
       List<PaymentReceival> receivals =
@@ -675,7 +676,7 @@ public class PaymentService {
                 .orElse(LocalDate.now(clock));
         payment.setPaymentDate(Optional.of(latestDate));
       }
-    } else if (totalReceived.compareTo(BigDecimal.ZERO) > 0) {
+    } else if (totalReceived.compareTo(ZERO) > 0) {
       newStatus = PARTIALLY_PAID;
       payment.setPaymentDate(Optional.empty());
     } else {
@@ -980,9 +981,7 @@ public class PaymentService {
       List<PaymentReceival> receivals =
           receivalsByPaymentId.getOrDefault(payment.getId(), List.of());
       BigDecimal receivedAmount =
-          receivals.stream()
-              .map(r -> r.getAmount().value())
-              .reduce(BigDecimal.ZERO, BigDecimal::add);
+          receivals.stream().map(r -> r.getAmount().value()).reduce(ZERO, BigDecimal::add);
       BigDecimal balance = payment.getAmount().value().subtract(receivedAmount);
       List<PaymentReceivalResponse> receivalResponses =
           receivals.stream().map(receivalMapper::toResponse).toList();
@@ -1049,7 +1048,7 @@ public class PaymentService {
     List<PaymentReceival> receivals =
         receivalRepository.findByPaymentIdAndTeamId(payment.getId(), teamId);
     BigDecimal receivedAmount =
-        receivals.stream().map(r -> r.getAmount().value()).reduce(BigDecimal.ZERO, BigDecimal::add);
+        receivals.stream().map(r -> r.getAmount().value()).reduce(ZERO, BigDecimal::add);
     BigDecimal balance = payment.getAmount().value().subtract(receivedAmount);
     List<PaymentReceivalResponse> receivalResponses =
         receivals.stream().map(receivalMapper::toResponse).toList();

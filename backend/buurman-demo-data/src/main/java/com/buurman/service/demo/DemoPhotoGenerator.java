@@ -44,8 +44,10 @@ public class DemoPhotoGenerator {
   private final S3StorageService s3StorageService;
   private final Random random = new Random(42);
 
+  private record PhotoFile(byte[] data, String mimeType) {}
+
   /** Photo pool loaded once from classpath, keyed by room category. */
-  private final Map<String, List<byte[]>> photoPool;
+  private final Map<String, List<PhotoFile>> photoPool;
 
   public DemoPhotoGenerator(PhotoRepository photoRepository, S3StorageService s3StorageService) {
     this.photoRepository = photoRepository;
@@ -135,16 +137,22 @@ public class DemoPhotoGenerator {
 
     int count = 0;
     for (PhotoSlot slot : slots) {
-      byte[] imageData = pickRandom(slot.category);
-      if (imageData == null) {
+      PhotoFile photoFile = pickRandom(slot.category);
+      if (photoFile == null) {
         continue;
       }
 
       try {
-        String fileName = slot.title.toLowerCase(Locale.ROOT).replace(" ", "-") + ".jpg";
+        String ext = photoFile.mimeType.equals("image/png") ? ".png" : ".jpg";
+        String fileName = slot.title.toLowerCase(Locale.ROOT).replace(" ", "-") + ext;
         String fileKey =
             s3StorageService.uploadFile(
-                imageData, "image/jpeg", teamIdentifier, "PROPERTY", propertyIdentifier, fileName);
+                photoFile.data,
+                photoFile.mimeType,
+                teamIdentifier,
+                "PROPERTY",
+                propertyIdentifier,
+                fileName);
 
         Photo photo = new Photo();
         photo.setTeamId(teamId);
@@ -153,8 +161,8 @@ public class DemoPhotoGenerator {
         photo.setFileKey(fileKey);
 
         photo.setFileName(fileName);
-        photo.setFileSize((long) imageData.length);
-        photo.setMimeType("image/jpeg");
+        photo.setFileSize((long) photoFile.data.length);
+        photo.setMimeType(photoFile.mimeType);
         photo.setTitle(Optional.of(slot.title));
         photo.setIsMainPhoto(slot.isMain);
         photo.setUploadedBy(uploadedBy);
@@ -170,24 +178,27 @@ public class DemoPhotoGenerator {
   }
 
   @SuppressWarnings("NullAway")
-  private byte @Nullable [] pickRandom(String category) {
-    List<byte[]> pool = photoPool.get(category);
+  private @Nullable PhotoFile pickRandom(String category) {
+    List<PhotoFile> pool = photoPool.get(category);
     if (pool == null || pool.isEmpty()) {
       pool = photoPool.values().stream().filter(l -> !l.isEmpty()).findFirst().orElse(null);
     }
     return pool != null ? pool.get(random.nextInt(pool.size())) : null;
   }
 
-  private static Map<String, List<byte[]>> loadPhotoPool() {
-    Map<String, List<byte[]>> pool = new LinkedHashMap<>();
+  private static Map<String, List<PhotoFile>> loadPhotoPool() {
+    Map<String, List<PhotoFile>> pool = new LinkedHashMap<>();
     var resolver = new PathMatchingResourcePatternResolver();
 
     for (String category : ALL_CATEGORIES) {
-      List<byte[]> images = new ArrayList<>();
+      List<PhotoFile> images = new ArrayList<>();
       try {
-        Resource[] resources = resolver.getResources(RESOURCE_BASE + category + "/*.jpg");
-        for (Resource resource : resources) {
-          images.add(resource.getContentAsByteArray());
+        for (String ext : List.of("*.jpg", "*.png")) {
+          Resource[] resources = resolver.getResources(RESOURCE_BASE + category + "/" + ext);
+          String mimeType = ext.equals("*.png") ? "image/png" : "image/jpeg";
+          for (Resource resource : resources) {
+            images.add(new PhotoFile(resource.getContentAsByteArray(), mimeType));
+          }
         }
       } catch (IOException e) {
         // Category not found — skip

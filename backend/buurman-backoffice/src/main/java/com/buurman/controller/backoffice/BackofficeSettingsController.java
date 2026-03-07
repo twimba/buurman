@@ -41,7 +41,7 @@ public class BackofficeSettingsController implements BackofficeSettingsApi {
       UpdatePhoneNumberPolicyRequest updatePhoneNumberPolicyRequest) {
     BackofficePrincipal principal = SecurityUtils.getBackofficePrincipal();
     PhoneNumberPolicy policy = policyService.getPolicy();
-    policy.setPolicyMatrix(Optional.ofNullable(updatePhoneNumberPolicyRequest.policyMatrix()));
+    policy.setPolicyMatrix(Optional.of(updatePhoneNumberPolicyRequest.policyMatrix()));
     policy.setMaxCodesPerHour(updatePhoneNumberPolicyRequest.maxCodesPerHour());
     policy.setVerificationCodeExpiryMinutes(
         updatePhoneNumberPolicyRequest.verificationCodeExpiryMinutes());

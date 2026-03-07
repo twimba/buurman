@@ -241,8 +241,118 @@ public class DemoContractGenerator {
         ctx.incrementContracts();
       }
 
+      // === HISTORICAL EXPIRED CONTRACTS (4-6 per team) ===
+      int historicalCount = random.nextInt(4, 7);
+      int extraTenantStart = 12; // indices 12-17 are extra tenants
+      int[] historicalPropertyIndices = {0, 2, 4, 6, 1, 3};
+
+      for (int h = 0; h < historicalCount && h < historicalPropertyIndices.length; h++) {
+        int propIdx = historicalPropertyIndices[h];
+        if (propIdx >= sortedProperties.size()) {
+          continue;
+        }
+        int tenantIdx = extraTenantStart + h;
+        if (tenantIdx >= sortedTenants.size()) {
+          continue;
+        }
+
+        UUID historicalContractId = UUID.randomUUID();
+        UUID historicalPropertyId = sortedProperties.get(propIdx);
+        UUID historicalTenantId = sortedTenants.get(tenantIdx);
+        String historicalCategory = ctx.getPropertyCategory(historicalPropertyId);
+
+        // Start 3-5 years ago, end 1-3 years ago (before current contracts)
+        LocalDate histStart =
+            today.minusYears(random.nextInt(3, 6)).minusMonths(random.nextInt(0, 6));
+        LocalDate histEnd =
+            today.minusYears(random.nextInt(1, 3)).minusMonths(random.nextInt(0, 6));
+        if (!histEnd.isAfter(histStart)) {
+          histEnd = histStart.plusYears(1);
+        }
+        LocalDate histSigned = histStart.minusDays(random.nextInt(7, 30));
+
+        // Rent 80-90% of current (shows rent increase over time)
+        BigDecimal histRent =
+            rentAmountForCategory(historicalCategory)
+                .multiply(BigDecimal.valueOf(0.80 + random.nextDouble() * 0.10))
+                .setScale(2, java.math.RoundingMode.HALF_UP);
+        BigDecimal histDeposit = histRent.multiply(BigDecimal.valueOf(2));
+
+        String histContractType = CONTRACT_TYPES[h % CONTRACT_TYPES.length];
+
+        // Resolve country from property
+        String histCountry =
+            dsl.select(PROPERTIES.COUNTRY_CODE)
+                .from(PROPERTIES)
+                .where(PROPERTIES.ID.eq(historicalPropertyId))
+                .fetchOneInto(String.class);
+        String histCountryCode = CountryMetadataRegistry.normalizeCountryCode(histCountry);
+        ContractCountryMetadata histMetadata =
+            histCountryCode != null ? buildDemoMetadata(histCountryCode) : null;
+
+        Sid histContractIdentifier = newContractId();
+        dsl.insertInto(CONTRACTS)
+            .set(CONTRACTS.ID, historicalContractId)
+            .set(CONTRACTS.IDENTIFIER, histContractIdentifier)
+            .set(CONTRACTS.TEAM_ID, teamId)
+            .set(CONTRACTS.PROPERTY_ID, historicalPropertyId)
+            .set(CONTRACTS.CONTRACT_TYPE, histContractType)
+            .set(CONTRACTS.START_DATE, histStart)
+            .set(CONTRACTS.END_DATE, histEnd)
+            .set(CONTRACTS.SIGNED_DATE, histSigned)
+            .set(CONTRACTS.RENT_AMOUNT, histRent)
+            .set(CONTRACTS.DEPOSIT_AMOUNT, histDeposit)
+            .set(CONTRACTS.SECURITY_DEPOSIT, histRent)
+            .set(CONTRACTS.RENT_AMOUNT_CURRENCY, currency)
+            .set(CONTRACTS.DEPOSIT_AMOUNT_CURRENCY, currency)
+            .set(CONTRACTS.SECURITY_DEPOSIT_CURRENCY, currency)
+            .set(CONTRACTS.PAYMENT_FREQUENCY, paymentFrequencyForCategory(historicalCategory))
+            .set(CONTRACTS.PAYMENT_DUE_DAY, 1)
+            .set(CONTRACTS.AUTO_RENEWAL, false)
+            .set(CONTRACTS.RENEWAL_NOTICE_DAYS, 30)
+            .set(
+                CONTRACTS.TERMINATION_NOTICE_DAYS, terminationNoticeForCategory(historicalCategory))
+            .set(CONTRACTS.LATE_FEE_PERCENTAGE, BigDecimal.valueOf(2))
+            .set(CONTRACTS.STATUS, "EXPIRED")
+            .set(CONTRACTS.NOTES, "Historical contract - expired " + histEnd)
+            .set(field("country_code", String.class), histCountryCode)
+            .set(
+                field("country_metadata", JSONB.class),
+                histMetadata != null
+                    ? JSONB.jsonb(countryMetadataSerializer.serialize(histMetadata))
+                    : null)
+            .set(CONTRACTS.CREATED_AT, now.minusDays(random.nextInt(365, 1800)))
+            .set(CONTRACTS.UPDATED_AT, now.minusDays(random.nextInt(30, 365)))
+            .set(CONTRACTS.CREATED_BY, createdBy)
+            .set(CONTRACTS.UPDATED_BY, createdBy)
+            .execute();
+
+        // Insert historical contract party
+        dsl.insertInto(table("contract_parties"))
+            .set(field("id", UUID.class), UUID.randomUUID())
+            .set(field("identifier", String.class), newContractPartyId().value())
+            .set(field("team_id", UUID.class), teamId)
+            .set(field("contract_id", UUID.class), historicalContractId)
+            .set(field("tenant_id", UUID.class), historicalTenantId)
+            .set(field("role", String.class), "PRIMARY_TENANT")
+            .set(field("created_at", LocalDateTime.class), now)
+            .set(field("updated_at", LocalDateTime.class), now)
+            .set(field("created_by", UUID.class), createdBy)
+            .set(field("updated_by", UUID.class), createdBy)
+            .execute();
+
+        contractIds.add(historicalContractId);
+        ctx.putIdentifier(historicalContractId, histContractIdentifier);
+        ctx.incrementContracts();
+      }
+
       ctx.getContractIdsByTeam().put(teamId, contractIds);
-      log.info("Created {} contracts for team {}", contractCount, teamKey);
+      log.info(
+          "Created {} contracts ({} current + {} historical) for team {}",
+          contractIds.size(),
+          contractCount,
+          contractIds.size() - contractCount,
+          teamKey);
     }
   }
 

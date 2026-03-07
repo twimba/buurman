@@ -1,6 +1,7 @@
 package com.buurman.service;
 
 import static com.buurman.util.SidGenerator.newFinancingPaymentId;
+import static java.math.BigDecimal.ZERO;
 import static java.util.stream.Collectors.joining;
 
 import java.math.BigDecimal;
@@ -121,7 +122,7 @@ public class FinancingPaymentService {
     boolean shouldDeduct = request.deductFromBalance().orElse(true);
     BigDecimal deductionAmount = computeDeductionAmount(payment);
 
-    if (shouldDeduct && deductionAmount.compareTo(BigDecimal.ZERO) > 0) {
+    if (shouldDeduct && deductionAmount.compareTo(ZERO) > 0) {
       adjustFinancingBalance(financing, deductionAmount, principal.getUserId());
       payment.setBalanceDeducted(true);
     }
@@ -148,8 +149,7 @@ public class FinancingPaymentService {
     FinancingPayment payment =
         paymentRepository.getByIdentifierAndTeamId(paymentIdentifier, principal.requireTeamId());
 
-    BigDecimal oldDeduction =
-        payment.isBalanceDeducted() ? computeDeductionAmount(payment) : BigDecimal.ZERO;
+    BigDecimal oldDeduction = payment.isBalanceDeducted() ? computeDeductionAmount(payment) : ZERO;
 
     paymentMapper.updateEntity(payment, request);
     payment.setUpdatedBy(principal.getUserId());
@@ -163,7 +163,7 @@ public class FinancingPaymentService {
     if (shouldDeduct) {
       BigDecimal newDeduction = computeDeductionAmount(payment);
       BigDecimal delta = newDeduction.subtract(oldDeduction);
-      if (delta.compareTo(BigDecimal.ZERO) != 0) {
+      if (delta.compareTo(ZERO) != 0) {
         PropertyFinancing financing =
             financingRepository
                 .findByIdAndTeamId(payment.getFinancingId(), principal.requireTeamId())
@@ -174,7 +174,7 @@ public class FinancingPaymentService {
       payment.setBalanceDeducted(true);
     } else if (payment.isBalanceDeducted()) {
       // Was previously deducted, now opted out — reverse
-      if (oldDeduction.compareTo(BigDecimal.ZERO) > 0) {
+      if (oldDeduction.compareTo(ZERO) > 0) {
         PropertyFinancing financing =
             financingRepository
                 .findByIdAndTeamId(payment.getFinancingId(), principal.requireTeamId())
@@ -207,7 +207,7 @@ public class FinancingPaymentService {
     // Reverse balance deduction if applicable
     if (payment.isBalanceDeducted()) {
       BigDecimal deduction = computeDeductionAmount(payment);
-      if (deduction.compareTo(BigDecimal.ZERO) > 0) {
+      if (deduction.compareTo(ZERO) > 0) {
         PropertyFinancing financing =
             financingRepository
                 .findByIdAndTeamId(payment.getFinancingId(), principal.requireTeamId())
@@ -273,8 +273,8 @@ public class FinancingPaymentService {
   // ===== Balance Helpers =====
 
   private BigDecimal computeDeductionAmount(FinancingPayment payment) {
-    BigDecimal principal = payment.getPrincipalAmount().orElse(BigDecimal.ZERO);
-    BigDecimal extra = payment.getExtraPayment().orElse(BigDecimal.ZERO);
+    BigDecimal principal = payment.getPrincipalAmount().orElse(ZERO);
+    BigDecimal extra = payment.getExtraPayment().orElse(ZERO);
     return principal.add(extra);
   }
 
@@ -282,8 +282,8 @@ public class FinancingPaymentService {
     BigDecimal current =
         financing.getCurrentBalance().orElse(financing.getOriginalAmount().value());
     BigDecimal newBalance = current.subtract(amount);
-    if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
-      newBalance = BigDecimal.ZERO;
+    if (newBalance.compareTo(ZERO) < 0) {
+      newBalance = ZERO;
     }
     financing.setCurrentBalance(Optional.of(newBalance));
     financing.setUpdatedBy(userId);

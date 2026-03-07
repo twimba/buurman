@@ -33,7 +33,7 @@ public class DemoTenantGenerator {
   private final Faker faker = new Faker(Locale.ENGLISH, new Random(42));
   private final Random random = new Random(42);
 
-  public static final int TENANTS_PER_TEAM = 8;
+  public static final int TENANTS_PER_TEAM = 18;
 
   private static final String[] DUTCH_CITIES = {
     "Amsterdam", "Rotterdam", "Den Haag", "Utrecht", "Eindhoven",
@@ -129,7 +129,8 @@ public class DemoTenantGenerator {
                   .toLowerCase(Locale.ROOT)
                   .replaceAll("[^a-z0-9]+", "")
                   .substring(0, Math.min(15, companyName.replaceAll("[^a-z0-9]+", "").length()));
-          email = "info@" + slug + domain;
+          String teamSlug = teamKey.replace("-", "");
+          email = "info." + teamSlug + "." + i + "@" + slug + domain;
           // Landline format
           phone = "+3120" + String.format("%07d", random.nextInt(1000000, 9999999));
           taxNumber = "NL" + String.format("%09d", random.nextInt(100000000, 999999999)) + "B01";
