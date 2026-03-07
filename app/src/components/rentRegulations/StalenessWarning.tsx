@@ -1,30 +1,15 @@
-import { AlertTriangle } from 'lucide-react';
+import { Info } from 'lucide-react';
 
-interface StalenessWarningProps {
-  lastReviewedAt?: string;
-}
-
-export const StalenessWarning = ({ lastReviewedAt }: StalenessWarningProps) => {
-  const formattedDate = lastReviewedAt
-    ? new Date(lastReviewedAt).toLocaleDateString(undefined, {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })
-    : 'unknown';
-
+export const RegulationDisclaimer = () => {
   return (
-    <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
-      <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-      <div>
-        <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
-          Regulation data may be outdated
-        </p>
-        <p className="text-sm text-amber-700 dark:text-amber-400 mt-1">
-          Last reviewed: {formattedDate}. Please verify with official sources
-          before applying rent increases.
-        </p>
-      </div>
+    <div className="flex items-start gap-3 p-4 rounded-lg bg-[#f8f9fc] dark:bg-[#0c0d14] border border-[#e2e6f0] dark:border-[#2a2e3f]">
+      <Info className="h-4 w-4 text-[#6b7194] dark:text-[#8b90a8] flex-shrink-0 mt-0.5" />
+      <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] leading-relaxed">
+        Regulation data is provided for informational purposes only. Always
+        verify with official legal sources and seek professional advice before
+        applying rent adjustments. We are not accountable for errors or
+        omissions.
+      </p>
     </div>
   );
 };
