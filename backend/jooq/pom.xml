@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.buurman</groupId>
+        <artifactId>buurman-backend</artifactId>
+        <version>0.41.0</version>
+    </parent>
+
+    <artifactId>buurman-jooq</artifactId>
+    <name>Buurman JOOQ</name>
+    <description>JOOQ code generation and Flyway migrations</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.buurman</groupId>
+            <artifactId>buurman-common</artifactId>
+        </dependency>
+
+        <!-- JOOQ -->
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
+        </dependency>
+
+        <!-- Flyway (needed at compile time for migration resources) -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+        </dependency>
+
+        <!-- PostgreSQL -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+
+        <!-- Testcontainers (provided - only needed for JOOQ codegen) -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-postgresql</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-jdbc</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <!-- JOOQ Code Generation via Testcontainers -->
+            <plugin>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-jooq-codegen-maven-plugin</artifactId>
+                <version>${testcontainers-jooq-codegen-maven-plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.testcontainers</groupId>
+                        <artifactId>testcontainers</artifactId>
+                        <version>${testcontainers.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.testcontainers</groupId>
+                        <artifactId>testcontainers-postgresql</artifactId>
+                        <version>${testcontainers.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>42.7.10</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.jooq</groupId>
+                        <artifactId>jooq</artifactId>
+                        <version>${jooq.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.jooq</groupId>
+                        <artifactId>jooq-meta</artifactId>
+                        <version>${jooq.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.jooq</groupId>
+                        <artifactId>jooq-codegen</artifactId>
+                        <version>${jooq.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>generate-jooq-sources</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <database>
+                                <type>POSTGRES</type>
+                                <containerImage>postgres:18-alpine</containerImage>
+                            </database>
+                            <flyway>
+                                <locations>
+                                    filesystem:${project.basedir}/src/main/resources/db/migration
+                                </locations>
+                            </flyway>
+                            <jooq>
+                                <generator>
+                                    <database>
+                                        <includes>.*</includes>
+                                        <excludes>flyway_schema_history</excludes>
+                                        <inputSchema>public</inputSchema>
+                                        <catalogVersionProvider>SELECT CAST(MAX(installed_rank) AS VARCHAR) FROM flyway_schema_history</catalogVersionProvider>
+                                        <schemaVersionProvider>SELECT CAST(MAX(installed_rank) AS VARCHAR) FROM flyway_schema_history</schemaVersionProvider>
+                                        <forcedTypes>
+                                            <forcedType>
+                                                <userType>com.buurman.domain.Sid</userType>
+                                                <converter>com.buurman.config.jooq.SidJooqConverter</converter>
+                                                <includeExpression>.*\.IDENTIFIER</includeExpression>
+                                                <includeTypes>VARCHAR</includeTypes>
+                                                <ignoreUnused>true</ignoreUnused>
+                                            </forcedType>
+                                            <forcedType>
+                                                <userType>java.math.BigDecimal</userType>
+                                                <converter>com.buurman.config.jooq.MoneyMinorUnitConverter</converter>
+                                                <includeExpression>.*\.(RENT_AMOUNT|DEPOSIT_AMOUNT|SECURITY_DEPOSIT|AMOUNT|TOTAL_AMOUNT|PRINCIPAL_AMOUNT|INTEREST_AMOUNT|ESCROW_AMOUNT|EXTRA_PAYMENT|ANNUAL_AMOUNT|ANNUAL_PREMIUM|COVERAGE_AMOUNT|ORIGINAL_AMOUNT|CURRENT_BALANCE|MONTHLY_PAYMENT|PURCHASE_PRICE|CLOSING_COSTS|RENOVATION_COSTS|LAND_VALUE)</includeExpression>
+                                                <includeTypes>BIGINT</includeTypes>
+                                                <ignoreUnused>true</ignoreUnused>
+                                            </forcedType>
+                                        </forcedTypes>
+                                    </database>
+                                    <target>
+                                        <packageName>com.buurman.jooq.generated</packageName>
+                                        <directory>target/generated-sources/jooq</directory>
+                                    </target>
+                                    <generate>
+                                        <pojos>false</pojos>
+                                        <daos>false</daos>
+                                        <records>true</records>
+                                        <interfaces>false</interfaces>
+                                        <javaTimeTypes>true</javaTimeTypes>
+                                        <relations>true</relations>
+                                        <routines>false</routines>
+                                    </generate>
+                                </generator>
+                            </jooq>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Add JOOQ generated sources -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.6.1</version>
+                <executions>
+                    <execution>
+                        <id>add-jooq-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/jooq</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- SQL Formatting for migrations -->
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <configuration>
+                    <formats>
+                        <format>
+                            <includes>
+                                <include>src/main/resources/db/migration/**/*.sql</include>
+                            </includes>
+                            <prettier>
+                                <devDependencies>
+                                    <prettier>3.8.1</prettier>
+                                    <prettier-plugin-sql>0.19.2</prettier-plugin-sql>
+                                </devDependencies>
+                                <config>
+                                    <plugins>prettier-plugin-sql</plugins>
+                                    <language>postgresql</language>
+                                    <keywordCase>upper</keywordCase>
+                                    <dataTypeCase>upper</dataTypeCase>
+                                    <functionCase>lower</functionCase>
+                                    <tabWidth>4</tabWidth>
+                                </config>
+                            </prettier>
+                        </format>
+                    </formats>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

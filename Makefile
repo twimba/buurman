@@ -1,4 +1,4 @@
-.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi
+.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend
 
 ## Start everything in Docker (including backend + app containers)
 up:
@@ -39,6 +39,10 @@ certs:
 
 stats:
 	scc --gen --no-gen --min --no-min --min-gen --no-min-gen --sort complexity  --avg-wage 100000 --sloccount-format --cocomo-project-type "ai-solo,0.25,1.03,1.0,1.0"
+
+## Run backend locally
+backend:
+	cd backend && mvn spring-boot:run -pl app -am
 
 backend-upgradable-dependencies:
 	mvn versions:display-dependency-updates -DallowMajorUpdates=false -Dversions.outputLineWidth=145 -Dmaven.version.ignore='(?i).*-(alpha|beta|rc|m)([-.]?\d+)?' -DprocessDependencyManagementTransitive=false

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.buurman</groupId>
+        <artifactId>buurman-backend</artifactId>
+        <version>0.41.0</version>
+    </parent>
+
+    <artifactId>buurman-app</artifactId>
+    <name>Buurman App</name>
+    <description>Thin shell — assembles all modules into a Spring Boot fat JAR</description>
+
+    <dependencies>
+        <!-- All modules converge here -->
+        <dependency>
+            <groupId>com.buurman</groupId>
+            <artifactId>buurman-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.buurman</groupId>
+            <artifactId>buurman-notifications</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.buurman</groupId>
+            <artifactId>buurman-backoffice</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.buurman</groupId>
+            <artifactId>buurman-demo-data</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.buurman</groupId>
+            <artifactId>buurman-takeout</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.buurman</groupId>
+            <artifactId>buurman-booklets</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <skip>false</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>build-info</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
+                <version>9.0.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+                    <includeOnlyProperties>
+                        <includeOnlyProperty>git.branch</includeOnlyProperty>
+                        <includeOnlyProperty>git.closest.tag.name</includeOnlyProperty>
+                        <includeOnlyProperty>git.commit.id.abbrev</includeOnlyProperty>
+                        <includeOnlyProperty>git.commit.id.full</includeOnlyProperty>
+                        <includeOnlyProperty>git.commit.message.short</includeOnlyProperty>
+                        <includeOnlyProperty>git.commit.time</includeOnlyProperty>
+                        <includeOnlyProperty>git.dirty</includeOnlyProperty>
+                    </includeOnlyProperties>
+                    <commitIdGenerationMode>full</commitIdGenerationMode>
+                    <failOnNoGitDirectory>false</failOnNoGitDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

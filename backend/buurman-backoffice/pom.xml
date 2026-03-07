@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.buurman</groupId>
+        <artifactId>buurman-backend</artifactId>
+        <version>0.41.0</version>
+    </parent>
+
+    <artifactId>buurman-backoffice</artifactId>
+    <name>Buurman Backoffice</name>
+    <description>Backoffice admin panel controllers, services, and repositories</description>
+
+    <dependencies>
+        <!-- Inter-module -->
+        <dependency>
+            <groupId>com.buurman</groupId>
+            <artifactId>buurman-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.buurman</groupId>
+            <artifactId>buurman-notifications</artifactId>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Null Safety -->
+        <dependency>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
+        </dependency>
+
+        <!-- Swagger Annotations -->
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations-jakarta</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+            </plugin>
+            <!--
+                OpenAPI Code Generation (backoffice API)
+                Moved from buurman-core — generates Spring controller interfaces
+                for the backoffice OpenAPI spec.
+            -->
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>7.20.0</version>
+                <executions>
+                    <execution>
+                        <id>generate-backoffice-api</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/../../openapi/backoffice.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <output>${project.build.directory}/generated-sources/openapi</output>
+                            <apiPackage>com.buurman.generated.backoffice.api</apiPackage>
+                            <modelPackage>com.buurman.generated.backoffice.model</modelPackage>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useTags>true</useTags>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useJakartaEe>true</useJakartaEe>
+                                <useBeanValidation>true</useBeanValidation>
+                                <useResponseEntity>false</useResponseEntity>
+                                <skipDefaultInterface>true</skipDefaultInterface>
+                                <openApiNullable>false</openApiNullable>
+                                <useOptional>true</useOptional>
+                                <documentationProvider>none</documentationProvider>
+                                <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                                <additionalModelTypeAnnotations>@lombok.Generated</additionalModelTypeAnnotations>
+                            </configOptions>
+                            <typeMappings>
+                                <typeMapping>DateTime=java.time.Instant</typeMapping>
+                            </typeMappings>
+                            <schemaMappings>
+                                <schemaMapping>PageResponseBackofficeNotificationResponse=com.buurman.dto.response.PageResponse</schemaMapping>
+                                <schemaMapping>PageResponseBackofficeTeamResponse=com.buurman.dto.response.PageResponse</schemaMapping>
+                                <schemaMapping>PageResponseBackofficeUserResponse=com.buurman.dto.response.PageResponse</schemaMapping>
+                                <schemaMapping>PageResponseBuurmyResponse=com.buurman.dto.response.PageResponse</schemaMapping>
+                                <schemaMapping>PageResponseJobExecutionHistoryResponse=com.buurman.dto.response.PageResponse</schemaMapping>
+                                <schemaMapping>PageResponseRegistrationInvitationResponse=com.buurman.dto.response.PageResponse</schemaMapping>
+                                <schemaMapping>NotificationIdentifier=com.buurman.domain.identifier.NotificationIdentifier</schemaMapping>
+                                <schemaMapping>RegistrationInvitationIdentifier=com.buurman.domain.identifier.RegistrationInvitationIdentifier</schemaMapping>
+                                <schemaMapping>TeamIdentifier=com.buurman.domain.identifier.TeamIdentifier</schemaMapping>
+                                <schemaMapping>UserIdentifier=com.buurman.domain.identifier.UserIdentifier</schemaMapping>
+                                <schemaMapping>WwsCalculationIdentifier=com.buurman.domain.identifier.WwsCalculationIdentifier</schemaMapping>
+                            </schemaMappings>
+                            <importMappings>
+                                <importMapping>Instant=java.time.Instant</importMapping>
+                                <importMapping>ProblemDetail=org.springframework.http.ProblemDetail</importMapping>
+                                <importMapping>BackofficeDashboardResponse=com.buurman.dto.response.backoffice.BackofficeDashboardResponse</importMapping>
+                                <importMapping>BackofficeNotificationResponse=com.buurman.dto.response.backoffice.BackofficeNotificationResponse</importMapping>
+                                <importMapping>BackofficePhoneNumberPolicyResponse=com.buurman.dto.response.backoffice.BackofficePhoneNumberPolicyResponse</importMapping>
+                                <importMapping>BackofficeSystemInfoResponse=com.buurman.dto.response.backoffice.BackofficeSystemInfoResponse</importMapping>
+                                <importMapping>BackofficeTeamDetailResponse=com.buurman.dto.response.backoffice.BackofficeTeamDetailResponse</importMapping>
+                                <importMapping>BackofficeTeamResponse=com.buurman.dto.response.backoffice.BackofficeTeamResponse</importMapping>
+                                <importMapping>BackofficeUserResponse=com.buurman.dto.response.backoffice.BackofficeUserResponse</importMapping>
+                                <importMapping>BuurmyResponse=com.buurman.dto.response.backoffice.BuurmyResponse</importMapping>
+                                <importMapping>FeatureFlagUpdateResponse=com.buurman.dto.response.backoffice.FeatureFlagUpdateResponse</importMapping>
+                                <importMapping>JobExecutionHistoryResponse=com.buurman.dto.response.backoffice.JobExecutionHistoryResponse</importMapping>
+                                <importMapping>LoggerConfigurationResponse=com.buurman.dto.response.backoffice.LoggerConfigurationResponse</importMapping>
+                                <importMapping>RateLimitConfigResponse=com.buurman.dto.response.backoffice.RateLimitConfigResponse</importMapping>
+                                <importMapping>RegistrationInvitationDetailResponse=com.buurman.dto.response.backoffice.RegistrationInvitationDetailResponse</importMapping>
+                                <importMapping>RegistrationInvitationResponse=com.buurman.dto.response.backoffice.RegistrationInvitationResponse</importMapping>
+                                <importMapping>ScheduledJobResponse=com.buurman.dto.response.backoffice.ScheduledJobResponse</importMapping>
+                                <importMapping>SegmentEvaluation=com.buurman.dto.response.backoffice.SegmentEvaluation</importMapping>
+                                <importMapping>TeamFlagEvaluation=com.buurman.dto.response.backoffice.TeamFlagEvaluation</importMapping>
+                                <importMapping>CreateBuurmyRequest=com.buurman.dto.request.backoffice.CreateBuurmyRequest</importMapping>
+                                <importMapping>CreateRegistrationInvitationRequest=com.buurman.dto.request.backoffice.CreateRegistrationInvitationRequest</importMapping>
+                                <importMapping>RescheduleRequest=com.buurman.dto.request.backoffice.RescheduleRequest</importMapping>
+                                <importMapping>SendRegistrationInvitationRequest=com.buurman.dto.request.backoffice.SendRegistrationInvitationRequest</importMapping>
+                                <importMapping>SetLogLevelRequest=com.buurman.dto.request.backoffice.SetLogLevelRequest</importMapping>
+                                <importMapping>UpdateFeatureFlagRequest=com.buurman.dto.request.backoffice.UpdateFeatureFlagRequest</importMapping>
+                                <importMapping>UpdatePhoneNumberPolicyRequest=com.buurman.dto.request.backoffice.UpdatePhoneNumberPolicyRequest</importMapping>
+                                <importMapping>UpdateRateLimitConfigRequest=com.buurman.dto.request.backoffice.UpdateRateLimitConfigRequest</importMapping>
+                                <importMapping>UpdateRegistrationInvitationNoteRequest=com.buurman.dto.request.backoffice.UpdateRegistrationInvitationNoteRequest</importMapping>
+                                <importMapping>UpdateTeamNameRequest=com.buurman.dto.request.backoffice.UpdateTeamNameRequest</importMapping>
+                            </importMappings>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Add OpenAPI generated sources -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.6.1</version>
+                <executions>
+                    <execution>
+                        <id>add-openapi-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/openapi/src/main/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.buurman</groupId>
+        <artifactId>buurman-backend</artifactId>
+        <version>0.41.0</version>
+    </parent>
+
+    <artifactId>buurman-core</artifactId>
+    <name>Buurman Core</name>
+    <description>Core services, repositories, and configuration</description>
+
+    <dependencies>
+        <!-- Inter-module -->
+        <dependency>
+            <groupId>com.buurman</groupId>
+            <artifactId>buurman-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.buurman</groupId>
+            <artifactId>buurman-jooq</artifactId>
+        </dependency>
+
+        <!-- Spring Boot Starters -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jooq</artifactId>
+        </dependency>
+
+        <!-- Spring Security -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-resource-server</artifactId>
+        </dependency>
+
+        <!-- Keycloak Admin Client -->
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-admin-client</artifactId>
+        </dependency>
+
+        <!-- Database -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-flyway</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+        </dependency>
+
+        <!-- JOOQ -->
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
+        </dependency>
+
+        <!-- Jackson -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jdk8</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Null Safety -->
+        <dependency>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
+        </dependency>
+
+        <!-- MapStruct -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+        </dependency>
+
+        <!-- AWS S3 SDK v2 -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>url-connection-client</artifactId>
+        </dependency>
+
+        <!-- Monitoring -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+
+        <!-- Rate Limiting -->
+        <dependency>
+            <groupId>com.bucket4j</groupId>
+            <artifactId>bucket4j_jdk17-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.bucket4j</groupId>
+            <artifactId>bucket4j_jdk17-postgresql</artifactId>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>com.logtail</groupId>
+            <artifactId>logback-logtail</artifactId>
+        </dependency>
+
+        <!-- Documentation -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        </dependency>
+
+        <!-- Quartz Scheduler -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-quartz</artifactId>
+        </dependency>
+
+
+        <!-- Phone number validation -->
+        <dependency>
+            <groupId>com.googlecode.libphonenumber</groupId>
+            <artifactId>libphonenumber</artifactId>
+        </dependency>
+
+        <!-- Feature Flags -->
+        <dependency>
+            <groupId>com.flagsmith</groupId>
+            <artifactId>flagsmith-java-client</artifactId>
+        </dependency>
+
+        <!-- AOP -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+        </dependency>
+
+
+        <!-- Image Thumbnails -->
+        <dependency>
+            <groupId>net.coobird</groupId>
+            <artifactId>thumbnailator</artifactId>
+        </dependency>
+
+        <!-- Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+            </plugin>
+            <!--
+                OpenAPI Code Generation (API-first)
+                Generates Spring controller interfaces from OpenAPI specs.
+                Controllers implement these interfaces; DTOs are hand-written
+                and mapped via importMappings/schemaMappings.
+            -->
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>7.20.0</version>
+                <executions>
+                    <execution>
+                        <id>generate-app-api</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/../../openapi/app.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <output>${project.build.directory}/generated-sources/openapi</output>
+                            <apiPackage>com.buurman.generated.api</apiPackage>
+                            <modelPackage>com.buurman.generated.model</modelPackage>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <useTags>true</useTags>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <useJakartaEe>true</useJakartaEe>
+                                <useBeanValidation>true</useBeanValidation>
+                                <useResponseEntity>false</useResponseEntity>
+                                <skipDefaultInterface>true</skipDefaultInterface>
+                                <openApiNullable>false</openApiNullable>
+                                <useOptional>true</useOptional>
+                                <documentationProvider>none</documentationProvider>
+                                <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                                <additionalModelTypeAnnotations>@lombok.Generated</additionalModelTypeAnnotations>
+                            </configOptions>
+                            <typeMappings>
+                                <typeMapping>DateTime=java.time.Instant</typeMapping>
+                            </typeMappings>
+                            <schemaMappings>
+                                <schemaMapping>PageResponsePropertyResponse=com.buurman.dto.response.PageResponse</schemaMapping>
+                                <schemaMapping>PageResponseContractResponse=com.buurman.dto.response.PageResponse</schemaMapping>
+                                <schemaMapping>PageResponseExpenseResponse=com.buurman.dto.response.PageResponse</schemaMapping>
+                                <schemaMapping>PageResponsePaymentResponse=com.buurman.dto.response.PageResponse</schemaMapping>
+                                <schemaMapping>PageResponseTenantResponse=com.buurman.dto.response.PageResponse</schemaMapping>
+                                <schemaMapping>PageResponseNotificationResponse=com.buurman.dto.response.PageResponse</schemaMapping>
+                                <schemaMapping>PageResponseDocumentResponse=com.buurman.dto.response.PageResponse</schemaMapping>
+                                <schemaMapping>PageResponsePhotoResponse=com.buurman.dto.response.PageResponse</schemaMapping>
+                                <schemaMapping>PageResponseRecentActivityResponse=com.buurman.dto.response.PageResponse</schemaMapping>
+                                <schemaMapping>BulkCreateResultExpenseResponse=com.buurman.dto.response.BulkCreateResult</schemaMapping>
+                                <schemaMapping>BulkCreateResultFinancingPaymentResponse=com.buurman.dto.response.BulkCreateResult</schemaMapping>
+                                <schemaMapping>BulkCreateResultPaymentResponse=com.buurman.dto.response.BulkCreateResult</schemaMapping>
+                                <schemaMapping>AmenityIdentifier=com.buurman.domain.identifier.AmenityIdentifier</schemaMapping>
+                                <schemaMapping>CalendarFeedIdentifier=com.buurman.domain.identifier.CalendarFeedIdentifier</schemaMapping>
+                                <schemaMapping>ContractIdentifier=com.buurman.domain.identifier.ContractIdentifier</schemaMapping>
+                                <schemaMapping>ContractPartyIdentifier=com.buurman.domain.identifier.ContractPartyIdentifier</schemaMapping>
+                                <schemaMapping>ContractPaymentInstructionIdentifier=com.buurman.domain.identifier.ContractPaymentInstructionIdentifier</schemaMapping>
+                                <schemaMapping>ContractRentPeriodIdentifier=com.buurman.domain.identifier.ContractRentPeriodIdentifier</schemaMapping>
+                                <schemaMapping>DocumentIdentifier=com.buurman.domain.identifier.DocumentIdentifier</schemaMapping>
+                                <schemaMapping>ExpenseIdentifier=com.buurman.domain.identifier.ExpenseIdentifier</schemaMapping>
+                                <schemaMapping>FinancingPaymentIdentifier=com.buurman.domain.identifier.FinancingPaymentIdentifier</schemaMapping>
+                                <schemaMapping>NotificationIdentifier=com.buurman.domain.identifier.NotificationIdentifier</schemaMapping>
+                                <schemaMapping>OccupancyPeriodIdentifier=com.buurman.domain.identifier.OccupancyPeriodIdentifier</schemaMapping>
+                                <schemaMapping>PaymentIdentifier=com.buurman.domain.identifier.PaymentIdentifier</schemaMapping>
+                                <schemaMapping>PaymentInstructionIdentifier=com.buurman.domain.identifier.PaymentInstructionIdentifier</schemaMapping>
+                                <schemaMapping>PaymentReceivalIdentifier=com.buurman.domain.identifier.PaymentReceivalIdentifier</schemaMapping>
+                                <schemaMapping>PhotoIdentifier=com.buurman.domain.identifier.PhotoIdentifier</schemaMapping>
+                                <schemaMapping>PropertyFeeIdentifier=com.buurman.domain.identifier.PropertyFeeIdentifier</schemaMapping>
+                                <schemaMapping>PropertyFinancingIdentifier=com.buurman.domain.identifier.PropertyFinancingIdentifier</schemaMapping>
+                                <schemaMapping>PropertyIdentifier=com.buurman.domain.identifier.PropertyIdentifier</schemaMapping>
+                                <schemaMapping>PropertyInsuranceIdentifier=com.buurman.domain.identifier.PropertyInsuranceIdentifier</schemaMapping>
+                                <schemaMapping>PropertyOutdoorAreaIdentifier=com.buurman.domain.identifier.PropertyOutdoorAreaIdentifier</schemaMapping>
+                                <schemaMapping>PropertyTaxIdentifier=com.buurman.domain.identifier.PropertyTaxIdentifier</schemaMapping>
+                                <schemaMapping>PropertyValuationIdentifier=com.buurman.domain.identifier.PropertyValuationIdentifier</schemaMapping>
+                                <schemaMapping>TeamIdentifier=com.buurman.domain.identifier.TeamIdentifier</schemaMapping>
+                                <schemaMapping>TenantAddressIdentifier=com.buurman.domain.identifier.TenantAddressIdentifier</schemaMapping>
+                                <schemaMapping>TenantIdentifier=com.buurman.domain.identifier.TenantIdentifier</schemaMapping>
+                                <schemaMapping>UserIdentifier=com.buurman.domain.identifier.UserIdentifier</schemaMapping>
+                                <schemaMapping>WwsCalculationIdentifier=com.buurman.domain.identifier.WwsCalculationIdentifier</schemaMapping>
+                            </schemaMappings>
+                            <importMappings>
+                                <importMapping>Instant=java.time.Instant</importMapping>
+                                <importMapping>ProblemDetail=org.springframework.http.ProblemDetail</importMapping>
+                                <importMapping>AgriculturalDetailsResponse=com.buurman.dto.response.AgriculturalDetailsResponse</importMapping>
+                                <importMapping>AmenityResponse=com.buurman.dto.response.AmenityResponse</importMapping>
+                                <importMapping>CalendarFeedResponse=com.buurman.dto.response.CalendarFeedResponse</importMapping>
+                                <importMapping>CategoryExpenseSummary=com.buurman.dto.response.CategoryExpenseSummary</importMapping>
+                                <importMapping>CompleteOnboardingRequest=com.buurman.dto.request.CompleteOnboardingRequest</importMapping>
+                                <importMapping>CommercialDetailsResponse=com.buurman.dto.response.CommercialDetailsResponse</importMapping>
+                                <importMapping>ContractPartyResponse=com.buurman.dto.response.ContractPartyResponse</importMapping>
+                                <importMapping>ContractPaymentInstructionResponse=com.buurman.dto.response.ContractPaymentInstructionResponse</importMapping>
+                                <importMapping>ContractResponse=com.buurman.dto.response.ContractResponse</importMapping>
+                                <importMapping>ContractSummary=com.buurman.dto.response.ContractSummary</importMapping>
+                                <importMapping>CountryCurrencyResponse=com.buurman.dto.response.CountryCurrencyResponse</importMapping>
+                                <importMapping>CountryMetadataSchemaResponse=com.buurman.dto.response.CountryMetadataSchemaResponse</importMapping>
+                                <importMapping>CurrencyChangeRequest=com.buurman.dto.request.CurrencyChangeRequest</importMapping>
+                                <importMapping>CurrencyChangeResponse=com.buurman.dto.response.CurrencyChangeResponse</importMapping>
+                                <importMapping>CurrencyInfo=com.buurman.dto.response.CurrencyInfo</importMapping>
+                                <importMapping>DashboardStatsResponse=com.buurman.dto.response.DashboardStatsResponse</importMapping>
+                                <importMapping>DataDateRangeResponse=com.buurman.dto.response.DataDateRangeResponse</importMapping>
+                                <importMapping>DemoDataResponse=com.buurman.dto.response.DemoDataResponse</importMapping>
+                                <importMapping>DocumentResponse=com.buurman.dto.response.DocumentResponse</importMapping>
+                                <importMapping>EntityPrefixInfo=com.buurman.dto.response.EntityPrefixInfo</importMapping>
+                                <importMapping>ExpenseBreakdownResponse=com.buurman.dto.response.ExpenseBreakdownResponse</importMapping>
+                                <importMapping>ExpenseResponse=com.buurman.dto.response.ExpenseResponse</importMapping>
+                                <importMapping>ExpenseStatsResponse=com.buurman.dto.response.ExpenseStatsResponse</importMapping>
+                                <importMapping>ExpenseSummaryResponse=com.buurman.dto.response.ExpenseSummaryResponse</importMapping>
+                                <importMapping>FinancialOverviewResponse=com.buurman.dto.response.FinancialOverviewResponse</importMapping>
+                                <importMapping>FinancingPaymentResponse=com.buurman.dto.response.FinancingPaymentResponse</importMapping>
+                                <importMapping>GeocodeResponse=com.buurman.dto.response.GeocodeResponse</importMapping>
+                                <importMapping>HealthResponse=com.buurman.dto.response.HealthResponse</importMapping>
+                                <importMapping>IncomeTrendResponse=com.buurman.dto.response.IncomeTrendResponse</importMapping>
+                                <importMapping>InfoResponse=com.buurman.dto.response.InfoResponse</importMapping>
+                                <importMapping>IndustrialDetailsResponse=com.buurman.dto.response.IndustrialDetailsResponse</importMapping>
+                                <importMapping>InvitationResponse=com.buurman.dto.response.InvitationResponse</importMapping>
+                                <importMapping>NotificationResponse=com.buurman.dto.response.NotificationResponse</importMapping>
+                                <importMapping>NotificationStatsResponse=com.buurman.dto.response.NotificationStatsResponse</importMapping>
+                                <importMapping>NotificationTypePreferencesResponse=com.buurman.dto.response.NotificationTypePreferencesResponse</importMapping>
+                                <importMapping>OnboardingStatusResponse=com.buurman.dto.response.OnboardingStatusResponse</importMapping>
+                                <importMapping>OccupancyPeriodResponse=com.buurman.dto.response.OccupancyPeriodResponse</importMapping>
+                                <importMapping>OccupancyTrendResponse=com.buurman.dto.response.OccupancyTrendResponse</importMapping>
+                                <importMapping>PaymentInstructionResponse=com.buurman.dto.response.PaymentInstructionResponse</importMapping>
+                                <importMapping>PaymentReceivalResponse=com.buurman.dto.response.PaymentReceivalResponse</importMapping>
+                                <importMapping>PaymentResponse=com.buurman.dto.response.PaymentResponse</importMapping>
+                                <importMapping>PaymentStatsResponse=com.buurman.dto.response.PaymentStatsResponse</importMapping>
+                                <importMapping>PaymentSummary=com.buurman.dto.response.PaymentSummary</importMapping>
+                                <importMapping>PhoneNumberPolicyResponse=com.buurman.dto.response.PhoneNumberPolicyResponse</importMapping>
+                                <importMapping>PhotoResponse=com.buurman.dto.response.PhotoResponse</importMapping>
+                                <importMapping>PropertyAcquisitionResponse=com.buurman.dto.response.PropertyAcquisitionResponse</importMapping>
+                                <importMapping>PropertyAmenityResponse=com.buurman.dto.response.PropertyAmenityResponse</importMapping>
+                                <importMapping>PropertyComparisonResponse=com.buurman.dto.response.PropertyComparisonResponse</importMapping>
+                                <importMapping>PortfolioDashboardResponse=com.buurman.dto.response.PortfolioDashboardResponse</importMapping>
+                                <importMapping>PropertyDashboardResponse=com.buurman.dto.response.PropertyDashboardResponse</importMapping>
+                                <importMapping>PropertyFeeResponse=com.buurman.dto.response.PropertyFeeResponse</importMapping>
+                                <importMapping>PropertyFinancialSummary=com.buurman.dto.response.PropertyFinancialSummary</importMapping>
+                                <importMapping>PropertyFinancialSummaryResponse=com.buurman.dto.response.PropertyFinancialSummaryResponse</importMapping>
+                                <importMapping>PropertyFinancingResponse=com.buurman.dto.response.PropertyFinancingResponse</importMapping>
+                                <importMapping>PropertyInsuranceResponse=com.buurman.dto.response.PropertyInsuranceResponse</importMapping>
+                                <importMapping>PropertyOutdoorAreaResponse=com.buurman.dto.response.PropertyOutdoorAreaResponse</importMapping>
+                                <importMapping>PropertyResponse=com.buurman.dto.response.PropertyResponse</importMapping>
+                                <importMapping>PropertySummary=com.buurman.dto.response.PropertySummary</importMapping>
+                                <importMapping>PropertyTaxResponse=com.buurman.dto.response.PropertyTaxResponse</importMapping>
+                                <importMapping>PropertyTenantHistoryResponse=com.buurman.dto.response.PropertyTenantHistoryResponse</importMapping>
+                                <importMapping>PropertyTimelineResponse=com.buurman.dto.response.PropertyTimelineResponse</importMapping>
+                                <importMapping>PropertyValuationResponse=com.buurman.dto.response.PropertyValuationResponse</importMapping>
+                                <importMapping>RecentActivityResponse=com.buurman.dto.response.RecentActivityResponse</importMapping>
+                                <importMapping>RegistrationConfigResponse=com.buurman.dto.response.RegistrationConfigResponse</importMapping>
+                                <importMapping>RentPeriodResponse=com.buurman.dto.response.RentPeriodResponse</importMapping>
+                                <importMapping>ReportStatusResponse=com.buurman.dto.response.ReportStatusResponse</importMapping>
+                                <importMapping>ResidentialDetailsResponse=com.buurman.dto.response.ResidentialDetailsResponse</importMapping>
+                                <importMapping>TaxSummaryResponse=com.buurman.dto.response.TaxSummaryResponse</importMapping>
+                                <importMapping>TeamMemberResponse=com.buurman.dto.response.TeamMemberResponse</importMapping>
+                                <importMapping>TeamPreferencesResponse=com.buurman.dto.response.TeamPreferencesResponse</importMapping>
+                                <importMapping>TeamResponse=com.buurman.dto.response.TeamResponse</importMapping>
+                                <importMapping>TenantAddressResponse=com.buurman.dto.response.TenantAddressResponse</importMapping>
+                                <importMapping>TenantPropertyAssignment=com.buurman.dto.response.TenantPropertyAssignment</importMapping>
+                                <importMapping>TenantResponse=com.buurman.dto.response.TenantResponse</importMapping>
+                                <importMapping>TenantSummary=com.buurman.dto.response.TenantSummary</importMapping>
+                                <importMapping>TransactionResponse=com.buurman.dto.response.TransactionResponse</importMapping>
+                                <importMapping>UserPreferencesResponse=com.buurman.dto.response.UserPreferencesResponse</importMapping>
+                                <importMapping>UserProfileResponse=com.buurman.dto.response.UserProfileResponse</importMapping>
+                                <importMapping>UserResponse=com.buurman.dto.response.UserResponse</importMapping>
+                                <importMapping>UserTeamResponse=com.buurman.dto.response.UserTeamResponse</importMapping>
+                                <importMapping>ValidateInvitationCodeResponse=com.buurman.dto.response.ValidateInvitationCodeResponse</importMapping>
+                                <importMapping>WwsCalculationResponse=com.buurman.dto.response.WwsCalculationResponse</importMapping>
+                                <importMapping>WwsCategoryBreakdown=com.buurman.dto.response.WwsCategoryBreakdown</importMapping>
+                                <importMapping>WwsPreFillResponse=com.buurman.dto.response.WwsPreFillResponse</importMapping>
+                                <importMapping>AddContractPartyRequest=com.buurman.dto.request.AddContractPartyRequest</importMapping>
+                                <importMapping>AgriculturalDetailsRequest=com.buurman.dto.request.AgriculturalDetailsRequest</importMapping>
+                                <importMapping>BulkCreateExpensesRequest=com.buurman.dto.request.BulkCreateExpensesRequest</importMapping>
+                                <importMapping>BulkCreateFinancingPaymentsRequest=com.buurman.dto.request.BulkCreateFinancingPaymentsRequest</importMapping>
+                                <importMapping>BulkCreatePaymentsRequest=com.buurman.dto.request.BulkCreatePaymentsRequest</importMapping>
+                                <importMapping>BulkDownloadRequest=com.buurman.dto.request.BulkDownloadRequest</importMapping>
+                                <importMapping>BulkGeneratePaymentsRequest=com.buurman.dto.request.BulkGeneratePaymentsRequest</importMapping>
+                                <importMapping>ChangeContractStatusRequest=com.buurman.dto.request.ChangeContractStatusRequest</importMapping>
+                                <importMapping>ChangePrimaryTenantRequest=com.buurman.dto.request.ChangePrimaryTenantRequest</importMapping>
+                                <importMapping>CommercialDetailsRequest=com.buurman.dto.request.CommercialDetailsRequest</importMapping>
+                                <importMapping>ContractPartyRequest=com.buurman.dto.request.ContractPartyRequest</importMapping>
+                                <importMapping>CreateCalendarFeedRequest=com.buurman.dto.request.CreateCalendarFeedRequest</importMapping>
+                                <importMapping>CreateContractPaymentInstructionRequest=com.buurman.dto.request.CreateContractPaymentInstructionRequest</importMapping>
+                                <importMapping>CreateContractRequest=com.buurman.dto.request.CreateContractRequest</importMapping>
+                                <importMapping>CreateExpenseRequest=com.buurman.dto.request.CreateExpenseRequest</importMapping>
+                                <importMapping>CreateFinancingPaymentRequest=com.buurman.dto.request.CreateFinancingPaymentRequest</importMapping>
+                                <importMapping>CreateInvitationRequest=com.buurman.dto.request.CreateInvitationRequest</importMapping>
+                                <importMapping>CreateOccupancyPeriodRequest=com.buurman.dto.request.CreateOccupancyPeriodRequest</importMapping>
+                                <importMapping>CreatePaymentInstructionRequest=com.buurman.dto.request.CreatePaymentInstructionRequest</importMapping>
+                                <importMapping>CreatePaymentReceivalRequest=com.buurman.dto.request.CreatePaymentReceivalRequest</importMapping>
+                                <importMapping>CreatePaymentRequest=com.buurman.dto.request.CreatePaymentRequest</importMapping>
+                                <importMapping>CreatePropertyFeeRequest=com.buurman.dto.request.CreatePropertyFeeRequest</importMapping>
+                                <importMapping>CreatePropertyFinancingRequest=com.buurman.dto.request.CreatePropertyFinancingRequest</importMapping>
+                                <importMapping>CreatePropertyInsuranceRequest=com.buurman.dto.request.CreatePropertyInsuranceRequest</importMapping>
+                                <importMapping>CreatePropertyRequest=com.buurman.dto.request.CreatePropertyRequest</importMapping>
+                                <importMapping>CreatePropertyTaxRequest=com.buurman.dto.request.CreatePropertyTaxRequest</importMapping>
+                                <importMapping>CreatePropertyValuationRequest=com.buurman.dto.request.CreatePropertyValuationRequest</importMapping>
+                                <importMapping>CreateRentPeriodRequest=com.buurman.dto.request.CreateRentPeriodRequest</importMapping>
+                                <importMapping>CreateTenantAddressRequest=com.buurman.dto.request.CreateTenantAddressRequest</importMapping>
+                                <importMapping>CreateTenantRequest=com.buurman.dto.request.CreateTenantRequest</importMapping>
+                                <importMapping>EndOccupancyPeriodRequest=com.buurman.dto.request.EndOccupancyPeriodRequest</importMapping>
+                                <importMapping>FinancialOverviewRequest=com.buurman.dto.request.FinancialOverviewRequest</importMapping>
+                                <importMapping>GeneratePaymentsRequest=com.buurman.dto.request.GeneratePaymentsRequest</importMapping>
+                                <importMapping>GenerateReportRequest=com.buurman.dto.request.GenerateReportRequest</importMapping>
+                                <importMapping>GeocodeRequest=com.buurman.dto.request.GeocodeRequest</importMapping>
+                                <importMapping>IndustrialDetailsRequest=com.buurman.dto.request.IndustrialDetailsRequest</importMapping>
+                                <importMapping>LinkTenantToPropertyRequest=com.buurman.dto.request.LinkTenantToPropertyRequest</importMapping>
+                                <importMapping>MarkPaidRequest=com.buurman.dto.request.MarkPaidRequest</importMapping>
+                                <importMapping>NotificationFilterRequest=com.buurman.dto.request.NotificationFilterRequest</importMapping>
+                                <importMapping>PropertyAmenityRequest=com.buurman.dto.request.PropertyAmenityRequest</importMapping>
+                                <importMapping>PropertyOutdoorAreaRequest=com.buurman.dto.request.PropertyOutdoorAreaRequest</importMapping>
+                                <importMapping>RegisterRequest=com.buurman.dto.request.RegisterRequest</importMapping>
+                                <importMapping>ResidentialDetailsRequest=com.buurman.dto.request.ResidentialDetailsRequest</importMapping>
+                                <importMapping>SetDefaultTeamRequest=com.buurman.dto.request.SetDefaultTeamRequest</importMapping>
+                                <importMapping>SwitchTeamRequest=com.buurman.dto.request.SwitchTeamRequest</importMapping>
+                                <importMapping>TransactionHistoryRequest=com.buurman.dto.request.TransactionHistoryRequest</importMapping>
+                                <importMapping>TransferOwnershipRequest=com.buurman.dto.request.TransferOwnershipRequest</importMapping>
+                                <importMapping>UpdateContractPaymentInstructionRequest=com.buurman.dto.request.UpdateContractPaymentInstructionRequest</importMapping>
+                                <importMapping>UpdateContractRequest=com.buurman.dto.request.UpdateContractRequest</importMapping>
+                                <importMapping>UpdateDocumentRequest=com.buurman.dto.request.UpdateDocumentRequest</importMapping>
+                                <importMapping>UpdateExpenseRequest=com.buurman.dto.request.UpdateExpenseRequest</importMapping>
+                                <importMapping>UpdateFinancingPaymentRequest=com.buurman.dto.request.UpdateFinancingPaymentRequest</importMapping>
+                                <importMapping>UpdateMemberRoleRequest=com.buurman.dto.request.UpdateMemberRoleRequest</importMapping>
+                                <importMapping>UpdateNotificationTypePreferencesRequest=com.buurman.dto.request.UpdateNotificationTypePreferencesRequest</importMapping>
+                                <importMapping>UpdateOccupancyPeriodRequest=com.buurman.dto.request.UpdateOccupancyPeriodRequest</importMapping>
+                                <importMapping>UpdatePaymentInstructionRequest=com.buurman.dto.request.UpdatePaymentInstructionRequest</importMapping>
+                                <importMapping>UpdatePaymentReceivalRequest=com.buurman.dto.request.UpdatePaymentReceivalRequest</importMapping>
+                                <importMapping>UpdatePaymentRequest=com.buurman.dto.request.UpdatePaymentRequest</importMapping>
+                                <importMapping>UpdatePhotoRequest=com.buurman.dto.request.UpdatePhotoRequest</importMapping>
+                                <importMapping>UpdateProfileRequest=com.buurman.dto.request.UpdateProfileRequest</importMapping>
+                                <importMapping>UpdatePropertyFeeRequest=com.buurman.dto.request.UpdatePropertyFeeRequest</importMapping>
+                                <importMapping>UpdatePropertyFinancingRequest=com.buurman.dto.request.UpdatePropertyFinancingRequest</importMapping>
+                                <importMapping>UpdatePropertyInsuranceRequest=com.buurman.dto.request.UpdatePropertyInsuranceRequest</importMapping>
+                                <importMapping>UpdatePropertyRequest=com.buurman.dto.request.UpdatePropertyRequest</importMapping>
+                                <importMapping>UpdatePropertyTaxRequest=com.buurman.dto.request.UpdatePropertyTaxRequest</importMapping>
+                                <importMapping>UpdatePropertyValuationRequest=com.buurman.dto.request.UpdatePropertyValuationRequest</importMapping>
+                                <importMapping>UpdateRentPeriodRequest=com.buurman.dto.request.UpdateRentPeriodRequest</importMapping>
+                                <importMapping>UpdateTeamRequest=com.buurman.dto.request.UpdateTeamRequest</importMapping>
+                                <importMapping>UpdateTeamSettingsRequest=com.buurman.dto.request.UpdateTeamSettingsRequest</importMapping>
+                                <importMapping>UpdateTenantAddressRequest=com.buurman.dto.request.UpdateTenantAddressRequest</importMapping>
+                                <importMapping>UpdateTenantRequest=com.buurman.dto.request.UpdateTenantRequest</importMapping>
+                                <importMapping>UpdateUserPreferencesRequest=com.buurman.dto.request.UpdateUserPreferencesRequest</importMapping>
+                                <importMapping>UpdateUserProfileRequest=com.buurman.dto.request.UpdateUserProfileRequest</importMapping>
+                                <importMapping>UploadDocumentRequest=com.buurman.dto.request.UploadDocumentRequest</importMapping>
+                                <importMapping>UpsertPropertyAcquisitionRequest=com.buurman.dto.request.UpsertPropertyAcquisitionRequest</importMapping>
+                                <importMapping>VerifyEmailRequest=com.buurman.dto.request.VerifyEmailRequest</importMapping>
+                                <importMapping>VerifyPhoneRequest=com.buurman.dto.request.VerifyPhoneRequest</importMapping>
+                                <importMapping>WwsCalculationRequest=com.buurman.dto.request.WwsCalculationRequest</importMapping>
+                            </importMappings>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Add OpenAPI generated sources -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.6.1</version>
+                <executions>
+                    <execution>
+                        <id>add-openapi-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/openapi/src/main/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Alternative JOOQ codegen using running database -->
+            <plugin>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-codegen-maven</artifactId>
+                <version>${jooq.version}</version>
+                <executions>
+                    <execution>
+                        <id>generate-jooq-direct</id>
+                        <phase>none</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <jdbc>
+                                <driver>org.postgresql.Driver</driver>
+                                <url>jdbc:postgresql://localhost:5432/buurman</url>
+                                <user>buurman</user>
+                                <password>buurman</password>
+                            </jdbc>
+                            <generator>
+                                <database>
+                                    <name>org.jooq.meta.postgres.PostgresDatabase</name>
+                                    <includes>.*</includes>
+                                    <excludes>flyway_schema_history</excludes>
+                                    <inputSchema>public</inputSchema>
+                                    <catalogVersionProvider>SELECT CAST(MAX(installed_rank) AS VARCHAR) FROM flyway_schema_history</catalogVersionProvider>
+                                    <schemaVersionProvider>SELECT CAST(MAX(installed_rank) AS VARCHAR) FROM flyway_schema_history</schemaVersionProvider>
+                                    <forcedTypes>
+                                        <forcedType>
+                                            <userType>java.math.BigDecimal</userType>
+                                            <converter>com.buurman.config.jooq.MoneyMinorUnitConverter</converter>
+                                            <includeExpression>.*\.(RENT_AMOUNT|DEPOSIT_AMOUNT|SECURITY_DEPOSIT|AMOUNT|TOTAL_AMOUNT|PRINCIPAL_AMOUNT|INTEREST_AMOUNT|ESCROW_AMOUNT|EXTRA_PAYMENT|ANNUAL_AMOUNT|ANNUAL_PREMIUM|COVERAGE_AMOUNT|ORIGINAL_AMOUNT|CURRENT_BALANCE|MONTHLY_PAYMENT|PURCHASE_PRICE|CLOSING_COSTS|RENOVATION_COSTS|LAND_VALUE)</includeExpression>
+                                            <includeTypes>BIGINT</includeTypes>
+                                        </forcedType>
+                                    </forcedTypes>
+                                </database>
+                                <target>
+                                    <packageName>com.buurman.jooq.generated</packageName>
+                                    <directory>target/generated-sources/jooq</directory>
+                                </target>
+                                <generate>
+                                    <pojos>false</pojos>
+                                    <daos>false</daos>
+                                    <records>true</records>
+                                    <interfaces>false</interfaces>
+                                    <javaTimeTypes>true</javaTimeTypes>
+                                    <relations>true</relations>
+                                    <routines>false</routines>
+                                </generate>
+                            </generator>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>42.7.10</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+</project>
