@@ -140,9 +140,6 @@ export const AcquisitionFormModal = ({
               value={formData.purchasePrice}
               onChange={(v) => setFormData({ ...formData, purchasePrice: v })}
               currency={formData.purchasePriceCurrency ?? currency}
-              onCurrencyChange={(c) =>
-                setFormData({ ...formData, purchasePriceCurrency: c })
-              }
             />
           </div>
 
@@ -154,9 +151,6 @@ export const AcquisitionFormModal = ({
               value={formData.closingCosts}
               onChange={(v) => setFormData({ ...formData, closingCosts: v })}
               currency={formData.closingCostsCurrency ?? currency}
-              onCurrencyChange={(c) =>
-                setFormData({ ...formData, closingCostsCurrency: c })
-              }
             />
           </div>
 
@@ -168,9 +162,6 @@ export const AcquisitionFormModal = ({
               value={formData.renovationCosts}
               onChange={(v) => setFormData({ ...formData, renovationCosts: v })}
               currency={formData.renovationCostsCurrency ?? currency}
-              onCurrencyChange={(c) =>
-                setFormData({ ...formData, renovationCostsCurrency: c })
-              }
             />
           </div>
 
@@ -182,9 +173,6 @@ export const AcquisitionFormModal = ({
               value={formData.landValue}
               onChange={(v) => setFormData({ ...formData, landValue: v })}
               currency={formData.landValueCurrency ?? currency}
-              onCurrencyChange={(c) =>
-                setFormData({ ...formData, landValueCurrency: c })
-              }
             />
           </div>
 

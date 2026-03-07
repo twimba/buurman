@@ -130,7 +130,7 @@ export interface PropertyResponse {
   street: string;
   city: string;
   postalCode: string;
-  country: string;
+  countryCode: string;
   latitude?: number;
   longitude?: number;
   geocodeAccuracy?: string;
@@ -330,7 +330,7 @@ export interface CreatePropertyRequest {
   street: string;
   city: string;
   postalCode: string;
-  country: string;
+  countryCode: string;
   latitude?: number;
   longitude?: number;
   geocodeAccuracy?: string;
@@ -389,7 +389,7 @@ export interface UpdatePropertyRequest {
   street: string;
   city: string;
   postalCode: string;
-  country: string;
+  countryCode: string;
   latitude?: number;
   longitude?: number;
   geocodeAccuracy?: string;

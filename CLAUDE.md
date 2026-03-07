@@ -71,6 +71,13 @@ Commands (via Makefile):
 - `docker`: All services in Docker behind Traefik (`make up`)
 - Credentials externalized via `.env` file
 
+### OpenAPI Spec (API-First)
+- Source files: `openapi/src/app.yaml` (root with `$ref` entries + schemas) + `openapi/src/paths/*.yaml` (17 domain-grouped path files)
+- Bundled output: `openapi/app.yaml` (single file consumed by openapi-generator + Orval, committed to git)
+- Bundle command: `make bundle-openapi` or `python3 scripts/bundle_openapi.py`
+- **After editing any `openapi/src/` file, run `make bundle-openapi` to regenerate `openapi/app.yaml`**
+- Path files use `$ref: '#/components/schemas/...'` — these resolve correctly in the bundled output
+
 ### Database Migrations (Flyway)
 - Location: `src/main/resources/db/migration/`
 - Convention: `V<version>__<description>.sql` (currently at V010)

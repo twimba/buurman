@@ -11,7 +11,6 @@ import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.UserPreferencesService;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -28,7 +27,7 @@ public class UserPreferencesController implements UserPreferencesApi {
 
   @Override
   public UserPreferencesResponse updatePreferences(
-      @Valid UpdateUserPreferencesRequest updateUserPreferencesRequest) {
+      UpdateUserPreferencesRequest updateUserPreferencesRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return preferencesService.updatePreferences(principal, updateUserPreferencesRequest);
   }
@@ -41,7 +40,7 @@ public class UserPreferencesController implements UserPreferencesApi {
 
   @Override
   public NotificationTypePreferencesResponse updateNotificationTypePreferences(
-      @Valid UpdateNotificationTypePreferencesRequest updateNotificationTypePreferencesRequest) {
+      UpdateNotificationTypePreferencesRequest updateNotificationTypePreferencesRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return preferencesService.updateNotificationTypePreferences(
         principal, updateNotificationTypePreferencesRequest);

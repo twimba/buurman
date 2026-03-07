@@ -328,7 +328,7 @@ public class AuthService {
                         .notificationType(VERIFICATION_CODE)
                         .recipientUserId(user.getId())
                         .recipientEmail(user.getEmail())
-                        .recipientPhone(user.getPhone().orElse(null))
+                        .recipientPhone(user.getPhone())
                         .createdBy(user.getId())
                         .templateName("verification-code")
                         .templateVariables(
@@ -480,7 +480,7 @@ public class AuthService {
                         .notificationType(NotificationType.WELCOME)
                         .recipientUserId(user.getId())
                         .recipientEmail(user.getEmail())
-                        .recipientPhone(user.getPhone().orElse(null))
+                        .recipientPhone(user.getPhone())
                         .createdBy(user.getId())
                         .templateName("welcome")
                         .templateVariables(

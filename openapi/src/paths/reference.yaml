@@ -1,0 +1,642 @@
+webhooks-twilio-status:
+  post:
+    tags:
+      - Webhooks
+    summary: Twilio status callback
+    description: Receives SMS delivery status from Twilio
+    operationId: handleTwilioStatus
+    parameters:
+      - name: params
+        in: query
+        description: Twilio status callback form parameters
+        required: true
+        schema:
+          type: object
+          additionalProperties:
+            type: string
+      - name: X-Twilio-Signature
+        in: header
+        description: Twilio request signature
+        required: false
+        schema:
+          type: string
+    responses:
+      "200":
+        description: OK
+        content:
+          "*/*":
+            schema:
+              type: string
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+
+webhooks-sendgrid-events:
+  post:
+    tags:
+      - Webhooks
+    summary: SendGrid event webhook
+    description: Receives delivery status events from SendGrid
+    operationId: handleSendGridEvents
+    parameters:
+      - name: X-Twilio-Email-Event-Webhook-Signature
+        in: header
+        description: SendGrid ECDSA signature
+        required: false
+        schema:
+          type: string
+      - name: X-Twilio-Email-Event-Webhook-Timestamp
+        in: header
+        description: SendGrid event timestamp
+        required: false
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: string
+            description: Raw JSON event payload
+      required: true
+    responses:
+      "200":
+        description: OK
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+
+geocode:
+  post:
+    tags:
+      - Geocoding
+    summary: Geocode address
+    description: Convert an address to latitude/longitude coordinates
+    operationId: geocode
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GeocodeRequest'
+      required: true
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeocodeResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+reference-entity-prefixes:
+  get:
+    tags:
+      - Reference
+    summary: Entity identifier prefixes
+    description: "Returns the 3-character prefix codes used in entity identifiers (format: <prefix><id>)"
+    operationId: getEntityPrefixes
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/EntityPrefixInfo'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+
+reference-currencies:
+  get:
+    tags:
+      - Reference
+    summary: Available currencies
+    description: >-
+      Returns all ISO 4217 currencies with their fractional digit count. Use fractionalDigits to determine the input
+      step for monetary amounts.
+    operationId: getCurrencies
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CurrencyInfo'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+
+wws-calculate:
+  post:
+    tags:
+      - WWS Calculator
+    summary: Calculate WWS points (dry run)
+    description: Calculates WWS points without saving. Returns full breakdown.
+    operationId: calculateWws
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/WwsCalculationRequest'
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WwsCalculationResponse'
+      "400":
+        description: Bad request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+wws-calculate-and-save:
+  post:
+    tags:
+      - WWS Calculator
+    summary: Calculate and save WWS points
+    description: Calculates WWS points and persists to calculation history.
+    operationId: calculateAndSaveWws
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/WwsCalculationRequest'
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WwsCalculationResponse'
+      "400":
+        description: Bad request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+wws-properties-pre-fill:
+  get:
+    tags:
+      - WWS Calculator
+    summary: Get pre-filled WWS data from property
+    operationId: getWwsPreFill
+    parameters:
+      - name: propertyIdentifier
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/PropertyIdentifier'
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WwsPreFillResponse'
+      "401":
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Property not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+wws-properties-calculations:
+  get:
+    tags:
+      - WWS Calculator
+    summary: Get WWS calculation history for property
+    operationId: getWwsCalculations
+    parameters:
+      - name: propertyIdentifier
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/PropertyIdentifier'
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/WwsCalculationResponse'
+      "401":
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+wws-properties-latest:
+  get:
+    tags:
+      - WWS Calculator
+    summary: Get latest WWS calculation for property
+    operationId: getLatestWwsCalculation
+    parameters:
+      - name: propertyIdentifier
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/PropertyIdentifier'
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WwsCalculationResponse'
+      "401":
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: No calculation found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+wws-calculations-item:
+  delete:
+    tags:
+      - WWS Calculator
+    summary: Delete a WWS calculation
+    description: Soft delete a saved WWS calculation (Admin/Editor)
+    operationId: deleteWwsCalculation
+    parameters:
+      - name: calculationIdentifier
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/WwsCalculationIdentifier'
+    responses:
+      "204":
+        description: No Content
+      "401":
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Calculation not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+info:
+  get:
+    tags:
+      - Health
+    summary: Application info
+    description: Returns application version and environment
+    operationId: info
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InfoResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+
+health:
+  get:
+    tags:
+      - Health
+    summary: Health check
+    description: Returns the health status of the application
+    operationId: health
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HealthResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+
+feature-flags:
+  get:
+    tags:
+      - Feature Flags
+    operationId: getFeatureFlags
+    responses:
+      "200":
+        description: OK
+        content:
+          "*/*":
+            schema:
+              type: object
+              additionalProperties: {}
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+
+amenities:
+  get:
+    tags:
+      - Amenities
+    summary: List all amenities grouped by category
+    description: Get all available amenities grouped by category
+    operationId: getAllAmenities
+    parameters:
+      - name: category
+        in: query
+        description: Filter by category
+        required: false
+        schema:
+          type: string
+    responses:
+      "200":
+        description: OK
+        content:
+          "*/*":
+            schema:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AmenityResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []

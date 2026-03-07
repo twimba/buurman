@@ -13,7 +13,6 @@ import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.PaymentInstructionService;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -36,7 +35,7 @@ public class PaymentInstructionController implements PaymentInstructionsApi {
 
   @Override
   public PaymentInstructionResponse createPaymentInstruction(
-      @Valid CreatePaymentInstructionRequest createPaymentInstructionRequest) {
+      CreatePaymentInstructionRequest createPaymentInstructionRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return paymentInstructionService.create(createPaymentInstructionRequest, principal);
   }
@@ -44,7 +43,7 @@ public class PaymentInstructionController implements PaymentInstructionsApi {
   @Override
   public PaymentInstructionResponse updatePaymentInstruction(
       PaymentInstructionIdentifier identifier,
-      @Valid UpdatePaymentInstructionRequest updatePaymentInstructionRequest) {
+      UpdatePaymentInstructionRequest updatePaymentInstructionRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return paymentInstructionService.update(identifier, updatePaymentInstructionRequest, principal);
   }

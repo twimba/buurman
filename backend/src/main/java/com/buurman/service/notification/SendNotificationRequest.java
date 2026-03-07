@@ -4,8 +4,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.jspecify.annotations.Nullable;
-
 import com.buurman.domain.NotificationType;
 
 public record SendNotificationRequest(
@@ -25,17 +23,22 @@ public record SendNotificationRequest(
 
   @SuppressWarnings("NullAway.Init")
   public static class Builder {
-    private @Nullable UUID teamId;
+    private Optional<UUID> teamId = Optional.empty();
     private NotificationType notificationType;
-    private @Nullable UUID recipientUserId;
-    private @Nullable UUID recipientTenantId;
-    private @Nullable String recipientEmail;
-    private @Nullable String recipientPhone;
+    private Optional<UUID> recipientUserId = Optional.empty();
+    private Optional<UUID> recipientTenantId = Optional.empty();
+    private Optional<String> recipientEmail = Optional.empty();
+    private Optional<String> recipientPhone = Optional.empty();
     private String templateName;
     private Map<String, Object> templateVariables;
     private UUID createdBy;
 
-    public Builder teamId(@Nullable UUID teamId) {
+    public Builder teamId(UUID teamId) {
+      this.teamId = Optional.of(teamId);
+      return this;
+    }
+
+    public Builder teamId(Optional<UUID> teamId) {
       this.teamId = teamId;
       return this;
     }
@@ -45,22 +48,42 @@ public record SendNotificationRequest(
       return this;
     }
 
-    public Builder recipientUserId(@Nullable UUID recipientUserId) {
+    public Builder recipientUserId(UUID recipientUserId) {
+      this.recipientUserId = Optional.of(recipientUserId);
+      return this;
+    }
+
+    public Builder recipientUserId(Optional<UUID> recipientUserId) {
       this.recipientUserId = recipientUserId;
       return this;
     }
 
-    public Builder recipientTenantId(@Nullable UUID recipientTenantId) {
+    public Builder recipientTenantId(UUID recipientTenantId) {
+      this.recipientTenantId = Optional.of(recipientTenantId);
+      return this;
+    }
+
+    public Builder recipientTenantId(Optional<UUID> recipientTenantId) {
       this.recipientTenantId = recipientTenantId;
       return this;
     }
 
-    public Builder recipientEmail(@Nullable String recipientEmail) {
+    public Builder recipientEmail(String recipientEmail) {
+      this.recipientEmail = Optional.of(recipientEmail);
+      return this;
+    }
+
+    public Builder recipientEmail(Optional<String> recipientEmail) {
       this.recipientEmail = recipientEmail;
       return this;
     }
 
-    public Builder recipientPhone(@Nullable String recipientPhone) {
+    public Builder recipientPhone(String recipientPhone) {
+      this.recipientPhone = Optional.of(recipientPhone);
+      return this;
+    }
+
+    public Builder recipientPhone(Optional<String> recipientPhone) {
       this.recipientPhone = recipientPhone;
       return this;
     }
@@ -82,12 +105,12 @@ public record SendNotificationRequest(
 
     public SendNotificationRequest build() {
       return new SendNotificationRequest(
-          Optional.ofNullable(teamId),
+          teamId,
           notificationType,
-          Optional.ofNullable(recipientUserId),
-          Optional.ofNullable(recipientTenantId),
-          Optional.ofNullable(recipientEmail),
-          Optional.ofNullable(recipientPhone),
+          recipientUserId,
+          recipientTenantId,
+          recipientEmail,
+          recipientPhone,
           templateName,
           templateVariables,
           createdBy);

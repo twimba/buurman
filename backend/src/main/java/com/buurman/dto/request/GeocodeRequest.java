@@ -8,4 +8,4 @@ public record GeocodeRequest(
     @NotBlank String street,
     @NotBlank String city,
     Optional<String> postalCode,
-    @NotBlank String country) {}
+    @NotBlank String countryCode) {}

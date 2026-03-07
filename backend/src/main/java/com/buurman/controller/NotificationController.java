@@ -1,5 +1,7 @@
 package com.buurman.controller;
 
+import java.util.Optional;
+
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buurman.domain.identifier.NotificationIdentifier;
@@ -24,23 +26,33 @@ public class NotificationController implements NotificationsApi {
   @SuppressWarnings("unchecked")
   @Override
   public PageResponse getNotifications(
-      String type,
-      String channel,
-      String status,
-      String recipientEmail,
-      String dateFrom,
-      String dateTo,
-      Integer page,
-      Integer size,
-      String sort,
-      String direction) {
+      Optional<String> type,
+      Optional<String> channel,
+      Optional<String> status,
+      Optional<String> recipientEmail,
+      Optional<String> dateFrom,
+      Optional<String> dateTo,
+      Optional<Integer> page,
+      Optional<Integer> size,
+      Optional<String> sort,
+      Optional<String> direction) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
+    PageRequest pageRequest =
+        PageRequest.of(
+            page.orElse(null), size.orElse(null), sort.orElse(null), direction.orElse(null));
     PaginatedResult<NotificationResponse> result =
         centerService.getNotifications(
-            principal, type, channel, status, recipientEmail, dateFrom, dateTo, pageRequest);
+            principal,
+            type.orElse(null),
+            channel.orElse(null),
+            status.orElse(null),
+            recipientEmail.orElse(null),
+            dateFrom.orElse(null),
+            dateTo.orElse(null),
+            pageRequest);
 
-    return PageResponse.of(result.items(), page, size, result.totalElements());
+    return PageResponse.of(
+        result.items(), pageRequest.page(), pageRequest.size(), result.totalElements());
   }
 
   @Override

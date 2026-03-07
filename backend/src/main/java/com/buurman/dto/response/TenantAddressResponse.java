@@ -11,7 +11,7 @@ public record TenantAddressResponse(
     String street,
     String city,
     String postalCode,
-    String country,
+    String countryCode,
     TenantAddress.AddressType addressType,
     TenantAddress.AddressStatus status,
     Optional<Double> latitude,

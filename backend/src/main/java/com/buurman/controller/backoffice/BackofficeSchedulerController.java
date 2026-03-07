@@ -1,6 +1,7 @@
 package com.buurman.controller.backoffice;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.quartz.SchedulerException;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,36 +32,38 @@ public class BackofficeSchedulerController implements BackofficeSchedulerApi {
   }
 
   @Override
-  public void pauseJob(String jobName, String group) {
+  public void pauseJob(String jobName, Optional<String> group) {
     try {
-      schedulerService.pauseJob(jobName, group);
+      schedulerService.pauseJob(jobName, group.orElse("scheduling"));
     } catch (SchedulerException e) {
       throw new IllegalStateException("Failed to pause job", e);
     }
   }
 
   @Override
-  public void resumeJob(String jobName, String group) {
+  public void resumeJob(String jobName, Optional<String> group) {
     try {
-      schedulerService.resumeJob(jobName, group);
+      schedulerService.resumeJob(jobName, group.orElse("scheduling"));
     } catch (SchedulerException e) {
       throw new IllegalStateException("Failed to resume job", e);
     }
   }
 
   @Override
-  public void triggerJob(String jobName, String group) {
+  public void triggerJob(String jobName, Optional<String> group) {
     try {
-      schedulerService.triggerJobNow(jobName, group);
+      schedulerService.triggerJobNow(jobName, group.orElse("scheduling"));
     } catch (SchedulerException e) {
       throw new IllegalStateException("Failed to trigger job", e);
     }
   }
 
   @Override
-  public void rescheduleJob(String jobName, RescheduleRequest rescheduleRequest, String group) {
+  public void rescheduleJob(
+      String jobName, RescheduleRequest rescheduleRequest, Optional<String> group) {
     try {
-      schedulerService.rescheduleJob(jobName, group, rescheduleRequest.cronExpression());
+      schedulerService.rescheduleJob(
+          jobName, group.orElse("scheduling"), rescheduleRequest.cronExpression());
     } catch (SchedulerException e) {
       throw new IllegalStateException("Failed to reschedule job", e);
     }
@@ -68,13 +71,16 @@ public class BackofficeSchedulerController implements BackofficeSchedulerApi {
 
   @Override
   public PageResponse<JobExecutionHistoryResponse> getHistory(
-      List<String> jobName,
-      String status,
-      Integer page,
-      Integer size,
-      String sort,
-      String direction) {
-    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
-    return schedulerService.getExecutionHistory(pageRequest, jobName, status);
+      Optional<List<String>> jobName,
+      Optional<String> status,
+      Optional<Integer> page,
+      Optional<Integer> size,
+      Optional<String> sort,
+      Optional<String> direction) {
+    PageRequest pageRequest =
+        PageRequest.of(
+            page.orElse(null), size.orElse(null), sort.orElse(null), direction.orElse(null));
+    return schedulerService.getExecutionHistory(
+        pageRequest, jobName.orElse(null), status.orElse(null));
   }
 }

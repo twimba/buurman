@@ -21,7 +21,6 @@ import com.buurman.service.PhoneNumberPolicyService;
 import com.buurman.service.PhoneVerificationService;
 import com.buurman.service.UserTeamService;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -39,14 +38,13 @@ public class UserController implements UsersApi {
   }
 
   @Override
-  public UserProfileResponse updateUserProfile(
-      @Valid UpdateUserProfileRequest updateUserProfileRequest) {
+  public UserProfileResponse updateUserProfile(UpdateUserProfileRequest updateUserProfileRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return userTeamService.updateUserProfile(updateUserProfileRequest, principal);
   }
 
   @Override
-  public UserProfileResponse verifyPhone(@Valid VerifyPhoneRequest verifyPhoneRequest) {
+  public UserProfileResponse verifyPhone(VerifyPhoneRequest verifyPhoneRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return phoneVerificationService.verifyPhone(principal.getUserId(), verifyPhoneRequest.code());
   }
@@ -77,13 +75,13 @@ public class UserController implements UsersApi {
   }
 
   @Override
-  public UserTeamResponse switchTeam(@Valid SwitchTeamRequest switchTeamRequest) {
+  public UserTeamResponse switchTeam(SwitchTeamRequest switchTeamRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return userTeamService.switchTeam(switchTeamRequest.teamIdentifier(), principal);
   }
 
   @Override
-  public UserTeamResponse setDefaultTeam(@Valid SetDefaultTeamRequest setDefaultTeamRequest) {
+  public UserTeamResponse setDefaultTeam(SetDefaultTeamRequest setDefaultTeamRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return userTeamService.setDefaultTeam(setDefaultTeamRequest.teamIdentifier(), principal);
   }

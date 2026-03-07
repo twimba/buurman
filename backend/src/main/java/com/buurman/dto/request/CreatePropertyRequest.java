@@ -19,7 +19,7 @@ public record CreatePropertyRequest(
     @NotBlank(message = "Street is required") String street,
     @NotBlank(message = "City is required") String city,
     @NotBlank(message = "Postal code is required") String postalCode,
-    @NotBlank(message = "Country is required") String country,
+    @NotBlank(message = "Country code is required") String countryCode,
     Optional<BigDecimal> latitude,
     Optional<BigDecimal> longitude,
     Optional<String> geocodeAccuracy,

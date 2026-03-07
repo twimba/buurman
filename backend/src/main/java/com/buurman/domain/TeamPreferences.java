@@ -24,14 +24,17 @@ public class TeamPreferences {
   @Builder.Default private boolean autoGenerationEnabled = true;
 
   // Regional settings
-  @Builder.Default private Optional<String> defaultCurrency = Optional.empty();
-  @Builder.Default private String defaultCountry = "Netherlands";
+  @Builder.Default private String defaultCurrency = "EUR";
+  @Builder.Default private String defaultCountryCode = "NL";
   @Builder.Default private String timezone = "Europe/Amsterdam";
   @Builder.Default private String dateFormat = "DD/MM/YYYY";
   @Builder.Default private String fiscalYearStartMonth = "01";
 
   // Takeout settings
   @Builder.Default private int takeoutRetentionDays = 30;
+
+  // Onboarding
+  @Builder.Default private Optional<Instant> onboardingCompletedAt = Optional.empty();
 
   // Audit
   private Instant createdAt;

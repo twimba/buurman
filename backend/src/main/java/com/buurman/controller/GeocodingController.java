@@ -9,7 +9,6 @@ import com.buurman.dto.response.GeocodeResponse;
 import com.buurman.generated.api.GeocodingApi;
 import com.buurman.service.GeocodingService;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -19,13 +18,13 @@ public class GeocodingController implements GeocodingApi {
   private final GeocodingService geocodingService;
 
   @Override
-  public GeocodeResponse geocode(@Valid GeocodeRequest geocodeRequest) {
+  public GeocodeResponse geocode(GeocodeRequest geocodeRequest) {
     return geocodingService
         .geocode(
             geocodeRequest.street(),
             geocodeRequest.city(),
-            geocodeRequest.postalCode().orElse(null),
-            geocodeRequest.country())
+            geocodeRequest.postalCode(),
+            geocodeRequest.countryCode())
         .map(
             result ->
                 new GeocodeResponse(

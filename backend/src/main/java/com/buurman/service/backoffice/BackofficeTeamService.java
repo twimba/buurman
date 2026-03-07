@@ -93,7 +93,7 @@ public class BackofficeTeamService {
     Optional<String> currency =
         activeRent.getValue() != null
             ? Optional.of(activeRent.getValue())
-            : prefs.getDefaultCurrency();
+            : Optional.of(prefs.getDefaultCurrency());
 
     FinancialSnapshot financialSnapshot =
         new FinancialSnapshot(
@@ -110,7 +110,7 @@ public class BackofficeTeamService {
             Optional.of(prefs.getPaymentsAheadCount()),
             prefs.isAutoGenerationEnabled(),
             prefs.getDefaultCurrency(),
-            Optional.ofNullable(prefs.getDefaultCountry()),
+            Optional.ofNullable(prefs.getDefaultCountryCode()),
             Optional.ofNullable(prefs.getTimezone()),
             Optional.ofNullable(prefs.getDateFormat()),
             Optional.ofNullable(prefs.getFiscalYearStartMonth()));

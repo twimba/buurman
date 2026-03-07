@@ -13,6 +13,6 @@
   },
   "packageManager": "yarn@4.12.0",
   "devDependencies": {
-    "orval": "^8.5.2"
+    "orval": "^8.5.3"
   }
 }

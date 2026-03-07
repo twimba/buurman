@@ -91,6 +91,7 @@ public class ContractService {
   private final ContractRentPeriodService contractRentPeriodService;
   private final CountryMetadataSerializer countryMetadataSerializer;
   private final CountryMetadataValidator countryMetadataValidator;
+  private final CurrencyEnforcementService currencyEnforcement;
   private final AppProperties appProperties;
   private final Clock clock;
 
@@ -134,7 +135,7 @@ public class ContractService {
     contract.setUpdatedAt(clock.instant());
 
     // Resolve country code from property
-    String countryCode = CountryMetadataRegistry.normalizeCountryCode(property.getCountry());
+    String countryCode = CountryMetadataRegistry.normalizeCountryCode(property.getCountryCode());
     contract.setCountryCode(Optional.ofNullable(countryCode));
 
     // Deserialize and validate country metadata from request
@@ -155,6 +156,15 @@ public class ContractService {
     validateCurrencyRequired(
         contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::currency).orElse(null),
         contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::value).orElse(null));
+
+    // Enforce team currency
+    currencyEnforcement.validateCurrency(contract.getRentAmount().currency(), teamId);
+    contract
+        .getDepositAmount()
+        .ifPresent(d -> currencyEnforcement.validateCurrency(d.currency(), teamId));
+    contract
+        .getSecurityDeposit()
+        .ifPresent(d -> currencyEnforcement.validateCurrency(d.currency(), teamId));
 
     Contract savedContract = contractRepository.save(contract);
 
@@ -329,7 +339,7 @@ public class ContractService {
 
     // Update country code and metadata (only while DRAFT — locked after activation)
     if (contract.getStatus() == DRAFT) {
-      String countryCode = CountryMetadataRegistry.normalizeCountryCode(property.getCountry());
+      String countryCode = CountryMetadataRegistry.normalizeCountryCode(property.getCountryCode());
       contract.setCountryCode(Optional.ofNullable(countryCode));
 
       if (request.countryMetadata() != null && countryCode != null) {
@@ -355,6 +365,15 @@ public class ContractService {
     validateCurrencyRequired(
         contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::currency).orElse(null),
         contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::value).orElse(null));
+
+    // Enforce team currency
+    currencyEnforcement.validateCurrency(contract.getRentAmount().currency(), teamId);
+    contract
+        .getDepositAmount()
+        .ifPresent(d -> currencyEnforcement.validateCurrency(d.currency(), teamId));
+    contract
+        .getSecurityDeposit()
+        .ifPresent(d -> currencyEnforcement.validateCurrency(d.currency(), teamId));
 
     Contract updatedContract = contractRepository.save(contract);
 
@@ -715,36 +734,34 @@ public class ContractService {
     Contract sourceContract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
 
     // Create new contract with same data (without tenantId)
-    @SuppressWarnings("NullAway") // ID is null for new entities, assigned by repository on save
     Contract newContract =
-        new Contract(
-            null, // New ID will be generated
-            Optional.of(newContractId()), // New identifier
-            teamId,
-            sourceContract.getPropertyId(),
-            sourceContract.getContractType(),
-            sourceContract.getStartDate(),
-            sourceContract.getEndDate(),
-            sourceContract.getSignedDate(),
-            sourceContract.getRentAmount(),
-            sourceContract.getDepositAmount(),
-            sourceContract.getSecurityDeposit(),
-            sourceContract.getPaymentFrequency(),
-            sourceContract.getPaymentDueDay(),
-            sourceContract.getAutoRenewal(),
-            sourceContract.getRenewalNoticeDays(),
-            sourceContract.getTerminationNoticeDays(),
-            sourceContract.getLateFeePercentage(),
-            DRAFT, // Always start as DRAFT
-            sourceContract.getTermsAndConditions(),
-            sourceContract.getNotes(),
-            sourceContract.getCountryCode(),
-            sourceContract.getCountryMetadata(),
-            clock.instant(),
-            clock.instant(),
-            principal.getUserId(),
-            principal.getUserId(),
-            Optional.empty());
+        Contract.builder()
+            .identifier(Optional.of(newContractId()))
+            .teamId(teamId)
+            .propertyId(sourceContract.getPropertyId())
+            .contractType(sourceContract.getContractType())
+            .startDate(sourceContract.getStartDate())
+            .endDate(sourceContract.getEndDate())
+            .signedDate(sourceContract.getSignedDate())
+            .rentAmount(sourceContract.getRentAmount())
+            .depositAmount(sourceContract.getDepositAmount())
+            .securityDeposit(sourceContract.getSecurityDeposit())
+            .paymentFrequency(sourceContract.getPaymentFrequency())
+            .paymentDueDay(sourceContract.getPaymentDueDay())
+            .autoRenewal(sourceContract.getAutoRenewal())
+            .renewalNoticeDays(sourceContract.getRenewalNoticeDays())
+            .terminationNoticeDays(sourceContract.getTerminationNoticeDays())
+            .lateFeePercentage(sourceContract.getLateFeePercentage())
+            .status(DRAFT)
+            .termsAndConditions(sourceContract.getTermsAndConditions())
+            .notes(sourceContract.getNotes())
+            .countryCode(sourceContract.getCountryCode())
+            .countryMetadata(sourceContract.getCountryMetadata())
+            .createdAt(clock.instant())
+            .updatedAt(clock.instant())
+            .createdBy(principal.getUserId())
+            .updatedBy(principal.getUserId())
+            .build();
 
     Contract savedContract = contractRepository.save(newContract);
 

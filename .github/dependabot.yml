@@ -1,6 +1,3 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
 # https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 
 version: 2
@@ -11,6 +8,33 @@ updates:
     schedule:
       interval: "daily"
     open-pull-requests-limit: 50
+    groups:
+      spring:
+        patterns:
+          - "org.springframework*"
+        update-types:
+          - "minor"
+          - "patch"
+      jooq:
+        patterns:
+          - "org.jooq:*"
+      flyway:
+        patterns:
+          - "org.flywaydb:*"
+      mapstruct:
+        patterns:
+          - "org.mapstruct:*"
+      itext:
+        patterns:
+          - "com.itextpdf:*"
+      testcontainers:
+        patterns:
+          - "org.testcontainers:*"
+      maven-plugins:
+        patterns:
+          - "*-maven-plugin"
+          - "org.openapitools:*"
+          - "io.github.git-commit-id:*"
 
   - package-ecosystem: "npm"
     directories:
@@ -21,6 +45,53 @@ updates:
     schedule:
       interval: "daily"
     open-pull-requests-limit: 50
+    groups:
+      tiptap:
+        patterns:
+          - "@tiptap/*"
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+          - "react-is"
+          - "@types/react-is"
+      react-router:
+        patterns:
+          - "react-router-dom"
+          - "react-router"
+      tanstack:
+        patterns:
+          - "@tanstack/*"
+      eslint:
+        patterns:
+          - "eslint"
+          - "@eslint/*"
+          - "eslint-plugin-*"
+          - "typescript-eslint"
+      tailwindcss:
+        patterns:
+          - "tailwindcss"
+          - "@tailwindcss/*"
+      vite:
+        patterns:
+          - "vite"
+          - "@vitejs/*"
+      floating-ui:
+        patterns:
+          - "@floating-ui/*"
+      keycloak:
+        patterns:
+          - "keycloak-js"
+          - "@react-keycloak/*"
+      dompurify:
+        patterns:
+          - "dompurify"
+          - "@types/dompurify"
+      lucide:
+        patterns:
+          - "lucide-react"
 
   - package-ecosystem: "docker"
     directories:

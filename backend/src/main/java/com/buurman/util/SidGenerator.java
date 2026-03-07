@@ -32,6 +32,7 @@ import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.domain.identifier.TenantAddressIdentifier;
 import com.buurman.domain.identifier.TenantIdentifier;
 import com.buurman.domain.identifier.UserIdentifier;
+import com.buurman.domain.identifier.WwsCalculationIdentifier;
 
 import de.huxhorn.sulky.ulid.ULID;
 
@@ -175,5 +176,9 @@ public class SidGenerator {
 
   public static DataTakeoutIdentifier newTakeoutId() {
     return DataTakeoutIdentifier.of(generateRaw(EntityPrefix.TKO));
+  }
+
+  public static WwsCalculationIdentifier newWwsCalculationId() {
+    return WwsCalculationIdentifier.of(generateRaw(EntityPrefix.WWS));
   }
 }

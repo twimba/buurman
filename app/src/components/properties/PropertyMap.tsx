@@ -6,7 +6,7 @@ interface PropertyMapProps {
   street: string;
   city: string;
   postalCode: string;
-  country: string;
+  countryCode: string;
   latitude?: number | null;
   longitude?: number | null;
   onCoordinatesChange?: (lat: number, lng: number) => void;
@@ -21,7 +21,7 @@ export const PropertyMap = ({
   street,
   city,
   postalCode,
-  country,
+  countryCode,
   latitude,
   longitude,
   onCoordinatesChange,
@@ -48,7 +48,7 @@ export const PropertyMap = ({
         return;
       }
 
-      const address = `${street}, ${city}, ${postalCode}, ${country}`;
+      const address = `${street}, ${city}, ${postalCode}, ${countryCode}`;
 
       try {
         // Use Google Geocoding API
@@ -80,7 +80,7 @@ export const PropertyMap = ({
 
     geocodeAddress();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [street, city, postalCode, country, latitude, longitude, apiKey]); // onCoordinatesChange excluded to prevent infinite loop
+  }, [street, city, postalCode, countryCode, latitude, longitude, apiKey]); // onCoordinatesChange excluded to prevent infinite loop
 
   if (!apiKey) {
     return (
@@ -93,7 +93,7 @@ export const PropertyMap = ({
           Configure VITE_GOOGLE_MAPS_API_KEY to enable maps
         </p>
         <div className="mt-3 text-xs text-gray-400 bg-gray-100 rounded p-2 font-mono">
-          {street}, {city}, {postalCode}, {country}
+          {street}, {city}, {postalCode}, {countryCode}
         </div>
       </div>
     );
@@ -119,7 +119,7 @@ export const PropertyMap = ({
           {error || 'Could not find this address on the map'}
         </p>
         <div className="mt-3 text-xs text-gray-400 bg-gray-100 rounded p-2 font-mono">
-          {street}, {city}, {postalCode}, {country}
+          {street}, {city}, {postalCode}, {countryCode}
         </div>
       </div>
     );

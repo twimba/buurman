@@ -45,8 +45,8 @@ public record BackofficeTeamDetailResponse(
   public record SettingsInfo(
       Optional<Integer> paymentsAheadCount,
       boolean autoGenerationEnabled,
-      Optional<String> defaultCurrency,
-      Optional<String> defaultCountry,
+      String defaultCurrency,
+      Optional<String> defaultCountryCode,
       Optional<String> timezone,
       Optional<String> dateFormat,
       Optional<String> fiscalYearStartMonth) {}

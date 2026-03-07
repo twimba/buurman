@@ -92,9 +92,7 @@ public class ReportService {
 
     UUID teamId = principal.requireTeamId();
     String activeCurrency =
-        currency != null
-            ? currency
-            : teamService.getDefaultCurrency(principal.requireTeamId()).orElse("EUR");
+        currency != null ? currency : teamService.getDefaultCurrency(principal.requireTeamId());
 
     // Pre-fetch all contracts for the team to resolve payment→property mapping
     Map<UUID, Contract> contractsById =
@@ -286,7 +284,7 @@ public class ReportService {
     }
 
     return new IncomeTrendResponse(
-        dataPoints, teamService.getDefaultCurrency(principal.requireTeamId()).orElse("EUR"));
+        dataPoints, teamService.getDefaultCurrency(principal.requireTeamId()));
   }
 
   @Transactional(readOnly = true)
@@ -342,7 +340,7 @@ public class ReportService {
     }
 
     return new IncomeTrendResponse(
-        dataPoints, teamService.getDefaultCurrency(principal.requireTeamId()).orElse("EUR"));
+        dataPoints, teamService.getDefaultCurrency(principal.requireTeamId()));
   }
 
   @Transactional(readOnly = true)
@@ -381,7 +379,7 @@ public class ReportService {
             .toList();
 
     return new ExpenseBreakdownResponse(
-        categories, total, teamService.getDefaultCurrency(principal.requireTeamId()).orElse("EUR"));
+        categories, total, teamService.getDefaultCurrency(principal.requireTeamId()));
   }
 
   @Transactional(readOnly = true)
@@ -461,7 +459,7 @@ public class ReportService {
             .toList();
 
     return new PropertyComparisonResponse(
-        propertyData, teamService.getDefaultCurrency(principal.requireTeamId()).orElse("EUR"));
+        propertyData, teamService.getDefaultCurrency(principal.requireTeamId()));
   }
 
   @Transactional(readOnly = true)
@@ -654,7 +652,7 @@ public class ReportService {
         netIncome,
         expensesByCategory,
         properties,
-        teamService.getDefaultCurrency(principal.requireTeamId()).orElse("EUR"));
+        teamService.getDefaultCurrency(principal.requireTeamId()));
   }
 
   @Transactional(readOnly = true)

@@ -182,7 +182,6 @@ export const FinancingPaymentFormModal = ({
                 value={formData.totalAmount as number}
                 onChange={(v) => update('totalAmount', v)}
                 currency={formData.currency ?? defaultCurrency ?? 'EUR'}
-                onCurrencyChange={(c) => update('currency', c)}
               />
             </div>
 
@@ -193,7 +192,6 @@ export const FinancingPaymentFormModal = ({
                 value={formData.principalAmount as number}
                 onChange={(v) => update('principalAmount', v ?? undefined)}
                 currency={formData.currency ?? defaultCurrency ?? 'EUR'}
-                onCurrencyChange={(c) => update('currency', c)}
               />
             </div>
 
@@ -204,7 +202,6 @@ export const FinancingPaymentFormModal = ({
                 value={formData.interestAmount as number}
                 onChange={(v) => update('interestAmount', v ?? undefined)}
                 currency={formData.currency ?? defaultCurrency ?? 'EUR'}
-                onCurrencyChange={(c) => update('currency', c)}
               />
             </div>
 
@@ -215,7 +212,6 @@ export const FinancingPaymentFormModal = ({
                 value={formData.escrowAmount as number}
                 onChange={(v) => update('escrowAmount', v ?? undefined)}
                 currency={formData.currency ?? defaultCurrency ?? 'EUR'}
-                onCurrencyChange={(c) => update('currency', c)}
               />
             </div>
 
@@ -226,7 +222,6 @@ export const FinancingPaymentFormModal = ({
                 value={formData.extraPayment as number}
                 onChange={(v) => update('extraPayment', v ?? undefined)}
                 currency={formData.currency ?? defaultCurrency ?? 'EUR'}
-                onCurrencyChange={(c) => update('currency', c)}
               />
             </div>
           </div>

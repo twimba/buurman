@@ -101,6 +101,7 @@ public class PaymentService {
   private final PropertyRepository propertyRepository;
   private final TenantRepository tenantRepository;
   private final ContractPartyService contractPartyService;
+  private final CurrencyEnforcementService currencyEnforcement;
   private final DocumentRepository documentRepository;
   private final PaymentMapper paymentMapper;
   private final PaymentReceivalMapper receivalMapper;
@@ -171,6 +172,7 @@ public class PaymentService {
     }
 
     validateCurrencyDecimals(request.amount(), request.currency());
+    currencyEnforcement.validateCurrency(request.currency(), teamId);
 
     boolean markAsPaid = request.markAsPaid().orElse(false);
     LocalDate paymentDate = markAsPaid ? request.paymentDate().orElse(LocalDate.now(clock)) : null;
@@ -352,6 +354,7 @@ public class PaymentService {
     BigDecimal effectiveAmount = request.amount().orElse(payment.getAmount().value());
     String effectiveCurrency = request.currency().orElse(payment.getAmount().currency());
     validateCurrencyDecimals(effectiveAmount, effectiveCurrency);
+    request.currency().ifPresent(c -> currencyEnforcement.validateCurrency(c, teamId));
 
     PaymentResponse oldState = enrichPaymentResponse(payment, teamId);
 

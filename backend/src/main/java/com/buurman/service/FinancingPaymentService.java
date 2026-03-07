@@ -44,6 +44,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class FinancingPaymentService {
 
+  private final CurrencyEnforcementService currencyEnforcement;
   private final FinancingPaymentRepository paymentRepository;
   private final PropertyFinancingRepository financingRepository;
   private final FinancingPaymentMapper paymentMapper;
@@ -115,6 +116,7 @@ public class FinancingPaymentService {
     payment.setUpdatedBy(principal.getUserId());
     payment.setCreatedAt(clock.instant());
     payment.setUpdatedAt(clock.instant());
+    currencyEnforcement.validateCurrency(request.currency(), principal.requireTeamId());
 
     boolean shouldDeduct = request.deductFromBalance().orElse(true);
     BigDecimal deductionAmount = computeDeductionAmount(payment);
@@ -152,6 +154,9 @@ public class FinancingPaymentService {
     paymentMapper.updateEntity(payment, request);
     payment.setUpdatedBy(principal.getUserId());
     payment.setUpdatedAt(clock.instant());
+    request
+        .currency()
+        .ifPresent(c -> currencyEnforcement.validateCurrency(c, principal.requireTeamId()));
 
     boolean shouldDeduct = request.deductFromBalance().orElse(payment.isBalanceDeducted());
 

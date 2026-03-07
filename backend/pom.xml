@@ -26,7 +26,7 @@
         <testcontainers.version>2.0.3</testcontainers.version>
         <testcontainers-jooq-codegen-maven-plugin.version>0.0.4</testcontainers-jooq-codegen-maven-plugin.version>
         <keycloak.version>26.0.8</keycloak.version>
-        <aws-sdk.version>2.42.6</aws-sdk.version>
+        <aws-sdk.version>2.42.7</aws-sdk.version>
         <lombok.version>1.18.42</lombok.version>
         <spotless.version>3.3.0</spotless.version>
         <google-java-format.version>1.34.1</google-java-format.version>
@@ -375,7 +375,7 @@
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>7.12.0</version>
+                <version>7.20.0</version>
                 <executions>
                     <execution>
                         <id>generate-app-api</id>
@@ -399,6 +399,7 @@
                                 <useResponseEntity>false</useResponseEntity>
                                 <skipDefaultInterface>true</skipDefaultInterface>
                                 <openApiNullable>false</openApiNullable>
+                                <useOptional>true</useOptional>
                                 <documentationProvider>none</documentationProvider>
                                 <hideGenerationTimestamp>true</hideGenerationTimestamp>
                                 <additionalModelTypeAnnotations>@lombok.Generated</additionalModelTypeAnnotations>
@@ -453,6 +454,7 @@
                                 <schemaMapping>TenantAddressIdentifier=com.buurman.domain.identifier.TenantAddressIdentifier</schemaMapping>
                                 <schemaMapping>TenantIdentifier=com.buurman.domain.identifier.TenantIdentifier</schemaMapping>
                                 <schemaMapping>UserIdentifier=com.buurman.domain.identifier.UserIdentifier</schemaMapping>
+                                <schemaMapping>WwsCalculationIdentifier=com.buurman.domain.identifier.WwsCalculationIdentifier</schemaMapping>
                             </schemaMappings>
                             <importMappings>
                                 <importMapping>Instant=java.time.Instant</importMapping>
@@ -462,12 +464,16 @@
                                 <importMapping>AmenityResponse=com.buurman.dto.response.AmenityResponse</importMapping>
                                 <importMapping>CalendarFeedResponse=com.buurman.dto.response.CalendarFeedResponse</importMapping>
                                 <importMapping>CategoryExpenseSummary=com.buurman.dto.response.CategoryExpenseSummary</importMapping>
+                                <importMapping>CompleteOnboardingRequest=com.buurman.dto.request.CompleteOnboardingRequest</importMapping>
                                 <importMapping>CommercialDetailsResponse=com.buurman.dto.response.CommercialDetailsResponse</importMapping>
                                 <importMapping>ContractPartyResponse=com.buurman.dto.response.ContractPartyResponse</importMapping>
                                 <importMapping>ContractPaymentInstructionResponse=com.buurman.dto.response.ContractPaymentInstructionResponse</importMapping>
                                 <importMapping>ContractResponse=com.buurman.dto.response.ContractResponse</importMapping>
                                 <importMapping>ContractSummary=com.buurman.dto.response.ContractSummary</importMapping>
+                                <importMapping>CountryCurrencyResponse=com.buurman.dto.response.CountryCurrencyResponse</importMapping>
                                 <importMapping>CountryMetadataSchemaResponse=com.buurman.dto.response.CountryMetadataSchemaResponse</importMapping>
+                                <importMapping>CurrencyChangeRequest=com.buurman.dto.request.CurrencyChangeRequest</importMapping>
+                                <importMapping>CurrencyChangeResponse=com.buurman.dto.response.CurrencyChangeResponse</importMapping>
                                 <importMapping>CurrencyInfo=com.buurman.dto.response.CurrencyInfo</importMapping>
                                 <importMapping>DashboardStatsResponse=com.buurman.dto.response.DashboardStatsResponse</importMapping>
                                 <importMapping>DataDateRangeResponse=com.buurman.dto.response.DataDateRangeResponse</importMapping>
@@ -489,6 +495,7 @@
                                 <importMapping>NotificationResponse=com.buurman.dto.response.NotificationResponse</importMapping>
                                 <importMapping>NotificationStatsResponse=com.buurman.dto.response.NotificationStatsResponse</importMapping>
                                 <importMapping>NotificationTypePreferencesResponse=com.buurman.dto.response.NotificationTypePreferencesResponse</importMapping>
+                                <importMapping>OnboardingStatusResponse=com.buurman.dto.response.OnboardingStatusResponse</importMapping>
                                 <importMapping>OccupancyPeriodResponse=com.buurman.dto.response.OccupancyPeriodResponse</importMapping>
                                 <importMapping>OccupancyTrendResponse=com.buurman.dto.response.OccupancyTrendResponse</importMapping>
                                 <importMapping>PaymentInstructionResponse=com.buurman.dto.response.PaymentInstructionResponse</importMapping>
@@ -534,6 +541,9 @@
                                 <importMapping>UserResponse=com.buurman.dto.response.UserResponse</importMapping>
                                 <importMapping>UserTeamResponse=com.buurman.dto.response.UserTeamResponse</importMapping>
                                 <importMapping>ValidateInvitationCodeResponse=com.buurman.dto.response.ValidateInvitationCodeResponse</importMapping>
+                                <importMapping>WwsCalculationResponse=com.buurman.dto.response.WwsCalculationResponse</importMapping>
+                                <importMapping>WwsCategoryBreakdown=com.buurman.dto.response.WwsCategoryBreakdown</importMapping>
+                                <importMapping>WwsPreFillResponse=com.buurman.dto.response.WwsPreFillResponse</importMapping>
                                 <!-- Request DTOs -->
                                 <importMapping>AddContractPartyRequest=com.buurman.dto.request.AddContractPartyRequest</importMapping>
                                 <importMapping>AgriculturalDetailsRequest=com.buurman.dto.request.AgriculturalDetailsRequest</importMapping>
@@ -612,6 +622,7 @@
                                 <importMapping>UpsertPropertyAcquisitionRequest=com.buurman.dto.request.UpsertPropertyAcquisitionRequest</importMapping>
                                 <importMapping>VerifyEmailRequest=com.buurman.dto.request.VerifyEmailRequest</importMapping>
                                 <importMapping>VerifyPhoneRequest=com.buurman.dto.request.VerifyPhoneRequest</importMapping>
+                                <importMapping>WwsCalculationRequest=com.buurman.dto.request.WwsCalculationRequest</importMapping>
                             </importMappings>
                         </configuration>
                     </execution>
@@ -637,6 +648,7 @@
                                 <useResponseEntity>false</useResponseEntity>
                                 <skipDefaultInterface>true</skipDefaultInterface>
                                 <openApiNullable>false</openApiNullable>
+                                <useOptional>true</useOptional>
                                 <documentationProvider>none</documentationProvider>
                                 <hideGenerationTimestamp>true</hideGenerationTimestamp>
                                 <additionalModelTypeAnnotations>@lombok.Generated</additionalModelTypeAnnotations>
@@ -657,6 +669,7 @@
                                 <schemaMapping>RegistrationInvitationIdentifier=com.buurman.domain.identifier.RegistrationInvitationIdentifier</schemaMapping>
                                 <schemaMapping>TeamIdentifier=com.buurman.domain.identifier.TeamIdentifier</schemaMapping>
                                 <schemaMapping>UserIdentifier=com.buurman.domain.identifier.UserIdentifier</schemaMapping>
+                                <schemaMapping>WwsCalculationIdentifier=com.buurman.domain.identifier.WwsCalculationIdentifier</schemaMapping>
                             </schemaMappings>
                             <importMappings>
                                 <importMapping>Instant=java.time.Instant</importMapping>
@@ -837,12 +850,14 @@
                                                 <converter>com.buurman.config.jooq.SidJooqConverter</converter>
                                                 <includeExpression>.*\.IDENTIFIER</includeExpression>
                                                 <includeTypes>VARCHAR</includeTypes>
+                                                <ignoreUnused>true</ignoreUnused>
                                             </forcedType>
                                             <forcedType>
                                                 <userType>java.math.BigDecimal</userType>
                                                 <converter>com.buurman.config.jooq.MoneyMinorUnitConverter</converter>
                                                 <includeExpression>.*\.(RENT_AMOUNT|DEPOSIT_AMOUNT|SECURITY_DEPOSIT|AMOUNT|TOTAL_AMOUNT|PRINCIPAL_AMOUNT|INTEREST_AMOUNT|ESCROW_AMOUNT|EXTRA_PAYMENT|ANNUAL_AMOUNT|ANNUAL_PREMIUM|COVERAGE_AMOUNT|ORIGINAL_AMOUNT|CURRENT_BALANCE|MONTHLY_PAYMENT|PURCHASE_PRICE|CLOSING_COSTS|RENOVATION_COSTS|LAND_VALUE)</includeExpression>
                                                 <includeTypes>BIGINT</includeTypes>
+                                                <ignoreUnused>true</ignoreUnused>
                                             </forcedType>
                                         </forcedTypes>
                                     </database>

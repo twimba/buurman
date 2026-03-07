@@ -12,7 +12,7 @@ public record CreateTenantAddressRequest(
     @NotBlank(message = "Street is required") String street,
     @NotBlank(message = "City is required") String city,
     Optional<String> postalCode,
-    @NotBlank(message = "Country is required") String country,
+    @NotBlank(message = "Country code is required") String countryCode,
     @NotNull(message = "Address type is required") TenantAddress.AddressType addressType,
     Optional<AddressStatus> status,
     Optional<Double> latitude,

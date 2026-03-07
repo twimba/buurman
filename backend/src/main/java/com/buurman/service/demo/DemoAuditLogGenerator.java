@@ -56,7 +56,7 @@ public class DemoAuditLogGenerator {
                 PROPERTIES.STREET,
                 PROPERTIES.CITY,
                 PROPERTIES.POSTAL_CODE,
-                PROPERTIES.COUNTRY,
+                PROPERTIES.COUNTRY_CODE,
                 PROPERTIES.PROPERTY_TYPE,
                 PROPERTIES.PROPERTY_CATEGORY,
                 PROPERTIES.STATUS,
@@ -76,7 +76,7 @@ public class DemoAuditLogGenerator {
       values.put("street", r.get(PROPERTIES.STREET));
       values.put("city", r.get(PROPERTIES.CITY));
       values.put("postalCode", r.get(PROPERTIES.POSTAL_CODE));
-      values.put("country", r.get(PROPERTIES.COUNTRY));
+      values.put("country", r.get(PROPERTIES.COUNTRY_CODE));
       values.put("propertyType", r.get(PROPERTIES.PROPERTY_TYPE));
       values.put("propertyCategory", r.get(PROPERTIES.PROPERTY_CATEGORY));
       values.put("status", r.get(PROPERTIES.STATUS));

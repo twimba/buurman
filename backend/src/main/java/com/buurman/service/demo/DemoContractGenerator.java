@@ -178,7 +178,7 @@ public class DemoContractGenerator {
 
         // Resolve country from property
         String propertyCountry =
-            dsl.select(PROPERTIES.COUNTRY)
+            dsl.select(PROPERTIES.COUNTRY_CODE)
                 .from(PROPERTIES)
                 .where(PROPERTIES.ID.eq(propertyId))
                 .fetchOneInto(String.class);

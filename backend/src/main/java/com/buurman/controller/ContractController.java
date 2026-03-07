@@ -3,6 +3,7 @@ package com.buurman.controller;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.web.bind.annotation.RestController;
 
@@ -53,32 +54,35 @@ public class ContractController implements ContractsApi {
   @Override
   @SuppressWarnings("rawtypes")
   public PageResponse getContracts(
-      String status,
-      String propertyIdentifier,
-      String tenantIdentifier,
-      Integer page,
-      Integer size,
-      String sort,
-      String direction) {
+      Optional<String> status,
+      Optional<String> propertyIdentifier,
+      Optional<String> tenantIdentifier,
+      Optional<Integer> page,
+      Optional<Integer> size,
+      Optional<String> sort,
+      Optional<String> direction) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
 
     // When filtering by property or tenant identifier, use the existing non-paginated methods
     // wrapped in PageResponse
-    if (propertyIdentifier != null) {
+    if (propertyIdentifier.isPresent()) {
       List<ContractResponse> results =
           contractService.getContractsByProperty(
-              PropertyIdentifier.of(propertyIdentifier), principal);
+              PropertyIdentifier.of(propertyIdentifier.get()), principal);
       return PageResponse.of(results, 0, results.size(), results.size());
     }
 
-    if (tenantIdentifier != null) {
+    if (tenantIdentifier.isPresent()) {
       List<ContractResponse> results =
-          contractService.getContractsByTenant(TenantIdentifier.of(tenantIdentifier), principal);
+          contractService.getContractsByTenant(
+              TenantIdentifier.of(tenantIdentifier.get()), principal);
       return PageResponse.of(results, 0, results.size(), results.size());
     }
 
-    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
-    return contractService.getContractsPaginated(principal, status, pageRequest);
+    PageRequest pageRequest =
+        PageRequest.of(
+            page.orElse(null), size.orElse(null), sort.orElse(null), direction.orElse(null));
+    return contractService.getContractsPaginated(principal, status.orElse(null), pageRequest);
   }
 
   @Override
@@ -158,12 +162,13 @@ public class ContractController implements ContractsApi {
   @SuppressWarnings("NullAway")
   public DocumentResponse uploadContractDocument(
       ContractIdentifier identifier,
-      String title,
-      String notes,
-      UploadPhotoRequest uploadPhotoRequest) {
+      Optional<String> title,
+      Optional<String> notes,
+      Optional<UploadPhotoRequest> uploadPhotoRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     // Generated interface mismodels multipart upload as JSON body
-    return contractService.uploadDocument(identifier, null, title, notes, principal);
+    return contractService.uploadDocument(
+        identifier, null, title.orElse(null), notes.orElse(null), principal);
   }
 
   @Override

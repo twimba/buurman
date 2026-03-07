@@ -2,6 +2,7 @@ package com.buurman.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,7 +17,6 @@ import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.PropertyAmenityService;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -26,8 +26,8 @@ public class AmenityController implements AmenitiesApi, PropertyAmenitiesApi {
   private final PropertyAmenityService propertyAmenityService;
 
   @Override
-  public Map<String, List<AmenityResponse>> getAllAmenities(String category) {
-    return propertyAmenityService.getAllAmenitiesGrouped(category);
+  public Map<String, List<AmenityResponse>> getAllAmenities(Optional<String> category) {
+    return propertyAmenityService.getAllAmenitiesGrouped(category.orElse(null));
   }
 
   @Override
@@ -38,7 +38,7 @@ public class AmenityController implements AmenitiesApi, PropertyAmenitiesApi {
 
   @Override
   public PropertyAmenityResponse addAmenity(
-      PropertyIdentifier propertyIdentifier, @Valid PropertyAmenityRequest propertyAmenityRequest) {
+      PropertyIdentifier propertyIdentifier, PropertyAmenityRequest propertyAmenityRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return propertyAmenityService.addAmenity(propertyIdentifier, propertyAmenityRequest, principal);
   }

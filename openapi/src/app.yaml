@@ -1,0 +1,7015 @@
+openapi: 3.1.0
+info:
+  title: Buurman API
+  description: Property Management API for Small Landlords
+  contact:
+    name: Buurman Team
+    email: info@buurman.io
+  version: 0.1.0
+servers:
+  - url: http://api.local.buurman.io
+    description: Generated server url
+security:
+  - bearer-jwt: []
+tags:
+  - name: WWS Calculator
+    description: Netherlands WWS (Woningwaarderingsstelsel) points calculator
+  - name: Reference
+    description: Technical reference data for integrators and developers
+  - name: Property Taxes
+    description: Property tax obligations
+  - name: Calendar Feeds
+    description: iCalendar feed management and serving
+  - name: Teams
+    description: Team management
+  - name: Property Outdoor Areas
+    description: Manage outdoor areas for properties
+  - name: Properties
+    description: Property management
+  - name: Property Acquisitions
+    description: Property acquisition data (1:1 per property)
+  - name: Property Valuations
+    description: Property valuation history (time-series)
+  - name: Expenses
+    description: Property expense tracking and management
+  - name: Contract Rent Periods
+    description: Rent timeline management for contracts
+  - name: Property Insurances
+    description: Property insurance policies
+  - name: Tenants
+    description: Tenant management
+  - name: Users
+    description: User team management
+  - name: Property Financings
+    description: Financing instruments and payments (mortgages, loans, etc.)
+  - name: Reports
+    description: Financial reporting and analytics
+  - name: Occupancy Periods
+    description: Self-occupancy period management
+  - name: Notifications
+    description: Notification center and management
+  - name: Contract Payment Instructions
+    description: Per-contract payment instructions with history
+  - name: Photos
+    description: Photo management endpoints
+  - name: Audit Logs
+    description: Activity log management
+  - name: Property Dashboard
+    description: Property-level investment analytics
+  - name: Amenities
+    description: Reference amenity data
+  - name: Booklets
+    description: Entity booklet PDF exports
+  - name: Payments
+    description: Rent payment tracking and management
+  - name: Property Fees
+    description: Recurring property fees (HOA, management, etc.)
+  - name: User Preferences
+    description: User preferences and notification channel settings
+  - name: Health
+    description: Health and info endpoints
+  - name: Geocoding
+    description: Address geocoding
+  - name: Webhooks
+    description: Provider status callbacks
+  - name: Contracts
+    description: Rental agreement management
+  - name: Dashboard
+    description: Dashboard statistics and recent activities
+  - name: Registration
+    description: Public registration endpoints
+  - name: Property Amenities
+    description: Manage amenities for properties
+  - name: Payment Instructions
+    description: Team-level payment instruction templates
+  - name: Authentication
+    description: User registration and profile management
+  - name: Property Financials
+    description: Aggregated property financial overview
+  - name: Documents
+    description: Document management endpoints
+  - name: Invitations
+    description: Team invitation management
+  - name: Feature Flags
+    description: Feature flag configuration
+  - name: Onboarding
+    description: Team onboarding wizard
+  - name: Currency
+    description: Currency and country-currency mappings
+paths:
+  /users/preferences/notifications:
+    $ref: 'paths/users.yaml#/users-preferences-notifications'
+  /users/me:
+    $ref: 'paths/users.yaml#/users-me'
+  /users/default-team:
+    $ref: 'paths/users.yaml#/users-default-team'
+  /tenants/{tenantIdentifier}/addresses/{addressIdentifier}:
+    $ref: 'paths/tenants.yaml#/addresses-item'
+  /tenants/{identifier}:
+    $ref: 'paths/tenants.yaml#/item'
+  /tenants/{identifier}/photos/{photoIdentifier}/set-main:
+    $ref: 'paths/tenants.yaml#/photos-set-main'
+  /teams/{teamIdentifier}:
+    $ref: 'paths/teams.yaml#/teams-item'
+  /teams/{teamIdentifier}/settings:
+    $ref: 'paths/teams.yaml#/teams-settings'
+  /teams/{teamIdentifier}/members/{userIdentifier}/role:
+    $ref: 'paths/teams.yaml#/teams-members-role'
+  /properties/{propertyIdentifier}/outdoor-areas/{areaIdentifier}:
+    $ref: 'paths/properties.yaml#/outdoor-areas-item'
+  /properties/{propertyIdentifier}/occupancy-periods/{identifier}:
+    $ref: 'paths/occupancy.yaml#/occupancy-periods-item'
+  /properties/{propertyIdentifier}/financials/valuations/{identifier}:
+    $ref: 'paths/properties.yaml#/financials-valuations-item'
+  /properties/{propertyIdentifier}/financials/taxes/{identifier}:
+    $ref: 'paths/properties.yaml#/financials-taxes-item'
+  /properties/{propertyIdentifier}/financials/insurances/{identifier}:
+    $ref: 'paths/properties.yaml#/financials-insurances-item'
+  /properties/{propertyIdentifier}/financials/financings/{financingIdentifier}:
+    $ref: 'paths/properties.yaml#/financials-financings-item'
+  /properties/{propertyIdentifier}/financials/financings/{financingIdentifier}/payments/{paymentIdentifier}:
+    $ref: 'paths/properties.yaml#/financials-financings-payments-item'
+  /properties/{propertyIdentifier}/financials/fees/{identifier}:
+    $ref: 'paths/properties.yaml#/financials-fees-item'
+  /properties/{propertyIdentifier}/financials/acquisition:
+    $ref: 'paths/properties.yaml#/financials-acquisition'
+  /properties/{identifier}:
+    $ref: 'paths/properties.yaml#/item'
+  /properties/{identifier}/photos/{photoIdentifier}/set-main:
+    $ref: 'paths/properties.yaml#/photos-set-main'
+  /photos/{identifier}:
+    $ref: 'paths/documents.yaml#/photos-item'
+  /payments/{identifier}:
+    $ref: 'paths/payments.yaml#/payments-item'
+  /payments/{identifier}/receivals/{receivalIdentifier}:
+    $ref: 'paths/payments.yaml#/payments-receivals-item'
+  /payments/{identifier}/mark-paid:
+    $ref: 'paths/payments.yaml#/payments-mark-paid'
+  /payment-instructions/{identifier}:
+    $ref: 'paths/payments.yaml#/payment-instructions-item'
+  /expenses/{identifier}:
+    $ref: 'paths/expenses.yaml#/item'
+  /documents/{identifier}:
+    $ref: 'paths/documents.yaml#/documents-item'
+  /contracts/{identifier}:
+    $ref: 'paths/contracts.yaml#/item'
+  /contracts/{contractIdentifier}/rent-periods/{periodIdentifier}:
+    $ref: 'paths/contracts.yaml#/rent-periods-item'
+  /contracts/{contractIdentifier}/payment-instructions/{instructionIdentifier}:
+    $ref: 'paths/contracts.yaml#/payment-instructions-item'
+  /auth/me:
+    $ref: 'paths/users.yaml#/auth-me'
+  /webhooks/twilio/status:
+    $ref: 'paths/reference.yaml#/webhooks-twilio-status'
+  /webhooks/sendgrid/events:
+    $ref: 'paths/reference.yaml#/webhooks-sendgrid-events'
+  /users/teams/{teamIdentifier}/leave:
+    $ref: 'paths/users.yaml#/users-teams-leave'
+  /users/switch-team:
+    $ref: 'paths/users.yaml#/users-switch-team'
+  /users/me/phone/verify:
+    $ref: 'paths/users.yaml#/users-me-phone-verify'
+  /users/me/phone/resend-verification:
+    $ref: 'paths/users.yaml#/users-me-phone-resend-verification'
+  /users/me/phone/cancel-verification:
+    $ref: 'paths/users.yaml#/users-me-phone-cancel-verification'
+  /tenants:
+    $ref: 'paths/tenants.yaml#/collection'
+  /tenants/{tenantIdentifier}/addresses:
+    $ref: 'paths/tenants.yaml#/addresses'
+  /tenants/{identifier}/unlink-property:
+    $ref: 'paths/tenants.yaml#/unlink-property'
+  /tenants/{identifier}/photos:
+    $ref: 'paths/tenants.yaml#/photos'
+  /tenants/{identifier}/link-property:
+    $ref: 'paths/tenants.yaml#/link-property'
+  /tenants/{identifier}/documents:
+    $ref: 'paths/tenants.yaml#/documents'
+  /teams/{teamIdentifier}/transfer-ownership:
+    $ref: 'paths/teams.yaml#/teams-transfer-ownership'
+  /teams/{teamIdentifier}/invitations:
+    $ref: 'paths/teams.yaml#/teams-invitations'
+  /teams/{teamIdentifier}/invitations/{token}/resend:
+    $ref: 'paths/teams.yaml#/teams-invitations-resend'
+  /registration-invitations/validate:
+    $ref: 'paths/registration.yaml#/registration-invitations-validate'
+  /properties:
+    $ref: 'paths/properties.yaml#/collection'
+  /properties/{propertyIdentifier}/outdoor-areas:
+    $ref: 'paths/properties.yaml#/outdoor-areas'
+  /properties/{propertyIdentifier}/occupancy-periods:
+    $ref: 'paths/occupancy.yaml#/occupancy-periods'
+  /properties/{propertyIdentifier}/occupancy-periods/{identifier}/end:
+    $ref: 'paths/occupancy.yaml#/occupancy-periods-end'
+  /properties/{propertyIdentifier}/financials/valuations:
+    $ref: 'paths/properties.yaml#/financials-valuations'
+  /properties/{propertyIdentifier}/financials/taxes:
+    $ref: 'paths/properties.yaml#/financials-taxes'
+  /properties/{propertyIdentifier}/financials/insurances:
+    $ref: 'paths/properties.yaml#/financials-insurances'
+  /properties/{propertyIdentifier}/financials/financings:
+    $ref: 'paths/properties.yaml#/financials-financings'
+  /properties/{propertyIdentifier}/financials/financings/{financingIdentifier}/payments:
+    $ref: 'paths/properties.yaml#/financials-financings-payments'
+  /properties/{propertyIdentifier}/financials/financings/{financingIdentifier}/payments/{paymentIdentifier}/documents:
+    $ref: 'paths/properties.yaml#/financials-financings-payments-documents'
+  /properties/{propertyIdentifier}/financials/financings/{financingIdentifier}/payments/bulk:
+    $ref: 'paths/properties.yaml#/financials-financings-payments-bulk'
+  /properties/{propertyIdentifier}/financials/fees:
+    $ref: 'paths/properties.yaml#/financials-fees'
+  /properties/{propertyIdentifier}/amenities:
+    $ref: 'paths/properties.yaml#/amenities'
+  /properties/{identifier}/photos:
+    $ref: 'paths/properties.yaml#/photos'
+  /properties/{identifier}/documents:
+    $ref: 'paths/properties.yaml#/documents'
+  /photos/bulk-download:
+    $ref: 'paths/documents.yaml#/photos-bulk-download'
+  /payments:
+    $ref: 'paths/payments.yaml#/payments'
+  /payments/{identifier}/receivals:
+    $ref: 'paths/payments.yaml#/payments-receivals'
+  /payments/{identifier}/documents:
+    $ref: 'paths/payments.yaml#/payments-documents'
+  /payments/bulk:
+    $ref: 'paths/payments.yaml#/payments-bulk'
+  /payments/bulk-generate:
+    $ref: 'paths/payments.yaml#/payments-bulk-generate'
+  /payment-instructions:
+    $ref: 'paths/payments.yaml#/payment-instructions'
+  /notifications/{identifier}/resend:
+    $ref: 'paths/notifications.yaml#/resend'
+  /notifications/{identifier}/refresh-status:
+    $ref: 'paths/notifications.yaml#/refresh-status'
+  /invitations/{token}/accept:
+    $ref: 'paths/teams.yaml#/invitations-accept'
+  /geocode:
+    $ref: 'paths/reference.yaml#/geocode'
+  /expenses:
+    $ref: 'paths/expenses.yaml#/collection'
+  /expenses/{identifier}/documents:
+    $ref: 'paths/expenses.yaml#/documents'
+  /expenses/bulk:
+    $ref: 'paths/expenses.yaml#/bulk'
+  /documents/bulk-download:
+    $ref: 'paths/documents.yaml#/documents-bulk-download'
+  /contracts:
+    $ref: 'paths/contracts.yaml#/collection'
+  /contracts/{identifier}/reopen:
+    $ref: 'paths/contracts.yaml#/reopen'
+  /contracts/{identifier}/parties:
+    $ref: 'paths/contracts.yaml#/parties'
+  /contracts/{identifier}/parties/change-primary:
+    $ref: 'paths/contracts.yaml#/parties-change-primary'
+  /contracts/{identifier}/generate-payments:
+    $ref: 'paths/contracts.yaml#/generate-payments'
+  /contracts/{identifier}/duplicate:
+    $ref: 'paths/contracts.yaml#/duplicate'
+  /contracts/{identifier}/documents:
+    $ref: 'paths/contracts.yaml#/documents'
+  /contracts/{identifier}/change-status:
+    $ref: 'paths/contracts.yaml#/change-status'
+  /contracts/{contractIdentifier}/rent-periods:
+    $ref: 'paths/contracts.yaml#/rent-periods'
+  /contracts/{contractIdentifier}/payment-instructions:
+    $ref: 'paths/contracts.yaml#/payment-instructions'
+  /calendar/feeds:
+    $ref: 'paths/calendar-feeds.yaml#/feeds'
+  /calendar/feeds/{identifier}/rotate:
+    $ref: 'paths/calendar-feeds.yaml#/feeds-rotate'
+  /auth/verify-email:
+    $ref: 'paths/users.yaml#/auth-verify-email'
+  /auth/verify-email-token:
+    $ref: 'paths/users.yaml#/auth-verify-email-token'
+  /auth/resend-verification:
+    $ref: 'paths/users.yaml#/auth-resend-verification'
+  /auth/register:
+    $ref: 'paths/users.yaml#/auth-register'
+  /users/preferences:
+    $ref: 'paths/users.yaml#/users-preferences'
+  /users/phone-policy:
+    $ref: 'paths/users.yaml#/users-phone-policy'
+  /users/me/teams:
+    $ref: 'paths/users.yaml#/users-me-teams'
+  /tenants/{identifier}/history:
+    $ref: 'paths/tenants.yaml#/history'
+  /tenants/{identifier}/audit-log:
+    $ref: 'paths/tenants.yaml#/audit-log'
+  /tenants/documents/{documentIdentifier}/download:
+    $ref: 'paths/tenants.yaml#/documents-download'
+  /teams/{teamIdentifier}/members:
+    $ref: 'paths/teams.yaml#/teams-members'
+  /teams/{teamIdentifier}/invitations/pending:
+    $ref: 'paths/teams.yaml#/teams-invitations-pending'
+  /teams/current:
+    $ref: 'paths/teams.yaml#/teams-current'
+  /reports/tax-summary:
+    $ref: 'paths/dashboard.yaml#/reports-tax-summary'
+  /reports/financial-overview:
+    $ref: 'paths/dashboard.yaml#/reports-financial-overview'
+  /reports/export/transactions/pdf:
+    $ref: 'paths/dashboard.yaml#/reports-export-transactions-pdf'
+  /reports/export/transactions/csv:
+    $ref: 'paths/dashboard.yaml#/reports-export-transactions-csv'
+  /reports/date-range:
+    $ref: 'paths/dashboard.yaml#/reports-date-range'
+  /reports/charts/property-comparison:
+    $ref: 'paths/dashboard.yaml#/reports-charts-property-comparison'
+  /reports/charts/occupancy-trend:
+    $ref: 'paths/dashboard.yaml#/reports-charts-occupancy-trend'
+  /reports/charts/income-trend:
+    $ref: 'paths/dashboard.yaml#/reports-charts-income-trend'
+  /reports/charts/expense-breakdown:
+    $ref: 'paths/dashboard.yaml#/reports-charts-expense-breakdown'
+  /registration/config:
+    $ref: 'paths/registration.yaml#/registration-config'
+  /reference/entity-prefixes:
+    $ref: 'paths/reference.yaml#/reference-entity-prefixes'
+  /reference/currencies:
+    $ref: 'paths/reference.yaml#/reference-currencies'
+  /properties/{propertyIdentifier}/occupancy-periods/timeline:
+    $ref: 'paths/occupancy.yaml#/occupancy-periods-timeline'
+  /properties/{propertyIdentifier}/financials:
+    $ref: 'paths/properties.yaml#/financials'
+  /properties/{propertyIdentifier}/financials/valuations/latest:
+    $ref: 'paths/properties.yaml#/financials-valuations-latest'
+  /properties/{propertyIdentifier}/financials/financings/{financingIdentifier}/payments/documents/{documentIdentifier}/download:
+    $ref: 'paths/properties.yaml#/financials-financings-payments-documents-download'
+  /properties/{identifier}/dashboard:
+    $ref: 'paths/properties.yaml#/dashboard'
+  /properties/{identifier}/dashboard/export/pdf:
+    $ref: 'paths/properties.yaml#/dashboard-export-pdf'
+  /properties/{identifier}/dashboard/export/csv:
+    $ref: 'paths/properties.yaml#/dashboard-export-csv'
+  /wws/calculate:
+    $ref: 'paths/reference.yaml#/wws-calculate'
+  /wws/calculate-and-save:
+    $ref: 'paths/reference.yaml#/wws-calculate-and-save'
+  /wws/properties/{propertyIdentifier}/pre-fill:
+    $ref: 'paths/reference.yaml#/wws-properties-pre-fill'
+  /wws/properties/{propertyIdentifier}/calculations:
+    $ref: 'paths/reference.yaml#/wws-properties-calculations'
+  /wws/properties/{propertyIdentifier}/latest:
+    $ref: 'paths/reference.yaml#/wws-properties-latest'
+  /wws/calculations/{calculationIdentifier}:
+    $ref: 'paths/reference.yaml#/wws-calculations-item'
+  /properties/{identifier}/audit-log:
+    $ref: 'paths/properties.yaml#/audit-log'
+  /properties/documents/{documentIdentifier}/download:
+    $ref: 'paths/properties.yaml#/documents-download'
+  /photos:
+    $ref: 'paths/documents.yaml#/photos'
+  /photos/{identifier}/preview:
+    $ref: 'paths/documents.yaml#/photos-preview'
+  /photos/{identifier}/download:
+    $ref: 'paths/documents.yaml#/photos-download'
+  /payments/{identifier}/audit-log:
+    $ref: 'paths/payments.yaml#/payments-audit-log'
+  /payments/stats:
+    $ref: 'paths/payments.yaml#/payments-stats'
+  /payments/overdue:
+    $ref: 'paths/payments.yaml#/payments-overdue'
+  /payments/documents/{documentIdentifier}/download:
+    $ref: 'paths/payments.yaml#/payments-documents-download'
+  /notifications:
+    $ref: 'paths/notifications.yaml#/collection'
+  /notifications/{identifier}:
+    $ref: 'paths/notifications.yaml#/item'
+  /notifications/stats:
+    $ref: 'paths/notifications.yaml#/stats'
+  /invitations/{token}:
+    $ref: 'paths/teams.yaml#/invitations-item'
+  /invitations/pending:
+    $ref: 'paths/teams.yaml#/invitations-pending'
+  /info:
+    $ref: 'paths/reference.yaml#/info'
+  /health:
+    $ref: 'paths/reference.yaml#/health'
+  /feature-flags:
+    $ref: 'paths/reference.yaml#/feature-flags'
+  /expenses/{identifier}/audit-log:
+    $ref: 'paths/expenses.yaml#/audit-log'
+  /expenses/stats:
+    $ref: 'paths/expenses.yaml#/stats'
+  /expenses/documents/{documentIdentifier}/download:
+    $ref: 'paths/expenses.yaml#/documents-download'
+  /documents:
+    $ref: 'paths/documents.yaml#/documents'
+  /documents/{identifier}/preview:
+    $ref: 'paths/documents.yaml#/documents-preview'
+  /documents/{identifier}/download:
+    $ref: 'paths/documents.yaml#/documents-download'
+  /dashboard/stats:
+    $ref: 'paths/dashboard.yaml#/dashboard-stats'
+  /dashboard/recent-activities:
+    $ref: 'paths/dashboard.yaml#/dashboard-recent-activities'
+  /contracts/{identifier}/audit-log:
+    $ref: 'paths/contracts.yaml#/audit-log'
+  /contracts/{contractIdentifier}/payment-instructions/current:
+    $ref: 'paths/contracts.yaml#/payment-instructions-current'
+  /contracts/metadata-schema/{countryCode}:
+    $ref: 'paths/contracts.yaml#/metadata-schema-item'
+  /contracts/documents/{documentIdentifier}/download:
+    $ref: 'paths/contracts.yaml#/documents-download'
+  /calendar/ical/{feedToken}:
+    $ref: 'paths/calendar-feeds.yaml#/ical-item'
+  /booklets/tenant/{tenantIdentifier}:
+    $ref: 'paths/documents.yaml#/booklets-tenant-item'
+  /booklets/property/{propertyIdentifier}:
+    $ref: 'paths/documents.yaml#/booklets-property-item'
+  /booklets/contract/{contractIdentifier}:
+    $ref: 'paths/documents.yaml#/booklets-contract-item'
+  /audit-logs:
+    $ref: 'paths/audit-logs.yaml#/collection'
+  /amenities:
+    $ref: 'paths/reference.yaml#/amenities'
+  /tenants/documents/{documentIdentifier}:
+    $ref: 'paths/tenants.yaml#/documents-item'
+  /teams/{teamIdentifier}/members/{userIdentifier}:
+    $ref: 'paths/teams.yaml#/teams-members-item'
+  /properties/{propertyIdentifier}/financials/financings/{financingIdentifier}/payments/documents/{documentIdentifier}:
+    $ref: 'paths/properties.yaml#/financials-financings-payments-documents-item'
+  /properties/{propertyIdentifier}/amenities/{amenityIdentifier}:
+    $ref: 'paths/properties.yaml#/amenities-item'
+  /properties/documents/{documentIdentifier}:
+    $ref: 'paths/properties.yaml#/documents-item'
+  /payments/documents/{documentIdentifier}:
+    $ref: 'paths/payments.yaml#/payments-documents-item'
+  /expenses/documents/{documentIdentifier}:
+    $ref: 'paths/expenses.yaml#/documents-item'
+  /contracts/{identifier}/parties/{partyIdentifier}:
+    $ref: 'paths/contracts.yaml#/parties-item'
+  /contracts/documents/{documentIdentifier}:
+    $ref: 'paths/contracts.yaml#/documents-item'
+  /calendar/feeds/{identifier}:
+    $ref: 'paths/calendar-feeds.yaml#/feeds-item'
+  /onboarding/status:
+    $ref: 'paths/onboarding.yaml#/status'
+  /onboarding/complete:
+    $ref: 'paths/onboarding.yaml#/complete'
+  /countries/currencies:
+    $ref: 'paths/currency.yaml#/countries-currencies'
+  /countries/{code}/currency:
+    $ref: 'paths/currency.yaml#/countries-currency'
+  /teams/{teamIdentifier}/currency-change:
+    $ref: 'paths/currency.yaml#/teams-currency-change'
+components:
+  schemas:
+    AmenityIdentifier:
+      type: string
+      description: Amenity identifier
+    CalendarFeedIdentifier:
+      type: string
+      description: Calendar feed identifier
+    ContractIdentifier:
+      type: string
+      description: Contract identifier
+    ContractPartyIdentifier:
+      type: string
+      description: Contract party identifier
+    ContractPaymentInstructionIdentifier:
+      type: string
+      description: Contract payment instruction identifier
+    ContractRentPeriodIdentifier:
+      type: string
+      description: Contract rent period identifier
+    DocumentIdentifier:
+      type: string
+      description: Document identifier
+    ExpenseIdentifier:
+      type: string
+      description: Expense identifier
+    FinancingPaymentIdentifier:
+      type: string
+      description: Financing payment identifier
+    NotificationIdentifier:
+      type: string
+      description: Notification identifier
+    OccupancyPeriodIdentifier:
+      type: string
+      description: Occupancy period identifier
+    PaymentIdentifier:
+      type: string
+      description: Payment identifier
+    PaymentInstructionIdentifier:
+      type: string
+      description: Payment instruction identifier
+    PaymentReceivalIdentifier:
+      type: string
+      description: Payment receival identifier
+    PhotoIdentifier:
+      type: string
+      description: Photo identifier
+    PropertyFeeIdentifier:
+      type: string
+      description: Property fee identifier
+    PropertyFinancingIdentifier:
+      type: string
+      description: Property financing identifier
+    PropertyIdentifier:
+      type: string
+      description: Property identifier
+    PropertyInsuranceIdentifier:
+      type: string
+      description: Property insurance identifier
+    PropertyOutdoorAreaIdentifier:
+      type: string
+      description: Property outdoor area identifier
+    PropertyTaxIdentifier:
+      type: string
+      description: Property tax identifier
+    PropertyValuationIdentifier:
+      type: string
+      description: Property valuation identifier
+    TeamIdentifier:
+      type: string
+      description: Team identifier
+    TenantAddressIdentifier:
+      type: string
+      description: Tenant address identifier
+    TenantIdentifier:
+      type: string
+      description: Tenant identifier
+    UserIdentifier:
+      type: string
+      description: User identifier
+    WwsCalculationIdentifier:
+      type: string
+      description: WWS calculation identifier
+      example: "wws_01JGRM5N7GWRR8PQZRVP8T4M1H"
+    Entry:
+      type: object
+      properties:
+        notificationType:
+          type: string
+        emailEnabled:
+          type: boolean
+        smsEnabled:
+          type: boolean
+      required:
+        - emailEnabled
+        - notificationType
+        - smsEnabled
+    UpdateNotificationTypePreferencesRequest:
+      type: object
+      properties:
+        preferences:
+          type: array
+          items:
+            $ref: "#/components/schemas/Entry"
+      required:
+        - preferences
+    NotificationTypePreferencesResponse:
+      type: object
+      properties:
+        globalEmailEnabled:
+          type: boolean
+        globalSmsEnabled:
+          type: boolean
+        smsAvailable:
+          type: boolean
+        emailAvailable:
+          type: boolean
+        preferences:
+          type: array
+          items:
+            $ref: "#/components/schemas/Entry"
+      required:
+        - emailAvailable
+        - globalEmailEnabled
+        - globalSmsEnabled
+        - preferences
+        - smsAvailable
+    UpdateUserProfileRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+          maxLength: 100
+          minLength: 1
+        lastName:
+          type: string
+          maxLength: 100
+          minLength: 1
+        phone:
+          type: string
+          pattern: ^\+[1-9]\d{1,14}$
+      required:
+        - firstName
+        - lastName
+    UserProfileResponse:
+      type: object
+      description: Authenticated user profile with contact and verification details
+      properties:
+        identifier:
+          type: string
+          description: Unique user identifier
+          example: usr_01HZQX7V8B3K5M2N4P6R9T0W
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        phoneVerified:
+          type: boolean
+      required:
+        - email
+        - firstName
+        - identifier
+        - lastName
+        - phoneVerified
+    SetDefaultTeamRequest:
+      type: object
+      properties:
+        teamIdentifier:
+          type: string
+      required:
+        - teamIdentifier
+    UserTeamResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        teamName:
+          type: string
+        role:
+          type: string
+        isOwner:
+          type: boolean
+        isDefault:
+          type: boolean
+        isActive:
+          type: boolean
+        memberCount:
+          type: integer
+          format: int32
+        joinedAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - isActive
+        - isDefault
+        - isOwner
+        - joinedAt
+        - memberCount
+        - role
+        - teamName
+    UpdateTenantAddressRequest:
+      type: object
+      properties:
+        street:
+          type: string
+          minLength: 1
+        city:
+          type: string
+          minLength: 1
+        postalCode:
+          type: string
+        country:
+          type: string
+          minLength: 1
+        addressType:
+          type: string
+          description: Purpose or classification of the tenant address
+          enum:
+            - CURRENT
+            - MAILING
+            - RELATIVE
+            - WORK
+            - HISTORIC
+        status:
+          type: string
+          description: Whether the address is currently in use
+          enum:
+            - ACTIVE
+            - INACTIVE
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        geocodeAccuracy:
+          type: string
+      required:
+        - addressType
+        - city
+        - country
+        - status
+        - street
+    TenantAddressResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        street:
+          type: string
+        city:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
+        addressType:
+          type: string
+          description: Purpose or classification of the tenant address
+          enum:
+            - CURRENT
+            - MAILING
+            - RELATIVE
+            - WORK
+            - HISTORIC
+        status:
+          type: string
+          description: Whether the address is currently in use
+          enum:
+            - ACTIVE
+            - INACTIVE
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        geocodeAccuracy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - addressType
+        - city
+        - country
+        - createdAt
+        - identifier
+        - postalCode
+        - status
+        - street
+    UpdateTenantRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+          minLength: 1
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          pattern: ^\+[1-9]\d{1,14}$
+        taxNumber:
+          type: string
+        idNumber:
+          type: string
+        additionalInfo:
+          type: string
+      required:
+        - firstName
+    PropertySummary:
+      type: object
+      properties:
+        identifier:
+          type: string
+        street:
+          type: string
+        city:
+          type: string
+        postalCode:
+          type: string
+        propertyCategory:
+          type: string
+          description: High-level property classification
+          enum:
+            - RESIDENTIAL
+            - COMMERCIAL
+            - INDUSTRIAL
+            - AGRICULTURAL
+            - MIXED_USE
+        propertyType:
+          type: string
+          description: Specific property type within a category
+          enum:
+            - APARTMENT
+            - HOUSE
+            - STUDIO
+            - ROOM
+            - VILLA
+            - TOWNHOUSE
+            - OTHER_RESIDENTIAL
+            - OFFICE
+            - RETAIL
+            - RESTAURANT
+            - HOTEL
+            - SHOWROOM
+            - AUTO_DEALERSHIP
+            - SNACKBAR
+            - CAFE
+            - MOTEL
+            - BAR
+            - BED_AND_BREAKFAST
+            - OTHER_COMMERCIAL
+            - WAREHOUSE
+            - WORKSHOP
+            - FACTORY
+            - DATA_CENTER
+            - COLD_STORAGE
+            - GARAGE
+            - OTHER_INDUSTRIAL
+            - FARMLAND
+            - RANCH
+            - GREENHOUSE
+            - ORCHARD
+            - VINEYARD
+            - OTHER_AGRICULTURAL
+            - MIXED_USE
+            - COMMERCIAL
+        status:
+          type: string
+          description: Current occupancy or availability status of the property
+          enum:
+            - VACANT
+            - OCCUPIED
+            - SELF_OCCUPIED
+            - MAINTENANCE
+            - UNAVAILABLE
+            - UNDER_RENOVATION
+            - FALLOW
+            - LISTED
+      required:
+        - city
+        - identifier
+        - postalCode
+        - propertyCategory
+        - propertyType
+        - status
+        - street
+    TenantPropertyAssignment:
+      type: object
+      properties:
+        property:
+          $ref: "#/components/schemas/PropertySummary"
+        role:
+          type: string
+      required:
+        - property
+    TenantResponse:
+      type: object
+      description: Tenant details including contact information and active property assignments
+      properties:
+        identifier:
+          type: string
+          description: Unique tenant identifier
+          example: tnt_01HZQX7V8B3K5M2N4P6R9T0W
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        taxNumber:
+          type: string
+        idNumber:
+          type: string
+        additionalInfo:
+          type: string
+        mainPhotoUrl:
+          type: string
+        mainPhotoThumbnailUrl:
+          type: string
+        activeProperties:
+          type: array
+          items:
+            $ref: "#/components/schemas/TenantPropertyAssignment"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - activeProperties
+        - createdAt
+        - firstName
+        - identifier
+        - lastName
+    PhotoResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        entityType:
+          type: string
+        entityIdentifier:
+          type: string
+        fileKey:
+          type: string
+        fileName:
+          type: string
+        fileSize:
+          type: integer
+          format: int64
+        mimeType:
+          type: string
+        title:
+          type: string
+        notes:
+          type: string
+        isMainPhoto:
+          type: boolean
+        uploadedAt:
+          type: string
+          format: date-time
+        downloadUrl:
+          type: string
+        thumbnailUrl:
+          type: string
+      required:
+        - entityIdentifier
+        - entityType
+        - fileKey
+        - fileName
+        - fileSize
+        - identifier
+        - isMainPhoto
+        - mimeType
+        - uploadedAt
+    UpdateTeamRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          minLength: 2
+      required:
+        - name
+    TeamResponse:
+      type: object
+      description: Team summary with member count
+      properties:
+        identifier:
+          type: string
+          description: Unique team identifier
+          example: team_01HZQX7V8B3K5M2N4P6R9T0W
+        teamName:
+          type: string
+        memberCount:
+          type: integer
+          format: int64
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - createdAt
+        - identifier
+        - memberCount
+        - teamName
+    PaymentSettings:
+      type: object
+      properties:
+        paymentsAheadCount:
+          type: integer
+          format: int32
+          maximum: 12
+          minimum: 1
+        autoGenerationEnabled:
+          type: boolean
+      required:
+        - autoGenerationEnabled
+        - paymentsAheadCount
+    RegionalSettings:
+      type: object
+      properties:
+        defaultCurrency:
+          type: string
+          maxLength: 3
+          minLength: 3
+        defaultCountry:
+          type: string
+          maxLength: 100
+        timezone:
+          type: string
+          maxLength: 50
+        dateFormat:
+          type: string
+          maxLength: 20
+        fiscalYearStartMonth:
+          type: string
+          maxLength: 2
+          minLength: 2
+    UpdateTeamSettingsRequest:
+      type: object
+      properties:
+        payments:
+          $ref: "#/components/schemas/PaymentSettings"
+        regional:
+          $ref: "#/components/schemas/RegionalSettings"
+    TeamPreferencesResponse:
+      type: object
+      properties:
+        payments:
+          $ref: "#/components/schemas/PaymentSettings"
+        regional:
+          $ref: "#/components/schemas/RegionalSettings"
+      required:
+        - payments
+        - regional
+    UpdateMemberRoleRequest:
+      type: object
+      properties:
+        role:
+          type: string
+          description: Role assigned to a team member determining access level
+          enum:
+            - TEAM_ADMIN
+            - TEAM_EDITOR
+            - TEAM_VIEWER
+      required:
+        - role
+    TeamMemberResponse:
+      type: object
+      properties:
+        userIdentifier:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+        isOwner:
+          type: boolean
+        joinedAt:
+          type: string
+          format: date-time
+        isCurrentUser:
+          type: boolean
+      required:
+        - email
+        - isCurrentUser
+        - isOwner
+        - joinedAt
+        - name
+        - role
+        - userIdentifier
+    PropertyOutdoorAreaRequest:
+      type: object
+      properties:
+        type:
+          type: string
+          minLength: 1
+        areaValue:
+          type: number
+        areaUnit:
+          type: string
+      required:
+        - type
+    PropertyOutdoorAreaResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        type:
+          type: string
+        areaValue:
+          type: number
+        areaUnit:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - createdAt
+        - identifier
+        - type
+    UpdateOccupancyPeriodRequest:
+      type: object
+      properties:
+        startDate:
+          type: string
+          format: date
+        type:
+          type: string
+          description: Nature of the self-occupancy period
+          enum:
+            - PERSONAL
+            - FAMILY
+            - BUSINESS
+        endDate:
+          type: string
+          format: date
+        occupantName:
+          type: string
+          maxLength: 255
+        monthlyImputedRent:
+          type: number
+          minimum: 0
+        notes:
+          type: string
+          maxLength: 500
+    OccupancyPeriodResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        propertyIdentifier:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        type:
+          type: string
+          description: Nature of the self-occupancy period
+          enum:
+            - PERSONAL
+            - FAMILY
+            - BUSINESS
+        occupantName:
+          type: string
+        monthlyImputedRent:
+          type: number
+        endReason:
+          type: string
+          description: Reason for ending the self-occupancy period
+          enum:
+            - CONVERTING_TO_RENTAL
+            - SELLING
+            - RENOVATION
+            - OTHER
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - createdAt
+        - identifier
+        - propertyIdentifier
+        - startDate
+        - type
+    UpdatePropertyValuationRequest:
+      type: object
+      properties:
+        valuationType:
+          type: string
+          description: Method or source of the property valuation
+          enum:
+            - MARKET
+            - APPRAISAL
+            - TAX_ASSESSED
+            - PURCHASE
+            - INSURANCE
+            - USER_ESTIMATE
+        valuationDate:
+          type: string
+          format: date
+        amount:
+          type: number
+          exclusiveMinimum: 0
+        currency:
+          type: string
+        source:
+          type: string
+        notes:
+          type: string
+    PropertyValuationResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        valuationType:
+          type: string
+          description: Method or source of the property valuation
+          enum:
+            - MARKET
+            - APPRAISAL
+            - TAX_ASSESSED
+            - PURCHASE
+            - INSURANCE
+            - USER_ESTIMATE
+        valuationDate:
+          type: string
+          format: date
+        amount:
+          type: number
+        currency:
+          type: string
+        source:
+          type: string
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - amount
+        - createdAt
+        - currency
+        - identifier
+        - updatedAt
+        - valuationDate
+        - valuationType
+    UpdatePropertyTaxRequest:
+      type: object
+      properties:
+        taxType:
+          type: string
+          description: Classification of property tax
+          enum:
+            - PROPERTY
+            - MUNICIPAL
+            - STATE
+            - LOCAL
+            - LAND
+            - SPECIAL_ASSESSMENT
+            - OTHER
+        authority:
+          type: string
+        annualAmount:
+          type: number
+          exclusiveMinimum: 0
+        currency:
+          type: string
+        paymentFrequency:
+          type: string
+        dueMonths:
+          type: string
+        taxYear:
+          type: integer
+          format: int32
+          maximum: 2100
+          minimum: 1900
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        status:
+          type: string
+          description: Current status of the tax obligation
+          enum:
+            - ACTIVE
+            - EXPIRED
+            - EXEMPT
+        notes:
+          type: string
+    PropertyTaxResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        property:
+          $ref: "#/components/schemas/PropertySummary"
+        taxType:
+          type: string
+          description: Classification of property tax
+          enum:
+            - PROPERTY
+            - MUNICIPAL
+            - STATE
+            - LOCAL
+            - LAND
+            - SPECIAL_ASSESSMENT
+            - OTHER
+        authority:
+          type: string
+        annualAmount:
+          type: number
+        currency:
+          type: string
+        paymentFrequency:
+          type: string
+        dueMonths:
+          type: string
+        taxYear:
+          type: integer
+          format: int32
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        status:
+          type: string
+          description: Current status of the tax obligation
+          enum:
+            - ACTIVE
+            - EXPIRED
+            - EXEMPT
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - annualAmount
+        - createdAt
+        - currency
+        - identifier
+        - paymentFrequency
+        - status
+        - taxType
+    UpdatePropertyInsuranceRequest:
+      type: object
+      properties:
+        insuranceType:
+          type: string
+          description: Type of insurance coverage for the property
+          enum:
+            - BUILDING
+            - LIABILITY
+            - CONTENTS
+            - FLOOD
+            - EARTHQUAKE
+            - UMBRELLA
+            - RENT_GUARANTEE
+            - OTHER
+        provider:
+          type: string
+        policyNumber:
+          type: string
+        coverageAmount:
+          type: number
+          exclusiveMinimum: 0
+        coverageAmountCurrency:
+          type: string
+        annualPremium:
+          type: number
+          exclusiveMinimum: 0
+        annualPremiumCurrency:
+          type: string
+        paymentFrequency:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        status:
+          type: string
+          description: Current status of the insurance policy
+          enum:
+            - ACTIVE
+            - EXPIRED
+            - CANCELLED
+        notes:
+          type: string
+    PropertyInsuranceResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        property:
+          $ref: "#/components/schemas/PropertySummary"
+        insuranceType:
+          type: string
+          description: Type of insurance coverage for the property
+          enum:
+            - BUILDING
+            - LIABILITY
+            - CONTENTS
+            - FLOOD
+            - EARTHQUAKE
+            - UMBRELLA
+            - RENT_GUARANTEE
+            - OTHER
+        provider:
+          type: string
+        policyNumber:
+          type: string
+        coverageAmount:
+          type: number
+        coverageAmountCurrency:
+          type: string
+        annualPremium:
+          type: number
+        annualPremiumCurrency:
+          type: string
+        paymentFrequency:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        status:
+          type: string
+          description: Current status of the insurance policy
+          enum:
+            - ACTIVE
+            - EXPIRED
+            - CANCELLED
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - annualPremium
+        - annualPremiumCurrency
+        - createdAt
+        - identifier
+        - insuranceType
+        - paymentFrequency
+        - status
+    UpdatePropertyFinancingRequest:
+      type: object
+      properties:
+        financingType:
+          type: string
+          description: Type of financing instrument
+          enum:
+            - MORTGAGE
+            - LEASING
+            - LOAN
+            - LINE_OF_CREDIT
+            - PRIVATE_FINANCING
+            - OTHER
+        rateType:
+          type: string
+          description: Interest rate structure of the financing
+          enum:
+            - FIXED
+            - VARIABLE
+            - INTEREST_ONLY
+            - HYBRID
+        lenderName:
+          type: string
+        loanNumber:
+          type: string
+        originalAmount:
+          type: number
+          exclusiveMinimum: 0
+        originalAmountCurrency:
+          type: string
+        currentBalance:
+          type: number
+          minimum: 0
+        currentBalanceCurrency:
+          type: string
+        interestRate:
+          type: number
+          minimum: 0
+        monthlyPayment:
+          type: number
+          exclusiveMinimum: 0
+        monthlyPaymentCurrency:
+          type: string
+        paymentVariable:
+          type: boolean
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        termMonths:
+          type: integer
+          format: int32
+          exclusiveMinimum: 0
+        status:
+          type: string
+          description: Current status of the financing arrangement
+          enum:
+            - ACTIVE
+            - PAID_OFF
+            - REFINANCED
+            - DEFAULTED
+        notes:
+          type: string
+    PropertyFinancingResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        propertyIdentifier:
+          type: string
+        financingType:
+          type: string
+          description: Type of financing instrument
+          enum:
+            - MORTGAGE
+            - LEASING
+            - LOAN
+            - LINE_OF_CREDIT
+            - PRIVATE_FINANCING
+            - OTHER
+        rateType:
+          type: string
+          description: Interest rate structure of the financing
+          enum:
+            - FIXED
+            - VARIABLE
+            - INTEREST_ONLY
+            - HYBRID
+        lenderName:
+          type: string
+        loanNumber:
+          type: string
+        originalAmount:
+          type: number
+        originalAmountCurrency:
+          type: string
+        currentBalance:
+          type: number
+        currentBalanceCurrency:
+          type: string
+        interestRate:
+          type: number
+        monthlyPayment:
+          type: number
+        monthlyPaymentCurrency:
+          type: string
+        paymentVariable:
+          type: boolean
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        termMonths:
+          type: integer
+          format: int32
+        status:
+          type: string
+          description: Current status of the financing arrangement
+          enum:
+            - ACTIVE
+            - PAID_OFF
+            - REFINANCED
+            - DEFAULTED
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - createdAt
+        - financingType
+        - identifier
+        - originalAmount
+        - originalAmountCurrency
+        - paymentVariable
+        - propertyIdentifier
+        - rateType
+        - startDate
+        - status
+    UpdateFinancingPaymentRequest:
+      type: object
+      properties:
+        paymentDate:
+          type: string
+          format: date
+        totalAmount:
+          type: number
+          exclusiveMinimum: 0
+        principalAmount:
+          type: number
+          minimum: 0
+        interestAmount:
+          type: number
+          minimum: 0
+        escrowAmount:
+          type: number
+          minimum: 0
+        extraPayment:
+          type: number
+          minimum: 0
+        currency:
+          type: string
+        status:
+          type: string
+          description: Status of a financing installment payment
+          enum:
+            - SCHEDULED
+            - COMPLETED
+            - MISSED
+            - LATE
+        notes:
+          type: string
+        deductFromBalance:
+          type: boolean
+    FinancingPaymentResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        financingIdentifier:
+          type: string
+        paymentDate:
+          type: string
+          format: date
+        totalAmount:
+          type: number
+        principalAmount:
+          type: number
+        interestAmount:
+          type: number
+        escrowAmount:
+          type: number
+        extraPayment:
+          type: number
+        currency:
+          type: string
+        status:
+          type: string
+          description: Status of a financing installment payment
+          enum:
+            - SCHEDULED
+            - COMPLETED
+            - MISSED
+            - LATE
+        notes:
+          type: string
+        balanceDeducted:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - balanceDeducted
+        - createdAt
+        - currency
+        - financingIdentifier
+        - identifier
+        - paymentDate
+        - status
+        - totalAmount
+    UpdatePropertyFeeRequest:
+      type: object
+      properties:
+        feeType:
+          type: string
+          description: Type of recurring property fee
+          enum:
+            - HOA
+            - MANAGEMENT
+            - MAINTENANCE_RESERVE
+            - CLEANING
+            - GARDENING
+            - SECURITY
+            - WASTE_MANAGEMENT
+            - WATER
+            - UTILITIES
+            - OTHER
+        name:
+          type: string
+        annualAmount:
+          type: number
+          exclusiveMinimum: 0
+        currency:
+          type: string
+        paymentFrequency:
+          type: string
+        dueMonths:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        status:
+          type: string
+          description: Current status of the fee obligation
+          enum:
+            - ACTIVE
+            - EXPIRED
+            - CANCELLED
+        notes:
+          type: string
+    PropertyFeeResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        property:
+          $ref: "#/components/schemas/PropertySummary"
+        feeType:
+          type: string
+          description: Type of recurring property fee
+          enum:
+            - HOA
+            - MANAGEMENT
+            - MAINTENANCE_RESERVE
+            - CLEANING
+            - GARDENING
+            - SECURITY
+            - WASTE_MANAGEMENT
+            - WATER
+            - UTILITIES
+            - OTHER
+        name:
+          type: string
+        annualAmount:
+          type: number
+        currency:
+          type: string
+        paymentFrequency:
+          type: string
+        dueMonths:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        status:
+          type: string
+          description: Current status of the fee obligation
+          enum:
+            - ACTIVE
+            - EXPIRED
+            - CANCELLED
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - annualAmount
+        - createdAt
+        - currency
+        - feeType
+        - identifier
+        - paymentFrequency
+        - status
+    UpsertPropertyAcquisitionRequest:
+      type: object
+      properties:
+        acquisitionType:
+          type: string
+          description: How the property was acquired
+          enum:
+            - PURCHASE
+            - INHERITANCE
+            - GIFT
+            - FORECLOSURE
+            - AUCTION
+            - OTHER
+        acquisitionDate:
+          type: string
+          format: date
+        purchasePrice:
+          type: number
+          exclusiveMinimum: 0
+        purchasePriceCurrency:
+          type: string
+        closingCosts:
+          type: number
+          minimum: 0
+        closingCostsCurrency:
+          type: string
+        renovationCosts:
+          type: number
+          minimum: 0
+        renovationCostsCurrency:
+          type: string
+        landValue:
+          type: number
+          minimum: 0
+        landValueCurrency:
+          type: string
+        depreciationMethod:
+          type: string
+          description: Accounting method used for property depreciation
+          enum:
+            - STRAIGHT_LINE
+            - DECLINING_BALANCE
+            - NONE
+        depreciationYears:
+          type: integer
+          format: int32
+          exclusiveMinimum: 0
+        notes:
+          type: string
+      required:
+        - acquisitionType
+    PropertyAcquisitionResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        acquisitionType:
+          type: string
+          description: How the property was acquired
+          enum:
+            - PURCHASE
+            - INHERITANCE
+            - GIFT
+            - FORECLOSURE
+            - AUCTION
+            - OTHER
+        acquisitionDate:
+          type: string
+          format: date
+        purchasePrice:
+          type: number
+        purchasePriceCurrency:
+          type: string
+        closingCosts:
+          type: number
+        closingCostsCurrency:
+          type: string
+        renovationCosts:
+          type: number
+        renovationCostsCurrency:
+          type: string
+        landValue:
+          type: number
+        landValueCurrency:
+          type: string
+        depreciationMethod:
+          type: string
+          description: Accounting method used for property depreciation
+          enum:
+            - STRAIGHT_LINE
+            - DECLINING_BALANCE
+            - NONE
+        depreciationYears:
+          type: integer
+          format: int32
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - acquisitionType
+        - createdAt
+        - identifier
+        - updatedAt
+    AgriculturalDetailsRequest:
+      type: object
+      properties:
+        totalLandAreaValue:
+          type: number
+          exclusiveMinimum: 0
+        totalLandAreaUnit:
+          type: string
+        arableAreaValue:
+          type: number
+          exclusiveMinimum: 0
+        arableAreaUnit:
+          type: string
+        soilType:
+          type: string
+        hasWaterRights:
+          type: boolean
+        waterSource:
+          type: string
+        irrigationType:
+          type: string
+        fencingType:
+          type: string
+        hasOutbuildings:
+          type: boolean
+        outbuildingDetails:
+          type: string
+        currentUse:
+          type: string
+        zoningClassification:
+          type: string
+    CommercialDetailsRequest:
+      type: object
+      properties:
+        usableAreaValue:
+          type: number
+          exclusiveMinimum: 0
+        usableAreaUnit:
+          type: string
+        commonAreaValue:
+          type: number
+          exclusiveMinimum: 0
+        commonAreaUnit:
+          type: string
+        floorLevel:
+          type: integer
+          format: int32
+        ceilingHeightM:
+          type: number
+          exclusiveMinimum: 0
+        hasStorefront:
+          type: boolean
+        hasSignageRights:
+          type: boolean
+        zoningClassification:
+          type: string
+        maxOccupancy:
+          type: integer
+          format: int32
+          exclusiveMinimum: 0
+        restroomCount:
+          type: integer
+          format: int32
+          minimum: 0
+        hasKitchenFacility:
+          type: boolean
+        accessibilityCompliant:
+          type: boolean
+    IndustrialDetailsRequest:
+      type: object
+      properties:
+        clearHeightM:
+          type: number
+          exclusiveMinimum: 0
+        loadingDocks:
+          type: integer
+          format: int32
+          minimum: 0
+        driveInDoors:
+          type: integer
+          format: int32
+          minimum: 0
+        floorLoadCapacityKgSqm:
+          type: number
+          exclusiveMinimum: 0
+        powerCapacityKva:
+          type: integer
+          format: int32
+          exclusiveMinimum: 0
+        hasThreePhasePower:
+          type: boolean
+        hasCrane:
+          type: boolean
+        craneCapacityTons:
+          type: number
+          exclusiveMinimum: 0
+        hasHazmatCertification:
+          type: boolean
+        hasVentilationSystem:
+          type: boolean
+        hasClimateControl:
+          type: boolean
+        yardAreaValue:
+          type: number
+          exclusiveMinimum: 0
+        yardAreaUnit:
+          type: string
+        zoningClassification:
+          type: string
+    ResidentialDetailsRequest:
+      type: object
+      properties:
+        bedrooms:
+          type: integer
+          format: int32
+          minimum: 0
+        bathrooms:
+          type: integer
+          format: int32
+          minimum: 0
+        furnished:
+          type: boolean
+        petPolicy:
+          type: string
+    UpdatePropertyRequest:
+      type: object
+      properties:
+        propertyType:
+          type: string
+          description: Specific property type within a category
+          enum:
+            - APARTMENT
+            - HOUSE
+            - STUDIO
+            - ROOM
+            - VILLA
+            - TOWNHOUSE
+            - OTHER_RESIDENTIAL
+            - OFFICE
+            - RETAIL
+            - RESTAURANT
+            - HOTEL
+            - SHOWROOM
+            - AUTO_DEALERSHIP
+            - SNACKBAR
+            - CAFE
+            - MOTEL
+            - BAR
+            - BED_AND_BREAKFAST
+            - OTHER_COMMERCIAL
+            - WAREHOUSE
+            - WORKSHOP
+            - FACTORY
+            - DATA_CENTER
+            - COLD_STORAGE
+            - GARAGE
+            - OTHER_INDUSTRIAL
+            - FARMLAND
+            - RANCH
+            - GREENHOUSE
+            - ORCHARD
+            - VINEYARD
+            - OTHER_AGRICULTURAL
+            - MIXED_USE
+            - COMMERCIAL
+        status:
+          type: string
+          description: Current occupancy or availability status of the property
+          enum:
+            - VACANT
+            - OCCUPIED
+            - SELF_OCCUPIED
+            - MAINTENANCE
+            - UNAVAILABLE
+            - UNDER_RENOVATION
+            - FALLOW
+            - LISTED
+        street:
+          type: string
+          minLength: 1
+        city:
+          type: string
+          minLength: 1
+        postalCode:
+          type: string
+          minLength: 1
+        country:
+          type: string
+          minLength: 1
+        latitude:
+          type: number
+        longitude:
+          type: number
+        geocodeAccuracy:
+          type: string
+        areaValue:
+          type: number
+          exclusiveMinimum: 0
+        areaUnit:
+          type: string
+        yearBuilt:
+          type: integer
+          format: int32
+        yearLastRenovated:
+          type: integer
+          format: int32
+        constructionType:
+          type: string
+        foundationType:
+          type: string
+        roofType:
+          type: string
+        wallConstruction:
+          type: string
+        flooringType:
+          type: string
+        windowType:
+          type: string
+        numberOfFloors:
+          type: integer
+          format: int32
+        structuralNotes:
+          type: string
+        energyEfficiencyRating:
+          type: string
+        energyCertificateExpiryDate:
+          type: string
+          format: date
+        heatingType:
+          type: string
+        coolingType:
+          type: string
+        hotWaterSystem:
+          type: string
+        insulationNotes:
+          type: string
+        electricityConnectionType:
+          type: string
+        electricityCapacityAmps:
+          type: integer
+          format: int32
+        waterConnectionType:
+          type: string
+        hasGasConnection:
+          type: boolean
+        sewageType:
+          type: string
+        internetConnectionType:
+          type: string
+        internetMaxSpeedMbps:
+          type: integer
+          format: int32
+        internetStatus:
+          type: string
+        parkingSpaces:
+          type: integer
+          format: int32
+        parkingType:
+          type: string
+        hasSmokeDetectors:
+          type: boolean
+        hasCoDetectors:
+          type: boolean
+        hasFireExtinguisher:
+          type: boolean
+        hasSprinklerSystem:
+          type: boolean
+        hasAlarmSystem:
+          type: boolean
+        hasSecurityCameras:
+          type: boolean
+        hasSecureEntry:
+          type: boolean
+        safetyNotes:
+          type: string
+        isWheelchairAccessible:
+          type: boolean
+        hasElevator:
+          type: boolean
+        hasStepFreeEntrance:
+          type: boolean
+        hasAdaptedBathroom:
+          type: boolean
+        accessibilityNotes:
+          type: string
+        residentialDetails:
+          $ref: "#/components/schemas/ResidentialDetailsRequest"
+        commercialDetails:
+          $ref: "#/components/schemas/CommercialDetailsRequest"
+        industrialDetails:
+          $ref: "#/components/schemas/IndustrialDetailsRequest"
+        agriculturalDetails:
+          $ref: "#/components/schemas/AgriculturalDetailsRequest"
+      required:
+        - city
+        - country
+        - postalCode
+        - propertyType
+        - status
+        - street
+    AgriculturalDetailsResponse:
+      type: object
+      properties:
+        totalLandAreaValue:
+          type: number
+        totalLandAreaUnit:
+          type: string
+        arableAreaValue:
+          type: number
+        arableAreaUnit:
+          type: string
+        soilType:
+          type: string
+        hasWaterRights:
+          type: boolean
+        waterSource:
+          type: string
+        irrigationType:
+          type: string
+        fencingType:
+          type: string
+        hasOutbuildings:
+          type: boolean
+        outbuildingDetails:
+          type: string
+        currentUse:
+          type: string
+        zoningClassification:
+          type: string
+    CommercialDetailsResponse:
+      type: object
+      properties:
+        usableAreaValue:
+          type: number
+        usableAreaUnit:
+          type: string
+        commonAreaValue:
+          type: number
+        commonAreaUnit:
+          type: string
+        floorLevel:
+          type: integer
+          format: int32
+        ceilingHeightM:
+          type: number
+        hasStorefront:
+          type: boolean
+        hasSignageRights:
+          type: boolean
+        zoningClassification:
+          type: string
+        maxOccupancy:
+          type: integer
+          format: int32
+        restroomCount:
+          type: integer
+          format: int32
+        hasKitchenFacility:
+          type: boolean
+        accessibilityCompliant:
+          type: boolean
+    IndustrialDetailsResponse:
+      type: object
+      properties:
+        clearHeightM:
+          type: number
+        loadingDocks:
+          type: integer
+          format: int32
+        driveInDoors:
+          type: integer
+          format: int32
+        floorLoadCapacityKgSqm:
+          type: number
+        powerCapacityKva:
+          type: integer
+          format: int32
+        hasThreePhasePower:
+          type: boolean
+        hasCrane:
+          type: boolean
+        craneCapacityTons:
+          type: number
+        hasHazmatCertification:
+          type: boolean
+        hasVentilationSystem:
+          type: boolean
+        hasClimateControl:
+          type: boolean
+        yardAreaValue:
+          type: number
+        yardAreaUnit:
+          type: string
+        zoningClassification:
+          type: string
+    PropertyAmenityResponse:
+      type: object
+      properties:
+        amenityIdentifier:
+          type: string
+        amenityName:
+          type: string
+        amenityCategory:
+          type: string
+        amenityIcon:
+          type: string
+        notes:
+          type: string
+      required:
+        - amenityCategory
+        - amenityIdentifier
+        - amenityName
+    PropertyResponse:
+      type: object
+      description: Property details including location, construction, energy, and accessibility information
+      properties:
+        identifier:
+          type: string
+          description: Unique property identifier
+          example: prop_01HZQX7V8B3K5M2N4P6R9T0W
+        propertyCategory:
+          type: string
+          description: High-level property classification
+          enum:
+            - RESIDENTIAL
+            - COMMERCIAL
+            - INDUSTRIAL
+            - AGRICULTURAL
+            - MIXED_USE
+        propertyType:
+          type: string
+          description: Specific property type within a category
+          enum:
+            - APARTMENT
+            - HOUSE
+            - STUDIO
+            - ROOM
+            - VILLA
+            - TOWNHOUSE
+            - OTHER_RESIDENTIAL
+            - OFFICE
+            - RETAIL
+            - RESTAURANT
+            - HOTEL
+            - SHOWROOM
+            - AUTO_DEALERSHIP
+            - SNACKBAR
+            - CAFE
+            - MOTEL
+            - BAR
+            - BED_AND_BREAKFAST
+            - OTHER_COMMERCIAL
+            - WAREHOUSE
+            - WORKSHOP
+            - FACTORY
+            - DATA_CENTER
+            - COLD_STORAGE
+            - GARAGE
+            - OTHER_INDUSTRIAL
+            - FARMLAND
+            - RANCH
+            - GREENHOUSE
+            - ORCHARD
+            - VINEYARD
+            - OTHER_AGRICULTURAL
+            - MIXED_USE
+            - COMMERCIAL
+        status:
+          type: string
+          description: Current occupancy or availability status of the property
+          enum:
+            - VACANT
+            - OCCUPIED
+            - SELF_OCCUPIED
+            - MAINTENANCE
+            - UNAVAILABLE
+            - UNDER_RENOVATION
+            - FALLOW
+            - LISTED
+        street:
+          type: string
+        city:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        geocodeAccuracy:
+          type: string
+        areaValue:
+          type: number
+        areaUnit:
+          type: string
+        mainPhotoUrl:
+          type: string
+        mainPhotoThumbnailUrl:
+          type: string
+        yearBuilt:
+          type: integer
+          format: int32
+        yearLastRenovated:
+          type: integer
+          format: int32
+        constructionType:
+          type: string
+        foundationType:
+          type: string
+        roofType:
+          type: string
+        wallConstruction:
+          type: string
+        flooringType:
+          type: string
+        windowType:
+          type: string
+        numberOfFloors:
+          type: integer
+          format: int32
+        structuralNotes:
+          type: string
+        energyEfficiencyRating:
+          type: string
+        energyCertificateExpiryDate:
+          type: string
+          format: date
+        heatingType:
+          type: string
+        coolingType:
+          type: string
+        hotWaterSystem:
+          type: string
+        insulationNotes:
+          type: string
+        electricityConnectionType:
+          type: string
+        electricityCapacityAmps:
+          type: integer
+          format: int32
+        waterConnectionType:
+          type: string
+        hasGasConnection:
+          type: boolean
+        sewageType:
+          type: string
+        internetConnectionType:
+          type: string
+        internetMaxSpeedMbps:
+          type: integer
+          format: int32
+        internetStatus:
+          type: string
+        parkingSpaces:
+          type: integer
+          format: int32
+        parkingType:
+          type: string
+        hasSmokeDetectors:
+          type: boolean
+        hasCoDetectors:
+          type: boolean
+        hasFireExtinguisher:
+          type: boolean
+        hasSprinklerSystem:
+          type: boolean
+        hasAlarmSystem:
+          type: boolean
+        hasSecurityCameras:
+          type: boolean
+        hasSecureEntry:
+          type: boolean
+        safetyNotes:
+          type: string
+        isWheelchairAccessible:
+          type: boolean
+        hasElevator:
+          type: boolean
+        hasStepFreeEntrance:
+          type: boolean
+        hasAdaptedBathroom:
+          type: boolean
+        accessibilityNotes:
+          type: string
+        residentialDetails:
+          $ref: "#/components/schemas/ResidentialDetailsResponse"
+        commercialDetails:
+          $ref: "#/components/schemas/CommercialDetailsResponse"
+        industrialDetails:
+          $ref: "#/components/schemas/IndustrialDetailsResponse"
+        agriculturalDetails:
+          $ref: "#/components/schemas/AgriculturalDetailsResponse"
+        outdoorAreas:
+          type: array
+          items:
+            $ref: "#/components/schemas/PropertyOutdoorAreaResponse"
+        amenities:
+          type: array
+          items:
+            $ref: "#/components/schemas/PropertyAmenityResponse"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - city
+        - country
+        - createdAt
+        - identifier
+        - postalCode
+        - propertyCategory
+        - propertyType
+        - status
+        - street
+    ResidentialDetailsResponse:
+      type: object
+      properties:
+        bedrooms:
+          type: integer
+          format: int32
+        bathrooms:
+          type: integer
+          format: int32
+        furnished:
+          type: boolean
+        petPolicy:
+          type: string
+    UpdatePhotoRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        notes:
+          type: string
+    UpdatePaymentRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+          exclusiveMinimum: 0
+        currency:
+          type: string
+        dueDate:
+          type: string
+          format: date
+        status:
+          type: string
+          description: Current payment collection status
+          enum:
+            - PENDING
+            - PARTIALLY_PAID
+            - PAID
+            - OVERDUE
+            - CANCELLED
+        notes:
+          type: string
+    ContractSummary:
+      type: object
+      properties:
+        identifier:
+          type: string
+        property:
+          $ref: "#/components/schemas/PropertySummary"
+        primaryTenant:
+          $ref: "#/components/schemas/TenantSummary"
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        rentAmount:
+          type: number
+        status:
+          type: string
+          description: Current lifecycle status of the contract
+          enum:
+            - DRAFT
+            - ACTIVE
+            - EXPIRED
+            - TERMINATED
+            - PENDING_SIGNATURE
+      required:
+        - identifier
+        - property
+        - rentAmount
+        - startDate
+        - status
+    DocumentResponse:
+      type: object
+      description: Uploaded document metadata with download URL
+      properties:
+        identifier:
+          type: string
+          description: Unique document identifier
+          example: doc_01HZQX7V8B3K5M2N4P6R9T0W
+        entityType:
+          type: string
+        entityIdentifier:
+          type: string
+        fileKey:
+          type: string
+        fileName:
+          type: string
+        fileSize:
+          type: integer
+          format: int64
+        mimeType:
+          type: string
+        title:
+          type: string
+        notes:
+          type: string
+        uploadedAt:
+          type: string
+          format: date-time
+        downloadUrl:
+          type: string
+      required:
+        - entityIdentifier
+        - entityType
+        - fileKey
+        - fileName
+        - identifier
+        - uploadedAt
+    PaymentReceivalResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        receivalDate:
+          type: string
+          format: date
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - amount
+        - createdAt
+        - currency
+        - identifier
+        - receivalDate
+    PaymentResponse:
+      type: object
+      description: Payment record with amount, due date, status, and linked contract
+      properties:
+        identifier:
+          type: string
+          description: Unique payment identifier
+          example: pay_01HZQX7V8B3K5M2N4P6R9T0W
+        contract:
+          $ref: "#/components/schemas/ContractSummary"
+        tenant:
+          $ref: "#/components/schemas/TenantSummary"
+        property:
+          $ref: "#/components/schemas/PropertySummary"
+        amount:
+          type: number
+        currency:
+          type: string
+        receivedAmount:
+          type: number
+        balance:
+          type: number
+        paymentDate:
+          type: string
+          format: date
+        dueDate:
+          type: string
+          format: date
+        status:
+          type: string
+          description: Current payment collection status
+          enum:
+            - PENDING
+            - PARTIALLY_PAID
+            - PAID
+            - OVERDUE
+            - CANCELLED
+        notes:
+          type: string
+        proofOfPayment:
+          $ref: "#/components/schemas/DocumentResponse"
+        receipt:
+          $ref: "#/components/schemas/DocumentResponse"
+        receivals:
+          type: array
+          items:
+            $ref: "#/components/schemas/PaymentReceivalResponse"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - amount
+        - createdAt
+        - currency
+        - dueDate
+        - identifier
+        - receivals
+        - status
+    TenantSummary:
+      type: object
+      properties:
+        identifier:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+      required:
+        - firstName
+        - identifier
+        - lastName
+    UpdatePaymentReceivalRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+        receivalDate:
+          type: string
+          format: date
+        notes:
+          type: string
+      required:
+        - amount
+        - receivalDate
+    MarkPaidRequest:
+      type: object
+      properties:
+        paymentDate:
+          type: string
+          format: date
+        notes:
+          type: string
+      required:
+        - paymentDate
+    UpdatePaymentInstructionRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        paymentMethod:
+          type: string
+          description: Supported payment method for rent collection
+          enum:
+            - BANK_TRANSFER
+            - PAYPAL
+            - CASH
+            - CHECK
+            - DIRECT_DEBIT
+            - IDEAL_WERO
+            - ZELLE
+            - OTHER
+        bankName:
+          type: string
+        accountHolderName:
+          type: string
+        iban:
+          type: string
+          maxLength: 34
+        bicSwift:
+          type: string
+          maxLength: 11
+        accountNumber:
+          type: string
+        routingNumber:
+          type: string
+        paymentReference:
+          type: string
+        additionalDetails:
+          type: string
+        isDefault:
+          type: boolean
+    PaymentInstructionResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        paymentMethod:
+          type: string
+        bankName:
+          type: string
+        accountHolderName:
+          type: string
+        iban:
+          type: string
+        bicSwift:
+          type: string
+        accountNumber:
+          type: string
+        routingNumber:
+          type: string
+        paymentReference:
+          type: string
+        additionalDetails:
+          type: string
+        isDefault:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - createdAt
+        - identifier
+        - name
+        - paymentMethod
+    UpdateExpenseRequest:
+      type: object
+      properties:
+        category:
+          type: string
+          description: Category of the property-related expense
+          enum:
+            - MAINTENANCE
+            - REPAIR
+            - UTILITY
+            - TAX
+            - INSURANCE
+            - LEGAL
+            - MARKETING
+            - CLEANING
+            - LANDSCAPING
+            - PROPERTY_MANAGEMENT
+            - FEES
+            - PROPERTY_TAX
+            - OTHER
+        amount:
+          type: number
+          exclusiveMinimum: 0
+        currency:
+          type: string
+        expenseDate:
+          type: string
+          format: date
+        description:
+          type: string
+          maxLength: 500
+          minLength: 1
+        notes:
+          type: string
+    ExpenseResponse:
+      type: object
+      description: Property expense record with category, amount, and supporting documents
+      properties:
+        identifier:
+          type: string
+          description: Unique expense identifier
+          example: exp_01HZQX7V8B3K5M2N4P6R9T0W
+        property:
+          $ref: "#/components/schemas/PropertySummary"
+        category:
+          type: string
+          description: Category of the property-related expense
+          enum:
+            - MAINTENANCE
+            - REPAIR
+            - UTILITY
+            - TAX
+            - INSURANCE
+            - LEGAL
+            - MARKETING
+            - CLEANING
+            - LANDSCAPING
+            - PROPERTY_MANAGEMENT
+            - FEES
+            - PROPERTY_TAX
+            - OTHER
+        amount:
+          type: number
+        currency:
+          type: string
+        expenseDate:
+          type: string
+          format: date
+        description:
+          type: string
+        notes:
+          type: string
+        documents:
+          type: array
+          items:
+            $ref: "#/components/schemas/DocumentResponse"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - amount
+        - category
+        - createdAt
+        - currency
+        - documents
+        - expenseDate
+        - identifier
+    UpdateDocumentRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        notes:
+          type: string
+    UpdateContractRequest:
+      type: object
+      properties:
+        propertyIdentifier:
+          type: string
+        contractType:
+          type: string
+          description: Type of rental contract
+          enum:
+            - FIXED_TERM
+            - INDEFINITE
+            - FURNISHED
+            - UNFURNISHED
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        signedDate:
+          type: string
+          format: date
+        rentAmount:
+          type: number
+        depositAmount:
+          type: number
+          minimum: 0
+        securityDeposit:
+          type: number
+          minimum: 0
+        rentAmountCurrency:
+          type: string
+        depositAmountCurrency:
+          type: string
+        securityDepositCurrency:
+          type: string
+        paymentFrequency:
+          type: string
+          description: How often rent payments are due
+          enum:
+            - MONTHLY
+            - QUARTERLY
+            - ANNUALLY
+        paymentDueDay:
+          type: integer
+          format: int32
+        autoRenewal:
+          type: boolean
+        renewalNoticeDays:
+          type: integer
+          format: int32
+        terminationNoticeDays:
+          type: integer
+          format: int32
+        lateFeePercentage:
+          type: number
+          minimum: 0
+        termsAndConditions:
+          type: string
+        notes:
+          type: string
+        countryMetadata:
+          type: object
+          additionalProperties: {}
+        endDateAfterStartDate:
+          type: boolean
+      required:
+        - contractType
+        - countryMetadata
+        - paymentFrequency
+        - propertyIdentifier
+        - rentAmount
+        - startDate
+    AlContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            kontrataTip:
+              type: string
+            energyCertificateRating:
+              type: string
+            garanciaAmount:
+              type: number
+            garanciaMonths:
+              type: integer
+              format: int32
+            tatimoreRegistered:
+              type: boolean
+            shpenzimet:
+              type: number
+    ArContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            tipoContrato:
+              type: string
+            depositoAmount:
+              type: number
+            depositoMonths:
+              type: integer
+              format: int32
+            registroPropiedad:
+              type: boolean
+            expensasAmount:
+              type: number
+            contratoInscripcion:
+              type: string
+            actualizacionIpcApplicable:
+              type: boolean
+    AtContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            mietrechtsgesetzCategory:
+              type: string
+            energyCertificateRating:
+              type: string
+            betriebskostenAmount:
+              type: number
+            kautionMonths:
+              type: integer
+              format: int32
+            kautionAmount:
+              type: number
+            befristung:
+              type: boolean
+            richtwertmiete:
+              type: number
+            energyCertificateNumber:
+              type: string
+    BaContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            ugovorType:
+              type: string
+            entityRegion:
+              type: string
+            depozitAmount:
+              type: number
+            depozitMonths:
+              type: integer
+              format: int32
+            poreskaUpravaRegistered:
+              type: boolean
+            rezijeAmount:
+              type: number
+    BeContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            region:
+              type: string
+            indexationBase:
+              type: number
+            energyCertificateRating:
+              type: string
+            energyCertificateNumber:
+              type: string
+            registrationNumber:
+              type: string
+            depositMonths:
+              type: integer
+              format: int32
+            depositType:
+              type: string
+            indexationBaseMonth:
+              type: string
+    BgContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            contractType:
+              type: string
+            energyCertificateRating:
+              type: string
+            depozitAmount:
+              type: number
+            depozitMonths:
+              type: integer
+              format: int32
+            notarizedContract:
+              type: boolean
+            obshtiRazhodiAmount:
+              type: number
+    BrContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            tipoLocacao:
+              type: string
+            caucaoAmount:
+              type: number
+            caucaoMonths:
+              type: integer
+              format: int32
+            iptuIncluded:
+              type: boolean
+            condominioAmount:
+              type: number
+            registroImobiliario:
+              type: string
+            seguroFianca:
+              type: boolean
+    CaContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            province:
+              type: string
+            rentControlled:
+              type: boolean
+            securityDepositAmount:
+              type: number
+            securityDepositMonths:
+              type: integer
+              format: int32
+            tenancyBoardRegistered:
+              type: boolean
+            energyRating:
+              type: string
+    ChContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            canton:
+              type: string
+            mietrechtRegion:
+              type: string
+            nebenkostenAmount:
+              type: number
+            kautionMonths:
+              type: integer
+              format: int32
+            kautionAmount:
+              type: number
+            referenzzinssatzApplicable:
+              type: boolean
+            referenzzinssatz:
+              type: number
+    ClContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            tipoArriendo:
+              type: string
+            garantiaAmount:
+              type: number
+            garantiaMonths:
+              type: integer
+              format: int32
+            siiRegistered:
+              type: boolean
+            gastosComunes:
+              type: number
+            rolPropiedad:
+              type: string
+            reajusteIpcApplicable:
+              type: boolean
+    CoContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            tipoContrato:
+              type: string
+            depositoAmount:
+              type: number
+            depositoMonths:
+              type: integer
+              format: int32
+            registraduriaInscribed:
+              type: boolean
+            administracionAmount:
+              type: number
+            matriculaInmobiliaria:
+              type: string
+            estratoApplicable:
+              type: boolean
+    ContractCountryMetadata: {}
+    ContractPartyResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        tenant:
+          $ref: "#/components/schemas/TenantSummary"
+        role:
+          type: string
+          description: Role of a party within a rental contract
+          enum:
+            - PRIMARY_TENANT
+            - GUARANTOR
+            - COSIGNER
+            - EXTRA_TENANT
+      required:
+        - identifier
+        - role
+    ContractResponse:
+      type: object
+      description: Rental contract details including parties, payment terms, and status
+      properties:
+        identifier:
+          type: string
+          description: Unique contract identifier
+          example: ctr_01HZQX7V8B3K5M2N4P6R9T0W
+        property:
+          $ref: "#/components/schemas/PropertySummary"
+        parties:
+          type: array
+          items:
+            $ref: "#/components/schemas/ContractPartyResponse"
+        primaryTenant:
+          $ref: "#/components/schemas/TenantSummary"
+        contractType:
+          type: string
+          description: Type of rental contract
+          enum:
+            - FIXED_TERM
+            - INDEFINITE
+            - FURNISHED
+            - UNFURNISHED
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        signedDate:
+          type: string
+          format: date
+        rentAmount:
+          type: number
+        depositAmount:
+          type: number
+        securityDeposit:
+          type: number
+        rentAmountCurrency:
+          type: string
+        depositAmountCurrency:
+          type: string
+        securityDepositCurrency:
+          type: string
+        paymentFrequency:
+          type: string
+          description: How often rent payments are due
+          enum:
+            - MONTHLY
+            - QUARTERLY
+            - ANNUALLY
+        paymentDueDay:
+          type: integer
+          format: int32
+        autoRenewal:
+          type: boolean
+        renewalNoticeDays:
+          type: integer
+          format: int32
+        terminationNoticeDays:
+          type: integer
+          format: int32
+        lateFeePercentage:
+          type: number
+        status:
+          type: string
+          description: Current lifecycle status of the contract
+          enum:
+            - DRAFT
+            - ACTIVE
+            - EXPIRED
+            - TERMINATED
+            - PENDING_SIGNATURE
+        termsAndConditions:
+          type: string
+        notes:
+          type: string
+        countryCode:
+          type: string
+        countryMetadata:
+          oneOf:
+            - $ref: "#/components/schemas/AlContractMetadata"
+            - $ref: "#/components/schemas/ArContractMetadata"
+            - $ref: "#/components/schemas/AtContractMetadata"
+            - $ref: "#/components/schemas/BaContractMetadata"
+            - $ref: "#/components/schemas/BeContractMetadata"
+            - $ref: "#/components/schemas/BgContractMetadata"
+            - $ref: "#/components/schemas/BrContractMetadata"
+            - $ref: "#/components/schemas/CaContractMetadata"
+            - $ref: "#/components/schemas/ChContractMetadata"
+            - $ref: "#/components/schemas/ClContractMetadata"
+            - $ref: "#/components/schemas/CoContractMetadata"
+            - $ref: "#/components/schemas/CyContractMetadata"
+            - $ref: "#/components/schemas/CzContractMetadata"
+            - $ref: "#/components/schemas/DeContractMetadata"
+            - $ref: "#/components/schemas/DkContractMetadata"
+            - $ref: "#/components/schemas/EeContractMetadata"
+            - $ref: "#/components/schemas/EsContractMetadata"
+            - $ref: "#/components/schemas/FiContractMetadata"
+            - $ref: "#/components/schemas/FrContractMetadata"
+            - $ref: "#/components/schemas/GenericContractMetadata"
+            - $ref: "#/components/schemas/GrContractMetadata"
+            - $ref: "#/components/schemas/HrContractMetadata"
+            - $ref: "#/components/schemas/HuContractMetadata"
+            - $ref: "#/components/schemas/IeContractMetadata"
+            - $ref: "#/components/schemas/ItContractMetadata"
+            - $ref: "#/components/schemas/LtContractMetadata"
+            - $ref: "#/components/schemas/LuContractMetadata"
+            - $ref: "#/components/schemas/LvContractMetadata"
+            - $ref: "#/components/schemas/MeContractMetadata"
+            - $ref: "#/components/schemas/MkContractMetadata"
+            - $ref: "#/components/schemas/MtContractMetadata"
+            - $ref: "#/components/schemas/MxContractMetadata"
+            - $ref: "#/components/schemas/NlContractMetadata"
+            - $ref: "#/components/schemas/NoContractMetadata"
+            - $ref: "#/components/schemas/PeContractMetadata"
+            - $ref: "#/components/schemas/PlContractMetadata"
+            - $ref: "#/components/schemas/PtContractMetadata"
+            - $ref: "#/components/schemas/RoContractMetadata"
+            - $ref: "#/components/schemas/RsContractMetadata"
+            - $ref: "#/components/schemas/SeContractMetadata"
+            - $ref: "#/components/schemas/SiContractMetadata"
+            - $ref: "#/components/schemas/SkContractMetadata"
+            - $ref: "#/components/schemas/UkContractMetadata"
+            - $ref: "#/components/schemas/UsContractMetadata"
+            - $ref: "#/components/schemas/UyContractMetadata"
+            - $ref: "#/components/schemas/XkContractMetadata"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - autoRenewal
+        - contractType
+        - createdAt
+        - identifier
+        - parties
+        - paymentFrequency
+        - renewalNoticeDays
+        - rentAmount
+        - rentAmountCurrency
+        - startDate
+        - status
+        - terminationNoticeDays
+    CyContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            tenancyType:
+              type: string
+            epcRating:
+              type: string
+            depositAmount:
+              type: number
+            depositMonths:
+              type: integer
+              format: int32
+            rentTribunalEligible:
+              type: boolean
+            commonExpensesAmount:
+              type: number
+            municipalityRegistration:
+              type: string
+    CzContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            najemniSmlouvaType:
+              type: string
+            energyCertificateRating:
+              type: string
+            kauceAmount:
+              type: number
+            kauceMonths:
+              type: integer
+              format: int32
+            sluzbyAmount:
+              type: number
+            regulatedRent:
+              type: boolean
+    DeContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            mietspiegelReference:
+              type: string
+            mietpreisbremseApplicable:
+              type: boolean
+            rentType:
+              type: string
+            warmRent:
+              type: boolean
+            nebenkostenAmount:
+              type: number
+            kautionAmount:
+              type: number
+            kautionMonths:
+              type: integer
+              format: int32
+            energyCertificateType:
+              type: string
+            energyCertificateRating:
+              type: string
+            energyCertificateValue:
+              type: number
+    DkContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            lejelovType:
+              type: string
+            energyLabel:
+              type: string
+            depositumAmount:
+              type: number
+            depositumMonths:
+              type: integer
+              format: int32
+            forudbetalingAmount:
+              type: number
+            forudbetalingMonths:
+              type: integer
+              format: int32
+            huslejenaevnEligible:
+              type: boolean
+    EeContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            uuerilepinguType:
+              type: string
+            energyCertificateRating:
+              type: string
+            tagatisrahaAmount:
+              type: number
+            tagatisrahaMonths:
+              type: integer
+              format: int32
+            kinnistusraamatRegistered:
+              type: boolean
+            kommunaalkuludAmount:
+              type: number
+    EsContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            viviendaHabitual:
+              type: boolean
+            zonaTensionada:
+              type: boolean
+            referencePriceIndex:
+              type: number
+            fianzaAmount:
+              type: number
+            fianzaMonths:
+              type: integer
+              format: int32
+            energyCertificateRating:
+              type: string
+            garantiaAdicionalAmount:
+              type: number
+            garantiaAdicionalMonths:
+              type: integer
+              format: int32
+    FiContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            vuokrasopimustyyppi:
+              type: string
+            energyCertificateRating:
+              type: string
+            vakuusAmount:
+              type: number
+            vakuusMonths:
+              type: integer
+              format: int32
+            araRestricted:
+              type: boolean
+    FrContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            referenceRentPrice:
+              type: number
+            maxRentPrice:
+              type: number
+            zoneTendue:
+              type: boolean
+            loiAlurCompliant:
+              type: boolean
+            diagnosticDpe:
+              type: string
+            leadPaintDiagnostic:
+              type: boolean
+            asbestosDiagnostic:
+              type: boolean
+            gasDiagnostic:
+              type: boolean
+            electricityDiagnostic:
+              type: boolean
+            erpDiagnostic:
+              type: boolean
+            furnishedLease:
+              type: boolean
+            cautionAmount:
+              type: number
+            cautionMonths:
+              type: integer
+              format: int32
+    GenericContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            energyCertificateRating:
+              type: string
+            energyCertificateNumber:
+              type: string
+            contractRegistrationNumber:
+              type: string
+            maxDepositMonths:
+              type: number
+            rentIndexationApplicable:
+              type: boolean
+            notes:
+              type: string
+    GrContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            misthosisType:
+              type: string
+            energyCertificateRating:
+              type: string
+            eggysisAmount:
+              type: number
+            eggysisMonths:
+              type: integer
+              format: int32
+            enoikiostasiProtected:
+              type: boolean
+            koinochristaAmount:
+              type: number
+            taxisRegistrationNumber:
+              type: string
+    HrContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            ugovorType:
+              type: string
+            energyCertificateRating:
+              type: string
+            jamcevinaAmount:
+              type: number
+            jamcevinaMonths:
+              type: integer
+              format: int32
+            poreznaUprava:
+              type: boolean
+            pricuvaAmount:
+              type: number
+    HuContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            berletiszerzodesType:
+              type: string
+            energyCertificateRating:
+              type: string
+            kaucioAmount:
+              type: number
+            kaucioMonths:
+              type: integer
+              format: int32
+            kozosKoltsegAmount:
+              type: number
+            lakberApplicable:
+              type: boolean
+    IeContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            tenancyType:
+              type: string
+            berRating:
+              type: string
+            depositAmount:
+              type: number
+            depositMonths:
+              type: integer
+              format: int32
+            rtbRegistered:
+              type: boolean
+            rentPressureZone:
+              type: boolean
+            marketRentAmount:
+              type: number
+            berCertificateNumber:
+              type: string
+    ItContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            contractCategory:
+              type: string
+            cedolareSecca:
+              type: boolean
+            cedolareRate:
+              type: number
+            registrationNumber:
+              type: string
+            apeRating:
+              type: string
+            depositoAmount:
+              type: number
+            depositoMonths:
+              type: integer
+              format: int32
+    LtContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            nuomosSutartisType:
+              type: string
+            energyCertificateRating:
+              type: string
+            uzstatasAmount:
+              type: number
+            uzstatasMonths:
+              type: integer
+              format: int32
+            registruCentras:
+              type: boolean
+            komunaliniaiAmount:
+              type: number
+    LuContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            bailType:
+              type: string
+            energyCertificateRating:
+              type: string
+            cautionAmount:
+              type: number
+            cautionMonths:
+              type: integer
+              format: int32
+            loyerMaxApplicable:
+              type: boolean
+            chargesAmount:
+              type: number
+            registrationNumber:
+              type: string
+    LvContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            iresLigumsType:
+              type: string
+            energyCertificateRating:
+              type: string
+            drosibaNaudaAmount:
+              type: number
+            drosibaNaudaMonths:
+              type: integer
+              format: int32
+            zemesgramataRegistered:
+              type: boolean
+            komunalieAmount:
+              type: number
+    MeContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            ugovorType:
+              type: string
+            energyCertificateRating:
+              type: string
+            depozitAmount:
+              type: number
+            depozitMonths:
+              type: integer
+              format: int32
+            poreskaUpravaRegistered:
+              type: boolean
+            komunalijeAmount:
+              type: number
+    MkContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            dogovorType:
+              type: string
+            energyCertificateRating:
+              type: string
+            depozitAmount:
+              type: number
+            depozitMonths:
+              type: integer
+              format: int32
+            ujpRegistered:
+              type: boolean
+            rezhiskiTroskoviAmount:
+              type: number
+    MtContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            tenancyType:
+              type: string
+            epcRating:
+              type: string
+            depositAmount:
+              type: number
+            depositMonths:
+              type: integer
+              format: int32
+            housingAuthorityRegistered:
+              type: boolean
+            groundRent:
+              type: number
+            rentalAgreementNumber:
+              type: string
+    MxContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            estadoCode:
+              type: string
+            contratoType:
+              type: string
+            depositoAmount:
+              type: number
+            depositoMonths:
+              type: integer
+              format: int32
+            profecoRegistered:
+              type: boolean
+            mantenimientoAmount:
+              type: number
+    NlContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            sectorClassification:
+              type: string
+            wwsPoints:
+              type: integer
+              format: int32
+            huurcommissieEligible:
+              type: boolean
+            allInRent:
+              type: boolean
+            serviceGas:
+              type: boolean
+            serviceWater:
+              type: boolean
+            serviceElectricity:
+              type: boolean
+            serviceInternet:
+              type: boolean
+            serviceCleaning:
+              type: boolean
+            totalServiceCostsAmount:
+              type: number
+            huurtoeslagEligible:
+              type: boolean
+            liberalizationThreshold:
+              type: number
+            energyLabel:
+              type: string
+    NoContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            husleielovType:
+              type: string
+            energyLabel:
+              type: string
+            depositumskontoAmount:
+              type: number
+            depositumskontoMonths:
+              type: integer
+              format: int32
+            husleietvistnemnda:
+              type: boolean
+            kommunalBolig:
+              type: boolean
+    PeContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            tipoContrato:
+              type: string
+            garantiaAmount:
+              type: number
+            garantiaMonths:
+              type: integer
+              format: int32
+            sunarpRegistered:
+              type: boolean
+            mantenimientoAmount:
+              type: number
+            partidaRegistral:
+              type: string
+    PlContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            rodzajNajmu:
+              type: string
+            energyCertificateRating:
+              type: string
+            kaucjaAmount:
+              type: number
+            kaucjaMonths:
+              type: integer
+              format: int32
+            indexationApplicable:
+              type: boolean
+            energyCertificateNumber:
+              type: string
+            czynszdodatkowy:
+              type: boolean
+    PtContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            nrauRegime:
+              type: string
+            oldLeaseRegime:
+              type: boolean
+            updateCoefficient:
+              type: number
+            imiReference:
+              type: string
+            energyCertificateRating:
+              type: string
+    RoContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            contractType:
+              type: string
+            energyCertificateRating:
+              type: string
+            garantieAmount:
+              type: number
+            garantieMonths:
+              type: integer
+              format: int32
+            anafRegistered:
+              type: boolean
+            intretinereAmount:
+              type: number
+    RsContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            ugovorType:
+              type: string
+            energyCertificateRating:
+              type: string
+            depozitAmount:
+              type: number
+            depozitMonths:
+              type: integer
+              format: int32
+            poreskaUpravaRegistered:
+              type: boolean
+            komunalniTroskoviAmount:
+              type: number
+    SeContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            hyrestyp:
+              type: string
+            bruksvardessystemApplicable:
+              type: boolean
+            energyDeclarationRating:
+              type: string
+            depositAmount:
+              type: number
+            depositMonths:
+              type: integer
+              format: int32
+            hyresnamndenEligible:
+              type: boolean
+    SiContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            najemnaPogodbaTip:
+              type: string
+            energyCertificateRating:
+              type: string
+            varscinsAmount:
+              type: number
+            varscinsMonths:
+              type: integer
+              format: int32
+            neprofitnoStanovanje:
+              type: boolean
+            rezervniFondAmount:
+              type: number
+    SkContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            najomnaZmluvaType:
+              type: string
+            energyCertificateRating:
+              type: string
+            kauciaAmount:
+              type: number
+            kauciaMonths:
+              type: integer
+              format: int32
+            poplatkyAmount:
+              type: number
+            regulatedRent:
+              type: boolean
+    UkContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            tenancyType:
+              type: string
+            depositScheme:
+              type: string
+            epcRating:
+              type: string
+            rightToRentChecked:
+              type: boolean
+            gasSafetyCertificate:
+              type: boolean
+            electricalSafetyCertificate:
+              type: boolean
+            depositAmount:
+              type: number
+    UsContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            state:
+              type: string
+            rentControlled:
+              type: boolean
+            rentControlJurisdiction:
+              type: string
+            section8Eligible:
+              type: boolean
+            leadPaintDisclosure:
+              type: boolean
+            securityDepositLimit:
+              type: number
+            securityDepositMonths:
+              type: integer
+              format: int32
+    UyContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            garantiaType:
+              type: string
+            tipoContrato:
+              type: string
+            depositoAmount:
+              type: number
+            depositoMonths:
+              type: integer
+              format: int32
+            dgiRegistered:
+              type: boolean
+            gastosComunes:
+              type: number
+            padronNumero:
+              type: string
+    XkContractMetadata:
+      allOf:
+        - $ref: "#/components/schemas/ContractCountryMetadata"
+        - type: object
+          properties:
+            kontrataTip:
+              type: string
+            depozitAmount:
+              type: number
+            depozitMonths:
+              type: integer
+              format: int32
+            tatRegistered:
+              type: boolean
+            shpenzimetKomunale:
+              type: number
+            komunaRegistration:
+              type: string
+    UpdateRentPeriodRequest:
+      type: object
+      properties:
+        rentAmount:
+          type: number
+          minimum: 0.01
+        effectiveFrom:
+          type: string
+          format: date
+        notes:
+          type: string
+      required:
+        - effectiveFrom
+        - rentAmount
+    RentPeriodResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        rentAmount:
+          type: number
+        currency:
+          type: string
+        effectiveFrom:
+          type: string
+          format: date
+        effectiveTo:
+          type: string
+          format: date
+        notes:
+          type: string
+        percentageChange:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - createdAt
+        - currency
+        - effectiveFrom
+        - identifier
+        - rentAmount
+    UpdateContractPaymentInstructionRequest:
+      type: object
+      properties:
+        paymentInstructionIdentifier:
+          type: string
+        isCustom:
+          type: boolean
+        customName:
+          type: string
+        customDescription:
+          type: string
+        customPaymentMethod:
+          type: string
+        customBankName:
+          type: string
+        customAccountHolderName:
+          type: string
+        customIban:
+          type: string
+          maxLength: 34
+        customBicSwift:
+          type: string
+          maxLength: 11
+        customAccountNumber:
+          type: string
+        customRoutingNumber:
+          type: string
+        customPaymentReference:
+          type: string
+        customAdditionalDetails:
+          type: string
+        effectiveFrom:
+          type: string
+          format: date
+        notes:
+          type: string
+      required:
+        - effectiveFrom
+    ContractPaymentInstructionResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        paymentInstructionIdentifier:
+          type: string
+        isCustom:
+          type: boolean
+        name:
+          type: string
+        description:
+          type: string
+        paymentMethod:
+          type: string
+        bankName:
+          type: string
+        accountHolderName:
+          type: string
+        iban:
+          type: string
+        bicSwift:
+          type: string
+        accountNumber:
+          type: string
+        routingNumber:
+          type: string
+        paymentReference:
+          type: string
+        additionalDetails:
+          type: string
+        effectiveFrom:
+          type: string
+          format: date
+        effectiveTo:
+          type: string
+          format: date
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - createdAt
+        - identifier
+    UpdateProfileRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+          minLength: 1
+        lastName:
+          type: string
+          minLength: 1
+      required:
+        - firstName
+        - lastName
+    UserResponse:
+      type: object
+      description: Team member details including role and verification status
+      properties:
+        identifier:
+          type: string
+          description: Unique user identifier
+          example: usr_01HZQX7V8B3K5M2N4P6R9T0W
+        teamIdentifier:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        role:
+          type: string
+        emailVerified:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - createdAt
+        - email
+        - emailVerified
+        - firstName
+        - identifier
+        - lastName
+        - role
+        - teamIdentifier
+    SwitchTeamRequest:
+      type: object
+      properties:
+        teamIdentifier:
+          type: string
+      required:
+        - teamIdentifier
+    VerifyPhoneRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          maxLength: 6
+          minLength: 6
+      required:
+        - code
+    CreateTenantRequest:
+      type: object
+      description: Request to create a new tenant
+      properties:
+        firstName:
+          type: string
+          minLength: 1
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          pattern: ^\+[1-9]\d{1,14}$
+        taxNumber:
+          type: string
+        idNumber:
+          type: string
+        additionalInfo:
+          type: string
+      required:
+        - firstName
+    CreateTenantAddressRequest:
+      type: object
+      properties:
+        street:
+          type: string
+          minLength: 1
+        city:
+          type: string
+          minLength: 1
+        postalCode:
+          type: string
+        country:
+          type: string
+          minLength: 1
+        addressType:
+          type: string
+          description: Purpose or classification of the tenant address
+          enum:
+            - CURRENT
+            - MAILING
+            - RELATIVE
+            - WORK
+            - HISTORIC
+        status:
+          type: string
+          description: Whether the address is currently in use
+          enum:
+            - ACTIVE
+            - INACTIVE
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        geocodeAccuracy:
+          type: string
+      required:
+        - addressType
+        - city
+        - country
+        - street
+    LinkTenantToPropertyRequest:
+      type: object
+      properties:
+        propertyIdentifier:
+          type: string
+        movedInAt:
+          type: string
+          format: date-time
+      required:
+        - propertyIdentifier
+    TransferOwnershipRequest:
+      type: object
+      properties:
+        newOwnerIdentifier:
+          type: string
+      required:
+        - newOwnerIdentifier
+    CreateInvitationRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+        role:
+          type: string
+          description: Role assigned to a team member determining access level
+          enum:
+            - TEAM_ADMIN
+            - TEAM_EDITOR
+            - TEAM_VIEWER
+      required:
+        - email
+        - role
+    InvitationResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        email:
+          type: string
+        teamIdentifier:
+          type: string
+        teamName:
+          type: string
+        role:
+          type: string
+        inviterName:
+          type: string
+        invitedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        invitationUrl:
+          type: string
+        isExpired:
+          type: boolean
+        isAccepted:
+          type: boolean
+      required:
+        - email
+        - invitationUrl
+        - invitedAt
+        - isAccepted
+        - isExpired
+        - role
+        - teamIdentifier
+        - teamName
+        - token
+    ValidateInvitationCodeResponse:
+      type: object
+      properties:
+        valid:
+          type: boolean
+      required:
+        - valid
+    CreatePropertyRequest:
+      type: object
+      description: Request to create a new property
+      properties:
+        propertyCategory:
+          type: string
+          description: High-level property classification
+          enum:
+            - RESIDENTIAL
+            - COMMERCIAL
+            - INDUSTRIAL
+            - AGRICULTURAL
+            - MIXED_USE
+        propertyType:
+          type: string
+          description: Specific property type within a category
+          enum:
+            - APARTMENT
+            - HOUSE
+            - STUDIO
+            - ROOM
+            - VILLA
+            - TOWNHOUSE
+            - OTHER_RESIDENTIAL
+            - OFFICE
+            - RETAIL
+            - RESTAURANT
+            - HOTEL
+            - SHOWROOM
+            - AUTO_DEALERSHIP
+            - SNACKBAR
+            - CAFE
+            - MOTEL
+            - BAR
+            - BED_AND_BREAKFAST
+            - OTHER_COMMERCIAL
+            - WAREHOUSE
+            - WORKSHOP
+            - FACTORY
+            - DATA_CENTER
+            - COLD_STORAGE
+            - GARAGE
+            - OTHER_INDUSTRIAL
+            - FARMLAND
+            - RANCH
+            - GREENHOUSE
+            - ORCHARD
+            - VINEYARD
+            - OTHER_AGRICULTURAL
+            - MIXED_USE
+            - COMMERCIAL
+        status:
+          type: string
+          description: Current occupancy or availability status of the property
+          enum:
+            - VACANT
+            - OCCUPIED
+            - SELF_OCCUPIED
+            - MAINTENANCE
+            - UNAVAILABLE
+            - UNDER_RENOVATION
+            - FALLOW
+            - LISTED
+        street:
+          type: string
+          minLength: 1
+        city:
+          type: string
+          minLength: 1
+        postalCode:
+          type: string
+          minLength: 1
+        country:
+          type: string
+          minLength: 1
+        latitude:
+          type: number
+        longitude:
+          type: number
+        geocodeAccuracy:
+          type: string
+        areaValue:
+          type: number
+          exclusiveMinimum: 0
+        areaUnit:
+          type: string
+        yearBuilt:
+          type: integer
+          format: int32
+        yearLastRenovated:
+          type: integer
+          format: int32
+        constructionType:
+          type: string
+        foundationType:
+          type: string
+        roofType:
+          type: string
+        wallConstruction:
+          type: string
+        flooringType:
+          type: string
+        windowType:
+          type: string
+        numberOfFloors:
+          type: integer
+          format: int32
+        structuralNotes:
+          type: string
+        energyEfficiencyRating:
+          type: string
+        energyCertificateExpiryDate:
+          type: string
+          format: date
+        heatingType:
+          type: string
+        coolingType:
+          type: string
+        hotWaterSystem:
+          type: string
+        insulationNotes:
+          type: string
+        electricityConnectionType:
+          type: string
+        electricityCapacityAmps:
+          type: integer
+          format: int32
+        waterConnectionType:
+          type: string
+        hasGasConnection:
+          type: boolean
+        sewageType:
+          type: string
+        internetConnectionType:
+          type: string
+        internetMaxSpeedMbps:
+          type: integer
+          format: int32
+        internetStatus:
+          type: string
+        parkingSpaces:
+          type: integer
+          format: int32
+        parkingType:
+          type: string
+        hasSmokeDetectors:
+          type: boolean
+        hasCoDetectors:
+          type: boolean
+        hasFireExtinguisher:
+          type: boolean
+        hasSprinklerSystem:
+          type: boolean
+        hasAlarmSystem:
+          type: boolean
+        hasSecurityCameras:
+          type: boolean
+        hasSecureEntry:
+          type: boolean
+        safetyNotes:
+          type: string
+        isWheelchairAccessible:
+          type: boolean
+        hasElevator:
+          type: boolean
+        hasStepFreeEntrance:
+          type: boolean
+        hasAdaptedBathroom:
+          type: boolean
+        accessibilityNotes:
+          type: string
+        residentialDetails:
+          $ref: "#/components/schemas/ResidentialDetailsRequest"
+        commercialDetails:
+          $ref: "#/components/schemas/CommercialDetailsRequest"
+        industrialDetails:
+          $ref: "#/components/schemas/IndustrialDetailsRequest"
+        agriculturalDetails:
+          $ref: "#/components/schemas/AgriculturalDetailsRequest"
+      required:
+        - city
+        - country
+        - postalCode
+        - propertyCategory
+        - propertyType
+        - status
+        - street
+    CreateOccupancyPeriodRequest:
+      type: object
+      properties:
+        startDate:
+          type: string
+          format: date
+        type:
+          type: string
+          description: Nature of the self-occupancy period
+          enum:
+            - PERSONAL
+            - FAMILY
+            - BUSINESS
+        endDate:
+          type: string
+          format: date
+        occupantName:
+          type: string
+          maxLength: 255
+        monthlyImputedRent:
+          type: number
+          minimum: 0
+        notes:
+          type: string
+          maxLength: 500
+      required:
+        - startDate
+        - type
+    EndOccupancyPeriodRequest:
+      type: object
+      properties:
+        endDate:
+          type: string
+          format: date
+        endReason:
+          type: string
+          description: Reason for ending the self-occupancy period
+          enum:
+            - CONVERTING_TO_RENTAL
+            - SELLING
+            - RENOVATION
+            - OTHER
+        notes:
+          type: string
+          maxLength: 500
+      required:
+        - endDate
+    CreatePropertyValuationRequest:
+      type: object
+      properties:
+        valuationType:
+          type: string
+          description: Method or source of the property valuation
+          enum:
+            - MARKET
+            - APPRAISAL
+            - TAX_ASSESSED
+            - PURCHASE
+            - INSURANCE
+            - USER_ESTIMATE
+        valuationDate:
+          type: string
+          format: date
+        amount:
+          type: number
+        currency:
+          type: string
+          minLength: 1
+        source:
+          type: string
+        notes:
+          type: string
+      required:
+        - amount
+        - currency
+        - valuationDate
+        - valuationType
+    CreatePropertyTaxRequest:
+      type: object
+      properties:
+        taxType:
+          type: string
+          description: Classification of property tax
+          enum:
+            - PROPERTY
+            - MUNICIPAL
+            - STATE
+            - LOCAL
+            - LAND
+            - SPECIAL_ASSESSMENT
+            - OTHER
+        authority:
+          type: string
+        annualAmount:
+          type: number
+        currency:
+          type: string
+          minLength: 1
+        paymentFrequency:
+          type: string
+          minLength: 1
+        dueMonths:
+          type: string
+        taxYear:
+          type: integer
+          format: int32
+          maximum: 2100
+          minimum: 1900
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        status:
+          type: string
+          description: Current status of the tax obligation
+          enum:
+            - ACTIVE
+            - EXPIRED
+            - EXEMPT
+        notes:
+          type: string
+      required:
+        - annualAmount
+        - currency
+        - paymentFrequency
+        - taxType
+    CreatePropertyInsuranceRequest:
+      type: object
+      properties:
+        insuranceType:
+          type: string
+          description: Type of insurance coverage for the property
+          enum:
+            - BUILDING
+            - LIABILITY
+            - CONTENTS
+            - FLOOD
+            - EARTHQUAKE
+            - UMBRELLA
+            - RENT_GUARANTEE
+            - OTHER
+        provider:
+          type: string
+        policyNumber:
+          type: string
+        coverageAmount:
+          type: number
+          exclusiveMinimum: 0
+        coverageAmountCurrency:
+          type: string
+        annualPremium:
+          type: number
+        annualPremiumCurrency:
+          type: string
+          minLength: 1
+        paymentFrequency:
+          type: string
+          minLength: 1
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        status:
+          type: string
+          description: Current status of the insurance policy
+          enum:
+            - ACTIVE
+            - EXPIRED
+            - CANCELLED
+        notes:
+          type: string
+      required:
+        - annualPremium
+        - annualPremiumCurrency
+        - insuranceType
+        - paymentFrequency
+    CreatePropertyFinancingRequest:
+      type: object
+      properties:
+        financingType:
+          type: string
+          description: Type of financing instrument
+          enum:
+            - MORTGAGE
+            - LEASING
+            - LOAN
+            - LINE_OF_CREDIT
+            - PRIVATE_FINANCING
+            - OTHER
+        rateType:
+          type: string
+          description: Interest rate structure of the financing
+          enum:
+            - FIXED
+            - VARIABLE
+            - INTEREST_ONLY
+            - HYBRID
+        lenderName:
+          type: string
+        loanNumber:
+          type: string
+        originalAmount:
+          type: number
+        originalAmountCurrency:
+          type: string
+          minLength: 1
+        currentBalance:
+          type: number
+          minimum: 0
+        currentBalanceCurrency:
+          type: string
+        interestRate:
+          type: number
+          minimum: 0
+        monthlyPayment:
+          type: number
+          exclusiveMinimum: 0
+        monthlyPaymentCurrency:
+          type: string
+        paymentVariable:
+          type: boolean
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        termMonths:
+          type: integer
+          format: int32
+          exclusiveMinimum: 0
+        status:
+          type: string
+          description: Current status of the financing arrangement
+          enum:
+            - ACTIVE
+            - PAID_OFF
+            - REFINANCED
+            - DEFAULTED
+        notes:
+          type: string
+      required:
+        - financingType
+        - originalAmount
+        - originalAmountCurrency
+        - rateType
+        - startDate
+    CreateFinancingPaymentRequest:
+      type: object
+      properties:
+        paymentDate:
+          type: string
+          format: date
+        totalAmount:
+          type: number
+        principalAmount:
+          type: number
+          minimum: 0
+        interestAmount:
+          type: number
+          minimum: 0
+        escrowAmount:
+          type: number
+          minimum: 0
+        extraPayment:
+          type: number
+          minimum: 0
+        currency:
+          type: string
+          minLength: 1
+        status:
+          type: string
+          description: Status of a financing installment payment
+          enum:
+            - SCHEDULED
+            - COMPLETED
+            - MISSED
+            - LATE
+        notes:
+          type: string
+        deductFromBalance:
+          type: boolean
+      required:
+        - currency
+        - paymentDate
+        - totalAmount
+    BulkCreateFinancingPaymentsRequest:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateFinancingPaymentRequest"
+          maxItems: 1000
+          minItems: 1
+      required:
+        - items
+    BulkCreateResultFinancingPaymentResponse:
+      type: object
+      properties:
+        index:
+          type: integer
+          format: int32
+        result:
+          $ref: "#/components/schemas/FinancingPaymentResponse"
+        error:
+          type: string
+        success:
+          type: boolean
+    CreatePropertyFeeRequest:
+      type: object
+      properties:
+        feeType:
+          type: string
+          description: Type of recurring property fee
+          enum:
+            - HOA
+            - MANAGEMENT
+            - MAINTENANCE_RESERVE
+            - CLEANING
+            - GARDENING
+            - SECURITY
+            - WASTE_MANAGEMENT
+            - WATER
+            - UTILITIES
+            - OTHER
+        name:
+          type: string
+        annualAmount:
+          type: number
+        currency:
+          type: string
+          minLength: 1
+        paymentFrequency:
+          type: string
+          minLength: 1
+        dueMonths:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        status:
+          type: string
+          description: Current status of the fee obligation
+          enum:
+            - ACTIVE
+            - EXPIRED
+            - CANCELLED
+        notes:
+          type: string
+      required:
+        - annualAmount
+        - currency
+        - feeType
+        - paymentFrequency
+    PropertyAmenityRequest:
+      type: object
+      properties:
+        amenityIdentifier:
+          type: string
+          minLength: 1
+        notes:
+          type: string
+      required:
+        - amenityIdentifier
+    BulkDownloadRequest:
+      type: object
+      properties:
+        documentIdentifiers:
+          type: array
+          items:
+            type: string
+          maxItems: 50
+          minItems: 0
+      required:
+        - documentIdentifiers
+    CreatePaymentRequest:
+      type: object
+      description: Request to create a new payment record
+      properties:
+        contractIdentifier:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+          minLength: 1
+        dueDate:
+          type: string
+          format: date
+        notes:
+          type: string
+        markAsPaid:
+          type: boolean
+        paymentDate:
+          type: string
+          format: date
+      required:
+        - amount
+        - contractIdentifier
+        - currency
+        - dueDate
+    CreatePaymentReceivalRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+        receivalDate:
+          type: string
+          format: date
+        notes:
+          type: string
+      required:
+        - amount
+        - receivalDate
+    BulkCreatePaymentsRequest:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreatePaymentRequest"
+          maxItems: 1000
+          minItems: 1
+      required:
+        - items
+    BulkCreateResultPaymentResponse:
+      type: object
+      properties:
+        index:
+          type: integer
+          format: int32
+        result:
+          $ref: "#/components/schemas/PaymentResponse"
+        error:
+          type: string
+        success:
+          type: boolean
+    BulkGeneratePaymentsRequest:
+      type: object
+      properties:
+        forMonth:
+          type: string
+          pattern: \d{4}-\d{2}
+      required:
+        - forMonth
+    CreatePaymentInstructionRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        paymentMethod:
+          type: string
+          description: Supported payment method for rent collection
+          enum:
+            - BANK_TRANSFER
+            - PAYPAL
+            - CASH
+            - CHECK
+            - DIRECT_DEBIT
+            - IDEAL_WERO
+            - ZELLE
+            - OTHER
+        bankName:
+          type: string
+        accountHolderName:
+          type: string
+        iban:
+          type: string
+          maxLength: 34
+        bicSwift:
+          type: string
+          maxLength: 11
+        accountNumber:
+          type: string
+        routingNumber:
+          type: string
+        paymentReference:
+          type: string
+        additionalDetails:
+          type: string
+        isDefault:
+          type: boolean
+      required:
+        - name
+        - paymentMethod
+    NotificationResponse:
+      type: object
+      description: Notification delivery record with status and engagement tracking
+      properties:
+        identifier:
+          type: string
+          description: Unique notification identifier
+          example: ntf_01HZQX7V8B3K5M2N4P6R9T0W
+        notificationType:
+          type: string
+        channel:
+          type: string
+        subject:
+          type: string
+        body:
+          type: string
+        recipientEmail:
+          type: string
+        recipientPhone:
+          type: string
+        status:
+          type: string
+        providerStatus:
+          type: string
+        providerError:
+          type: string
+        openCount:
+          type: integer
+          format: int32
+        clickCount:
+          type: integer
+          format: int32
+        firstOpenedAt:
+          type: string
+          format: date-time
+        firstClickedAt:
+          type: string
+          format: date-time
+        resentFromIdentifier:
+          type: string
+        resendReason:
+          type: string
+        demoBlocked:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        statusUpdatedAt:
+          type: string
+          format: date-time
+      required:
+        - channel
+        - clickCount
+        - createdAt
+        - demoBlocked
+        - identifier
+        - notificationType
+        - openCount
+        - status
+    GeocodeRequest:
+      type: object
+      properties:
+        street:
+          type: string
+          minLength: 1
+        city:
+          type: string
+          minLength: 1
+        postalCode:
+          type: string
+        country:
+          type: string
+          minLength: 1
+      required:
+        - city
+        - country
+        - street
+    GeocodeResponse:
+      type: object
+      properties:
+        latitude:
+          type: number
+        longitude:
+          type: number
+        accuracy:
+          type: string
+    CreateExpenseRequest:
+      type: object
+      description: Request to create a new property expense
+      properties:
+        propertyIdentifier:
+          type: string
+        category:
+          type: string
+          description: Category of the property-related expense
+          enum:
+            - MAINTENANCE
+            - REPAIR
+            - UTILITY
+            - TAX
+            - INSURANCE
+            - LEGAL
+            - MARKETING
+            - CLEANING
+            - LANDSCAPING
+            - PROPERTY_MANAGEMENT
+            - FEES
+            - PROPERTY_TAX
+            - OTHER
+        amount:
+          type: number
+        currency:
+          type: string
+          minLength: 1
+        expenseDate:
+          type: string
+          format: date
+        description:
+          type: string
+          maxLength: 500
+          minLength: 1
+        notes:
+          type: string
+      required:
+        - amount
+        - category
+        - currency
+        - description
+        - expenseDate
+        - propertyIdentifier
+    BulkCreateExpensesRequest:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateExpenseRequest"
+          maxItems: 1000
+          minItems: 1
+      required:
+        - items
+    BulkCreateResultExpenseResponse:
+      type: object
+      properties:
+        index:
+          type: integer
+          format: int32
+        result:
+          $ref: "#/components/schemas/ExpenseResponse"
+        error:
+          type: string
+        success:
+          type: boolean
+    ContractPartyRequest:
+      type: object
+      properties:
+        tenantIdentifier:
+          type: string
+        newTenant:
+          $ref: "#/components/schemas/CreateTenantRequest"
+        role:
+          type: string
+          description: Role of a party within a rental contract
+          enum:
+            - PRIMARY_TENANT
+            - GUARANTOR
+            - COSIGNER
+            - EXTRA_TENANT
+        validPartySource:
+          type: boolean
+      required:
+        - role
+    CreateContractRequest:
+      type: object
+      description: Request to create a new rental contract
+      properties:
+        propertyIdentifier:
+          type: string
+        parties:
+          type: array
+          items:
+            $ref: "#/components/schemas/ContractPartyRequest"
+          maxItems: 2147483647
+          minItems: 1
+        contractType:
+          type: string
+          description: Type of rental contract
+          enum:
+            - FIXED_TERM
+            - INDEFINITE
+            - FURNISHED
+            - UNFURNISHED
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        signedDate:
+          type: string
+          format: date
+        rentAmount:
+          type: number
+        depositAmount:
+          type: number
+          minimum: 0
+        securityDeposit:
+          type: number
+          minimum: 0
+        rentAmountCurrency:
+          type: string
+        depositAmountCurrency:
+          type: string
+        securityDepositCurrency:
+          type: string
+        paymentFrequency:
+          type: string
+          description: How often rent payments are due
+          enum:
+            - MONTHLY
+            - QUARTERLY
+            - ANNUALLY
+        paymentDueDay:
+          type: integer
+          format: int32
+        autoRenewal:
+          type: boolean
+        renewalNoticeDays:
+          type: integer
+          format: int32
+        terminationNoticeDays:
+          type: integer
+          format: int32
+        lateFeePercentage:
+          type: number
+          minimum: 0
+        termsAndConditions:
+          type: string
+        notes:
+          type: string
+        countryMetadata:
+          type: object
+          additionalProperties: {}
+        endDateAfterStartDate:
+          type: boolean
+        exactlyOnePrimaryTenant:
+          type: boolean
+      required:
+        - contractType
+        - countryMetadata
+        - parties
+        - paymentFrequency
+        - propertyIdentifier
+        - rentAmount
+        - startDate
+    AddContractPartyRequest:
+      type: object
+      properties:
+        tenantIdentifier:
+          type: string
+        newTenant:
+          $ref: "#/components/schemas/CreateTenantRequest"
+        role:
+          type: string
+          description: Role of a party within a rental contract
+          enum:
+            - PRIMARY_TENANT
+            - GUARANTOR
+            - COSIGNER
+            - EXTRA_TENANT
+        validPartySource:
+          type: boolean
+      required:
+        - role
+    ChangePrimaryTenantRequest:
+      type: object
+      properties:
+        tenantIdentifier:
+          type: string
+        newTenant:
+          $ref: "#/components/schemas/CreateTenantRequest"
+        validPartySource:
+          type: boolean
+    GeneratePaymentsRequest:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+          maximum: 24
+          minimum: 1
+        markAsPaid:
+          type: boolean
+        paymentDate:
+          type: string
+          format: date
+      required:
+        - count
+    ChangeContractStatusRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Current lifecycle status of the contract
+          enum:
+            - DRAFT
+            - ACTIVE
+            - EXPIRED
+            - TERMINATED
+            - PENDING_SIGNATURE
+        reason:
+          type: string
+      required:
+        - status
+    CreateRentPeriodRequest:
+      type: object
+      properties:
+        rentAmount:
+          type: number
+          minimum: 0.01
+        effectiveFrom:
+          type: string
+          format: date
+        notes:
+          type: string
+      required:
+        - effectiveFrom
+        - rentAmount
+    CreateContractPaymentInstructionRequest:
+      type: object
+      properties:
+        paymentInstructionIdentifier:
+          type: string
+        isCustom:
+          type: boolean
+        customName:
+          type: string
+        customDescription:
+          type: string
+        customPaymentMethod:
+          type: string
+        customBankName:
+          type: string
+        customAccountHolderName:
+          type: string
+        customIban:
+          type: string
+          maxLength: 34
+        customBicSwift:
+          type: string
+          maxLength: 11
+        customAccountNumber:
+          type: string
+        customRoutingNumber:
+          type: string
+        customPaymentReference:
+          type: string
+        customAdditionalDetails:
+          type: string
+        effectiveFrom:
+          type: string
+          format: date
+        notes:
+          type: string
+      required:
+        - effectiveFrom
+    CreateCalendarFeedRequest:
+      type: object
+      properties:
+        feedType:
+          type: string
+          description: Scope of events included in the calendar feed
+          enum:
+            - ALL_PAYMENTS
+            - CONTRACT
+            - PROPERTY_PAYMENTS
+            - TENANT_PAYMENTS
+        contractIdentifier:
+          type: string
+        propertyIdentifier:
+          type: string
+        tenantIdentifier:
+          type: string
+      required:
+        - feedType
+    CalendarFeedResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        feedType:
+          type: string
+          description: Scope of events included in the calendar feed
+          enum:
+            - ALL_PAYMENTS
+            - CONTRACT
+            - PROPERTY_PAYMENTS
+            - TENANT_PAYMENTS
+        contractIdentifier:
+          type: string
+        propertyIdentifier:
+          type: string
+        tenantIdentifier:
+          type: string
+        entityLabel:
+          type: string
+        enabled:
+          type: boolean
+        feedUrl:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - createdAt
+        - enabled
+        - feedType
+        - feedUrl
+        - identifier
+    VerifyEmailRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          maxLength: 6
+          minLength: 6
+      required:
+        - code
+    RegisterRequest:
+      type: object
+      description: Request to register a new user account
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+        firstName:
+          type: string
+          minLength: 1
+        lastName:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          maxLength: 2147483647
+          minLength: 8
+        invitationToken:
+          type: string
+        registrationInvitationCode:
+          type: string
+      required:
+        - email
+        - firstName
+        - lastName
+        - password
+    UpdateUserPreferencesRequest:
+      type: object
+      properties:
+        theme:
+          type: string
+          pattern: light|dark|system
+        language:
+          type: string
+          pattern: "[a-z]{2}"
+        timezone:
+          type: string
+        dateFormat:
+          type: string
+        currencyFormat:
+          type: string
+        emailNotifications:
+          type: boolean
+        smsNotifications:
+          type: boolean
+    UserPreferencesResponse:
+      type: object
+      properties:
+        theme:
+          type: string
+        language:
+          type: string
+        timezone:
+          type: string
+        dateFormat:
+          type: string
+        currencyFormat:
+          type: string
+        emailNotifications:
+          type: boolean
+        smsNotifications:
+          type: boolean
+      required:
+        - emailNotifications
+        - smsNotifications
+    PhoneNumberPolicyResponse:
+      type: object
+      properties:
+        policyMatrix:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      required:
+        - policyMatrix
+    PageResponseTenantResponse:
+      type: object
+      description: Paginated response wrapper with content and pagination metadata
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/TenantResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    PropertyTenantHistoryResponse:
+      type: object
+      properties:
+        property:
+          $ref: "#/components/schemas/PropertySummary"
+        movedInAt:
+          type: string
+          format: date-time
+        movedOutAt:
+          type: string
+          format: date-time
+        actionType:
+          type: string
+          description: Type of tenant-property link action
+          enum:
+            - LINKED
+            - UNLINKED
+        performedBy:
+          type: string
+        performedAt:
+          type: string
+          format: date-time
+      required:
+        - actionType
+        - performedAt
+        - property
+    RecentActivityResponse:
+      type: object
+      properties:
+        entityType:
+          type: string
+        entityIdentifier:
+          type: string
+        entityName:
+          type: string
+        action:
+          type: string
+        userName:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        description:
+          type: string
+        changedFields:
+          type: object
+          additionalProperties: {}
+        oldValues:
+          type: object
+          additionalProperties: {}
+        newValues:
+          type: object
+          additionalProperties: {}
+      required:
+        - action
+        - changedFields
+        - entityIdentifier
+        - entityName
+        - entityType
+        - newValues
+        - oldValues
+        - timestamp
+    CategoryExpenseSummary:
+      type: object
+      properties:
+        category:
+          type: string
+        total:
+          type: number
+        count:
+          type: integer
+          format: int32
+        percentage:
+          type: number
+          format: double
+      required:
+        - category
+        - count
+        - percentage
+        - total
+    PropertyFinancialSummary:
+      type: object
+      properties:
+        property:
+          $ref: "#/components/schemas/PropertySummary"
+        income:
+          type: number
+        expenses:
+          type: number
+        netProfit:
+          type: number
+        occupancyDays:
+          type: integer
+          format: int32
+      required:
+        - expenses
+        - income
+        - netProfit
+        - occupancyDays
+        - property
+    TaxSummaryResponse:
+      type: object
+      properties:
+        year:
+          type: integer
+          format: int32
+        totalIncome:
+          type: number
+        totalExpenses:
+          type: number
+        netIncome:
+          type: number
+        expensesByCategory:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryExpenseSummary"
+        properties:
+          type: array
+          items:
+            $ref: "#/components/schemas/PropertyFinancialSummary"
+        currency:
+          type: string
+      required:
+        - currency
+        - expensesByCategory
+        - netIncome
+        - properties
+        - totalExpenses
+        - totalIncome
+        - year
+    Expenses:
+      type: object
+      properties:
+        total:
+          type: number
+        byCategory:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryExpenseSummary"
+        byProperty:
+          type: array
+          items:
+            $ref: "#/components/schemas/PropertyFinancialSummary"
+      required:
+        - byCategory
+        - byProperty
+        - total
+    FinancialOverviewResponse:
+      type: object
+      properties:
+        period:
+          $ref: "#/components/schemas/Period"
+        income:
+          $ref: "#/components/schemas/Income"
+        expenses:
+          $ref: "#/components/schemas/Expenses"
+        netProfit:
+          type: number
+        currency:
+          type: string
+      required:
+        - currency
+        - expenses
+        - income
+        - netProfit
+        - period
+    Income:
+      type: object
+      properties:
+        total:
+          type: number
+        byProperty:
+          type: array
+          items:
+            $ref: "#/components/schemas/PropertyFinancialSummary"
+      required:
+        - byProperty
+        - total
+    Period:
+      type: object
+      properties:
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+      required:
+        - endDate
+        - startDate
+    DataDateRangeResponse:
+      type: object
+      properties:
+        earliestDate:
+          type: string
+          format: date
+    PropertyComparisonResponse:
+      type: object
+      properties:
+        properties:
+          type: array
+          items:
+            $ref: "#/components/schemas/PropertyData"
+        currency:
+          type: string
+      required:
+        - currency
+        - properties
+    PropertyData:
+      type: object
+      properties:
+        property:
+          $ref: "#/components/schemas/PropertySummary"
+        income:
+          type: number
+        expenses:
+          type: number
+        netProfit:
+          type: number
+      required:
+        - expenses
+        - income
+        - netProfit
+        - property
+    DataPoint:
+      type: object
+      properties:
+        period:
+          type: string
+        occupancyRate:
+          type: number
+          format: double
+        totalUnits:
+          type: integer
+          format: int32
+        occupiedUnits:
+          type: integer
+          format: int32
+      required:
+        - occupancyRate
+        - occupiedUnits
+        - period
+        - totalUnits
+    OccupancyTrendResponse:
+      type: object
+      properties:
+        dataPoints:
+          type: array
+          items:
+            $ref: "#/components/schemas/DataPoint"
+      required:
+        - dataPoints
+    IncomeTrendResponse:
+      type: object
+      properties:
+        dataPoints:
+          type: array
+          items:
+            $ref: "#/components/schemas/DataPoint"
+        currency:
+          type: string
+      required:
+        - currency
+        - dataPoints
+    Category:
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: number
+        color:
+          type: string
+      required:
+        - color
+        - name
+        - value
+    ExpenseBreakdownResponse:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/Category"
+        total:
+          type: number
+        currency:
+          type: string
+      required:
+        - categories
+        - currency
+        - total
+    RegistrationConfigResponse:
+      type: object
+      properties:
+        invitationRequired:
+          type: boolean
+      required:
+        - invitationRequired
+    EntityPrefixInfo:
+      type: object
+      properties:
+        prefix:
+          type: string
+        entity:
+          type: string
+    CurrencyInfo:
+      type: object
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        symbol:
+          type: string
+        fractionalDigits:
+          type: integer
+          format: int32
+    PageResponsePropertyResponse:
+      type: object
+      description: Paginated response wrapper with content and pagination metadata
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/PropertyResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    FinancingEntry:
+      type: object
+      properties:
+        identifier:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        financingType:
+          type: string
+        status:
+          type: string
+        lenderName:
+          type: string
+        originalAmount:
+          type: number
+        originalAmountCurrency:
+          type: string
+        interestRate:
+          type: number
+      required:
+        - financingType
+        - identifier
+        - originalAmount
+        - originalAmountCurrency
+        - startDate
+        - status
+    PropertyTimelineResponse:
+      type: object
+      properties:
+        acquisitionDate:
+          type: string
+          format: date
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/TimelineEntry"
+        financings:
+          type: array
+          items:
+            $ref: "#/components/schemas/FinancingEntry"
+      required:
+        - entries
+        - financings
+    TimelineEntry:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - SELF_OCCUPANCY
+            - CONTRACT
+            - VACANCY
+        identifier:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        description:
+          type: string
+        metadata:
+          type: string
+      required:
+        - identifier
+        - startDate
+        - type
+    PropertyFinancialSummaryResponse:
+      type: object
+      properties:
+        acquisition:
+          $ref: "#/components/schemas/PropertyAcquisitionResponse"
+        latestValuation:
+          $ref: "#/components/schemas/PropertyValuationResponse"
+        valuationHistory:
+          type: array
+          items:
+            $ref: "#/components/schemas/PropertyValuationResponse"
+        financings:
+          type: array
+          items:
+            $ref: "#/components/schemas/PropertyFinancingResponse"
+        insurances:
+          type: array
+          items:
+            $ref: "#/components/schemas/PropertyInsuranceResponse"
+        taxes:
+          type: array
+          items:
+            $ref: "#/components/schemas/PropertyTaxResponse"
+        fees:
+          type: array
+          items:
+            $ref: "#/components/schemas/PropertyFeeResponse"
+        totalFinancingBalance:
+          type: number
+        totalAnnualInsurance:
+          type: number
+        totalAnnualTaxes:
+          type: number
+        totalAnnualFees:
+          type: number
+        totalAnnualCosts:
+          type: number
+        netWorth:
+          type: number
+        currency:
+          type: string
+      required:
+        - fees
+        - financings
+        - insurances
+        - taxes
+        - valuationHistory
+    CashFlowChartData:
+      type: object
+      properties:
+        months:
+          type: array
+          items:
+            $ref: "#/components/schemas/MonthlyDataPoint"
+      required:
+        - months
+    CategorySlice:
+      type: object
+      properties:
+        category:
+          type: string
+        amount:
+          type: number
+      required:
+        - amount
+        - category
+    DataCompleteness:
+      type: object
+      properties:
+        hasPurchasePrice:
+          type: boolean
+        hasMarketValue:
+          type: boolean
+        hasMortgageInfo:
+          type: boolean
+        hasOperatingCosts:
+          type: boolean
+        hasContracts:
+          type: boolean
+        hasPayments:
+          type: boolean
+        hasExpenses:
+          type: boolean
+        completenessPercent:
+          type: integer
+          format: int32
+      required:
+        - completenessPercent
+        - hasContracts
+        - hasExpenses
+        - hasMarketValue
+        - hasMortgageInfo
+        - hasOperatingCosts
+        - hasPayments
+        - hasPurchasePrice
+    EquityChartData:
+      type: object
+      properties:
+        purchasePrice:
+          type: number
+        currentMarketValue:
+          type: number
+        mortgageBalance:
+          type: number
+    ExpenseBreakdownChartData:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategorySlice"
+        timeline:
+          type: array
+          items:
+            $ref: "#/components/schemas/ExpenseTimelineMonth"
+      required:
+        - categories
+        - timeline
+    ExpenseTimelineMonth:
+      type: object
+      properties:
+        month:
+          type: string
+        categoryAmounts:
+          type: object
+          additionalProperties:
+            type: number
+      required:
+        - categoryAmounts
+        - month
+    FutureMonthDataPoint:
+      type: object
+      properties:
+        month:
+          type: string
+        expectedIncome:
+          type: number
+        expectedExpenses:
+          type: number
+        expectedNet:
+          type: number
+      required:
+        - expectedExpenses
+        - expectedIncome
+        - expectedNet
+        - month
+    FutureTrendData:
+      type: object
+      properties:
+        months:
+          type: array
+          items:
+            $ref: "#/components/schemas/FutureMonthDataPoint"
+      required:
+        - months
+    MonthlyDataPoint:
+      type: object
+      properties:
+        month:
+          type: string
+        income:
+          type: number
+        expenses:
+          type: number
+        mortgage:
+          type: number
+        net:
+          type: number
+      required:
+        - expenses
+        - income
+        - month
+        - mortgage
+        - net
+    OccupancyChartData:
+      type: object
+      properties:
+        months:
+          type: array
+          items:
+            $ref: "#/components/schemas/OccupancyDataPoint"
+      required:
+        - months
+    OccupancyDataPoint:
+      type: object
+      properties:
+        month:
+          type: string
+        tenantOccupancyPercent:
+          type: number
+        selfOccupancyPercent:
+          type: number
+      required:
+        - month
+        - selfOccupancyPercent
+        - tenantOccupancyPercent
+    PropertyDashboardResponse:
+      type: object
+      properties:
+        summary:
+          $ref: "#/components/schemas/SummaryMetrics"
+        cashFlow:
+          $ref: "#/components/schemas/CashFlowChartData"
+        equity:
+          $ref: "#/components/schemas/EquityChartData"
+        expenseBreakdown:
+          $ref: "#/components/schemas/ExpenseBreakdownChartData"
+        occupancy:
+          $ref: "#/components/schemas/OccupancyChartData"
+        dataCompleteness:
+          $ref: "#/components/schemas/DataCompleteness"
+        futureTrend:
+          $ref: "#/components/schemas/FutureTrendData"
+      required:
+        - cashFlow
+        - dataCompleteness
+        - equity
+        - expenseBreakdown
+        - futureTrend
+        - occupancy
+        - summary
+    SummaryMetrics:
+      type: object
+      properties:
+        totalRoiPercent:
+          type: number
+        annualizedRoiPercent:
+          type: number
+        capRatePercent:
+          type: number
+        cashOnCashPercent:
+          type: number
+        monthlyCashFlow:
+          type: number
+        annualNoi:
+          type: number
+        totalEquity:
+          type: number
+        equityGrowthPercent:
+          type: number
+        occupancyRatePercent:
+          type: number
+        grossRentMultiplier:
+          type: number
+        currency:
+          type: string
+    PageResponsePhotoResponse:
+      type: object
+      description: Paginated response wrapper with content and pagination metadata
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/PhotoResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    PageResponsePaymentResponse:
+      type: object
+      description: Paginated response wrapper with content and pagination metadata
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/PaymentResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    MonthlyTrend:
+      type: object
+      properties:
+        month:
+          type: string
+        total:
+          type: number
+      required:
+        - month
+        - total
+    PaymentStatsResponse:
+      type: object
+      properties:
+        pendingCount:
+          type: integer
+          format: int32
+        pendingAmount:
+          type: number
+        overdueCount:
+          type: integer
+          format: int32
+        overdueAmount:
+          type: number
+        currency:
+          type: string
+        monthlyTrend:
+          type: array
+          items:
+            $ref: "#/components/schemas/MonthlyTrend"
+      required:
+        - monthlyTrend
+        - overdueAmount
+        - overdueCount
+        - pendingAmount
+        - pendingCount
+    PageResponseNotificationResponse:
+      type: object
+      description: Paginated response wrapper with content and pagination metadata
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/NotificationResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    NotificationStatsResponse:
+      type: object
+      properties:
+        totalCount:
+          type: integer
+          format: int64
+        pendingCount:
+          type: integer
+          format: int64
+        sentCount:
+          type: integer
+          format: int64
+        deliveredCount:
+          type: integer
+          format: int64
+        failedCount:
+          type: integer
+          format: int64
+        demoBlockedCount:
+          type: integer
+          format: int64
+        byChannel:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+      required:
+        - byChannel
+        - deliveredCount
+        - demoBlockedCount
+        - failedCount
+        - pendingCount
+        - sentCount
+        - totalCount
+    InfoResponse:
+      type: object
+      properties:
+        version:
+          type: string
+        environment:
+          type: string
+      required:
+        - environment
+        - version
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+      required:
+        - status
+        - timestamp
+    PageResponseExpenseResponse:
+      type: object
+      description: Paginated response wrapper with content and pagination metadata
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/ExpenseResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    CategoryTotal:
+      type: object
+      properties:
+        category:
+          type: string
+        total:
+          type: number
+        count:
+          type: integer
+          format: int32
+      required:
+        - category
+        - count
+        - total
+    ExpenseStatsResponse:
+      type: object
+      properties:
+        totalAmount:
+          type: number
+        currency:
+          type: string
+        topCategories:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryTotal"
+        monthlyTrend:
+          type: array
+          items:
+            $ref: "#/components/schemas/MonthlyTrend"
+      required:
+        - currency
+        - monthlyTrend
+        - topCategories
+        - totalAmount
+    PageResponseDocumentResponse:
+      type: object
+      description: Paginated response wrapper with content and pagination metadata
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/DocumentResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    DashboardStatsResponse:
+      type: object
+      description: Dashboard statistics including property counts, occupancy rates, and monthly income
+      properties:
+        totalProperties:
+          type: integer
+          format: int32
+        occupiedUnits:
+          type: integer
+          format: int32
+        selfOccupiedUnits:
+          type: integer
+          format: int32
+        vacantUnits:
+          type: integer
+          format: int32
+        maintenanceUnits:
+          type: integer
+          format: int32
+        unavailableUnits:
+          type: integer
+          format: int32
+        underRenovationUnits:
+          type: integer
+          format: int32
+        fallowUnits:
+          type: integer
+          format: int32
+        listedUnits:
+          type: integer
+          format: int32
+        monthlyIncome:
+          $ref: "#/components/schemas/MonthlyIncome"
+        occupancyRate:
+          type: number
+        rentalOccupancyRate:
+          type: number
+      required:
+        - fallowUnits
+        - listedUnits
+        - maintenanceUnits
+        - monthlyIncome
+        - occupancyRate
+        - occupiedUnits
+        - rentalOccupancyRate
+        - selfOccupiedUnits
+        - totalProperties
+        - unavailableUnits
+        - underRenovationUnits
+        - vacantUnits
+    MonthlyIncome:
+      type: object
+      properties:
+        amount:
+          type: number
+        currency:
+          type: string
+      required:
+        - amount
+        - currency
+    PageResponseContractResponse:
+      type: object
+      description: Paginated response wrapper with content and pagination metadata
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/ContractResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    CountryMetadataSchemaResponse:
+      type: object
+      properties:
+        countryCode:
+          type: string
+        countryName:
+          type: string
+        hasDedicatedSchema:
+          type: boolean
+        fields:
+          type: array
+          items:
+            $ref: "#/components/schemas/FieldSchema"
+        groups:
+          type: array
+          items:
+            $ref: "#/components/schemas/GroupSchema"
+      required:
+        - countryCode
+        - countryName
+        - fields
+        - groups
+        - hasDedicatedSchema
+    EnumValue:
+      type: object
+      properties:
+        value:
+          type: string
+        label:
+          type: string
+      required:
+        - label
+        - value
+    FieldSchema:
+      type: object
+      properties:
+        name:
+          type: string
+        label:
+          type: string
+        type:
+          type: string
+          enum:
+            - STRING
+            - INTEGER
+            - DECIMAL
+            - BOOLEAN
+            - ENUM
+        required:
+          type: boolean
+        enumValues:
+          type: array
+          items:
+            $ref: "#/components/schemas/EnumValue"
+        validation:
+          $ref: "#/components/schemas/ValidationSchema"
+        group:
+          type: string
+        helpText:
+          type: string
+        unit:
+          type: string
+      required:
+        - enumValues
+        - group
+        - label
+        - name
+        - required
+        - type
+        - validation
+    GroupSchema:
+      type: object
+      properties:
+        key:
+          type: string
+        label:
+          type: string
+      required:
+        - key
+        - label
+    ValidationSchema:
+      type: object
+      properties:
+        min:
+          type: integer
+          format: int32
+        max:
+          type: integer
+          format: int32
+        pattern:
+          type: string
+    PageResponseRecentActivityResponse:
+      type: object
+      description: Paginated response wrapper with content and pagination metadata
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/RecentActivityResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    AmenityResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+        icon:
+          type: string
+        applicableCategories:
+          type: array
+          items:
+            type: string
+      required:
+        - applicableCategories
+        - category
+        - icon
+        - identifier
+        - name
+    ProblemDetail:
+      description: RFC 7807 Problem Detail response
+      properties:
+        detail:
+          type: string
+          description: Human-readable explanation of the problem
+        status:
+          description: HTTP status code
+          example: 400
+        type:
+          type: string
+          description: Problem type URI
+        instance:
+          type: string
+          description: URI of the request that caused the error
+        title:
+          type: string
+          description: Short human-readable summary
+    WwsCalculationRequest:
+      type: object
+      properties:
+        systemVersion:
+          type: string
+          description: "Scoring system version: 2024 or PRE_2024"
+          example: "2024"
+        propertyIdentifier:
+          $ref: "#/components/schemas/PropertyIdentifier"
+        contractIdentifier:
+          type: string
+          description: Optional contract to link calculation to
+        surfaceAreaSqm:
+          type: number
+        numberOfRooms:
+          type: integer
+          format: int32
+        numberOfHeatedRooms:
+          type: integer
+          format: int32
+        energyLabel:
+          type: string
+        kitchenQualityPoints:
+          type: number
+        bathroomQualityPoints:
+          type: number
+        wozValue:
+          type: number
+          description: WOZ property tax assessment value
+        outdoorSpaceSqm:
+          type: number
+        parkingType:
+          type: string
+          description: "GARAGE, CARPORT, DESIGNATED_SPOT, STREET, NONE"
+        parkingSpaces:
+          type: integer
+          format: int32
+        locationBonus:
+          type: number
+          description: Location bonus/penalty points (-10 to +15)
+        renovationInvestment:
+          type: number
+          description: Renovation investment amount in EUR
+        accessibilityFeatures:
+          type: integer
+          format: int32
+          description: Number of accessibility features (wheelchair, elevator, etc.)
+        commonAreaSqm:
+          type: number
+      required:
+        - systemVersion
+        - propertyIdentifier
+    WwsCalculationResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        totalPoints:
+          type: number
+        sectorClassification:
+          type: string
+          description: "REGULATED, MID_SEGMENT, FREE_SECTOR"
+        maxRentIndication:
+          type: number
+        systemVersion:
+          type: string
+        calculationDate:
+          type: string
+          format: date
+        breakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/WwsCategoryBreakdown"
+        inputData:
+          $ref: "#/components/schemas/WwsCalculationRequest"
+      required:
+        - totalPoints
+        - sectorClassification
+        - systemVersion
+        - calculationDate
+        - breakdown
+    WwsCategoryBreakdown:
+      type: object
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        nameNl:
+          type: string
+        points:
+          type: number
+        explanation:
+          type: string
+      required:
+        - key
+        - name
+        - nameNl
+        - points
+    WwsPreFillResponse:
+      type: object
+      properties:
+        surfaceAreaSqm:
+          type: number
+        numberOfRooms:
+          type: integer
+          format: int32
+        numberOfHeatedRooms:
+          type: integer
+          format: int32
+        energyLabel:
+          type: string
+        outdoorSpaceSqm:
+          type: number
+        parkingType:
+          type: string
+        parkingSpaces:
+          type: integer
+          format: int32
+        accessibilityFeatures:
+          type: integer
+          format: int32
+        propertyAddress:
+          type: string
+    CompleteOnboardingRequest:
+      type: object
+      properties:
+        countryCode:
+          type: string
+          minLength: 1
+          description: ISO 3166-1 alpha-2 country code
+        currency:
+          type: string
+          minLength: 1
+          description: ISO 4217 currency code
+        dateFormat:
+          type: string
+          description: Preferred date format
+      required:
+        - countryCode
+        - currency
+    OnboardingStatusResponse:
+      type: object
+      properties:
+        completed:
+          type: boolean
+        completedAt:
+          type: string
+          format: date-time
+        currentCurrency:
+          type: string
+        currentCountryCode:
+          type: string
+      required:
+        - completed
+        - currentCurrency
+        - currentCountryCode
+    CurrencyChangeRequest:
+      type: object
+      properties:
+        newCurrency:
+          type: string
+          minLength: 1
+          description: ISO 4217 currency code
+        mode:
+          type: string
+          description: Currency change mode
+          enum:
+            - RELABEL
+            - CONVERT
+        conversionRate:
+          type: number
+          description: Conversion rate (required for CONVERT mode)
+      required:
+        - newCurrency
+        - mode
+    CurrencyChangeResponse:
+      type: object
+      properties:
+        oldCurrency:
+          type: string
+        newCurrency:
+          type: string
+        mode:
+          type: string
+        conversionRate:
+          type: number
+        affectedContracts:
+          type: integer
+          format: int32
+        affectedPayments:
+          type: integer
+          format: int32
+        affectedExpenses:
+          type: integer
+          format: int32
+        affectedFinancials:
+          type: integer
+          format: int32
+      required:
+        - oldCurrency
+        - newCurrency
+        - mode
+        - affectedContracts
+        - affectedPayments
+        - affectedExpenses
+        - affectedFinancials
+    CountryCurrencyResponse:
+      type: object
+      properties:
+        countryCode:
+          type: string
+        currency:
+          type: string
+      required:
+        - countryCode
+        - currency
+  securitySchemes:
+    bearer-jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
