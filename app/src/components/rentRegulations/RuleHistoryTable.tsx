@@ -1,9 +1,26 @@
 import { ExternalLink } from 'lucide-react';
+import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import type { RentRegulationRuleResponse } from '@/types/rentRegulation';
 
 interface RuleHistoryTableProps {
   rules: RentRegulationRuleResponse[];
 }
+
+const humanizeEnum = (value: string): string => {
+  const labels: Record<string, string> = {
+    FIXED_PERCENTAGE: 'Fixed Percentage',
+    CPI_LINKED: 'CPI Linked',
+    INDEX_LINKED: 'Index Linked',
+    MARKET_RENT: 'Market Rent',
+    NEGOTIATED: 'Negotiated',
+    FROZEN: 'Frozen',
+    OTHER: 'Other',
+  };
+  return (
+    labels[value] ??
+    value.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+  );
+};
 
 export const RuleHistoryTable = ({ rules }: RuleHistoryTableProps) => {
   const currentYear = new Date().getFullYear();
@@ -96,7 +113,7 @@ export const RuleHistoryTable = ({ rules }: RuleHistoryTableProps) => {
                     )}
                   </td>
                   <td className="px-4 py-3 text-[#3d4463] dark:text-[#c4c8db]">
-                    {rule.maxIncreaseType}
+                    {humanizeEnum(rule.maxIncreaseType)}
                   </td>
                   <td className="px-4 py-3 text-[#3d4463] dark:text-[#c4c8db]">
                     {rule.effectiveDate ?? '-'}
@@ -138,13 +155,20 @@ export const RuleHistoryTable = ({ rules }: RuleHistoryTableProps) => {
             {sortedRules
               .filter((r) => r.notes || r.additionalConditions)
               .map((r) => (
-                <p
+                <div
                   key={r.identifier}
                   className="text-xs text-[#6b7194] dark:text-[#8b90a8]"
                 >
                   <span className="font-medium">{r.year}:</span>{' '}
-                  {r.additionalConditions ?? r.notes}
-                </p>
+                  {r.additionalConditions ? (
+                    <RichTextDisplay
+                      content={r.additionalConditions}
+                      className="inline text-xs [&>*]:inline"
+                    />
+                  ) : (
+                    r.notes
+                  )}
+                </div>
               ))}
           </div>
         </div>

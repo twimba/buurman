@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Pencil, Trash2, Plus, X, CheckCircle, Layers } from "lucide-react";
 import { PageHeader, Button, ConfirmDialog, RefreshButton } from "@buurman/ui";
 import { format } from "date-fns";
+import { RichTextEditor } from "../components/RichTextEditor";
+import { RichTextDisplay } from "../components/RichTextDisplay";
 import {
   useRentRegulationCountries,
   useUpdateCountry,
@@ -117,10 +119,10 @@ export const RentRegulationCountryDetailPage = () => {
             <Button
               variant="secondary"
               size="sm"
+              leftIcon={<CheckCircle />}
               onClick={handleReview}
               isLoading={reviewCountry.isPending}
             >
-              <CheckCircle className="h-4 w-4 mr-1" />
               Mark as Reviewed
             </Button>
             <Button
@@ -232,8 +234,12 @@ function OverviewTab({
             Country Details
           </h3>
           {!isEditing && (
-            <Button variant="secondary" size="sm" onClick={startEditing}>
-              <Pencil className="h-3.5 w-3.5 mr-1" />
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<Pencil />}
+              onClick={startEditing}
+            >
               Edit
             </Button>
           )}
@@ -268,11 +274,9 @@ function OverviewTab({
               <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
                 Summary
               </label>
-              <textarea
+              <RichTextEditor
                 value={editSummary}
-                onChange={(e) => setEditSummary(e.target.value)}
-                rows={4}
-                className={INPUT_CLASS + " resize-none"}
+                onChange={setEditSummary}
                 placeholder="Brief overview of rent regulations..."
               />
             </div>
@@ -331,9 +335,10 @@ function OverviewTab({
                 <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mb-1">
                   Summary
                 </p>
-                <p className="text-sm text-[#3d4463] dark:text-[#c4c8db] whitespace-pre-wrap">
-                  {country.summary}
-                </p>
+                <RichTextDisplay
+                  content={country.summary}
+                  className="text-sm text-[#3d4463] dark:text-[#c4c8db]"
+                />
               </div>
             )}
           </div>
@@ -498,9 +503,16 @@ function RegionsTab({ countryCode }: { countryCode: string }) {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="text-sm text-[#6b7194] dark:text-[#8b90a8] truncate block max-w-xs">
-                      {region.summary ?? "--"}
-                    </span>
+                    {region.summary ? (
+                      <RichTextDisplay
+                        content={region.summary}
+                        className="text-sm text-[#6b7194] dark:text-[#8b90a8] max-w-xs [&>*]:truncate"
+                      />
+                    ) : (
+                      <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                        --
+                      </span>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-1">
@@ -531,7 +543,7 @@ function RegionsTab({ countryCode }: { countryCode: string }) {
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="fixed inset-0 bg-black/40" onClick={closeForm} />
-          <div className="relative bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] shadow-xl w-full max-w-md mx-4">
+          <div className="relative bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between px-6 py-4 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
               <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
                 {editingRegion ? "Edit Region" : "Add Region"}
@@ -582,11 +594,10 @@ function RegionsTab({ countryCode }: { countryCode: string }) {
                     (optional)
                   </span>
                 </label>
-                <textarea
+                <RichTextEditor
                   value={regionSummary}
-                  onChange={(e) => setRegionSummary(e.target.value)}
-                  rows={3}
-                  className={INPUT_CLASS + " resize-none"}
+                  onChange={setRegionSummary}
+                  placeholder="Brief overview of regional regulations..."
                 />
               </div>
               <div className="flex justify-end gap-3 pt-2">
@@ -1342,16 +1353,15 @@ function RulesTab({ countryCode }: { countryCode: string }) {
                     (optional)
                   </span>
                 </label>
-                <textarea
+                <RichTextEditor
                   value={form.additionalConditions}
-                  onChange={(e) =>
+                  onChange={(val) =>
                     setForm((f) => ({
                       ...f,
-                      additionalConditions: e.target.value,
+                      additionalConditions: val,
                     }))
                   }
-                  rows={2}
-                  className={INPUT_CLASS + " resize-none"}
+                  placeholder="Any additional conditions or notes..."
                 />
               </div>
 

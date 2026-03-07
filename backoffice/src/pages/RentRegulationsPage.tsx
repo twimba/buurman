@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Search, X } from "lucide-react";
 import { RefreshButton, Button } from "@buurman/ui";
+import { RichTextEditor } from "../components/RichTextEditor";
 import { format } from "date-fns";
 import {
   useRentRegulationCountries,
@@ -254,14 +255,10 @@ export const RentRegulationsPage = () => {
                     (optional)
                   </span>
                 </label>
-                <textarea
+                <RichTextEditor
                   value={form.summary}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, summary: e.target.value }))
-                  }
-                  rows={3}
+                  onChange={(val) => setForm((f) => ({ ...f, summary: val }))}
                   placeholder="Brief overview of rent regulations in this country..."
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#0c0d14] text-[#1a1d2e] dark:text-[#eef0f6] focus:outline-none focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa]/20 transition-colors resize-none"
                 />
               </div>
               <div className="flex justify-end gap-3 pt-2">

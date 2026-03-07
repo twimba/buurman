@@ -23,6 +23,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
   Scale,
+  TrendingUp,
 } from 'lucide-react';
 import { useState } from 'react';
 import { SidebarTooltip } from '@buurman/ui';
@@ -38,6 +39,12 @@ const navigation = [
   { name: 'Tenants', href: '/tenants', icon: Users },
   { name: 'Contracts', href: '/contracts', icon: FileText },
   { name: 'Rent Regulations', href: '/rent-regulations', icon: Scale },
+  {
+    name: 'Rent Increases',
+    href: '/rent-increases/apply',
+    icon: TrendingUp,
+    indent: true,
+  },
   {
     name: 'Payment Instructions',
     href: '/payment-instructions',

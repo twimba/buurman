@@ -1,5 +1,13 @@
 import { useState, useMemo } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import {
+  AlertTriangle,
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  ArrowRight,
+  CalendarDays,
+  Sparkles,
+} from 'lucide-react';
 import type { RentIncreaseContractPreview } from '@/types/rentIncrease';
 import type { RentIncreaseItem } from '@/types/rentIncrease';
 
@@ -17,6 +25,50 @@ function computeNewRent(currentRent: number, percentage: number): number {
   return Math.round(currentRent * (1 + percentage / 100) * 100) / 100;
 }
 
+const formatMoney = (amount: number) =>
+  amount.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+const formatPct = (pct: number) => {
+  const prefix = pct > 0 ? '+' : '';
+  return `${prefix}${pct.toFixed(1)}%`;
+};
+
+const pctColor = (pct: number) => {
+  if (pct > 0) {
+    return 'text-emerald-600 dark:text-emerald-400';
+  }
+  if (pct < 0) {
+    return 'text-red-500 dark:text-red-400';
+  }
+  return 'text-[#6b7194] dark:text-[#8b90a8]';
+};
+
+const pctBgColor = (pct: number) => {
+  if (pct > 0) {
+    return 'bg-emerald-50 dark:bg-emerald-500/10 ring-1 ring-emerald-200 dark:ring-emerald-500/25';
+  }
+  if (pct < 0) {
+    return 'bg-red-50 dark:bg-red-500/10 ring-1 ring-red-200 dark:ring-red-500/25';
+  }
+  return 'bg-[#f1f3f9] dark:bg-[#1e2130] ring-1 ring-[#e2e6f0] dark:ring-[#2a2e3f]';
+};
+
+const PctIcon = ({ pct }: { pct: number }) => {
+  if (pct > 0) {
+    return <TrendingUp className="h-3.5 w-3.5" />;
+  }
+  if (pct < 0) {
+    return <TrendingDown className="h-3.5 w-3.5" />;
+  }
+  return <Minus className="h-3.5 w-3.5" />;
+};
+
+const TH =
+  'px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]';
+
 export const PropertyAdjustmentStep = ({
   contracts,
   increases,
@@ -27,11 +79,23 @@ export const PropertyAdjustmentStep = ({
   const [strategy, setStrategy] = useState<Strategy>('maximum');
   const [bulkEffectiveDate, setBulkEffectiveDate] = useState('');
 
-  const strategies: { value: Strategy; label: string }[] = [
-    { value: 'maximum', label: 'Maximum' },
-    { value: 'medium', label: 'Medium' },
-    { value: 'minimum', label: 'Minimum' },
-    { value: 'custom', label: 'Custom' },
+  const strategies: {
+    value: Strategy;
+    label: string;
+    description: string;
+  }[] = [
+    {
+      value: 'maximum',
+      label: 'Maximum',
+      description: 'Apply max regulated %',
+    },
+    { value: 'medium', label: 'Medium', description: 'Average of min & max' },
+    {
+      value: 'minimum',
+      label: 'Minimum',
+      description: 'Apply min regulated %',
+    },
+    { value: 'custom', label: 'Custom', description: 'Set per property' },
   ];
 
   const applyStrategy = (s: Strategy) => {
@@ -49,7 +113,7 @@ export const PropertyAdjustmentStep = ({
       } else if (s === 'minimum') {
         pct = min;
       } else {
-        pct = (min + max) / 2;
+        pct = Math.round(((min + max) / 2) * 10) / 10;
       }
 
       return {
@@ -126,130 +190,214 @@ export const PropertyAdjustmentStep = ({
     return result;
   }, [contracts, increases]);
 
+  // Summary stats
+  const summary = useMemo(() => {
+    const active = increases.filter((i) => i.increasePercentage !== 0);
+    const avgPct =
+      active.length > 0
+        ? active.reduce((sum, i) => sum + i.increasePercentage, 0) /
+          active.length
+        : 0;
+    return {
+      activeCount: active.length,
+      avgPct,
+      warningCount: Object.keys(warnings).length,
+    };
+  }, [increases, warnings]);
+
   return (
-    <div className="space-y-6">
-      {/* Controls */}
-      <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
-        <div className="flex flex-wrap items-end gap-4">
-          <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-              Strategy
-            </label>
-            <div className="flex gap-2">
-              {strategies.map((s) => (
-                <button
-                  key={s.value}
-                  onClick={() => applyStrategy(s.value)}
-                  className={`px-3 py-1.5 rounded text-sm transition-colors ${
-                    strategy === s.value
-                      ? 'bg-[#5c7cfa] text-white'
-                      : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#e8ecf4] dark:hover:bg-[#3a3f54]'
-                  }`}
-                >
-                  {s.label}
-                </button>
-              ))}
+    <div className="space-y-5">
+      {/* Controls toolbar */}
+      <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] shadow-sm">
+        <div className="p-5">
+          <div className="flex flex-wrap items-start gap-6">
+            {/* Strategy selector */}
+            <div className="flex-1 min-w-[280px]">
+              <label className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8] mb-2.5">
+                <Sparkles className="h-3.5 w-3.5" />
+                Adjustment Strategy
+              </label>
+              <div className="grid grid-cols-4 gap-1.5 p-1 rounded-lg bg-[#f1f3f9] dark:bg-[#0c0d14]">
+                {strategies.map((s) => (
+                  <button
+                    key={s.value}
+                    onClick={() => applyStrategy(s.value)}
+                    className={`relative px-3 py-2 rounded-md text-xs font-medium transition-all duration-150 ${
+                      strategy === s.value
+                        ? 'bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] shadow-sm ring-1 ring-[#e2e6f0] dark:ring-[#2a2e3f]'
+                        : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#3d4463] dark:hover:text-[#c4c8db]'
+                    }`}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Bulk date */}
+            <div className="min-w-[200px]">
+              <label className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8] mb-2.5">
+                <CalendarDays className="h-3.5 w-3.5" />
+                Bulk Effective Date
+              </label>
+              <input
+                type="date"
+                value={bulkEffectiveDate}
+                onChange={(e) => applyBulkDate(e.target.value)}
+                className="w-full h-9 px-3 rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#0c0d14] text-[#1a1d2e] dark:text-[#eef0f6] text-sm focus:outline-none focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa]/20 transition-colors"
+              />
             </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-              Bulk Effective Date
-            </label>
-            <input
-              type="date"
-              value={bulkEffectiveDate}
-              onChange={(e) => applyBulkDate(e.target.value)}
-              className="px-3 py-1.5 rounded border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] text-sm"
-            />
-          </div>
+        </div>
+
+        {/* Mini summary bar */}
+        <div className="flex items-center gap-5 px-5 py-2.5 border-t border-[#e2e6f0] dark:border-[#2a2e3f] bg-[#f8f9fc] dark:bg-[#0c0d14] rounded-b-xl">
+          <span className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+            <span className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+              {summary.activeCount}
+            </span>{' '}
+            of {contracts.length} contracts adjusted
+          </span>
+          <span className="w-px h-3.5 bg-[#e2e6f0] dark:bg-[#2a2e3f]" />
+          <span className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+            Avg change:{' '}
+            <span className={`font-semibold ${pctColor(summary.avgPct)}`}>
+              {formatPct(summary.avgPct)}
+            </span>
+          </span>
+          {summary.warningCount > 0 && (
+            <>
+              <span className="w-px h-3.5 bg-[#e2e6f0] dark:bg-[#2a2e3f]" />
+              <span className="inline-flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
+                <AlertTriangle className="h-3 w-3" />
+                <span className="font-semibold">
+                  {summary.warningCount}
+                </span>{' '}
+                warning{summary.warningCount !== 1 ? 's' : ''}
+              </span>
+            </>
+          )}
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden">
+      <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-                <th className="text-left px-4 py-3 font-semibold text-[#3d4463] dark:text-[#c4c8db]">
-                  Property
-                </th>
-                <th className="text-right px-4 py-3 font-semibold text-[#3d4463] dark:text-[#c4c8db]">
-                  Current Rent
-                </th>
-                <th className="text-right px-4 py-3 font-semibold text-[#3d4463] dark:text-[#c4c8db]">
-                  Regulated Range
-                </th>
-                <th className="text-right px-4 py-3 font-semibold text-[#3d4463] dark:text-[#c4c8db]">
-                  Increase %
-                </th>
-                <th className="text-right px-4 py-3 font-semibold text-[#3d4463] dark:text-[#c4c8db]">
-                  New Rent
-                </th>
-                <th className="text-left px-4 py-3 font-semibold text-[#3d4463] dark:text-[#c4c8db]">
-                  Effective Date
-                </th>
-                <th className="px-4 py-3"></th>
+              <tr className="border-b-2 border-[#e2e6f0] dark:border-[#2a2e3f] bg-[#f8f9fc] dark:bg-[#0c0d14]">
+                <th className={`${TH} text-left`}>Property</th>
+                <th className={`${TH} text-right`}>Current Rent</th>
+                <th className={`${TH} text-center`}>Regulated Range</th>
+                <th className={`${TH} text-center`}>Adjustment</th>
+                <th className={`${TH} text-right`}>New Rent</th>
+                <th className={`${TH} text-left`}>Effective Date</th>
+                <th className={`${TH} w-10`} />
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-[#e2e6f0] dark:divide-[#2a2e3f]">
               {contracts.map((contract) => {
                 const inc = increases.find(
                   (i) => i.contractIdentifier === contract.contractIdentifier
                 );
                 const warning = warnings[contract.contractIdentifier];
+                const pct = inc?.increasePercentage ?? 0;
+                const newRent =
+                  inc?.newRentAmount ?? contract.currentRentAmount;
+                const diff = newRent - contract.currentRentAmount;
 
                 return (
                   <tr
                     key={contract.contractIdentifier}
-                    className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0 hover:bg-[#f8f9fc] dark:hover:bg-[#1a1c28]"
+                    className={`group transition-colors ${
+                      warning
+                        ? 'bg-amber-50/50 dark:bg-amber-500/[0.03] hover:bg-amber-50 dark:hover:bg-amber-500/[0.06]'
+                        : 'hover:bg-[#f8f9fc] dark:hover:bg-[#1a1c28]'
+                    }`}
                   >
-                    <td className="px-4 py-3">
-                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                    {/* Property */}
+                    <td className="px-5 py-4">
+                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6] leading-tight">
                         {contract.propertyName}
                       </p>
-                      <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                      <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180] mt-0.5">
                         {contract.propertyAddress}
                       </p>
                     </td>
-                    <td className="px-4 py-3 text-right text-[#1a1d2e] dark:text-[#eef0f6]">
-                      {contract.currency}{' '}
-                      {contract.currentRentAmount.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+
+                    {/* Current rent */}
+                    <td className="px-5 py-4 text-right">
+                      <span className="font-mono text-sm text-[#3d4463] dark:text-[#c4c8db]">
+                        {contract.currency}{' '}
+                        {formatMoney(contract.currentRentAmount)}
+                      </span>
                     </td>
-                    <td className="px-4 py-3 text-right text-[#6b7194] dark:text-[#8b90a8]">
+
+                    {/* Regulated range */}
+                    <td className="px-5 py-4 text-center">
                       {contract.regulationMinPercent != null &&
-                      contract.regulationMaxPercent != null
-                        ? `${contract.regulationMinPercent}% - ${contract.regulationMaxPercent}%`
-                        : '-'}
+                      contract.regulationMaxPercent != null ? (
+                        <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium bg-[#f1f3f9] dark:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8] ring-1 ring-[#e2e6f0] dark:ring-[#2a2e3f]">
+                          {contract.regulationMinPercent}%
+                          <ArrowRight className="h-3 w-3 text-[#9ca0b8]" />
+                          {contract.regulationMaxPercent}%
+                        </span>
+                      ) : (
+                        <span className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
+                          No data
+                        </span>
+                      )}
                     </td>
-                    <td className="px-4 py-3 text-right">
-                      <input
-                        type="number"
-                        step="0.1"
-                        value={inc?.increasePercentage ?? 0}
-                        onChange={(e) =>
-                          updateIncrease(
-                            contract.contractIdentifier,
-                            'increasePercentage',
-                            e.target.value
-                          )
-                        }
-                        className="w-20 px-2 py-1 rounded border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#14161f] text-right text-[#1a1d2e] dark:text-[#eef0f6]"
-                      />
+
+                    {/* Adjustment input + badge */}
+                    <td className="px-5 py-4">
+                      <div className="flex items-center justify-center gap-2">
+                        <div className="relative">
+                          <input
+                            type="number"
+                            step="0.1"
+                            value={inc?.increasePercentage ?? 0}
+                            onChange={(e) =>
+                              updateIncrease(
+                                contract.contractIdentifier,
+                                'increasePercentage',
+                                e.target.value
+                              )
+                            }
+                            className="w-[72px] h-8 pl-2.5 pr-7 rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#0c0d14] text-right text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] focus:outline-none focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa]/20 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          />
+                          <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs font-medium text-[#9ca0b8] dark:text-[#5c6180] pointer-events-none">
+                            %
+                          </span>
+                        </div>
+                        <span
+                          className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${pctColor(pct)} ${pctBgColor(pct)}`}
+                        >
+                          <PctIcon pct={pct} />
+                          {formatPct(pct)}
+                        </span>
+                      </div>
                     </td>
-                    <td className="px-4 py-3 text-right font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
-                      {contract.currency}{' '}
-                      {(
-                        inc?.newRentAmount ?? contract.currentRentAmount
-                      ).toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+
+                    {/* New rent */}
+                    <td className="px-5 py-4 text-right">
+                      <div>
+                        <span className="font-mono text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                          {contract.currency} {formatMoney(newRent)}
+                        </span>
+                        {pct !== 0 && (
+                          <p
+                            className={`text-xs font-medium mt-0.5 ${pctColor(pct)}`}
+                          >
+                            {diff > 0 ? '+' : ''}
+                            {formatMoney(diff)}/mo
+                          </p>
+                        )}
+                      </div>
                     </td>
-                    <td className="px-4 py-3">
+
+                    {/* Effective date */}
+                    <td className="px-5 py-4">
                       <input
                         type="date"
                         value={inc?.effectiveDate ?? ''}
@@ -260,15 +408,22 @@ export const PropertyAdjustmentStep = ({
                             e.target.value
                           )
                         }
-                        className="px-2 py-1 rounded border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] text-sm"
+                        className="h-8 px-2.5 rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#0c0d14] text-[#1a1d2e] dark:text-[#eef0f6] text-sm focus:outline-none focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa]/20 transition-colors"
                       />
                     </td>
-                    <td className="px-4 py-3">
+
+                    {/* Warning */}
+                    <td className="px-3 py-4">
                       {warning && (
-                        <div className="group relative">
-                          <AlertTriangle className="h-4 w-4 text-amber-500" />
-                          <div className="hidden group-hover:block absolute right-0 top-6 z-10 w-56 p-2 rounded bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 text-xs text-amber-700 dark:text-amber-400 shadow-lg">
-                            {warning}
+                        <div className="group/tip relative flex items-center justify-center">
+                          <div className="p-1 rounded-full bg-amber-100 dark:bg-amber-500/20">
+                            <AlertTriangle className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+                          </div>
+                          <div className="hidden group-hover/tip:block absolute right-0 top-full mt-1 z-10 w-60 p-3 rounded-lg bg-white dark:bg-[#1e2130] border border-amber-200 dark:border-amber-500/30 text-xs text-amber-700 dark:text-amber-300 shadow-lg shadow-amber-500/10">
+                            <div className="flex items-start gap-2">
+                              <AlertTriangle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                              <span>{warning}</span>
+                            </div>
                           </div>
                         </div>
                       )}
@@ -282,18 +437,19 @@ export const PropertyAdjustmentStep = ({
       </div>
 
       {/* Navigation */}
-      <div className="flex justify-between">
+      <div className="flex justify-between pt-1">
         <button
           onClick={onBack}
-          className="px-6 py-2 rounded border border-[#e2e6f0] dark:border-[#2a2e3f] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+          className="inline-flex items-center h-10 px-5 rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] bg-white dark:bg-[#14161f] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] hover:border-[#c9cfd9] dark:hover:border-[#3a3f54] shadow-sm transition-all"
         >
           Back
         </button>
         <button
           onClick={onNext}
-          className="bg-[#5c7cfa] text-white px-6 py-2 rounded hover:bg-[#4c6ef5] transition-colors"
+          className="inline-flex items-center gap-2 h-10 px-6 rounded-lg text-sm font-medium bg-gradient-to-b from-[#5c7cfa] to-[#4c6ef5] text-white border border-[#4263eb] shadow-sm shadow-[#5c7cfa]/20 hover:from-[#4c6ef5] hover:to-[#4263eb] hover:shadow-md hover:shadow-[#5c7cfa]/30 transition-all"
         >
           Next: Review
+          <ArrowRight className="h-4 w-4" />
         </button>
       </div>
     </div>

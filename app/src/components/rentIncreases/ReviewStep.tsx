@@ -20,7 +20,7 @@ export const ReviewStep = ({
   isApplying,
 }: ReviewStepProps) => {
   const changedIncreases = useMemo(
-    () => increases.filter((inc) => inc.increasePercentage > 0),
+    () => increases.filter((inc) => inc.increasePercentage !== 0),
     [increases]
   );
 
@@ -107,8 +107,15 @@ export const ReviewStep = ({
                   <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
                     Increase
                   </span>
-                  <span className="font-semibold text-green-600 dark:text-green-400">
-                    +{formatMoney(totals.newTotal - totals.previousTotal)}
+                  <span
+                    className={`font-semibold ${
+                      totals.newTotal >= totals.previousTotal
+                        ? 'text-emerald-600 dark:text-emerald-400'
+                        : 'text-red-500 dark:text-red-400'
+                    }`}
+                  >
+                    {totals.newTotal >= totals.previousTotal ? '+' : ''}
+                    {formatMoney(totals.newTotal - totals.previousTotal)}
                   </span>
                 </div>
               </div>
@@ -170,8 +177,17 @@ export const ReviewStep = ({
                       {contract.currency}{' '}
                       {formatMoney(contract.currentRentAmount)}
                     </td>
-                    <td className="px-4 py-3 text-right text-green-600 dark:text-green-400">
-                      +{inc.increasePercentage}%
+                    <td
+                      className={`px-4 py-3 text-right font-medium ${
+                        inc.increasePercentage > 0
+                          ? 'text-emerald-600 dark:text-emerald-400'
+                          : inc.increasePercentage < 0
+                            ? 'text-red-500 dark:text-red-400'
+                            : 'text-[#6b7194] dark:text-[#8b90a8]'
+                      }`}
+                    >
+                      {inc.increasePercentage > 0 ? '+' : ''}
+                      {inc.increasePercentage.toFixed(1)}%
                     </td>
                     <td className="px-4 py-3 text-right font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
                       {contract.currency} {formatMoney(inc.newRentAmount)}

@@ -22847,7 +22847,6 @@ components:
           $ref: '#/components/schemas/ContractIdentifier'
         increasePercentage:
           type: number
-          minimum: 0.01
         effectiveDate:
           type: string
           format: date

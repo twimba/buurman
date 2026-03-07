@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Scale } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Scale, TrendingUp } from 'lucide-react';
 import {
   useRentRegulationCountries,
   useRentRegulationCountryDetail,
@@ -13,6 +14,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 
 export const RentRegulationsPage = () => {
+  const navigate = useNavigate();
   const [selectedCountry, setSelectedCountry] = useState<string | undefined>();
   const [selectedRegion, setSelectedRegion] = useState<string | undefined>();
 
@@ -58,16 +60,25 @@ export const RentRegulationsPage = () => {
     <div className="min-h-screen bg-background">
       <div className="px-4 py-8">
         {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center gap-3 mb-1">
-            <Scale className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-            <h1 className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-              Rent Regulations
-            </h1>
+        <div className="flex items-start justify-between mb-6">
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <Scale className="h-8 w-8 text-primary-500 dark:text-primary-300" />
+              <h1 className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+                Rent Regulations
+              </h1>
+            </div>
+            <p className="text-[#6b7194] dark:text-[#8b90a8] ml-11">
+              Reference data for rent increase rules by country
+            </p>
           </div>
-          <p className="text-[#6b7194] dark:text-[#8b90a8] ml-11">
-            Reference data for rent increase rules by country
-          </p>
+          <button
+            onClick={() => navigate('/rent-increases/apply')}
+            className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg bg-gradient-to-b from-[#5c7cfa] to-[#4c6ef5] text-white border border-[#4263eb] shadow-sm shadow-[#5c7cfa]/20 hover:from-[#4c6ef5] hover:to-[#4263eb] hover:shadow-md transition-all"
+          >
+            <TrendingUp className="h-4 w-4" />
+            Apply Rent Increases
+          </button>
         </div>
 
         {/* Country Selector */}
