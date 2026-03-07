@@ -1,0 +1,391 @@
+resend:
+  post:
+    tags:
+      - Notifications
+    summary: Resend notification
+    description: Resend a failed notification (Admin only)
+    operationId: resendNotification
+    parameters:
+      - name: identifier
+        in: path
+        description: Notification identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/NotificationIdentifier'
+    responses:
+      "201":
+        description: Created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+refresh-status:
+  post:
+    tags:
+      - Notifications
+    summary: Refresh notification status
+    description: Fetch latest delivery status from provider (Admin only)
+    operationId: refreshStatus
+    parameters:
+      - name: identifier
+        in: path
+        description: Notification identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/NotificationIdentifier'
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+collection:
+  get:
+    tags:
+      - Notifications
+    summary: List notifications
+    description: Paginated list of all team notifications (Admin only)
+    operationId: getNotifications
+    parameters:
+      - name: type
+        in: query
+        description: Filter by notification type
+        required: false
+        schema:
+          type: string
+          description: Type of notification event that triggers delivery
+          enum:
+            - WELCOME
+            - VERIFICATION_CODE
+            - PHONE_VERIFICATION_CODE
+            - TEAM_INVITATION
+            - INVITATION_ACCEPTED
+            - PASSWORD_CHANGED
+            - PAYMENT_REMINDER
+            - CONTRACT_EXPIRY
+            - PROPERTY_CREATED
+            - CONTRACT_CREATED
+            - CONTRACT_STATUS_CHANGED
+            - CONTRACT_REOPENED
+            - CONTRACT_RENT_ADJUSTED
+            - PAYMENT_PAID
+            - PAYMENT_RECEIVAL
+            - EXPENSE_CREATED
+      - name: channel
+        in: query
+        description: Filter by channel
+        required: false
+        schema:
+          type: string
+          description: Delivery channel for notifications
+          enum:
+            - EMAIL
+            - SMS
+      - name: status
+        in: query
+        description: Filter by status
+        required: false
+        schema:
+          type: string
+          description: Delivery status of a notification
+          enum:
+            - PENDING
+            - QUEUED
+            - SENT
+            - DELIVERED
+            - FAILED
+            - BOUNCED
+            - REJECTED
+            - DEMO_BLOCKED
+      - name: recipientEmail
+        in: query
+        description: Filter by recipient email
+        required: false
+        schema:
+          type: string
+      - name: dateFrom
+        in: query
+        description: Start date filter (inclusive)
+        required: false
+        schema:
+          type: string
+        example: "2026-01-01"
+      - name: dateTo
+        in: query
+        description: End date filter (inclusive)
+        required: false
+        schema:
+          type: string
+        example: "2026-12-31"
+      - name: page
+        in: query
+        description: Page number (0-based)
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+        example: 0
+      - name: size
+        in: query
+        description: Page size
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 25
+        example: 25
+      - name: sort
+        in: query
+        description: Sort field name
+        required: false
+        schema:
+          type: string
+        example: createdAt
+      - name: direction
+        in: query
+        description: Sort direction
+        required: false
+        schema:
+          type: string
+          default: DESC
+          description: Sort order direction for paginated queries
+          enum:
+            - ASC
+            - DESC
+        example: DESC
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageResponseNotificationResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+item:
+  get:
+    tags:
+      - Notifications
+    summary: Get notification details
+    operationId: getNotification
+    parameters:
+      - name: identifier
+        in: path
+        description: Notification identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/NotificationIdentifier'
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+stats:
+  get:
+    tags:
+      - Notifications
+    summary: Get notification statistics
+    operationId: getStats
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationStatsResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []

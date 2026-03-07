@@ -1,4 +1,4 @@
-.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api
+.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi
 
 ## Start everything in Docker (including backend + app containers)
 up:
@@ -44,6 +44,10 @@ backend-upgradable-dependencies:
 	mvn versions:display-dependency-updates -DallowMajorUpdates=false -Dversions.outputLineWidth=145 -Dmaven.version.ignore='(?i).*-(alpha|beta|rc|m)([-.]?\d+)?' -DprocessDependencyManagementTransitive=false
 	
 ## Generate TypeScript API clients from OpenAPI specs
+## Bundle split OpenAPI source files into openapi/app.yaml
+bundle-openapi:
+	python3 scripts/bundle_openapi.py
+
 generate-api:
 	yarn generate:api
 

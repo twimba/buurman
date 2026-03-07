@@ -1,0 +1,781 @@
+reports-tax-summary:
+  get:
+    tags:
+      - Reports
+    summary: Get tax summary
+    description: Get annual tax summary with income, expenses, and breakdown by category
+    operationId: getTaxSummary
+    parameters:
+      - name: year
+        in: query
+        description: Fiscal year
+        required: true
+        schema:
+          type: integer
+          format: int32
+        example: 2026
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaxSummaryResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+reports-financial-overview:
+  get:
+    tags:
+      - Reports
+    summary: Get financial overview
+    description: Get comprehensive financial summary including income, expenses, and net profit for a period
+    operationId: getFinancialOverview
+    parameters:
+      - name: startDate
+        in: query
+        description: Start date filter (inclusive)
+        required: true
+        schema:
+          type: string
+          format: date
+        example: "2026-01-01"
+      - name: endDate
+        in: query
+        description: End date filter (inclusive)
+        required: true
+        schema:
+          type: string
+          format: date
+        example: "2026-12-31"
+      - name: propertyIdentifiers
+        in: query
+        description: Property identifiers to filter by
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - name: currency
+        in: query
+        description: Currency code
+        required: false
+        schema:
+          type: string
+        example: EUR
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinancialOverviewResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+reports-export-transactions-pdf:
+  get:
+    tags:
+      - Reports
+    summary: Export transaction history to PDF
+    description: Download transaction history as PDF file
+    operationId: exportTransactionHistoryPDF
+    parameters:
+      - name: startDate
+        in: query
+        description: Start date filter (inclusive)
+        required: false
+        schema:
+          type: string
+          format: date
+        example: "2026-01-01"
+      - name: endDate
+        in: query
+        description: End date filter (inclusive)
+        required: false
+        schema:
+          type: string
+          format: date
+        example: "2026-12-31"
+    responses:
+      "200":
+        description: OK
+        content:
+          "*/*":
+            schema:
+              type: string
+              format: byte
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+reports-export-transactions-csv:
+  get:
+    tags:
+      - Reports
+    summary: Export transaction history to CSV
+    description: Download transaction history as CSV file
+    operationId: exportTransactionHistoryCSV
+    parameters:
+      - name: startDate
+        in: query
+        description: Start date filter (inclusive)
+        required: false
+        schema:
+          type: string
+          format: date
+        example: "2026-01-01"
+      - name: endDate
+        in: query
+        description: End date filter (inclusive)
+        required: false
+        schema:
+          type: string
+          format: date
+        example: "2026-12-31"
+    responses:
+      "200":
+        description: OK
+        content:
+          "*/*":
+            schema:
+              type: string
+              format: byte
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+reports-date-range:
+  get:
+    tags:
+      - Reports
+    summary: Get data date range
+    description: Get the earliest date across all financial data for the team
+    operationId: getDataDateRange
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataDateRangeResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+reports-charts-property-comparison:
+  get:
+    tags:
+      - Reports
+    summary: Get property comparison
+    description: Compare financial performance across all properties
+    operationId: getPropertyComparison
+    parameters:
+      - name: startDate
+        in: query
+        description: Start date filter (inclusive)
+        required: true
+        schema:
+          type: string
+          format: date
+        example: "2026-01-01"
+      - name: endDate
+        in: query
+        description: End date filter (inclusive)
+        required: true
+        schema:
+          type: string
+          format: date
+        example: "2026-12-31"
+      - name: propertyIdentifiers
+        in: query
+        description: Property identifiers to filter by
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PropertyComparisonResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+reports-charts-occupancy-trend:
+  get:
+    tags:
+      - Reports
+    summary: Get occupancy trend
+    description: Get occupancy rate trend for a date range or last N months
+    operationId: getOccupancyTrend
+    parameters:
+      - name: months
+        in: query
+        description: Number of months to look back
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 12
+        example: 12
+      - name: startDate
+        in: query
+        description: Start date filter (inclusive)
+        required: false
+        schema:
+          type: string
+          format: date
+        example: "2026-01-01"
+      - name: endDate
+        in: query
+        description: End date filter (inclusive)
+        required: false
+        schema:
+          type: string
+          format: date
+        example: "2026-12-31"
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OccupancyTrendResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+reports-charts-income-trend:
+  get:
+    tags:
+      - Reports
+    summary: Get income trend
+    description: Get income, expenses, and net profit trend for a date range or last N months
+    operationId: getIncomeTrend
+    parameters:
+      - name: months
+        in: query
+        description: Number of months to look back
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 12
+        example: 12
+      - name: startDate
+        in: query
+        description: Start date filter (inclusive)
+        required: false
+        schema:
+          type: string
+          format: date
+        example: "2026-01-01"
+      - name: endDate
+        in: query
+        description: End date filter (inclusive)
+        required: false
+        schema:
+          type: string
+          format: date
+        example: "2026-12-31"
+      - name: propertyIdentifiers
+        in: query
+        description: Property identifiers to filter by
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncomeTrendResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+reports-charts-expense-breakdown:
+  get:
+    tags:
+      - Reports
+    summary: Get expense breakdown
+    description: Get expense breakdown by category with totals and percentages
+    operationId: getExpenseBreakdown
+    parameters:
+      - name: startDate
+        in: query
+        description: Start date filter (inclusive)
+        required: true
+        schema:
+          type: string
+          format: date
+        example: "2026-01-01"
+      - name: endDate
+        in: query
+        description: End date filter (inclusive)
+        required: true
+        schema:
+          type: string
+          format: date
+        example: "2026-12-31"
+      - name: propertyIdentifiers
+        in: query
+        description: Property identifiers to filter by
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExpenseBreakdownResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+dashboard-stats:
+  get:
+    tags:
+      - Dashboard
+    summary: Get dashboard statistics
+    description: Get overall statistics for the dashboard
+    operationId: getDashboardStats
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DashboardStatsResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+dashboard-recent-activities:
+  get:
+    tags:
+      - Dashboard
+    summary: Get recent activities
+    description: Get recent audit trail activities
+    operationId: getRecentActivities
+    parameters:
+      - name: limit
+        in: query
+        description: Maximum number of items to return
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 10
+        example: 10
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RecentActivityResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
