@@ -108,8 +108,8 @@ public class PropertyOutdoorAreaService {
         area.getIdentifier().orElseThrow(),
         area.getType(),
         area.getAreaValue(),
-        Optional.ofNullable(area.getAreaUnit()),
+        Optional.of(area.getAreaUnit()),
         area.getCreatedAt(),
-        Optional.ofNullable(area.getUpdatedAt()));
+        Optional.of(area.getUpdatedAt()));
   }
 }

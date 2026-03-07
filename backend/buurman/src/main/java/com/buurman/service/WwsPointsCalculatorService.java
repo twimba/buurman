@@ -1,7 +1,10 @@
 package com.buurman.service;
 
+import static java.math.BigDecimal.ZERO;
+import static java.math.RoundingMode.DOWN;
+import static java.math.RoundingMode.HALF_UP;
+
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -81,7 +84,7 @@ public class WwsPointsCalculatorService {
           Map.entry("D", new BigDecimal("11")),
           Map.entry("E", new BigDecimal("8")),
           Map.entry("F", new BigDecimal("4")),
-          Map.entry("G", BigDecimal.ZERO));
+          Map.entry("G", ZERO));
 
   // Post-July 2024 (Wet betaalbare huur) energy label points
   private static final Map<String, BigDecimal> ENERGY_LABELS_POST_2024 =
@@ -114,7 +117,7 @@ public class WwsPointsCalculatorService {
               141,
               0,
               new BigDecimal("808.06"),
-              BigDecimal.ZERO,
+              ZERO,
               false,
               false),
           "2024",
@@ -165,8 +168,8 @@ public class WwsPointsCalculatorService {
           "GARAGE", new BigDecimal("9"),
           "CARPORT", new BigDecimal("6"),
           "DESIGNATED_SPOT", new BigDecimal("4"),
-          "STREET", BigDecimal.ZERO,
-          "NONE", BigDecimal.ZERO);
+          "STREET", ZERO,
+          "NONE", ZERO);
 
   private static WwsVersionConfig getVersionConfig(String systemVersion) {
     WwsVersionConfig config = VERSION_CONFIGS.get(systemVersion);
@@ -298,8 +301,8 @@ public class WwsPointsCalculatorService {
                 oa ->
                     "SQM".equalsIgnoreCase(oa.getAreaUnit())
                         || "M2".equalsIgnoreCase(oa.getAreaUnit()))
-            .map(oa -> oa.getAreaValue().orElse(BigDecimal.ZERO))
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
+            .map(oa -> oa.getAreaValue().orElse(ZERO))
+            .reduce(ZERO, BigDecimal::add);
 
     Optional<String> parkingType = property.getParkingType();
     Optional<Integer> parkingSpaces = property.getParkingSpaces();
@@ -326,7 +329,7 @@ public class WwsPointsCalculatorService {
         rooms,
         Optional.empty(),
         energyLabel,
-        outdoorTotal.compareTo(BigDecimal.ZERO) > 0 ? Optional.of(outdoorTotal) : Optional.empty(),
+        outdoorTotal.compareTo(ZERO) > 0 ? Optional.of(outdoorTotal) : Optional.empty(),
         parkingType,
         parkingSpaces,
         accessibilityCount > 0 ? Optional.of(accessibilityCount) : Optional.empty(),
@@ -361,8 +364,8 @@ public class WwsPointsCalculatorService {
   private static BigDecimal sumPoints(List<WwsCategoryBreakdown> breakdown) {
     return breakdown.stream()
         .map(WwsCategoryBreakdown::points)
-        .reduce(BigDecimal.ZERO, BigDecimal::add)
-        .setScale(2, RoundingMode.HALF_UP);
+        .reduce(ZERO, BigDecimal::add)
+        .setScale(2, HALF_UP);
   }
 
   private List<WwsCategoryBreakdown> calculateBreakdown(
@@ -371,23 +374,19 @@ public class WwsPointsCalculatorService {
 
     // 1. Surface Area (Oppervlakte) — 1 pt/m²
     BigDecimal surfacePoints =
-        request
-            .surfaceAreaSqm()
-            .map(area -> area.setScale(2, RoundingMode.HALF_UP))
-            .orElse(BigDecimal.ZERO);
+        request.surfaceAreaSqm().map(area -> area.setScale(2, HALF_UP)).orElse(ZERO);
     breakdown.add(
         new WwsCategoryBreakdown(
             "SURFACE_AREA",
             "Surface Area",
             "Oppervlakte",
             surfacePoints,
-            surfacePoints.compareTo(BigDecimal.ZERO) > 0
+            surfacePoints.compareTo(ZERO) > 0
                 ? surfacePoints + " m² × 1 pt = " + surfacePoints + " pts"
                 : "Not provided"));
 
     // 2. Rooms (Kamers) — 2 pts/room
-    BigDecimal roomPoints =
-        request.numberOfRooms().map(r -> new BigDecimal(r * 2)).orElse(BigDecimal.ZERO);
+    BigDecimal roomPoints = request.numberOfRooms().map(r -> new BigDecimal(r * 2)).orElse(ZERO);
     breakdown.add(
         new WwsCategoryBreakdown(
             "ROOMS",
@@ -401,7 +400,7 @@ public class WwsPointsCalculatorService {
 
     // 3. Heating (Verwarming) — 2 pts/heated room
     BigDecimal heatingPoints =
-        request.numberOfHeatedRooms().map(r -> new BigDecimal(r * 2)).orElse(BigDecimal.ZERO);
+        request.numberOfHeatedRooms().map(r -> new BigDecimal(r * 2)).orElse(ZERO);
     breakdown.add(
         new WwsCategoryBreakdown(
             "HEATING",
@@ -419,10 +418,8 @@ public class WwsPointsCalculatorService {
             .energyLabel()
             .map(
                 label ->
-                    config
-                        .energyLabelPoints()
-                        .getOrDefault(label.toUpperCase(Locale.ROOT), BigDecimal.ZERO))
-            .orElse(BigDecimal.ZERO);
+                    config.energyLabelPoints().getOrDefault(label.toUpperCase(Locale.ROOT), ZERO))
+            .orElse(ZERO);
     breakdown.add(
         new WwsCategoryBreakdown(
             "ENERGY_LABEL",
@@ -435,26 +432,26 @@ public class WwsPointsCalculatorService {
                 .orElse("Not provided")));
 
     // 5. Kitchen (Keuken) — direct quality points
-    BigDecimal kitchenPoints = request.kitchenQualityPoints().orElse(BigDecimal.ZERO);
+    BigDecimal kitchenPoints = request.kitchenQualityPoints().orElse(ZERO);
     breakdown.add(
         new WwsCategoryBreakdown(
             "KITCHEN",
             "Kitchen",
             "Keuken",
             kitchenPoints,
-            kitchenPoints.compareTo(BigDecimal.ZERO) > 0
+            kitchenPoints.compareTo(ZERO) > 0
                 ? "Kitchen quality: " + kitchenPoints + " pts"
                 : "Not assessed"));
 
     // 6. Bathroom (Sanitair) — direct quality points
-    BigDecimal bathroomPoints = request.bathroomQualityPoints().orElse(BigDecimal.ZERO);
+    BigDecimal bathroomPoints = request.bathroomQualityPoints().orElse(ZERO);
     breakdown.add(
         new WwsCategoryBreakdown(
             "BATHROOM",
             "Bathroom",
             "Sanitair",
             bathroomPoints,
-            bathroomPoints.compareTo(BigDecimal.ZERO) > 0
+            bathroomPoints.compareTo(ZERO) > 0
                 ? "Bathroom quality: " + bathroomPoints + " pts"
                 : "Not assessed"));
 
@@ -480,9 +477,8 @@ public class WwsPointsCalculatorService {
     BigDecimal parkingBasePoints =
         request
             .parkingType()
-            .map(
-                type -> PARKING_POINTS.getOrDefault(type.toUpperCase(Locale.ROOT), BigDecimal.ZERO))
-            .orElse(BigDecimal.ZERO);
+            .map(type -> PARKING_POINTS.getOrDefault(type.toUpperCase(Locale.ROOT), ZERO))
+            .orElse(ZERO);
     int spaces = request.parkingSpaces().orElse(1);
     BigDecimal parkingPoints = parkingBasePoints.multiply(new BigDecimal(Math.max(spaces, 1)));
     breakdown.add(
@@ -497,14 +493,14 @@ public class WwsPointsCalculatorService {
                 .orElse("Not provided")));
 
     // 10. Location (Ligging) — direct bonus/penalty
-    BigDecimal locationPoints = request.locationBonus().orElse(BigDecimal.ZERO);
+    BigDecimal locationPoints = request.locationBonus().orElse(ZERO);
     breakdown.add(
         new WwsCategoryBreakdown(
             "LOCATION",
             "Location",
             "Ligging",
             locationPoints,
-            locationPoints.compareTo(BigDecimal.ZERO) != 0
+            locationPoints.compareTo(ZERO) != 0
                 ? "Location adjustment: " + locationPoints + " pts"
                 : "No adjustment"));
 
@@ -524,7 +520,7 @@ public class WwsPointsCalculatorService {
             .accessibilityFeatures()
             .filter(f -> f > 0)
             .map(f -> new BigDecimal(f * 3))
-            .orElse(BigDecimal.ZERO);
+            .orElse(ZERO);
     breakdown.add(
         new WwsCategoryBreakdown(
             "ACCESSIBILITY",
@@ -541,9 +537,9 @@ public class WwsPointsCalculatorService {
     BigDecimal commonAreaPoints =
         request
             .commonAreaSqm()
-            .filter(sqm -> sqm.compareTo(BigDecimal.ZERO) > 0)
-            .map(sqm -> sqm.multiply(new BigDecimal("0.75")).setScale(2, RoundingMode.HALF_UP))
-            .orElse(BigDecimal.ZERO);
+            .filter(sqm -> sqm.compareTo(ZERO) > 0)
+            .map(sqm -> sqm.multiply(new BigDecimal("0.75")).setScale(2, HALF_UP))
+            .orElse(ZERO);
     breakdown.add(
         new WwsCategoryBreakdown(
             "COMMON_AREAS",
@@ -552,20 +548,20 @@ public class WwsPointsCalculatorService {
             commonAreaPoints,
             request
                 .commonAreaSqm()
-                .filter(sqm -> sqm.compareTo(BigDecimal.ZERO) > 0)
+                .filter(sqm -> sqm.compareTo(ZERO) > 0)
                 .map(sqm -> sqm + " m² × 0.75 = " + commonAreaPoints + " pts")
                 .orElse("Not provided")));
 
     // Apply WOZ 33% cap (post-July 2024 only)
-    if (config.hasWozCap() && rawWozPoints.compareTo(BigDecimal.ZERO) > 0) {
+    if (config.hasWozCap() && rawWozPoints.compareTo(ZERO) > 0) {
       BigDecimal nonWozTotal =
           breakdown.stream()
               .filter(b -> !"WOZ_VALUE".equals(b.key()))
               .map(WwsCategoryBreakdown::points)
-              .reduce(BigDecimal.ZERO, BigDecimal::add);
+              .reduce(ZERO, BigDecimal::add);
 
-      if (nonWozTotal.compareTo(BigDecimal.ZERO) > 0) {
-        BigDecimal maxWoz = nonWozTotal.multiply(WOZ_CAP_RATIO).setScale(2, RoundingMode.HALF_UP);
+      if (nonWozTotal.compareTo(ZERO) > 0) {
+        BigDecimal maxWoz = nonWozTotal.multiply(WOZ_CAP_RATIO).setScale(2, HALF_UP);
         if (rawWozPoints.compareTo(maxWoz) > 0) {
           breakdown.set(
               wozIndex,
@@ -590,48 +586,47 @@ public class WwsPointsCalculatorService {
       WwsCalculationRequest request, WwsVersionConfig config) {
     return request
         .wozValue()
-        .filter(woz -> woz.compareTo(BigDecimal.ZERO) > 0)
+        .filter(woz -> woz.compareTo(ZERO) > 0)
         .map(
             woz -> {
               BigDecimal effectiveWoz = woz.max(config.wozMinimum());
 
-              BigDecimal componentI =
-                  effectiveWoz.divide(config.wozDividerI(), 2, RoundingMode.HALF_UP);
+              BigDecimal componentI = effectiveWoz.divide(config.wozDividerI(), 2, HALF_UP);
 
               BigDecimal componentII =
                   request
                       .surfaceAreaSqm()
-                      .filter(area -> area.compareTo(BigDecimal.ZERO) > 0)
+                      .filter(area -> area.compareTo(ZERO) > 0)
                       .map(
                           area ->
                               effectiveWoz
-                                  .divide(area, 2, RoundingMode.HALF_UP)
-                                  .divide(config.wozDividerII(), 2, RoundingMode.HALF_UP))
-                      .orElse(BigDecimal.ZERO);
+                                  .divide(area, 2, HALF_UP)
+                                  .divide(config.wozDividerII(), 2, HALF_UP))
+                      .orElse(ZERO);
 
-              return componentI.add(componentII).setScale(2, RoundingMode.HALF_UP);
+              return componentI.add(componentII).setScale(2, HALF_UP);
             })
-        .orElse(BigDecimal.ZERO);
+        .orElse(ZERO);
   }
 
   private static String buildWozExplanation(
       WwsCalculationRequest request, WwsVersionConfig config, BigDecimal totalWozPoints) {
-    if (request.wozValue().filter(woz -> woz.compareTo(BigDecimal.ZERO) > 0).isEmpty()) {
+    if (request.wozValue().filter(woz -> woz.compareTo(ZERO) > 0).isEmpty()) {
       return "Not provided";
     }
 
     BigDecimal woz = request.wozValue().orElseThrow();
     BigDecimal effectiveWoz = woz.max(config.wozMinimum());
-    BigDecimal compI = effectiveWoz.divide(config.wozDividerI(), 2, RoundingMode.HALF_UP);
+    BigDecimal compI = effectiveWoz.divide(config.wozDividerI(), 2, HALF_UP);
 
     StringBuilder sb = new StringBuilder();
     if (woz.compareTo(config.wozMinimum()) < 0) {
       sb.append("Min floor applied: €")
-          .append(config.wozMinimum().setScale(0, RoundingMode.HALF_UP))
+          .append(config.wozMinimum().setScale(0, HALF_UP))
           .append(". ");
     }
     sb.append("I: €")
-        .append(effectiveWoz.setScale(0, RoundingMode.HALF_UP))
+        .append(effectiveWoz.setScale(0, HALF_UP))
         .append(" / €")
         .append(config.wozDividerI())
         .append(" = ")
@@ -640,15 +635,13 @@ public class WwsPointsCalculatorService {
 
     request
         .surfaceAreaSqm()
-        .filter(area -> area.compareTo(BigDecimal.ZERO) > 0)
+        .filter(area -> area.compareTo(ZERO) > 0)
         .ifPresent(
             area -> {
               BigDecimal compII =
-                  effectiveWoz
-                      .divide(area, 2, RoundingMode.HALF_UP)
-                      .divide(config.wozDividerII(), 2, RoundingMode.HALF_UP);
+                  effectiveWoz.divide(area, 2, HALF_UP).divide(config.wozDividerII(), 2, HALF_UP);
               sb.append(" + II: (€")
-                  .append(effectiveWoz.setScale(0, RoundingMode.HALF_UP))
+                  .append(effectiveWoz.setScale(0, HALF_UP))
                   .append(" / ")
                   .append(area)
                   .append(" m²) / €")
@@ -670,32 +663,29 @@ public class WwsPointsCalculatorService {
     if (config.newOutdoorFormula()) {
       return request
           .outdoorSpaceSqm()
-          .filter(sqm -> sqm.compareTo(BigDecimal.ZERO) > 0)
+          .filter(sqm -> sqm.compareTo(ZERO) > 0)
           .map(
               sqm -> {
                 BigDecimal points =
                     new BigDecimal("2")
                         .add(sqm.multiply(new BigDecimal("0.35")))
-                        .setScale(2, RoundingMode.HALF_UP);
+                        .setScale(2, HALF_UP);
                 return points.min(new BigDecimal("15"));
               })
           .orElse(new BigDecimal("-5"));
     } else {
       return request
           .outdoorSpaceSqm()
-          .filter(sqm -> sqm.compareTo(BigDecimal.ZERO) > 0)
-          .map(
-              sqm ->
-                  sqm.divide(new BigDecimal("25"), 0, RoundingMode.DOWN)
-                      .multiply(new BigDecimal("2")))
-          .orElse(BigDecimal.ZERO);
+          .filter(sqm -> sqm.compareTo(ZERO) > 0)
+          .map(sqm -> sqm.divide(new BigDecimal("25"), 0, DOWN).multiply(new BigDecimal("2")))
+          .orElse(ZERO);
     }
   }
 
   private static String buildOutdoorExplanation(
       WwsCalculationRequest request, WwsVersionConfig config, BigDecimal points) {
     boolean hasOutdoor =
-        request.outdoorSpaceSqm().filter(sqm -> sqm.compareTo(BigDecimal.ZERO) > 0).isPresent();
+        request.outdoorSpaceSqm().filter(sqm -> sqm.compareTo(ZERO) > 0).isPresent();
 
     if (config.newOutdoorFormula()) {
       if (hasOutdoor) {
@@ -722,13 +712,13 @@ public class WwsPointsCalculatorService {
   private static BigDecimal calculateRenovationPoints(
       WwsCalculationRequest request, WwsVersionConfig config) {
     if (!config.hasRenovation()) {
-      return BigDecimal.ZERO;
+      return ZERO;
     }
     return request
         .renovationInvestment()
-        .filter(inv -> inv.compareTo(BigDecimal.ZERO) > 0)
-        .map(inv -> inv.divide(RENOVATION_DIVISOR, 2, RoundingMode.HALF_UP))
-        .orElse(BigDecimal.ZERO);
+        .filter(inv -> inv.compareTo(ZERO) > 0)
+        .map(inv -> inv.divide(RENOVATION_DIVISOR, 2, HALF_UP))
+        .orElse(ZERO);
   }
 
   private static String buildRenovationExplanation(
@@ -738,11 +728,11 @@ public class WwsPointsCalculatorService {
     }
     return request
         .renovationInvestment()
-        .filter(inv -> inv.compareTo(BigDecimal.ZERO) > 0)
+        .filter(inv -> inv.compareTo(ZERO) > 0)
         .map(
             inv ->
                 "€"
-                    + inv.setScale(0, RoundingMode.HALF_UP)
+                    + inv.setScale(0, HALF_UP)
                     + " / €"
                     + RENOVATION_DIVISOR
                     + " = "
@@ -756,7 +746,7 @@ public class WwsPointsCalculatorService {
   // 2023: ≤141 = REGULATED, >141 = FREE_SECTOR
   // 2024+: ≤143 = REGULATED, 144-186 = MID_SEGMENT, ≥187 = FREE_SECTOR
   private static String classifyPoints(BigDecimal totalPoints, WwsVersionConfig config) {
-    int points = totalPoints.setScale(0, RoundingMode.HALF_UP).intValue();
+    int points = totalPoints.setScale(0, HALF_UP).intValue();
 
     if (points <= config.regulatedMaxPoints()) {
       return "REGULATED";
@@ -779,15 +769,15 @@ public class WwsPointsCalculatorService {
       rate =
           config
               .midSegmentThresholdRent()
-              .divide(new BigDecimal(config.midSegmentMaxPoints()), 4, RoundingMode.HALF_UP);
+              .divide(new BigDecimal(config.midSegmentMaxPoints()), 4, HALF_UP);
     } else {
       rate =
           config
               .socialThresholdRent()
-              .divide(new BigDecimal(config.regulatedMaxPoints()), 4, RoundingMode.HALF_UP);
+              .divide(new BigDecimal(config.regulatedMaxPoints()), 4, HALF_UP);
     }
 
-    return Optional.of(totalPoints.multiply(rate).setScale(2, RoundingMode.HALF_UP));
+    return Optional.of(totalPoints.multiply(rate).setScale(2, HALF_UP));
   }
 
   // --- Helpers ---
@@ -832,7 +822,7 @@ public class WwsPointsCalculatorService {
   private UUID resolveContractId(String contractIdentifier, UUID teamId) {
     return contractRepository
         .findByIdentifierAndTeamId(Sid.of(contractIdentifier), teamId)
-        .map(c -> c.getId())
+        .map(Contract::getId)
         .orElseThrow(() -> new NotFoundException("Contract not found: " + contractIdentifier));
   }
 }

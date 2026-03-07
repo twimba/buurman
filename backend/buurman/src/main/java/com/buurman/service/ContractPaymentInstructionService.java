@@ -344,9 +344,9 @@ public class ContractPaymentInstructionService {
           cpi.getIdentifier().orElseThrow(),
           Optional.of(template.getIdentifier().orElseThrow()),
           Optional.of(false),
-          Optional.ofNullable(template.getName()),
-          Optional.ofNullable(template.getDescription()),
-          Optional.ofNullable(
+          Optional.of(template.getName()),
+          Optional.of(template.getDescription()),
+          Optional.of(
               template.getPaymentMethod() != null ? template.getPaymentMethod().name() : null),
           template.getBankName(),
           template.getAccountHolderName(),

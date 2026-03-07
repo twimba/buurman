@@ -18,6 +18,7 @@ import static com.buurman.service.export.BookletHelper.escapeHtml;
 import static com.buurman.service.export.BookletHelper.formatEnumValue;
 import static com.buurman.service.export.BookletHelper.isTrue;
 import static com.buurman.service.export.BookletHelper.propertyTypeIconHtml;
+import static java.math.BigDecimal.ZERO;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -1415,8 +1416,8 @@ public class PropertyBookletExporter {
 
   private static class FinancialYearSummary {
     private final int year;
-    private BigDecimal income = BigDecimal.ZERO;
-    private BigDecimal expenses = BigDecimal.ZERO;
+    private BigDecimal income = ZERO;
+    private BigDecimal expenses = ZERO;
 
     FinancialYearSummary(int year) {
       this.year = year;

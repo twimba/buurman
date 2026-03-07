@@ -8,10 +8,11 @@ import static com.buurman.domain.Property.PropertyStatus.SELF_OCCUPIED;
 import static com.buurman.domain.Property.PropertyStatus.UNAVAILABLE;
 import static com.buurman.domain.Property.PropertyStatus.UNDER_RENOVATION;
 import static com.buurman.domain.Property.PropertyStatus.VACANT;
+import static java.math.BigDecimal.ZERO;
+import static java.math.RoundingMode.HALF_UP;
 import static java.time.ZoneOffset.UTC;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -61,9 +62,9 @@ public class DashboardService {
     BigDecimal occupancyRate =
         availableUnits > 0
             ? BigDecimal.valueOf(occupiedUnits + selfOccupiedUnits)
-                .divide(BigDecimal.valueOf(availableUnits), 4, RoundingMode.HALF_UP)
+                .divide(BigDecimal.valueOf(availableUnits), 4, HALF_UP)
                 .multiply(BigDecimal.valueOf(100))
-            : BigDecimal.ZERO;
+            : ZERO;
 
     // Rental occupancy rate: only rented units vs rental-eligible units
     // Excludes self-occupied from both numerator and denominator
@@ -71,9 +72,9 @@ public class DashboardService {
     BigDecimal rentalOccupancyRate =
         rentalEligibleUnits > 0
             ? BigDecimal.valueOf(occupiedUnits)
-                .divide(BigDecimal.valueOf(rentalEligibleUnits), 4, RoundingMode.HALF_UP)
+                .divide(BigDecimal.valueOf(rentalEligibleUnits), 4, HALF_UP)
                 .multiply(BigDecimal.valueOf(100))
-            : BigDecimal.ZERO;
+            : ZERO;
 
     // Calculate monthly income from active contracts
     DashboardStatsResponse.MonthlyIncome monthlyIncome = calculateMonthlyIncome(teamId);
@@ -145,8 +146,7 @@ public class DashboardService {
         contractRepository.findActiveContractIncomeByTeamId(teamId);
 
     if (activeContracts.isEmpty()) {
-      return new DashboardStatsResponse.MonthlyIncome(
-          BigDecimal.ZERO, teamService.getDefaultCurrency(teamId));
+      return new DashboardStatsResponse.MonthlyIncome(ZERO, teamService.getDefaultCurrency(teamId));
     }
 
     // Group by currency and calculate monthly income
@@ -161,8 +161,8 @@ public class DashboardService {
       BigDecimal monthlyAmount =
           switch (paymentFrequency) {
             case "MONTHLY" -> rentAmount;
-            case "QUARTERLY" -> rentAmount.divide(BigDecimal.valueOf(3), 2, RoundingMode.HALF_UP);
-            case "ANNUALLY" -> rentAmount.divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_UP);
+            case "QUARTERLY" -> rentAmount.divide(BigDecimal.valueOf(3), 2, HALF_UP);
+            case "ANNUALLY" -> rentAmount.divide(BigDecimal.valueOf(12), 2, HALF_UP);
             default -> rentAmount;
           };
 
@@ -173,6 +173,6 @@ public class DashboardService {
     Map.Entry<String, BigDecimal> primaryIncome = incomePerCurrency.entrySet().iterator().next();
 
     return new DashboardStatsResponse.MonthlyIncome(
-        primaryIncome.getValue().setScale(2, RoundingMode.HALF_UP), primaryIncome.getKey());
+        primaryIncome.getValue().setScale(2, HALF_UP), primaryIncome.getKey());
   }
 }

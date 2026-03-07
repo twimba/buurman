@@ -72,8 +72,6 @@ public class ContractPaymentInstructionRepository {
 
     UUID id = UUID.randomUUID();
     Sid identifier = newContractPaymentInstructionId();
-    LocalDateTime createdAt = now;
-    LocalDateTime updatedAt = now;
 
     dsl.insertInto(TABLE)
         .set(ID, id)
@@ -96,16 +94,16 @@ public class ContractPaymentInstructionRepository {
         .set(EFFECTIVE_FROM, cpi.getEffectiveFrom())
         .set(EFFECTIVE_TO, cpi.getEffectiveTo().orElse(null))
         .set(NOTES, cpi.getNotes().orElse(null))
-        .set(CREATED_AT, createdAt)
-        .set(UPDATED_AT, updatedAt)
+        .set(CREATED_AT, now)
+        .set(UPDATED_AT, now)
         .set(CREATED_BY, cpi.getCreatedBy())
         .set(UPDATED_BY, cpi.getUpdatedBy())
         .execute();
 
     cpi.setId(id);
     cpi.setIdentifier(java.util.Optional.of(identifier));
-    cpi.setCreatedAt(createdAt.toInstant(UTC));
-    cpi.setUpdatedAt(updatedAt.toInstant(UTC));
+    cpi.setCreatedAt(now.toInstant(UTC));
+    cpi.setUpdatedAt(now.toInstant(UTC));
     return cpi;
   }
 
@@ -177,25 +175,25 @@ public class ContractPaymentInstructionRepository {
     cpi.setIdentifier(java.util.Optional.of(com.buurman.domain.Sid.of(record.get(IDENTIFIER))));
     cpi.setTeamId(record.get(TEAM_ID));
     cpi.setContractId(record.get(CONTRACT_ID));
-    cpi.setPaymentInstructionId(Optional.ofNullable(record.get(PAYMENT_INSTRUCTION_ID)));
+    cpi.setPaymentInstructionId(Optional.of(record.get(PAYMENT_INSTRUCTION_ID)));
     cpi.setIsCustom(record.get(IS_CUSTOM));
-    cpi.setCustomName(Optional.ofNullable(record.get(CUSTOM_NAME)));
-    cpi.setCustomDescription(Optional.ofNullable(record.get(CUSTOM_DESCRIPTION)));
-    cpi.setCustomPaymentMethod(Optional.ofNullable(record.get(CUSTOM_PAYMENT_METHOD)));
-    cpi.setCustomBankName(Optional.ofNullable(record.get(CUSTOM_BANK_NAME)));
-    cpi.setCustomAccountHolderName(Optional.ofNullable(record.get(CUSTOM_ACCOUNT_HOLDER_NAME)));
-    cpi.setCustomIban(Optional.ofNullable(record.get(CUSTOM_IBAN)));
-    cpi.setCustomBicSwift(Optional.ofNullable(record.get(CUSTOM_BIC_SWIFT)));
-    cpi.setCustomAccountNumber(Optional.ofNullable(record.get(CUSTOM_ACCOUNT_NUMBER)));
-    cpi.setCustomRoutingNumber(Optional.ofNullable(record.get(CUSTOM_ROUTING_NUMBER)));
-    cpi.setCustomPaymentReference(Optional.ofNullable(record.get(CUSTOM_PAYMENT_REFERENCE)));
-    cpi.setCustomAdditionalDetails(Optional.ofNullable(record.get(CUSTOM_ADDITIONAL_DETAILS)));
+    cpi.setCustomName(Optional.of(record.get(CUSTOM_NAME)));
+    cpi.setCustomDescription(Optional.of(record.get(CUSTOM_DESCRIPTION)));
+    cpi.setCustomPaymentMethod(Optional.of(record.get(CUSTOM_PAYMENT_METHOD)));
+    cpi.setCustomBankName(Optional.of(record.get(CUSTOM_BANK_NAME)));
+    cpi.setCustomAccountHolderName(Optional.of(record.get(CUSTOM_ACCOUNT_HOLDER_NAME)));
+    cpi.setCustomIban(Optional.of(record.get(CUSTOM_IBAN)));
+    cpi.setCustomBicSwift(Optional.of(record.get(CUSTOM_BIC_SWIFT)));
+    cpi.setCustomAccountNumber(Optional.of(record.get(CUSTOM_ACCOUNT_NUMBER)));
+    cpi.setCustomRoutingNumber(Optional.of(record.get(CUSTOM_ROUTING_NUMBER)));
+    cpi.setCustomPaymentReference(Optional.of(record.get(CUSTOM_PAYMENT_REFERENCE)));
+    cpi.setCustomAdditionalDetails(Optional.of(record.get(CUSTOM_ADDITIONAL_DETAILS)));
     LocalDate effectiveFrom = toLocalDate(record.get("effective_from"));
     if (effectiveFrom != null) {
       cpi.setEffectiveFrom(effectiveFrom);
     }
     cpi.setEffectiveTo(Optional.ofNullable(toLocalDate(record.get("effective_to"))));
-    cpi.setNotes(Optional.ofNullable(record.get(NOTES)));
+    cpi.setNotes(Optional.of(record.get(NOTES)));
     Instant createdAt = toInstant(record.get("created_at"));
     if (createdAt != null) {
       cpi.setCreatedAt(createdAt);

@@ -169,7 +169,6 @@ public final class HumanReadableIdGenerator {
       }
     }
     // Fallback: append random digits
-    String code = generate() + "-" + String.format("%04d", RANDOM.nextInt(10000));
-    return code;
+    return generate() + "-" + String.format("%04d", RANDOM.nextInt(10000));
   }
 }

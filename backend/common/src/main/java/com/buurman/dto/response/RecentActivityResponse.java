@@ -30,9 +30,9 @@ public record RecentActivityResponse(
         entityIdentifier,
         entityName,
         action,
-        Optional.ofNullable(userName),
+        Optional.of(userName),
         timestamp,
-        Optional.ofNullable(description),
+        Optional.of(description),
         Map.of(),
         Map.of(),
         Map.of());

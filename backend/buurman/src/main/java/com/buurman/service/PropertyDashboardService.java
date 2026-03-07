@@ -399,7 +399,7 @@ public class PropertyDashboardService {
         Optional.ofNullable(capRatePercent),
         Optional.ofNullable(cashOnCashPercent),
         Optional.ofNullable(monthlyCashFlow),
-        Optional.ofNullable(annualNoi),
+        Optional.of(annualNoi),
         Optional.ofNullable(totalEquity),
         Optional.ofNullable(equityGrowthPercent),
         Optional.ofNullable(occupancyRatePercent),

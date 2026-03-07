@@ -1,6 +1,7 @@
 package com.buurman.service;
 
 import static com.buurman.util.SidGenerator.newExpenseId;
+import static java.math.BigDecimal.ZERO;
 import static java.util.stream.Collectors.joining;
 
 import java.math.BigDecimal;
@@ -94,7 +95,6 @@ public class ExpenseService {
     List<BulkCreateResult<ExpenseResponse>> results = new ArrayList<>();
 
     for (int i = 0; i < requests.size(); i++) {
-      final int index = i;
       CreateExpenseRequest request = requests.get(i);
 
       // Per-item validation
@@ -104,17 +104,17 @@ public class ExpenseService {
             violations.stream()
                 .map(v -> v.getPropertyPath() + ": " + v.getMessage())
                 .collect(joining(", "));
-        results.add(BulkCreateResult.error(index, errorMsg));
+        results.add(BulkCreateResult.error(i, errorMsg));
         continue;
       }
 
       try {
         ExpenseResponse response =
             txTemplate.execute(status -> performCreateExpense(request, principal));
-        results.add(BulkCreateResult.success(index, response));
+        results.add(BulkCreateResult.success(i, response));
       } catch (Exception e) {
-        log.warn("Bulk expense creation failed for item {}: {}", index, e.getMessage());
-        results.add(BulkCreateResult.error(index, extractErrorMessage(e)));
+        log.warn("Bulk expense creation failed for item {}: {}", i, e.getMessage());
+        results.add(BulkCreateResult.error(i, extractErrorMessage(e)));
       }
     }
 
@@ -400,7 +400,7 @@ public class ExpenseService {
       List<ExpenseResponse> successes, UserPrincipal principal) {
     int count = successes.size();
     BigDecimal totalAmount =
-        successes.stream().map(ExpenseResponse::amount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        successes.stream().map(ExpenseResponse::amount).reduce(ZERO, BigDecimal::add);
     String currency = successes.stream().map(ExpenseResponse::currency).findFirst().orElse("");
     String propertyNames =
         successes.stream()

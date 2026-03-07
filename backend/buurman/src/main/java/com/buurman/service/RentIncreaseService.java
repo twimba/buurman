@@ -1,7 +1,9 @@
 package com.buurman.service;
 
+import static java.math.BigDecimal.ZERO;
+import static java.math.RoundingMode.HALF_UP;
+
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -179,9 +181,8 @@ public class RentIncreaseService {
         BigDecimal currentRent = contract.getRentAmount().value();
         BigDecimal multiplier =
             BigDecimal.ONE.add(
-                item.increasePercentage()
-                    .divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP));
-        BigDecimal newRent = currentRent.multiply(multiplier).setScale(2, RoundingMode.HALF_UP);
+                item.increasePercentage().divide(BigDecimal.valueOf(100), 10, HALF_UP));
+        BigDecimal newRent = currentRent.multiply(multiplier).setScale(2, HALF_UP);
 
         // Delegate to ContractRentPeriodService.addRentPeriod
         CreateRentPeriodRequest rentPeriodRequest =
@@ -219,8 +220,8 @@ public class RentIncreaseService {
                 item.contractIdentifier(),
                 "Unknown",
                 false,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
+                ZERO,
+                ZERO,
                 item.effectiveDate(),
                 0,
                 0,

@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.Property;
+import com.buurman.domain.PropertyAcquisition;
 import com.buurman.domain.PropertyFinancing;
 import com.buurman.domain.PropertyOccupancyPeriod;
 import com.buurman.domain.Sid;
@@ -239,7 +240,7 @@ public class OccupancyPeriodService {
     Optional<LocalDate> acquisitionDate =
         acquisitionRepository
             .findByPropertyIdAndTeamId(property.getId(), teamId)
-            .flatMap(a -> a.getAcquisitionDate());
+            .flatMap(PropertyAcquisition::getAcquisitionDate);
 
     List<PropertyOccupancyPeriod> periods =
         repository.findByPropertyIdAndTeamId(property.getId(), teamId);

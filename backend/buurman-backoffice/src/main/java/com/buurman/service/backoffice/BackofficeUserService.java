@@ -132,8 +132,8 @@ public class BackofficeUserService {
     return new BackofficeUserResponse(
         user.getIdentifier().orElseThrow(),
         user.getEmail(),
-        Optional.ofNullable(user.getFirstName()),
-        Optional.ofNullable(user.getLastName()),
+        Optional.of(user.getFirstName()),
+        Optional.of(user.getLastName()),
         user.getPhone(),
         user.getEmailVerifiedAt().isPresent(),
         user.getDisabledAt().isPresent(),
@@ -141,6 +141,6 @@ public class BackofficeUserService {
         teamCount,
         demoTeamCount,
         user.getCreatedAt(),
-        Optional.ofNullable(user.getUpdatedAt()));
+        Optional.of(user.getUpdatedAt()));
   }
 }

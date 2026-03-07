@@ -6,11 +6,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import lombok.Getter;
+
 /** Mutable context passed between demo data generators to share generated IDs. */
 public class DemoDataContext {
 
   // Team key (e.g., "demo-team") -> team UUID
-  private final Map<String, UUID> teamIds = new LinkedHashMap<>();
+  @Getter private final Map<String, UUID> teamIds = new LinkedHashMap<>();
 
   // Team key -> default currency code (e.g., "EUR")
   private final Map<String, String> teamCurrencies = new LinkedHashMap<>();
@@ -19,25 +21,28 @@ public class DemoDataContext {
   private final Map<UUID, String> identifiers = new LinkedHashMap<>();
 
   // Email -> user UUID
-  private final Map<String, UUID> userIds = new LinkedHashMap<>();
+  @Getter private final Map<String, UUID> userIds = new LinkedHashMap<>();
 
   // Email -> Keycloak user ID
-  private final Map<String, String> keycloakIds = new LinkedHashMap<>();
+  @Getter private final Map<String, String> keycloakIds = new LinkedHashMap<>();
 
   // Team UUID -> list of property UUIDs
-  private final Map<UUID, List<UUID>> propertyIdsByTeam = new LinkedHashMap<>();
+  @Getter private final Map<UUID, List<UUID>> propertyIdsByTeam = new LinkedHashMap<>();
 
   // Team UUID -> list of tenant UUIDs
-  private final Map<UUID, List<UUID>> tenantIdsByTeam = new LinkedHashMap<>();
+  @Getter private final Map<UUID, List<UUID>> tenantIdsByTeam = new LinkedHashMap<>();
 
   // Team UUID -> list of contract UUIDs
-  private final Map<UUID, List<UUID>> contractIdsByTeam = new LinkedHashMap<>();
+  @Getter private final Map<UUID, List<UUID>> contractIdsByTeam = new LinkedHashMap<>();
 
   // Team UUID -> list of payment instruction UUIDs
-  private final Map<UUID, List<UUID>> paymentInstructionIdsByTeam = new LinkedHashMap<>();
+  @Getter private final Map<UUID, List<UUID>> paymentInstructionIdsByTeam = new LinkedHashMap<>();
 
   // Contract UUID -> list of payment UUIDs
-  private final Map<UUID, List<UUID>> paymentIdsByContract = new LinkedHashMap<>();
+  @Getter private final Map<UUID, List<UUID>> paymentIdsByContract = new LinkedHashMap<>();
+
+  // Team UUID -> list of financing UUIDs (for financing payment generation)
+  @Getter private final Map<UUID, List<UUID>> financingIdsByTeam = new LinkedHashMap<>();
 
   // Property UUID -> property category (RESIDENTIAL, COMMERCIAL, INDUSTRIAL, AGRICULTURAL,
   // MIXED_USE)
@@ -47,19 +52,15 @@ public class DemoDataContext {
   private final Map<UUID, Boolean> businessTenantFlags = new LinkedHashMap<>();
 
   // Counters
-  private int teamsCreated;
-  private int usersCreated;
-  private int propertiesCreated;
-  private int tenantsCreated;
-  private int contractsCreated;
-  private int paymentsCreated;
-  private int expensesCreated;
-  private int notificationsCreated;
-  private int documentsCreated;
-
-  public Map<String, UUID> getTeamIds() {
-    return teamIds;
-  }
+  @Getter private int teamsCreated;
+  @Getter private int usersCreated;
+  @Getter private int propertiesCreated;
+  @Getter private int tenantsCreated;
+  @Getter private int contractsCreated;
+  @Getter private int paymentsCreated;
+  @Getter private int expensesCreated;
+  @Getter private int notificationsCreated;
+  @Getter private int documentsCreated;
 
   public void putIdentifier(UUID id, String identifier) {
     identifiers.put(id, identifier);
@@ -85,34 +86,6 @@ public class DemoDataContext {
     return teamCurrencies.getOrDefault(teamKey, "EUR");
   }
 
-  public Map<String, UUID> getUserIds() {
-    return userIds;
-  }
-
-  public Map<String, String> getKeycloakIds() {
-    return keycloakIds;
-  }
-
-  public Map<UUID, List<UUID>> getPropertyIdsByTeam() {
-    return propertyIdsByTeam;
-  }
-
-  public Map<UUID, List<UUID>> getTenantIdsByTeam() {
-    return tenantIdsByTeam;
-  }
-
-  public Map<UUID, List<UUID>> getContractIdsByTeam() {
-    return contractIdsByTeam;
-  }
-
-  public Map<UUID, List<UUID>> getPaymentInstructionIdsByTeam() {
-    return paymentInstructionIdsByTeam;
-  }
-
-  public Map<UUID, List<UUID>> getPaymentIdsByContract() {
-    return paymentIdsByContract;
-  }
-
   public void putPropertyCategory(UUID propertyId, String category) {
     propertyCategoriesByProperty.put(propertyId, category);
   }
@@ -129,72 +102,36 @@ public class DemoDataContext {
     return businessTenantFlags.getOrDefault(tenantId, false);
   }
 
-  public int getTeamsCreated() {
-    return teamsCreated;
-  }
-
   public void incrementTeams() {
     teamsCreated++;
-  }
-
-  public int getUsersCreated() {
-    return usersCreated;
   }
 
   public void incrementUsers() {
     usersCreated++;
   }
 
-  public int getPropertiesCreated() {
-    return propertiesCreated;
-  }
-
   public void incrementProperties() {
     propertiesCreated++;
-  }
-
-  public int getTenantsCreated() {
-    return tenantsCreated;
   }
 
   public void incrementTenants() {
     tenantsCreated++;
   }
 
-  public int getContractsCreated() {
-    return contractsCreated;
-  }
-
   public void incrementContracts() {
     contractsCreated++;
-  }
-
-  public int getPaymentsCreated() {
-    return paymentsCreated;
   }
 
   public void incrementPayments() {
     paymentsCreated++;
   }
 
-  public int getExpensesCreated() {
-    return expensesCreated;
-  }
-
   public void incrementExpenses() {
     expensesCreated++;
   }
 
-  public int getNotificationsCreated() {
-    return notificationsCreated;
-  }
-
   public void incrementNotifications(int count) {
     notificationsCreated += count;
-  }
-
-  public int getDocumentsCreated() {
-    return documentsCreated;
   }
 
   public void incrementDocuments(int count) {

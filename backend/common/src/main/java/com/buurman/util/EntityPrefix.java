@@ -1,5 +1,8 @@
 package com.buurman.util;
 
+import lombok.Getter;
+
+@Getter
 public enum EntityPrefix {
   AMN("AMN", "Amenities"),
   BCM("BCM", "Broadcast Messages"),
@@ -44,13 +47,5 @@ public enum EntityPrefix {
   EntityPrefix(String code, String entityName) {
     this.code = code;
     this.entityName = entityName;
-  }
-
-  public String getCode() {
-    return code;
-  }
-
-  public String getEntityName() {
-    return entityName;
   }
 }

@@ -27,49 +27,49 @@ public record WwsCalculationRequest(
     Optional<BigDecimal> commonAreaSqm) {
 
   public WwsCalculationRequest {
-    if (contractIdentifier == null) {
+    if (contractIdentifier.isEmpty()) {
       contractIdentifier = Optional.empty();
     }
-    if (surfaceAreaSqm == null) {
+    if (surfaceAreaSqm.isEmpty()) {
       surfaceAreaSqm = Optional.empty();
     }
-    if (numberOfRooms == null) {
+    if (numberOfRooms.isEmpty()) {
       numberOfRooms = Optional.empty();
     }
-    if (numberOfHeatedRooms == null) {
+    if (numberOfHeatedRooms.isEmpty()) {
       numberOfHeatedRooms = Optional.empty();
     }
-    if (energyLabel == null) {
+    if (energyLabel.isEmpty()) {
       energyLabel = Optional.empty();
     }
-    if (kitchenQualityPoints == null) {
+    if (kitchenQualityPoints.isEmpty()) {
       kitchenQualityPoints = Optional.empty();
     }
-    if (bathroomQualityPoints == null) {
+    if (bathroomQualityPoints.isEmpty()) {
       bathroomQualityPoints = Optional.empty();
     }
-    if (wozValue == null) {
+    if (wozValue.isEmpty()) {
       wozValue = Optional.empty();
     }
-    if (outdoorSpaceSqm == null) {
+    if (outdoorSpaceSqm.isEmpty()) {
       outdoorSpaceSqm = Optional.empty();
     }
-    if (parkingType == null) {
+    if (parkingType.isEmpty()) {
       parkingType = Optional.empty();
     }
-    if (parkingSpaces == null) {
+    if (parkingSpaces.isEmpty()) {
       parkingSpaces = Optional.empty();
     }
-    if (locationBonus == null) {
+    if (locationBonus.isEmpty()) {
       locationBonus = Optional.empty();
     }
-    if (renovationInvestment == null) {
+    if (renovationInvestment.isEmpty()) {
       renovationInvestment = Optional.empty();
     }
-    if (accessibilityFeatures == null) {
+    if (accessibilityFeatures.isEmpty()) {
       accessibilityFeatures = Optional.empty();
     }
-    if (commonAreaSqm == null) {
+    if (commonAreaSqm.isEmpty()) {
       commonAreaSqm = Optional.empty();
     }
   }

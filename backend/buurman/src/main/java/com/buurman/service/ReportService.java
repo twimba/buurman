@@ -2,6 +2,8 @@ package com.buurman.service;
 
 import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
 import static com.buurman.domain.Payment.PaymentStatus.PAID;
+import static java.math.BigDecimal.ZERO;
+import static java.math.RoundingMode.HALF_UP;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.counting;
@@ -10,7 +12,6 @@ import static java.util.stream.Collectors.reducing;
 import static java.util.stream.Collectors.toMap;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -124,7 +125,7 @@ public class ReportService {
 
     // Calculate total income
     BigDecimal totalIncome =
-        payments.stream().map(p -> p.getAmount().value()).reduce(BigDecimal.ZERO, BigDecimal::add);
+        payments.stream().map(p -> p.getAmount().value()).reduce(ZERO, BigDecimal::add);
 
     // Calculate income by property
     Map<UUID, BigDecimal> incomeByProperty =
@@ -137,11 +138,11 @@ public class ReportService {
                             .orElseThrow(
                                 () ->
                                     new IllegalStateException("Property ID missing after filter")),
-                    reducing(BigDecimal.ZERO, p -> p.getAmount().value(), BigDecimal::add)));
+                    reducing(ZERO, p -> p.getAmount().value(), BigDecimal::add)));
 
     // Calculate total expenses
     BigDecimal totalExpenses =
-        expenses.stream().map(e -> e.getAmount().value()).reduce(BigDecimal.ZERO, BigDecimal::add);
+        expenses.stream().map(e -> e.getAmount().value()).reduce(ZERO, BigDecimal::add);
 
     // Calculate expenses by category
     List<CategoryExpenseSummary> expensesByCategory =
@@ -153,7 +154,7 @@ public class ReportService {
             .collect(
                 groupingBy(
                     Expense::getPropertyId,
-                    reducing(BigDecimal.ZERO, e -> e.getAmount().value(), BigDecimal::add)));
+                    reducing(ZERO, e -> e.getAmount().value(), BigDecimal::add)));
 
     // Combine property data
     Set<UUID> allPropertyIds = new HashSet<>();
@@ -179,12 +180,11 @@ public class ReportService {
                     Optional.ofNullable(propertiesById.get(propId))
                         .map(
                             prop -> {
-                              BigDecimal income =
-                                  incomeByProperty.getOrDefault(propId, BigDecimal.ZERO);
+                              BigDecimal income = incomeByProperty.getOrDefault(propId, ZERO);
                               return new PropertyFinancialSummary(
                                   propertyMapper.toSummary(prop),
                                   income,
-                                  BigDecimal.ZERO,
+                                  ZERO,
                                   income,
                                   calculateOccupancyDays(
                                       contractsByProperty.getOrDefault(propId, List.of()),
@@ -201,10 +201,8 @@ public class ReportService {
                     Optional.ofNullable(propertiesById.get(propId))
                         .map(
                             prop -> {
-                              BigDecimal income =
-                                  incomeByProperty.getOrDefault(propId, BigDecimal.ZERO);
-                              BigDecimal expense =
-                                  expensesByProperty.getOrDefault(propId, BigDecimal.ZERO);
+                              BigDecimal income = incomeByProperty.getOrDefault(propId, ZERO);
+                              BigDecimal expense = expensesByProperty.getOrDefault(propId, ZERO);
                               BigDecimal netProfit = income.subtract(expense);
                               return new PropertyFinancialSummary(
                                   propertyMapper.toSummary(prop),
@@ -262,20 +260,20 @@ public class ReportService {
             .collect(
                 groupingBy(
                     p -> YearMonth.from(p.getPaymentDate().orElse(p.getDueDate())),
-                    reducing(BigDecimal.ZERO, p -> p.getAmount().value(), BigDecimal::add)));
+                    reducing(ZERO, p -> p.getAmount().value(), BigDecimal::add)));
     Map<YearMonth, BigDecimal> expensesByMonth =
         allExpenses.stream()
             .collect(
                 groupingBy(
                     e -> YearMonth.from(e.getExpenseDate()),
-                    reducing(BigDecimal.ZERO, e -> e.getAmount().value(), BigDecimal::add)));
+                    reducing(ZERO, e -> e.getAmount().value(), BigDecimal::add)));
 
     List<IncomeTrendResponse.DataPoint> dataPoints = new ArrayList<>();
 
     for (int i = 0; i < months; i++) {
       YearMonth month = YearMonth.from(startDate.plusMonths(i));
-      BigDecimal monthIncome = incomeByMonth.getOrDefault(month, BigDecimal.ZERO);
-      BigDecimal monthExpenses = expensesByMonth.getOrDefault(month, BigDecimal.ZERO);
+      BigDecimal monthIncome = incomeByMonth.getOrDefault(month, ZERO);
+      BigDecimal monthExpenses = expensesByMonth.getOrDefault(month, ZERO);
       BigDecimal monthNetProfit = monthIncome.subtract(monthExpenses);
 
       dataPoints.add(
@@ -317,21 +315,21 @@ public class ReportService {
             .collect(
                 groupingBy(
                     p -> YearMonth.from(p.getPaymentDate().orElse(p.getDueDate())),
-                    reducing(BigDecimal.ZERO, p -> p.getAmount().value(), BigDecimal::add)));
+                    reducing(ZERO, p -> p.getAmount().value(), BigDecimal::add)));
     Map<YearMonth, BigDecimal> expensesByMonth =
         allExpenses.stream()
             .collect(
                 groupingBy(
                     e -> YearMonth.from(e.getExpenseDate()),
-                    reducing(BigDecimal.ZERO, e -> e.getAmount().value(), BigDecimal::add)));
+                    reducing(ZERO, e -> e.getAmount().value(), BigDecimal::add)));
 
     List<IncomeTrendResponse.DataPoint> dataPoints = new ArrayList<>();
     YearMonth start = YearMonth.from(rangeStart);
     YearMonth end = YearMonth.from(endDate);
 
     for (YearMonth month = start; !month.isAfter(end); month = month.plusMonths(1)) {
-      BigDecimal monthIncome = incomeByMonth.getOrDefault(month, BigDecimal.ZERO);
-      BigDecimal monthExpenses = expensesByMonth.getOrDefault(month, BigDecimal.ZERO);
+      BigDecimal monthIncome = incomeByMonth.getOrDefault(month, ZERO);
+      BigDecimal monthExpenses = expensesByMonth.getOrDefault(month, ZERO);
       BigDecimal monthNetProfit = monthIncome.subtract(monthExpenses);
 
       dataPoints.add(
@@ -358,14 +356,14 @@ public class ReportService {
             .toList();
 
     BigDecimal total =
-        expenses.stream().map(e -> e.getAmount().value()).reduce(BigDecimal.ZERO, BigDecimal::add);
+        expenses.stream().map(e -> e.getAmount().value()).reduce(ZERO, BigDecimal::add);
 
     Map<Expense.ExpenseCategory, BigDecimal> expensesByCategory =
         expenses.stream()
             .collect(
                 groupingBy(
                     Expense::getCategory,
-                    reducing(BigDecimal.ZERO, e -> e.getAmount().value(), BigDecimal::add)));
+                    reducing(ZERO, e -> e.getAmount().value(), BigDecimal::add)));
 
     List<ExpenseBreakdownResponse.Category> categories =
         expensesByCategory.entrySet().stream()
@@ -419,14 +417,14 @@ public class ReportService {
                             .orElseThrow(
                                 () ->
                                     new IllegalStateException("Property ID missing after filter")),
-                    reducing(BigDecimal.ZERO, p -> p.getAmount().value(), BigDecimal::add)));
+                    reducing(ZERO, p -> p.getAmount().value(), BigDecimal::add)));
 
     Map<UUID, BigDecimal> expensesByProperty =
         expenses.stream()
             .collect(
                 groupingBy(
                     Expense::getPropertyId,
-                    reducing(BigDecimal.ZERO, e -> e.getAmount().value(), BigDecimal::add)));
+                    reducing(ZERO, e -> e.getAmount().value(), BigDecimal::add)));
 
     Set<UUID> allPropertyIds = new HashSet<>();
     allPropertyIds.addAll(incomeByProperty.keySet());
@@ -445,10 +443,8 @@ public class ReportService {
                     Optional.ofNullable(propertiesById.get(propId))
                         .map(
                             prop -> {
-                              BigDecimal income =
-                                  incomeByProperty.getOrDefault(propId, BigDecimal.ZERO);
-                              BigDecimal expense =
-                                  expensesByProperty.getOrDefault(propId, BigDecimal.ZERO);
+                              BigDecimal income = incomeByProperty.getOrDefault(propId, ZERO);
+                              BigDecimal expense = expensesByProperty.getOrDefault(propId, ZERO);
                               BigDecimal netProfit = income.subtract(expense);
                               return new PropertyComparisonResponse.PropertyData(
                                   propertyMapper.toSummary(prop), income, expense, netProfit);
@@ -570,13 +566,13 @@ public class ReportService {
             .toList();
 
     BigDecimal totalIncome =
-        payments.stream().map(p -> p.getAmount().value()).reduce(BigDecimal.ZERO, BigDecimal::add);
+        payments.stream().map(p -> p.getAmount().value()).reduce(ZERO, BigDecimal::add);
 
     // Get all expenses for the year
     List<Expense> expenses = expenseRepository.findByDateRange(startDate, endDate, teamId);
 
     BigDecimal totalExpenses =
-        expenses.stream().map(e -> e.getAmount().value()).reduce(BigDecimal.ZERO, BigDecimal::add);
+        expenses.stream().map(e -> e.getAmount().value()).reduce(ZERO, BigDecimal::add);
 
     BigDecimal netIncome = totalIncome.subtract(totalExpenses);
 
@@ -595,14 +591,14 @@ public class ReportService {
                             .orElseThrow(
                                 () ->
                                     new IllegalStateException("Property ID missing after filter")),
-                    reducing(BigDecimal.ZERO, p -> p.getAmount().value(), BigDecimal::add)));
+                    reducing(ZERO, p -> p.getAmount().value(), BigDecimal::add)));
 
     Map<UUID, BigDecimal> expensesByProperty =
         expenses.stream()
             .collect(
                 groupingBy(
                     Expense::getPropertyId,
-                    reducing(BigDecimal.ZERO, e -> e.getAmount().value(), BigDecimal::add)));
+                    reducing(ZERO, e -> e.getAmount().value(), BigDecimal::add)));
 
     Set<UUID> allPropertyIds = new HashSet<>();
     allPropertyIds.addAll(incomeByProperty.keySet());
@@ -627,10 +623,8 @@ public class ReportService {
                     Optional.ofNullable(propertiesById.get(propId))
                         .map(
                             prop -> {
-                              BigDecimal income =
-                                  incomeByProperty.getOrDefault(propId, BigDecimal.ZERO);
-                              BigDecimal expense =
-                                  expensesByProperty.getOrDefault(propId, BigDecimal.ZERO);
+                              BigDecimal income = incomeByProperty.getOrDefault(propId, ZERO);
+                              BigDecimal expense = expensesByProperty.getOrDefault(propId, ZERO);
                               BigDecimal netProfit = income.subtract(expense);
                               return new PropertyFinancialSummary(
                                   propertyMapper.toSummary(prop),
@@ -687,7 +681,7 @@ public class ReportService {
             .collect(
                 groupingBy(
                     Expense::getCategory,
-                    reducing(BigDecimal.ZERO, e -> e.getAmount().value(), BigDecimal::add)));
+                    reducing(ZERO, e -> e.getAmount().value(), BigDecimal::add)));
 
     Map<Expense.ExpenseCategory, Long> countsByCategory =
         expenses.stream().collect(groupingBy(Expense::getCategory, counting()));
@@ -696,10 +690,10 @@ public class ReportService {
         .map(
             entry -> {
               double percentage =
-                  total.compareTo(BigDecimal.ZERO) > 0
+                  total.compareTo(ZERO) > 0
                       ? entry
                           .getValue()
-                          .divide(total, 4, RoundingMode.HALF_UP)
+                          .divide(total, 4, HALF_UP)
                           .multiply(BigDecimal.valueOf(100))
                           .doubleValue()
                       : 0.0;

@@ -54,7 +54,8 @@ public final class CurrencyUtils {
     }
     String symbol = getCurrencySymbol(currencyCode);
     int digits = getFractionalDigits(currencyCode);
-    return symbol + String.format("%,." + digits + "f", amount);
+    String format = "%,." + digits + "f";
+    return symbol + String.format(format, amount);
   }
 
   /**

@@ -298,7 +298,7 @@ public class RegistrationInvitationService {
             .map(
                 u ->
                     new RegistrationInvitationDetailResponse.UsageRecord(
-                        u.getUserEmail(), Optional.ofNullable(u.getUserName()), u.getUsedAt()))
+                        u.getUserEmail(), Optional.of(u.getUserName()), u.getUsedAt()))
             .toList();
 
     return new RegistrationInvitationDetailResponse(

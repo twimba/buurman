@@ -219,7 +219,7 @@ public class PortfolioDashboardService {
     for (PropertyData pd : sameCurrency) {
       List<MonthlyDataPoint> months = pd.dashboard().cashFlow().months();
       if (!months.isEmpty()) {
-        BigDecimal lastMortgage = months.get(months.size() - 1).mortgage();
+        BigDecimal lastMortgage = months.getLast().mortgage();
         totalMonthlyMortgage = totalMonthlyMortgage.add(lastMortgage);
       }
     }

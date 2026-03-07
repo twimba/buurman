@@ -29,9 +29,7 @@ public class WwsCalculationRecordMapper {
     List<WwsCalculation.CategoryBreakdown> breakdown = List.of();
     try {
       breakdown =
-          objectMapper.readValue(
-              record.getCategoryBreakdown().data(),
-              new TypeReference<List<WwsCalculation.CategoryBreakdown>>() {});
+          objectMapper.readValue(record.getCategoryBreakdown().data(), new TypeReference<>() {});
     } catch (Exception e) {
       // Log but don't fail — breakdown is informational
     }

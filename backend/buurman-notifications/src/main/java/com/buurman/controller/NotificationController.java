@@ -23,7 +23,6 @@ public class NotificationController implements NotificationsApi {
 
   private final NotificationCenterService centerService;
 
-  @SuppressWarnings("unchecked")
   @Override
   public PageResponse getNotifications(
       Optional<String> type,

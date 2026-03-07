@@ -94,7 +94,7 @@ class TransactionDataLoader {
               "EXPENSE",
               expense.getDescription(),
               propertyName,
-              Optional.ofNullable(expense.getCategory()).map(Enum::name),
+              Optional.of(expense.getCategory()).map(Enum::name),
               expense.getAmount().value(),
               expense.getAmount().currency()));
     }

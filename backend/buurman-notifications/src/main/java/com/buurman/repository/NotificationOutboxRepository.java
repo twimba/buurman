@@ -30,7 +30,6 @@ public class NotificationOutboxRepository {
   public void save(NotificationOutbox outbox) {
     LocalDateTime now = LocalDateTime.now(clock);
     UUID id = UUID.randomUUID();
-    LocalDateTime createdAt = now;
 
     dsl.insertInto(NOTIFICATION_OUTBOX)
         .set(NOTIFICATION_OUTBOX.ID, id)
@@ -42,13 +41,13 @@ public class NotificationOutboxRepository {
         .set(
             NOTIFICATION_OUTBOX.MAX_RETRIES,
             outbox.getMaxRetries() > 0 ? outbox.getMaxRetries() : 3)
-        .set(NOTIFICATION_OUTBOX.CREATED_AT, createdAt)
+        .set(NOTIFICATION_OUTBOX.CREATED_AT, now)
         .execute();
 
     outbox.setId(id);
     outbox.setStatus(OutboxStatus.PENDING);
     outbox.setRetryCount(0);
-    outbox.setCreatedAt(createdAt.toInstant(UTC));
+    outbox.setCreatedAt(now.toInstant(UTC));
   }
 
   public List<NotificationOutbox> findPendingBatch(int batchSize) {

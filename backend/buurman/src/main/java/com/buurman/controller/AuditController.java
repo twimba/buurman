@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
+import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.generated.api.AuditLogsApi;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
@@ -19,9 +20,8 @@ public class AuditController implements AuditLogsApi {
 
   private final AuditService auditService;
 
-  @SuppressWarnings("unchecked")
   @Override
-  public PageResponse getAllAuditLogs(
+  public PageResponse<RecentActivityResponse> getAllAuditLogs(
       Optional<String> entityType,
       Optional<String> action,
       Optional<String> search,

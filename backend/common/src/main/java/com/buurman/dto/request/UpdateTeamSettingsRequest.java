@@ -24,7 +24,5 @@ public record UpdateTeamSettingsRequest(
       Optional<@Size(max = 20, message = "Date format must not exceed 20 characters") String>
           dateFormat,
       Optional<@Size(min = 2, max = 2, message = "Fiscal year start month must be 2 digits") String>
-          fiscalYearStartMonth) {
-    public RegionalSettings {}
-  }
+          fiscalYearStartMonth) {}
 }

@@ -1,5 +1,8 @@
 package com.buurman.domain;
 
+import lombok.Getter;
+
+@Getter
 public enum TeamRole {
   TEAM_ADMIN("Administrator"),
   TEAM_EDITOR("Editor"),
@@ -9,10 +12,6 @@ public enum TeamRole {
 
   TeamRole(String displayName) {
     this.displayName = displayName;
-  }
-
-  public String getDisplayName() {
-    return displayName;
   }
 
   /** Returns the Spring Security role string (with ROLE_ prefix). */

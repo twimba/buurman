@@ -5,11 +5,13 @@ import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
 
+import lombok.Getter;
+
 public class BackofficePrincipal implements Principal {
-  private final String keycloakId;
-  private final Optional<String> email;
+  @Getter private final String keycloakId;
+  @Getter private final Optional<String> email;
   private final Optional<String> name;
-  private final Optional<String> role;
+  @Getter private final Optional<String> role;
 
   public BackofficePrincipal(
       String keycloakId, @Nullable String email, @Nullable String name, @Nullable String role) {
@@ -17,18 +19,6 @@ public class BackofficePrincipal implements Principal {
     this.email = Optional.ofNullable(email);
     this.name = Optional.ofNullable(name);
     this.role = Optional.ofNullable(role);
-  }
-
-  public String getKeycloakId() {
-    return keycloakId;
-  }
-
-  public Optional<String> getEmail() {
-    return email;
-  }
-
-  public Optional<String> getRole() {
-    return role;
   }
 
   @Override
