@@ -20,6 +20,7 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.springframework.stereotype.Repository;
 
 import lombok.RequiredArgsConstructor;
@@ -39,29 +40,21 @@ public class CurrencyChangeRepository {
     var update = dsl.update(CONTRACTS).set(CONTRACTS.RENT_AMOUNT_CURRENCY, newCurrency);
 
     if (conversionRate.isPresent()) {
-      // Use DSL.val(rate) to avoid the MoneyMinorUnitConverter being applied to the rate.
-      // Without this, JOOQ converts 0.1 → 10 (minor units) via the field's converter.
       Field<BigDecimal> rate = DSL.val(conversionRate.get());
-      update =
-          update.set(
-              CONTRACTS.RENT_AMOUNT,
-              DSL.round(CONTRACTS.RENT_AMOUNT.mul(rate), MINOR_UNIT_SCALE)
-                  .cast(CONTRACTS.RENT_AMOUNT.getDataType()));
+      update = update.set(CONTRACTS.RENT_AMOUNT, convertAmount(CONTRACTS.RENT_AMOUNT, rate));
       update =
           update.set(
               CONTRACTS.DEPOSIT_AMOUNT,
               DSL.when(
                       CONTRACTS.DEPOSIT_AMOUNT.isNotNull(),
-                      DSL.round(CONTRACTS.DEPOSIT_AMOUNT.mul(rate), MINOR_UNIT_SCALE)
-                          .cast(CONTRACTS.DEPOSIT_AMOUNT.getDataType()))
+                      convertAmount(CONTRACTS.DEPOSIT_AMOUNT, rate))
                   .otherwise((BigDecimal) null));
       update =
           update.set(
               CONTRACTS.SECURITY_DEPOSIT,
               DSL.when(
                       CONTRACTS.SECURITY_DEPOSIT.isNotNull(),
-                      DSL.round(CONTRACTS.SECURITY_DEPOSIT.mul(rate), MINOR_UNIT_SCALE)
-                          .cast(CONTRACTS.SECURITY_DEPOSIT.getDataType()))
+                      convertAmount(CONTRACTS.SECURITY_DEPOSIT, rate))
                   .otherwise((BigDecimal) null));
     }
 
@@ -147,32 +140,25 @@ public class CurrencyChangeRepository {
                   PROPERTY_ACQUISITIONS.PURCHASE_PRICE,
                   DSL.when(
                           PROPERTY_ACQUISITIONS.PURCHASE_PRICE_CURRENCY.eq(oldCurrency),
-                          DSL.round(
-                                  PROPERTY_ACQUISITIONS.PURCHASE_PRICE.mul(rate), MINOR_UNIT_SCALE)
-                              .cast(PROPERTY_ACQUISITIONS.PURCHASE_PRICE.getDataType()))
+                          convertAmount(PROPERTY_ACQUISITIONS.PURCHASE_PRICE, rate))
                       .otherwise(PROPERTY_ACQUISITIONS.PURCHASE_PRICE))
               .set(
                   PROPERTY_ACQUISITIONS.CLOSING_COSTS,
                   DSL.when(
                           PROPERTY_ACQUISITIONS.CLOSING_COSTS_CURRENCY.eq(oldCurrency),
-                          DSL.round(PROPERTY_ACQUISITIONS.CLOSING_COSTS.mul(rate), MINOR_UNIT_SCALE)
-                              .cast(PROPERTY_ACQUISITIONS.CLOSING_COSTS.getDataType()))
+                          convertAmount(PROPERTY_ACQUISITIONS.CLOSING_COSTS, rate))
                       .otherwise(PROPERTY_ACQUISITIONS.CLOSING_COSTS))
               .set(
                   PROPERTY_ACQUISITIONS.RENOVATION_COSTS,
                   DSL.when(
                           PROPERTY_ACQUISITIONS.RENOVATION_COSTS_CURRENCY.eq(oldCurrency),
-                          DSL.round(
-                                  PROPERTY_ACQUISITIONS.RENOVATION_COSTS.mul(rate),
-                                  MINOR_UNIT_SCALE)
-                              .cast(PROPERTY_ACQUISITIONS.RENOVATION_COSTS.getDataType()))
+                          convertAmount(PROPERTY_ACQUISITIONS.RENOVATION_COSTS, rate))
                       .otherwise(PROPERTY_ACQUISITIONS.RENOVATION_COSTS))
               .set(
                   PROPERTY_ACQUISITIONS.LAND_VALUE,
                   DSL.when(
                           PROPERTY_ACQUISITIONS.LAND_VALUE_CURRENCY.eq(oldCurrency),
-                          DSL.round(PROPERTY_ACQUISITIONS.LAND_VALUE.mul(rate), MINOR_UNIT_SCALE)
-                              .cast(PROPERTY_ACQUISITIONS.LAND_VALUE.getDataType()))
+                          convertAmount(PROPERTY_ACQUISITIONS.LAND_VALUE, rate))
                       .otherwise(PROPERTY_ACQUISITIONS.LAND_VALUE));
     }
 
@@ -299,10 +285,19 @@ public class CurrencyChangeRepository {
     if (conversionRate.isPresent() && amountField.isPresent()) {
       Field<BigDecimal> rate = DSL.val(conversionRate.get());
       Field<BigDecimal> field = amountField.get();
-      update =
-          update.set(field, DSL.round(field.mul(rate), MINOR_UNIT_SCALE).cast(field.getDataType()));
+      update = update.set(field, convertAmount(field, rate));
     }
 
     return update.where(teamIdField.eq(teamId)).and(currencyField.eq(oldCurrency)).execute();
+  }
+
+  /**
+   * Multiply a money field by a rate using raw SQL to bypass JOOQ's {@code Field.mul()} which
+   * coerces the rate through the field's {@link com.buurman.config.jooq.MoneyMinorUnitConverter
+   * MoneyMinorUnitConverter}, turning e.g. 0.1 → 10.
+   */
+  private Field<BigDecimal> convertAmount(Field<BigDecimal> field, Field<BigDecimal> rate) {
+    return DSL.round(DSL.field("{0} * {1}", SQLDataType.NUMERIC, field, rate), MINOR_UNIT_SCALE)
+        .cast(field.getDataType());
   }
 }
