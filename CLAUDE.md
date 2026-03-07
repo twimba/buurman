@@ -28,11 +28,25 @@ Buurman is a property management dashboard for small landlords (properties, tena
 
 ## Development Commands
 
-### Backend (Spring Boot/Maven)
-- Build: `mvn clean install`
-- Run: `mvn spring-boot:run` (port **8081**)
-- Tests: `mvn test` / `mvn test -Dtest=ClassName#methodName`
-- Package: `mvn clean package -DskipTests`
+### Backend (Spring Boot/Maven — Multi-Module)
+
+The backend is a 10-module Maven project:
+- `common` — domain, DTOs, utils (no Spring deps)
+- `jooq` — JOOQ codegen + Flyway migrations
+- `buurman` — core services, repos, mappers, config, security (`buurman-core`)
+- `buurman-notifications` — notification system (email/SMS, outbox, webhooks)
+- `buurman-backoffice` — backoffice admin controllers/services/repos (depends on core + notifications)
+- `buurman-demo-data` — demo data generators + Quartz job
+- `buurman-takeout` — data export/takeout
+- `buurman-booklets` — PDF/CSV exporters + BookletController
+- `app` — thin shell, assembles fat JAR (`buurman-app`)
+
+- Build: `cd backend && mvn clean install -DskipTests`
+- Run: `cd backend && mvn spring-boot:run -pl app -am` (port **8081**)
+- Quick build (skip formatting): `cd backend && mvn package -DskipTests -Pquick`
+- Tests: `cd backend && mvn test` / `mvn test -pl buurman -Dtest=ClassName#methodName`
+- Regenerate JOOQ after migration changes: `cd backend && mvn generate-sources -pl jooq -am`
+- Build cache: enabled locally (`.mvn/extensions.xml`), disabled in CI (`-Dmaven.build.cache.enabled=false`)
 
 ### App (React/Vite/Yarn 4)
 - Install: `yarn install`
@@ -79,8 +93,8 @@ Commands (via Makefile):
 - Path files use `$ref: '#/components/schemas/...'` — these resolve correctly in the bundled output
 
 ### Database Migrations (Flyway)
-- Location: `src/main/resources/db/migration/`
-- Convention: `V<version>__<description>.sql` (currently at V010)
+- Location: `backend/jooq/src/main/resources/db/migration/`
+- Convention: `V<version>__<description>.sql` (currently at V028)
 - Auto-applied on startup. **Never modify existing migrations.**
 
 ## Architecture & Key Concepts
@@ -108,23 +122,67 @@ Commands (via Makefile):
 - Set manually in repository INSERT/UPDATE queries (no JPA listeners)
 - Soft deletes via `deleted_at` column (never hard delete)
 
-### Backend Package Structure
+### Backend Module Structure
 ```
-com.buurman
-├── config/          Security, S3, JOOQ, Swagger, Quartz config
-├── controller/      REST endpoints (thin, delegates to services)
-├── service/         Business logic + @PreAuthorize authorization
-├── repository/      JOOQ DSLContext queries (no base class, manual team_id filtering)
-├── domain/          POJOs (not JPA entities)
-├── dto/
-│   ├── request/     Request DTOs (classes + records)
-│   └── response/    Response DTOs (Java records, expose identifier only)
-├── mapper/          MapStruct interfaces + manual @Component mappers
-├── security/        JwtAuthenticationConverter, UserAuthentication, TeamMembershipAspect
-├── exception/       GlobalExceptionHandler + custom exceptions
-├── job/             Quartz scheduled jobs
-├── db/              FlywayMigrationLogger
-└── util/            SidGenerator, PaginationHelper, EntityPrefix, DateUtils
+backend/
+├── common/                  Leaf module (~381 files, no Spring deps)
+│   └── com.buurman
+│       ├── domain/              POJOs, Sid, typed identifiers, enums
+│       ├── dto/                 Request + response DTOs
+│       ├── exception/           Custom exceptions (not GlobalExceptionHandler)
+│       ├── util/                SidGenerator, EntityPrefix, MoneyAmount, DateUtils
+│       └── config/jooq/         SidJooqConverter, MoneyMinorUnitConverter
+├── jooq/                    JOOQ codegen + Flyway migrations (0 hand-written Java)
+│   ├── src/main/resources/db/migration/  (28 SQL migrations)
+│   └── target/generated-sources/jooq/   (generated JOOQ records)
+├── buurman/                 Core module (~259 files, buurman-core)
+│   └── com.buurman
+│       ├── config/              Security, S3, Swagger, Quartz config
+│       ├── controller/          REST endpoints (thin, delegates to services)
+│       ├── service/             Business logic + @PreAuthorize authorization
+│       ├── service/notification/ NotificationService interface + SPI types
+│       ├── repository/          JOOQ DSLContext queries (manual team_id filtering)
+│       ├── mapper/              MapStruct interfaces + manual @Component mappers
+│       ├── security/            JwtAuthenticationConverter, UserAuthentication
+│       ├── exception/           GlobalExceptionHandler
+│       ├── job/                 Quartz scheduled jobs
+│       ├── db/                  FlywayMigrationLogger
+│       └── util/                PaginationHelper, S3BucketInitializer
+├── buurman-notifications/   Notification system (~30 files)
+│   └── com.buurman
+│       ├── config/              SendGridConfig, TwilioConfig, NotificationQuartzConfig
+│       ├── config/models/       SendGridProperties, TwilioProperties, NotificationOutboxProperties
+│       ├── controller/          NotificationController, WebhookController
+│       ├── service/notification/ NotificationServiceImpl, NotificationCenterService, WebhookService
+│       ├── service/notification/channel/  Email/SMS senders (SendGrid, Twilio, local)
+│       ├── repository/          NotificationRepository, NotificationOutboxRepository
+│       ├── mapper/              NotificationRecordMapper, NotificationOutboxRecordMapper
+│       └── job/                 NotificationOutboxJob, ContractExpiryCheckJob, PaymentReminderCheckJob
+├── buurman-backoffice/      Backoffice admin (~28 files, depends on core + notifications)
+│   └── com.buurman
+│       ├── config/              BackofficeSecurityConfig
+│       ├── controller/backoffice/  12 backoffice controllers
+│       ├── service/backoffice/     11 backoffice services
+│       ├── repository/backoffice/  2 backoffice repositories
+│       └── security/            BackofficeJwtAuthenticationConverter
+├── buurman-demo-data/       Demo data generation (~18 files)
+│   └── com.buurman
+│       ├── config/              DemoQuartzConfig, DemoDataProperties
+│       ├── service/demo/        DemoDataService + 14 generators
+│       └── job/                 DemoDataRegenerationJob
+├── buurman-takeout/         Data export/takeout (~4 files)
+│   └── com.buurman
+│       ├── config/              TakeoutQuartzConfig
+│       ├── controller/          TakeoutController
+│       ├── service/             TakeoutService
+│       ├── repository/          DataTakeoutRepository
+│       └── job/                 TakeoutCleanupJob
+├── buurman-booklets/        PDF/CSV export (~16 files)
+│   └── com.buurman
+│       ├── controller/          BookletController
+│       └── service/export/      ExportServiceImpl + 14 exporters
+└── app/                     Thin shell — fat JAR assembly (1 file)
+    └── com.buurman           BuurmanApplication.java + all resources
 ```
 
 ### App Structure
@@ -179,13 +237,15 @@ src/
 - Always test multi-tenant isolation
 
 ## Adding a New Entity (Checklist)
-1. Flyway migration in `db/migration/` (next version after V028)
-2. Domain POJO in `domain/`
-3. JOOQ repository with manual `team_id` filtering in all queries
-4. Service with `@Transactional` and `@PreAuthorize`
-5. Request/Response DTOs (records preferred) + MapStruct mapper
-6. REST controller (thin, delegates to service)
-7. App: API module, React Query hook, page components, routes
+1. Flyway migration in `backend/jooq/src/main/resources/db/migration/` (next version after V028)
+2. Regenerate JOOQ: `cd backend && mvn generate-sources -pl jooq -am`
+3. Domain POJO in `backend/common/src/.../domain/`
+4. Request/Response DTOs in `backend/common/src/.../dto/`
+5. JOOQ repository in `backend/buurman/src/.../repository/` with manual `team_id` filtering
+6. MapStruct mapper in `backend/buurman/src/.../mapper/`
+7. Service with `@Transactional` and `@PreAuthorize` in `backend/buurman/src/.../service/`
+8. REST controller (thin) in `backend/buurman/src/.../controller/`
+9. App: API module, React Query hook, page components, routes
 
 ## Important Rules
 
