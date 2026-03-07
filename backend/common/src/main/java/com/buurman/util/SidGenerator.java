@@ -8,6 +8,7 @@ import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.ContractPartyIdentifier;
 import com.buurman.domain.identifier.ContractPaymentInstructionIdentifier;
 import com.buurman.domain.identifier.ContractRentPeriodIdentifier;
+import com.buurman.domain.identifier.CountryRequestIdentifier;
 import com.buurman.domain.identifier.DataTakeoutIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.ExpenseIdentifier;
@@ -195,5 +196,9 @@ public class SidGenerator {
 
   public static RentRegulationRuleIdentifier newRentRegulationRuleId() {
     return RentRegulationRuleIdentifier.of(generateRaw(EntityPrefix.RRL));
+  }
+
+  public static CountryRequestIdentifier newCountryRequestId() {
+    return CountryRequestIdentifier.of(generateRaw(EntityPrefix.CRQ));
   }
 }

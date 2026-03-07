@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,6 +25,8 @@ import com.buurman.domain.RentRegulationCountry;
 import com.buurman.domain.RentRegulationRegion;
 import com.buurman.domain.RentRegulationRule;
 import com.buurman.domain.Sid;
+import com.buurman.dto.response.CountryRegulationRequestSummary;
+import com.buurman.dto.response.CountryRegulationRequester;
 import com.buurman.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -353,6 +356,136 @@ public class RentRegulationRepository {
     for (RentRegulationRule rule : rules) {
       saveRule(rule);
     }
+  }
+
+  // ==================== Country request table ===
+  private static final Table<?> REQUESTS = table("rent_regulation_country_requests");
+  private static final Field<UUID> RQ_ID = field("id", UUID.class);
+  private static final Field<String> RQ_IDENTIFIER = field("identifier", String.class);
+  private static final Field<UUID> RQ_TEAM_ID = field("team_id", UUID.class);
+  private static final Field<String> RQ_COUNTRY_NAME = field("country_name", String.class);
+  private static final Field<String> RQ_NOTES = field("notes", String.class);
+  private static final Field<Timestamp> RQ_CREATED_AT = field("created_at", Timestamp.class);
+  private static final Field<Timestamp> RQ_UPDATED_AT = field("updated_at", Timestamp.class);
+  private static final Field<String> RQ_CREATED_BY = field("created_by", String.class);
+  private static final Field<String> RQ_UPDATED_BY = field("updated_by", String.class);
+
+  // ==================== Country request operations ====================
+
+  public boolean countryRequestExists(UUID teamId, String countryName, String createdBy) {
+    return dsl.fetchExists(
+        dsl.selectFrom(REQUESTS)
+            .where(
+                RQ_TEAM_ID
+                    .eq(teamId)
+                    .and(
+                        org.jooq
+                            .impl
+                            .DSL
+                            .lower(RQ_COUNTRY_NAME)
+                            .eq(countryName.toLowerCase(Locale.ROOT)))
+                    .and(RQ_CREATED_BY.eq(createdBy))));
+  }
+
+  public void saveCountryRequest(
+      Sid identifier,
+      UUID teamId,
+      String countryName,
+      @org.jspecify.annotations.Nullable String notes,
+      String createdBy) {
+    Timestamp now = Timestamp.from(clock.instant());
+    dsl.insertInto(REQUESTS)
+        .set(RQ_IDENTIFIER, identifier.value())
+        .set(RQ_TEAM_ID, teamId)
+        .set(RQ_COUNTRY_NAME, countryName)
+        .set(RQ_NOTES, notes)
+        .set(RQ_CREATED_AT, now)
+        .set(RQ_UPDATED_AT, now)
+        .set(RQ_CREATED_BY, createdBy)
+        .set(RQ_UPDATED_BY, createdBy)
+        .execute();
+  }
+
+  public List<CountryRegulationRequestSummary> findCountryRequestSummaries() {
+    // Qualified fields to avoid ambiguity with joined table columns
+    Table<?> TEAMS = table("teams");
+    Table<?> USERS = table("users");
+    Field<String> T_IDENTIFIER = field("teams.identifier", String.class);
+    Field<String> T_NAME = field("teams.name", String.class);
+    Field<String> U_IDENTIFIER = field("users.identifier", String.class);
+    Field<String> U_FIRST_NAME = field("users.first_name", String.class);
+    Field<String> U_LAST_NAME = field("users.last_name", String.class);
+    Field<String> RQ_Q_COUNTRY_NAME =
+        field("rent_regulation_country_requests.country_name", String.class);
+    Field<String> RQ_Q_CREATED_BY =
+        field("rent_regulation_country_requests.created_by", String.class);
+    Field<String> RQ_Q_NOTES = field("rent_regulation_country_requests.notes", String.class);
+    Field<Timestamp> RQ_Q_CREATED_AT =
+        field("rent_regulation_country_requests.created_at", Timestamp.class);
+
+    var rows =
+        dsl.select(
+                RQ_Q_COUNTRY_NAME,
+                RQ_Q_CREATED_BY,
+                T_IDENTIFIER,
+                T_NAME,
+                U_FIRST_NAME,
+                U_LAST_NAME,
+                RQ_Q_NOTES,
+                RQ_Q_CREATED_AT)
+            .from(REQUESTS)
+            .join(TEAMS)
+            .on(RQ_TEAM_ID.eq(field("teams.id", UUID.class)))
+            .leftJoin(USERS)
+            .on(RQ_Q_CREATED_BY.eq(U_IDENTIFIER))
+            .orderBy(RQ_Q_COUNTRY_NAME.asc(), RQ_Q_CREATED_AT.asc())
+            .fetch();
+
+    // Group by country name (case-insensitive)
+    java.util.LinkedHashMap<String, List<Record>> grouped = new java.util.LinkedHashMap<>();
+    for (Record row : rows) {
+      String name = row.get(RQ_Q_COUNTRY_NAME);
+      grouped.computeIfAbsent(name, k -> new java.util.ArrayList<>()).add(row);
+    }
+
+    return grouped.entrySet().stream()
+        .map(
+            entry -> {
+              String countryName = entry.getKey();
+              List<Record> records = entry.getValue();
+
+              List<CountryRegulationRequester> requesters =
+                  records.stream()
+                      .map(
+                          r -> {
+                            String firstName = Optional.ofNullable(r.get(U_FIRST_NAME)).orElse("");
+                            String lastName = Optional.ofNullable(r.get(U_LAST_NAME)).orElse("");
+                            String userName = (firstName + " " + lastName).trim();
+                            return new CountryRegulationRequester(
+                                r.get(RQ_Q_CREATED_BY),
+                                userName.isEmpty() ? r.get(RQ_Q_CREATED_BY) : userName,
+                                r.get(T_IDENTIFIER),
+                                r.get(T_NAME),
+                                Optional.ofNullable(r.get(RQ_Q_NOTES)),
+                                r.get(RQ_Q_CREATED_AT).toInstant());
+                          })
+                      .toList();
+
+              return new CountryRegulationRequestSummary(
+                  countryName,
+                  records.size(),
+                  records.getFirst().get(RQ_Q_CREATED_AT).toInstant(),
+                  records.getLast().get(RQ_Q_CREATED_AT).toInstant(),
+                  requesters);
+            })
+        .sorted((a, b) -> Integer.compare(b.requestCount(), a.requestCount()))
+        .toList();
+  }
+
+  public void deleteCountryRequests(String countryName) {
+    dsl.deleteFrom(REQUESTS)
+        .where(org.jooq.impl.DSL.lower(RQ_COUNTRY_NAME).eq(countryName.toLowerCase(Locale.ROOT)))
+        .execute();
   }
 
   // ==================== Mappers ====================

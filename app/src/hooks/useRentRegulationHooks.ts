@@ -1,4 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { useToast } from '../context/ToastContext';
+import { getErrorMessage } from '../utils/errorMessages';
 import * as rentRegulationsApi from '../api/rentRegulations';
 
 export const useRentRegulationCountries = () => {
@@ -44,5 +46,20 @@ export const useRentRegulationRegionRules = (
     queryFn: () =>
       rentRegulationsApi.getRegionCurrentRules(code ?? '', regionCode ?? ''),
     enabled: !!code && !!regionCode,
+  });
+};
+
+export const useRequestCountryRegulation = () => {
+  const { showToast } = useToast();
+
+  return useMutation({
+    mutationFn: (data: { countryName: string; notes?: string }) =>
+      rentRegulationsApi.requestCountryRegulation(data),
+    onSuccess: () => {
+      showToast('Your request has been submitted — thank you!', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
   });
 };

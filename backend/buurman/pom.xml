@@ -394,6 +394,7 @@
                                 <importMapping>RentRegulationCountryDetailResponse=com.buurman.dto.response.RentRegulationCountryDetailResponse</importMapping>
                                 <importMapping>RentRegulationRegionResponse=com.buurman.dto.response.RentRegulationRegionResponse</importMapping>
                                 <importMapping>RentRegulationRuleResponse=com.buurman.dto.response.RentRegulationRuleResponse</importMapping>
+                                <importMapping>CreateCountryRegulationRequestRequest=com.buurman.dto.request.CreateCountryRegulationRequestRequest</importMapping>
                                 <importMapping>RentIncreasePreviewResponse=com.buurman.dto.response.RentIncreasePreviewResponse</importMapping>
                                 <importMapping>RentIncreaseCountrySummary=com.buurman.dto.response.RentIncreaseCountrySummary</importMapping>
                                 <importMapping>RentIncreaseContractPreview=com.buurman.dto.response.RentIncreaseContractPreview</importMapping>

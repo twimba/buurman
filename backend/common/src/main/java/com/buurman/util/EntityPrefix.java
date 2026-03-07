@@ -35,7 +35,8 @@ public enum EntityPrefix {
   WWS("WWS", "WWS Calculations"),
   RRC("RRC", "Rent Regulation Countries"),
   RRG("RRG", "Rent Regulation Regions"),
-  RRL("RRL", "Rent Regulation Rules");
+  RRL("RRL", "Rent Regulation Rules"),
+  CRQ("CRQ", "Country Regulation Requests");
 
   private final String code;
   private final String entityName;

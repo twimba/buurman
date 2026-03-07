@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.dto.request.CreateCountryRegulationRequestRequest;
 import com.buurman.dto.response.RentRegulationCountryDetailResponse;
 import com.buurman.dto.response.RentRegulationCountryResponse;
 import com.buurman.dto.response.RentRegulationRuleResponse;
@@ -49,5 +50,13 @@ public class RentRegulationController implements RentRegulationsApi {
       String code, String regionCode) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return rentRegulationService.getCurrentRegionRules(code, regionCode, principal);
+  }
+
+  @Override
+  public void requestCountryRegulation(
+      CreateCountryRegulationRequestRequest createCountryRegulationRequestRequest) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    rentRegulationService.requestCountryRegulation(
+        createCountryRegulationRequestRequest, principal);
   }
 }

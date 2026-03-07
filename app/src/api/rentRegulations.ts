@@ -48,3 +48,10 @@ export const getRegionCurrentRules = async (
   );
   return response.data;
 };
+
+export const requestCountryRegulation = async (data: {
+  countryName: string;
+  notes?: string;
+}): Promise<void> => {
+  await client.post('/rent-regulations/country-requests', data);
+};

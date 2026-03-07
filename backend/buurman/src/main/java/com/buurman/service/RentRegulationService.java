@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.buurman.domain.RentRegulationCountry;
 import com.buurman.domain.RentRegulationRegion;
 import com.buurman.domain.RentRegulationRule;
+import com.buurman.dto.request.CreateCountryRegulationRequestRequest;
 import com.buurman.dto.response.RentRegulationCountryDetailResponse;
 import com.buurman.dto.response.RentRegulationCountryResponse;
 import com.buurman.dto.response.RentRegulationRegionResponse;
@@ -19,6 +21,7 @@ import com.buurman.dto.response.RentRegulationRuleResponse;
 import com.buurman.exception.NotFoundException;
 import com.buurman.repository.RentRegulationRepository;
 import com.buurman.security.UserPrincipal;
+import com.buurman.util.SidGenerator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -114,6 +117,30 @@ public class RentRegulationService {
     return rentRegulationRepository.findRulesByCountryIdAndYear(country.getId(), year).stream()
         .map(this::toRuleResponse)
         .toList();
+  }
+
+  @PreAuthorize("isAuthenticated()")
+  public void requestCountryRegulation(
+      CreateCountryRegulationRequestRequest request, UserPrincipal principal) {
+    UUID teamId = principal.getTeamId().orElseThrow();
+    String userId = principal.getUserIdentifier();
+
+    boolean exists =
+        rentRegulationRepository.countryRequestExists(teamId, request.countryName(), userId);
+
+    if (exists) {
+      log.debug("Country request already exists for {} by {}", request.countryName(), userId);
+      return;
+    }
+
+    rentRegulationRepository.saveCountryRequest(
+        SidGenerator.newCountryRequestId(),
+        teamId,
+        request.countryName(),
+        request.notes().orElse(null),
+        userId);
+
+    log.info("Country regulation requested: {} by {}", request.countryName(), userId);
   }
 
   // --- Private helpers ---

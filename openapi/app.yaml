@@ -15833,6 +15833,48 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
+  /rent-regulations/country-requests:
+    post:
+      tags:
+        - Rent Regulations
+      summary: Request country regulation data
+      description: Submit a request for regulation data for a country not yet available
+      operationId: requestCountryRegulation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCountryRegulationRequestRequest'
+      responses:
+        "204":
+          description: Request submitted (or already exists)
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
   /rent-increases/preview:
     post:
       tags:
@@ -22808,6 +22850,17 @@ components:
         - contractCount
         - hasRegulationData
         - rules
+    CreateCountryRegulationRequestRequest:
+      type: object
+      properties:
+        countryName:
+          type: string
+          maxLength: 255
+        notes:
+          type: string
+          maxLength: 1000
+      required:
+        - countryName
     RentIncreaseContractPreview:
       type: object
       properties:
