@@ -192,7 +192,7 @@ services:
       FLAGSMITH_ADMIN_PASSWORD: ${FLAGSMITH_ADMIN_PASSWORD:-buurmy}
     volumes:
       - ./docker/flagsmith/setup.sh:/setup.py:ro
-      - ./backend/src/main/java/com/buurman/util/FeatureFlags.java:/FeatureFlags.java:ro
+      - ./backend/common/src/main/java/com/buurman/util/FeatureFlags.java:/FeatureFlags.java:ro
     depends_on:
       flagsmith:
         condition: service_healthy

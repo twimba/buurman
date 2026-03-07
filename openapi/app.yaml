@@ -6052,7 +6052,7 @@ paths:
         - Occupancy Periods
       summary: List occupancy periods
       description: Get all self-occupancy periods for a property
-      operationId: list
+      operationId: listOccupancyPeriods
       parameters:
         - name: propertyIdentifier
           in: path

@@ -1210,7 +1210,7 @@ paths:
       tags:
         - Backoffice - Registration Invitations
       summary: List registration invitations
-      operationId: list
+      operationId: listRegistrationInvitations
       parameters:
         - name: search
           in: query
