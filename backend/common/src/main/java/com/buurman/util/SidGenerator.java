@@ -32,6 +32,9 @@ import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.domain.identifier.TenantAddressIdentifier;
 import com.buurman.domain.identifier.TenantIdentifier;
 import com.buurman.domain.identifier.UserIdentifier;
+import com.buurman.domain.identifier.RentRegulationCountryIdentifier;
+import com.buurman.domain.identifier.RentRegulationRegionIdentifier;
+import com.buurman.domain.identifier.RentRegulationRuleIdentifier;
 import com.buurman.domain.identifier.WwsCalculationIdentifier;
 
 import de.huxhorn.sulky.ulid.ULID;
@@ -180,5 +183,17 @@ public class SidGenerator {
 
   public static WwsCalculationIdentifier newWwsCalculationId() {
     return WwsCalculationIdentifier.of(generateRaw(EntityPrefix.WWS));
+  }
+
+  public static RentRegulationCountryIdentifier newRentRegulationCountryId() {
+    return RentRegulationCountryIdentifier.of(generateRaw(EntityPrefix.RRC));
+  }
+
+  public static RentRegulationRegionIdentifier newRentRegulationRegionId() {
+    return RentRegulationRegionIdentifier.of(generateRaw(EntityPrefix.RRG));
+  }
+
+  public static RentRegulationRuleIdentifier newRentRegulationRuleId() {
+    return RentRegulationRuleIdentifier.of(generateRaw(EntityPrefix.RRL));
   }
 }
