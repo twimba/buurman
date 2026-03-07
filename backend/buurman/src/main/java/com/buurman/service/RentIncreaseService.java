@@ -85,7 +85,9 @@ public class RentIncreaseService {
       // Fetch national-level rules (region_id IS NULL) for the country summary
       List<RentRegulationRule> nationalRules =
           regulationCountry
-              .map(c -> rentRegulationRepository.findNationalRulesByCountryIdAndYear(c.getId(), year))
+              .map(
+                  c ->
+                      rentRegulationRepository.findNationalRulesByCountryIdAndYear(c.getId(), year))
               .orElse(List.of());
 
       List<RentRegulationRuleResponse> ruleResponses =
@@ -241,9 +243,7 @@ public class RentIncreaseService {
   // --- Private helpers ---
 
   private List<RentRegulationRule> resolveApplicableRules(
-      Optional<RentRegulationCountry> regulationCountry,
-      Optional<String> regionCode,
-      int year) {
+      Optional<RentRegulationCountry> regulationCountry, Optional<String> regionCode, int year) {
     if (regulationCountry.isEmpty()) {
       return List.of();
     }

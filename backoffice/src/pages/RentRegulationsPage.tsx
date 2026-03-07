@@ -631,7 +631,10 @@ function RequestCard({
                       )}
                     </div>
                     <span className="text-xs text-[#9ca0b8] whitespace-nowrap">
-                      {format(new Date(requester.requestedAt), "dd MMM yyyy HH:mm")}
+                      {format(
+                        new Date(requester.requestedAt),
+                        "dd MMM yyyy HH:mm",
+                      )}
                     </span>
                   </div>
                 ))}

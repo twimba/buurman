@@ -493,7 +493,11 @@ export const PropertyForm = ({
             <CountrySelector
               value={formData.countryCode}
               onChange={(v) => {
-                setFormData((prev) => ({ ...prev, countryCode: v, regionCode: undefined }));
+                setFormData((prev) => ({
+                  ...prev,
+                  countryCode: v,
+                  regionCode: undefined,
+                }));
                 if (errors.countryCode) {
                   setErrors((prev) => ({ ...prev, countryCode: '' }));
                 }
@@ -510,7 +514,9 @@ export const PropertyForm = ({
               <label className={labelCls}>Region</label>
               <select
                 value={formData.regionCode ?? ''}
-                onChange={(e) => handleChange('regionCode', e.target.value || undefined)}
+                onChange={(e) =>
+                  handleChange('regionCode', e.target.value || undefined)
+                }
                 className={selectCls}
               >
                 <option value="">— No region —</option>

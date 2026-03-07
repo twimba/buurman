@@ -259,8 +259,7 @@ public class RentRegulationRepository {
     return List.copyOf(
         dsl.select()
             .from(RULES)
-            .where(
-                RL_COUNTRY_ID.eq(countryId).and(RL_YEAR.eq(year)).and(RL_REGION_ID.isNull()))
+            .where(RL_COUNTRY_ID.eq(countryId).and(RL_YEAR.eq(year)).and(RL_REGION_ID.isNull()))
             .orderBy(RL_PROPERTY_CATEGORY.asc())
             .fetch(this::toRuleDomain));
   }
