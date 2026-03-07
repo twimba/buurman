@@ -4395,6 +4395,79 @@ paths:
                 $ref: "#/components/schemas/ProblemDetail"
       security:
         - bearer-jwt: []
+  /backoffice/rent-regulations/country-requests:
+    get:
+      tags:
+        - Backoffice - Rent Regulations
+      summary: List country regulation requests
+      description: List all country regulation requests aggregated by country name
+      operationId: listCountryRegulationRequests
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CountryRegulationRequestSummary"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/rent-regulations/country-requests/{countryName}:
+    delete:
+      tags:
+        - Backoffice - Rent Regulations
+      summary: Dismiss country regulation request
+      description: Dismiss (delete) all requests for a specific country name
+      operationId: dismissCountryRegulationRequest
+      parameters:
+        - name: countryName
+          in: path
+          description: Country name to dismiss
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
 components:
   schemas:
     NotificationIdentifier:
@@ -5884,6 +5957,52 @@ components:
         - totalCreated
         - totalFailed
         - errors
+    CountryRegulationRequestSummary:
+      type: object
+      properties:
+        countryName:
+          type: string
+        requestCount:
+          type: integer
+          format: int32
+        firstRequestedAt:
+          type: string
+          format: date-time
+        lastRequestedAt:
+          type: string
+          format: date-time
+        requesters:
+          type: array
+          items:
+            $ref: "#/components/schemas/CountryRegulationRequester"
+      required:
+        - countryName
+        - requestCount
+        - firstRequestedAt
+        - lastRequestedAt
+        - requesters
+    CountryRegulationRequester:
+      type: object
+      properties:
+        userIdentifier:
+          type: string
+        userName:
+          type: string
+        teamIdentifier:
+          type: string
+        teamName:
+          type: string
+        notes:
+          type: string
+        requestedAt:
+          type: string
+          format: date-time
+      required:
+        - userIdentifier
+        - userName
+        - teamIdentifier
+        - teamName
+        - requestedAt
   securitySchemes:
     bearer-jwt:
       type: http

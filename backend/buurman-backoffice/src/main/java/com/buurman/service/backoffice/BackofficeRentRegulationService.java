@@ -21,6 +21,7 @@ import com.buurman.dto.request.UpdateRentRegulationCountryRequest;
 import com.buurman.dto.request.UpdateRentRegulationRegionRequest;
 import com.buurman.dto.request.UpdateRentRegulationRuleRequest;
 import com.buurman.dto.response.BulkImportResult;
+import com.buurman.dto.response.CountryRegulationRequestSummary;
 import com.buurman.dto.response.RentRegulationCountryResponse;
 import com.buurman.dto.response.RentRegulationRegionResponse;
 import com.buurman.dto.response.RentRegulationRuleResponse;
@@ -249,5 +250,22 @@ public class BackofficeRentRegulationService {
         "Backoffice user {} deleted rule {}",
         principal.getEmail().orElse("unknown"),
         identifier.value());
+  }
+
+  @Transactional(readOnly = true)
+  @PreAuthorize("hasRole('BACKOFFICE_ADMIN')")
+  public List<CountryRegulationRequestSummary> listCountryRequests() {
+    return repository.findCountryRequestSummaries();
+  }
+
+  @Transactional
+  @PreAuthorize("hasRole('BACKOFFICE_ADMIN')")
+  public void dismissCountryRequest(String countryName, BackofficePrincipal principal) {
+    repository.deleteCountryRequests(countryName);
+
+    log.info(
+        "Backoffice user {} dismissed country requests for '{}'",
+        principal.getEmail().orElse("unknown"),
+        countryName);
   }
 }

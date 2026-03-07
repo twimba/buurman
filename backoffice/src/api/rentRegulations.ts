@@ -87,6 +87,23 @@ export interface BulkRuleRequest {
   rules: CreateRuleRequest[];
 }
 
+export interface CountryRegulationRequester {
+  userIdentifier: string;
+  userName: string;
+  teamIdentifier: string;
+  teamName: string;
+  notes?: string;
+  requestedAt: string;
+}
+
+export interface CountryRegulationRequestSummary {
+  countryName: string;
+  requestCount: number;
+  firstRequestedAt: string;
+  lastRequestedAt: string;
+  requesters: CountryRegulationRequester[];
+}
+
 // ── API ──────────────────────────────────────────────────────────────
 
 const BASE = "/rent-regulations";
@@ -147,4 +164,12 @@ export const rentRegulationsApi = {
     client.put<RentRegulationRuleResponse>(`${BASE}/rules/${identifier}`, data),
   deleteRule: (identifier: string) =>
     client.delete(`${BASE}/rules/${identifier}`),
+
+  // Country requests
+  listCountryRequests: () =>
+    client.get<CountryRegulationRequestSummary[]>(`${BASE}/country-requests`),
+  dismissCountryRequest: (countryName: string) =>
+    client.delete(
+      `${BASE}/country-requests/${encodeURIComponent(countryName)}`,
+    ),
 };

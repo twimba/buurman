@@ -1,15 +1,47 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Search, X } from "lucide-react";
-import { RefreshButton, Button } from "@buurman/ui";
+import {
+  Plus,
+  Search,
+  X,
+  ChevronDown,
+  ChevronRight,
+  Trash2,
+  Users,
+  MessageSquareText,
+  Clock,
+  Globe,
+} from "lucide-react";
+import { RefreshButton, Button, ConfirmDialog } from "@buurman/ui";
 import { RichTextEditor } from "../components/RichTextEditor";
-import { format } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 import {
   useRentRegulationCountries,
   useCreateCountry,
+  useCountryRegulationRequests,
+  useDismissCountryRequest,
 } from "../hooks/useRentRegulationHooks";
 import { LoadingSpinner } from "../components/LoadingSpinner";
-import type { RentRegulationCountryResponse } from "../api/rentRegulations";
+import type {
+  RentRegulationCountryResponse,
+  CountryRegulationRequestSummary,
+  CountryRegulationRequester,
+} from "../api/rentRegulations";
+
+function groupByTeam(
+  requesters: CountryRegulationRequester[],
+): [string, CountryRegulationRequester[]][] {
+  const map = new Map<string, CountryRegulationRequester[]>();
+  for (const r of requesters) {
+    const existing = map.get(r.teamIdentifier);
+    if (existing) {
+      existing.push(r);
+    } else {
+      map.set(r.teamIdentifier, [r]);
+    }
+  }
+  return Array.from(map.entries());
+}
 
 const TH_CLASS =
   "text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]";
@@ -35,7 +67,60 @@ const emptyForm: CountryForm = {
   summary: "",
 };
 
+type Tab = "countries" | "requests";
+
 export const RentRegulationsPage = () => {
+  const [tab, setTab] = useState<Tab>("countries");
+
+  return (
+    <div>
+      {/* Tab bar */}
+      <div className="flex gap-1 mb-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+        <TabButton
+          active={tab === "countries"}
+          onClick={() => setTab("countries")}
+        >
+          Countries
+        </TabButton>
+        <TabButton
+          active={tab === "requests"}
+          onClick={() => setTab("requests")}
+        >
+          Country Requests
+        </TabButton>
+      </div>
+
+      {tab === "countries" ? <CountriesTab /> : <CountryRequestsTab />}
+    </div>
+  );
+};
+
+function TabButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
+        active
+          ? "border-[#5c7cfa] text-[#5c7cfa]"
+          : "border-transparent text-[#6b7194] dark:text-[#8b90a8] hover:text-[#3d4463] dark:hover:text-[#c4c8db]"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
+// ── Countries Tab ─────────────────────────────────────────────────────
+
+function CountriesTab() {
   const { data, isLoading, isFetching, error, refetch } =
     useRentRegulationCountries();
   const createCountry = useCreateCountry();
@@ -96,7 +181,7 @@ export const RentRegulationsPage = () => {
   }
 
   return (
-    <div>
+    <>
       {/* Header */}
       <div
         className="mb-6"
@@ -278,9 +363,9 @@ export const RentRegulationsPage = () => {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
-};
+}
 
 function CountryRow({
   country,
@@ -333,5 +418,228 @@ function CountryRow({
         )}
       </td>
     </tr>
+  );
+}
+
+// ── Country Requests Tab ──────────────────────────────────────────────
+
+function CountryRequestsTab() {
+  const { data, isLoading, isFetching, error, refetch } =
+    useCountryRegulationRequests();
+  const dismissRequest = useDismissCountryRequest();
+
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [dismissTarget, setDismissTarget] = useState<string | null>(null);
+
+  const toggle = (countryName: string) => {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(countryName)) {
+        next.delete(countryName);
+      } else {
+        next.add(countryName);
+      }
+      return next;
+    });
+  };
+
+  const handleDismiss = () => {
+    if (!dismissTarget) {
+      return;
+    }
+    dismissRequest.mutate(dismissTarget, {
+      onSuccess: () => setDismissTarget(null),
+    });
+  };
+
+  if (isLoading) {
+    return <LoadingSpinner message="Loading country requests..." />;
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-600 dark:text-red-400">
+          Failed to load country requests.
+        </p>
+      </div>
+    );
+  }
+
+  const requests = data ?? [];
+
+  return (
+    <>
+      {/* Header */}
+      <div
+        className="mb-6"
+        style={{
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+        }}
+      >
+        <div>
+          <h1 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+            Country Requests
+          </h1>
+          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+            Countries that users have requested regulation data for, sorted by
+            demand.
+          </p>
+        </div>
+        <RefreshButton onClick={() => refetch()} isRefreshing={isFetching} />
+      </div>
+
+      {requests.length === 0 ? (
+        <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] px-6 py-12 text-center">
+          <Globe className="h-10 w-10 mx-auto text-[#9ca0b8] dark:text-[#5c6180] mb-3" />
+          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+            No country requests yet. Users can request countries from the Rent
+            Regulations page.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {requests.map((req) => (
+            <RequestCard
+              key={req.countryName}
+              request={req}
+              isExpanded={expanded.has(req.countryName)}
+              onToggle={() => toggle(req.countryName)}
+              onDismiss={() => setDismissTarget(req.countryName)}
+            />
+          ))}
+        </div>
+      )}
+
+      {dismissTarget && (
+        <ConfirmDialog
+          onCancel={() => setDismissTarget(null)}
+          onConfirm={handleDismiss}
+          isLoading={dismissRequest.isPending}
+          title="Dismiss Country Request"
+          message={`Dismiss all requests for "${dismissTarget}"? This will remove the request and all associated requester data. This action cannot be undone.`}
+          confirmLabel="Dismiss"
+          variant="danger"
+        />
+      )}
+    </>
+  );
+}
+
+function RequestCard({
+  request,
+  isExpanded,
+  onToggle,
+  onDismiss,
+}: {
+  request: CountryRegulationRequestSummary;
+  isExpanded: boolean;
+  onToggle: () => void;
+  onDismiss: () => void;
+}) {
+  return (
+    <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden">
+      {/* Summary row */}
+      <div
+        className="flex items-center gap-4 px-5 py-4 cursor-pointer hover:bg-[#f8f9fc] dark:hover:bg-[#1a1d28] transition-colors"
+        onClick={onToggle}
+      >
+        <div className="text-[#9ca0b8]">
+          {isExpanded ? (
+            <ChevronDown className="h-4 w-4" />
+          ) : (
+            <ChevronRight className="h-4 w-4" />
+          )}
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+              {request.countryName}
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium bg-[#5c7cfa]/10 text-[#5c7cfa] ring-1 ring-[#5c7cfa]/20">
+              <Users className="h-3 w-3" />
+              {request.requestCount}{" "}
+              {request.requestCount === 1 ? "request" : "requests"}
+            </span>
+          </div>
+          <div className="flex items-center gap-4 mt-1">
+            <span className="flex items-center gap-1 text-xs text-[#9ca0b8]">
+              <Clock className="h-3 w-3" />
+              First: {format(new Date(request.firstRequestedAt), "dd MMM yyyy")}
+            </span>
+            <span className="flex items-center gap-1 text-xs text-[#9ca0b8]">
+              <Clock className="h-3 w-3" />
+              Last:{" "}
+              {formatDistanceToNow(new Date(request.lastRequestedAt), {
+                addSuffix: true,
+              })}
+            </span>
+          </div>
+        </div>
+
+        <Button
+          variant="ghost"
+          size="sm"
+          leftIcon={<Trash2 className="h-3.5 w-3.5" />}
+          onClick={(e) => {
+            e.stopPropagation();
+            onDismiss();
+          }}
+          className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+        >
+          Dismiss
+        </Button>
+      </div>
+
+      {/* Expanded requester details grouped by team */}
+      {isExpanded && (
+        <div className="border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
+          {groupByTeam(request.requesters).map(([teamKey, members]) => (
+            <div key={teamKey}>
+              <div className="px-5 py-2.5 bg-[#f8f9fc] dark:bg-[#0c0d14] flex items-center gap-2 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+                <Users className="h-3.5 w-3.5 text-[#6b7194] dark:text-[#8b90a8]" />
+                <span className="text-xs font-semibold text-[#3d4463] dark:text-[#c4c8db]">
+                  {members[0].teamName}
+                </span>
+                <span className="text-xs text-[#9ca0b8] font-mono">
+                  {members[0].teamIdentifier}
+                </span>
+              </div>
+              <div className="divide-y divide-[#e2e6f0] dark:divide-[#2a2e3f]">
+                {members.map((requester, idx) => (
+                  <div
+                    key={idx}
+                    className="px-5 py-3 flex items-start gap-4 text-sm pl-10"
+                  >
+                    <div className="flex-1 min-w-0 space-y-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                          {requester.userName}
+                        </span>
+                        <span className="text-[#9ca0b8] font-mono text-xs">
+                          {requester.userIdentifier}
+                        </span>
+                      </div>
+                      {requester.notes && (
+                        <div className="flex items-start gap-1.5 text-[#6b7194] dark:text-[#8b90a8]">
+                          <MessageSquareText className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                          <span className="text-xs">{requester.notes}</span>
+                        </div>
+                      )}
+                    </div>
+                    <span className="text-xs text-[#9ca0b8] whitespace-nowrap">
+                      {format(new Date(requester.requestedAt), "dd MMM yyyy HH:mm")}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

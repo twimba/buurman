@@ -15,6 +15,7 @@ import com.buurman.dto.request.UpdateRentRegulationCountryRequest;
 import com.buurman.dto.request.UpdateRentRegulationRegionRequest;
 import com.buurman.dto.request.UpdateRentRegulationRuleRequest;
 import com.buurman.dto.response.BulkImportResult;
+import com.buurman.dto.response.CountryRegulationRequestSummary;
 import com.buurman.dto.response.RentRegulationCountryResponse;
 import com.buurman.dto.response.RentRegulationRegionResponse;
 import com.buurman.dto.response.RentRegulationRuleResponse;
@@ -130,5 +131,16 @@ public class BackofficeRentRegulationController implements BackofficeRentRegulat
   public void deleteRentRegulationRule(RentRegulationRuleIdentifier identifier) {
     BackofficePrincipal principal = SecurityUtils.getBackofficePrincipal();
     backofficeRentRegulationService.deleteRule(identifier, principal);
+  }
+
+  @Override
+  public List<CountryRegulationRequestSummary> listCountryRegulationRequests() {
+    return backofficeRentRegulationService.listCountryRequests();
+  }
+
+  @Override
+  public void dismissCountryRegulationRequest(String countryName) {
+    BackofficePrincipal principal = SecurityUtils.getBackofficePrincipal();
+    backofficeRentRegulationService.dismissCountryRequest(countryName, principal);
   }
 }

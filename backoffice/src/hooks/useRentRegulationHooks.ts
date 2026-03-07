@@ -229,3 +229,26 @@ export const useDeleteRule = (countryCode: string) => {
     },
   });
 };
+
+// ── Country Requests ────────────────────────────────────────────────
+
+export const useCountryRegulationRequests = () => {
+  return useQuery({
+    queryKey: ["country-regulation-requests"],
+    queryFn: () =>
+      rentRegulationsApi.listCountryRequests().then((res) => res.data),
+  });
+};
+
+export const useDismissCountryRequest = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (countryName: string) =>
+      rentRegulationsApi.dismissCountryRequest(countryName),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["country-regulation-requests"],
+      });
+    },
+  });
+};
