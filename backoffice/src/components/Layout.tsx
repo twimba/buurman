@@ -14,6 +14,7 @@ import {
   MessageSquare,
   Radio,
   Flag,
+  BookOpen,
   Ticket,
   Timer,
   ScrollText,
@@ -53,6 +54,7 @@ const navigation = [
   { name: "Broadcasts", href: "/broadcasts", icon: Radio },
   { name: "SMS Policy", href: "/sms-policy", icon: MessageSquare },
   { name: "Invitations", href: "/registration-invitations", icon: Ticket },
+  { name: "Rent Regulations", href: "/rent-regulations", icon: BookOpen },
   { name: "Feature Flags", href: "/feature-flags", icon: Flag },
 ];
 
