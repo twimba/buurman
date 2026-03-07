@@ -63,7 +63,7 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
   // Table state
   const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState<
-    'street' | 'city' | 'country' | 'addressType' | 'status'
+    'street' | 'city' | 'countryCode' | 'addressType' | 'status'
   >('street');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [currentPage, setCurrentPage] = useState(1);
@@ -150,7 +150,7 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
         (a) =>
           a.street.toLowerCase().includes(s) ||
           a.city.toLowerCase().includes(s) ||
-          a.country.toLowerCase().includes(s) ||
+          a.countryCode.toLowerCase().includes(s) ||
           a.addressType.toLowerCase().includes(s) ||
           (a.postalCode && a.postalCode.toLowerCase().includes(s))
       );
@@ -166,9 +166,9 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
           aVal = a.city;
           bVal = b.city;
           break;
-        case 'country':
-          aVal = a.country;
-          bVal = b.country;
+        case 'countryCode':
+          aVal = a.countryCode;
+          bVal = b.countryCode;
           break;
         case 'addressType':
           aVal = a.addressType;
@@ -313,11 +313,11 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
                   </th>
                   <th
                     className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
-                    onClick={() => handleSort('country')}
+                    onClick={() => handleSort('countryCode')}
                   >
                     <div className="flex items-center gap-1">
                       Country
-                      {renderSortIcon('country')}
+                      {renderSortIcon('countryCode')}
                     </div>
                   </th>
                   <th
@@ -373,7 +373,7 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
                           {address.city}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
-                          {address.country}
+                          {address.countryCode}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span

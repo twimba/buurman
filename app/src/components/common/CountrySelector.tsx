@@ -24,7 +24,7 @@ export const CountrySelector = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  const selected = value ? countries.find((c) => c.name === value) : undefined;
+  const selected = value ? countries.find((c) => c.code === value) : undefined;
   const displayValue = selected ? `${selected.flag} ${selected.name}` : '';
 
   const filtered = countries.filter(
@@ -55,8 +55,8 @@ export const CountrySelector = ({
     }
   }, [highlightedIndex]);
 
-  const handleSelect = (name: string) => {
-    onChange(name);
+  const handleSelect = (code: string) => {
+    onChange(code);
     setIsOpen(false);
     setSearch('');
   };
@@ -84,7 +84,7 @@ export const CountrySelector = ({
       case 'Enter':
         e.preventDefault();
         if (highlightedIndex >= 0 && highlightedIndex < filtered.length) {
-          handleSelect(filtered[highlightedIndex].name);
+          handleSelect(filtered[highlightedIndex].code);
         }
         break;
       case 'Escape':
@@ -143,12 +143,12 @@ export const CountrySelector = ({
               type="button"
               data-option
               onMouseDown={(e) => e.preventDefault()}
-              onClick={() => handleSelect(country.name)}
+              onClick={() => handleSelect(country.code)}
               onMouseEnter={() => setHighlightedIndex(index)}
               className={`w-full text-left px-3 py-2 text-sm ${
                 highlightedIndex === index
                   ? 'bg-blue-50 dark:bg-blue-900/30'
-                  : country.name === value
+                  : country.code === value
                     ? 'bg-primary-100 dark:bg-primary-500/10'
                     : ''
               }`}

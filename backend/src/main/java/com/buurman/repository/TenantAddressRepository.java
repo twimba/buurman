@@ -48,7 +48,7 @@ public class TenantAddressRepository {
           .set(TENANT_ADDRESSES.STREET, address.getStreet())
           .set(TENANT_ADDRESSES.CITY, address.getCity())
           .set(TENANT_ADDRESSES.POSTAL_CODE, address.getPostalCode())
-          .set(TENANT_ADDRESSES.COUNTRY, address.getCountry())
+          .set(TENANT_ADDRESSES.COUNTRY_CODE, address.getCountryCode())
           .set(TENANT_ADDRESSES.ADDRESS_TYPE, address.getAddressType().name())
           .set(TENANT_ADDRESSES.STATUS, address.getStatus().name())
           .set(
@@ -73,7 +73,7 @@ public class TenantAddressRepository {
           .set(TENANT_ADDRESSES.STREET, address.getStreet())
           .set(TENANT_ADDRESSES.CITY, address.getCity())
           .set(TENANT_ADDRESSES.POSTAL_CODE, address.getPostalCode())
-          .set(TENANT_ADDRESSES.COUNTRY, address.getCountry())
+          .set(TENANT_ADDRESSES.COUNTRY_CODE, address.getCountryCode())
           .set(TENANT_ADDRESSES.ADDRESS_TYPE, address.getAddressType().name())
           .set(TENANT_ADDRESSES.STATUS, address.getStatus().name())
           .set(
@@ -162,7 +162,7 @@ public class TenantAddressRepository {
         .street(record.get(TENANT_ADDRESSES.STREET))
         .city(record.get(TENANT_ADDRESSES.CITY))
         .postalCode(record.get(TENANT_ADDRESSES.POSTAL_CODE))
-        .country(record.get(TENANT_ADDRESSES.COUNTRY))
+        .countryCode(record.get(TENANT_ADDRESSES.COUNTRY_CODE))
         .addressType(AddressType.valueOf(record.get(TENANT_ADDRESSES.ADDRESS_TYPE)))
         .status(AddressStatus.valueOf(record.get(TENANT_ADDRESSES.STATUS)))
         .latitude(

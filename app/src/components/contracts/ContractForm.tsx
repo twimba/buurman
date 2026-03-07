@@ -281,7 +281,7 @@ export const ContractForm = ({
     );
   }, [propertiesPage, formData.propertyIdentifier]);
   const propertyCountryCode =
-    contract?.countryCode || selectedProperty?.country || undefined;
+    contract?.countryCode || selectedProperty?.countryCode || undefined;
   const countryName = useCountryName(propertyCountryCode);
 
   // Sync currency fields when defaultCurrency loads asynchronously (create mode)

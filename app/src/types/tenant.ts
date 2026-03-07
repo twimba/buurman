@@ -92,7 +92,7 @@ export interface CreateTenantAddressRequest {
   street: string;
   city: string;
   postalCode?: string;
-  country: string;
+  countryCode: string;
   addressType: TenantAddressResponseAddressType;
   status?: TenantAddressResponseStatus;
   latitude?: number;
@@ -104,7 +104,7 @@ export interface UpdateTenantAddressRequest {
   street: string;
   city: string;
   postalCode?: string;
-  country: string;
+  countryCode: string;
   addressType: TenantAddressResponseAddressType;
   status: TenantAddressResponseStatus;
   latitude?: number;
@@ -117,7 +117,7 @@ export interface TenantAddressResponse {
   street: string;
   city: string;
   postalCode?: string;
-  country: string;
+  countryCode: string;
   addressType: TenantAddressResponseAddressType;
   status: TenantAddressResponseStatus;
   latitude?: number;

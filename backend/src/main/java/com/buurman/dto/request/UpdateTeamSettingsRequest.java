@@ -18,8 +18,8 @@ public record UpdateTeamSettingsRequest(
   public record RegionalSettings(
       Optional<@Size(min = 3, max = 3, message = "Currency code must be 3 characters") String>
           defaultCurrency,
-      Optional<@Size(max = 100, message = "Country name must not exceed 100 characters") String>
-          defaultCountry,
+      Optional<@Size(max = 2, message = "Country code must be 2 characters") String>
+          defaultCountryCode,
       Optional<@Size(max = 50, message = "Timezone must not exceed 50 characters") String> timezone,
       Optional<@Size(max = 20, message = "Date format must not exceed 20 characters") String>
           dateFormat,

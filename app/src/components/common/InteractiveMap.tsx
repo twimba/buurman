@@ -46,7 +46,7 @@ interface InteractiveMapProps {
   isGeocoding?: boolean;
   onLocationChange?: (lat: number, lng: number) => void;
   height?: string;
-  defaultCountry?: string;
+  defaultCountryCode?: string;
 }
 
 const placeholderCls =
@@ -118,7 +118,7 @@ export const InteractiveMap = ({
   isGeocoding = false,
   onLocationChange,
   height = 'h-96',
-  defaultCountry,
+  defaultCountryCode,
 }: InteractiveMapProps) => {
   const apiKey = env('VITE_GOOGLE_MAPS_API_KEY');
   const mapsChannel = parseGoogleMapsChannel(env('VITE_GOOGLE_MAPS_CHANNEL'));
@@ -213,7 +213,7 @@ export const InteractiveMap = ({
 
   // Click-to-place mode (no coordinates, user activated manual placement)
   if (clickToPlaceActive && latitude == null && longitude == null) {
-    const center = getCountryCenter(defaultCountry);
+    const center = getCountryCenter(defaultCountryCode);
     return (
       <div className="space-y-2">
         <div

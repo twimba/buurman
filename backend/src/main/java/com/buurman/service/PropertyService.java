@@ -154,7 +154,7 @@ public class PropertyService {
       geocodingService
           .geocode(
               request.street(), request.city(),
-              request.postalCode(), request.country())
+              Optional.of(request.postalCode()), request.countryCode())
           .ifPresent(
               result -> {
                 property.setLatitude(Optional.of(result.latitude()));
@@ -252,7 +252,7 @@ public class PropertyService {
     String oldStreet = property.getStreet();
     String oldCity = property.getCity();
     String oldPostalCode = property.getPostalCode();
-    String oldCountry = property.getCountry();
+    String oldCountry = property.getCountryCode();
 
     propertyMapper.updateEntity(property, request);
     property.setUpdatedBy(principal.getUserId());
@@ -261,13 +261,13 @@ public class PropertyService {
         !Objects.equals(oldStreet, property.getStreet())
             || !Objects.equals(oldCity, property.getCity())
             || !Objects.equals(oldPostalCode, property.getPostalCode())
-            || !Objects.equals(oldCountry, property.getCountry());
+            || !Objects.equals(oldCountry, property.getCountryCode());
 
     if (addressChanged && (property.getLatitude().isEmpty() || property.getLongitude().isEmpty())) {
       geocodingService
           .geocode(
               property.getStreet(), property.getCity(),
-              property.getPostalCode(), property.getCountry())
+              Optional.of(property.getPostalCode()), property.getCountryCode())
           .ifPresent(
               result -> {
                 property.setLatitude(Optional.of(result.latitude()));
@@ -778,7 +778,7 @@ public class PropertyService {
         response.street(),
         response.city(),
         response.postalCode(),
-        response.country(),
+        response.countryCode(),
         response.latitude(),
         response.longitude(),
         response.geocodeAccuracy(),

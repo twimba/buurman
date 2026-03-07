@@ -64,7 +64,7 @@ export const PropertyForm = ({
   onRemoveAmenity,
 }: PropertyFormProps) => {
   const navigate = useNavigate();
-  const { defaultCountry } = useTeamDefaults();
+  const { defaultCountryCode } = useTeamDefaults();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const geocodeMutation = useGeocode();
   const [addressDirty, setAddressDirty] = useState(false);
@@ -89,7 +89,7 @@ export const PropertyForm = ({
     street: property?.street ?? '',
     city: property?.city ?? '',
     postalCode: property?.postalCode ?? '',
-    country: property?.country || defaultCountry || '',
+    countryCode: property?.countryCode || defaultCountryCode || '',
     latitude: property?.latitude ?? undefined,
     longitude: property?.longitude ?? undefined,
     geocodeAccuracy: property?.geocodeAccuracy ?? undefined,
@@ -194,7 +194,7 @@ export const PropertyForm = ({
         street: property.street,
         city: property.city,
         postalCode: property.postalCode,
-        country: property.country,
+        countryCode: property.countryCode,
         latitude: property.latitude,
         longitude: property.longitude,
         geocodeAccuracy: property.geocodeAccuracy,
@@ -255,12 +255,12 @@ export const PropertyForm = ({
 
   // Debounce address changes for geocoding via backend (2 seconds)
   useEffect(() => {
-    if (formData.street && formData.city && formData.country) {
+    if (formData.street && formData.city && formData.countryCode) {
       const hasChanged = property
         ? formData.street !== property.street ||
           formData.city !== property.city ||
           formData.postalCode !== property.postalCode ||
-          formData.country !== property.country
+          formData.countryCode !== property.countryCode
         : true;
 
       if (hasChanged) {
@@ -269,12 +269,12 @@ export const PropertyForm = ({
     }
 
     const timeoutId = setTimeout(() => {
-      if (formData.street && formData.city && formData.country) {
+      if (formData.street && formData.city && formData.countryCode) {
         const hasChanged = property
           ? formData.street !== property.street ||
             formData.city !== property.city ||
             formData.postalCode !== property.postalCode ||
-            formData.country !== property.country
+            formData.countryCode !== property.countryCode
           : true;
 
         if (hasChanged) {
@@ -283,7 +283,7 @@ export const PropertyForm = ({
               street: formData.street,
               city: formData.city,
               postalCode: formData.postalCode,
-              country: formData.country,
+              countryCode: formData.countryCode,
             },
             {
               onSuccess: (result) => {
@@ -319,7 +319,7 @@ export const PropertyForm = ({
     formData.street,
     formData.city,
     formData.postalCode,
-    formData.country,
+    formData.countryCode,
     property,
   ]);
 
@@ -349,8 +349,8 @@ export const PropertyForm = ({
     if (!formData.postalCode.trim()) {
       newErrors.postalCode = 'Postal code is required';
     }
-    if (!formData.country.trim()) {
-      newErrors.country = 'Country is required';
+    if (!formData.countryCode.trim()) {
+      newErrors.countryCode = 'Country is required';
     }
 
     if (formData.areaValue != null && formData.areaValue <= 0) {
@@ -465,17 +465,17 @@ export const PropertyForm = ({
               Country <span className="text-red-500">*</span>
             </label>
             <CountrySelector
-              value={formData.country}
-              onChange={(v) => handleChange('country', v)}
+              value={formData.countryCode}
+              onChange={(v) => handleChange('countryCode', v)}
             />
-            {errors.country && (
-              <p className="text-red-600 text-sm mt-1">{errors.country}</p>
+            {errors.countryCode && (
+              <p className="text-red-600 text-sm mt-1">{errors.countryCode}</p>
             )}
           </div>
         </div>
 
         {/* Location Preview */}
-        {formData.street && formData.city && formData.country && (
+        {formData.street && formData.city && formData.countryCode && (
           <div className="mt-6">
             <h4 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-3">
               Location Preview
@@ -487,7 +487,7 @@ export const PropertyForm = ({
               longitude={formData.longitude}
               geocodeAccuracy={formData.geocodeAccuracy}
               isGeocoding={addressDirty || geocodeMutation.isPending}
-              defaultCountry={formData.country || defaultCountry}
+              defaultCountryCode={formData.countryCode || defaultCountryCode}
               onLocationChange={(lat, lng) => {
                 setFormData((prev) => ({
                   ...prev,

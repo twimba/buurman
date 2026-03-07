@@ -1332,8 +1332,8 @@ public class PropertyBookletExporter {
     if (property.getPostalCode() != null) {
       location.append(", ").append(escapeHtml(property.getPostalCode()));
     }
-    if (property.getCountry() != null) {
-      location.append(", ").append(escapeHtml(property.getCountry()));
+    if (property.getCountryCode() != null) {
+      location.append(", ").append(escapeHtml(property.getCountryCode()));
     }
     return location.toString();
   }

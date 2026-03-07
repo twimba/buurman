@@ -25,7 +25,7 @@ public class TeamPreferences {
 
   // Regional settings
   @Builder.Default private String defaultCurrency = "EUR";
-  @Builder.Default private String defaultCountry = "Netherlands";
+  @Builder.Default private String defaultCountryCode = "NL";
   @Builder.Default private String timezone = "Europe/Amsterdam";
   @Builder.Default private String dateFormat = "DD/MM/YYYY";
   @Builder.Default private String fiscalYearStartMonth = "01";

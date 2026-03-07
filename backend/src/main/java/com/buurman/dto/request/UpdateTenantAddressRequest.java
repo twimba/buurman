@@ -11,7 +11,7 @@ public record UpdateTenantAddressRequest(
     @NotBlank(message = "Street is required") String street,
     @NotBlank(message = "City is required") String city,
     Optional<String> postalCode,
-    @NotBlank(message = "Country is required") String country,
+    @NotBlank(message = "Country code is required") String countryCode,
     @NotNull(message = "Address type is required") TenantAddress.AddressType addressType,
     @NotNull(message = "Status is required") TenantAddress.AddressStatus status,
     Optional<Double> latitude,

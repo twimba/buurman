@@ -4,11 +4,11 @@ export interface OnboardingStatusResponse {
   completed: boolean;
   completedAt: string | null;
   currentCurrency: string;
-  currentCountry: string;
+  currentCountryCode: string;
 }
 
 export interface CompleteOnboardingRequest {
-  country: string;
+  countryCode: string;
   currency: string;
   dateFormat?: string;
 }
@@ -30,10 +30,11 @@ export interface CurrencyChangeResponse {
   affectedFinancials: number;
 }
 
-export const getOnboardingStatus = async (): Promise<OnboardingStatusResponse> => {
-  const { data } = await client.get('/onboarding/status');
-  return data;
-};
+export const getOnboardingStatus =
+  async (): Promise<OnboardingStatusResponse> => {
+    const { data } = await client.get('/onboarding/status');
+    return data;
+  };
 
 export const completeOnboarding = async (
   request: CompleteOnboardingRequest
@@ -42,7 +43,9 @@ export const completeOnboarding = async (
   return data;
 };
 
-export const getCountryCurrencies = async (): Promise<Record<string, string>> => {
+export const getCountryCurrencies = async (): Promise<
+  Record<string, string>
+> => {
   const { data } = await client.get('/countries/currencies');
   return data;
 };

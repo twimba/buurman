@@ -49,7 +49,7 @@ public class TeamPreferencesRepository {
           .set(TEAM_PREFERENCES.PAYMENTS_AHEAD_COUNT, prefs.getPaymentsAheadCount())
           .set(TEAM_PREFERENCES.AUTO_GENERATION_ENABLED, prefs.isAutoGenerationEnabled())
           .set(TEAM_PREFERENCES.DEFAULT_CURRENCY, prefs.getDefaultCurrency())
-          .set(TEAM_PREFERENCES.DEFAULT_COUNTRY, prefs.getDefaultCountry())
+          .set(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE, prefs.getDefaultCountryCode())
           .set(TEAM_PREFERENCES.TIMEZONE, prefs.getTimezone())
           .set(TEAM_PREFERENCES.DATE_FORMAT, prefs.getDateFormat())
           .set(TEAM_PREFERENCES.FISCAL_YEAR_START_MONTH, prefs.getFiscalYearStartMonth())
@@ -71,7 +71,7 @@ public class TeamPreferencesRepository {
           .set(TEAM_PREFERENCES.PAYMENTS_AHEAD_COUNT, prefs.getPaymentsAheadCount())
           .set(TEAM_PREFERENCES.AUTO_GENERATION_ENABLED, prefs.isAutoGenerationEnabled())
           .set(TEAM_PREFERENCES.DEFAULT_CURRENCY, prefs.getDefaultCurrency())
-          .set(TEAM_PREFERENCES.DEFAULT_COUNTRY, prefs.getDefaultCountry())
+          .set(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE, prefs.getDefaultCountryCode())
           .set(TEAM_PREFERENCES.TIMEZONE, prefs.getTimezone())
           .set(TEAM_PREFERENCES.DATE_FORMAT, prefs.getDateFormat())
           .set(TEAM_PREFERENCES.FISCAL_YEAR_START_MONTH, prefs.getFiscalYearStartMonth())
@@ -113,7 +113,7 @@ public class TeamPreferencesRepository {
     prefs.setAutoGenerationEnabled(record.getAutoGenerationEnabled());
     prefs.setDefaultCurrency(
         record.getDefaultCurrency() != null ? record.getDefaultCurrency() : "EUR");
-    prefs.setDefaultCountry(record.getDefaultCountry());
+    prefs.setDefaultCountryCode(record.getDefaultCountryCode());
     prefs.setTimezone(record.getTimezone());
     prefs.setDateFormat(record.getDateFormat());
     prefs.setFiscalYearStartMonth(record.getFiscalYearStartMonth());

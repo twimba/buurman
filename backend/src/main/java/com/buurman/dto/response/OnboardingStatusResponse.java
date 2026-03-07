@@ -7,4 +7,4 @@ public record OnboardingStatusResponse(
     boolean completed,
     Optional<Instant> completedAt,
     String currentCurrency,
-    String currentCountry) {}
+    String currentCountryCode) {}

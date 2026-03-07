@@ -352,7 +352,7 @@ public class TeamService {
                                     .notificationType(NotificationType.INVITATION_ACCEPTED)
                                     .recipientUserId(inviter.getId())
                                     .recipientEmail(inviter.getEmail())
-                                    .recipientPhone(inviter.getPhone().orElse(null))
+                                    .recipientPhone(inviter.getPhone())
                                     .templateName("invitation-accepted")
                                     .templateVariables(
                                         Map.of(
@@ -471,7 +471,7 @@ public class TeamService {
         .ifPresent(
             regional -> {
               regional.defaultCurrency().ifPresent(prefs::setDefaultCurrency);
-              regional.defaultCountry().ifPresent(prefs::setDefaultCountry);
+              regional.defaultCountryCode().ifPresent(prefs::setDefaultCountryCode);
               regional.timezone().ifPresent(prefs::setTimezone);
               regional.dateFormat().ifPresent(prefs::setDateFormat);
               regional.fiscalYearStartMonth().ifPresent(prefs::setFiscalYearStartMonth);
@@ -507,7 +507,7 @@ public class TeamService {
             prefs.getPaymentsAheadCount(), prefs.isAutoGenerationEnabled()),
         new TeamPreferencesResponse.RegionalSettings(
             prefs.getDefaultCurrency(),
-            Optional.of(prefs.getDefaultCountry()),
+            Optional.of(prefs.getDefaultCountryCode()),
             Optional.of(prefs.getTimezone()),
             Optional.of(prefs.getDateFormat()),
             Optional.of(prefs.getFiscalYearStartMonth())));

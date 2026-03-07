@@ -1,13 +1,23 @@
 import { useState, useMemo } from 'react';
-import { Globe, Coins, Calendar, ArrowRight, ArrowLeft, Check } from 'lucide-react';
+import {
+  Globe,
+  Coins,
+  Calendar,
+  ArrowRight,
+  ArrowLeft,
+  Check,
+} from 'lucide-react';
 import {
   useCompleteOnboarding,
   useCountryCurrencies,
 } from '@/hooks/useOnboarding';
+import { getCountryByCode } from '@/utils/countries';
+import { useCurrencies, getCurrencyByCode } from '@/hooks/useCurrencies';
+import { getCurrencyFlag } from '@/utils/currencyFlags';
 
 interface OnboardingWizardProps {
   onComplete: () => void;
-  currentCountry: string;
+  currentCountryCode: string;
   currentCurrency: string;
 }
 
@@ -68,22 +78,44 @@ const COUNTRIES = [
 ];
 
 const COMMON_CURRENCIES = [
-  'EUR', 'GBP', 'USD', 'CHF', 'SEK', 'NOK', 'DKK', 'PLN', 'CZK', 'HUF',
-  'RON', 'BGN', 'CAD', 'MXN', 'BRL', 'ARS', 'CLP', 'COP', 'PEN', 'UYU',
+  'EUR',
+  'GBP',
+  'USD',
+  'CHF',
+  'SEK',
+  'NOK',
+  'DKK',
+  'PLN',
+  'CZK',
+  'HUF',
+  'RON',
+  'BGN',
+  'CAD',
+  'MXN',
+  'BRL',
+  'ARS',
+  'CLP',
+  'COP',
+  'PEN',
+  'UYU',
 ];
 
 export const OnboardingWizard = ({
   onComplete,
-  currentCountry,
+  currentCountryCode,
   currentCurrency,
 }: OnboardingWizardProps) => {
   const [stepIndex, setStepIndex] = useState(0);
-  const [country, setCountry] = useState(currentCountry || 'NL');
+  const [country, setCountry] = useState(currentCountryCode || 'NL');
   const [currency, setCurrency] = useState(currentCurrency || 'EUR');
+  const [suggestedCurrency, setSuggestedCurrency] = useState(
+    currentCurrency || 'EUR'
+  );
   const [dateFormat, setDateFormat] = useState('DD/MM/YYYY');
   const [countrySearch, setCountrySearch] = useState('');
 
   const { data: countryCurrencies } = useCountryCurrencies();
+  const { data: currencyList } = useCurrencies();
   const completeMutation = useCompleteOnboarding();
 
   const currentStep = STEPS[stepIndex];
@@ -103,7 +135,9 @@ export const OnboardingWizard = ({
   const handleCountrySelect = (code: string) => {
     setCountry(code);
     if (countryCurrencies?.[code]) {
-      setCurrency(countryCurrencies[code]);
+      const suggested = countryCurrencies[code];
+      setSuggestedCurrency(suggested);
+      setCurrency(suggested);
     }
   };
 
@@ -121,7 +155,7 @@ export const OnboardingWizard = ({
 
   const handleComplete = () => {
     completeMutation.mutate(
-      { country, currency, dateFormat },
+      { countryCode: country, currency, dateFormat },
       { onSuccess: onComplete }
     );
   };
@@ -153,11 +187,7 @@ export const OnboardingWizard = ({
                         : 'bg-[#edf0f7] dark:bg-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8]'
                   }`}
                 >
-                  {i < stepIndex ? (
-                    <Check className="h-4 w-4" />
-                  ) : (
-                    i + 1
-                  )}
+                  {i < stepIndex ? <Check className="h-4 w-4" /> : i + 1}
                 </div>
                 {i < STEPS.length - 1 && (
                   <div
@@ -194,61 +224,167 @@ export const OnboardingWizard = ({
                 className="w-full px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] mb-3 focus:outline-none focus:ring-1 focus:ring-[#5c7cfa]"
               />
               <div className="max-h-48 overflow-y-auto space-y-1">
-                {filteredCountries.map((c) => (
-                  <button
-                    key={c.code}
-                    onClick={() => handleCountrySelect(c.code)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                      country === c.code
-                        ? 'bg-[#5c7cfa] text-white'
-                        : 'hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]'
-                    }`}
-                  >
-                    {c.name}
-                  </button>
-                ))}
+                {filteredCountries.map((c) => {
+                  const flag = getCountryByCode(c.code)?.flag;
+                  return (
+                    <button
+                      key={c.code}
+                      onClick={() => handleCountrySelect(c.code)}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2.5 ${
+                        country === c.code
+                          ? 'bg-[#5c7cfa] text-white'
+                          : 'hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]'
+                      }`}
+                    >
+                      {flag && <span className="text-base">{flag}</span>}
+                      {c.name}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
 
-          {currentStep === 'currency' && (
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <Coins className="h-5 w-5 text-[#5c7cfa]" />
-                <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-                  Team Currency
-                </h3>
-              </div>
-              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-4">
-                All financial data will use this currency. You can change it
-                later in settings.
-              </p>
-              <div className="bg-[#f1f3f9] dark:bg-[#1e2130] rounded-lg p-4 mb-4">
-                <div className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                  Suggested for{' '}
-                  {COUNTRIES.find((c) => c.code === country)?.name}
-                </div>
-                <div className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
-                  {currency}
-                </div>
-              </div>
-              <div className="grid grid-cols-4 gap-2">
-                {COMMON_CURRENCIES.map((c) => (
-                  <button
-                    key={c}
-                    onClick={() => setCurrency(c)}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      currency === c
-                        ? 'bg-[#5c7cfa] text-white'
-                        : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] hover:bg-[#e2e6f0] dark:hover:bg-[#262a3a]'
-                    }`}
+          {currentStep === 'currency' &&
+            (() => {
+              const suggestedInfo = getCurrencyByCode(
+                currencyList,
+                suggestedCurrency
+              );
+              const selectedInfo = getCurrencyByCode(currencyList, currency);
+              const countryName = COUNTRIES.find(
+                (c) => c.code === country
+              )?.name;
+              const isSuggested = currency === suggestedCurrency;
+
+              return (
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <Coins className="h-5 w-5 text-[#5c7cfa]" />
+                    <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                      Team Currency
+                    </h3>
+                  </div>
+                  <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-4">
+                    All financial data will use this currency. You can change it
+                    later in settings.
+                  </p>
+
+                  {/* Suggested + Selected cards */}
+                  <div
+                    className={`grid gap-3 mb-5 ${isSuggested ? 'grid-cols-1' : 'grid-cols-2'}`}
                   >
-                    {c}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+                    {/* Suggested */}
+                    <button
+                      onClick={() => setCurrency(suggestedCurrency)}
+                      className={`rounded-xl border-2 p-4 text-left transition-all ${
+                        isSuggested
+                          ? 'border-[#5c7cfa] bg-[#5c7cfa]/5 dark:bg-[#5c7cfa]/10'
+                          : 'border-[#e2e6f0] dark:border-[#2a2e3f] hover:border-[#5c7cfa]/40'
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5 mb-2">
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded">
+                          Suggested for {countryName}
+                        </span>
+                        {isSuggested && (
+                          <span className="text-[10px] font-semibold uppercase tracking-wider text-[#5c7cfa] bg-[#5c7cfa]/10 px-1.5 py-0.5 rounded">
+                            Selected
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-2xl">
+                          {getCurrencyFlag(suggestedCurrency)}
+                        </span>
+                        <div>
+                          <div className="text-lg font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+                            {suggestedCurrency}
+                            {suggestedInfo && (
+                              <span className="ml-1.5 text-sm font-normal text-[#6b7194] dark:text-[#8b90a8]">
+                                {suggestedInfo.symbol}
+                              </span>
+                            )}
+                          </div>
+                          {suggestedInfo && (
+                            <div className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                              {suggestedInfo.name}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+
+                    {/* Selected (only when different from suggested) */}
+                    {!isSuggested && (
+                      <div className="rounded-xl border-2 border-[#5c7cfa] bg-[#5c7cfa]/5 dark:bg-[#5c7cfa]/10 p-4">
+                        <div className="mb-2">
+                          <span className="text-[10px] font-semibold uppercase tracking-wider text-[#5c7cfa] bg-[#5c7cfa]/10 px-1.5 py-0.5 rounded">
+                            Selected
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2.5">
+                          <span className="text-2xl">
+                            {getCurrencyFlag(currency)}
+                          </span>
+                          <div>
+                            <div className="text-lg font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+                              {currency}
+                              {selectedInfo && (
+                                <span className="ml-1.5 text-sm font-normal text-[#6b7194] dark:text-[#8b90a8]">
+                                  {selectedInfo.symbol}
+                                </span>
+                              )}
+                            </div>
+                            {selectedInfo && (
+                              <div className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                                {selectedInfo.name}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Currency grid */}
+                  <div className="grid grid-cols-4 gap-2">
+                    {COMMON_CURRENCIES.map((c) => {
+                      const info = getCurrencyByCode(currencyList, c);
+                      return (
+                        <button
+                          key={c}
+                          onClick={() => setCurrency(c)}
+                          className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left ${
+                            currency === c
+                              ? 'bg-[#5c7cfa] text-white'
+                              : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] hover:bg-[#e2e6f0] dark:hover:bg-[#262a3a]'
+                          }`}
+                        >
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-sm">
+                              {getCurrencyFlag(c)}
+                            </span>
+                            <span>{c}</span>
+                          </div>
+                          {info && (
+                            <div
+                              className={`text-[10px] mt-0.5 truncate ${
+                                currency === c
+                                  ? 'text-white/70'
+                                  : 'text-[#6b7194] dark:text-[#8b90a8]'
+                              }`}
+                            >
+                              {info.symbol}
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })()}
 
           {currentStep === 'dateFormat' && (
             <div>
@@ -293,6 +429,7 @@ export const OnboardingWizard = ({
                       Country
                     </span>
                     <span className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                      {getCountryByCode(country)?.flag}{' '}
                       {COUNTRIES.find((c) => c.code === country)?.name}
                     </span>
                   </div>
@@ -301,7 +438,12 @@ export const OnboardingWizard = ({
                       Currency
                     </span>
                     <span className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
-                      {currency}
+                      {getCurrencyFlag(currency)} {currency}
+                      {getCurrencyByCode(currencyList, currency) && (
+                        <span className="text-[#6b7194] dark:text-[#8b90a8] font-normal ml-1">
+                          ({getCurrencyByCode(currencyList, currency)?.symbol})
+                        </span>
+                      )}
                     </span>
                   </div>
                   <div className="flex justify-between">

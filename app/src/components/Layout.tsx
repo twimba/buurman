@@ -21,8 +21,7 @@ export const Layout = ({ children }: LayoutProps) => {
   const [wizardDismissed, setWizardDismissed] = useState(false);
 
   const { data: onboarding } = useOnboardingStatus();
-  const showWizard =
-    onboarding && !onboarding.completed && !wizardDismissed;
+  const showWizard = onboarding && !onboarding.completed && !wizardDismissed;
 
   const toggleCollapsed = () => {
     const next = !collapsed;
@@ -55,7 +54,7 @@ export const Layout = ({ children }: LayoutProps) => {
       {showWizard && (
         <OnboardingWizard
           onComplete={() => setWizardDismissed(true)}
-          currentCountry={onboarding.currentCountry}
+          currentCountryCode={onboarding.currentCountryCode}
           currentCurrency={onboarding.currentCurrency}
         />
       )}

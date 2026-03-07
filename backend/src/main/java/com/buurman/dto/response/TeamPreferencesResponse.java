@@ -8,7 +8,7 @@ public record TeamPreferencesResponse(PaymentSettings payments, RegionalSettings
 
   public record RegionalSettings(
       String defaultCurrency,
-      Optional<String> defaultCountry,
+      Optional<String> defaultCountryCode,
       Optional<String> timezone,
       Optional<String> dateFormat,
       Optional<String> fiscalYearStartMonth) {}

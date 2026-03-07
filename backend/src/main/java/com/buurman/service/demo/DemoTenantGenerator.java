@@ -185,7 +185,7 @@ public class DemoTenantGenerator {
             .set(TENANT_ADDRESSES.STREET, faker.address().streetName() + " " + houseNum)
             .set(TENANT_ADDRESSES.CITY, city)
             .set(TENANT_ADDRESSES.POSTAL_CODE, postalCode)
-            .set(TENANT_ADDRESSES.COUNTRY, "Netherlands")
+            .set(TENANT_ADDRESSES.COUNTRY_CODE, "NL")
             .set(TENANT_ADDRESSES.ADDRESS_TYPE, "CURRENT")
             .set(TENANT_ADDRESSES.STATUS, "ACTIVE")
             .set(TENANT_ADDRESSES.LATITUDE, BigDecimal.valueOf(51.8 + random.nextDouble() * 1.2))

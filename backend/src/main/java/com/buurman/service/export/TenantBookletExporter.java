@@ -315,9 +315,9 @@ public class TenantBookletExporter {
         html.append(", ").append(escapeHtml(addr.getPostalCode()));
       }
       html.append("</div>");
-      if (addr.getCountry() != null) {
+      if (addr.getCountryCode() != null) {
         html.append("<div style='font-size:13px;color:#4a5568;'>")
-            .append(escapeHtml(addr.getCountry()))
+            .append(escapeHtml(addr.getCountryCode()))
             .append("</div>");
       }
       html.append("</div>");

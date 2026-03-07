@@ -33,7 +33,7 @@ export const TeamPreferencesSection = () => {
   const { data: currencies } = useCurrencies();
   const [preferences, setPreferences] = useState({
     defaultCurrency: '',
-    defaultCountry: '',
+    defaultCountryCode: '',
     fiscalYearStart: '01',
   });
 
@@ -48,7 +48,7 @@ export const TeamPreferencesSection = () => {
     setLastSyncedSettings(settingsData);
     setPreferences({
       defaultCurrency: settingsData.regional.defaultCurrency ?? '',
-      defaultCountry: settingsData.regional.defaultCountry ?? '',
+      defaultCountryCode: settingsData.regional.defaultCountryCode ?? '',
       fiscalYearStart: settingsData.regional.fiscalYearStartMonth ?? '01',
     });
   }
@@ -77,7 +77,7 @@ export const TeamPreferencesSection = () => {
     const saveSettings = () =>
       updateSettingsMutation.mutateAsync({
         regional: {
-          defaultCountry: preferences.defaultCountry || undefined,
+          defaultCountryCode: preferences.defaultCountryCode || undefined,
           fiscalYearStartMonth: preferences.fiscalYearStart,
         },
       });
@@ -176,8 +176,12 @@ export const TeamPreferencesSection = () => {
               </label>
               <div className="flex items-center gap-3">
                 <div className="flex-1 px-3 py-2 bg-[#f1f3f9] dark:bg-[#1e2130] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg text-[#1a1d2e] dark:text-[#eef0f6] font-medium">
-                  {preferences.defaultCurrency || 'EUR'}{' '}
-                  ({getCurrencySymbol(currencies, preferences.defaultCurrency || 'EUR')})
+                  {preferences.defaultCurrency || 'EUR'} (
+                  {getCurrencySymbol(
+                    currencies,
+                    preferences.defaultCurrency || 'EUR'
+                  )}
+                  )
                 </div>
                 {canEditTeamSettings && (
                   <button
@@ -190,7 +194,8 @@ export const TeamPreferencesSection = () => {
                 )}
               </div>
               <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
-                All financial data uses this currency. Changing it affects all existing records.
+                All financial data uses this currency. Changing it affects all
+                existing records.
               </p>
             </div>
           </div>
@@ -209,8 +214,10 @@ export const TeamPreferencesSection = () => {
                 Default Country
               </label>
               <CountrySelector
-                value={preferences.defaultCountry}
-                onChange={(v) => handlePreferenceChange('defaultCountry', v)}
+                value={preferences.defaultCountryCode}
+                onChange={(v) =>
+                  handlePreferenceChange('defaultCountryCode', v)
+                }
                 disabled={!canEditTeamSettings}
                 placeholder="No default (select each time)"
               />

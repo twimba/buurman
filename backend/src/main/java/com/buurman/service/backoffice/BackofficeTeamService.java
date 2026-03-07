@@ -110,7 +110,7 @@ public class BackofficeTeamService {
             Optional.of(prefs.getPaymentsAheadCount()),
             prefs.isAutoGenerationEnabled(),
             prefs.getDefaultCurrency(),
-            Optional.ofNullable(prefs.getDefaultCountry()),
+            Optional.ofNullable(prefs.getDefaultCountryCode()),
             Optional.ofNullable(prefs.getTimezone()),
             Optional.ofNullable(prefs.getDateFormat()),
             Optional.ofNullable(prefs.getFiscalYearStartMonth()));

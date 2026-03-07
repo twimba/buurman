@@ -13,7 +13,7 @@ export const useTeamDefaults = () => {
 
   return {
     defaultCurrency: settings?.regional?.defaultCurrency || 'EUR',
-    defaultCountry: settings?.regional?.defaultCountry || undefined,
+    defaultCountryCode: settings?.regional?.defaultCountryCode || undefined,
     defaultDateFormat: settings?.regional?.dateFormat || undefined,
     isLoading: !settings,
     activeTeamId: activeTeam?.identifier,
