@@ -1,9 +1,8 @@
--- V034 set Germany's frequency to TRIENNIAL which doesn't exist in the RentFrequency enum.
--- Revert to ANNUAL (increases happen annually, capped at 20% over 3 years).
--- Document the 3-year rolling cap in additional_conditions instead.
+-- V034 correctly identified Germany's Kappungsgrenze as TRIENNIAL, but the
+-- RentFrequency enum didn't have that value yet. Now that TRIENNIAL has been
+-- added to the enum, restore the correct frequency and add additional_conditions.
 UPDATE rent_regulation_rules
 SET
-    frequency = 'ANNUAL',
     additional_conditions = 'Kappungsgrenze: total increases capped at 20% over any rolling 3-year period (15% in tight housing markets).'
 WHERE
     identifier IN (

@@ -5707,10 +5707,12 @@ components:
     RentFrequency:
       type: string
       enum:
-        - ANNUAL
-        - SEMI_ANNUAL
-        - QUARTERLY
         - MONTHLY
+        - QUARTERLY
+        - SEMI_ANNUAL
+        - ANNUAL
+        - BIENNIAL
+        - TRIENNIAL
     RentRegulationCountryResponse:
       type: object
       properties:
