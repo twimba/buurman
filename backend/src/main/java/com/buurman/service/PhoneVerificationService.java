@@ -150,10 +150,10 @@ public class PhoneVerificationService {
 
     SendNotificationRequest sendNotificationRequest =
         SendNotificationRequest.builder()
-            .teamId(user.getActiveTeamId().orElse(null))
+            .teamId(user.getActiveTeamId())
             .notificationType(PHONE_VERIFICATION_CODE)
             .recipientUserId(user.getId())
-            .recipientPhone(user.getPhone().orElse(null))
+            .recipientPhone(user.getPhone())
             .createdBy(user.getId())
             .templateName("phone-verification-code")
             .templateVariables(

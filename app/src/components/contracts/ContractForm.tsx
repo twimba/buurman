@@ -281,7 +281,7 @@ export const ContractForm = ({
     );
   }, [propertiesPage, formData.propertyIdentifier]);
   const propertyCountryCode =
-    contract?.countryCode || selectedProperty?.country || undefined;
+    contract?.countryCode || selectedProperty?.countryCode || undefined;
   const countryName = useCountryName(propertyCountryCode);
 
   // Sync currency fields when defaultCurrency loads asynchronously (create mode)
@@ -897,9 +897,6 @@ export const ContractForm = ({
               value={formData.rentAmount || undefined}
               onChange={(val) => handleChange('rentAmount', val ?? '')}
               currency={formData.rentAmountCurrency || defaultCurrency || ''}
-              onCurrencyChange={(value) =>
-                handleChange('rentAmountCurrency', value)
-              }
               disabled={isLoading}
               error={!!errors.rentAmount || !!errors.rentAmountCurrency}
             />
@@ -918,9 +915,6 @@ export const ContractForm = ({
               value={formData.depositAmount ?? undefined}
               onChange={(val) => handleChange('depositAmount', val)}
               currency={formData.depositAmountCurrency || defaultCurrency || ''}
-              onCurrencyChange={(value) =>
-                handleChange('depositAmountCurrency', value)
-              }
               disabled={isLoading}
               error={!!errors.depositAmountCurrency}
             />
@@ -940,9 +934,6 @@ export const ContractForm = ({
               onChange={(val) => handleChange('securityDeposit', val)}
               currency={
                 formData.securityDepositCurrency || defaultCurrency || ''
-              }
-              onCurrencyChange={(value) =>
-                handleChange('securityDepositCurrency', value)
               }
               disabled={isLoading}
               error={!!errors.securityDepositCurrency}

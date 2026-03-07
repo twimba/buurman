@@ -32,7 +32,7 @@ export interface TeamSettingsResponse {
   };
   regional: {
     defaultCurrency: string;
-    defaultCountry: string;
+    defaultCountryCode: string;
     timezone: string;
     dateFormat: string;
     fiscalYearStartMonth: string;
@@ -46,7 +46,7 @@ export interface UpdateTeamSettingsRequest {
   };
   regional?: {
     defaultCurrency?: string;
-    defaultCountry?: string;
+    defaultCountryCode?: string;
     timezone?: string;
     dateFormat?: string;
     fiscalYearStartMonth?: string;

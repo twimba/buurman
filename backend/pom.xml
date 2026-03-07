@@ -464,12 +464,16 @@
                                 <importMapping>AmenityResponse=com.buurman.dto.response.AmenityResponse</importMapping>
                                 <importMapping>CalendarFeedResponse=com.buurman.dto.response.CalendarFeedResponse</importMapping>
                                 <importMapping>CategoryExpenseSummary=com.buurman.dto.response.CategoryExpenseSummary</importMapping>
+                                <importMapping>CompleteOnboardingRequest=com.buurman.dto.request.CompleteOnboardingRequest</importMapping>
                                 <importMapping>CommercialDetailsResponse=com.buurman.dto.response.CommercialDetailsResponse</importMapping>
                                 <importMapping>ContractPartyResponse=com.buurman.dto.response.ContractPartyResponse</importMapping>
                                 <importMapping>ContractPaymentInstructionResponse=com.buurman.dto.response.ContractPaymentInstructionResponse</importMapping>
                                 <importMapping>ContractResponse=com.buurman.dto.response.ContractResponse</importMapping>
                                 <importMapping>ContractSummary=com.buurman.dto.response.ContractSummary</importMapping>
+                                <importMapping>CountryCurrencyResponse=com.buurman.dto.response.CountryCurrencyResponse</importMapping>
                                 <importMapping>CountryMetadataSchemaResponse=com.buurman.dto.response.CountryMetadataSchemaResponse</importMapping>
+                                <importMapping>CurrencyChangeRequest=com.buurman.dto.request.CurrencyChangeRequest</importMapping>
+                                <importMapping>CurrencyChangeResponse=com.buurman.dto.response.CurrencyChangeResponse</importMapping>
                                 <importMapping>CurrencyInfo=com.buurman.dto.response.CurrencyInfo</importMapping>
                                 <importMapping>DashboardStatsResponse=com.buurman.dto.response.DashboardStatsResponse</importMapping>
                                 <importMapping>DataDateRangeResponse=com.buurman.dto.response.DataDateRangeResponse</importMapping>
@@ -491,6 +495,7 @@
                                 <importMapping>NotificationResponse=com.buurman.dto.response.NotificationResponse</importMapping>
                                 <importMapping>NotificationStatsResponse=com.buurman.dto.response.NotificationStatsResponse</importMapping>
                                 <importMapping>NotificationTypePreferencesResponse=com.buurman.dto.response.NotificationTypePreferencesResponse</importMapping>
+                                <importMapping>OnboardingStatusResponse=com.buurman.dto.response.OnboardingStatusResponse</importMapping>
                                 <importMapping>OccupancyPeriodResponse=com.buurman.dto.response.OccupancyPeriodResponse</importMapping>
                                 <importMapping>OccupancyTrendResponse=com.buurman.dto.response.OccupancyTrendResponse</importMapping>
                                 <importMapping>PaymentInstructionResponse=com.buurman.dto.response.PaymentInstructionResponse</importMapping>

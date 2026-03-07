@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Sidebar } from './Sidebar';
 import { AuthenticatedBroadcastBanner } from './common/BroadcastBanner';
+import { OnboardingWizard } from './onboarding/OnboardingWizard';
+import { useOnboardingStatus } from '@/hooks/useOnboarding';
 
 const STORAGE_KEY = 'buurman-sidebar-collapsed';
 
@@ -16,6 +18,10 @@ export const Layout = ({ children }: LayoutProps) => {
       return false;
     }
   });
+  const [wizardDismissed, setWizardDismissed] = useState(false);
+
+  const { data: onboarding } = useOnboardingStatus();
+  const showWizard = onboarding && !onboarding.completed && !wizardDismissed;
 
   const toggleCollapsed = () => {
     const next = !collapsed;
@@ -44,6 +50,14 @@ export const Layout = ({ children }: LayoutProps) => {
           {children}
         </div>
       </main>
+
+      {showWizard && (
+        <OnboardingWizard
+          onComplete={() => setWizardDismissed(true)}
+          currentCountryCode={onboarding.currentCountryCode}
+          currentCurrency={onboarding.currentCurrency}
+        />
+      )}
     </div>
   );
 };

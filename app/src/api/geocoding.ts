@@ -4,7 +4,7 @@ export interface GeocodeRequest {
   street: string;
   city: string;
   postalCode: string;
-  country: string;
+  countryCode: string;
 }
 
 export interface GeocodeResponse {

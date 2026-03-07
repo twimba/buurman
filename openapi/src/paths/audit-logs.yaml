@@ -1,0 +1,124 @@
+collection:
+  get:
+    tags:
+      - Audit Logs
+    summary: Get all audit logs
+    description: Get all activity logs for the team with optional filtering and pagination
+    operationId: getAllAuditLogs
+    parameters:
+      - name: entityType
+        in: query
+        description: Filter by entity type (PROPERTY, TENANT, CONTRACT, PAYMENT, EXPENSE)
+        required: false
+        schema:
+          type: string
+          description: Type of entity tracked in audit logs
+          enum:
+            - PROPERTY
+            - TENANT
+            - CONTRACT
+            - CONTRACT_PARTY
+            - EXPENSE
+            - PAYMENT
+            - TEAM
+            - USER
+      - name: action
+        in: query
+        description: Filter by action (CREATE, UPDATE, DELETE, RESTORE)
+        required: false
+        schema:
+          type: string
+          description: Type of audit action performed on an entity
+          enum:
+            - CREATE
+            - UPDATE
+            - DELETE
+            - RESTORE
+      - name: search
+        in: query
+        description: Search by user name, entity type, or action
+        required: false
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: Page number (0-based)
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+        example: 0
+      - name: size
+        in: query
+        description: Page size
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 25
+        example: 25
+      - name: sort
+        in: query
+        description: Sort field name
+        required: false
+        schema:
+          type: string
+        example: createdAt
+      - name: direction
+        in: query
+        description: Sort direction
+        required: false
+        schema:
+          type: string
+          default: DESC
+          description: Sort order direction for paginated queries
+          enum:
+            - ASC
+            - DESC
+        example: DESC
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageResponseRecentActivityResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []

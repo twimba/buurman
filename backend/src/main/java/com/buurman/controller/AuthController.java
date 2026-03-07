@@ -11,7 +11,6 @@ import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.AuthService;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -21,7 +20,7 @@ public class AuthController implements AuthenticationApi {
   private final AuthService authService;
 
   @Override
-  public UserResponse register(@Valid RegisterRequest registerRequest) {
+  public UserResponse register(RegisterRequest registerRequest) {
     return authService.register(registerRequest);
   }
 
@@ -32,13 +31,13 @@ public class AuthController implements AuthenticationApi {
   }
 
   @Override
-  public UserResponse updateProfile(@Valid UpdateProfileRequest updateProfileRequest) {
+  public UserResponse updateProfile(UpdateProfileRequest updateProfileRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return authService.updateProfile(principal.getUserId(), updateProfileRequest);
   }
 
   @Override
-  public UserResponse verifyEmail(@Valid VerifyEmailRequest verifyEmailRequest) {
+  public UserResponse verifyEmail(VerifyEmailRequest verifyEmailRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return authService.verifyEmail(principal.getUserId(), verifyEmailRequest.code());
   }

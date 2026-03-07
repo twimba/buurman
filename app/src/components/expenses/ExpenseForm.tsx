@@ -192,9 +192,6 @@ export const ExpenseForm = ({
           value={formData.amount ?? undefined}
           onChange={(val) => setFormData({ ...formData, amount: val ?? 0 })}
           currency={formData.currency || defaultCurrency || ''}
-          onCurrencyChange={(currency) =>
-            setFormData({ ...formData, currency })
-          }
           disabled={isLoading}
           error={!!errors.amount || !!errors.currency}
         />

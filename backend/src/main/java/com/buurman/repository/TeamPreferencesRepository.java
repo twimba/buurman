@@ -48,12 +48,18 @@ public class TeamPreferencesRepository {
           .set(TEAM_PREFERENCES.TEAM_ID, prefs.getTeamId())
           .set(TEAM_PREFERENCES.PAYMENTS_AHEAD_COUNT, prefs.getPaymentsAheadCount())
           .set(TEAM_PREFERENCES.AUTO_GENERATION_ENABLED, prefs.isAutoGenerationEnabled())
-          .set(TEAM_PREFERENCES.DEFAULT_CURRENCY, prefs.getDefaultCurrency().orElse(null))
-          .set(TEAM_PREFERENCES.DEFAULT_COUNTRY, prefs.getDefaultCountry())
+          .set(TEAM_PREFERENCES.DEFAULT_CURRENCY, prefs.getDefaultCurrency())
+          .set(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE, prefs.getDefaultCountryCode())
           .set(TEAM_PREFERENCES.TIMEZONE, prefs.getTimezone())
           .set(TEAM_PREFERENCES.DATE_FORMAT, prefs.getDateFormat())
           .set(TEAM_PREFERENCES.FISCAL_YEAR_START_MONTH, prefs.getFiscalYearStartMonth())
           .set(TEAM_PREFERENCES.TAKEOUT_RETENTION_DAYS, prefs.getTakeoutRetentionDays())
+          .set(
+              TEAM_PREFERENCES.ONBOARDING_COMPLETED_AT,
+              prefs
+                  .getOnboardingCompletedAt()
+                  .map(i -> LocalDateTime.ofInstant(i, UTC))
+                  .orElse(null))
           .set(TEAM_PREFERENCES.CREATED_AT, createdAt)
           .set(TEAM_PREFERENCES.UPDATED_AT, now)
           .execute();
@@ -64,12 +70,18 @@ public class TeamPreferencesRepository {
       dsl.update(TEAM_PREFERENCES)
           .set(TEAM_PREFERENCES.PAYMENTS_AHEAD_COUNT, prefs.getPaymentsAheadCount())
           .set(TEAM_PREFERENCES.AUTO_GENERATION_ENABLED, prefs.isAutoGenerationEnabled())
-          .set(TEAM_PREFERENCES.DEFAULT_CURRENCY, prefs.getDefaultCurrency().orElse(null))
-          .set(TEAM_PREFERENCES.DEFAULT_COUNTRY, prefs.getDefaultCountry())
+          .set(TEAM_PREFERENCES.DEFAULT_CURRENCY, prefs.getDefaultCurrency())
+          .set(TEAM_PREFERENCES.DEFAULT_COUNTRY_CODE, prefs.getDefaultCountryCode())
           .set(TEAM_PREFERENCES.TIMEZONE, prefs.getTimezone())
           .set(TEAM_PREFERENCES.DATE_FORMAT, prefs.getDateFormat())
           .set(TEAM_PREFERENCES.FISCAL_YEAR_START_MONTH, prefs.getFiscalYearStartMonth())
           .set(TEAM_PREFERENCES.TAKEOUT_RETENTION_DAYS, prefs.getTakeoutRetentionDays())
+          .set(
+              TEAM_PREFERENCES.ONBOARDING_COMPLETED_AT,
+              prefs
+                  .getOnboardingCompletedAt()
+                  .map(i -> LocalDateTime.ofInstant(i, UTC))
+                  .orElse(null))
           .set(TEAM_PREFERENCES.UPDATED_AT, now)
           .where(TEAM_PREFERENCES.ID.eq(prefs.getId()))
           .execute();
@@ -99,12 +111,15 @@ public class TeamPreferencesRepository {
     prefs.setTeamId(record.getTeamId());
     prefs.setPaymentsAheadCount(record.getPaymentsAheadCount());
     prefs.setAutoGenerationEnabled(record.getAutoGenerationEnabled());
-    prefs.setDefaultCurrency(Optional.ofNullable(record.getDefaultCurrency()));
-    prefs.setDefaultCountry(record.getDefaultCountry());
+    prefs.setDefaultCurrency(
+        record.getDefaultCurrency() != null ? record.getDefaultCurrency() : "EUR");
+    prefs.setDefaultCountryCode(record.getDefaultCountryCode());
     prefs.setTimezone(record.getTimezone());
     prefs.setDateFormat(record.getDateFormat());
     prefs.setFiscalYearStartMonth(record.getFiscalYearStartMonth());
     prefs.setTakeoutRetentionDays(record.getTakeoutRetentionDays());
+    prefs.setOnboardingCompletedAt(
+        Optional.ofNullable(record.getOnboardingCompletedAt()).map(ldt -> ldt.toInstant(UTC)));
     prefs.setCreatedAt(record.getCreatedAt().toInstant(UTC));
     prefs.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     return prefs;

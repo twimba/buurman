@@ -153,7 +153,7 @@ public class AuditLogRepository {
                   .or(lower(PROPERTIES.STREET).like(searchPattern))
                   .or(lower(PROPERTIES.CITY).like(searchPattern))
                   .or(lower(PROPERTIES.POSTAL_CODE).like(searchPattern))
-                  .or(lower(PROPERTIES.COUNTRY).like(searchPattern))
+                  .or(lower(PROPERTIES.COUNTRY_CODE).like(searchPattern))
                   // Tenant search (name, email, phone, identifier)
                   .or(lower(TENANTS.IDENTIFIER.cast(String.class)).like(searchPattern))
                   .or(lower(TENANTS.FIRST_NAME).like(searchPattern))

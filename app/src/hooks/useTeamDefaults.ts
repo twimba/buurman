@@ -12,8 +12,8 @@ export const useTeamDefaults = () => {
   const { data: settings } = useTeamSettings(team?.identifier);
 
   return {
-    defaultCurrency: settings?.regional?.defaultCurrency || undefined,
-    defaultCountry: settings?.regional?.defaultCountry || undefined,
+    defaultCurrency: settings?.regional?.defaultCurrency || 'EUR',
+    defaultCountryCode: settings?.regional?.defaultCountryCode || undefined,
     defaultDateFormat: settings?.regional?.dateFormat || undefined,
     isLoading: !settings,
     activeTeamId: activeTeam?.identifier,

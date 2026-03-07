@@ -121,7 +121,6 @@ export const RegisterPaymentForm = ({
           value={formData.amount ?? undefined}
           onChange={(val) => setFormData({ ...formData, amount: val ?? 0 })}
           currency={currency}
-          onCurrencyChange={(c) => setFormData({ ...formData, currency: c })}
           disabled={isLoading}
           error={!!errors.amount || !!errors.currency}
         />

@@ -20,7 +20,6 @@ import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.TeamService;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -43,7 +42,7 @@ public class TeamController implements TeamsApi {
 
   @Override
   public InvitationResponse createInvitation(
-      TeamIdentifier teamIdentifier, @Valid CreateInvitationRequest createInvitationRequest) {
+      TeamIdentifier teamIdentifier, CreateInvitationRequest createInvitationRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return teamService.createInvitation(teamIdentifier, createInvitationRequest, principal);
   }
@@ -70,7 +69,7 @@ public class TeamController implements TeamsApi {
   public TeamMemberResponse updateMemberRole(
       TeamIdentifier teamIdentifier,
       UserIdentifier userIdentifier,
-      @Valid UpdateMemberRoleRequest updateMemberRoleRequest) {
+      UpdateMemberRoleRequest updateMemberRoleRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return teamService.updateMemberRole(
         teamIdentifier, userIdentifier, updateMemberRoleRequest, principal);
@@ -78,14 +77,14 @@ public class TeamController implements TeamsApi {
 
   @Override
   public TeamResponse updateTeam(
-      TeamIdentifier teamIdentifier, @Valid UpdateTeamRequest updateTeamRequest) {
+      TeamIdentifier teamIdentifier, UpdateTeamRequest updateTeamRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return teamService.updateTeam(teamIdentifier, updateTeamRequest, principal);
   }
 
   @Override
   public TeamPreferencesResponse updateTeamSettings(
-      TeamIdentifier teamIdentifier, @Valid UpdateTeamSettingsRequest updateTeamSettingsRequest) {
+      TeamIdentifier teamIdentifier, UpdateTeamSettingsRequest updateTeamSettingsRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return teamService.updateTeamPreferences(teamIdentifier, updateTeamSettingsRequest, principal);
   }
@@ -98,7 +97,7 @@ public class TeamController implements TeamsApi {
 
   @Override
   public TeamMemberResponse transferOwnership(
-      TeamIdentifier teamIdentifier, @Valid TransferOwnershipRequest transferOwnershipRequest) {
+      TeamIdentifier teamIdentifier, TransferOwnershipRequest transferOwnershipRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return teamService.transferOwnership(
         teamIdentifier, transferOwnershipRequest.newOwnerIdentifier(), principal);

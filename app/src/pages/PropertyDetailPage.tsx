@@ -166,7 +166,7 @@ export const PropertyDetailPage = () => {
   const expensesPerPage = 10;
 
   const { data: property, isLoading, error } = useProperty(id);
-  const isNlProperty = property?.country === 'Netherlands';
+  const isNlProperty = property?.countryCode === 'NL';
   const { data: latestWws } = useLatestWwsCalculation(
     isNlProperty ? id : undefined
   );
@@ -856,7 +856,7 @@ export const PropertyDetailPage = () => {
                     <span className="text-sm font-medium">Country</span>
                   </div>
                   <p className="text-lg text-[#1a1d2e] dark:text-[#eef0f6]">
-                    {property.country}
+                    {property.countryCode}
                   </p>
                 </div>
               </div>

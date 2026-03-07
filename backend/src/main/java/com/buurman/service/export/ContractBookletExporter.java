@@ -364,7 +364,7 @@ public class ContractBookletExporter {
     appendField(
         html, "City", escapeHtml(property.getCity()) + " " + escapeHtml(property.getPostalCode()));
     html.append("</tr><tr>");
-    appendField(html, "Country", escapeHtml(property.getCountry()));
+    appendField(html, "Country", escapeHtml(property.getCountryCode()));
     appendField(html, "Property Type", formatEnumValue(property.getPropertyType().name()));
     html.append("</tr><tr>");
     appendField(html, "Category", formatEnumValue(property.getPropertyCategory().name()));

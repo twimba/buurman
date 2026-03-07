@@ -33,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class PropertyFeeService {
 
+  private final CurrencyEnforcementService currencyEnforcement;
   private final PropertyFeeRepository feeRepository;
   private final PropertyRepository propertyRepository;
   private final PropertyFeeMapper feeMapper;
@@ -60,6 +61,7 @@ public class PropertyFeeService {
     if (fee.getStatus() == null) {
       fee.setStatus(PropertyFee.FeeStatus.ACTIVE);
     }
+    currencyEnforcement.validateCurrency(request.currency(), teamId);
 
     PropertyFee saved = feeRepository.save(fee);
 
@@ -100,6 +102,7 @@ public class PropertyFeeService {
     feeMapper.updateEntity(fee, request);
     fee.setUpdatedBy(principal.getUserId());
     fee.setUpdatedAt(clock.instant());
+    request.currency().ifPresent(c -> currencyEnforcement.validateCurrency(c, teamId));
 
     PropertyFee updated = feeRepository.save(fee);
 

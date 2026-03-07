@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class PropertyAcquisitionService {
 
+  private final CurrencyEnforcementService currencyEnforcement;
   private final PropertyAcquisitionRepository acquisitionRepository;
   private final PropertyRepository propertyRepository;
   private final PropertyAcquisitionMapper acquisitionMapper;
@@ -86,6 +87,10 @@ public class PropertyAcquisitionService {
           propertyIdentifier,
           principal.getUserId());
     }
+
+    request
+        .purchasePriceCurrency()
+        .ifPresent(c -> currencyEnforcement.validateCurrency(c, principal.requireTeamId()));
 
     PropertyAcquisition saved = acquisitionRepository.save(acquisition);
     return acquisitionMapper.toResponse(saved);

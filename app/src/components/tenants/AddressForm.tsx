@@ -31,7 +31,7 @@ export const AddressForm = ({
   showTypeSelector = true,
   showStatusSelector = true,
 }: AddressFormProps) => {
-  const { defaultCountry } = useTeamDefaults();
+  const { defaultCountryCode } = useTeamDefaults();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const geocodeMutation = useGeocode();
   const [addressDirty, setAddressDirty] = useState(false);
@@ -40,7 +40,7 @@ export const AddressForm = ({
     street: address?.street ?? '',
     city: address?.city ?? '',
     postalCode: address?.postalCode ?? '',
-    country: address?.country || defaultCountry || '',
+    countryCode: address?.countryCode || defaultCountryCode || '',
     addressType: address?.addressType ?? AddressType.CURRENT,
     status: address?.status ?? AddressStatus.ACTIVE,
     latitude: address?.latitude ?? undefined,
@@ -50,12 +50,12 @@ export const AddressForm = ({
 
   // Debounce address changes for geocoding via backend (2 seconds)
   useEffect(() => {
-    if (formData.street && formData.city && formData.country) {
+    if (formData.street && formData.city && formData.countryCode) {
       const hasChanged = address
         ? formData.street !== address.street ||
           formData.city !== address.city ||
           formData.postalCode !== address.postalCode ||
-          formData.country !== address.country
+          formData.countryCode !== address.countryCode
         : true;
 
       if (hasChanged) {
@@ -64,12 +64,12 @@ export const AddressForm = ({
     }
 
     const timeoutId = setTimeout(() => {
-      if (formData.street && formData.city && formData.country) {
+      if (formData.street && formData.city && formData.countryCode) {
         const hasChanged = address
           ? formData.street !== address.street ||
             formData.city !== address.city ||
             formData.postalCode !== address.postalCode ||
-            formData.country !== address.country
+            formData.countryCode !== address.countryCode
           : true;
 
         if (hasChanged) {
@@ -78,7 +78,7 @@ export const AddressForm = ({
               street: formData.street,
               city: formData.city,
               postalCode: formData.postalCode,
-              country: formData.country,
+              countryCode: formData.countryCode,
             },
             {
               onSuccess: (result) => {
@@ -114,7 +114,7 @@ export const AddressForm = ({
     formData.street,
     formData.city,
     formData.postalCode,
-    formData.country,
+    formData.countryCode,
     address,
   ]);
 
@@ -127,8 +127,8 @@ export const AddressForm = ({
     if (!formData.city.trim()) {
       newErrors.city = 'City is required';
     }
-    if (!formData.country.trim()) {
-      newErrors.country = 'Country is required';
+    if (!formData.countryCode.trim()) {
+      newErrors.countryCode = 'Country is required';
     }
 
     setErrors(newErrors);
@@ -248,11 +248,11 @@ export const AddressForm = ({
             Country <span className="text-red-500">*</span>
           </label>
           <CountrySelector
-            value={formData.country}
-            onChange={(v) => handleChange('country', v)}
+            value={formData.countryCode}
+            onChange={(v) => handleChange('countryCode', v)}
           />
-          {errors.country && (
-            <p className="text-red-600 text-sm mt-1">{errors.country}</p>
+          {errors.countryCode && (
+            <p className="text-red-600 text-sm mt-1">{errors.countryCode}</p>
           )}
         </div>
 
@@ -299,7 +299,7 @@ export const AddressForm = ({
       </div>
 
       {/* Location Preview */}
-      {formData.street && formData.city && formData.country && (
+      {formData.street && formData.city && formData.countryCode && (
         <div>
           <h4 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-3">
             Location Preview
@@ -311,7 +311,7 @@ export const AddressForm = ({
             longitude={formData.longitude}
             geocodeAccuracy={formData.geocodeAccuracy}
             isGeocoding={addressDirty || geocodeMutation.isPending}
-            defaultCountry={formData.country || defaultCountry}
+            defaultCountryCode={formData.countryCode || defaultCountryCode}
             onLocationChange={(lat, lng) => {
               setFormData((prev) => ({
                 ...prev,

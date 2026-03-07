@@ -175,12 +175,12 @@ public class NotificationService {
               user -> {
                 SendNotificationRequest perUser =
                     SendNotificationRequest.builder()
-                        .teamId(request.teamId().orElse(null))
+                        .teamId(request.teamId())
                         .notificationType(request.notificationType())
                         .recipientUserId(user.getId())
-                        .recipientTenantId(request.recipientTenantId().orElse(null))
+                        .recipientTenantId(request.recipientTenantId())
                         .recipientEmail(user.getEmail())
-                        .recipientPhone(user.getPhone().orElse(null))
+                        .recipientPhone(user.getPhone())
                         .templateName(request.templateName())
                         .templateVariables(request.templateVariables())
                         .createdBy(request.createdBy())
@@ -336,11 +336,11 @@ public class NotificationService {
         .map(
             phone ->
                 SendNotificationRequest.builder()
-                    .teamId(request.teamId().orElse(null))
+                    .teamId(request.teamId())
                     .notificationType(request.notificationType())
-                    .recipientUserId(request.recipientUserId().orElse(null))
-                    .recipientTenantId(request.recipientTenantId().orElse(null))
-                    .recipientEmail(request.recipientEmail().orElse(null))
+                    .recipientUserId(request.recipientUserId())
+                    .recipientTenantId(request.recipientTenantId())
+                    .recipientEmail(request.recipientEmail())
                     .recipientPhone(phone)
                     .templateName(request.templateName())
                     .templateVariables(request.templateVariables())

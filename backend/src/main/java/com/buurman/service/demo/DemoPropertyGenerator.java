@@ -325,7 +325,7 @@ public class DemoPropertyGenerator {
             .set(PROPERTIES.STREET, street)
             .set(PROPERTIES.CITY, city)
             .set(PROPERTIES.POSTAL_CODE, postalCode)
-            .set(PROPERTIES.COUNTRY, country.name())
+            .set(PROPERTIES.COUNTRY_CODE, country.name())
             .set(PROPERTIES.LATITUDE, BigDecimal.valueOf(lat))
             .set(PROPERTIES.LONGITUDE, BigDecimal.valueOf(lon))
             .set(PROPERTIES.PROPERTY_CATEGORY, propertyCategory)

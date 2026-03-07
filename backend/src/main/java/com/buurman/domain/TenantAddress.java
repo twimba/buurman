@@ -36,7 +36,7 @@ public class TenantAddress {
   private String street;
   private String city;
   private String postalCode;
-  private String country;
+  private String countryCode;
   private AddressType addressType;
   private AddressStatus status;
   @Builder.Default private Optional<Double> latitude = Optional.empty();

@@ -165,6 +165,58 @@ public final class CountryMetadataRegistry {
           Map.entry("PE", "Peru"),
           Map.entry("UY", "Uruguay"));
 
+  /** Maps ISO 3166-1 alpha-2 country codes to their default ISO 4217 currency code. */
+  private static final Map<String, String> COUNTRY_CURRENCIES =
+      Map.ofEntries(
+          // Eurozone
+          Map.entry("NL", "EUR"),
+          Map.entry("DE", "EUR"),
+          Map.entry("FR", "EUR"),
+          Map.entry("BE", "EUR"),
+          Map.entry("PT", "EUR"),
+          Map.entry("ES", "EUR"),
+          Map.entry("IT", "EUR"),
+          Map.entry("AT", "EUR"),
+          Map.entry("IE", "EUR"),
+          Map.entry("FI", "EUR"),
+          Map.entry("GR", "EUR"),
+          Map.entry("MT", "EUR"),
+          Map.entry("CY", "EUR"),
+          Map.entry("LU", "EUR"),
+          Map.entry("SK", "EUR"),
+          Map.entry("SI", "EUR"),
+          Map.entry("LT", "EUR"),
+          Map.entry("LV", "EUR"),
+          Map.entry("EE", "EUR"),
+          Map.entry("HR", "EUR"),
+          Map.entry("XK", "EUR"),
+          Map.entry("ME", "EUR"),
+          // Non-euro European
+          Map.entry("GB", "GBP"),
+          Map.entry("CH", "CHF"),
+          Map.entry("DK", "DKK"),
+          Map.entry("SE", "SEK"),
+          Map.entry("NO", "NOK"),
+          Map.entry("PL", "PLN"),
+          Map.entry("CZ", "CZK"),
+          Map.entry("HU", "HUF"),
+          Map.entry("RO", "RON"),
+          Map.entry("BG", "BGN"),
+          Map.entry("RS", "RSD"),
+          Map.entry("BA", "BAM"),
+          Map.entry("AL", "ALL"),
+          Map.entry("MK", "MKD"),
+          // Americas
+          Map.entry("US", "USD"),
+          Map.entry("CA", "CAD"),
+          Map.entry("MX", "MXN"),
+          Map.entry("BR", "BRL"),
+          Map.entry("AR", "ARS"),
+          Map.entry("CL", "CLP"),
+          Map.entry("CO", "COP"),
+          Map.entry("PE", "PEN"),
+          Map.entry("UY", "UYU"));
+
   /** Maps common country name strings to ISO 3166-1 alpha-2 codes. */
   private static final Map<String, String> NAME_TO_CODE =
       Map.ofEntries(
@@ -300,5 +352,22 @@ public final class CountryMetadataRegistry {
     }
     // Try name lookup
     return NAME_TO_CODE.get(trimmed.toLowerCase(Locale.ROOT));
+  }
+
+  /**
+   * Returns the default currency code for a given country code.
+   *
+   * @return the ISO 4217 currency code, or "EUR" if the country is unknown
+   */
+  public static String getDefaultCurrency(String countryCode) {
+    if (countryCode == null || countryCode.isBlank()) {
+      return "EUR";
+    }
+    return COUNTRY_CURRENCIES.getOrDefault(countryCode.toUpperCase(Locale.ROOT), "EUR");
+  }
+
+  /** Returns the full country-to-currency mapping for all supported countries. */
+  public static Map<String, String> getCountryCurrencies() {
+    return COUNTRY_CURRENCIES;
   }
 }

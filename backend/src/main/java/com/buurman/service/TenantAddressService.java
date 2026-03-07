@@ -81,7 +81,7 @@ public class TenantAddressService {
       geocodingService
           .geocode(
               request.street(), request.city(),
-              request.postalCode().orElse(null), request.country())
+              request.postalCode(), request.countryCode())
           .ifPresent(
               result -> {
                 address.setLatitude(Optional.of(result.latitude().doubleValue()));
@@ -97,7 +97,7 @@ public class TenantAddressService {
         principal.requireTeamId(),
         savedAddress.getStreet(),
         savedAddress.getCity(),
-        savedAddress.getCountry());
+        savedAddress.getCountryCode());
 
     // Log to audit trail
     auditService.logCreate(
@@ -148,7 +148,7 @@ public class TenantAddressService {
             .street(address.getStreet())
             .city(address.getCity())
             .postalCode(address.getPostalCode())
-            .country(address.getCountry())
+            .countryCode(address.getCountryCode())
             .addressType(address.getAddressType())
             .status(address.getStatus())
             .latitude(address.getLatitude())
@@ -187,7 +187,7 @@ public class TenantAddressService {
     String oldStreet = address.getStreet();
     String oldCity = address.getCity();
     String oldPostalCode = address.getPostalCode();
-    String oldCountry = address.getCountry();
+    String oldCountryCode = address.getCountryCode();
 
     // Update address fields
     addressMapper.updateEntity(address, request);
@@ -198,13 +198,13 @@ public class TenantAddressService {
         !java.util.Objects.equals(oldStreet, address.getStreet())
             || !java.util.Objects.equals(oldCity, address.getCity())
             || !java.util.Objects.equals(oldPostalCode, address.getPostalCode())
-            || !java.util.Objects.equals(oldCountry, address.getCountry());
+            || !java.util.Objects.equals(oldCountryCode, address.getCountryCode());
 
     if (addressChanged && (address.getLatitude().isEmpty() || address.getLongitude().isEmpty())) {
       geocodingService
           .geocode(
               address.getStreet(), address.getCity(),
-              address.getPostalCode(), address.getCountry())
+              Optional.ofNullable(address.getPostalCode()), address.getCountryCode())
           .ifPresent(
               result -> {
                 address.setLatitude(Optional.of(result.latitude().doubleValue()));
@@ -231,8 +231,8 @@ public class TenantAddressService {
     if (!java.util.Objects.equals(oldAddress.getPostalCode(), updatedAddress.getPostalCode())) {
       changedFields.put("postalCode", updatedAddress.getPostalCode());
     }
-    if (!oldAddress.getCountry().equals(updatedAddress.getCountry())) {
-      changedFields.put("country", updatedAddress.getCountry());
+    if (!oldAddress.getCountryCode().equals(updatedAddress.getCountryCode())) {
+      changedFields.put("countryCode", updatedAddress.getCountryCode());
     }
     if (!oldAddress.getAddressType().equals(updatedAddress.getAddressType())) {
       changedFields.put("addressType", updatedAddress.getAddressType());

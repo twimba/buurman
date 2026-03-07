@@ -13,7 +13,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import com.buurman.config.models.GoogleMapsProperties;
@@ -45,10 +44,7 @@ public class GeocodingService {
 
   /** Geocode with progressive fallback: full address → city+country → country only. */
   public Optional<GeocodingResult> geocode(
-      @Nullable String street,
-      @Nullable String city,
-      @Nullable String postalCode,
-      @Nullable String country) {
+      String street, String city, Optional<String> postalCode, String countryCode) {
     if (properties.apiKey() == null || properties.apiKey().isBlank()) {
       log.debug("Google Maps API key not configured, skipping geocoding");
       return Optional.empty();
@@ -58,8 +54,9 @@ public class GeocodingService {
 
     // Try 1: Full address
     String fullAddress =
-        Stream.of(street, city, postalCode, country)
-            .filter(s -> s != null && !s.isBlank())
+        Stream.of(Optional.of(street), Optional.of(city), postalCode, Optional.of(countryCode))
+            .flatMap(Optional::stream)
+            .filter(s -> !s.isBlank())
             .collect(Collectors.joining(", "));
     Optional<GeocodingResult> result = geocodeAddress(fullAddress);
     if (result.isPresent()) {
@@ -69,9 +66,7 @@ public class GeocodingService {
 
     // Try 2: City + country
     String cityCountry =
-        Stream.of(city, country)
-            .filter(s -> s != null && !s.isBlank())
-            .collect(Collectors.joining(", "));
+        Stream.of(city, countryCode).filter(s -> !s.isBlank()).collect(Collectors.joining(", "));
     if (!cityCountry.equals(fullAddress)) {
       result = geocodeAddress(cityCountry);
       if (result.isPresent()) {
@@ -84,8 +79,8 @@ public class GeocodingService {
     }
 
     // Try 3: Country only
-    if (country != null && !country.isBlank()) {
-      result = geocodeAddress(country);
+    if (!countryCode.isBlank()) {
+      result = geocodeAddress(countryCode);
       if (result.isPresent()) {
         log.debug("Geocoding fell back to country for: {}", fullAddress);
         var fallbackResult =

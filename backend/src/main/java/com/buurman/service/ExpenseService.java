@@ -66,6 +66,7 @@ public class ExpenseService {
   private final DocumentRepository documentRepository;
   private final ExpenseMapper expenseMapper;
   private final PropertyMapper propertyMapper;
+  private final CurrencyEnforcementService currencyEnforcement;
   private final AuditService auditService;
   private final DocumentService documentService;
   private final com.buurman.mapper.DocumentMapper documentMapper;
@@ -151,6 +152,7 @@ public class ExpenseService {
         || expense.getAmount().currency().isBlank()) {
       throw new BadRequestException("Currency is required for expenses");
     }
+    currencyEnforcement.validateCurrency(request.currency(), principal.requireTeamId());
 
     Expense savedExpense = expenseRepository.save(expense);
 
@@ -280,6 +282,9 @@ public class ExpenseService {
     expenseMapper.updateEntity(expense, request);
     expense.setUpdatedBy(principal.getUserId());
     expense.setUpdatedAt(clock.instant());
+    request
+        .currency()
+        .ifPresent(c -> currencyEnforcement.validateCurrency(c, principal.requireTeamId()));
 
     Expense updatedExpense = expenseRepository.save(expense);
     ExpenseResponse newState = enrichExpenseResponse(updatedExpense, principal.requireTeamId());
