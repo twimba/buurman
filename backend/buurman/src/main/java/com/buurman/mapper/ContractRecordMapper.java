@@ -59,7 +59,7 @@ public class ContractRecordMapper {
 
     // country_code and country_metadata columns (added in V012)
     String countryCode = record.get(org.jooq.impl.DSL.field("country_code", String.class));
-    contract.setCountryCode(Optional.ofNullable(countryCode));
+    contract.setCountryCode(Optional.of(countryCode));
     if (countryCode != null) {
       org.jooq.JSONB metadataJsonb =
           record.get(org.jooq.impl.DSL.field("country_metadata", org.jooq.JSONB.class));

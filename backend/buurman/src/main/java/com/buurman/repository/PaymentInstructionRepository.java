@@ -61,8 +61,6 @@ public class PaymentInstructionRepository {
     if (pi.getId() == null) {
       UUID id = UUID.randomUUID();
       Sid identifier = newPaymentInstructionId();
-      LocalDateTime createdAt = now;
-      LocalDateTime updatedAt = now;
 
       dsl.insertInto(TABLE)
           .set(ID, id)
@@ -80,18 +78,17 @@ public class PaymentInstructionRepository {
           .set(PAYMENT_REFERENCE, pi.getPaymentReference().orElse(null))
           .set(ADDITIONAL_DETAILS, pi.getAdditionalDetails().orElse(null))
           .set(IS_DEFAULT, pi.getIsDefault() != null ? pi.getIsDefault() : false)
-          .set(CREATED_AT, createdAt)
-          .set(UPDATED_AT, updatedAt)
+          .set(CREATED_AT, now)
+          .set(UPDATED_AT, now)
           .set(CREATED_BY, pi.getCreatedBy())
           .set(UPDATED_BY, pi.getUpdatedBy())
           .execute();
 
       pi.setId(id);
       pi.setIdentifier(java.util.Optional.of(identifier));
-      pi.setCreatedAt(createdAt.toInstant(UTC));
-      pi.setUpdatedAt(updatedAt.toInstant(UTC));
+      pi.setCreatedAt(now.toInstant(UTC));
+      pi.setUpdatedAt(now.toInstant(UTC));
     } else {
-      LocalDateTime updatedAt = now;
 
       dsl.update(TABLE)
           .set(NAME, pi.getName())
@@ -106,7 +103,7 @@ public class PaymentInstructionRepository {
           .set(PAYMENT_REFERENCE, pi.getPaymentReference().orElse(null))
           .set(ADDITIONAL_DETAILS, pi.getAdditionalDetails().orElse(null))
           .set(IS_DEFAULT, pi.getIsDefault() != null ? pi.getIsDefault() : false)
-          .set(UPDATED_AT, updatedAt)
+          .set(UPDATED_AT, now)
           .set(UPDATED_BY, pi.getUpdatedBy())
           .where(ID.eq(pi.getId()).and(TEAM_ID.eq(pi.getTeamId())).and(DELETED_AT.isNull()))
           .execute();
@@ -176,14 +173,14 @@ public class PaymentInstructionRepository {
     pi.setName(record.get(NAME));
     pi.setDescription(record.get(DESCRIPTION));
     pi.setPaymentMethod(PaymentInstruction.PaymentMethod.valueOf(record.get(PAYMENT_METHOD)));
-    pi.setBankName(Optional.ofNullable(record.get(BANK_NAME)));
-    pi.setAccountHolderName(Optional.ofNullable(record.get(ACCOUNT_HOLDER_NAME)));
-    pi.setIban(Optional.ofNullable(record.get(IBAN)));
-    pi.setBicSwift(Optional.ofNullable(record.get(BIC_SWIFT)));
-    pi.setAccountNumber(Optional.ofNullable(record.get(ACCOUNT_NUMBER)));
-    pi.setRoutingNumber(Optional.ofNullable(record.get(ROUTING_NUMBER)));
-    pi.setPaymentReference(Optional.ofNullable(record.get(PAYMENT_REFERENCE)));
-    pi.setAdditionalDetails(Optional.ofNullable(record.get(ADDITIONAL_DETAILS)));
+    pi.setBankName(Optional.of(record.get(BANK_NAME)));
+    pi.setAccountHolderName(Optional.of(record.get(ACCOUNT_HOLDER_NAME)));
+    pi.setIban(Optional.of(record.get(IBAN)));
+    pi.setBicSwift(Optional.of(record.get(BIC_SWIFT)));
+    pi.setAccountNumber(Optional.of(record.get(ACCOUNT_NUMBER)));
+    pi.setRoutingNumber(Optional.of(record.get(ROUTING_NUMBER)));
+    pi.setPaymentReference(Optional.of(record.get(PAYMENT_REFERENCE)));
+    pi.setAdditionalDetails(Optional.of(record.get(ADDITIONAL_DETAILS)));
     pi.setIsDefault(record.get(IS_DEFAULT));
     Instant createdAt = toInstant(record.get("created_at"));
     if (createdAt != null) {

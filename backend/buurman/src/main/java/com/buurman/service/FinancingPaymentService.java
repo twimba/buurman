@@ -73,7 +73,6 @@ public class FinancingPaymentService {
     List<BulkCreateResult<FinancingPaymentResponse>> results = new ArrayList<>();
 
     for (int i = 0; i < requests.size(); i++) {
-      final int index = i;
       CreateFinancingPaymentRequest request = requests.get(i);
 
       Set<ConstraintViolation<CreateFinancingPaymentRequest>> violations =
@@ -83,17 +82,17 @@ public class FinancingPaymentService {
             violations.stream()
                 .map(v -> v.getPropertyPath() + ": " + v.getMessage())
                 .collect(joining(", "));
-        results.add(BulkCreateResult.error(index, errorMsg));
+        results.add(BulkCreateResult.error(i, errorMsg));
         continue;
       }
 
       try {
         FinancingPaymentResponse response =
             txTemplate.execute(status -> performCreate(financingIdentifier, request, principal));
-        results.add(BulkCreateResult.success(index, response));
+        results.add(BulkCreateResult.success(i, response));
       } catch (Exception e) {
-        log.warn("Bulk financing payment creation failed for item {}: {}", index, e.getMessage());
-        results.add(BulkCreateResult.error(index, extractErrorMessage(e)));
+        log.warn("Bulk financing payment creation failed for item {}: {}", i, e.getMessage());
+        results.add(BulkCreateResult.error(i, extractErrorMessage(e)));
       }
     }
 

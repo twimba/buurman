@@ -8,17 +8,19 @@ import org.jspecify.annotations.Nullable;
 
 import com.buurman.domain.TeamRole;
 
+import lombok.Getter;
+
 public class UserPrincipal implements Principal {
-  private final UUID userId;
-  private final String userIdentifier; // Sid
-  private final String keycloakId;
-  private final String email;
+  @Getter private final UUID userId;
+  @Getter private final String userIdentifier; // Sid
+  @Getter private final String keycloakId;
+  @Getter private final String email;
   private final String name;
-  private final Optional<UUID> teamId; // empty for users without team membership
-  private final Optional<String> teamIdentifier; // Sid, empty if no team
-  private final Optional<TeamRole> role; // empty for users without team membership
-  private final boolean isOwner;
-  private final boolean emailVerified;
+  @Getter private final Optional<UUID> teamId; // empty for users without team membership
+  @Getter private final Optional<String> teamIdentifier; // Sid, empty if no team
+  @Getter private final Optional<TeamRole> role; // empty for users without team membership
+  @Getter private final boolean isOwner;
+  @Getter private final boolean emailVerified;
 
   public UserPrincipal(
       UUID userId,
@@ -79,45 +81,9 @@ public class UserPrincipal implements Principal {
         userId, userIdentifier, keycloakId, email, name, teamId, teamIdentifier, role, false, true);
   }
 
-  public UUID getUserId() {
-    return userId;
-  }
-
-  public String getUserIdentifier() {
-    return userIdentifier;
-  }
-
-  public String getKeycloakId() {
-    return keycloakId;
-  }
-
-  public String getEmail() {
-    return email;
-  }
-
   @Override
   public String getName() {
     return name;
-  }
-
-  public Optional<UUID> getTeamId() {
-    return teamId;
-  }
-
-  public Optional<String> getTeamIdentifier() {
-    return teamIdentifier;
-  }
-
-  public Optional<TeamRole> getRole() {
-    return role;
-  }
-
-  public boolean isOwner() {
-    return isOwner;
-  }
-
-  public boolean isEmailVerified() {
-    return emailVerified;
   }
 
   public boolean hasNoTeam() {

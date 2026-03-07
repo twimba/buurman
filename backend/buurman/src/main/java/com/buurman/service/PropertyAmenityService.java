@@ -136,7 +136,7 @@ public class PropertyAmenityService {
         amenity.getIdentifier().orElseThrow(),
         amenity.getName(),
         amenity.getCategory(),
-        Optional.ofNullable(amenity.getIcon()),
+        Optional.of(amenity.getIcon()),
         pa.getNotes());
   }
 

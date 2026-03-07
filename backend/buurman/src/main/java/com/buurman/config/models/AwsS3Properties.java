@@ -15,7 +15,7 @@ public record AwsS3Properties(
     boolean usePresignedUrls) {
 
   public AwsS3Properties {
-    endpoint = Optional.ofNullable(endpoint).flatMap(o -> o);
-    publicEndpoint = Optional.ofNullable(publicEndpoint).flatMap(o -> o);
+    endpoint = Optional.of(endpoint).flatMap(o -> o);
+    publicEndpoint = Optional.of(publicEndpoint).flatMap(o -> o);
   }
 }

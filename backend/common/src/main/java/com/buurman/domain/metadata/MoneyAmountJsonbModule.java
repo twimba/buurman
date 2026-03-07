@@ -23,9 +23,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
  *       "EUR")}
  * </ul>
  *
- * <p>This module is only registered on the dedicated {@link CountryMetadataSerializer}
- * ObjectMapper, NOT on the global Spring ObjectMapper (which uses default record serialization with
- * major units).
+ * <p>This module is only registered on the dedicated CountryMetadataSerializer ObjectMapper, NOT on
+ * the global Spring ObjectMapper (which uses default record serialization with major units).
  */
 public class MoneyAmountJsonbModule extends SimpleModule {
 

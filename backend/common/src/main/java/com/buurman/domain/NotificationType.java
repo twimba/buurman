@@ -3,6 +3,9 @@ package com.buurman.domain;
 import java.util.Arrays;
 import java.util.List;
 
+import lombok.Getter;
+
+@Getter
 public enum NotificationType {
   WELCOME("Welcome", false),
   VERIFICATION_CODE("Verification Code", false),
@@ -27,14 +30,6 @@ public enum NotificationType {
   NotificationType(String displayName, boolean configurable) {
     this.displayName = displayName;
     this.configurable = configurable;
-  }
-
-  public String getDisplayName() {
-    return displayName;
-  }
-
-  public boolean isConfigurable() {
-    return configurable;
   }
 
   public static List<NotificationType> configurableTypes() {

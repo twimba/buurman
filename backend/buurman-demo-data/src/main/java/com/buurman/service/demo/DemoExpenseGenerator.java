@@ -81,8 +81,7 @@ public class DemoExpenseGenerator {
 
       int teamExpenses = 0;
 
-      for (int p = 0; p < propertyIds.size(); p++) {
-        UUID propertyId = propertyIds.get(p);
+      for (UUID propertyId : propertyIds) {
         String propCategory = ctx.getPropertyCategory(propertyId);
         double categoryMultiplier =
             "COMMERCIAL".equals(propCategory) || "INDUSTRIAL".equals(propCategory) ? 2.5 : 1.0;

@@ -898,7 +898,7 @@ public class ContractService {
 
     return new ContractResponse(
         contract.getIdentifier().orElseThrow(),
-        Optional.ofNullable(propertySummary),
+        Optional.of(propertySummary),
         partyResponses,
         primaryTenant,
         contract.getContractType(),

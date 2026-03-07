@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CurrencyChangeRepository {
 
-  /** Rounding precision matching {@link com.buurman.config.jooq.MoneyMinorUnitConverter#SCALE}. */
+  /// Rounding precision matching [com.buurman.config.jooq.MoneyMinorUnitConverter#SCALE].
   private static final int MINOR_UNIT_SCALE = 2;
 
   private final DSLContext dsl;
@@ -269,7 +269,6 @@ public class CurrencyChangeRepository {
         .execute();
   }
 
-  @SuppressWarnings("unchecked")
   private <R extends org.jooq.Record> int updateSimpleCurrency(
       Table<R> table,
       Field<UUID> teamIdField,

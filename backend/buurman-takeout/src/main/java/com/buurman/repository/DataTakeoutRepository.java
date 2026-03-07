@@ -39,7 +39,6 @@ public class DataTakeoutRepository {
 
     if (takeout.getId() == null) {
       UUID id = UUID.randomUUID();
-      LocalDateTime createdAt = now;
 
       dsl.insertInto(DATA_TAKEOUTS)
           .set(DATA_TAKEOUTS.ID, id)
@@ -52,7 +51,7 @@ public class DataTakeoutRepository {
           .set(DATA_TAKEOUTS.ERROR, takeout.getError().orElse(null))
           .set(DATA_TAKEOUTS.CREATED_BY, takeout.getCreatedBy())
           .set(DATA_TAKEOUTS.UPDATED_BY, takeout.getUpdatedBy())
-          .set(DATA_TAKEOUTS.CREATED_AT, createdAt)
+          .set(DATA_TAKEOUTS.CREATED_AT, now)
           .set(DATA_TAKEOUTS.UPDATED_AT, now)
           .set(
               DATA_TAKEOUTS.COMPLETED_AT,
@@ -63,7 +62,7 @@ public class DataTakeoutRepository {
           .execute();
 
       takeout.setId(id);
-      takeout.setCreatedAt(createdAt.toInstant(UTC));
+      takeout.setCreatedAt(now.toInstant(UTC));
       takeout.setUpdatedAt(now.toInstant(UTC));
     } else {
       dsl.update(DATA_TAKEOUTS)

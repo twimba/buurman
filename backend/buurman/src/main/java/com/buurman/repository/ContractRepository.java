@@ -195,8 +195,6 @@ public class ContractRepository {
     if (contract.getId() == null) {
       // Insert
       UUID id = UUID.randomUUID();
-      LocalDateTime createdAt = now;
-      LocalDateTime updatedAt = now;
 
       dsl.insertInto(CONTRACTS)
           .set(CONTRACTS.ID, id)
@@ -237,18 +235,17 @@ public class ContractRepository {
                   .getCountryMetadata()
                   .map(m -> JSONB.jsonb(countryMetadataSerializer.serialize(m)))
                   .orElse(null))
-          .set(CONTRACTS.CREATED_AT, createdAt)
-          .set(CONTRACTS.UPDATED_AT, updatedAt)
+          .set(CONTRACTS.CREATED_AT, now)
+          .set(CONTRACTS.UPDATED_AT, now)
           .set(CONTRACTS.CREATED_BY, contract.getCreatedBy())
           .set(CONTRACTS.UPDATED_BY, contract.getUpdatedBy())
           .execute();
 
       contract.setId(id);
-      contract.setCreatedAt(createdAt.toInstant(UTC));
-      contract.setUpdatedAt(updatedAt.toInstant(UTC));
+      contract.setCreatedAt(now.toInstant(UTC));
+      contract.setUpdatedAt(now.toInstant(UTC));
     } else {
       // Update
-      LocalDateTime updatedAt = now;
 
       var query =
           dsl.update(CONTRACTS)
@@ -296,12 +293,12 @@ public class ContractRepository {
       }
 
       query
-          .set(CONTRACTS.UPDATED_AT, updatedAt)
+          .set(CONTRACTS.UPDATED_AT, now)
           .set(CONTRACTS.UPDATED_BY, contract.getUpdatedBy())
           .where(CONTRACTS.ID.eq(contract.getId()).and(CONTRACTS.TEAM_ID.eq(contract.getTeamId())))
           .execute();
 
-      contract.setUpdatedAt(updatedAt.toInstant(UTC));
+      contract.setUpdatedAt(now.toInstant(UTC));
     }
 
     return contract;

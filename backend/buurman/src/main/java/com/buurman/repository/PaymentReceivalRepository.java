@@ -114,8 +114,6 @@ public class PaymentReceivalRepository {
     LocalDateTime now = LocalDateTime.now(clock);
 
     UUID id = UUID.randomUUID();
-    LocalDateTime createdAt = now;
-    LocalDateTime updatedAt = now;
 
     dsl.insertInto(TABLE)
         .set(ID, id)
@@ -126,15 +124,15 @@ public class PaymentReceivalRepository {
         .set(CURRENCY, receival.getAmount().currency())
         .set(RECEIVAL_DATE, receival.getReceivalDate())
         .set(NOTES, receival.getNotes().orElse(null))
-        .set(CREATED_AT, createdAt)
-        .set(UPDATED_AT, updatedAt)
+        .set(CREATED_AT, now)
+        .set(UPDATED_AT, now)
         .set(CREATED_BY, receival.getCreatedBy())
         .set(UPDATED_BY, receival.getUpdatedBy())
         .execute();
 
     receival.setId(id);
-    receival.setCreatedAt(createdAt.toInstant(UTC));
-    receival.setUpdatedAt(updatedAt.toInstant(UTC));
+    receival.setCreatedAt(now.toInstant(UTC));
+    receival.setUpdatedAt(now.toInstant(UTC));
   }
 
   public void update(
@@ -186,7 +184,7 @@ public class PaymentReceivalRepository {
     if (receivalDate != null) {
       receival.setReceivalDate(receivalDate);
     }
-    receival.setNotes(Optional.ofNullable(record.get(NOTES)));
+    receival.setNotes(Optional.of(record.get(NOTES)));
     Instant createdAt = toInstant(record.get("created_at"));
     if (createdAt != null) {
       receival.setCreatedAt(createdAt);

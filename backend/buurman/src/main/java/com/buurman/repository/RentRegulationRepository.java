@@ -275,10 +275,9 @@ public class RentRegulationRepository {
 
   public List<RentRegulationRule> findCurrentRules(UUID countryId, Optional<UUID> regionId) {
     int currentYear = LocalDate.now(clock).getYear();
-    if (regionId.isPresent()) {
-      return findRulesByRegionIdAndYear(regionId.get(), currentYear);
-    }
-    return findRulesByCountryIdAndYear(countryId, currentYear);
+    return regionId
+        .map(uuid -> findRulesByRegionIdAndYear(uuid, currentYear))
+        .orElseGet(() -> findRulesByCountryIdAndYear(countryId, currentYear));
   }
 
   public Optional<RentRegulationRule> findRuleByIdentifier(Sid identifier) {
@@ -467,15 +466,15 @@ public class RentRegulationRepository {
                   records.stream()
                       .map(
                           r -> {
-                            String firstName = Optional.ofNullable(r.get(U_FIRST_NAME)).orElse("");
-                            String lastName = Optional.ofNullable(r.get(U_LAST_NAME)).orElse("");
+                            String firstName = Optional.of(r.get(U_FIRST_NAME)).orElse("");
+                            String lastName = Optional.of(r.get(U_LAST_NAME)).orElse("");
                             String userName = (firstName + " " + lastName).trim();
                             return new CountryRegulationRequester(
                                 r.get(RQ_Q_CREATED_BY),
                                 userName.isEmpty() ? r.get(RQ_Q_CREATED_BY) : userName,
                                 r.get(T_IDENTIFIER),
                                 r.get(T_NAME),
-                                Optional.ofNullable(r.get(RQ_Q_NOTES)),
+                                Optional.of(r.get(RQ_Q_NOTES)),
                                 r.get(RQ_Q_CREATED_AT).toInstant());
                           })
                       .toList();
@@ -507,9 +506,9 @@ public class RentRegulationRepository {
     country.setCountryName(record.get(C_COUNTRY_NAME));
     Boolean hasRegional = record.get(C_HAS_REGIONAL);
     country.setHasRegionalRegulations(hasRegional != null && hasRegional);
-    country.setSummary(Optional.ofNullable(record.get(C_SUMMARY)));
+    country.setSummary(Optional.of(record.get(C_SUMMARY)));
     Timestamp lastReviewed = record.get(C_LAST_REVIEWED_AT);
-    country.setLastReviewedAt(Optional.ofNullable(lastReviewed).map(Timestamp::toInstant));
+    country.setLastReviewedAt(Optional.of(lastReviewed).map(Timestamp::toInstant));
     Timestamp createdAt = record.get(C_CREATED_AT);
     if (createdAt != null) {
       country.setCreatedAt(createdAt.toInstant());
@@ -518,8 +517,8 @@ public class RentRegulationRepository {
     if (updatedAt != null) {
       country.setUpdatedAt(updatedAt.toInstant());
     }
-    country.setCreatedBy(Optional.ofNullable(record.get(C_CREATED_BY)));
-    country.setUpdatedBy(Optional.ofNullable(record.get(C_UPDATED_BY)));
+    country.setCreatedBy(Optional.of(record.get(C_CREATED_BY)));
+    country.setUpdatedBy(Optional.of(record.get(C_UPDATED_BY)));
     return country;
   }
 
@@ -530,7 +529,7 @@ public class RentRegulationRepository {
     region.setCountryId(record.get(R_COUNTRY_ID));
     region.setRegionCode(record.get(R_REGION_CODE));
     region.setRegionName(record.get(R_REGION_NAME));
-    region.setSummary(Optional.ofNullable(record.get(R_SUMMARY)));
+    region.setSummary(Optional.of(record.get(R_SUMMARY)));
     Timestamp createdAt = record.get(R_CREATED_AT);
     if (createdAt != null) {
       region.setCreatedAt(createdAt.toInstant());
@@ -539,8 +538,8 @@ public class RentRegulationRepository {
     if (updatedAt != null) {
       region.setUpdatedAt(updatedAt.toInstant());
     }
-    region.setCreatedBy(Optional.ofNullable(record.get(R_CREATED_BY)));
-    region.setUpdatedBy(Optional.ofNullable(record.get(R_UPDATED_BY)));
+    region.setCreatedBy(Optional.of(record.get(R_CREATED_BY)));
+    region.setUpdatedBy(Optional.of(record.get(R_UPDATED_BY)));
     return region;
   }
 
@@ -549,21 +548,21 @@ public class RentRegulationRepository {
     rule.setId(record.get(RL_ID));
     rule.setIdentifier(Optional.of(Sid.of(record.get(RL_IDENTIFIER))));
     rule.setCountryId(record.get(RL_COUNTRY_ID));
-    rule.setRegionId(Optional.ofNullable(record.get(RL_REGION_ID)));
+    rule.setRegionId(Optional.of(record.get(RL_REGION_ID)));
     rule.setYear(record.get(RL_YEAR));
     rule.setPropertyCategory(record.get(RL_PROPERTY_CATEGORY));
-    rule.setSector(Optional.ofNullable(record.get(RL_SECTOR)));
-    rule.setMaxIncreasePercentage(Optional.ofNullable(record.get(RL_MAX_INCREASE_PERCENTAGE)));
+    rule.setSector(Optional.of(record.get(RL_SECTOR)));
+    rule.setMaxIncreasePercentage(Optional.of(record.get(RL_MAX_INCREASE_PERCENTAGE)));
     rule.setMaxIncreaseType(MaxIncreaseType.valueOf(record.get(RL_MAX_INCREASE_TYPE)));
-    rule.setIndexName(Optional.ofNullable(record.get(RL_INDEX_NAME)));
-    rule.setIndexValue(Optional.ofNullable(record.get(RL_INDEX_VALUE)));
+    rule.setIndexName(Optional.of(record.get(RL_INDEX_NAME)));
+    rule.setIndexValue(Optional.of(record.get(RL_INDEX_VALUE)));
     Date effectiveDate = record.get(RL_EFFECTIVE_DATE);
-    rule.setEffectiveDate(Optional.ofNullable(effectiveDate).map(Date::toLocalDate));
-    rule.setNoticePeriodDays(Optional.ofNullable(record.get(RL_NOTICE_PERIOD_DAYS)));
+    rule.setEffectiveDate(Optional.of(effectiveDate).map(Date::toLocalDate));
+    rule.setNoticePeriodDays(Optional.of(record.get(RL_NOTICE_PERIOD_DAYS)));
     rule.setFrequency(RentFrequency.valueOf(record.get(RL_FREQUENCY)));
-    rule.setAdditionalConditions(Optional.ofNullable(record.get(RL_ADDITIONAL_CONDITIONS)));
-    rule.setSourceUrl(Optional.ofNullable(record.get(RL_SOURCE_URL)));
-    rule.setNotes(Optional.ofNullable(record.get(RL_NOTES)));
+    rule.setAdditionalConditions(Optional.of(record.get(RL_ADDITIONAL_CONDITIONS)));
+    rule.setSourceUrl(Optional.of(record.get(RL_SOURCE_URL)));
+    rule.setNotes(Optional.of(record.get(RL_NOTES)));
     Timestamp createdAt = record.get(RL_CREATED_AT);
     if (createdAt != null) {
       rule.setCreatedAt(createdAt.toInstant());
@@ -572,8 +571,8 @@ public class RentRegulationRepository {
     if (updatedAt != null) {
       rule.setUpdatedAt(updatedAt.toInstant());
     }
-    rule.setCreatedBy(Optional.ofNullable(record.get(RL_CREATED_BY)));
-    rule.setUpdatedBy(Optional.ofNullable(record.get(RL_UPDATED_BY)));
+    rule.setCreatedBy(Optional.of(record.get(RL_CREATED_BY)));
+    rule.setUpdatedBy(Optional.of(record.get(RL_UPDATED_BY)));
     return rule;
   }
 }

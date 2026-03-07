@@ -204,12 +204,12 @@ public class TenantAddressService {
       geocodingService
           .geocode(
               address.getStreet(), address.getCity(),
-              Optional.ofNullable(address.getPostalCode()), address.getCountryCode())
+              Optional.of(address.getPostalCode()), address.getCountryCode())
           .ifPresent(
               result -> {
                 address.setLatitude(Optional.of(result.latitude().doubleValue()));
                 address.setLongitude(Optional.of(result.longitude().doubleValue()));
-                address.setGeocodeAccuracy(Optional.ofNullable(result.accuracy()));
+                address.setGeocodeAccuracy(Optional.of(result.accuracy()));
               });
     }
 

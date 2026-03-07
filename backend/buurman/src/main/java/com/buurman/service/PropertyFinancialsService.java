@@ -17,7 +17,9 @@ import com.buurman.domain.PropertyFinancing;
 import com.buurman.domain.PropertyInsurance;
 import com.buurman.domain.PropertyTax;
 import com.buurman.domain.identifier.PropertyIdentifier;
+import com.buurman.dto.response.PropertyAcquisitionResponse;
 import com.buurman.dto.response.PropertyFinancialSummaryResponse;
+import com.buurman.dto.response.PropertyValuationResponse;
 import com.buurman.repository.PropertyAcquisitionRepository;
 import com.buurman.repository.PropertyFeeRepository;
 import com.buurman.repository.PropertyFinancingRepository;
@@ -84,8 +86,8 @@ public class PropertyFinancialsService {
     // Determine currency from acquisition or latest valuation
     Optional<String> currency =
         acquisition
-            .flatMap(a -> a.purchasePriceCurrency())
-            .or(() -> latestValuation.map(v -> v.currency()));
+            .flatMap(PropertyAcquisitionResponse::purchasePriceCurrency)
+            .or(() -> latestValuation.map(PropertyValuationResponse::currency));
 
     return new PropertyFinancialSummaryResponse(
         acquisition,

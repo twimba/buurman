@@ -172,7 +172,6 @@ public class DemoContractGenerator {
 
         BigDecimal rentAmount = rentAmountForCategory(propertyCategory);
         BigDecimal deposit = rentAmount.multiply(depositMultiplierForCategory(propertyCategory));
-        BigDecimal securityDeposit = rentAmount;
         String paymentFrequency = paymentFrequencyForCategory(propertyCategory);
         int terminationNoticeDays = terminationNoticeForCategory(propertyCategory);
 
@@ -198,7 +197,7 @@ public class DemoContractGenerator {
             .set(CONTRACTS.SIGNED_DATE, signedDate)
             .set(CONTRACTS.RENT_AMOUNT, rentAmount)
             .set(CONTRACTS.DEPOSIT_AMOUNT, deposit)
-            .set(CONTRACTS.SECURITY_DEPOSIT, securityDeposit)
+            .set(CONTRACTS.SECURITY_DEPOSIT, rentAmount)
             .set(CONTRACTS.RENT_AMOUNT_CURRENCY, currency)
             .set(CONTRACTS.DEPOSIT_AMOUNT_CURRENCY, currency)
             .set(CONTRACTS.SECURITY_DEPOSIT_CURRENCY, currency)

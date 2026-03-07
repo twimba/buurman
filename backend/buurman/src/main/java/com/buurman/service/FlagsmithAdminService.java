@@ -541,14 +541,12 @@ public class FlagsmithAdminService {
     if (value != null && !value.isEmpty()) {
       fsv.put("type", "unicode");
       fsv.put("string_value", value);
-      fsv.putNull("boolean_value");
-      fsv.putNull("integer_value");
     } else {
       fsv.put("type", "unicode");
       fsv.putNull("string_value");
-      fsv.putNull("boolean_value");
-      fsv.putNull("integer_value");
     }
+    fsv.putNull("boolean_value");
+    fsv.putNull("integer_value");
     body.set("feature_state_value", fsv);
 
     JsonNode resp = post("/features/featurestates/", body, adminToken.orElse(null));

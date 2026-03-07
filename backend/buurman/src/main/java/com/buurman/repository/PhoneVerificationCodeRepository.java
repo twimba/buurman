@@ -26,7 +26,6 @@ public class PhoneVerificationCodeRepository {
   public void save(PhoneVerificationCode code) {
     LocalDateTime now = LocalDateTime.now(clock);
     UUID id = UUID.randomUUID();
-    LocalDateTime createdAt = now;
 
     dsl.insertInto(PHONE_VERIFICATION_CODES)
         .set(PHONE_VERIFICATION_CODES.ID, id)
@@ -34,11 +33,11 @@ public class PhoneVerificationCodeRepository {
         .set(PHONE_VERIFICATION_CODES.PHONE, code.getPhone())
         .set(PHONE_VERIFICATION_CODES.CODE, code.getCode())
         .set(PHONE_VERIFICATION_CODES.EXPIRES_AT, LocalDateTime.ofInstant(code.getExpiresAt(), UTC))
-        .set(PHONE_VERIFICATION_CODES.CREATED_AT, createdAt)
+        .set(PHONE_VERIFICATION_CODES.CREATED_AT, now)
         .execute();
 
     code.setId(id);
-    code.setCreatedAt(createdAt.toInstant(UTC));
+    code.setCreatedAt(now.toInstant(UTC));
   }
 
   public Optional<PhoneVerificationCode> findValidCode(UUID userId, String code, String phone) {

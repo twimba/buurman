@@ -37,8 +37,6 @@ public class TenantAddressRepository {
       // Insert
       UUID id = UUID.randomUUID();
       Sid identifier = newTenantAddressId();
-      LocalDateTime createdAt = now;
-      LocalDateTime updatedAt = now;
 
       dsl.insertInto(TENANT_ADDRESSES)
           .set(TENANT_ADDRESSES.ID, id)
@@ -58,8 +56,8 @@ public class TenantAddressRepository {
               TENANT_ADDRESSES.LONGITUDE,
               address.getLongitude().map(BigDecimal::valueOf).orElse(null))
           .set(TENANT_ADDRESSES.GEOCODE_ACCURACY, address.getGeocodeAccuracy().orElse(null))
-          .set(TENANT_ADDRESSES.CREATED_AT, createdAt)
-          .set(TENANT_ADDRESSES.UPDATED_AT, updatedAt)
+          .set(TENANT_ADDRESSES.CREATED_AT, now)
+          .set(TENANT_ADDRESSES.UPDATED_AT, now)
           .set(TENANT_ADDRESSES.CREATED_BY, address.getCreatedBy())
           .set(TENANT_ADDRESSES.UPDATED_BY, address.getUpdatedBy())
           .execute();
@@ -67,7 +65,6 @@ public class TenantAddressRepository {
       address.setIdentifier(java.util.Optional.of(identifier));
     } else {
       // Update
-      LocalDateTime updatedAt = now;
 
       dsl.update(TENANT_ADDRESSES)
           .set(TENANT_ADDRESSES.STREET, address.getStreet())
@@ -83,7 +80,7 @@ public class TenantAddressRepository {
               TENANT_ADDRESSES.LONGITUDE,
               address.getLongitude().map(BigDecimal::valueOf).orElse(null))
           .set(TENANT_ADDRESSES.GEOCODE_ACCURACY, address.getGeocodeAccuracy().orElse(null))
-          .set(TENANT_ADDRESSES.UPDATED_AT, updatedAt)
+          .set(TENANT_ADDRESSES.UPDATED_AT, now)
           .set(TENANT_ADDRESSES.UPDATED_BY, address.getUpdatedBy())
           .where(
               TENANT_ADDRESSES

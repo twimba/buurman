@@ -95,9 +95,9 @@ public class AuditLogRepository {
                     r.get(AUDIT_LOG.ENTITY_ID),
                     r.get(AUDIT_LOG.ACTION),
                     r.get(AUDIT_LOG.TIMESTAMP),
-                    Optional.ofNullable(r.get(AUDIT_LOG.CHANGED_FIELDS)).map(j -> j.data()),
-                    Optional.ofNullable(r.get(AUDIT_LOG.OLD_VALUES)).map(j -> j.data()),
-                    Optional.ofNullable(r.get(AUDIT_LOG.NEW_VALUES)).map(j -> j.data()),
+                    Optional.ofNullable(r.get(AUDIT_LOG.CHANGED_FIELDS)).map(JSONB::data),
+                    Optional.ofNullable(r.get(AUDIT_LOG.OLD_VALUES)).map(JSONB::data),
+                    Optional.ofNullable(r.get(AUDIT_LOG.NEW_VALUES)).map(JSONB::data),
                     Optional.ofNullable(r.get(USERS.FIRST_NAME)),
                     Optional.ofNullable(r.get(USERS.LAST_NAME))));
   }
@@ -180,9 +180,9 @@ public class AuditLogRepository {
                     r.get(AUDIT_LOG.ENTITY_ID),
                     r.get(AUDIT_LOG.ACTION),
                     r.get(AUDIT_LOG.TIMESTAMP),
-                    Optional.ofNullable(r.get(AUDIT_LOG.CHANGED_FIELDS)).map(j -> j.data()),
-                    Optional.ofNullable(r.get(AUDIT_LOG.OLD_VALUES)).map(j -> j.data()),
-                    Optional.ofNullable(r.get(AUDIT_LOG.NEW_VALUES)).map(j -> j.data()),
+                    Optional.ofNullable(r.get(AUDIT_LOG.CHANGED_FIELDS)).map(JSONB::data),
+                    Optional.ofNullable(r.get(AUDIT_LOG.OLD_VALUES)).map(JSONB::data),
+                    Optional.ofNullable(r.get(AUDIT_LOG.NEW_VALUES)).map(JSONB::data),
                     Optional.ofNullable(r.get(USERS.FIRST_NAME)),
                     Optional.ofNullable(r.get(USERS.LAST_NAME))));
   }
@@ -298,9 +298,9 @@ public class AuditLogRepository {
                         r.get(AUDIT_LOG.ENTITY_ID),
                         r.get(AUDIT_LOG.ACTION),
                         r.get(AUDIT_LOG.TIMESTAMP),
-                        Optional.ofNullable(r.get(AUDIT_LOG.CHANGED_FIELDS)).map(j -> j.data()),
-                        Optional.ofNullable(r.get(AUDIT_LOG.OLD_VALUES)).map(j -> j.data()),
-                        Optional.ofNullable(r.get(AUDIT_LOG.NEW_VALUES)).map(j -> j.data()),
+                        Optional.ofNullable(r.get(AUDIT_LOG.CHANGED_FIELDS)).map(JSONB::data),
+                        Optional.ofNullable(r.get(AUDIT_LOG.OLD_VALUES)).map(JSONB::data),
+                        Optional.ofNullable(r.get(AUDIT_LOG.NEW_VALUES)).map(JSONB::data),
                         Optional.ofNullable(r.get(USERS.FIRST_NAME)),
                         Optional.ofNullable(r.get(USERS.LAST_NAME))));
 

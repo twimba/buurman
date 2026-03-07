@@ -112,8 +112,6 @@ public class CalendarFeedRepository {
 
     if (feed.getId() == null) {
       UUID id = UUID.randomUUID();
-      LocalDateTime createdAt = now;
-      LocalDateTime updatedAt = now;
 
       dsl.insertInto(CALENDAR_FEEDS)
           .set(CALENDAR_FEEDS.ID, id)
@@ -126,28 +124,27 @@ public class CalendarFeedRepository {
           .set(CALENDAR_FEEDS.PROPERTY_ID, feed.getPropertyId().orElse(null))
           .set(CALENDAR_FEEDS.TENANT_ID, feed.getTenantId().orElse(null))
           .set(CALENDAR_FEEDS.ENABLED, feed.getEnabled())
-          .set(CALENDAR_FEEDS.CREATED_AT, createdAt)
-          .set(CALENDAR_FEEDS.UPDATED_AT, updatedAt)
+          .set(CALENDAR_FEEDS.CREATED_AT, now)
+          .set(CALENDAR_FEEDS.UPDATED_AT, now)
           .set(CALENDAR_FEEDS.CREATED_BY, feed.getCreatedBy())
           .set(CALENDAR_FEEDS.UPDATED_BY, feed.getUpdatedBy())
           .execute();
 
       feed.setId(id);
-      feed.setCreatedAt(createdAt.toInstant(UTC));
-      feed.setUpdatedAt(updatedAt.toInstant(UTC));
+      feed.setCreatedAt(now.toInstant(UTC));
+      feed.setUpdatedAt(now.toInstant(UTC));
     } else {
-      LocalDateTime updatedAt = now;
 
       dsl.update(CALENDAR_FEEDS)
           .set(CALENDAR_FEEDS.FEED_TOKEN, feed.getFeedToken())
           .set(CALENDAR_FEEDS.ENABLED, feed.getEnabled())
-          .set(CALENDAR_FEEDS.UPDATED_AT, updatedAt)
+          .set(CALENDAR_FEEDS.UPDATED_AT, now)
           .set(CALENDAR_FEEDS.UPDATED_BY, feed.getUpdatedBy())
           .where(
               CALENDAR_FEEDS.ID.eq(feed.getId()).and(CALENDAR_FEEDS.TEAM_ID.eq(feed.getTeamId())))
           .execute();
 
-      feed.setUpdatedAt(updatedAt.toInstant(UTC));
+      feed.setUpdatedAt(now.toInstant(UTC));
     }
 
     return feed;

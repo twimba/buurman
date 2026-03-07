@@ -218,9 +218,9 @@ public class AuditService {
         entityIdentifier,
         entityType, // entityName - can be enhanced later
         action,
-        Optional.ofNullable(userName),
+        Optional.of(userName),
         record.timestamp().toInstant(UTC),
-        Optional.ofNullable(description),
+        Optional.of(description),
         changedFields,
         oldValues,
         newValues);

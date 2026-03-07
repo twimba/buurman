@@ -61,8 +61,6 @@ public class PropertyOutdoorAreaRepository {
 
     if (area.getId() == null) {
       UUID newId = UUID.randomUUID();
-      LocalDateTime createdAt = now;
-      LocalDateTime updatedAt = now;
 
       dsl.insertInto(PROPERTY_OUTDOOR_AREAS)
           .set(PROPERTY_OUTDOOR_AREAS.ID, newId)
@@ -72,23 +70,22 @@ public class PropertyOutdoorAreaRepository {
           .set(PROPERTY_OUTDOOR_AREAS.TYPE, area.getType())
           .set(PROPERTY_OUTDOOR_AREAS.AREA_VALUE, area.getAreaValue().orElse(null))
           .set(PROPERTY_OUTDOOR_AREAS.AREA_UNIT, area.getAreaUnit())
-          .set(PROPERTY_OUTDOOR_AREAS.CREATED_AT, createdAt)
-          .set(PROPERTY_OUTDOOR_AREAS.UPDATED_AT, updatedAt)
+          .set(PROPERTY_OUTDOOR_AREAS.CREATED_AT, now)
+          .set(PROPERTY_OUTDOOR_AREAS.UPDATED_AT, now)
           .set(PROPERTY_OUTDOOR_AREAS.CREATED_BY, area.getCreatedBy())
           .set(PROPERTY_OUTDOOR_AREAS.UPDATED_BY, area.getUpdatedBy())
           .execute();
 
       area.setId(newId);
-      area.setCreatedAt(createdAt.toInstant(UTC));
-      area.setUpdatedAt(updatedAt.toInstant(UTC));
+      area.setCreatedAt(now.toInstant(UTC));
+      area.setUpdatedAt(now.toInstant(UTC));
     } else {
-      LocalDateTime updatedAt = now;
 
       dsl.update(PROPERTY_OUTDOOR_AREAS)
           .set(PROPERTY_OUTDOOR_AREAS.TYPE, area.getType())
           .set(PROPERTY_OUTDOOR_AREAS.AREA_VALUE, area.getAreaValue().orElse(null))
           .set(PROPERTY_OUTDOOR_AREAS.AREA_UNIT, area.getAreaUnit())
-          .set(PROPERTY_OUTDOOR_AREAS.UPDATED_AT, updatedAt)
+          .set(PROPERTY_OUTDOOR_AREAS.UPDATED_AT, now)
           .set(PROPERTY_OUTDOOR_AREAS.UPDATED_BY, area.getUpdatedBy())
           .where(
               PROPERTY_OUTDOOR_AREAS
@@ -97,7 +94,7 @@ public class PropertyOutdoorAreaRepository {
                   .and(PROPERTY_OUTDOOR_AREAS.TEAM_ID.eq(area.getTeamId())))
           .execute();
 
-      area.setUpdatedAt(updatedAt.toInstant(UTC));
+      area.setUpdatedAt(now.toInstant(UTC));
     }
 
     return area;

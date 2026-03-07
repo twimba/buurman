@@ -11,8 +11,10 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+@Getter
 @Service
 @RequiredArgsConstructor
 public class MetricsService {
@@ -69,9 +71,5 @@ public class MetricsService {
         result);
     incrementCounter(
         "notification.send.total", "channel", channel, "provider", provider, "result", result);
-  }
-
-  public MeterRegistry getRegistry() {
-    return registry;
   }
 }

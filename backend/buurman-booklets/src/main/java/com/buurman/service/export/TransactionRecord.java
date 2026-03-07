@@ -12,6 +12,4 @@ record TransactionRecord(
     String property,
     Optional<String> category,
     BigDecimal amount,
-    String currency) {
-  TransactionRecord {}
-}
+    String currency) {}

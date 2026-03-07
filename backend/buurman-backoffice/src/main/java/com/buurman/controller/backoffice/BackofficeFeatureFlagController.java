@@ -275,24 +275,24 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
     var featureStateId =
         flagsmithAdminService.findSegmentOverrideFeatureStateId(segmentId, globalState.featureId());
 
-    FeatureStateInfo updated;
-    if (featureStateId.isPresent()) {
-      // Update existing feature state
-      updated =
-          flagsmithAdminService.updateSegmentOverrideState(
-              featureStateId.get(),
-              segmentId,
-              updateFeatureFlagRequest.enabled(),
-              updateFeatureFlagRequest.value());
-    } else {
-      // No auto-created feature state — create one explicitly with desired values
-      updated =
-          flagsmithAdminService.createSegmentOverrideFeatureState(
-              linkId,
-              globalState.featureId(),
-              updateFeatureFlagRequest.enabled(),
-              updateFeatureFlagRequest.value());
-    }
+    // Update existing feature state
+    // No auto-created feature state — create one explicitly with desired values
+    FeatureStateInfo updated =
+        featureStateId
+            .map(
+                aLong ->
+                    flagsmithAdminService.updateSegmentOverrideState(
+                        aLong,
+                        segmentId,
+                        updateFeatureFlagRequest.enabled(),
+                        updateFeatureFlagRequest.value()))
+            .orElseGet(
+                () ->
+                    flagsmithAdminService.createSegmentOverrideFeatureState(
+                        linkId,
+                        globalState.featureId(),
+                        updateFeatureFlagRequest.enabled(),
+                        updateFeatureFlagRequest.value()));
     return new FeatureFlagUpdateResponse(flagName, updated.enabled(), updated.value());
   }
 

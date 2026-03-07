@@ -41,7 +41,6 @@ public class TeamPreferencesRepository {
 
     if (prefs.getId() == null) {
       UUID newId = UUID.randomUUID();
-      LocalDateTime createdAt = now;
 
       dsl.insertInto(TEAM_PREFERENCES)
           .set(TEAM_PREFERENCES.ID, newId)
@@ -60,11 +59,11 @@ public class TeamPreferencesRepository {
                   .getOnboardingCompletedAt()
                   .map(i -> LocalDateTime.ofInstant(i, UTC))
                   .orElse(null))
-          .set(TEAM_PREFERENCES.CREATED_AT, createdAt)
+          .set(TEAM_PREFERENCES.CREATED_AT, now)
           .set(TEAM_PREFERENCES.UPDATED_AT, now)
           .execute();
       prefs.setId(newId);
-      prefs.setCreatedAt(createdAt.toInstant(UTC));
+      prefs.setCreatedAt(now.toInstant(UTC));
       prefs.setUpdatedAt(now.toInstant(UTC));
     } else {
       dsl.update(TEAM_PREFERENCES)

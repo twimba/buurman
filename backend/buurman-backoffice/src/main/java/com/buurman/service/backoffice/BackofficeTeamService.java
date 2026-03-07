@@ -97,7 +97,7 @@ public class BackofficeTeamService {
 
     FinancialSnapshot financialSnapshot =
         new FinancialSnapshot(
-            Optional.ofNullable(activeRent.getKey()),
+            Optional.of(activeRent.getKey()),
             currency,
             statsRepository.propertyStatusDistribution(team.getId()),
             statsRepository.propertyCategoryDistribution(team.getId()),
@@ -110,16 +110,16 @@ public class BackofficeTeamService {
             Optional.of(prefs.getPaymentsAheadCount()),
             prefs.isAutoGenerationEnabled(),
             prefs.getDefaultCurrency(),
-            Optional.ofNullable(prefs.getDefaultCountryCode()),
-            Optional.ofNullable(prefs.getTimezone()),
-            Optional.ofNullable(prefs.getDateFormat()),
-            Optional.ofNullable(prefs.getFiscalYearStartMonth()));
+            Optional.of(prefs.getDefaultCountryCode()),
+            Optional.of(prefs.getTimezone()),
+            Optional.of(prefs.getDateFormat()),
+            Optional.of(prefs.getFiscalYearStartMonth()));
 
     return new BackofficeTeamDetailResponse(
         team.getIdentifier().orElseThrow(),
         team.getName(),
         team.getCreatedAt(),
-        Optional.ofNullable(team.getUpdatedAt()),
+        Optional.of(team.getUpdatedAt()),
         memberInfos,
         dataCounts,
         financialSnapshot,
@@ -173,6 +173,6 @@ public class BackofficeTeamService {
         memberCount,
         Optional.ofNullable(ownerEmail),
         team.getCreatedAt(),
-        Optional.ofNullable(team.getUpdatedAt()));
+        Optional.of(team.getUpdatedAt()));
   }
 }

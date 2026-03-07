@@ -149,7 +149,7 @@ public class BackofficeNotificationService {
         notification.getNotificationType().name(),
         notification.getChannel().name(),
         notification.getSubject(),
-        Optional.ofNullable(notification.getBody()),
+        Optional.of(notification.getBody()),
         notification.getRecipientEmail(),
         notification.getRecipientPhone(),
         notification.getStatus().name(),

@@ -34,8 +34,6 @@ public class UserPreferencesRepository {
 
     if (prefs.getId() == null) {
       UUID newId = UUID.randomUUID();
-      LocalDateTime createdAt = now;
-      LocalDateTime updatedAt = now;
 
       dsl.insertInto(USER_PREFERENCES)
           .set(USER_PREFERENCES.ID, newId)
@@ -48,14 +46,13 @@ public class UserPreferencesRepository {
           .set(USER_PREFERENCES.EMAIL_NOTIFICATIONS, prefs.isEmailNotifications())
           .set(USER_PREFERENCES.IN_APP_NOTIFICATIONS, prefs.isInAppNotifications())
           .set(USER_PREFERENCES.SMS_NOTIFICATIONS, prefs.isSmsNotifications())
-          .set(USER_PREFERENCES.CREATED_AT, createdAt)
-          .set(USER_PREFERENCES.UPDATED_AT, updatedAt)
+          .set(USER_PREFERENCES.CREATED_AT, now)
+          .set(USER_PREFERENCES.UPDATED_AT, now)
           .execute();
       prefs.setId(newId);
-      prefs.setCreatedAt(createdAt.toInstant(UTC));
-      prefs.setUpdatedAt(updatedAt.toInstant(UTC));
+      prefs.setCreatedAt(now.toInstant(UTC));
+      prefs.setUpdatedAt(now.toInstant(UTC));
     } else {
-      LocalDateTime updatedAt = now;
 
       dsl.update(USER_PREFERENCES)
           .set(USER_PREFERENCES.THEME, prefs.getTheme())
@@ -66,10 +63,10 @@ public class UserPreferencesRepository {
           .set(USER_PREFERENCES.EMAIL_NOTIFICATIONS, prefs.isEmailNotifications())
           .set(USER_PREFERENCES.IN_APP_NOTIFICATIONS, prefs.isInAppNotifications())
           .set(USER_PREFERENCES.SMS_NOTIFICATIONS, prefs.isSmsNotifications())
-          .set(USER_PREFERENCES.UPDATED_AT, updatedAt)
+          .set(USER_PREFERENCES.UPDATED_AT, now)
           .where(USER_PREFERENCES.ID.eq(prefs.getId()))
           .execute();
-      prefs.setUpdatedAt(updatedAt.toInstant(UTC));
+      prefs.setUpdatedAt(now.toInstant(UTC));
     }
     return prefs;
   }

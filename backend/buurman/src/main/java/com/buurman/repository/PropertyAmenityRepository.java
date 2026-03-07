@@ -63,8 +63,6 @@ public class PropertyAmenityRepository {
 
     if (pa.getId() == null) {
       UUID newId = UUID.randomUUID();
-      LocalDateTime createdAt = now;
-      LocalDateTime updatedAt = now;
 
       dsl.insertInto(PROPERTY_AMENITIES)
           .set(PROPERTY_AMENITIES.ID, newId)
@@ -72,21 +70,20 @@ public class PropertyAmenityRepository {
           .set(PROPERTY_AMENITIES.AMENITY_ID, pa.getAmenityId())
           .set(PROPERTY_AMENITIES.TEAM_ID, pa.getTeamId())
           .set(PROPERTY_AMENITIES.NOTES, pa.getNotes().orElse(null))
-          .set(PROPERTY_AMENITIES.CREATED_AT, createdAt)
-          .set(PROPERTY_AMENITIES.UPDATED_AT, updatedAt)
+          .set(PROPERTY_AMENITIES.CREATED_AT, now)
+          .set(PROPERTY_AMENITIES.UPDATED_AT, now)
           .set(PROPERTY_AMENITIES.CREATED_BY, pa.getCreatedBy())
           .set(PROPERTY_AMENITIES.UPDATED_BY, pa.getUpdatedBy())
           .execute();
 
       pa.setId(newId);
-      pa.setCreatedAt(createdAt.toInstant(UTC));
-      pa.setUpdatedAt(updatedAt.toInstant(UTC));
+      pa.setCreatedAt(now.toInstant(UTC));
+      pa.setUpdatedAt(now.toInstant(UTC));
     } else {
-      LocalDateTime updatedAt = now;
 
       dsl.update(PROPERTY_AMENITIES)
           .set(PROPERTY_AMENITIES.NOTES, pa.getNotes().orElse(null))
-          .set(PROPERTY_AMENITIES.UPDATED_AT, updatedAt)
+          .set(PROPERTY_AMENITIES.UPDATED_AT, now)
           .set(PROPERTY_AMENITIES.UPDATED_BY, pa.getUpdatedBy())
           .where(
               PROPERTY_AMENITIES
@@ -95,7 +92,7 @@ public class PropertyAmenityRepository {
                   .and(PROPERTY_AMENITIES.TEAM_ID.eq(pa.getTeamId())))
           .execute();
 
-      pa.setUpdatedAt(updatedAt.toInstant(UTC));
+      pa.setUpdatedAt(now.toInstant(UTC));
     }
   }
 

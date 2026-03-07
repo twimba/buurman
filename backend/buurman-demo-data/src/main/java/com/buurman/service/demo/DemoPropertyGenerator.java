@@ -970,10 +970,8 @@ public class DemoPropertyGenerator {
               .execute();
 
       case "AGRICULTURAL" -> {
-        BigDecimal totalLand = area;
         BigDecimal arableLand =
-            totalLand
-                .multiply(BigDecimal.valueOf(0.6 + random.nextDouble() * 0.3))
+            area.multiply(BigDecimal.valueOf(0.6 + random.nextDouble() * 0.3))
                 .setScale(2, java.math.RoundingMode.HALF_UP);
         String[] soilTypes = {"CLAY", "LOAM", "SANDY", "PEAT", "CHALK"};
         String[] waterSources = {"WELL", "CANAL", "RIVER", "MUNICIPAL"};
@@ -987,7 +985,7 @@ public class DemoPropertyGenerator {
             .set(PROPERTY_AGRICULTURAL_DETAILS.ID, UUID.randomUUID())
             .set(PROPERTY_AGRICULTURAL_DETAILS.PROPERTY_ID, propertyId)
             .set(PROPERTY_AGRICULTURAL_DETAILS.TEAM_ID, teamId)
-            .set(PROPERTY_AGRICULTURAL_DETAILS.TOTAL_LAND_AREA_VALUE, totalLand)
+            .set(PROPERTY_AGRICULTURAL_DETAILS.TOTAL_LAND_AREA_VALUE, area)
             .set(PROPERTY_AGRICULTURAL_DETAILS.TOTAL_LAND_AREA_UNIT, "sqm")
             .set(PROPERTY_AGRICULTURAL_DETAILS.ARABLE_AREA_VALUE, arableLand)
             .set(PROPERTY_AGRICULTURAL_DETAILS.ARABLE_AREA_UNIT, "sqm")
@@ -1648,20 +1646,19 @@ public class DemoPropertyGenerator {
             acquisitionDate,
             now);
       }
-      default -> {
-        insertFee(
-            propertyId,
-            teamId,
-            createdBy,
-            currency,
-            "MAINTENANCE_RESERVE",
-            "Maintenance Reserve",
-            random.nextInt(500_00, 1000_00),
-            "ANNUALLY",
-            "9",
-            acquisitionDate,
-            now);
-      }
+      default ->
+          insertFee(
+              propertyId,
+              teamId,
+              createdBy,
+              currency,
+              "MAINTENANCE_RESERVE",
+              "Maintenance Reserve",
+              random.nextInt(500_00, 1000_00),
+              "ANNUALLY",
+              "9",
+              acquisitionDate,
+              now);
     }
   }
 

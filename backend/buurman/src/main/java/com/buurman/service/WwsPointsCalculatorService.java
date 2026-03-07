@@ -822,7 +822,7 @@ public class WwsPointsCalculatorService {
   private UUID resolveContractId(String contractIdentifier, UUID teamId) {
     return contractRepository
         .findByIdentifierAndTeamId(Sid.of(contractIdentifier), teamId)
-        .map(c -> c.getId())
+        .map(Contract::getId)
         .orElseThrow(() -> new NotFoundException("Contract not found: " + contractIdentifier));
   }
 }
