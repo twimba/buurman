@@ -18,6 +18,7 @@ public record PropertyResponse(
     String city,
     String postalCode,
     String countryCode,
+    Optional<String> regionCode,
     Optional<BigDecimal> latitude,
     Optional<BigDecimal> longitude,
     Optional<String> geocodeAccuracy,

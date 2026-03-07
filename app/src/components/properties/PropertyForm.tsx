@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { X, Save } from 'lucide-react';
 import {
   PropertyResponse,
@@ -26,6 +27,7 @@ import {
   PROPERTY_CATEGORY_ICONS,
   PROPERTY_TYPE_ICONS,
 } from '@/utils/propertyIcons';
+import { getCountries, getCountryDetail } from '@/api/rentRegulations';
 
 interface PropertyFormProps {
   property?: PropertyResponse;
@@ -90,6 +92,7 @@ export const PropertyForm = ({
     city: property?.city ?? '',
     postalCode: property?.postalCode ?? '',
     countryCode: property?.countryCode || defaultCountryCode || '',
+    regionCode: property?.regionCode,
     latitude: property?.latitude ?? undefined,
     longitude: property?.longitude ?? undefined,
     geocodeAccuracy: property?.geocodeAccuracy ?? undefined,
@@ -152,6 +155,28 @@ export const PropertyForm = ({
     property?.identifier
   );
 
+  // Fetch rent regulation countries to know which ones have regional regulations
+  const { data: regulationCountries } = useQuery({
+    queryKey: ['rentRegulationCountries'],
+    queryFn: getCountries,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const selectedRegCountry = regulationCountries?.find(
+    (c) => c.countryCode === formData.countryCode
+  );
+  const hasRegions = selectedRegCountry?.hasRegionalRegulations ?? false;
+
+  // Fetch regions for the selected country (only if it has regional regulations)
+  const { data: countryDetail } = useQuery({
+    queryKey: ['rentRegulationCountryDetail', formData.countryCode],
+    queryFn: () => getCountryDetail(formData.countryCode),
+    enabled: hasRegions && !!formData.countryCode,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const availableRegions = countryDetail?.regions ?? [];
+
   // Available sub-types based on selected category
   const availableTypes = useMemo(
     () =>
@@ -195,6 +220,7 @@ export const PropertyForm = ({
         city: property.city,
         postalCode: property.postalCode,
         countryCode: property.countryCode,
+        regionCode: property.regionCode,
         latitude: property.latitude,
         longitude: property.longitude,
         geocodeAccuracy: property.geocodeAccuracy,
@@ -466,12 +492,42 @@ export const PropertyForm = ({
             </label>
             <CountrySelector
               value={formData.countryCode}
-              onChange={(v) => handleChange('countryCode', v)}
+              onChange={(v) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  countryCode: v,
+                  regionCode: undefined,
+                }));
+                if (errors.countryCode) {
+                  setErrors((prev) => ({ ...prev, countryCode: '' }));
+                }
+              }}
             />
             {errors.countryCode && (
               <p className="text-red-600 text-sm mt-1">{errors.countryCode}</p>
             )}
           </div>
+
+          {/* Region selector — only shown when country has regional regulations */}
+          {hasRegions && availableRegions.length > 0 && (
+            <div>
+              <label className={labelCls}>Region</label>
+              <select
+                value={formData.regionCode ?? ''}
+                onChange={(e) =>
+                  handleChange('regionCode', e.target.value || undefined)
+                }
+                className={selectCls}
+              >
+                <option value="">Other</option>
+                {availableRegions.map((r) => (
+                  <option key={r.regionCode} value={r.regionCode}>
+                    {r.regionName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
 
         {/* Location Preview */}

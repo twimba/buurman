@@ -32,7 +32,11 @@ public enum EntityPrefix {
   PTX("PTX", "Property Taxes"),
   FEE("FEE", "Property Fees"),
   TKO("TKO", "Data Takeouts"),
-  WWS("WWS", "WWS Calculations");
+  WWS("WWS", "WWS Calculations"),
+  RRC("RRC", "Rent Regulation Countries"),
+  RRG("RRG", "Rent Regulation Regions"),
+  RRL("RRL", "Rent Regulation Rules"),
+  CRQ("CRQ", "Country Regulation Requests");
 
   private final String code;
   private final String entityName;

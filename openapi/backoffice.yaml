@@ -34,6 +34,8 @@ tags:
     description: Platform-wide user management
   - name: Backoffice - Feature Flags
     description: Feature flag management
+  - name: Backoffice - Rent Regulations
+    description: Rent regulation reference data management
 paths:
   /backoffice/teams/{identifier}:
     get:
@@ -3669,6 +3671,803 @@ paths:
                 $ref: "#/components/schemas/ProblemDetail"
       security:
         - bearer-jwt: []
+  /backoffice/rent-regulations/countries:
+    get:
+      tags:
+        - Backoffice - Rent Regulations
+      summary: List regulation countries
+      description: List all countries with rent regulation data
+      operationId: listBackofficeRentRegulationCountries
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RentRegulationCountryResponse"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    post:
+      tags:
+        - Backoffice - Rent Regulations
+      summary: Create regulation country
+      description: Add a new country with rent regulation data
+      operationId: createRentRegulationCountry
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRentRegulationCountryRequest"
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentRegulationCountryResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - country already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/rent-regulations/countries/{code}:
+    put:
+      tags:
+        - Backoffice - Rent Regulations
+      summary: Update regulation country
+      description: Update a country's rent regulation metadata
+      operationId: updateRentRegulationCountry
+      parameters:
+        - name: code
+          in: path
+          description: Country code
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRentRegulationCountryRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentRegulationCountryResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    delete:
+      tags:
+        - Backoffice - Rent Regulations
+      summary: Delete regulation country
+      description: Delete a country and all its regulation data
+      operationId: deleteRentRegulationCountry
+      parameters:
+        - name: code
+          in: path
+          description: Country code
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/rent-regulations/countries/{code}/review:
+    post:
+      tags:
+        - Backoffice - Rent Regulations
+      summary: Mark country as reviewed
+      description: Mark a country's regulation data as reviewed (resets stale flag)
+      operationId: reviewRentRegulationCountry
+      parameters:
+        - name: code
+          in: path
+          description: Country code
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/rent-regulations/countries/{code}/regions:
+    get:
+      tags:
+        - Backoffice - Rent Regulations
+      summary: List regions for country
+      description: List all regions for a country
+      operationId: listRentRegulationRegions
+      parameters:
+        - name: code
+          in: path
+          description: Country code
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RentRegulationRegionResponse"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    post:
+      tags:
+        - Backoffice - Rent Regulations
+      summary: Create region
+      description: Add a new region to a country
+      operationId: createRentRegulationRegion
+      parameters:
+        - name: code
+          in: path
+          description: Country code
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRentRegulationRegionRequest"
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentRegulationRegionResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - region already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/rent-regulations/countries/{code}/regions/{regionCode}:
+    put:
+      tags:
+        - Backoffice - Rent Regulations
+      summary: Update region
+      description: Update a region's metadata
+      operationId: updateRentRegulationRegion
+      parameters:
+        - name: code
+          in: path
+          description: Country code
+          required: true
+          schema:
+            type: string
+        - name: regionCode
+          in: path
+          description: Region code
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRentRegulationRegionRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentRegulationRegionResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    delete:
+      tags:
+        - Backoffice - Rent Regulations
+      summary: Delete region
+      description: Delete a region
+      operationId: deleteRentRegulationRegion
+      parameters:
+        - name: code
+          in: path
+          description: Country code
+          required: true
+          schema:
+            type: string
+        - name: regionCode
+          in: path
+          description: Region code
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/rent-regulations/countries/{code}/rules:
+    get:
+      tags:
+        - Backoffice - Rent Regulations
+      summary: List rules for country
+      description: List all rent regulation rules for a country
+      operationId: listRentRegulationRules
+      parameters:
+        - name: code
+          in: path
+          description: Country code
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RentRegulationRuleResponse"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    post:
+      tags:
+        - Backoffice - Rent Regulations
+      summary: Create rule
+      description: Add a new rent regulation rule to a country
+      operationId: createRentRegulationRule
+      parameters:
+        - name: code
+          in: path
+          description: Country code
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRentRegulationRuleRequest"
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentRegulationRuleResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/rent-regulations/countries/{code}/rules/bulk:
+    post:
+      tags:
+        - Backoffice - Rent Regulations
+      summary: Bulk import rules
+      description: Bulk import rent regulation rules for a country
+      operationId: bulkImportRentRegulationRules
+      parameters:
+        - name: code
+          in: path
+          description: Country code
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BulkCreateRentRegulationRulesRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BulkImportResult"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/rent-regulations/rules/{identifier}:
+    put:
+      tags:
+        - Backoffice - Rent Regulations
+      summary: Update rule
+      description: Update an existing rent regulation rule
+      operationId: updateRentRegulationRule
+      parameters:
+        - name: identifier
+          in: path
+          description: Rule identifier
+          required: true
+          schema:
+            $ref: "#/components/schemas/RentRegulationRuleIdentifier"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRentRegulationRuleRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RentRegulationRuleResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    delete:
+      tags:
+        - Backoffice - Rent Regulations
+      summary: Delete rule
+      description: Delete a rent regulation rule
+      operationId: deleteRentRegulationRule
+      parameters:
+        - name: identifier
+          in: path
+          description: Rule identifier
+          required: true
+          schema:
+            $ref: "#/components/schemas/RentRegulationRuleIdentifier"
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/rent-regulations/country-requests:
+    get:
+      tags:
+        - Backoffice - Rent Regulations
+      summary: List country regulation requests
+      description: List all country regulation requests aggregated by country name
+      operationId: listCountryRegulationRequests
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CountryRegulationRequestSummary"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/rent-regulations/country-requests/{countryName}:
+    delete:
+      tags:
+        - Backoffice - Rent Regulations
+      summary: Dismiss country regulation request
+      description: Dismiss (delete) all requests for a specific country name
+      operationId: dismissCountryRegulationRequest
+      parameters:
+        - name: countryName
+          in: path
+          description: Country name to dismiss
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
 components:
   schemas:
     NotificationIdentifier:
@@ -4892,6 +5691,320 @@ components:
         title:
           type: string
           description: Short human-readable summary
+    RentRegulationRuleIdentifier:
+      type: string
+      description: Rent regulation rule identifier
+    MaxIncreaseType:
+      type: string
+      enum:
+        - FIXED_PERCENTAGE
+        - CPI_LINKED
+        - INDEX_LINKED
+        - MARKET_RENT
+        - NEGOTIATED
+        - FROZEN
+        - OTHER
+    RentFrequency:
+      type: string
+      enum:
+        - MONTHLY
+        - QUARTERLY
+        - SEMI_ANNUAL
+        - ANNUAL
+        - BIENNIAL
+        - TRIENNIAL
+    RentRegulationCountryResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        countryCode:
+          type: string
+        countryName:
+          type: string
+        hasRegionalRegulations:
+          type: boolean
+        summary:
+          type: string
+        lastReviewedAt:
+          type: string
+          format: date-time
+        stale:
+          type: boolean
+      required:
+        - identifier
+        - countryCode
+        - countryName
+        - hasRegionalRegulations
+        - stale
+    RentRegulationRegionResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        regionCode:
+          type: string
+        regionName:
+          type: string
+        summary:
+          type: string
+      required:
+        - identifier
+        - regionCode
+        - regionName
+    RentRegulationRuleResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        year:
+          type: integer
+          format: int32
+        propertyCategory:
+          type: string
+        sector:
+          type: string
+        maxIncreasePercentage:
+          type: number
+        maxIncreaseType:
+          $ref: "#/components/schemas/MaxIncreaseType"
+        indexName:
+          type: string
+        indexValue:
+          type: number
+        effectiveDate:
+          type: string
+          format: date
+        noticePeriodDays:
+          type: integer
+          format: int32
+        frequency:
+          $ref: "#/components/schemas/RentFrequency"
+        additionalConditions:
+          type: string
+        sourceUrl:
+          type: string
+        notes:
+          type: string
+      required:
+        - identifier
+        - year
+        - propertyCategory
+        - maxIncreaseType
+        - frequency
+    CreateRentRegulationCountryRequest:
+      type: object
+      properties:
+        countryCode:
+          type: string
+          minLength: 2
+          maxLength: 3
+        countryName:
+          type: string
+          minLength: 1
+          maxLength: 100
+        hasRegionalRegulations:
+          type: boolean
+        summary:
+          type: string
+      required:
+        - countryCode
+        - countryName
+        - hasRegionalRegulations
+    UpdateRentRegulationCountryRequest:
+      type: object
+      properties:
+        countryName:
+          type: string
+          minLength: 1
+          maxLength: 100
+        hasRegionalRegulations:
+          type: boolean
+        summary:
+          type: string
+      required:
+        - countryName
+        - hasRegionalRegulations
+    CreateRentRegulationRegionRequest:
+      type: object
+      properties:
+        regionCode:
+          type: string
+          minLength: 1
+          maxLength: 20
+        regionName:
+          type: string
+          minLength: 1
+          maxLength: 100
+        summary:
+          type: string
+      required:
+        - regionCode
+        - regionName
+    UpdateRentRegulationRegionRequest:
+      type: object
+      properties:
+        regionName:
+          type: string
+          minLength: 1
+          maxLength: 100
+        summary:
+          type: string
+      required:
+        - regionName
+    CreateRentRegulationRuleRequest:
+      type: object
+      properties:
+        year:
+          type: integer
+          format: int32
+          minimum: 1900
+        propertyCategory:
+          type: string
+          minLength: 1
+        sector:
+          type: string
+        maxIncreasePercentage:
+          type: number
+        maxIncreaseType:
+          $ref: "#/components/schemas/MaxIncreaseType"
+        indexName:
+          type: string
+        indexValue:
+          type: number
+        effectiveDate:
+          type: string
+          format: date
+        noticePeriodDays:
+          type: integer
+          format: int32
+        frequency:
+          $ref: "#/components/schemas/RentFrequency"
+        additionalConditions:
+          type: string
+        sourceUrl:
+          type: string
+        notes:
+          type: string
+      required:
+        - year
+        - propertyCategory
+        - maxIncreaseType
+    UpdateRentRegulationRuleRequest:
+      type: object
+      properties:
+        year:
+          type: integer
+          format: int32
+          minimum: 1900
+        propertyCategory:
+          type: string
+          minLength: 1
+        sector:
+          type: string
+        maxIncreasePercentage:
+          type: number
+        maxIncreaseType:
+          $ref: "#/components/schemas/MaxIncreaseType"
+        indexName:
+          type: string
+        indexValue:
+          type: number
+        effectiveDate:
+          type: string
+          format: date
+        noticePeriodDays:
+          type: integer
+          format: int32
+        frequency:
+          $ref: "#/components/schemas/RentFrequency"
+        additionalConditions:
+          type: string
+        sourceUrl:
+          type: string
+        notes:
+          type: string
+      required:
+        - year
+        - propertyCategory
+        - maxIncreaseType
+    BulkCreateRentRegulationRulesRequest:
+      type: object
+      properties:
+        rules:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateRentRegulationRuleRequest"
+          minItems: 1
+      required:
+        - rules
+    BulkImportResult:
+      type: object
+      properties:
+        totalReceived:
+          type: integer
+          format: int32
+        totalCreated:
+          type: integer
+          format: int32
+        totalFailed:
+          type: integer
+          format: int32
+        errors:
+          type: array
+          items:
+            type: string
+      required:
+        - totalReceived
+        - totalCreated
+        - totalFailed
+        - errors
+    CountryRegulationRequestSummary:
+      type: object
+      properties:
+        countryName:
+          type: string
+        requestCount:
+          type: integer
+          format: int32
+        firstRequestedAt:
+          type: string
+          format: date-time
+        lastRequestedAt:
+          type: string
+          format: date-time
+        requesters:
+          type: array
+          items:
+            $ref: "#/components/schemas/CountryRegulationRequester"
+      required:
+        - countryName
+        - requestCount
+        - firstRequestedAt
+        - lastRequestedAt
+        - requesters
+    CountryRegulationRequester:
+      type: object
+      properties:
+        userIdentifier:
+          type: string
+        userName:
+          type: string
+        teamIdentifier:
+          type: string
+        teamName:
+          type: string
+        notes:
+          type: string
+        requestedAt:
+          type: string
+          format: date-time
+      required:
+        - userIdentifier
+        - userName
+        - teamIdentifier
+        - teamName
+        - requestedAt
   securitySchemes:
     bearer-jwt:
       type: http

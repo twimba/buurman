@@ -69,6 +69,16 @@ const BroadcastsPage = lazy(() =>
     default: m.BroadcastsPage,
   })),
 );
+const RentRegulationsPage = lazy(() =>
+  import("./pages/RentRegulationsPage").then((m) => ({
+    default: m.RentRegulationsPage,
+  })),
+);
+const RentRegulationCountryDetailPage = lazy(() =>
+  import("./pages/RentRegulationCountryDetailPage").then((m) => ({
+    default: m.RentRegulationCountryDetailPage,
+  })),
+);
 
 function App() {
   return (
@@ -110,6 +120,14 @@ function App() {
                     element={<RegistrationInvitationDetailPage />}
                   />
                   <Route path="/broadcasts" element={<BroadcastsPage />} />
+                  <Route
+                    path="/rent-regulations"
+                    element={<RentRegulationsPage />}
+                  />
+                  <Route
+                    path="/rent-regulations/:code"
+                    element={<RentRegulationCountryDetailPage />}
+                  />
                   <Route path="/feature-flags" element={<FeatureFlagsPage />} />
                   <Route path="/scheduler" element={<SchedulerPage />} />
                   <Route path="/loggers" element={<LoggersPage />} />

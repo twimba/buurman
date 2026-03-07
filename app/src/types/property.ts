@@ -131,6 +131,7 @@ export interface PropertyResponse {
   city: string;
   postalCode: string;
   countryCode: string;
+  regionCode?: string;
   latitude?: number;
   longitude?: number;
   geocodeAccuracy?: string;
@@ -331,6 +332,7 @@ export interface CreatePropertyRequest {
   city: string;
   postalCode: string;
   countryCode: string;
+  regionCode?: string;
   latitude?: number;
   longitude?: number;
   geocodeAccuracy?: string;
@@ -390,6 +392,7 @@ export interface UpdatePropertyRequest {
   city: string;
   postalCode: string;
   countryCode: string;
+  regionCode?: string;
   latitude?: number;
   longitude?: number;
   geocodeAccuracy?: string;

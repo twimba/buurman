@@ -8,6 +8,7 @@ import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.ContractPartyIdentifier;
 import com.buurman.domain.identifier.ContractPaymentInstructionIdentifier;
 import com.buurman.domain.identifier.ContractRentPeriodIdentifier;
+import com.buurman.domain.identifier.CountryRequestIdentifier;
 import com.buurman.domain.identifier.DataTakeoutIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.ExpenseIdentifier;
@@ -28,6 +29,9 @@ import com.buurman.domain.identifier.PropertyOutdoorAreaIdentifier;
 import com.buurman.domain.identifier.PropertyTaxIdentifier;
 import com.buurman.domain.identifier.PropertyValuationIdentifier;
 import com.buurman.domain.identifier.RegistrationInvitationIdentifier;
+import com.buurman.domain.identifier.RentRegulationCountryIdentifier;
+import com.buurman.domain.identifier.RentRegulationRegionIdentifier;
+import com.buurman.domain.identifier.RentRegulationRuleIdentifier;
 import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.domain.identifier.TenantAddressIdentifier;
 import com.buurman.domain.identifier.TenantIdentifier;
@@ -180,5 +184,21 @@ public class SidGenerator {
 
   public static WwsCalculationIdentifier newWwsCalculationId() {
     return WwsCalculationIdentifier.of(generateRaw(EntityPrefix.WWS));
+  }
+
+  public static RentRegulationCountryIdentifier newRentRegulationCountryId() {
+    return RentRegulationCountryIdentifier.of(generateRaw(EntityPrefix.RRC));
+  }
+
+  public static RentRegulationRegionIdentifier newRentRegulationRegionId() {
+    return RentRegulationRegionIdentifier.of(generateRaw(EntityPrefix.RRG));
+  }
+
+  public static RentRegulationRuleIdentifier newRentRegulationRuleId() {
+    return RentRegulationRuleIdentifier.of(generateRaw(EntityPrefix.RRL));
+  }
+
+  public static CountryRequestIdentifier newCountryRequestId() {
+    return CountryRequestIdentifier.of(generateRaw(EntityPrefix.CRQ));
   }
 }

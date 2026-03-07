@@ -25,6 +25,7 @@ public class Property {
   private String city;
   private String postalCode;
   private String countryCode;
+  @Builder.Default private Optional<String> regionCode = Optional.empty();
   @Builder.Default private Optional<BigDecimal> latitude = Optional.empty();
   @Builder.Default private Optional<BigDecimal> longitude = Optional.empty();
   @Builder.Default private Optional<String> geocodeAccuracy = Optional.empty();
