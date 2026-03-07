@@ -346,8 +346,7 @@ public class ContractPaymentInstructionService {
           Optional.of(false),
           Optional.of(template.getName()),
           Optional.of(template.getDescription()),
-          Optional.of(
-              template.getPaymentMethod() != null ? template.getPaymentMethod().name() : null),
+          Optional.of(template.getPaymentMethod().name()),
           template.getBankName(),
           template.getAccountHolderName(),
           template.getIban(),

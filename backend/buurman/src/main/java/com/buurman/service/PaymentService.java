@@ -189,7 +189,7 @@ public class PaymentService {
     payment.setUpdatedAt(clock.instant());
 
     if (markAsPaid) {
-      payment.setPaymentDate(Optional.of(paymentDate));
+      payment.setPaymentDate(Optional.ofNullable(paymentDate));
     }
 
     if (payment.getAmount() == null

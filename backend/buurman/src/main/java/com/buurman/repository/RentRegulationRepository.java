@@ -466,8 +466,8 @@ public class RentRegulationRepository {
                   records.stream()
                       .map(
                           r -> {
-                            String firstName = Optional.of(r.get(U_FIRST_NAME)).orElse("");
-                            String lastName = Optional.of(r.get(U_LAST_NAME)).orElse("");
+                            String firstName = Optional.ofNullable(r.get(U_FIRST_NAME)).orElse("");
+                            String lastName = Optional.ofNullable(r.get(U_LAST_NAME)).orElse("");
                             String userName = (firstName + " " + lastName).trim();
                             return new CountryRegulationRequester(
                                 r.get(RQ_Q_CREATED_BY),

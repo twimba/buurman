@@ -127,11 +127,11 @@ public class JobExecutionHistoryRepository {
                       r.get(JOB_NAME),
                       r.get(JOB_GROUP),
                       startedAt != null ? startedAt : "",
-                      Optional.of(formatTimestamp(r.get(ENDED_AT))),
-                      Optional.of(r.get(DURATION_MS)),
+                      Optional.ofNullable(formatTimestamp(r.get(ENDED_AT))),
+                      Optional.ofNullable(r.get(DURATION_MS)),
                       r.get(STATUS),
-                      Optional.of(r.get(ERROR_MESSAGE)),
-                      Optional.of(r.get(NODE_ID)));
+                      Optional.ofNullable(r.get(ERROR_MESSAGE)),
+                      Optional.ofNullable(r.get(NODE_ID)));
                 }));
 
     return PageResponse.of(items, pageRequest.page(), pageRequest.size(), total);

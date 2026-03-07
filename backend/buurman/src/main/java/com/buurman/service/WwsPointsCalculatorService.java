@@ -18,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.buurman.domain.Contract;
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyOutdoorArea;
 import com.buurman.domain.PropertyResidentialDetails;
