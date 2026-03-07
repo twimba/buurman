@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.buurman.domain.Contract;
 import com.buurman.domain.Property;
 import com.buurman.domain.RentRegulationCountry;
+import com.buurman.domain.RentRegulationRegion;
 import com.buurman.domain.RentRegulationRule;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.dto.request.ApplyRentIncreasesRequest;
@@ -78,45 +79,50 @@ public class RentIncreaseService {
       String countryCode = entry.getKey();
       List<ContractWithProperty> contracts = entry.getValue();
 
-      // Fetch regulation data for this country + year
       Optional<RentRegulationCountry> regulationCountry =
           rentRegulationRepository.findCountryByCode(countryCode);
-      List<RentRegulationRule> rules =
+
+      // Fetch national-level rules (region_id IS NULL) for the country summary
+      List<RentRegulationRule> nationalRules =
           regulationCountry
-              .map(c -> rentRegulationRepository.findRulesByCountryIdAndYear(c.getId(), year))
+              .map(c -> rentRegulationRepository.findNationalRulesByCountryIdAndYear(c.getId(), year))
               .orElse(List.of());
 
       List<RentRegulationRuleResponse> ruleResponses =
-          rules.stream().map(this::toRuleResponse).toList();
+          nationalRules.stream().map(this::toRuleResponse).toList();
 
       countrySummaries.add(
           new RentIncreaseCountrySummary(
               countryCode,
               regulationCountry.map(RentRegulationCountry::getCountryName).orElse(countryCode),
               contracts.size(),
-              !rules.isEmpty(),
+              !nationalRules.isEmpty(),
               ruleResponses));
 
-      // Build per-contract previews
+      // Build per-contract previews with region-aware rule matching
       for (ContractWithProperty cwp : contracts) {
         Contract contract = cwp.contract();
         Property property = cwp.property();
 
-        // Find min/max percentage from rules
+        // Resolve region-specific rules if property has a region
+        List<RentRegulationRule> applicableRules =
+            resolveApplicableRules(regulationCountry, property.getRegionCode(), year);
+
+        // Find min/max percentage from applicable rules
         Optional<BigDecimal> minPercent =
-            rules.stream()
+            applicableRules.stream()
                 .map(RentRegulationRule::getMaxIncreasePercentage)
                 .flatMap(Optional::stream)
                 .min(BigDecimal::compareTo);
         Optional<BigDecimal> maxPercent =
-            rules.stream()
+            applicableRules.stream()
                 .map(RentRegulationRule::getMaxIncreasePercentage)
                 .flatMap(Optional::stream)
                 .max(BigDecimal::compareTo);
 
-        // Suggested effective date from the first rule with one, or Jan 1 of the year
+        // Suggested effective date from the first rule with one
         Optional<java.time.LocalDate> suggestedDate =
-            rules.stream()
+            applicableRules.stream()
                 .map(RentRegulationRule::getEffectiveDate)
                 .flatMap(Optional::stream)
                 .findFirst();
@@ -132,6 +138,7 @@ public class RentIncreaseService {
                 property.getStreet(),
                 propertyAddress,
                 property.getCountryCode(),
+                property.getRegionCode(),
                 contract.getRentAmount().value(),
                 contract.getRentAmount().currency(),
                 minPercent,
@@ -232,6 +239,28 @@ public class RentIncreaseService {
   }
 
   // --- Private helpers ---
+
+  private List<RentRegulationRule> resolveApplicableRules(
+      Optional<RentRegulationCountry> regulationCountry,
+      Optional<String> regionCode,
+      int year) {
+    if (regulationCountry.isEmpty()) {
+      return List.of();
+    }
+    RentRegulationCountry country = regulationCountry.get();
+
+    // If property has a region, fetch region-specific rules
+    if (regionCode.isPresent()) {
+      Optional<RentRegulationRegion> region =
+          rentRegulationRepository.findRegionByCode(country.getId(), regionCode.get());
+      if (region.isPresent()) {
+        return rentRegulationRepository.findRulesByRegionIdAndYear(region.get().getId(), year);
+      }
+    }
+
+    // Fall back to national-level rules (region_id IS NULL)
+    return rentRegulationRepository.findNationalRulesByCountryIdAndYear(country.getId(), year);
+  }
 
   private RentIncreaseResult errorResult(RentIncreaseItem item, Contract contract, String error) {
     return new RentIncreaseResult(

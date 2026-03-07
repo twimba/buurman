@@ -17594,6 +17594,8 @@ components:
         country:
           type: string
           minLength: 1
+        regionCode:
+          type: string
         latitude:
           type: number
         longitude:
@@ -17891,6 +17893,8 @@ components:
         postalCode:
           type: string
         country:
+          type: string
+        regionCode:
           type: string
         latitude:
           type: number
@@ -19984,6 +19988,8 @@ components:
         country:
           type: string
           minLength: 1
+        regionCode:
+          type: string
         latitude:
           type: number
         longitude:
@@ -22873,6 +22879,8 @@ components:
         propertyAddress:
           type: string
         propertyCountryCode:
+          type: string
+        propertyRegionCode:
           type: string
         currentRentAmount:
           type: number

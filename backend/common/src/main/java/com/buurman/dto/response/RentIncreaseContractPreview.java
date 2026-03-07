@@ -13,6 +13,7 @@ public record RentIncreaseContractPreview(
     String propertyName,
     String propertyAddress,
     String propertyCountryCode,
+    Optional<String> propertyRegionCode,
     BigDecimal currentRentAmount,
     String currency,
     Optional<BigDecimal> regulationMinPercent,

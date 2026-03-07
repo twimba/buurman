@@ -20,6 +20,7 @@ export interface RentIncreaseContractPreview {
   propertyName: string;
   propertyAddress: string;
   propertyCountryCode: string;
+  propertyRegionCode?: string;
   currentRentAmount: number;
   currency: string;
   regulationMinPercent?: number;

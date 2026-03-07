@@ -779,6 +779,7 @@ public class PropertyService {
         response.city(),
         response.postalCode(),
         response.countryCode(),
+        response.regionCode(),
         response.latitude(),
         response.longitude(),
         response.geocodeAccuracy(),

@@ -255,6 +255,16 @@ public class RentRegulationRepository {
             .fetch(this::toRuleDomain));
   }
 
+  public List<RentRegulationRule> findNationalRulesByCountryIdAndYear(UUID countryId, int year) {
+    return List.copyOf(
+        dsl.select()
+            .from(RULES)
+            .where(
+                RL_COUNTRY_ID.eq(countryId).and(RL_YEAR.eq(year)).and(RL_REGION_ID.isNull()))
+            .orderBy(RL_PROPERTY_CATEGORY.asc())
+            .fetch(this::toRuleDomain));
+  }
+
   public List<RentRegulationRule> findRulesByRegionIdAndYear(UUID regionId, int year) {
     return List.copyOf(
         dsl.select()
