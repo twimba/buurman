@@ -26,7 +26,7 @@ export const useCompleteOnboarding = () => {
       completeOnboarding(request),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['onboarding-status'] });
-      queryClient.invalidateQueries({ queryKey: ['team-settings'] });
+      queryClient.invalidateQueries({ queryKey: ['teamSettings'] });
     },
   });
 };
@@ -45,8 +45,8 @@ export const useChangeCurrency = (teamIdentifier: string) => {
     mutationFn: (request: CurrencyChangeRequest) =>
       changeCurrency(teamIdentifier, request),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['team-settings'] });
-      queryClient.invalidateQueries({ queryKey: ['onboarding-status'] });
+      // Currency change affects all financial data across the entire app
+      queryClient.invalidateQueries();
     },
   });
 };

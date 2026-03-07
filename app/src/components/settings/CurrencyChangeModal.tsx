@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 import { useChangeCurrency } from '@/hooks/useOnboarding';
 import { useCurrencies, getCurrencySymbol } from '@/hooks/useCurrencies';
+import { CurrencySelector } from '@/components/common/CurrencySelector';
+import { getCurrencyFlag } from '@/utils/currencyFlags';
 
 interface CurrencyChangeModalProps {
   teamIdentifier: string;
@@ -52,7 +54,8 @@ export const CurrencyChangeModal = ({
   const canSubmit =
     newCurrency &&
     newCurrency !== currentCurrency &&
-    (mode === 'RELABEL' || (mode === 'CONVERT' && parseFloat(conversionRate) > 0));
+    (mode === 'RELABEL' ||
+      (mode === 'CONVERT' && parseFloat(conversionRate) > 0));
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -74,9 +77,9 @@ export const CurrencyChangeModal = ({
             <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
               Current Currency
             </label>
-            <div className="px-3 py-2 bg-[#f1f3f9] dark:bg-[#1e2130] rounded-lg text-[#1a1d2e] dark:text-[#eef0f6] font-medium">
-              {currentCurrency}{' '}
-              ({getCurrencySymbol(currencies, currentCurrency)})
+            <div className="px-3 py-2 bg-[#f1f3f9] dark:bg-[#1e2130] rounded-lg text-[#1a1d2e] dark:text-[#eef0f6] font-medium flex items-center gap-2">
+              <span>{getCurrencyFlag(currentCurrency)}</span>
+              {getCurrencySymbol(currencies, currentCurrency)} {currentCurrency}
             </div>
           </div>
 
@@ -84,13 +87,9 @@ export const CurrencyChangeModal = ({
             <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
               New Currency
             </label>
-            <input
-              type="text"
-              placeholder="e.g. USD, GBP, CHF"
-              value={newCurrency}
-              onChange={(e) => setNewCurrency(e.target.value.toUpperCase())}
-              maxLength={3}
-              className="w-full px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] focus:outline-none focus:ring-1 focus:ring-[#5c7cfa]"
+            <CurrencySelector
+              value={newCurrency || undefined}
+              onChange={setNewCurrency}
             />
           </div>
 
@@ -137,8 +136,8 @@ export const CurrencyChangeModal = ({
           {mode === 'CONVERT' && (
             <div>
               <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-                Conversion Rate (1 {currentCurrency} ={' '}
-                {conversionRate || '?'} {newCurrency || '???'})
+                Conversion Rate (1 {currentCurrency} = {conversionRate || '?'}{' '}
+                {newCurrency || '???'})
               </label>
               <input
                 type="number"

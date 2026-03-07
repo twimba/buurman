@@ -127,7 +127,6 @@ export const PaymentForm = ({
     (!currentRentPeriod ||
       rentPeriodForDate.identifier !== currentRentPeriod.identifier);
 
-
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 

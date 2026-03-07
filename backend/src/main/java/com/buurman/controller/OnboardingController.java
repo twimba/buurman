@@ -23,7 +23,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/onboarding")
+@RequestMapping("/onboarding")
 @RequiredArgsConstructor
 public class OnboardingController {
 
@@ -38,7 +38,7 @@ public class OnboardingController {
         prefs.getOnboardingCompletedAt().isPresent(),
         prefs.getOnboardingCompletedAt(),
         prefs.getDefaultCurrency(),
-        prefs.getDefaultCountry());
+        prefs.getDefaultCountryCode());
   }
 
   @PostMapping("/complete")
@@ -59,7 +59,7 @@ public class OnboardingController {
       throw new BadRequestException("Invalid ISO 4217 currency code: " + request.currency());
     }
 
-    prefs.setDefaultCountry(request.country());
+    prefs.setDefaultCountryCode(request.countryCode());
     prefs.setDefaultCurrency(request.currency().toUpperCase());
     request.dateFormat().ifPresent(prefs::setDateFormat);
     prefs.setOnboardingCompletedAt(Optional.of(clock.instant()));
@@ -70,6 +70,6 @@ public class OnboardingController {
             true,
             prefs.getOnboardingCompletedAt(),
             prefs.getDefaultCurrency(),
-            prefs.getDefaultCountry()));
+            prefs.getDefaultCountryCode()));
   }
 }
