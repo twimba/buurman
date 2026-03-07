@@ -4,8 +4,8 @@ import static com.buurman.service.export.BookletHelper.escapeHtml;
 
 import java.math.BigDecimal;
 import java.util.Locale;
+import java.util.Optional;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.dto.response.PortfolioDashboardResponse;
@@ -46,18 +46,17 @@ public class PortfolioDashboardPdfExporter {
 
     // Summary metrics
     html.append("<div class='summary'>");
-    metricCard(html, "Portfolio Value", fmtMoney(s.totalPortfolioValue().orElse(null), currency));
-    metricCard(html, "Total Equity", fmtMoney(s.totalEquity().orElse(null), currency));
-    metricCard(html, "Monthly Cash Flow", fmtMoney(s.monthlyCashFlow().orElse(null), currency));
-    metricCard(html, "Annual NOI", fmtMoney(s.annualNoi().orElse(null), currency));
-    metricCard(html, "Weighted Cap Rate", fmtPct(s.weightedCapRate().orElse(null)));
-    metricCard(html, "Weighted Cash-on-Cash", fmtPct(s.weightedCashOnCash().orElse(null)));
-    metricCard(html, "Occupancy", fmtPct(s.portfolioOccupancy().orElse(null)));
-    metricCard(html, "Debt-to-Equity", fmtRatio(s.debtToEquity().orElse(null)));
-    metricCard(html, "DSCR", fmtRatio(s.portfolioDscr().orElse(null)));
-    metricCard(
-        html, "Income Concentration", fmtPct(s.incomeConcentration().orElse(null)));
-    metricCard(html, "Data Completeness", fmtPct(s.dataCompleteness().orElse(null)));
+    metricCard(html, "Portfolio Value", fmtMoney(s.totalPortfolioValue(), currency));
+    metricCard(html, "Total Equity", fmtMoney(s.totalEquity(), currency));
+    metricCard(html, "Monthly Cash Flow", fmtMoney(s.monthlyCashFlow(), currency));
+    metricCard(html, "Annual NOI", fmtMoney(s.annualNoi(), currency));
+    metricCard(html, "Weighted Cap Rate", fmtPct(s.weightedCapRate()));
+    metricCard(html, "Weighted Cash-on-Cash", fmtPct(s.weightedCashOnCash()));
+    metricCard(html, "Occupancy", fmtPct(s.portfolioOccupancy()));
+    metricCard(html, "Debt-to-Equity", fmtRatio(s.debtToEquity()));
+    metricCard(html, "DSCR", fmtRatio(s.portfolioDscr()));
+    metricCard(html, "Income Concentration", fmtPct(s.incomeConcentration()));
+    metricCard(html, "Data Completeness", fmtPct(s.dataCompleteness()));
     html.append("</div>");
 
     // Property comparison table
@@ -73,20 +72,14 @@ public class PortfolioDashboardPdfExporter {
         html.append("<td>").append(escapeHtml(humanize(pp.category()))).append("</td>");
         String propCurrency = pp.currency().orElse(currency);
         html.append("<td class='right'>")
-            .append(fmtMoney(pp.monthlyCashFlow().orElse(null), propCurrency))
+            .append(fmtMoney(pp.monthlyCashFlow(), propCurrency))
             .append("</td>");
         html.append("<td class='right'>")
-            .append(fmtMoney(pp.annualNoi().orElse(null), propCurrency))
+            .append(fmtMoney(pp.annualNoi(), propCurrency))
             .append("</td>");
-        html.append("<td class='right'>")
-            .append(fmtPct(pp.capRate().orElse(null)))
-            .append("</td>");
-        html.append("<td class='right'>")
-            .append(fmtPct(pp.cashOnCash().orElse(null)))
-            .append("</td>");
-        html.append("<td class='right'>")
-            .append(fmtPct(pp.occupancyRate().orElse(null)))
-            .append("</td>");
+        html.append("<td class='right'>").append(fmtPct(pp.capRate())).append("</td>");
+        html.append("<td class='right'>").append(fmtPct(pp.cashOnCash())).append("</td>");
+        html.append("<td class='right'>").append(fmtPct(pp.occupancyRate())).append("</td>");
         html.append("<td class='right'>").append(pp.completenessPercent()).append("%</td>");
         html.append("</tr>");
       }
@@ -102,17 +95,19 @@ public class PortfolioDashboardPdfExporter {
       for (MonthlyDataPoint m : dashboard.cashFlow().months()) {
         html.append("<tr>");
         html.append("<td>").append(escapeHtml(m.month())).append("</td>");
-        html.append("<td class='right'>").append(fmtMoney(m.income(), currency)).append("</td>");
         html.append("<td class='right'>")
-            .append(fmtMoney(m.expenses(), currency))
+            .append(CurrencyUtils.formatCurrency(m.income(), currency))
             .append("</td>");
         html.append("<td class='right'>")
-            .append(fmtMoney(m.mortgage(), currency))
+            .append(CurrencyUtils.formatCurrency(m.expenses(), currency))
+            .append("</td>");
+        html.append("<td class='right'>")
+            .append(CurrencyUtils.formatCurrency(m.mortgage(), currency))
             .append("</td>");
         html.append("<td class='right ")
             .append(m.net().signum() >= 0 ? "positive" : "negative")
             .append("'>")
-            .append(fmtMoney(m.net(), currency))
+            .append(CurrencyUtils.formatCurrency(m.net(), currency))
             .append("</td>");
         html.append("</tr>");
       }
@@ -131,21 +126,21 @@ public class PortfolioDashboardPdfExporter {
         .append("</div></div>");
   }
 
-  private static String fmtPct(@Nullable BigDecimal value) {
-    return value != null ? value.toPlainString() + "%" : "N/A";
+  private static String fmtPct(Optional<BigDecimal> value) {
+    return value.map(v -> v.toPlainString() + "%").orElse("N/A");
   }
 
-  private static String fmtRatio(@Nullable BigDecimal value) {
-    return value != null ? value.toPlainString() : "N/A";
+  private static String fmtRatio(Optional<BigDecimal> value) {
+    return value.map(BigDecimal::toPlainString).orElse("N/A");
   }
 
-  private static String fmtMoney(@Nullable BigDecimal value, @Nullable String currencyCode) {
-    return CurrencyUtils.formatCurrency(value, currencyCode != null ? currencyCode : "EUR");
+  private static String fmtMoney(Optional<BigDecimal> value, String currencyCode) {
+    return CurrencyUtils.formatCurrency(value.orElse(null), currencyCode);
   }
 
-  private static String humanize(@Nullable String enumValue) {
-    if (enumValue == null || enumValue.isBlank()) {
-      return enumValue != null ? enumValue : "";
+  private static String humanize(String enumValue) {
+    if (enumValue.isBlank()) {
+      return enumValue;
     }
     String[] words = enumValue.split("_", -1);
     StringBuilder sb = new StringBuilder();

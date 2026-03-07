@@ -4,6 +4,8 @@ import static com.buurman.util.FeatureFlags.REPORTS;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 
+import java.util.Optional;
+
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,13 +38,13 @@ public class PortfolioDashboardController implements PortfolioDashboardApi {
   }
 
   @Override
-  public PortfolioDashboardResponse getPortfolioDashboard(Integer months) {
+  public PortfolioDashboardResponse getPortfolioDashboard(Optional<Integer> months) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return dashboardService.getPortfolioDashboard(months, principal);
   }
 
   @Override
-  public byte[] exportPortfolioPdf(Integer months) {
+  public byte[] exportPortfolioPdf(Optional<Integer> months) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     PortfolioDashboardResponse dashboard =
         dashboardService.getPortfolioDashboard(months, principal);
@@ -53,7 +55,7 @@ public class PortfolioDashboardController implements PortfolioDashboardApi {
   }
 
   @Override
-  public byte[] exportPortfolioCsv(Integer months) {
+  public byte[] exportPortfolioCsv(Optional<Integer> months) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     PortfolioDashboardResponse dashboard =
         dashboardService.getPortfolioDashboard(months, principal);

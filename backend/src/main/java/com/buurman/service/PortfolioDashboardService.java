@@ -10,9 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -59,10 +57,10 @@ public class PortfolioDashboardService {
   @Transactional(readOnly = true)
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public PortfolioDashboardResponse getPortfolioDashboard(
-      @Nullable Integer months, UserPrincipal principal) {
+      Optional<Integer> months, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
-    int effectiveMonths = months != null ? months : DEFAULT_MONTHS;
-    String defaultCurrency = teamService.getDefaultCurrency(teamId).orElse("EUR");
+    int effectiveMonths = months.orElse(DEFAULT_MONTHS);
+    String defaultCurrency = teamService.getDefaultCurrency(teamId);
 
     List<Property> allProperties = propertyRepository.findAllByTeamId(teamId);
 
@@ -86,8 +84,7 @@ public class PortfolioDashboardService {
     List<PropertyData> sameCurrencyProperties =
         propertyDataList.stream()
             .filter(
-                pd ->
-                    pd.dashboard().summary().currency().map(defaultCurrency::equals).orElse(true))
+                pd -> pd.dashboard().summary().currency().map(defaultCurrency::equals).orElse(true))
             .toList();
 
     int propertiesWithFinancialData =
@@ -119,9 +116,7 @@ public class PortfolioDashboardService {
   }
 
   private PortfolioSummary buildSummary(
-      List<PropertyData> allData,
-      List<PropertyData> sameCurrency,
-      String defaultCurrency) {
+      List<PropertyData> allData, List<PropertyData> sameCurrency, String defaultCurrency) {
 
     // Monetary sums: only same-currency properties
     BigDecimal totalPortfolioValue = ZERO;
@@ -168,8 +163,7 @@ public class PortfolioDashboardService {
     }
     Optional<BigDecimal> weightedCapRate =
         capRateWeightBase.compareTo(ZERO) > 0
-            ? Optional.of(
-                capRateWeightedSum.divide(capRateWeightBase, PERCENT_SCALE, HALF_UP))
+            ? Optional.of(capRateWeightedSum.divide(capRateWeightBase, PERCENT_SCALE, HALF_UP))
             : Optional.empty();
 
     // Weighted cash-on-cash: sum(cashOnCash * purchasePrice) / sum(purchasePrice)
@@ -207,10 +201,6 @@ public class PortfolioDashboardService {
     BigDecimal totalMortgage = ZERO;
     BigDecimal totalEquityForRatio = ZERO;
     for (PropertyData pd : sameCurrency) {
-      pd.dashboard()
-          .equity()
-          .mortgageBalance()
-          .ifPresent(m -> {}); // Just to check presence below
       if (pd.dashboard().equity().mortgageBalance().isPresent()) {
         totalMortgage = totalMortgage.add(pd.dashboard().equity().mortgageBalance().get());
       }
@@ -243,16 +233,6 @@ public class PortfolioDashboardService {
     // Derive annual income from annualNoi + expenses (approximation: use annualNoi as proxy)
     BigDecimal maxPropertyNoi = ZERO;
     BigDecimal totalNoi = ZERO;
-    for (PropertyData pd : sameCurrency) {
-      pd.dashboard()
-          .summary()
-          .annualNoi()
-          .ifPresent(
-              noi -> {
-                // Can't mutate locals from lambda; handled below
-              });
-    }
-    // Re-compute without lambda
     for (PropertyData pd : sameCurrency) {
       if (pd.dashboard().summary().annualNoi().isPresent()) {
         BigDecimal noi = pd.dashboard().summary().annualNoi().get().abs();
@@ -303,7 +283,8 @@ public class PortfolioDashboardService {
 
     for (PropertyData pd : sameCurrencyProperties) {
       for (MonthlyDataPoint point : pd.dashboard().cashFlow().months()) {
-        monthAggregates.computeIfAbsent(point.month(), k -> new BigDecimal[] {ZERO, ZERO, ZERO, ZERO});
+        monthAggregates.computeIfAbsent(
+            point.month(), k -> new BigDecimal[] {ZERO, ZERO, ZERO, ZERO});
         BigDecimal[] values = monthAggregates.get(point.month());
         values[0] = values[0].add(point.income());
         values[1] = values[1].add(point.expenses());
@@ -398,8 +379,7 @@ public class PortfolioDashboardService {
     Map<String, BigDecimal> byCategoryMap = new LinkedHashMap<>();
     for (PropertyData pd : allData) {
       String category = pd.property().getPropertyCategory().name();
-      BigDecimal value =
-          pd.dashboard().equity().currentMarketValue().orElse(BigDecimal.ONE);
+      BigDecimal value = pd.dashboard().equity().currentMarketValue().orElse(BigDecimal.ONE);
       byCategoryMap.merge(category, value, BigDecimal::add);
     }
     List<AllocationSlice> byCategory = toAllocationSlices(byCategoryMap);
@@ -407,9 +387,8 @@ public class PortfolioDashboardService {
     // By country
     Map<String, BigDecimal> byCountryMap = new LinkedHashMap<>();
     for (PropertyData pd : allData) {
-      String country = pd.property().getCountry();
-      BigDecimal value =
-          pd.dashboard().equity().currentMarketValue().orElse(BigDecimal.ONE);
+      String country = pd.property().getCountryCode();
+      BigDecimal value = pd.dashboard().equity().currentMarketValue().orElse(BigDecimal.ONE);
       byCountryMap.merge(country, value, BigDecimal::add);
     }
     List<AllocationSlice> byCountry = toAllocationSlices(byCountryMap);
@@ -428,10 +407,7 @@ public class PortfolioDashboardService {
                 new AllocationSlice(
                     entry.getKey(),
                     entry.getValue().setScale(MONETARY_SCALE, HALF_UP),
-                    entry
-                        .getValue()
-                        .multiply(ONE_HUNDRED)
-                        .divide(total, PERCENT_SCALE, HALF_UP)))
+                    entry.getValue().multiply(ONE_HUNDRED).divide(total, PERCENT_SCALE, HALF_UP)))
         .sorted((a, b) -> b.value().compareTo(a.value()))
         .toList();
   }
@@ -450,9 +426,7 @@ public class PortfolioDashboardService {
                   Optional<BigDecimal> equityAmount =
                       equity
                           .currentMarketValue()
-                          .map(
-                              mv ->
-                                  mv.subtract(equity.mortgageBalance().orElse(ZERO)));
+                          .map(mv -> mv.subtract(equity.mortgageBalance().orElse(ZERO)));
 
                   return new PropertyEquity(
                       identifier,

@@ -98,7 +98,10 @@ export const PortfolioOccupancyChart = ({
               tenantOccupancyPercent: 'Tenant Occupancy',
               selfOccupancyPercent: 'Self Occupancy',
             };
-            return [`${Number(value ?? 0).toFixed(1)}%`, labels[name ?? ''] ?? name];
+            return [
+              `${Number(value ?? 0).toFixed(1)}%`,
+              labels[name ?? ''] ?? name,
+            ];
           }}
         />
         <Legend

@@ -3,8 +3,8 @@ package com.buurman.service.export;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.dto.response.PortfolioDashboardResponse;
@@ -32,17 +32,17 @@ public class PortfolioDashboardCsvExporter {
             "Properties with Financial Data",
             dashboard.propertiesWithFinancialData() + " / " + dashboard.totalProperties()
           });
-      writer.writeNext(row("Total Portfolio Value", s.totalPortfolioValue().orElse(null)));
-      writer.writeNext(row("Total Equity", s.totalEquity().orElse(null)));
-      writer.writeNext(row("Monthly Cash Flow", s.monthlyCashFlow().orElse(null)));
-      writer.writeNext(row("Annual NOI", s.annualNoi().orElse(null)));
-      writer.writeNext(row("Weighted Cap Rate %", s.weightedCapRate().orElse(null)));
-      writer.writeNext(row("Weighted Cash-on-Cash %", s.weightedCashOnCash().orElse(null)));
-      writer.writeNext(row("Portfolio Occupancy %", s.portfolioOccupancy().orElse(null)));
-      writer.writeNext(row("Debt-to-Equity", s.debtToEquity().orElse(null)));
-      writer.writeNext(row("DSCR", s.portfolioDscr().orElse(null)));
-      writer.writeNext(row("Income Concentration %", s.incomeConcentration().orElse(null)));
-      writer.writeNext(row("Data Completeness %", s.dataCompleteness().orElse(null)));
+      writer.writeNext(row("Total Portfolio Value", s.totalPortfolioValue()));
+      writer.writeNext(row("Total Equity", s.totalEquity()));
+      writer.writeNext(row("Monthly Cash Flow", s.monthlyCashFlow()));
+      writer.writeNext(row("Annual NOI", s.annualNoi()));
+      writer.writeNext(row("Weighted Cap Rate %", s.weightedCapRate()));
+      writer.writeNext(row("Weighted Cash-on-Cash %", s.weightedCashOnCash()));
+      writer.writeNext(row("Portfolio Occupancy %", s.portfolioOccupancy()));
+      writer.writeNext(row("Debt-to-Equity", s.debtToEquity()));
+      writer.writeNext(row("DSCR", s.portfolioDscr()));
+      writer.writeNext(row("Income Concentration %", s.incomeConcentration()));
+      writer.writeNext(row("Data Completeness %", s.dataCompleteness()));
       writer.writeNext(new String[] {""});
 
       // Monthly cash flow
@@ -103,7 +103,7 @@ public class PortfolioDashboardCsvExporter {
     }
   }
 
-  private static String[] row(String label, @Nullable BigDecimal value) {
-    return new String[] {label, value != null ? value.toPlainString() : "N/A"};
+  private static String[] row(String label, Optional<BigDecimal> value) {
+    return new String[] {label, value.map(BigDecimal::toPlainString).orElse("N/A")};
   }
 }

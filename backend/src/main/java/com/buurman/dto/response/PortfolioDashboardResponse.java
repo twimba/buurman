@@ -43,9 +43,7 @@ public record PortfolioDashboardResponse(
       Optional<String> currency,
       boolean currencyMismatch) {}
 
-  public record AllocationData(
-      List<AllocationSlice> byCategory,
-      List<AllocationSlice> byCountry) {}
+  public record AllocationData(List<AllocationSlice> byCategory, List<AllocationSlice> byCountry) {}
 
   public record AllocationSlice(String label, BigDecimal value, BigDecimal percentage) {}
 

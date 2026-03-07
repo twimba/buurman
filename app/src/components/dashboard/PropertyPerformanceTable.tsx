@@ -13,10 +13,7 @@ type SortKey =
   | 'occupancyRate'
   | 'completenessPercent';
 
-function formatMoney(
-  value: number | undefined,
-  currencyCode?: string
-): string {
+function formatMoney(value: number | undefined, currencyCode?: string): string {
   if (value == null) {
     return '-';
   }

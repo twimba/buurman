@@ -148,10 +148,14 @@ export const PortfolioCashFlowChart = ({
               net: 'Net',
             };
             const num = Number(value ?? 0);
-            const display = name === 'negExpenses' || name === 'negMortgage'
-              ? Math.abs(num)
-              : num;
-            return [formatCurrency(display, currency), labels[name ?? ''] ?? name];
+            const display =
+              name === 'negExpenses' || name === 'negMortgage'
+                ? Math.abs(num)
+                : num;
+            return [
+              formatCurrency(display, currency),
+              labels[name ?? ''] ?? name,
+            ];
           }}
         />
         <Legend

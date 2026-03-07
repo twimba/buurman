@@ -1,11 +1,5 @@
 import { useState, useMemo } from 'react';
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import type { AllocationData, AllocationSlice } from '@/types/portfolio';
 
 const CATEGORY_COLORS: Record<string, string> = {

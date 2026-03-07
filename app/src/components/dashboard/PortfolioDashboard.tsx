@@ -1,5 +1,13 @@
 import { useState, useMemo, useCallback } from 'react';
-import { Download, BarChart3, TrendingUp, PieChart, Home, Table2, Activity } from 'lucide-react';
+import {
+  Download,
+  BarChart3,
+  TrendingUp,
+  PieChart,
+  Home,
+  Table2,
+  Activity,
+} from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { usePortfolioDashboard } from '@/hooks/usePortfolioDashboard';
 import {

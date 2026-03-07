@@ -92,9 +92,7 @@ export const PropertyComparisonChart = ({
           {sorted.map((entry) => (
             <Cell
               key={entry.identifier}
-              fill={
-                (entry.monthlyCashFlow ?? 0) >= 0 ? '#10B981' : '#EF4444'
-              }
+              fill={(entry.monthlyCashFlow ?? 0) >= 0 ? '#10B981' : '#EF4444'}
             />
           ))}
         </Bar>
