@@ -379,7 +379,14 @@ public class DemoDataService {
             .execute();
     log.debug("Deleted {} property occupancy periods", deleted);
 
-    // 14b. Properties
+    // 14b. WWS calculations (FK -> properties)
+    deleted =
+        dsl.deleteFrom(DSL.table("wws_calculations"))
+            .where(DSL.field("team_id", java.util.UUID.class).in(demoTeamIds))
+            .execute();
+    log.debug("Deleted {} wws calculations", deleted);
+
+    // 14c. Properties
     deleted = dsl.deleteFrom(PROPERTIES).where(PROPERTIES.TEAM_ID.in(demoTeamIds)).execute();
     log.debug("Deleted {} properties", deleted);
 
@@ -441,7 +448,14 @@ public class DemoDataService {
     deleted = dsl.deleteFrom(USERS).where(USERS.EMAIL.in(demoEmails)).execute();
     log.debug("Deleted {} users", deleted);
 
-    // 19. Teams
+    // 19. Currency change log (FK -> teams)
+    deleted =
+        dsl.deleteFrom(DSL.table("currency_change_log"))
+            .where(DSL.field("team_id", java.util.UUID.class).in(demoTeamIds))
+            .execute();
+    log.debug("Deleted {} currency change log entries", deleted);
+
+    // 20. Teams
     deleted = dsl.deleteFrom(TEAMS).where(TEAMS.ID.in(demoTeamIds)).execute();
     log.debug("Deleted {} teams", deleted);
   }
