@@ -4,10 +4,10 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import com.buurman.domain.identifier.ContractIdentifier;
@@ -41,14 +41,14 @@ public class ExportServiceImpl implements ExportService {
 
   @Override
   public byte[] generateTransactionHistoryCSV(
-      @Nullable LocalDate startDate, @Nullable LocalDate endDate, UUID teamId) {
+      Optional<LocalDate> startDate, Optional<LocalDate> endDate, UUID teamId) {
     return withMetrics(
         "transaction_csv", () -> transactionCsvExporter.generate(startDate, endDate, teamId));
   }
 
   @Override
   public byte[] generateTransactionHistoryPDF(
-      @Nullable LocalDate startDate, @Nullable LocalDate endDate, UUID teamId) {
+      Optional<LocalDate> startDate, Optional<LocalDate> endDate, UUID teamId) {
     return withMetrics(
         "transaction_pdf", () -> transactionPdfExporter.generate(startDate, endDate, teamId));
   }
@@ -97,7 +97,7 @@ public class ExportServiceImpl implements ExportService {
 
   @Override
   public byte[] generateTransactionHistoryExcel(
-      @Nullable LocalDate startDate, @Nullable LocalDate endDate, UUID teamId) {
+      Optional<LocalDate> startDate, Optional<LocalDate> endDate, UUID teamId) {
     return withMetrics(
         "transaction_excel", () -> transactionExcelExporter.generate(startDate, endDate, teamId));
   }

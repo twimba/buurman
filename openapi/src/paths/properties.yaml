@@ -3714,7 +3714,7 @@ dashboard-export-excel:
       "200":
         description: OK
         content:
-          "*/*":
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
             schema:
               type: string
               format: byte

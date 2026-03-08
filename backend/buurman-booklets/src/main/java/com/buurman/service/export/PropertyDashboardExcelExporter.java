@@ -2,6 +2,7 @@ package com.buurman.service.export;
 
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -9,7 +10,6 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.dto.response.PropertyDashboardResponse;
@@ -37,16 +37,16 @@ public class PropertyDashboardExcelExporter {
       int r = 0;
       r = writeHeader(summarySheet, r, headerStyle, "Metric", "Value");
       r = writeRow(summarySheet, r, "Currency", s.currency().orElse("N/A"));
-      r = writeNumericRow(summarySheet, r, "Total ROI %", s.totalRoiPercent().orElse(null));
-      r = writeNumericRow(summarySheet, r, "Annualized ROI %", s.annualizedRoiPercent().orElse(null));
-      r = writeNumericRow(summarySheet, r, "Cap Rate %", s.capRatePercent().orElse(null));
-      r = writeNumericRow(summarySheet, r, "Cash-on-Cash %", s.cashOnCashPercent().orElse(null));
-      r = writeNumericRow(summarySheet, r, "Monthly Cash Flow", s.monthlyCashFlow().orElse(null));
-      r = writeNumericRow(summarySheet, r, "Annual NOI", s.annualNoi().orElse(null));
-      r = writeNumericRow(summarySheet, r, "Total Equity", s.totalEquity().orElse(null));
-      r = writeNumericRow(summarySheet, r, "Equity Growth %", s.equityGrowthPercent().orElse(null));
-      r = writeNumericRow(summarySheet, r, "Occupancy Rate %", s.occupancyRatePercent().orElse(null));
-      writeNumericRow(summarySheet, r, "Gross Rent Multiplier", s.grossRentMultiplier().orElse(null));
+      r = writeNumericRow(summarySheet, r, "Total ROI %", s.totalRoiPercent());
+      r = writeNumericRow(summarySheet, r, "Annualized ROI %", s.annualizedRoiPercent());
+      r = writeNumericRow(summarySheet, r, "Cap Rate %", s.capRatePercent());
+      r = writeNumericRow(summarySheet, r, "Cash-on-Cash %", s.cashOnCashPercent());
+      r = writeNumericRow(summarySheet, r, "Monthly Cash Flow", s.monthlyCashFlow());
+      r = writeNumericRow(summarySheet, r, "Annual NOI", s.annualNoi());
+      r = writeNumericRow(summarySheet, r, "Total Equity", s.totalEquity());
+      r = writeNumericRow(summarySheet, r, "Equity Growth %", s.equityGrowthPercent());
+      r = writeNumericRow(summarySheet, r, "Occupancy Rate %", s.occupancyRatePercent());
+      writeNumericRow(summarySheet, r, "Gross Rent Multiplier", s.grossRentMultiplier());
       summarySheet.autoSizeColumn(0);
       summarySheet.autoSizeColumn(1);
 
@@ -103,11 +103,11 @@ public class PropertyDashboardExcelExporter {
   }
 
   private static int writeNumericRow(
-      Sheet sheet, int rowNum, String label, @Nullable BigDecimal value) {
+      Sheet sheet, int rowNum, String label, Optional<BigDecimal> value) {
     Row row = sheet.createRow(rowNum);
     row.createCell(0).setCellValue(label);
-    if (value != null) {
-      row.createCell(1).setCellValue(value.doubleValue());
+    if (value.isPresent()) {
+      row.createCell(1).setCellValue(value.get().doubleValue());
     } else {
       row.createCell(1).setCellValue("N/A");
     }

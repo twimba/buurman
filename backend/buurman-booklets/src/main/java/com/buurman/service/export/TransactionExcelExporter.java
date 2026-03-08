@@ -3,6 +3,7 @@ package com.buurman.service.export;
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -11,7 +12,6 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.exception.ExternalServiceException;
@@ -24,7 +24,7 @@ public class TransactionExcelExporter {
 
   private final TransactionDataLoader dataLoader;
 
-  public byte[] generate(@Nullable LocalDate startDate, @Nullable LocalDate endDate, UUID teamId) {
+  public byte[] generate(Optional<LocalDate> startDate, Optional<LocalDate> endDate, UUID teamId) {
     List<TransactionRecord> transactions = dataLoader.load(startDate, endDate, teamId);
 
     try (XSSFWorkbook workbook = new XSSFWorkbook();

@@ -11252,7 +11252,7 @@ paths:
         "200":
           description: OK
           content:
-            "*/*":
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
               schema:
                 type: string
                 format: byte
@@ -12259,7 +12259,7 @@ paths:
         "200":
           description: OK
           content:
-            "*/*":
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
               schema:
                 type: string
                 format: byte
@@ -12449,7 +12449,7 @@ paths:
         "200":
           description: OK
           content:
-            "*/*":
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
               schema:
                 type: string
                 format: byte

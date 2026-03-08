@@ -127,8 +127,7 @@ public class ReportController implements ReportsApi {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     httpServletResponse.setHeader(CONTENT_DISPOSITION, "attachment; filename=transactions.csv");
     httpServletResponse.setContentType("text/csv");
-    return exportService.generateTransactionHistoryCSV(
-        startDate.orElse(null), endDate.orElse(null), principal.requireTeamId());
+    return exportService.generateTransactionHistoryCSV(startDate, endDate, principal.requireTeamId());
   }
 
   @Override
@@ -138,8 +137,7 @@ public class ReportController implements ReportsApi {
     httpServletResponse.setHeader(
         CONTENT_DISPOSITION, "attachment; filename=transaction-history.pdf");
     httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
-    return exportService.generateTransactionHistoryPDF(
-        startDate.orElse(null), endDate.orElse(null), principal.requireTeamId());
+    return exportService.generateTransactionHistoryPDF(startDate, endDate, principal.requireTeamId());
   }
 
   @Override
@@ -153,7 +151,7 @@ public class ReportController implements ReportsApi {
     httpServletResponse.setContentType(
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     return exportService.generateTransactionHistoryExcel(
-        startDate.orElse(null), endDate.orElse(null), principal.requireTeamId());
+        startDate, endDate, principal.requireTeamId());
   }
 
   private @Nullable List<UUID> resolvePropertyIdentifiers(

@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import {
   Download,
   BarChart3,
@@ -7,7 +7,6 @@ import {
   Home,
   Table2,
   Activity,
-  ChevronDown,
 } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { usePortfolioDashboard } from '@/hooks/usePortfolioDashboard';
@@ -16,9 +15,8 @@ import {
   exportPortfolioDashboardCSV,
   exportPortfolioDashboardExcel,
 } from '@/api/dashboard';
-import { useFeatureFlags } from '@/context/FeatureFlagContext';
-import { FeatureFlags } from '@/constants/featureFlags';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { ExportDropdown } from '@/components/common/ExportDropdown';
 import { PortfolioSummaryCards } from './PortfolioSummaryCards';
 import { PortfolioCashFlowChart } from './PortfolioCashFlowChart';
 import { PropertyComparisonChart } from './PropertyComparisonChart';
@@ -41,26 +39,10 @@ export const PortfolioDashboard = () => {
   const [exporting, setExporting] = useState<'pdf' | 'csv' | 'excel' | null>(
     null
   );
-  const [csvDropdownOpen, setCsvDropdownOpen] = useState(false);
-  const csvDropdownRef = useRef<HTMLDivElement>(null);
   const { effectiveTheme } = useTheme();
-  const { isEnabled } = useFeatureFlags();
   const isDark = effectiveTheme === 'dark';
 
   const { data: dashboard, isLoading, error } = usePortfolioDashboard(months);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        csvDropdownRef.current &&
-        !csvDropdownRef.current.contains(event.target as Node)
-      ) {
-        setCsvDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   const handleExport = useCallback(
     async (format: 'pdf' | 'csv' | 'excel') => {
@@ -193,54 +175,15 @@ export const PortfolioDashboard = () => {
               ))}
             </div>
             <div className="flex gap-2">
-              {isEnabled(FeatureFlags.EXCEL_EXPORT) ? (
-                <div className="relative" ref={csvDropdownRef}>
-                  <button
-                    onClick={() => setCsvDropdownOpen((prev) => !prev)}
-                    disabled={exporting !== null}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-[#e2e6f0] dark:border-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f5f7fa] dark:hover:bg-[#1e2130] transition-colors disabled:opacity-50"
-                  >
-                    <Download className="h-3.5 w-3.5" />
-                    {exporting === 'csv' || exporting === 'excel'
-                      ? 'Exporting...'
-                      : 'Export'}
-                    <ChevronDown className="h-3 w-3" />
-                  </button>
-                  {csvDropdownOpen && (
-                    <div className="absolute right-0 mt-1 w-32 bg-white dark:bg-[#14161f] border border-[#e2e6f0] dark:border-[#2a2e3f] rounded-md shadow-lg z-10">
-                      <button
-                        onClick={() => {
-                          setCsvDropdownOpen(false);
-                          handleExport('csv');
-                        }}
-                        className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f5f7fa] dark:hover:bg-[#1e2130] transition-colors"
-                      >
-                        <Download className="h-3.5 w-3.5" />
-                        CSV
-                      </button>
-                      <button
-                        onClick={() => {
-                          setCsvDropdownOpen(false);
-                          handleExport('excel');
-                        }}
-                        className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f5f7fa] dark:hover:bg-[#1e2130] transition-colors"
-                      >
-                        <Download className="h-3.5 w-3.5" />
-                        Excel
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <button
-                  onClick={() => handleExport('csv')}
-                  disabled={exporting !== null}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-[#e2e6f0] dark:border-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f5f7fa] dark:hover:bg-[#1e2130] transition-colors disabled:opacity-50"
-                >
-                  <Download className="h-3.5 w-3.5" />
-                  {exporting === 'csv' ? 'Exporting...' : 'CSV'}
-                </button>
-              )}
+              <ExportDropdown
+                size="sm"
+                disabled={exporting !== null}
+                exporting={exporting === 'csv' || exporting === 'excel'}
+                options={[
+                  { label: 'CSV', onExport: () => handleExport('csv') },
+                  { label: 'Excel', onExport: () => handleExport('excel') },
+                ]}
+              />
               <button
                 onClick={() => handleExport('pdf')}
                 disabled={exporting !== null}
