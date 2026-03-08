@@ -133,7 +133,7 @@ public class ContractRentPeriodService {
         contractIdentifier,
         teamId,
         request.rentAmount(),
-        request.effectiveFrom());
+        request.effectiveFrom().toString());
 
     return rentPeriodMapper.toResponse(saved, Optional.ofNullable(previousRentAmount));
   }
