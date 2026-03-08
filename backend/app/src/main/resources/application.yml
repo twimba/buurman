@@ -58,6 +58,7 @@ keycloak:
 # AWS S3 Configuration
 aws:
   s3:
+    endpoint: ${AWS_S3_ENDPOINT:}
     region: ${AWS_S3_REGION:eu-west-1}
     bucket-name: ${AWS_S3_BUCKET:buurman-documents}
     access-key: ${AWS_ACCESS_KEY_ID:test}
