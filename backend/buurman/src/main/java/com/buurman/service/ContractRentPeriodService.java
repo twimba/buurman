@@ -343,11 +343,11 @@ public class ContractRentPeriodService {
       UUID contractId, UUID teamId, LocalDate effectiveFrom) {
     List<ContractRentPeriod> periods =
         rentPeriodRepository.findByContractIdAndTeamId(contractId, teamId);
-    boolean exists =
-        periods.stream().anyMatch(p -> p.getEffectiveFrom().equals(effectiveFrom));
+    boolean exists = periods.stream().anyMatch(p -> p.getEffectiveFrom().equals(effectiveFrom));
     if (exists) {
       throw new BusinessRuleException(
-          "A rent adjustment already exists for " + effectiveFrom
+          "A rent adjustment already exists for "
+              + effectiveFrom
               + ". Choose a different effective date.");
     }
   }

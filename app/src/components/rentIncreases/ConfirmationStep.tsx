@@ -86,9 +86,7 @@ export const ConfirmationStep = ({
             {summary.totalPaymentsGenerated > 0 && (
               <p className="text-sm text-blue-600 dark:text-blue-400">
                 {summary.totalPaymentsGenerated} adjustment{' '}
-                {summary.totalPaymentsGenerated === 1
-                  ? 'payment'
-                  : 'payments'}{' '}
+                {summary.totalPaymentsGenerated === 1 ? 'payment' : 'payments'}{' '}
                 created for retroactive changes
               </p>
             )}
@@ -250,18 +248,18 @@ export const ConfirmationStep = ({
           )}
         </div>
         <div className="flex gap-3">
-        <button
-          onClick={() => navigate('/rent-regulations')}
-          className="px-6 py-2 rounded border border-[#e2e6f0] dark:border-[#2a2e3f] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
-        >
-          View Regulations
-        </button>
-        <button
-          onClick={() => navigate('/contracts')}
-          className="bg-[#5c7cfa] text-white px-6 py-2 rounded hover:bg-[#4c6ef5] transition-colors"
-        >
-          View Contracts
-        </button>
+          <button
+            onClick={() => navigate('/rent-regulations')}
+            className="px-6 py-2 rounded border border-[#e2e6f0] dark:border-[#2a2e3f] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+          >
+            View Regulations
+          </button>
+          <button
+            onClick={() => navigate('/contracts')}
+            className="bg-[#5c7cfa] text-white px-6 py-2 rounded hover:bg-[#4c6ef5] transition-colors"
+          >
+            View Contracts
+          </button>
         </div>
       </div>
     </div>

@@ -32,6 +32,9 @@ export const RentIncreaseWizardPage = () => {
   const [increases, setIncreases] = useState<RentIncreaseItem[]>([]);
   const [applyResult, setApplyResult] =
     useState<ApplyRentIncreasesResponse | null>(null);
+  const [appliedContractIds, setAppliedContractIds] = useState<Set<string>>(
+    new Set()
+  );
 
   const previewMutation = useRentIncreasePreview();
   const applyMutation = useApplyRentIncreases();
@@ -73,7 +76,9 @@ export const RentIncreaseWizardPage = () => {
 
   const handleApply = () => {
     const changedIncreases = increases.filter(
-      (inc) => inc.increasePercentage > 0
+      (inc) =>
+        inc.increasePercentage > 0 &&
+        !appliedContractIds.has(inc.contractIdentifier)
     );
     applyMutation.mutate(
       { year, increases: changedIncreases },
@@ -90,19 +95,10 @@ export const RentIncreaseWizardPage = () => {
     if (!applyResult) {
       return;
     }
-    // Zero out increases for contracts that succeeded — they're already applied
-    const succeededIds = new Set(
-      applyResult.results
-        .filter((r) => r.success)
-        .map((r) => r.contractIdentifier)
-    );
-    setIncreases(
-      increases.map((inc) =>
-        succeededIds.has(inc.contractIdentifier)
-          ? { ...inc, increasePercentage: 0, newRentAmount: 0 }
-          : inc
-      )
-    );
+    const succeededIds = applyResult.results
+      .filter((r) => r.success)
+      .map((r) => r.contractIdentifier);
+    setAppliedContractIds((prev) => new Set([...prev, ...succeededIds]));
     setApplyResult(null);
     setStep('adjust');
   };
@@ -170,6 +166,7 @@ export const RentIncreaseWizardPage = () => {
             onIncreaseChange={setIncreases}
             onNext={() => setStep('review')}
             onBack={() => setStep('year')}
+            appliedContractIds={appliedContractIds}
           />
         )}
 

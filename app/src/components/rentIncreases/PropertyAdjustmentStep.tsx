@@ -12,6 +12,7 @@ import {
   Equal,
   SlidersHorizontal,
   Info,
+  CheckCircle2,
 } from 'lucide-react';
 import type { RentIncreaseContractPreview } from '@/types/rentIncrease';
 import type { RentIncreaseItem } from '@/types/rentIncrease';
@@ -24,6 +25,7 @@ interface PropertyAdjustmentStepProps {
   onIncreaseChange: (increases: RentIncreaseItem[]) => void;
   onNext: () => void;
   onBack: () => void;
+  appliedContractIds?: Set<string>;
 }
 
 function computeNewRent(currentRent: number, percentage: number): number {
@@ -93,6 +95,7 @@ export const PropertyAdjustmentStep = ({
   onIncreaseChange,
   onNext,
   onBack,
+  appliedContractIds = new Set(),
 }: PropertyAdjustmentStepProps) => {
   const [strategy, setStrategy] = useState<Strategy>('maximum');
   const [bulkEffectiveDate, setBulkEffectiveDate] = useState('');
@@ -358,24 +361,39 @@ export const PropertyAdjustmentStep = ({
                 const newRent =
                   inc?.newRentAmount ?? contract.currentRentAmount;
                 const diff = newRent - contract.currentRentAmount;
+                const isApplied = appliedContractIds.has(
+                  contract.contractIdentifier
+                );
 
                 return (
                   <tr
                     key={contract.contractIdentifier}
                     className={`group transition-colors ${
-                      warning
-                        ? 'bg-amber-50/50 dark:bg-amber-500/[0.03] hover:bg-amber-50 dark:hover:bg-amber-500/[0.06]'
-                        : 'hover:bg-[#f8f9fc] dark:hover:bg-[#1a1c28]'
+                      isApplied
+                        ? 'opacity-50'
+                        : warning
+                          ? 'bg-amber-50/50 dark:bg-amber-500/[0.03] hover:bg-amber-50 dark:hover:bg-amber-500/[0.06]'
+                          : 'hover:bg-[#f8f9fc] dark:hover:bg-[#1a1c28]'
                     }`}
                   >
                     {/* Property */}
                     <td className="px-5 py-4">
-                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6] leading-tight">
-                        {contract.propertyName}
-                      </p>
-                      <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180] mt-0.5">
-                        {contract.propertyAddress}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <div>
+                          <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6] leading-tight">
+                            {contract.propertyName}
+                          </p>
+                          <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180] mt-0.5">
+                            {contract.propertyAddress}
+                          </p>
+                        </div>
+                        {isApplied && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 ring-1 ring-green-200 dark:ring-green-500/30 whitespace-nowrap">
+                            <CheckCircle2 className="h-3 w-3" />
+                            Applied
+                          </span>
+                        )}
+                      </div>
                     </td>
 
                     {/* Current rent */}
@@ -412,7 +430,7 @@ export const PropertyAdjustmentStep = ({
                     <td className="px-5 py-4">
                       <div className="flex items-center justify-center">
                         <label
-                          className={`inline-flex items-center gap-1 rounded-full pl-2 pr-1 py-0.5 text-xs font-semibold cursor-text ${pctColor(pct)} ${pctBgColor(pct)}`}
+                          className={`inline-flex items-center gap-1 rounded-full pl-2 pr-1 py-0.5 text-xs font-semibold ${isApplied ? 'cursor-default' : 'cursor-text'} ${pctColor(pct)} ${pctBgColor(pct)}`}
                         >
                           <PctIcon pct={pct} />
                           <div className="relative">
@@ -427,7 +445,8 @@ export const PropertyAdjustmentStep = ({
                                   e.target.value
                                 )
                               }
-                              className="w-[48px] h-5 bg-transparent text-right text-xs font-semibold text-inherit focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                              disabled={isApplied}
+                              className="w-[48px] h-5 bg-transparent text-right text-xs font-semibold text-inherit focus:outline-none disabled:cursor-default [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             />
                             <span className="pointer-events-none text-xs font-semibold">
                               %
@@ -466,13 +485,14 @@ export const PropertyAdjustmentStep = ({
                             e.target.value
                           )
                         }
-                        className="h-8 px-2.5 rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#0c0d14] text-[#1a1d2e] dark:text-[#eef0f6] text-sm focus:outline-none focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa]/20 transition-colors"
+                        disabled={isApplied}
+                        className="h-8 px-2.5 rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#0c0d14] text-[#1a1d2e] dark:text-[#eef0f6] text-sm focus:outline-none focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa]/20 disabled:opacity-50 disabled:cursor-default transition-colors"
                       />
                     </td>
 
                     {/* Warning */}
                     <td className="px-3 py-4">
-                      {warning && (
+                      {warning && !isApplied && (
                         <div className="group/tip relative flex items-center justify-center">
                           <div className="p-1 rounded-full bg-amber-100 dark:bg-amber-500/20">
                             <AlertTriangle className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />

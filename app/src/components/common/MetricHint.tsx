@@ -66,7 +66,10 @@ export function MetricHint({
       return;
     }
     const rect = el.getBoundingClientRect();
-    const left = Math.max(104, Math.min(window.innerWidth - 104, rect.left + rect.width / 2));
+    const left = Math.max(
+      104,
+      Math.min(window.innerWidth - 104, rect.left + rect.width / 2)
+    );
     setPos({ bottom: window.innerHeight - rect.top + 8, left });
   }, []);
 

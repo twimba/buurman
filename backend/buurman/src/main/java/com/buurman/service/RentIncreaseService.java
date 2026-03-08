@@ -14,7 +14,6 @@ import java.util.UUID;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.Property;
@@ -26,8 +25,8 @@ import com.buurman.dto.request.ApplyRentIncreasesRequest;
 import com.buurman.dto.request.CreateRentPeriodRequest;
 import com.buurman.dto.request.RentIncreaseItem;
 import com.buurman.dto.request.RentIncreasePreviewRequest;
-import com.buurman.dto.response.ApplyRentIncreasesResponse;
 import com.buurman.dto.response.AddRentPeriodResult;
+import com.buurman.dto.response.ApplyRentIncreasesResponse;
 import com.buurman.dto.response.RentIncreaseContractPreview;
 import com.buurman.dto.response.RentIncreaseCountrySummary;
 import com.buurman.dto.response.RentIncreasePreviewResponse;
