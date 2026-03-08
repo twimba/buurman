@@ -29,6 +29,17 @@ function computeNewRent(currentRent: number, percentage: number): number {
   return Math.round(currentRent * (1 + percentage / 100) * 100) / 100;
 }
 
+function decimalPlaces(n: number): number {
+  const dot = n.toString().indexOf('.');
+  return dot === -1 ? 0 : n.toString().length - dot - 1;
+}
+
+function computeMedium(min: number, max: number): number {
+  const precision = Math.max(decimalPlaces(min), decimalPlaces(max));
+  const factor = Math.pow(10, precision);
+  return Math.round(((min + max) / 2) * factor) / factor;
+}
+
 const formatMoney = (amount: number, currency: string) =>
   amount.toLocaleString(undefined, {
     style: 'currency',
@@ -132,7 +143,7 @@ export const PropertyAdjustmentStep = ({
       } else if (s === 'minimum') {
         pct = min;
       } else {
-        pct = Math.round(((min + max) / 2) * 10) / 10;
+        pct = computeMedium(min, max);
       }
 
       return {
