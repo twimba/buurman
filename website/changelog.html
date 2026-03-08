@@ -45,7 +45,7 @@
     <div class="container-wide">
         <div class="header-inner">
             <a href="/" class="logo-link">
-                <img src="assets/logo/logo_horizontal.png" alt="Buurman" />
+                <img src="assets/logo/logo_horizontal.png" alt="Buurman" width="140" height="32" />
             </a>
 
             <nav class="nav">
@@ -55,112 +55,115 @@
                 <a href="https://app.buurman.io/register" class="btn btn-primary" style="margin-left: 0.5rem;">Get Started</a>
             </nav>
 
-            <button class="menu-toggle" onclick="document.getElementById('header').classList.toggle('menu-open')" aria-label="Toggle menu">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+            <button class="menu-toggle" onclick="document.getElementById('header').classList.toggle('menu-open')" aria-label="Toggle menu" aria-expanded="false">
+                <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
             </button>
         </div>
     </div>
 </header>
 
+<main id="main-content">
+
 <!-- ═══════════════ HERO ═══════════════ -->
-<section class="changelog-hero">
+<section class="changelog-hero" aria-labelledby="changelog-title">
     <div class="container-narrow">
-        <h1>What's <span class="gradient-text">New</span></h1>
+        <h1 id="changelog-title">What's <span class="gradient-text">New</span></h1>
         <p>Every week we ship improvements to make your life as a landlord easier. Here's what we've been building.</p>
     </div>
 </section>
 
 <!-- ═══════════════ CHANGELOG FEED ═══════════════ -->
-<section class="changelog-feed">
+<section class="changelog-feed" aria-label="Product changelog">
     <div class="changelog-layout">
 
         <!-- ── Sticky sidebar nav ── -->
-        <aside class="changelog-nav" aria-label="Release navigation">
-            <div class="changelog-nav-title">Releases</div>
-            <ul class="changelog-nav-list">
+        <nav class="changelog-nav" aria-label="Jump to release">
+            <div class="changelog-nav-title" aria-hidden="true">Releases</div>
+            <ul class="changelog-nav-list" role="list">
                 <li class="changelog-nav-item changelog-nav-latest" data-target="week-mar-2">
                     <a href="#week-mar-2">
-                        <span class="changelog-nav-dot"></span>
+                        <span class="changelog-nav-dot" aria-hidden="true"></span>
                         Mar 2, 2026
                     </a>
                 </li>
                 <li class="changelog-nav-item" data-target="week-feb-24">
                     <a href="#week-feb-24">
-                        <span class="changelog-nav-dot"></span>
+                        <span class="changelog-nav-dot" aria-hidden="true"></span>
                         Feb 24, 2026
                     </a>
                 </li>
                 <li class="changelog-nav-item" data-target="week-feb-17">
                     <a href="#week-feb-17">
-                        <span class="changelog-nav-dot"></span>
+                        <span class="changelog-nav-dot" aria-hidden="true"></span>
                         Feb 17, 2026
                     </a>
                 </li>
             </ul>
-        </aside>
+        </nav>
 
-        <!-- ── Feed ── -->
-        <div class="changelog-feed-inner">
+        <!-- ── Timeline feed ── -->
+        <div class="timeline">
 
         <!-- ══ WEEK: Mar 2–8, 2026 ══════════════════════ -->
-        <article class="week-entry week-entry--latest" id="week-mar-2">
+        <article class="week-entry week-entry--latest" id="week-mar-2" aria-label="Release: Week of March 2, 2026">
             <div class="week-header reveal">
-                <a class="week-date" href="#week-mar-2" aria-label="Link to this release">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M2 7h12" stroke="currentColor" stroke-width="1.5"/><path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                <a class="week-date" href="#week-mar-2" aria-label="Link to March 2, 2026 release">
+                    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M2 7h12" stroke="currentColor" stroke-width="1.5"/><path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
                     Week of March 2, 2026
-                    <span class="latest-badge">Latest</span>
+                    <span class="latest-badge" aria-label="Latest release">Latest</span>
                 </a>
-                <div class="week-line"></div>
-                <div class="week-version">v0.40 &rarr; v0.44</div>
+                <div class="week-line" aria-hidden="true"></div>
+                <div class="week-version" aria-label="Version range v0.40 to v0.44">v0.40 &rarr; v0.44</div>
             </div>
 
-            <div class="week-stats reveal">
-                <span class="week-stats-item"><span class="week-stats-dot week-stats-dot--new"></span>5 new</span>
-                <span style="color: var(--border);">·</span>
-                <span class="week-stats-item"><span class="week-stats-dot week-stats-dot--improved"></span>1 improved</span>
-                <span style="color: var(--border);">·</span>
-                <span class="week-stats-item"><span class="week-stats-dot week-stats-dot--fixed"></span>3 fixed</span>
-                <span style="color: var(--border);">·</span>
-                <span class="week-stats-item"><span class="week-stats-dot week-stats-dot--security"></span>2 security patches</span>
+            <div class="week-stats reveal" aria-label="Release summary">
+                <span class="week-stats-item"><span class="week-stats-dot week-stats-dot--new" aria-hidden="true"></span>5 new</span>
+                <span class="week-stats-sep" aria-hidden="true">·</span>
+                <span class="week-stats-item"><span class="week-stats-dot week-stats-dot--improved" aria-hidden="true"></span>1 improved</span>
+                <span class="week-stats-sep" aria-hidden="true">·</span>
+                <span class="week-stats-item"><span class="week-stats-dot week-stats-dot--fixed" aria-hidden="true"></span>3 fixed</span>
+                <span class="week-stats-sep" aria-hidden="true">·</span>
+                <span class="week-stats-item"><span class="week-stats-dot week-stats-dot--security" aria-hidden="true"></span>2 security</span>
             </div>
 
             <div class="features-list">
 
-                <!-- ─ Rent Regulation Wizard: HERO ── -->
-                <div class="feature-entry feature-entry--hero reveal">
+                <!-- ── Rent Regulation Wizard: HERO ── -->
+                <div class="feature-entry feature-entry--hero feature-entry--new reveal">
                     <div class="feature-entry-header">
                         <div class="feature-entry-icon icon-green">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2L3 6v5c0 4 3.5 7 7 7s7-3 7-7V6l-7-4z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M7 10l2 2 4-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2L3 6v5c0 4 3.5 7 7 7s7-3 7-7V6l-7-4z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M7 10l2 2 4-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                         </div>
                         <h3>Rent Regulation &amp; Adjustment Wizard</h3>
                         <span class="badge badge-new">New</span>
                     </div>
                     <div class="feature-tags">
-                        <span class="feature-tag feature-tag--geo">🌍 20 Countries</span>
+                        <span class="feature-tag feature-tag--geo">🌍 20 countries</span>
                         <span class="feature-tag feature-tag--geo">📅 2022–2026 data</span>
                     </div>
-                    <p style="margin-top: 0.875rem;">Getting a rent increase wrong isn't just embarrassing &mdash; in many countries it can invalidate the increase entirely, or worse. Buurman now includes a built-in rent regulation database covering 20 countries, with official legal limits from 2022 through 2026, verified against government sources. The Netherlands, Germany, Portugal, France, Spain, Belgium, Ireland, Italy, Austria, the UK (including Scotland), the US (New York, Oregon, California), Canada (Ontario, BC, Qu&eacute;bec), and more.</p>
-                    <p style="margin-top: 0.75rem;">Open the new <strong>Rent Adjustments</strong> section, pick your year, and see the legal ceiling for your region. Berlin's Kappungsgrenze, Flemish health index caps, Scottish rent control zones &mdash; all in there. The wizard then previews exactly what that means for each of your contracts, and lets you apply the adjustments across all of them in one click. If your country isn't covered yet, you can request it directly from the app.</p>
+                    <p style="margin-top: 0.875rem;">Raising rent shouldn't require a law degree &mdash; but getting it wrong can mean fines, disputes, or a voided increase. Buurman now includes a built-in rent regulation database covering 20 countries, with legal limits from 2022 through 2026, cross-referenced against official government sources. The Netherlands, Germany, Portugal, France, Spain, Belgium, Ireland, Italy, Austria, the UK (including Scotland), the US (New York, Oregon, California), Canada (Ontario, BC, Qu&eacute;bec), and more.</p>
+                    <p style="margin-top: 0.75rem;">Open the new <strong>Rent Adjustments</strong> section, pick your year, and see the legal ceiling for your region. Berlin's Kappungsgrenze, Flemish health index caps, Scottish rent control zones &mdash; all accounted for. The wizard previews exactly what each adjustment means for your contracts, then lets you apply them all in one click. If your country isn't covered yet, you can request it directly from the app.</p>
+                    <p class="country-list"><strong>Supported:</strong> NL, DE, PT, FR, ES, BE, IE, IT, AT, UK, DK, SE, NO, FI, PL, CH, CZ, LU &mdash; plus US (NY / OR / CA) and Canada (ON / BC / QC)</p>
                 </div>
 
-                <!-- ─ Portfolio Dashboard: HERO ── -->
-                <div class="feature-entry feature-entry--hero reveal">
+                <!-- ── Portfolio Dashboard: HERO ── -->
+                <div class="feature-entry feature-entry--hero feature-entry--new reveal">
                     <div class="feature-entry-header">
                         <div class="feature-entry-icon icon-blue">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 3v14h14" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 13l3-4 3 2 4-5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 3v14h14" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 13l3-4 3 2 4-5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                         </div>
                         <h3>Portfolio Investment Dashboard</h3>
                         <span class="badge badge-new">New</span>
                     </div>
-                    <p>Your properties are investments &mdash; now you can see how they're performing together. The new portfolio dashboard aggregates your entire portfolio into one view: total value, equity, monthly cash flow, net operating income, cap rate, cash-on-cash return, debt coverage ratio, and occupancy &mdash; all in one place, automatically updated.</p>
-                    <p style="margin-top: 0.75rem;">Seven interactive charts let you compare property performance side by side, see how your portfolio is allocated by category and country, track cash flow trends over time, and understand how your equity is composed. When your numbers are ready for the bank or accountant, export a full PDF or CSV summary with one click.</p>
+                    <p>You're not just managing properties &mdash; you're building wealth. The new portfolio dashboard gives you a cross-portfolio view of the numbers that matter: total value, equity, monthly cash flow, net operating income, cap rate, cash-on-cash return, debt service coverage ratio, and occupancy &mdash; across every property, automatically updated.</p>
+                    <p style="margin-top: 0.75rem;">Seven interactive charts let you compare properties side by side, see how your portfolio is allocated by category and country, track cash flow trends over time, and understand how your equity is composed. When the numbers are ready for your bank or accountant, export a full PDF or CSV summary with one click.</p>
                 </div>
 
-                <!-- ─ Dutch WWS Calculator ── -->
-                <div class="feature-entry reveal">
+                <!-- ── Dutch WWS Calculator ── -->
+                <div class="feature-entry feature-entry--new reveal">
                     <div class="feature-entry-header">
                         <div class="feature-entry-icon icon-green">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="white" stroke-width="1.5"/><path d="M7 10h6M7 7h6M7 13h3" stroke="white" stroke-width="1.5" stroke-linecap="round"/><circle cx="14.5" cy="13" r="2" stroke="white" stroke-width="1.3"/><path d="M14.5 12v1l.75.5" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="white" stroke-width="1.5"/><path d="M7 10h6M7 7h6M7 13h3" stroke="white" stroke-width="1.5" stroke-linecap="round"/><circle cx="14.5" cy="13" r="2" stroke="white" stroke-width="1.3"/><path d="M14.5 12v1l.75.5" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>
                         </div>
                         <h3>Dutch WWS Points Calculator</h3>
                         <span class="badge badge-new">New</span>
@@ -168,76 +171,76 @@
                     <div class="feature-tags">
                         <span class="feature-tag feature-tag--geo">🇳🇱 Netherlands only</span>
                     </div>
-                    <p style="margin-top: 0.875rem;">Know exactly where your rental property stands under Dutch law. The new WWS calculator computes the official Woningwaarderingsstelsel score for any of your properties &mdash; Buurman pre-fills what it already knows (surface area, energy label, rooms, parking), and you fill in the rest. You get the official point score with a full category breakdown, plus an instant classification: <strong>below 143</strong> is regulated, <strong>144&ndash;186</strong> is mid-segment, <strong>187+</strong> is free sector. Year-versioned rules for 2023&ndash;2026. Save calculations and track how your score changes over time directly on the property page.</p>
+                    <p style="margin-top: 0.875rem;">Know exactly where your rental property stands under Dutch law. The new WWS calculator computes the official Woningwaarderingsstelsel score for any of your properties &mdash; Buurman pre-fills what it already knows (surface area, energy label, rooms, parking), and you fill in the rest. You get the point score with a full category breakdown and an instant classification: <strong>below 143 points</strong> is regulated rent, <strong>144&ndash;186</strong> is mid-segment, <strong>187 and above</strong> is free sector. Year-versioned rules for 2023&ndash;2026. Save calculations and track how your score changes over time directly on the property page.</p>
                 </div>
 
-                <!-- ─ Compact: Setup Wizard + Data Export ── -->
-                <div class="compact-group reveal">
+                <!-- ── Compact: Setup Wizard + Data Export ── -->
+                <div class="compact-group compact-group--new reveal">
                     <div class="compact-group-header">
-                        <div class="feature-entry-icon icon-green" style="width: 36px; height: 36px; border-radius: 9px;">
-                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="white" stroke-width="1.5"/><path d="M6 9l2 2 4-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <div class="feature-entry-icon feature-entry-icon-sm icon-green">
+                            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="white" stroke-width="1.5"/><path d="M6 9l2 2 4-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                         </div>
                         <h3>Also new this week</h3>
                         <span class="badge badge-new">New</span>
                     </div>
                     <ul class="compact-list">
                         <li>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--success-dark)" stroke-width="1.5" fill="rgba(16,185,129,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--success-dark)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            <span><strong>Setup wizard for new accounts</strong> &mdash; a quick 3-step flow (country &rarr; currency &rarr; date format) so your account is configured from day one. Currency is now enforced consistently across all financial forms. Admins can relabel currency codes or convert all amounts with a fixed exchange rate &mdash; with a full audit trail.</span>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--success-dark)" stroke-width="1.5" fill="rgba(16,185,129,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--success-dark)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span><strong>Setup wizard for new accounts</strong> &mdash; a quick 3-step flow on first login (country &rarr; currency &rarr; date format) so your account is configured from day one. Currency is then enforced consistently across all financial forms, so your numbers always add up. Admins can relabel currency codes across existing records, or permanently convert all stored amounts using a fixed exchange rate &mdash; with a full audit trail kept.</span>
                         </li>
                         <li>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--success-dark)" stroke-width="1.5" fill="rgba(16,185,129,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--success-dark)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            <span><strong>Data export &mdash; Buurman Takeout</strong> &mdash; team admins can now download everything: CSV exports for all your data, PDF booklets for properties, tenants, and contracts, and a JSON summary. Export runs in the background &mdash; watch the progress bar, download when ready. Your data, always yours.</span>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--success-dark)" stroke-width="1.5" fill="rgba(16,185,129,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--success-dark)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span><strong>Full data export &mdash; Buurman Takeout</strong> &mdash; team admins can now download everything in one ZIP: CSV exports for all your data tables, PDF booklets for properties, tenants, and contracts, and a JSON data summary. Export runs in the background while you keep working &mdash; watch the progress bar and download when it's ready. Your data, always yours.</span>
                         </li>
                     </ul>
                 </div>
 
-                <!-- ─ Compact: Quality of Life ── -->
-                <div class="compact-group reveal">
+                <!-- ── Compact: Quality of Life ── -->
+                <div class="compact-group compact-group--improved reveal">
                     <div class="compact-group-header">
-                        <div class="feature-entry-icon icon-blue" style="width: 36px; height: 36px; border-radius: 9px;">
-                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1v16M1 9h16" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        <div class="feature-entry-icon feature-entry-icon-sm icon-blue">
+                            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1v16M1 9h16" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
                         </div>
                         <h3>Quality of Life</h3>
                         <span class="badge badge-improved">Improved</span>
                     </div>
                     <ul class="compact-list">
                         <li>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(92,124,250,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            <span><strong>Flexible measurement units for commercial &amp; industrial properties</strong> &mdash; ceiling height in meters or feet, floor load in kg/m&sup2; or lbs/ft&sup2;, crane capacity in metric or US tons, power in kVA, MVA, or HP, internet speed in Mbps, Gbps, or Tbps. Labels follow through to your property booklets.</span>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(92,124,250,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span><strong>Flexible measurement units for commercial &amp; industrial properties</strong> &mdash; ceiling height in meters or feet, floor load in kg/m&sup2; or lbs/ft&sup2;, crane capacity in metric or US tons, power in kVA, MVA, or HP, internet speed in Mbps, Gbps, or Tbps. Labels follow through to property booklets.</span>
                         </li>
                         <li>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(92,124,250,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            <span><strong>One-click email verification</strong> &mdash; your verification email now contains a magic link. One click and you're in &mdash; no codes to copy and paste.</span>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(92,124,250,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span><strong>One-click email verification</strong> &mdash; your verification email now contains a magic link. One click and you're in &mdash; no more codes to copy and paste.</span>
                         </li>
                     </ul>
                 </div>
 
-                <!-- ─ Compact: Bug Fixes + Security ── -->
-                <div class="compact-group reveal">
+                <!-- ── Compact: Fixes & Security ── -->
+                <div class="compact-group compact-group--fixed reveal">
                     <div class="compact-group-header">
-                        <div class="feature-entry-icon icon-amber" style="width: 36px; height: 36px; border-radius: 9px;">
-                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 6v4M9 12.5v.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M3.5 15h11l-5.5-11-5.5 11z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/></svg>
+                        <div class="feature-entry-icon feature-entry-icon-sm icon-amber">
+                            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 6v4M9 12.5v.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M3.5 15h11l-5.5-11-5.5 11z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/></svg>
                         </div>
                         <h3>Fixes &amp; Security</h3>
                         <span class="badge badge-fixed">Fixed</span>
                     </div>
                     <ul class="compact-list">
                         <li>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             <span>Calendar subscribe URLs now work correctly &mdash; they were pointing to the API domain instead of the app</span>
                         </li>
                         <li>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             <span>Expense bars on the 6-month projection chart now correctly render below the X-axis</span>
                         </li>
                         <li>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             <span>Team-invited users no longer hit a registration code barrier when joining</span>
                         </li>
                         <li>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#9ca0b8" stroke-width="1.5" fill="rgba(156,160,184,0.08)"/><path d="M8 5v4M8 11v.5" stroke="#9ca0b8" stroke-width="1.5" stroke-linecap="round"/></svg>
-                            <span><strong>Security:</strong> DOMPurify (XSS protection) and Keycloak (authentication) updated to latest versions</span>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#9ca0b8" stroke-width="1.5" fill="rgba(156,160,184,0.08)"/><path d="M8 5v4M8 11v.5" stroke="#9ca0b8" stroke-width="1.5" stroke-linecap="round"/></svg>
+                            <span><strong>Security &amp; infrastructure:</strong> DOMPurify (XSS protection) and Keycloak (authentication) updated to latest releases</span>
                         </li>
                     </ul>
                 </div>
@@ -246,23 +249,22 @@
         </article>
 
         <!-- ══ WEEK: Feb 24 – Mar 2, 2026 ══════════════ -->
-        <article class="week-entry" id="week-feb-24">
+        <article class="week-entry" id="week-feb-24" aria-label="Release: Week of February 24, 2026">
             <div class="week-header reveal">
-                <a class="week-date" href="#week-feb-24" aria-label="Link to this release">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M2 7h12" stroke="currentColor" stroke-width="1.5"/><path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                <a class="week-date" href="#week-feb-24" aria-label="Link to February 24, 2026 release">
+                    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M2 7h12" stroke="currentColor" stroke-width="1.5"/><path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
                     Week of February 24, 2026
                 </a>
-                <div class="week-line"></div>
-                <div class="week-version">v0.24 &rarr; v0.39</div>
+                <div class="week-line" aria-hidden="true"></div>
+                <div class="week-version" aria-label="Version range v0.24 to v0.39">v0.24 &rarr; v0.39</div>
             </div>
 
             <div class="features-list">
 
-                <!-- Country-Specific Contracts -->
-                <div class="feature-entry reveal">
+                <div class="feature-entry feature-entry--new reveal">
                     <div class="feature-entry-header">
                         <div class="feature-entry-icon icon-green">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="white" stroke-width="1.5"/><path d="M3 10h14M10 3c-2 2.5-2 4.5-2 7s0 4.5 2 7c2-2.5 2-4.5 2-7s0-4.5-2-7z" stroke="white" stroke-width="1.5"/></svg>
+                            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="white" stroke-width="1.5"/><path d="M3 10h14M10 3c-2 2.5-2 4.5-2 7s0 4.5 2 7c2-2.5 2-4.5 2-7s0-4.5-2-7z" stroke="white" stroke-width="1.5"/></svg>
                         </div>
                         <h3>Country-Specific Contracts</h3>
                         <span class="badge badge-new">New</span>
@@ -270,11 +272,10 @@
                     <p>Rental laws differ everywhere &mdash; and getting them wrong is expensive. Buurman now adapts contract fields to your country's rules: deposit limits, notice periods, indexation clauses, and required terms for 45 countries. Whether you rent out in the Netherlands, Portugal, Germany, or Brazil, your contracts reflect local conventions out of the box.</p>
                 </div>
 
-                <!-- Self-Occupancy Tracking -->
-                <div class="feature-entry reveal">
+                <div class="feature-entry feature-entry--new reveal">
                     <div class="feature-entry-header">
                         <div class="feature-entry-icon icon-green">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 17V7l7-5 7 5v10a1 1 0 01-1 1H4a1 1 0 01-1-1z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><circle cx="10" cy="11" r="2.5" stroke="white" stroke-width="1.5"/><path d="M10 8.5v-2" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+                            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 17V7l7-5 7 5v10a1 1 0 01-1 1H4a1 1 0 01-1-1z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><circle cx="10" cy="11" r="2.5" stroke="white" stroke-width="1.5"/><path d="M10 8.5v-2" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
                         </div>
                         <h3>Self-Occupancy Tracking &amp; Property Lifecycle</h3>
                         <span class="badge badge-new">New</span>
@@ -282,11 +283,10 @@
                     <p>Not every property is rented out all the time. You can now mark a property as owner-occupied and see its full lifecycle &mdash; vacant, rented, self-occupied &mdash; on a single visual timeline. Property types also got their own icons, so you can tell apartments from warehouses at a glance.</p>
                 </div>
 
-                <!-- Financing & Payment Management -->
-                <div class="feature-entry reveal">
+                <div class="feature-entry feature-entry--new reveal">
                     <div class="feature-entry-header">
                         <div class="feature-entry-icon icon-green">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="2" stroke="white" stroke-width="1.5"/><path d="M3 8h14" stroke="white" stroke-width="1.5"/><path d="M7 12h3" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M7 14h6" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+                            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="2" stroke="white" stroke-width="1.5"/><path d="M3 8h14" stroke="white" stroke-width="1.5"/><path d="M7 12h3" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M7 14h6" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
                         </div>
                         <h3>Financing &amp; Mortgage Tracking</h3>
                         <span class="badge badge-new">New</span>
@@ -294,11 +294,10 @@
                     <p>Keeping track of mortgages across multiple properties used to mean spreadsheets and guesswork. Now, loan details, payment schedules, and financing terms live in a dedicated section on each property dashboard &mdash; so your investment numbers stay accurate without the manual work.</p>
                 </div>
 
-                <!-- Improved Dashboard Charts -->
-                <div class="feature-entry reveal">
+                <div class="feature-entry feature-entry--improved reveal">
                     <div class="feature-entry-header">
                         <div class="feature-entry-icon icon-blue">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 3v14h14" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 14V10M9 14V7M12 14V9M15 14V5" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+                            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 3v14h14" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 14V10M9 14V7M12 14V9M15 14V5" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
                         </div>
                         <h3>Improved Dashboard Charts</h3>
                         <span class="badge badge-improved">Improved</span>
@@ -306,51 +305,49 @@
                     <p>Property dashboard charts have been redesigned to be easier to read. Clearer labels, cleaner visuals, and more useful breakdowns &mdash; so you can see how a property is performing without squinting at the data.</p>
                 </div>
 
-                <!-- Quality of Life -->
-                <div class="compact-group reveal">
+                <div class="compact-group compact-group--improved reveal">
                     <div class="compact-group-header">
-                        <div class="feature-entry-icon icon-blue" style="width: 36px; height: 36px; border-radius: 9px;">
-                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1v16M1 9h16" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        <div class="feature-entry-icon feature-entry-icon-sm icon-blue">
+                            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1v16M1 9h16" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
                         </div>
                         <h3>Quality of Life</h3>
                         <span class="badge badge-improved">Improved</span>
                     </div>
                     <ul class="compact-list">
                         <li>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(92,124,250,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(92,124,250,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             <span><strong>Bulk upload limit raised from 100 to 1,000</strong> &mdash; import large spreadsheets of expenses and payments without splitting them up</span>
                         </li>
                         <li>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(92,124,250,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(92,124,250,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             <span><strong>Smarter navigation after expenses</strong> &mdash; submit an expense and land right back where you were, not on a generic page</span>
                         </li>
                         <li>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(92,124,250,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(92,124,250,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             <span>We also launched a public status page at <a href="https://status.buurman.io" target="_blank" rel="noopener"><strong>status.buurman.io</strong></a> &mdash; bookmark it to check system health or subscribe to incident notifications</span>
                         </li>
                     </ul>
                 </div>
 
-                <!-- Bug Fixes -->
-                <div class="compact-group reveal">
+                <div class="compact-group compact-group--fixed reveal">
                     <div class="compact-group-header">
-                        <div class="feature-entry-icon icon-amber" style="width: 36px; height: 36px; border-radius: 9px;">
-                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 6v4M9 12.5v.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M3.5 15h11l-5.5-11-5.5 11z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/></svg>
+                        <div class="feature-entry-icon feature-entry-icon-sm icon-amber">
+                            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 6v4M9 12.5v.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M3.5 15h11l-5.5-11-5.5 11z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/></svg>
                         </div>
                         <h3>Bug Fixes</h3>
                         <span class="badge badge-fixed">Fixed</span>
                     </div>
                     <ul class="compact-list">
                         <li>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             <span>Contract end dates and signed dates can now be properly cleared when editing</span>
                         </li>
                         <li>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             <span>Outdoor areas and amenities panels display consistently across all property types</span>
                         </li>
                         <li>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             <span>Mortgage payment tracking now uses actual values instead of placeholders</span>
                         </li>
                     </ul>
@@ -360,23 +357,22 @@
         </article>
 
         <!-- ══ WEEK: Feb 17–23, 2026 ════════════════════ -->
-        <article class="week-entry" id="week-feb-17">
+        <article class="week-entry" id="week-feb-17" aria-label="Release: Week of February 17, 2026">
             <div class="week-header reveal">
-                <a class="week-date" href="#week-feb-17" aria-label="Link to this release">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M2 7h12" stroke="currentColor" stroke-width="1.5"/><path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                <a class="week-date" href="#week-feb-17" aria-label="Link to February 17, 2026 release">
+                    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M2 7h12" stroke="currentColor" stroke-width="1.5"/><path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
                     Week of February 17, 2026
                 </a>
-                <div class="week-line"></div>
-                <div class="week-version">v0.7 &rarr; v0.23</div>
+                <div class="week-line" aria-hidden="true"></div>
+                <div class="week-version" aria-label="Version range v0.7 to v0.23">v0.7 &rarr; v0.23</div>
             </div>
 
             <div class="features-list">
 
-                <!-- Property Investment Dashboard -->
-                <div class="feature-entry reveal">
+                <div class="feature-entry feature-entry--new reveal">
                     <div class="feature-entry-header">
                         <div class="feature-entry-icon icon-green">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 17V7l7-5 7 5v10a1 1 0 01-1 1H4a1 1 0 01-1-1z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M7 17v-5h6v5" stroke="white" stroke-width="1.5" stroke-linejoin="round"/></svg>
+                            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 17V7l7-5 7 5v10a1 1 0 01-1 1H4a1 1 0 01-1-1z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M7 17v-5h6v5" stroke="white" stroke-width="1.5" stroke-linejoin="round"/></svg>
                         </div>
                         <h3>Property Investment Dashboard</h3>
                         <span class="badge badge-new">New</span>
@@ -384,11 +380,10 @@
                     <p>Your properties are investments &mdash; now Buurman treats them that way. Every property gets its own analytics dashboard with ROI, Cap Rate, Cash-on-Cash Return, Net Operating Income, and more. Interactive charts reveal cash flow trends, occupancy patterns, and expense breakdowns. Add your purchase price and mortgage details, and Buurman projects your returns six months into the future. Export polished PDF or CSV reports for your accountant, bank, or partners.</p>
                 </div>
 
-                <!-- Non-Residential Real Estate -->
-                <div class="feature-entry reveal">
+                <div class="feature-entry feature-entry--new reveal">
                     <div class="feature-entry-header">
                         <div class="feature-entry-icon icon-green">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 17h16M3 17V5l6-3v15M9 17V8l8 3v6" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M5 7h2M5 10h2M5 13h2M12 12h2M12 14.5h2" stroke="white" stroke-width="1.2" stroke-linecap="round"/></svg>
+                            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 17h16M3 17V5l6-3v15M9 17V8l8 3v6" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M5 7h2M5 10h2M5 13h2M12 12h2M12 14.5h2" stroke="white" stroke-width="1.2" stroke-linecap="round"/></svg>
                         </div>
                         <h3>Commercial, Industrial &amp; Agricultural Properties</h3>
                         <span class="badge badge-new">New</span>
@@ -396,11 +391,10 @@
                     <p>Buurman is no longer just for apartments and houses. Manage offices, warehouses, retail spaces, farmland, vineyards, and mixed-use buildings &mdash; each with category-specific details, property types, and amenities. Whether you own a studio flat or a logistics park, it all lives in one place.</p>
                 </div>
 
-                <!-- Rent Periods -->
-                <div class="feature-entry reveal">
+                <div class="feature-entry feature-entry--new reveal">
                     <div class="feature-entry-header">
                         <div class="feature-entry-icon icon-green">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M4 6h12M4 14h8" stroke="white" stroke-width="1.5" stroke-linecap="round"/><circle cx="15" cy="14" r="2.5" stroke="white" stroke-width="1.5"/><path d="M15 12.5v1.5l1 .75" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M4 6h12M4 14h8" stroke="white" stroke-width="1.5" stroke-linecap="round"/><circle cx="15" cy="14" r="2.5" stroke="white" stroke-width="1.5"/><path d="M15 12.5v1.5l1 .75" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                         </div>
                         <h3>Rent History &amp; Period Tracking</h3>
                         <span class="badge badge-new">New</span>
@@ -408,11 +402,10 @@
                     <p>Rent changes over time &mdash; now Buurman tracks every adjustment. See a visual timeline of rent periods on each contract, record increases or decreases with effective dates, and pending payments automatically update to match. Your property booklet PDF now includes the full rent history too.</p>
                 </div>
 
-                <!-- Financial Reports -->
-                <div class="feature-entry reveal">
+                <div class="feature-entry feature-entry--improved reveal">
                     <div class="feature-entry-header">
                         <div class="feature-entry-icon icon-blue">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 3v14h14" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 13l3-4 3 2 4-5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 3v14h14" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 13l3-4 3 2 4-5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                         </div>
                         <h3>Financial Reports, Reimagined</h3>
                         <span class="badge badge-improved">Improved</span>
@@ -420,11 +413,10 @@
                     <p>Reports now come with flexible time periods &mdash; month, quarter, year, all time, or any custom range you choose. Filter across multiple properties, switch between chart types, and export everything as CSV or PDF with one click.</p>
                 </div>
 
-                <!-- Bulk Data Entry -->
-                <div class="feature-entry reveal">
+                <div class="feature-entry feature-entry--new reveal">
                     <div class="feature-entry-header">
                         <div class="feature-entry-icon icon-green">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="white" stroke-width="1.5"/><path d="M3 7h14M3 11h14M3 15h14M7 3v14M12 3v14" stroke="white" stroke-width="1" opacity="0.5"/></svg>
+                            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="white" stroke-width="1.5"/><path d="M3 7h14M3 11h14M3 15h14M7 3v14M12 3v14" stroke="white" stroke-width="1" opacity="0.5"/></svg>
                         </div>
                         <h3>Bulk Data Entry</h3>
                         <span class="badge badge-new">New</span>
@@ -432,11 +424,10 @@
                     <p>Stop entering expenses one by one. Copy rows straight from your spreadsheet and paste them into Buurman &mdash; columns are detected automatically. Set categories per row, and smart date parsing handles DD/MM and MM/DD formats based on your preferences. "Continue adding" mode keeps your property and category pre-filled between saves. Bulk uploads now send just one summary notification instead of flooding your inbox.</p>
                 </div>
 
-                <!-- Multi-Currency -->
-                <div class="feature-entry reveal">
+                <div class="feature-entry feature-entry--new reveal">
                     <div class="feature-entry-header">
                         <div class="feature-entry-icon icon-green">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="white" stroke-width="1.5"/><path d="M7.5 8.5c0-1.1.9-2 2-2h1c1.1 0 2 .9 2 2s-.9 2-2 2h-1c-1.1 0-2 .9-2 2s.9 2 2 2h1c1.1 0 2-.9 2-2" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M10 5.5v1M10 13.5v1" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+                            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="white" stroke-width="1.5"/><path d="M7.5 8.5c0-1.1.9-2 2-2h1c1.1 0 2 .9 2 2s-.9 2-2 2h-1c-1.1 0-2 .9-2 2s.9 2 2 2h1c1.1 0 2-.9 2-2" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M10 5.5v1M10 13.5v1" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
                         </div>
                         <h3>Multi-Currency Support</h3>
                         <span class="badge badge-new">New</span>
@@ -444,11 +435,10 @@
                     <p>Managing properties across borders? Every monetary field now carries its own currency. A property purchased in GBP with rent collected in EUR and expenses paid in PLN just works. Built-in currency pickers backed by the ISO 4217 standard, with automatic decimal precision when switching currencies.</p>
                 </div>
 
-                <!-- Payment Workflows -->
-                <div class="feature-entry reveal">
+                <div class="feature-entry feature-entry--improved reveal">
                     <div class="feature-entry-header">
                         <div class="feature-entry-icon icon-blue">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="11" rx="2" stroke="white" stroke-width="1.5"/><path d="M2 9h16" stroke="white" stroke-width="1.5"/><path d="M5 13h3" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+                            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="11" rx="2" stroke="white" stroke-width="1.5"/><path d="M2 9h16" stroke="white" stroke-width="1.5"/><path d="M5 13h3" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
                         </div>
                         <h3>Smarter Payment Workflows</h3>
                         <span class="badge badge-improved">Improved</span>
@@ -456,11 +446,10 @@
                     <p>A new "Register Payment" flow lets you record rent already received &mdash; one click and it's marked as paid. Schedule future payments, mark them paid on creation, filter by contract, and delete records you no longer need. Built around how landlords actually work.</p>
                 </div>
 
-                <!-- Map Pin Placement -->
-                <div class="feature-entry reveal">
+                <div class="feature-entry feature-entry--improved reveal">
                     <div class="feature-entry-header">
                         <div class="feature-entry-icon icon-blue">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2C6.7 2 4 4.7 4 8c0 4.5 6 10 6 10s6-5.5 6-10c0-3.3-2.7-6-6-6z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><circle cx="10" cy="8" r="2" stroke="white" stroke-width="1.5"/></svg>
+                            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2C6.7 2 4 4.7 4 8c0 4.5 6 10 6 10s6-5.5 6-10c0-3.3-2.7-6-6-6z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><circle cx="10" cy="8" r="2" stroke="white" stroke-width="1.5"/></svg>
                         </div>
                         <h3>Drag-and-Drop Map Pins</h3>
                         <span class="badge badge-improved">Improved</span>
@@ -468,11 +457,10 @@
                     <p>When automatic geocoding can't find your property's exact location, you can now place the pin manually by clicking or dragging on the map. Works for both property and tenant addresses &mdash; no more "Location Not Found" dead ends.</p>
                 </div>
 
-                <!-- Expense Categories + Notification Controls -->
-                <div class="feature-entry reveal">
+                <div class="feature-entry feature-entry--new reveal">
                     <div class="feature-entry-header">
                         <div class="feature-entry-icon icon-green">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3a5 5 0 015 5c0 3.5 1 5 1 5H4s1-1.5 1-5a5 5 0 015-5z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M8.5 16a1.5 1.5 0 003 0" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+                            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3a5 5 0 015 5c0 3.5 1 5 1 5H4s1-1.5 1-5a5 5 0 015-5z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M8.5 16a1.5 1.5 0 003 0" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
                         </div>
                         <h3>New Expense Categories &amp; Notification Controls</h3>
                         <span class="badge badge-new">New</span>
@@ -480,67 +468,65 @@
                     <p>Track Fees, Property Taxes, and Mortgage Payments as dedicated expense categories. Plus, you now control which notification channels are active on your account &mdash; toggle email and SMS independently, while security-critical messages always reach you.</p>
                 </div>
 
-                <!-- Quality of Life -->
-                <div class="compact-group reveal">
+                <div class="compact-group compact-group--improved reveal">
                     <div class="compact-group-header">
-                        <div class="feature-entry-icon icon-blue" style="width: 36px; height: 36px; border-radius: 9px;">
-                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1v16M1 9h16" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        <div class="feature-entry-icon feature-entry-icon-sm icon-blue">
+                            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1v16M1 9h16" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
                         </div>
                         <h3>Quality of Life</h3>
                         <span class="badge badge-improved">Improved</span>
                     </div>
                     <ul class="compact-list">
                         <li>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(92,124,250,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(92,124,250,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             <span><strong>Cmd+Enter</strong> submits any form instantly</span>
                         </li>
                         <li>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(92,124,250,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(92,124,250,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             <span><strong>Keyboard &amp; swipe navigation</strong> in document and photo previews &mdash; use arrow keys or swipe on mobile</span>
                         </li>
                         <li>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(92,124,250,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(92,124,250,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             <span><strong>Tabs remember your position</strong> when navigating back</span>
                         </li>
                         <li>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(92,124,250,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(92,124,250,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             <span><strong>Better currency formatting</strong> with proper symbols everywhere</span>
                         </li>
                         <li>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(92,124,250,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(92,124,250,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             <span><strong>Configurable operating cost due months</strong> &mdash; annual costs like insurance or HOA can be placed in the correct month on your dashboard instead of being spread evenly</span>
                         </li>
                     </ul>
                 </div>
 
-                <!-- Bug Fixes -->
-                <div class="compact-group reveal">
+                <div class="compact-group compact-group--fixed reveal">
                     <div class="compact-group-header">
-                        <div class="feature-entry-icon icon-amber" style="width: 36px; height: 36px; border-radius: 9px;">
-                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 6v4M9 12.5v.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M3.5 15h11l-5.5-11-5.5 11z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/></svg>
+                        <div class="feature-entry-icon feature-entry-icon-sm icon-amber">
+                            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 6v4M9 12.5v.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M3.5 15h11l-5.5-11-5.5 11z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/></svg>
                         </div>
                         <h3>Bug Fixes</h3>
                         <span class="badge badge-fixed">Fixed</span>
                     </div>
                     <ul class="compact-list">
                         <li>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             <span>Settings page no longer loads blank on navigation</span>
                         </li>
                         <li>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             <span>Multiple payments per day on the same contract now work correctly</span>
                         </li>
                         <li>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             <span>Theme preference changes no longer cause a conflict error</span>
                         </li>
                         <li>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             <span>Property edit forms properly load all financial fields</span>
                         </li>
                         <li>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             <span>Chart axes now display the year for clarity</span>
                         </li>
                     </ul>
@@ -549,17 +535,17 @@
             </div>
         </article>
 
-        </div><!-- /.changelog-feed-inner -->
+        </div><!-- /.timeline -->
     </div><!-- /.changelog-layout -->
 </section>
 
 <!-- Copy link toast -->
-<div class="copy-toast" id="copyToast">Link copied to clipboard</div>
+<div class="copy-toast" id="copyToast" role="status" aria-live="polite">Link copied to clipboard</div>
 
 <!-- ═══════════════ CTA ═══════════════ -->
-<section class="cta">
-    <div class="cta-orb cta-orb-1"></div>
-    <div class="cta-orb cta-orb-2"></div>
+<section class="cta" aria-label="Get started">
+    <div class="cta-orb cta-orb-1" aria-hidden="true"></div>
+    <div class="cta-orb cta-orb-2" aria-hidden="true"></div>
     <div class="cta-content reveal">
         <h2>Ready to try it yourself?</h2>
         <p>Join landlords who are already managing their properties smarter. Start free, no credit card required.</p>
@@ -568,6 +554,8 @@
         </div>
     </div>
 </section>
+
+</main>
 
 <!-- ═══════════════ FOOTER ═══════════════ -->
 <footer class="footer">
@@ -605,7 +593,7 @@
         </div>
         <div class="footer-bottom">
             <div class="footer-copy">&copy; 2026 Buurman. All rights reserved.</div>
-            <div class="footer-status"><iframe src="https://status.buurman.io/badge?theme=light" width="250" height="30" frameborder="0" scrolling="no" style="color-scheme: normal"></iframe></div>
+            <div class="footer-status"><iframe src="https://status.buurman.io/badge?theme=light" width="250" height="30" frameborder="0" scrolling="no" title="Buurman system status" style="color-scheme: normal"></iframe></div>
             <div class="footer-contact"><a href="mailto:hello@buurman.io">hello@buurman.io</a></div>
         </div>
     </div>
