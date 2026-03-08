@@ -1,5 +1,6 @@
 import { Building2, TrendingUp, DollarSign, Percent, Home } from 'lucide-react';
 import type { PortfolioSummary } from '@/types/portfolio';
+import { MetricHint } from '@/components/common/MetricHint';
 
 interface PortfolioSummaryCardsProps {
   summary: PortfolioSummary;
@@ -127,7 +128,7 @@ export const PortfolioSummaryCards = ({
         >
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-medium text-[#6b7194] dark:text-[#8b90a8]">
-              {card.label}
+              <MetricHint label={card.label} />
             </span>
             <div className={`p-2 rounded-lg ${card.bg}`}>{card.icon}</div>
           </div>

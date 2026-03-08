@@ -16,6 +16,12 @@ const HINTS: Record<string, string> = {
     'Net Operating Income — revenue minus operating expenses, before debt service',
   'Gross Rent Multiplier':
     'Purchase price divided by gross annual rent — lower is better',
+  // Dashboard summary cards
+  'Wtd Cap Rate':
+    'Weighted Capitalization Rate — NOI divided by property value, weighted by portfolio value across all properties',
+  'Wtd Cash-on-Cash':
+    'Weighted Cash-on-Cash Return — annual pre-tax cash flow divided by total cash invested, weighted by equity across all properties',
+  Occupancy: 'Percentage of units currently occupied by tenants',
   // Dashboard / reports
   'Occupancy Rate': 'Percentage of units currently rented out',
   'Net Profit': 'Total income minus total expenses for the period',
