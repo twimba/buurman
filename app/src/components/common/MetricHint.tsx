@@ -16,6 +16,12 @@ const HINTS: Record<string, string> = {
     'Net Operating Income — revenue minus operating expenses, before debt service',
   'Gross Rent Multiplier':
     'Purchase price divided by gross annual rent — lower is better',
+  // Property performance table
+  'Monthly CF':
+    'Monthly Cash Flow — total rent collected minus operating expenses and debt service',
+  CoC: 'Cash-on-Cash Return — annual pre-tax cash flow divided by total cash invested',
+  'Data %':
+    'Financial data completeness — how much cost and income data has been entered; higher means more accurate metrics',
   // Dashboard summary cards
   'Wtd Cap Rate':
     'Weighted Capitalization Rate — NOI divided by property value, weighted by portfolio value across all properties',

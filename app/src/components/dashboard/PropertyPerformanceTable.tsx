@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AlertTriangle, ArrowUp, ArrowDown } from 'lucide-react';
 import type { PropertyPerformance } from '@/types/portfolio';
+import { MetricHint } from '@/components/common/MetricHint';
 
 type SortKey =
   | 'address'
@@ -111,7 +112,7 @@ export const PropertyPerformanceTable = ({
                 onClick={() => handleSort(col.key)}
               >
                 <span className="inline-flex items-center gap-1">
-                  {col.label}
+                  <MetricHint label={col.label} />
                   {sortKey === col.key &&
                     (sortAsc ? (
                       <ArrowUp className="h-3 w-3" />
