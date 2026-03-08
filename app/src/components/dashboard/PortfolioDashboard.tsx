@@ -38,7 +38,9 @@ const PERIOD_OPTIONS: PeriodOption[] = [
 
 export const PortfolioDashboard = () => {
   const [months, setMonths] = useState<number | undefined>(12);
-  const [exporting, setExporting] = useState<'pdf' | 'csv' | 'excel' | null>(null);
+  const [exporting, setExporting] = useState<'pdf' | 'csv' | 'excel' | null>(
+    null
+  );
   const [csvDropdownOpen, setCsvDropdownOpen] = useState(false);
   const csvDropdownRef = useRef<HTMLDivElement>(null);
   const { effectiveTheme } = useTheme();

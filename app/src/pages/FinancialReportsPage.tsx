@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   TrendingUp,
@@ -37,7 +37,13 @@ import { MetricHint } from '@/components/common/MetricHint';
 import { useTheme } from '@/context/ThemeContext';
 import { useQuery } from '@tanstack/react-query';
 import { getProperties } from '@/api/properties';
-import { exportTransactionsCSV, exportTransactionsPDF } from '@/api/reports';
+import {
+  exportTransactionsCSV,
+  exportTransactionsPDF,
+  exportTransactionsExcel,
+} from '@/api/reports';
+import { useFeatureFlags } from '@/context/FeatureFlagContext';
+import { FeatureFlags } from '@/constants/featureFlags';
 import {
   ChevronDown,
   ChevronUp,
@@ -66,6 +72,22 @@ export const FinancialReportsPage = () => {
   );
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [selectedPropertyIds, setSelectedPropertyIds] = useState<string[]>([]);
+  const [csvDropdownOpen, setCsvDropdownOpen] = useState(false);
+  const csvDropdownRef = useRef<HTMLDivElement>(null);
+  const { isEnabled } = useFeatureFlags();
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        csvDropdownRef.current &&
+        !csvDropdownRef.current.contains(event.target as Node)
+      ) {
+        setCsvDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const { data: dateRangeData } = useDataDateRange();
 
@@ -284,29 +306,92 @@ export const FinancialReportsPage = () => {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={async () => {
-              try {
-                const blob = await exportTransactionsCSV(
-                  dateRange.startDate,
-                  dateRange.endDate
-                );
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'transactions.csv';
-                a.click();
-                URL.revokeObjectURL(url);
-              } catch {
-                /* ignore */
-              }
-            }}
-            className="flex items-center gap-2 px-3 py-2 text-[#3d4463] dark:text-[#c4c8db] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors text-sm"
-            title="Download CSV"
-          >
-            <Download className="h-4 w-4" />
-            CSV
-          </button>
+          {isEnabled(FeatureFlags.EXCEL_EXPORT) ? (
+            <div className="relative" ref={csvDropdownRef}>
+              <button
+                onClick={() => setCsvDropdownOpen((prev) => !prev)}
+                className="flex items-center gap-2 px-3 py-2 text-[#3d4463] dark:text-[#c4c8db] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors text-sm"
+              >
+                <Download className="h-4 w-4" />
+                Export
+                <ChevronDown className="h-3.5 w-3.5" />
+              </button>
+              {csvDropdownOpen && (
+                <div className="absolute right-0 mt-1 w-36 bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md shadow-lg z-10">
+                  <button
+                    onClick={async () => {
+                      setCsvDropdownOpen(false);
+                      try {
+                        const blob = await exportTransactionsCSV(
+                          dateRange.startDate,
+                          dateRange.endDate
+                        );
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'transactions.csv';
+                        a.click();
+                        URL.revokeObjectURL(url);
+                      } catch {
+                        /* ignore */
+                      }
+                    }}
+                    className="flex w-full items-center gap-2 px-4 py-2 text-sm text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    CSV
+                  </button>
+                  <button
+                    onClick={async () => {
+                      setCsvDropdownOpen(false);
+                      try {
+                        const blob = await exportTransactionsExcel(
+                          dateRange.startDate,
+                          dateRange.endDate
+                        );
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'transactions.xlsx';
+                        a.click();
+                        URL.revokeObjectURL(url);
+                      } catch {
+                        /* ignore */
+                      }
+                    }}
+                    className="flex w-full items-center gap-2 px-4 py-2 text-sm text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    Excel
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <button
+              onClick={async () => {
+                try {
+                  const blob = await exportTransactionsCSV(
+                    dateRange.startDate,
+                    dateRange.endDate
+                  );
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = 'transactions.csv';
+                  a.click();
+                  URL.revokeObjectURL(url);
+                } catch {
+                  /* ignore */
+                }
+              }}
+              className="flex items-center gap-2 px-3 py-2 text-[#3d4463] dark:text-[#c4c8db] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors text-sm"
+              title="Download CSV"
+            >
+              <Download className="h-4 w-4" />
+              CSV
+            </button>
+          )}
           <button
             onClick={async () => {
               try {
