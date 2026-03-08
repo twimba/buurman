@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.buurman</groupId>
         <artifactId>buurman-backend</artifactId>
-        <version>0.45.0</version>
+        <version>0.46.0</version>
     </parent>
 
     <artifactId>buurman-jooq</artifactId>
