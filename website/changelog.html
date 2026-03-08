@@ -72,15 +72,186 @@
 
 <!-- ═══════════════ CHANGELOG FEED ═══════════════ -->
 <section class="changelog-feed">
-    <div class="container-narrow">
+    <div class="changelog-layout">
 
-        <!-- ── WEEK: Feb 24 – Mar 2, 2026 ────────────── -->
-        <article class="week-entry">
+        <!-- ── Sticky sidebar nav ── -->
+        <aside class="changelog-nav" aria-label="Release navigation">
+            <div class="changelog-nav-title">Releases</div>
+            <ul class="changelog-nav-list">
+                <li class="changelog-nav-item changelog-nav-latest" data-target="week-mar-2">
+                    <a href="#week-mar-2">
+                        <span class="changelog-nav-dot"></span>
+                        Mar 2, 2026
+                    </a>
+                </li>
+                <li class="changelog-nav-item" data-target="week-feb-24">
+                    <a href="#week-feb-24">
+                        <span class="changelog-nav-dot"></span>
+                        Feb 24, 2026
+                    </a>
+                </li>
+                <li class="changelog-nav-item" data-target="week-feb-17">
+                    <a href="#week-feb-17">
+                        <span class="changelog-nav-dot"></span>
+                        Feb 17, 2026
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- ── Feed ── -->
+        <div class="changelog-feed-inner">
+
+        <!-- ══ WEEK: Mar 2–8, 2026 ══════════════════════ -->
+        <article class="week-entry week-entry--latest" id="week-mar-2">
             <div class="week-header reveal">
-                <div class="week-date">
+                <a class="week-date" href="#week-mar-2" aria-label="Link to this release">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M2 7h12" stroke="currentColor" stroke-width="1.5"/><path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    Week of March 2, 2026
+                    <span class="latest-badge">Latest</span>
+                </a>
+                <div class="week-line"></div>
+                <div class="week-version">v0.40 &rarr; v0.44</div>
+            </div>
+
+            <div class="week-stats reveal">
+                <span class="week-stats-item"><span class="week-stats-dot week-stats-dot--new"></span>5 new</span>
+                <span style="color: var(--border);">·</span>
+                <span class="week-stats-item"><span class="week-stats-dot week-stats-dot--improved"></span>1 improved</span>
+                <span style="color: var(--border);">·</span>
+                <span class="week-stats-item"><span class="week-stats-dot week-stats-dot--fixed"></span>3 fixed</span>
+                <span style="color: var(--border);">·</span>
+                <span class="week-stats-item"><span class="week-stats-dot week-stats-dot--security"></span>2 security patches</span>
+            </div>
+
+            <div class="features-list">
+
+                <!-- ─ Rent Regulation Wizard: HERO ── -->
+                <div class="feature-entry feature-entry--hero reveal">
+                    <div class="feature-entry-header">
+                        <div class="feature-entry-icon icon-green">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2L3 6v5c0 4 3.5 7 7 7s7-3 7-7V6l-7-4z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M7 10l2 2 4-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h3>Rent Regulation &amp; Adjustment Wizard</h3>
+                        <span class="badge badge-new">New</span>
+                    </div>
+                    <div class="feature-tags">
+                        <span class="feature-tag feature-tag--geo">🌍 20 Countries</span>
+                        <span class="feature-tag feature-tag--geo">📅 2022–2026 data</span>
+                    </div>
+                    <p style="margin-top: 0.875rem;">Getting a rent increase wrong isn't just embarrassing &mdash; in many countries it can invalidate the increase entirely, or worse. Buurman now includes a built-in rent regulation database covering 20 countries, with official legal limits from 2022 through 2026, verified against government sources. The Netherlands, Germany, Portugal, France, Spain, Belgium, Ireland, Italy, Austria, the UK (including Scotland), the US (New York, Oregon, California), Canada (Ontario, BC, Qu&eacute;bec), and more.</p>
+                    <p style="margin-top: 0.75rem;">Open the new <strong>Rent Adjustments</strong> section, pick your year, and see the legal ceiling for your region. Berlin's Kappungsgrenze, Flemish health index caps, Scottish rent control zones &mdash; all in there. The wizard then previews exactly what that means for each of your contracts, and lets you apply the adjustments across all of them in one click. If your country isn't covered yet, you can request it directly from the app.</p>
+                </div>
+
+                <!-- ─ Portfolio Dashboard: HERO ── -->
+                <div class="feature-entry feature-entry--hero reveal">
+                    <div class="feature-entry-header">
+                        <div class="feature-entry-icon icon-blue">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 3v14h14" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 13l3-4 3 2 4-5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h3>Portfolio Investment Dashboard</h3>
+                        <span class="badge badge-new">New</span>
+                    </div>
+                    <p>Your properties are investments &mdash; now you can see how they're performing together. The new portfolio dashboard aggregates your entire portfolio into one view: total value, equity, monthly cash flow, net operating income, cap rate, cash-on-cash return, debt coverage ratio, and occupancy &mdash; all in one place, automatically updated.</p>
+                    <p style="margin-top: 0.75rem;">Seven interactive charts let you compare property performance side by side, see how your portfolio is allocated by category and country, track cash flow trends over time, and understand how your equity is composed. When your numbers are ready for the bank or accountant, export a full PDF or CSV summary with one click.</p>
+                </div>
+
+                <!-- ─ Dutch WWS Calculator ── -->
+                <div class="feature-entry reveal">
+                    <div class="feature-entry-header">
+                        <div class="feature-entry-icon icon-green">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="white" stroke-width="1.5"/><path d="M7 10h6M7 7h6M7 13h3" stroke="white" stroke-width="1.5" stroke-linecap="round"/><circle cx="14.5" cy="13" r="2" stroke="white" stroke-width="1.3"/><path d="M14.5 12v1l.75.5" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h3>Dutch WWS Points Calculator</h3>
+                        <span class="badge badge-new">New</span>
+                    </div>
+                    <div class="feature-tags">
+                        <span class="feature-tag feature-tag--geo">🇳🇱 Netherlands only</span>
+                    </div>
+                    <p style="margin-top: 0.875rem;">Know exactly where your rental property stands under Dutch law. The new WWS calculator computes the official Woningwaarderingsstelsel score for any of your properties &mdash; Buurman pre-fills what it already knows (surface area, energy label, rooms, parking), and you fill in the rest. You get the official point score with a full category breakdown, plus an instant classification: <strong>below 143</strong> is regulated, <strong>144&ndash;186</strong> is mid-segment, <strong>187+</strong> is free sector. Year-versioned rules for 2023&ndash;2026. Save calculations and track how your score changes over time directly on the property page.</p>
+                </div>
+
+                <!-- ─ Compact: Setup Wizard + Data Export ── -->
+                <div class="compact-group reveal">
+                    <div class="compact-group-header">
+                        <div class="feature-entry-icon icon-green" style="width: 36px; height: 36px; border-radius: 9px;">
+                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="white" stroke-width="1.5"/><path d="M6 9l2 2 4-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h3>Also new this week</h3>
+                        <span class="badge badge-new">New</span>
+                    </div>
+                    <ul class="compact-list">
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--success-dark)" stroke-width="1.5" fill="rgba(16,185,129,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--success-dark)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span><strong>Setup wizard for new accounts</strong> &mdash; a quick 3-step flow (country &rarr; currency &rarr; date format) so your account is configured from day one. Currency is now enforced consistently across all financial forms. Admins can relabel currency codes or convert all amounts with a fixed exchange rate &mdash; with a full audit trail.</span>
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--success-dark)" stroke-width="1.5" fill="rgba(16,185,129,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--success-dark)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span><strong>Data export &mdash; Buurman Takeout</strong> &mdash; team admins can now download everything: CSV exports for all your data, PDF booklets for properties, tenants, and contracts, and a JSON summary. Export runs in the background &mdash; watch the progress bar, download when ready. Your data, always yours.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- ─ Compact: Quality of Life ── -->
+                <div class="compact-group reveal">
+                    <div class="compact-group-header">
+                        <div class="feature-entry-icon icon-blue" style="width: 36px; height: 36px; border-radius: 9px;">
+                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1v16M1 9h16" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        </div>
+                        <h3>Quality of Life</h3>
+                        <span class="badge badge-improved">Improved</span>
+                    </div>
+                    <ul class="compact-list">
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(92,124,250,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span><strong>Flexible measurement units for commercial &amp; industrial properties</strong> &mdash; ceiling height in meters or feet, floor load in kg/m&sup2; or lbs/ft&sup2;, crane capacity in metric or US tons, power in kVA, MVA, or HP, internet speed in Mbps, Gbps, or Tbps. Labels follow through to your property booklets.</span>
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--primary)" stroke-width="1.5" fill="rgba(92,124,250,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span><strong>One-click email verification</strong> &mdash; your verification email now contains a magic link. One click and you're in &mdash; no codes to copy and paste.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- ─ Compact: Bug Fixes + Security ── -->
+                <div class="compact-group reveal">
+                    <div class="compact-group-header">
+                        <div class="feature-entry-icon icon-amber" style="width: 36px; height: 36px; border-radius: 9px;">
+                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 6v4M9 12.5v.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M3.5 15h11l-5.5-11-5.5 11z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/></svg>
+                        </div>
+                        <h3>Fixes &amp; Security</h3>
+                        <span class="badge badge-fixed">Fixed</span>
+                    </div>
+                    <ul class="compact-list">
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span>Calendar subscribe URLs now work correctly &mdash; they were pointing to the API domain instead of the app</span>
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span>Expense bars on the 6-month projection chart now correctly render below the X-axis</span>
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#f59f00" stroke-width="1.5" fill="rgba(245,159,0,0.08)"/><path d="M5.5 8l1.5 1.5 3.5-3.5" stroke="#f59f00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span>Team-invited users no longer hit a registration code barrier when joining</span>
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#9ca0b8" stroke-width="1.5" fill="rgba(156,160,184,0.08)"/><path d="M8 5v4M8 11v.5" stroke="#9ca0b8" stroke-width="1.5" stroke-linecap="round"/></svg>
+                            <span><strong>Security:</strong> DOMPurify (XSS protection) and Keycloak (authentication) updated to latest versions</span>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </article>
+
+        <!-- ══ WEEK: Feb 24 – Mar 2, 2026 ══════════════ -->
+        <article class="week-entry" id="week-feb-24">
+            <div class="week-header reveal">
+                <a class="week-date" href="#week-feb-24" aria-label="Link to this release">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M2 7h12" stroke="currentColor" stroke-width="1.5"/><path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
                     Week of February 24, 2026
-                </div>
+                </a>
                 <div class="week-line"></div>
                 <div class="week-version">v0.24 &rarr; v0.39</div>
             </div>
@@ -188,13 +359,13 @@
             </div>
         </article>
 
-        <!-- ── WEEK: Feb 17–23, 2026 ─────────────────── -->
-        <article class="week-entry">
+        <!-- ══ WEEK: Feb 17–23, 2026 ════════════════════ -->
+        <article class="week-entry" id="week-feb-17">
             <div class="week-header reveal">
-                <div class="week-date">
+                <a class="week-date" href="#week-feb-17" aria-label="Link to this release">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M2 7h12" stroke="currentColor" stroke-width="1.5"/><path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
                     Week of February 17, 2026
-                </div>
+                </a>
                 <div class="week-line"></div>
                 <div class="week-version">v0.7 &rarr; v0.23</div>
             </div>
@@ -297,7 +468,7 @@
                     <p>When automatic geocoding can't find your property's exact location, you can now place the pin manually by clicking or dragging on the map. Works for both property and tenant addresses &mdash; no more "Location Not Found" dead ends.</p>
                 </div>
 
-                <!-- Expense Categories + Notification Controls (combined compact) -->
+                <!-- Expense Categories + Notification Controls -->
                 <div class="feature-entry reveal">
                     <div class="feature-entry-header">
                         <div class="feature-entry-icon icon-green">
@@ -378,25 +549,12 @@
             </div>
         </article>
 
-        <!-- ── Future weeks go here ────────────────────── -->
-        <!--
-        <article class="week-entry">
-            <div class="week-header reveal">
-                <div class="week-date">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M2 7h12" stroke="currentColor" stroke-width="1.5"/><path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                    March 2, 2026
-                </div>
-                <div class="week-line"></div>
-                <div class="week-version">v0.24</div>
-            </div>
-            <div class="features-list">
-                ... feature entries ...
-            </div>
-        </article>
-        -->
-
-    </div>
+        </div><!-- /.changelog-feed-inner -->
+    </div><!-- /.changelog-layout -->
 </section>
+
+<!-- Copy link toast -->
+<div class="copy-toast" id="copyToast">Link copied to clipboard</div>
 
 <!-- ═══════════════ CTA ═══════════════ -->
 <section class="cta">
@@ -455,6 +613,7 @@
 
 <script src="assets/js/main.js"></script>
 <script src="assets/js/konami.js"></script>
+<script src="assets/js/changelog.js"></script>
 
     <script src="https://uptime.betterstack.com/widgets/announcement.js" data-id="238636" async="async" type="text/javascript"></script>
 </body>

@@ -44,25 +44,122 @@
     .changelog-hero { padding: 3rem 0 2.5rem; }
 }
 
-/* ── Timeline ───────────────────────────────────── */
+/* ── Layout: sidebar + feed ─────────────────────── */
+.changelog-layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 0 3rem;
+    align-items: start;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+@media (max-width: 1024px) {
+    .changelog-layout {
+        grid-template-columns: 1fr;
+        max-width: 700px;
+        padding: 0 1.5rem;
+    }
+    .changelog-nav { display: none; }
+}
+
+/* ── Sticky sidebar nav ─────────────────────────── */
+.changelog-nav {
+    position: sticky;
+    top: 5rem;
+    padding: 1.5rem 0;
+}
+
+.changelog-nav-title {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    padding-left: 0.75rem;
+}
+
+.changelog-nav-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.changelog-nav-item a {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.625rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.15s ease;
+    border: 1px solid transparent;
+}
+
+.changelog-nav-item a:hover {
+    background: var(--surface);
+    color: var(--text);
+    border-color: var(--border);
+}
+
+.changelog-nav-item.active a {
+    background: var(--primary-50);
+    color: var(--primary-dark);
+    border-color: var(--primary-100);
+    font-weight: 600;
+}
+
+.changelog-nav-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+
+.changelog-nav-item.active .changelog-nav-dot {
+    background: var(--primary);
+}
+
+.changelog-nav-latest .changelog-nav-dot {
+    background: var(--success);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+/* ── Timeline feed ───────────────────────────────── */
 .changelog-feed {
     padding: 3rem 0 5rem;
     background: var(--bg);
 }
 
+.changelog-feed-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
 /* ── Week Entry ─────────────────────────────────── */
 .week-entry {
     position: relative;
-    margin-bottom: 4rem;
+    margin-bottom: 4.5rem;
+    scroll-margin-top: 5rem;
 }
 
 .week-entry:last-child { margin-bottom: 0; }
 
+/* ── Week header ────────────────────────────────── */
 .week-header {
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1.25rem;
 }
 
 .week-date {
@@ -77,6 +174,15 @@
     font-weight: 700;
     color: var(--text);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    text-decoration: none;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    white-space: nowrap;
+}
+
+.week-date:hover {
+    border-color: var(--primary-100);
+    box-shadow: 0 2px 12px rgba(92, 124, 250, 0.12);
 }
 
 .week-date svg { color: var(--primary); flex-shrink: 0; }
@@ -92,12 +198,78 @@
     font-weight: 600;
     color: var(--text-muted);
     letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+/* Stats bar: "5 new · 3 fixed" */
+.week-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0 0 0.875rem;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+}
+
+.week-stats-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3125rem;
+}
+
+.week-stats-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.week-stats-dot--new { background: var(--success); }
+.week-stats-dot--improved { background: var(--primary); }
+.week-stats-dot--fixed { background: #f59f00; }
+.week-stats-dot--security { background: #9ca0b8; }
+
+/* Latest release indicator */
+.week-entry--latest .week-date {
+    background: var(--primary-50);
+    border-color: var(--primary-100);
+    color: var(--primary-dark);
+}
+
+.latest-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3125rem;
+    padding: 0.125rem 0.5rem;
+    background: rgba(16, 185, 129, 0.1);
+    border-radius: 1rem;
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--success-dark);
+    margin-left: 0.125rem;
+}
+
+.latest-badge::before {
+    content: "";
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--success);
+    animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.8); }
 }
 
 /* ── Feature Cards ──────────────────────────────── */
 .features-list {
     display: grid;
-    gap: 1.25rem;
+    gap: 1.125rem;
 }
 
 .feature-entry {
@@ -115,11 +287,36 @@
     transform: translateY(-2px);
 }
 
+/* Hero feature card — top 1-2 features of the week */
+.feature-entry--hero {
+    border-color: var(--primary-100);
+    background: linear-gradient(160deg, #f8faff 0%, var(--surface) 60%);
+    overflow: hidden;
+}
+
+.feature-entry--hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--primary-light), var(--primary-lighter));
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+.feature-entry--hero:hover {
+    border-color: var(--primary);
+    box-shadow: 0 16px 48px rgba(92, 124, 250, 0.13);
+    transform: translateY(-3px);
+}
+
 .feature-entry-header {
     display: flex;
     align-items: center;
     gap: 0.875rem;
     margin-bottom: 0.75rem;
+    flex-wrap: wrap;
 }
 
 .feature-entry-icon {
@@ -138,12 +335,43 @@
     color: var(--text);
     letter-spacing: -0.01em;
     flex: 1;
+    min-width: 0;
 }
 
 .feature-entry p {
     font-size: 0.9375rem;
     color: var(--text-secondary);
     line-height: 1.7;
+}
+
+/* Feature tags (geo, category) */
+.feature-tags {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    flex-wrap: wrap;
+    margin-top: 0.25rem;
+}
+
+.feature-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.1875rem 0.5625rem;
+    background: var(--border-light);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+.feature-tag--geo {
+    background: rgba(92, 124, 250, 0.06);
+    border-color: var(--primary-100);
+    color: var(--primary-dark);
 }
 
 /* Category badges */
@@ -231,9 +459,55 @@
     font-weight: 600;
 }
 
+/* ── Staggered reveal animations ────────────────── */
+.reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Stagger children in .features-list */
+.features-list .reveal:nth-child(1) { transition-delay: 0ms; }
+.features-list .reveal:nth-child(2) { transition-delay: 60ms; }
+.features-list .reveal:nth-child(3) { transition-delay: 120ms; }
+.features-list .reveal:nth-child(4) { transition-delay: 180ms; }
+.features-list .reveal:nth-child(5) { transition-delay: 240ms; }
+.features-list .reveal:nth-child(6) { transition-delay: 300ms; }
+
+/* ── Copy-link toast ─────────────────────────────── */
+.copy-toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(1rem);
+    background: var(--bg-dark);
+    color: #fff;
+    padding: 0.625rem 1.25rem;
+    border-radius: 2rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 100;
+    white-space: nowrap;
+}
+
+.copy-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
 /* ── Responsive tweaks ──────────────────────────── */
 @media (max-width: 768px) {
     .feature-entry { padding: 1.5rem; }
     .compact-group-header { padding: 1.25rem 1.5rem 0; }
     .compact-list { padding: 1rem 1.5rem 1.5rem; }
+    .feature-entry--hero::before { display: none; }
 }
