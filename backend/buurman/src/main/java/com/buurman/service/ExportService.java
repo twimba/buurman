@@ -32,4 +32,11 @@ public interface ExportService {
   byte[] generatePortfolioDashboardPDF(PortfolioDashboardResponse dashboard);
 
   byte[] generatePortfolioDashboardCSV(PortfolioDashboardResponse dashboard);
+
+  byte[] generateTransactionHistoryExcel(
+      @Nullable LocalDate startDate, @Nullable LocalDate endDate, UUID teamId);
+
+  byte[] generatePropertyDashboardExcel(PropertyDashboardResponse dashboard);
+
+  byte[] generatePortfolioDashboardExcel(PortfolioDashboardResponse dashboard);
 }

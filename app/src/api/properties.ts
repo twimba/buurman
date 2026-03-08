@@ -260,3 +260,14 @@ export const exportPropertyDashboardCSV = async (
   );
   return response.data;
 };
+
+export const exportPropertyDashboardExcel = async (
+  propertyId: string,
+  months?: number
+): Promise<Blob> => {
+  const response = await client.get(
+    `/properties/${propertyId}/dashboard/export/excel`,
+    { responseType: 'blob', params: months != null ? { months } : undefined }
+  );
+  return response.data;
+};

@@ -91,3 +91,13 @@ export const exportPortfolioDashboardCSV = async (
   });
   return response.data;
 };
+
+export const exportPortfolioDashboardExcel = async (
+  months?: number
+): Promise<Blob> => {
+  const response = await client.get('/portfolio/dashboard/export/excel', {
+    params: months != null ? { months } : undefined,
+    responseType: 'blob',
+  });
+  return response.data;
+};

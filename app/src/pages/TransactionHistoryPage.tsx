@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -10,6 +10,7 @@ import {
   Download,
   FileText,
   List,
+  ChevronDown,
 } from 'lucide-react';
 import { usePayments } from '@/hooks/usePaymentHooks';
 import { useExpenses } from '@/hooks/useExpenseHooks';
@@ -41,6 +42,8 @@ export const TransactionHistoryPage = () => {
   const { formatDate } = useFormatDate();
   const { isEnabled } = useFeatureFlags();
   const { defaultCurrency } = useTeamDefaults();
+  const [csvDropdownOpen, setCsvDropdownOpen] = useState(false);
+  const csvDropdownRef = useRef<HTMLDivElement>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState<TransactionType>('ALL');
   const [startDate, setStartDate] = useState('');
@@ -222,6 +225,51 @@ export const TransactionHistoryPage = () => {
     }
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        csvDropdownRef.current &&
+        !csvDropdownRef.current.contains(event.target as Node)
+      ) {
+        setCsvDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleDownloadExcel = async () => {
+    try {
+      const params: Record<string, string> = {};
+      if (startDate) {
+        params.startDate = startDate;
+      }
+      if (endDate) {
+        params.endDate = endDate;
+      }
+
+      const response = await client.get('/reports/export/transactions/excel', {
+        params,
+        responseType: 'blob',
+      });
+
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'transactions.xlsx';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to download Excel:', error);
+      alert('Failed to download Excel. Please try again.');
+    }
+  };
+
   const handleDownloadCSV = async () => {
     try {
       const params: Record<string, string> = {};
@@ -307,13 +355,50 @@ export const TransactionHistoryPage = () => {
           />
           {isEnabled(FeatureFlags.REPORTS) && (
             <>
-              <button
-                onClick={handleDownloadCSV}
-                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] text-[#3d4463] dark:text-[#c4c8db] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] dark:bg-[#0c0d14] transition-colors"
-              >
-                <Download className="h-4 w-4" />
-                CSV
-              </button>
+              {isEnabled(FeatureFlags.EXCEL_EXPORT) ? (
+                <div className="relative" ref={csvDropdownRef}>
+                  <button
+                    onClick={() => setCsvDropdownOpen((prev) => !prev)}
+                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] text-[#3d4463] dark:text-[#c4c8db] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                  >
+                    <Download className="h-4 w-4" />
+                    Export
+                    <ChevronDown className="h-3.5 w-3.5" />
+                  </button>
+                  {csvDropdownOpen && (
+                    <div className="absolute right-0 mt-1 w-36 bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md shadow-lg z-10">
+                      <button
+                        onClick={() => {
+                          setCsvDropdownOpen(false);
+                          handleDownloadCSV();
+                        }}
+                        className="flex w-full items-center gap-2 px-4 py-2 text-sm text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                      >
+                        <Download className="h-3.5 w-3.5" />
+                        CSV
+                      </button>
+                      <button
+                        onClick={() => {
+                          setCsvDropdownOpen(false);
+                          handleDownloadExcel();
+                        }}
+                        className="flex w-full items-center gap-2 px-4 py-2 text-sm text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                      >
+                        <Download className="h-3.5 w-3.5" />
+                        Excel
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <button
+                  onClick={handleDownloadCSV}
+                  className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] text-[#3d4463] dark:text-[#c4c8db] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                >
+                  <Download className="h-4 w-4" />
+                  CSV
+                </button>
+              )}
               <button
                 onClick={handleDownloadPDF}
                 className="flex items-center gap-2 px-4 py-2 bg-[#5c7cfa] text-white rounded-md hover:bg-[#4c6ef5] transition-colors"

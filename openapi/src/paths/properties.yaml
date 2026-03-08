@@ -3689,6 +3689,74 @@ dashboard-export-csv:
     security:
       - bearer-jwt: []
 
+dashboard-export-excel:
+  get:
+    tags:
+      - Property Dashboard
+    summary: Export dashboard as Excel
+    operationId: exportExcel
+    parameters:
+      - name: identifier
+        in: path
+        description: Property identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/PropertyIdentifier'
+      - name: months
+        in: query
+        description: Number of months to include
+        required: false
+        schema:
+          type: integer
+          format: int32
+        example: 12
+    responses:
+      "200":
+        description: OK
+        content:
+          "*/*":
+            schema:
+              type: string
+              format: byte
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
 audit-log:
   get:
     tags:

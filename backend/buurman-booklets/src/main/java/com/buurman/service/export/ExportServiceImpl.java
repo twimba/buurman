@@ -33,6 +33,9 @@ public class ExportServiceImpl implements ExportService {
   private final PropertyDashboardCsvExporter propertyDashboardCsvExporter;
   private final PortfolioDashboardPdfExporter portfolioDashboardPdfExporter;
   private final PortfolioDashboardCsvExporter portfolioDashboardCsvExporter;
+  private final TransactionExcelExporter transactionExcelExporter;
+  private final PropertyDashboardExcelExporter propertyDashboardExcelExporter;
+  private final PortfolioDashboardExcelExporter portfolioDashboardExcelExporter;
   private final MetricsService metricsService;
   private final Clock clock;
 
@@ -90,6 +93,25 @@ public class ExportServiceImpl implements ExportService {
   public byte[] generatePortfolioDashboardCSV(PortfolioDashboardResponse dashboard) {
     return withMetrics(
         "portfolio_dashboard_csv", () -> portfolioDashboardCsvExporter.generate(dashboard));
+  }
+
+  @Override
+  public byte[] generateTransactionHistoryExcel(
+      @Nullable LocalDate startDate, @Nullable LocalDate endDate, UUID teamId) {
+    return withMetrics(
+        "transaction_excel", () -> transactionExcelExporter.generate(startDate, endDate, teamId));
+  }
+
+  @Override
+  public byte[] generatePropertyDashboardExcel(PropertyDashboardResponse dashboard) {
+    return withMetrics(
+        "property_dashboard_excel", () -> propertyDashboardExcelExporter.generate(dashboard));
+  }
+
+  @Override
+  public byte[] generatePortfolioDashboardExcel(PortfolioDashboardResponse dashboard) {
+    return withMetrics(
+        "portfolio_dashboard_excel", () -> portfolioDashboardExcelExporter.generate(dashboard));
   }
 
   private byte[] withMetrics(String exportType, Supplier<byte[]> generator) {

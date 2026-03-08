@@ -15,4 +15,5 @@ public final class FeatureFlags {
   public static final String BLOCK_EMAIL_NOTIFICATIONS = "block_email_notifications";
   public static final String BLOCK_SMS_NOTIFICATIONS = "block_sms_notifications";
   public static final String TAKEOUT_MAX_EXPORTS = "takeout_max_exports";
+  public static final String EXCEL_EXPORT = "excel_export";
 }

@@ -1,5 +1,6 @@
 package com.buurman.controller;
 
+import static com.buurman.util.FeatureFlags.EXCEL_EXPORT;
 import static com.buurman.util.FeatureFlags.REPORTS;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
@@ -63,5 +64,20 @@ public class PortfolioDashboardController implements PortfolioDashboardApi {
         CONTENT_DISPOSITION, "attachment; filename=portfolio-dashboard.csv");
     httpServletResponse.setContentType("text/csv");
     return exportService.generatePortfolioDashboardCSV(dashboard);
+  }
+
+  @Override
+  public byte[] exportPortfolioExcel(Optional<Integer> months) {
+    if (featureFlagService.isDisabled(EXCEL_EXPORT, SecurityUtils.getCurrentPrincipal())) {
+      throw new ForbiddenException("Excel export feature is not available");
+    }
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    PortfolioDashboardResponse dashboard =
+        dashboardService.getPortfolioDashboard(months, principal);
+    httpServletResponse.setHeader(
+        CONTENT_DISPOSITION, "attachment; filename=portfolio-dashboard.xlsx");
+    httpServletResponse.setContentType(
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    return exportService.generatePortfolioDashboardExcel(dashboard);
   }
 }
