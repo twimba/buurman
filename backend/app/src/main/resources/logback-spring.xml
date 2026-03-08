@@ -15,6 +15,7 @@
             <ingestUrl>${LOGTAIL_INGEST_URL}</ingestUrl>
             <mdcFields>requestId,userId,teamId,userEmail</mdcFields>
             <mdcTypes>string,string,string,string</mdcTypes>
+            <objectMapperModule>com.fasterxml.jackson.datatype.jsr310.JavaTimeModule</objectMapperModule>
         </appender>
 
         <root level="INFO">
