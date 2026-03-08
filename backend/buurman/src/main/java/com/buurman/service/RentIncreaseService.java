@@ -156,7 +156,6 @@ public class RentIncreaseService {
   }
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-  @Transactional
   public ApplyRentIncreasesResponse apply(
       ApplyRentIncreasesRequest request, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();

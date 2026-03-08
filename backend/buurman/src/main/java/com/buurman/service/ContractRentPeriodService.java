@@ -71,6 +71,7 @@ public class ContractRentPeriodService {
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
 
     validateEffectiveFrom(contract, request.effectiveFrom());
+    validateNoDuplicateEffectiveDate(contract.getId(), teamId, request.effectiveFrom());
     List<Payment> conflictingPayments =
         findConflictingPayments(contract.getId(), teamId, request.effectiveFrom());
 
@@ -335,6 +336,19 @@ public class ContractRentPeriodService {
     }
     if (contract.getEndDate().filter(effectiveFrom::isAfter).isPresent()) {
       throw new BusinessRuleException("Effective date cannot be after the contract end date");
+    }
+  }
+
+  private void validateNoDuplicateEffectiveDate(
+      UUID contractId, UUID teamId, LocalDate effectiveFrom) {
+    List<ContractRentPeriod> periods =
+        rentPeriodRepository.findByContractIdAndTeamId(contractId, teamId);
+    boolean exists =
+        periods.stream().anyMatch(p -> p.getEffectiveFrom().equals(effectiveFrom));
+    if (exists) {
+      throw new BusinessRuleException(
+          "A rent adjustment already exists for " + effectiveFrom
+              + ". Choose a different effective date.");
     }
   }
 
