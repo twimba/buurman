@@ -11,6 +11,7 @@ import {
   ChevronsDown,
   Equal,
   SlidersHorizontal,
+  Info,
 } from 'lucide-react';
 import type { RentIncreaseContractPreview } from '@/types/rentIncrease';
 import type { RentIncreaseItem } from '@/types/rentIncrease';
@@ -222,16 +223,21 @@ export const PropertyAdjustmentStep = ({
 
   // Summary stats
   const summary = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0];
     const active = increases.filter((i) => i.increasePercentage !== 0);
     const avgPct =
       active.length > 0
         ? active.reduce((sum, i) => sum + i.increasePercentage, 0) /
           active.length
         : 0;
+    const retroactiveCount = increases.filter(
+      (i) => i.effectiveDate && i.effectiveDate < today
+    ).length;
     return {
       activeCount: active.length,
       avgPct,
       warningCount: Object.keys(warnings).length,
+      retroactiveCount,
     };
   }, [increases, warnings]);
 
@@ -305,6 +311,22 @@ export const PropertyAdjustmentStep = ({
                   {summary.warningCount}
                 </span>{' '}
                 warning{summary.warningCount !== 1 ? 's' : ''}
+              </span>
+            </>
+          )}
+          {summary.retroactiveCount > 0 && (
+            <>
+              <span className="w-px h-3.5 bg-[#e2e6f0] dark:bg-[#2a2e3f]" />
+              <span className="group/retro relative inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 cursor-help">
+                <Info className="h-3 w-3" />
+                <span className="font-semibold">
+                  {summary.retroactiveCount}
+                </span>{' '}
+                retroactive
+                <span className="hidden group-hover/retro:block absolute left-0 top-full mt-1 z-10 w-64 p-2.5 rounded-lg bg-white dark:bg-[#1e2130] border border-blue-200 dark:border-blue-500/30 text-xs text-blue-700 dark:text-blue-300 shadow-lg">
+                  Adjustment payments will be created for any already settled
+                  payments affected by retroactive date changes.
+                </span>
               </span>
             </>
           )}

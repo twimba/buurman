@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { X, TrendingUp, TrendingDown } from 'lucide-react';
+import { X, TrendingUp, TrendingDown, Info } from 'lucide-react';
 import { MoneyInput } from '@/components/common/MoneyInput';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
 
@@ -36,6 +36,14 @@ export const AdjustRentModal = ({
     const val = parseFloat(rentAmount);
     return isNaN(val) ? null : val;
   }, [rentAmount]);
+
+  const isRetroactive = useMemo(() => {
+    if (!effectiveFrom) {
+      return false;
+    }
+    const today = new Date().toISOString().split('T')[0];
+    return effectiveFrom < today;
+  }, [effectiveFrom]);
 
   const percentageChange = useMemo(() => {
     if (parsedAmount === null || currentRent <= 0) {
@@ -154,10 +162,21 @@ export const AdjustRentModal = ({
                 disabled={isLoading}
                 required
               />
-              <p className="mt-1 text-xs text-[#9ca0b8] dark:text-[#5c6180]">
-                Pending payments from this date will be updated to the new
-                amount.
-              </p>
+              {isRetroactive ? (
+                <div className="mt-2 flex items-start gap-1.5 text-xs text-blue-600 dark:text-blue-400">
+                  <Info className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                  <span>
+                    This is a retroactive adjustment. Pending payments will be
+                    updated. For already settled payments, an adjustment payment
+                    will be created for the difference.
+                  </span>
+                </div>
+              ) : (
+                <p className="mt-1 text-xs text-[#9ca0b8] dark:text-[#5c6180]">
+                  Pending payments from this date will be updated to the new
+                  amount.
+                </p>
+              )}
             </div>
 
             {/* Notes */}
