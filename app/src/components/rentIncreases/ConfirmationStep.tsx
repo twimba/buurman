@@ -11,12 +11,14 @@ interface ConfirmationStepProps {
   response: ApplyRentIncreasesResponse;
   contracts: RentIncreaseContractPreview[];
   increases: RentIncreaseItem[];
+  onBack?: () => void;
 }
 
 export const ConfirmationStep = ({
   response,
   contracts,
   increases,
+  onBack,
 }: ConfirmationStepProps) => {
   const navigate = useNavigate();
   const { results, summary } = response;
@@ -236,7 +238,18 @@ export const ConfirmationStep = ({
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end gap-3">
+      <div className="flex justify-between">
+        <div>
+          {summary.totalFailed > 0 && onBack && (
+            <button
+              onClick={onBack}
+              className="px-6 py-2 rounded border border-[#e2e6f0] dark:border-[#2a2e3f] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+            >
+              Back to Adjust
+            </button>
+          )}
+        </div>
+        <div className="flex gap-3">
         <button
           onClick={() => navigate('/rent-regulations')}
           className="px-6 py-2 rounded border border-[#e2e6f0] dark:border-[#2a2e3f] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
@@ -249,6 +262,7 @@ export const ConfirmationStep = ({
         >
           View Contracts
         </button>
+        </div>
       </div>
     </div>
   );

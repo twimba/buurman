@@ -86,6 +86,27 @@ export const RentIncreaseWizardPage = () => {
     );
   };
 
+  const handleBackFromConfirmation = () => {
+    if (!applyResult) {
+      return;
+    }
+    // Zero out increases for contracts that succeeded — they're already applied
+    const succeededIds = new Set(
+      applyResult.results
+        .filter((r) => r.success)
+        .map((r) => r.contractIdentifier)
+    );
+    setIncreases(
+      increases.map((inc) =>
+        succeededIds.has(inc.contractIdentifier)
+          ? { ...inc, increasePercentage: 0, newRentAmount: 0 }
+          : inc
+      )
+    );
+    setApplyResult(null);
+    setStep('adjust');
+  };
+
   const stepIndex = STEPS.findIndex((s) => s.key === step);
 
   return (
@@ -168,6 +189,7 @@ export const RentIncreaseWizardPage = () => {
             response={applyResult}
             contracts={preview?.contracts ?? []}
             increases={increases}
+            onBack={handleBackFromConfirmation}
           />
         )}
       </div>
