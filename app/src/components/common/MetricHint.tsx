@@ -88,7 +88,7 @@ export function MetricHint({
       </span>
       {pos && (
         <span
-          className="pointer-events-none fixed z-50 w-max max-w-[200px] -translate-x-1/2 px-2.5 py-1.5 rounded-md bg-[#1a1d2e] dark:bg-[#2a2e3f] border border-[#2a2e3f] dark:border-[#3a3f55] shadow-lg text-[10px] leading-snug text-[#d4d7e8] font-normal"
+          className="pointer-events-none fixed z-50 w-max max-w-[200px] -translate-x-1/2 px-2.5 py-1.5 rounded-md bg-[#1a1d2e] dark:bg-[#2a2e3f] border border-[#2a2e3f] dark:border-[#3a3f55] shadow-lg text-[10px] leading-snug text-[#d4d7e8] font-normal text-left"
           style={{ bottom: pos.bottom, left: pos.left }}
           role="tooltip"
         >
