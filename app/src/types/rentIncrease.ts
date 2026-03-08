@@ -48,24 +48,19 @@ export interface ApplyRentIncreasesResponse {
 export interface RentIncreaseResult {
   contractIdentifier: string;
   propertyName: string;
+  success: boolean;
   previousRentAmount: number;
   newRentAmount: number;
-  increasePercentage: number;
-  currency: string;
   effectiveDate: string;
-  success: boolean;
-  errorMessage?: string;
+  paymentsCancelled: number;
+  paymentsGenerated: number;
+  error?: string;
 }
 
 export interface RentIncreaseSummary {
-  totalContracts: number;
-  successCount: number;
-  failureCount: number;
-  totalsByCurrency: Record<string, CurrencyTotals>;
-}
-
-export interface CurrencyTotals {
-  previousTotal: number;
-  newTotal: number;
-  increaseTotal: number;
+  totalContractsUpdated: number;
+  totalRentPeriodsCreated: number;
+  totalPaymentsCancelled: number;
+  totalPaymentsGenerated: number;
+  totalFailed: number;
 }

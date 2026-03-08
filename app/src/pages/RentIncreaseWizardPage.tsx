@@ -164,7 +164,11 @@ export const RentIncreaseWizardPage = () => {
         )}
 
         {step === 'confirmation' && applyResult && (
-          <ConfirmationStep response={applyResult} />
+          <ConfirmationStep
+            response={applyResult}
+            contracts={preview?.contracts ?? []}
+            increases={increases}
+          />
         )}
       </div>
     </div>
