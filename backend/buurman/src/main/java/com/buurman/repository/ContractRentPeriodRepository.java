@@ -224,7 +224,7 @@ public class ContractRentPeriodRepository {
     period.setUpdatedBy(record.get(UPDATED_BY));
 
     Timestamp deletedAtVal = record.get(DELETED_AT);
-    period.setDeletedAt(Optional.of(deletedAtVal).map(Timestamp::toInstant));
+    period.setDeletedAt(Optional.ofNullable(deletedAtVal).map(Timestamp::toInstant));
 
     return period;
   }

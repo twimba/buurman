@@ -77,7 +77,7 @@ public class PhoneNumberPolicyRepository {
     if (updatedAtTs != null) {
       policy.setUpdatedAt(Optional.of(updatedAtTs.toInstant()));
     }
-    policy.setUpdatedBy(Optional.of(record.get(UPDATED_BY)));
+    policy.setUpdatedBy(Optional.ofNullable(record.get(UPDATED_BY)));
     return policy;
   }
 

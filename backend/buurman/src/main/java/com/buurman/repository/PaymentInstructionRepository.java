@@ -173,14 +173,14 @@ public class PaymentInstructionRepository {
     pi.setName(record.get(NAME));
     pi.setDescription(record.get(DESCRIPTION));
     pi.setPaymentMethod(PaymentInstruction.PaymentMethod.valueOf(record.get(PAYMENT_METHOD)));
-    pi.setBankName(Optional.of(record.get(BANK_NAME)));
-    pi.setAccountHolderName(Optional.of(record.get(ACCOUNT_HOLDER_NAME)));
-    pi.setIban(Optional.of(record.get(IBAN)));
-    pi.setBicSwift(Optional.of(record.get(BIC_SWIFT)));
-    pi.setAccountNumber(Optional.of(record.get(ACCOUNT_NUMBER)));
-    pi.setRoutingNumber(Optional.of(record.get(ROUTING_NUMBER)));
-    pi.setPaymentReference(Optional.of(record.get(PAYMENT_REFERENCE)));
-    pi.setAdditionalDetails(Optional.of(record.get(ADDITIONAL_DETAILS)));
+    pi.setBankName(Optional.ofNullable(record.get(BANK_NAME)));
+    pi.setAccountHolderName(Optional.ofNullable(record.get(ACCOUNT_HOLDER_NAME)));
+    pi.setIban(Optional.ofNullable(record.get(IBAN)));
+    pi.setBicSwift(Optional.ofNullable(record.get(BIC_SWIFT)));
+    pi.setAccountNumber(Optional.ofNullable(record.get(ACCOUNT_NUMBER)));
+    pi.setRoutingNumber(Optional.ofNullable(record.get(ROUTING_NUMBER)));
+    pi.setPaymentReference(Optional.ofNullable(record.get(PAYMENT_REFERENCE)));
+    pi.setAdditionalDetails(Optional.ofNullable(record.get(ADDITIONAL_DETAILS)));
     pi.setIsDefault(record.get(IS_DEFAULT));
     Instant createdAt = toInstant(record.get("created_at"));
     if (createdAt != null) {

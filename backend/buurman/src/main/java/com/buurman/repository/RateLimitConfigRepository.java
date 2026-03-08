@@ -65,7 +65,7 @@ public class RateLimitConfigRepository {
     config.setId(record.get(ID));
     config.setKey(record.get(KEY));
     config.setDisplayName(record.get(DISPLAY_NAME));
-    config.setDescription(Optional.of(record.get(DESCRIPTION)));
+    config.setDescription(Optional.ofNullable(record.get(DESCRIPTION)));
     Integer maxRequests = record.get(MAX_REQUESTS);
     if (maxRequests != null) {
       config.setMaxRequests(maxRequests);
@@ -82,7 +82,7 @@ public class RateLimitConfigRepository {
     if (updatedAtTs != null) {
       config.setUpdatedAt(Optional.of(updatedAtTs.toInstant()));
     }
-    config.setUpdatedBy(Optional.of(record.get(UPDATED_BY)));
+    config.setUpdatedBy(Optional.ofNullable(record.get(UPDATED_BY)));
     return config;
   }
 }

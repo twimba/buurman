@@ -184,7 +184,7 @@ public class PaymentReceivalRepository {
     if (receivalDate != null) {
       receival.setReceivalDate(receivalDate);
     }
-    receival.setNotes(Optional.of(record.get(NOTES)));
+    receival.setNotes(Optional.ofNullable(record.get(NOTES)));
     Instant createdAt = toInstant(record.get("created_at"));
     if (createdAt != null) {
       receival.setCreatedAt(createdAt);

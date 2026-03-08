@@ -169,7 +169,7 @@ public class ContractPartyRepository {
     party.setIdentifier(java.util.Optional.of(com.buurman.domain.Sid.of(record.get(IDENTIFIER))));
     party.setTeamId(record.get(TEAM_ID));
     party.setContractId(record.get(CONTRACT_ID));
-    party.setTenantId(Optional.of(record.get(TENANT_ID)));
+    party.setTenantId(Optional.ofNullable(record.get(TENANT_ID)));
     party.setRole(ContractPartyRole.valueOf(record.get(ROLE)));
 
     Timestamp createdAtVal = record.get(CREATED_AT);
@@ -186,7 +186,7 @@ public class ContractPartyRepository {
     party.setUpdatedBy(record.get(UPDATED_BY));
 
     Timestamp deletedAtVal = record.get(DELETED_AT);
-    party.setDeletedAt(Optional.of(deletedAtVal).map(Timestamp::toInstant));
+    party.setDeletedAt(Optional.ofNullable(deletedAtVal).map(Timestamp::toInstant));
 
     return party;
   }
