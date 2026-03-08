@@ -1,7 +1,9 @@
 package com.buurman.service;
 
+import static com.buurman.domain.Payment.PaymentStatus.CANCELLED;
 import static com.buurman.domain.Payment.PaymentStatus.PENDING;
 import static com.buurman.util.SidGenerator.newContractRentPeriodId;
+import static com.buurman.util.SidGenerator.newPaymentId;
 
 import java.math.BigDecimal;
 import java.time.Clock;
@@ -28,6 +30,7 @@ import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.ContractRentPeriodIdentifier;
 import com.buurman.dto.request.CreateRentPeriodRequest;
 import com.buurman.dto.request.UpdateRentPeriodRequest;
+import com.buurman.dto.response.AddRentPeriodResult;
 import com.buurman.dto.response.RentPeriodResponse;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.mapper.ContractRentPeriodMapper;
@@ -60,7 +63,7 @@ public class ContractRentPeriodService {
 
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-  public RentPeriodResponse addRentPeriod(
+  public AddRentPeriodResult addRentPeriod(
       ContractIdentifier contractIdentifier,
       CreateRentPeriodRequest request,
       UserPrincipal principal) {
@@ -68,7 +71,8 @@ public class ContractRentPeriodService {
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
 
     validateEffectiveFrom(contract, request.effectiveFrom());
-    validateNoConflictingPayments(contract.getId(), teamId, request.effectiveFrom());
+    List<Payment> conflictingPayments =
+        findConflictingPayments(contract.getId(), teamId, request.effectiveFrom());
 
     // Close the previous period
     var previousPeriod =
@@ -108,6 +112,16 @@ public class ContractRentPeriodService {
         request.rentAmount(),
         principal.getUserId());
 
+    // Create adjustment payments for non-PENDING payments affected by the retroactive change
+    int adjustmentPaymentsCreated =
+        createAdjustmentPayments(
+            conflictingPayments,
+            request.rentAmount(),
+            contract.getId(),
+            teamId,
+            contract.getRentAmount().currency(),
+            principal.getUserId());
+
     // Audit trail — log on the CONTRACT entity so it shows in contract history
     Map<String, Object> changedFields = new HashMap<>();
     changedFields.put("rentPeriodAction", "ADDED");
@@ -115,6 +129,9 @@ public class ContractRentPeriodService {
     changedFields.put("effectiveFrom", request.effectiveFrom());
     if (previousRentAmount != null) {
       changedFields.put("previousRentAmount", previousRentAmount);
+    }
+    if (adjustmentPaymentsCreated > 0) {
+      changedFields.put("adjustmentPaymentsCreated", adjustmentPaymentsCreated);
     }
     request.notes().ifPresent(n -> changedFields.put("notes", n));
     auditService.logCreate(teamId, "CONTRACT", contract.getId(), principal.getUserId(), saved);
@@ -129,13 +146,16 @@ public class ContractRentPeriodService {
         principal.getUserId());
 
     log.info(
-        "Rent period added for contract {} in team {}: {} from {}",
+        "Rent period added for contract {} in team {}: {} from {} (adjustment payments: {})",
         contractIdentifier,
         teamId,
         request.rentAmount(),
-        request.effectiveFrom());
+        request.effectiveFrom(),
+        adjustmentPaymentsCreated);
 
-    return rentPeriodMapper.toResponse(saved, Optional.ofNullable(previousRentAmount));
+    RentPeriodResponse response =
+        rentPeriodMapper.toResponse(saved, Optional.ofNullable(previousRentAmount));
+    return new AddRentPeriodResult(response, adjustmentPaymentsCreated);
   }
 
   public List<RentPeriodResponse> getRentTimeline(
@@ -318,25 +338,73 @@ public class ContractRentPeriodService {
     }
   }
 
-  private void validateNoConflictingPayments(
+  private List<Payment> findConflictingPayments(
       UUID contractId, UUID teamId, LocalDate effectiveFrom) {
     LocalDate today = LocalDate.now(clock);
-    if (effectiveFrom.isBefore(today)) {
-      // Retroactive — check for non-PENDING payments in the affected range
-      List<Payment> existingPayments = paymentRepository.findByContractId(contractId, teamId);
-      boolean hasConflicting =
-          existingPayments.stream()
-              .anyMatch(
-                  p ->
-                      !p.getDueDate().isBefore(effectiveFrom)
-                          && p.getStatus() != PENDING
-                          && p.getDeletedAt().isEmpty());
-      if (hasConflicting) {
-        throw new BusinessRuleException(
-            "Cannot set retroactive rent period: non-pending payments exist for dates after "
-                + effectiveFrom);
+    if (!effectiveFrom.isBefore(today)) {
+      return List.of();
+    }
+    // Retroactive — find non-PENDING, non-CANCELLED payments in the affected range
+    List<Payment> existingPayments = paymentRepository.findByContractId(contractId, teamId);
+    return existingPayments.stream()
+        .filter(
+            p ->
+                !p.getDueDate().isBefore(effectiveFrom)
+                    && p.getStatus() != PENDING
+                    && p.getStatus() != CANCELLED
+                    && p.getDeletedAt().isEmpty())
+        .toList();
+  }
+
+  private int createAdjustmentPayments(
+      List<Payment> conflictingPayments,
+      BigDecimal newRentAmount,
+      UUID contractId,
+      UUID teamId,
+      String currency,
+      UUID userId) {
+    int created = 0;
+    for (Payment existing : conflictingPayments) {
+      BigDecimal oldAmount = existing.getAmount().value();
+      BigDecimal difference = newRentAmount.subtract(oldAmount);
+
+      if (difference.compareTo(BigDecimal.ZERO) > 0) {
+        // Rent increase: create adjustment payment for the positive difference
+        Payment adjustment = new Payment();
+        adjustment.setIdentifier(Optional.of(newPaymentId()));
+        adjustment.setTeamId(teamId);
+        adjustment.setContractId(contractId);
+        adjustment.setAmount(com.buurman.util.MoneyAmount.of(difference, currency));
+        adjustment.setDueDate(existing.getDueDate());
+        adjustment.setStatus(PENDING);
+        adjustment.setNotes(
+            Optional.of(
+                String.format(
+                    "Rent adjustment: difference from %s to %s (original payment %s)",
+                    oldAmount, newRentAmount, existing.getIdentifier().orElseThrow())));
+        adjustment.setAutoGenerated(true);
+        adjustment.setCreatedBy(userId);
+        adjustment.setUpdatedBy(userId);
+        adjustment.setCreatedAt(clock.instant());
+        adjustment.setUpdatedAt(clock.instant());
+
+        paymentRepository.save(adjustment);
+
+        auditService.logCreate(teamId, "PAYMENT", adjustment.getId(), userId, adjustment);
+        log.info(
+            "Created adjustment payment {} for difference {} on due date {}",
+            adjustment.getIdentifier().orElseThrow(),
+            difference,
+            existing.getDueDate());
+        created++;
+      } else if (difference.compareTo(BigDecimal.ZERO) < 0) {
+        log.warn(
+            "Skipped adjustment for payment {} — rent decrease of {} not supported as payment",
+            existing.getIdentifier().orElseThrow(),
+            difference.abs());
       }
     }
+    return created;
   }
 
   private void syncContractRentAmount(Contract contract, UUID teamId, UUID userId) {

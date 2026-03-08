@@ -32,7 +32,9 @@ public class ContractRentPeriodController implements ContractRentPeriodsApi {
   public RentPeriodResponse addRentPeriod(
       ContractIdentifier contractIdentifier, CreateRentPeriodRequest createRentPeriodRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return rentPeriodService.addRentPeriod(contractIdentifier, createRentPeriodRequest, principal);
+    return rentPeriodService
+        .addRentPeriod(contractIdentifier, createRentPeriodRequest, principal)
+        .rentPeriodResponse();
   }
 
   @Override

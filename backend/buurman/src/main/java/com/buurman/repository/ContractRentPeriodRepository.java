@@ -206,9 +206,9 @@ public class ContractRentPeriodRepository {
     }
 
     Date effectiveToVal = record.get(EFFECTIVE_TO);
-    period.setEffectiveTo(Optional.of(effectiveToVal).map(Date::toLocalDate));
+    period.setEffectiveTo(Optional.ofNullable(effectiveToVal).map(Date::toLocalDate));
 
-    period.setNotes(Optional.of(record.get(NOTES)));
+    period.setNotes(Optional.ofNullable(record.get(NOTES)));
 
     Timestamp createdAtVal = record.get(CREATED_AT);
     if (createdAtVal != null) {

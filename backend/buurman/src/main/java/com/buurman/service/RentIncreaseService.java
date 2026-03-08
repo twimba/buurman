@@ -27,6 +27,7 @@ import com.buurman.dto.request.CreateRentPeriodRequest;
 import com.buurman.dto.request.RentIncreaseItem;
 import com.buurman.dto.request.RentIncreasePreviewRequest;
 import com.buurman.dto.response.ApplyRentIncreasesResponse;
+import com.buurman.dto.response.AddRentPeriodResult;
 import com.buurman.dto.response.RentIncreaseContractPreview;
 import com.buurman.dto.response.RentIncreaseCountrySummary;
 import com.buurman.dto.response.RentIncreasePreviewResponse;
@@ -187,8 +188,9 @@ public class RentIncreaseService {
         // Delegate to ContractRentPeriodService.addRentPeriod
         CreateRentPeriodRequest rentPeriodRequest =
             new CreateRentPeriodRequest(newRent, item.effectiveDate(), Optional.empty());
-        contractRentPeriodService.addRentPeriod(
-            item.contractIdentifier(), rentPeriodRequest, principal);
+        AddRentPeriodResult result =
+            contractRentPeriodService.addRentPeriod(
+                item.contractIdentifier(), rentPeriodRequest, principal);
 
         Property property =
             propertyRepository.findByIdAndTeamId(contract.getPropertyId(), teamId).orElse(null);
@@ -203,11 +205,12 @@ public class RentIncreaseService {
                 newRent,
                 item.effectiveDate(),
                 0,
-                0,
+                result.adjustmentPaymentsCreated(),
                 Optional.empty()));
 
         totalUpdated++;
         totalRentPeriods++;
+        totalPaymentsGenerated += result.adjustmentPaymentsCreated();
       } catch (Exception e) {
         log.error(
             "Failed to apply rent increase for contract {}: {}",
