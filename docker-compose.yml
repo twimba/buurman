@@ -80,7 +80,7 @@ services:
       - buurman-network
 
   seaweedfs:
-    image: chrislusf/seaweedfs:4.15
+    image: chrislusf/seaweedfs:4.16
     container_name: buurman-seaweedfs
     entrypoint: ["/bin/sh", "/etc/seaweedfs/entrypoint.sh"]
     environment:
