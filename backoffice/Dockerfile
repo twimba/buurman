@@ -26,7 +26,7 @@ RUN npx orval --project backoffice
 WORKDIR /monorepo/backoffice
 RUN rm -rf dist && GIT_COMMIT="$GIT_COMMIT" GIT_COMMIT_SHORT="$GIT_COMMIT_SHORT" GIT_BRANCH="$GIT_BRANCH" yarn build
 
-FROM nginx:1.29.5-alpine
+FROM nginx:1.29.6-alpine
 WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
 COPY --from=build /monorepo/backoffice/dist .
