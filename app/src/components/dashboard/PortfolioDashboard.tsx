@@ -13,8 +13,10 @@ import { usePortfolioDashboard } from '@/hooks/usePortfolioDashboard';
 import {
   exportPortfolioDashboardPDF,
   exportPortfolioDashboardCSV,
+  exportPortfolioDashboardExcel,
 } from '@/api/dashboard';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { ExportDropdown } from '@/components/common/ExportDropdown';
 import { PortfolioSummaryCards } from './PortfolioSummaryCards';
 import { PortfolioCashFlowChart } from './PortfolioCashFlowChart';
 import { PropertyComparisonChart } from './PropertyComparisonChart';
@@ -34,26 +36,40 @@ const PERIOD_OPTIONS: PeriodOption[] = [
 
 export const PortfolioDashboard = () => {
   const [months, setMonths] = useState<number | undefined>(12);
-  const [exporting, setExporting] = useState<'pdf' | 'csv' | null>(null);
+  const [exporting, setExporting] = useState<'pdf' | 'csv' | 'excel' | null>(
+    null
+  );
   const { effectiveTheme } = useTheme();
   const isDark = effectiveTheme === 'dark';
 
   const { data: dashboard, isLoading, error } = usePortfolioDashboard(months);
 
   const handleExport = useCallback(
-    async (format: 'pdf' | 'csv') => {
+    async (format: 'pdf' | 'csv' | 'excel') => {
       setExporting(format);
       try {
-        const blob =
-          format === 'pdf'
-            ? await exportPortfolioDashboardPDF(months)
-            : await exportPortfolioDashboardCSV(months);
-        const mimeType = format === 'pdf' ? 'application/pdf' : 'text/csv';
+        let blob: Blob;
+        let mimeType: string;
+        let filename: string;
+        if (format === 'pdf') {
+          blob = await exportPortfolioDashboardPDF(months);
+          mimeType = 'application/pdf';
+          filename = 'portfolio-dashboard.pdf';
+        } else if (format === 'excel') {
+          blob = await exportPortfolioDashboardExcel(months);
+          mimeType =
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+          filename = 'portfolio-dashboard.xlsx';
+        } else {
+          blob = await exportPortfolioDashboardCSV(months);
+          mimeType = 'text/csv';
+          filename = 'portfolio-dashboard.csv';
+        }
         const file = new Blob([blob], { type: mimeType });
         const url = window.URL.createObjectURL(file);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `portfolio-dashboard.${format}`;
+        link.download = filename;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -159,14 +175,15 @@ export const PortfolioDashboard = () => {
               ))}
             </div>
             <div className="flex gap-2">
-              <button
-                onClick={() => handleExport('csv')}
+              <ExportDropdown
+                size="sm"
                 disabled={exporting !== null}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-[#e2e6f0] dark:border-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f5f7fa] dark:hover:bg-[#1e2130] transition-colors disabled:opacity-50"
-              >
-                <Download className="h-3.5 w-3.5" />
-                {exporting === 'csv' ? 'Exporting...' : 'CSV'}
-              </button>
+                exporting={exporting === 'csv' || exporting === 'excel'}
+                options={[
+                  { label: 'CSV', onExport: () => handleExport('csv') },
+                  { label: 'Excel', onExport: () => handleExport('excel') },
+                ]}
+              />
               <button
                 onClick={() => handleExport('pdf')}
                 disabled={exporting !== null}

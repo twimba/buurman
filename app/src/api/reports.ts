@@ -120,3 +120,14 @@ export const exportTransactionsPDF = async (
   });
   return response.data;
 };
+
+export const exportTransactionsExcel = async (
+  startDate?: string,
+  endDate?: string
+): Promise<Blob> => {
+  const response = await client.get('/reports/export/transactions/excel', {
+    params: { startDate, endDate },
+    responseType: 'blob',
+  });
+  return response.data;
+};

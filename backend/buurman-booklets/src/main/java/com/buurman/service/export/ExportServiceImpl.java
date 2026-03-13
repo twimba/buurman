@@ -4,10 +4,10 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import com.buurman.domain.identifier.ContractIdentifier;
@@ -33,19 +33,22 @@ public class ExportServiceImpl implements ExportService {
   private final PropertyDashboardCsvExporter propertyDashboardCsvExporter;
   private final PortfolioDashboardPdfExporter portfolioDashboardPdfExporter;
   private final PortfolioDashboardCsvExporter portfolioDashboardCsvExporter;
+  private final TransactionExcelExporter transactionExcelExporter;
+  private final PropertyDashboardExcelExporter propertyDashboardExcelExporter;
+  private final PortfolioDashboardExcelExporter portfolioDashboardExcelExporter;
   private final MetricsService metricsService;
   private final Clock clock;
 
   @Override
   public byte[] generateTransactionHistoryCSV(
-      @Nullable LocalDate startDate, @Nullable LocalDate endDate, UUID teamId) {
+      Optional<LocalDate> startDate, Optional<LocalDate> endDate, UUID teamId) {
     return withMetrics(
         "transaction_csv", () -> transactionCsvExporter.generate(startDate, endDate, teamId));
   }
 
   @Override
   public byte[] generateTransactionHistoryPDF(
-      @Nullable LocalDate startDate, @Nullable LocalDate endDate, UUID teamId) {
+      Optional<LocalDate> startDate, Optional<LocalDate> endDate, UUID teamId) {
     return withMetrics(
         "transaction_pdf", () -> transactionPdfExporter.generate(startDate, endDate, teamId));
   }
@@ -90,6 +93,25 @@ public class ExportServiceImpl implements ExportService {
   public byte[] generatePortfolioDashboardCSV(PortfolioDashboardResponse dashboard) {
     return withMetrics(
         "portfolio_dashboard_csv", () -> portfolioDashboardCsvExporter.generate(dashboard));
+  }
+
+  @Override
+  public byte[] generateTransactionHistoryExcel(
+      Optional<LocalDate> startDate, Optional<LocalDate> endDate, UUID teamId) {
+    return withMetrics(
+        "transaction_excel", () -> transactionExcelExporter.generate(startDate, endDate, teamId));
+  }
+
+  @Override
+  public byte[] generatePropertyDashboardExcel(PropertyDashboardResponse dashboard) {
+    return withMetrics(
+        "property_dashboard_excel", () -> propertyDashboardExcelExporter.generate(dashboard));
+  }
+
+  @Override
+  public byte[] generatePortfolioDashboardExcel(PortfolioDashboardResponse dashboard) {
+    return withMetrics(
+        "portfolio_dashboard_excel", () -> portfolioDashboardExcelExporter.generate(dashboard));
   }
 
   private byte[] withMetrics(String exportType, Supplier<byte[]> generator) {

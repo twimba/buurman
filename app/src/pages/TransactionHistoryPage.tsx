@@ -7,7 +7,6 @@ import {
   TrendingDown,
   Calendar,
   ArrowUpDown,
-  Download,
   FileText,
   List,
 } from 'lucide-react';
@@ -22,6 +21,7 @@ import { useFormatDate } from '@/hooks/useFormatDate';
 import { useFeatureFlags } from '@/context/FeatureFlagContext';
 import { FeatureFlags } from '@/constants/featureFlags';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
+import { ExportDropdown } from '@/components/common/ExportDropdown';
 
 type TransactionType = 'ALL' | 'INCOME' | 'EXPENSE';
 
@@ -222,6 +222,38 @@ export const TransactionHistoryPage = () => {
     }
   };
 
+  const handleDownloadExcel = async () => {
+    try {
+      const params: Record<string, string> = {};
+      if (startDate) {
+        params.startDate = startDate;
+      }
+      if (endDate) {
+        params.endDate = endDate;
+      }
+
+      const response = await client.get('/reports/export/transactions/excel', {
+        params,
+        responseType: 'blob',
+      });
+
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'transactions.xlsx';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to download Excel:', error);
+      alert('Failed to download Excel. Please try again.');
+    }
+  };
+
   const handleDownloadCSV = async () => {
     try {
       const params: Record<string, string> = {};
@@ -307,13 +339,13 @@ export const TransactionHistoryPage = () => {
           />
           {isEnabled(FeatureFlags.REPORTS) && (
             <>
-              <button
-                onClick={handleDownloadCSV}
-                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] text-[#3d4463] dark:text-[#c4c8db] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] dark:bg-[#0c0d14] transition-colors"
-              >
-                <Download className="h-4 w-4" />
-                CSV
-              </button>
+              <ExportDropdown
+                size="md"
+                options={[
+                  { label: 'CSV', onExport: handleDownloadCSV },
+                  { label: 'Excel', onExport: handleDownloadExcel },
+                ]}
+              />
               <button
                 onClick={handleDownloadPDF}
                 className="flex items-center gap-2 px-4 py-2 bg-[#5c7cfa] text-white rounded-md hover:bg-[#4c6ef5] transition-colors"

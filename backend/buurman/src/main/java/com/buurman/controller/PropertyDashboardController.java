@@ -1,5 +1,6 @@
 package com.buurman.controller;
 
+import static com.buurman.util.FeatureFlags.EXCEL_EXPORT;
 import static com.buurman.util.FeatureFlags.REPORTS;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
@@ -65,5 +66,21 @@ public class PropertyDashboardController implements PropertyDashboardApi {
         CONTENT_DISPOSITION, "attachment; filename=property-dashboard-" + identifier + ".csv");
     httpServletResponse.setContentType("text/csv");
     return exportService.generatePropertyDashboardCSV(dashboard);
+  }
+
+  @Override
+  public byte[] exportExcel(PropertyIdentifier identifier, Optional<Integer> months) {
+    if (featureFlagService.isDisabled(EXCEL_EXPORT, SecurityUtils.getCurrentPrincipal())) {
+      throw new ForbiddenException("Excel export feature is not available");
+    }
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    PropertyDashboardResponse dashboard =
+        dashboardService.getDashboard(identifier, months.orElse(null), principal);
+    httpServletResponse.setHeader(
+        CONTENT_DISPOSITION,
+        "attachment; filename=property-dashboard-" + identifier + ".xlsx");
+    httpServletResponse.setContentType(
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    return exportService.generatePropertyDashboardExcel(dashboard);
   }
 }

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Contract;
@@ -33,7 +32,7 @@ class TransactionDataLoader {
   private final PropertyRepository propertyRepository;
 
   List<TransactionRecord> load(
-      @Nullable LocalDate startDate, @Nullable LocalDate endDate, UUID teamId) {
+      Optional<LocalDate> startDate, Optional<LocalDate> endDate, UUID teamId) {
     List<TransactionRecord> transactions = new ArrayList<>();
 
     addPaymentsAsIncome(transactions, startDate, endDate, teamId);
@@ -45,12 +44,12 @@ class TransactionDataLoader {
 
   private void addPaymentsAsIncome(
       List<TransactionRecord> transactions,
-      @Nullable LocalDate startDate,
-      @Nullable LocalDate endDate,
+      Optional<LocalDate> startDate,
+      Optional<LocalDate> endDate,
       UUID teamId) {
     List<Payment> payments =
-        (startDate != null && endDate != null)
-            ? paymentRepository.findByDateRange(startDate, endDate, teamId)
+        (startDate.isPresent() && endDate.isPresent())
+            ? paymentRepository.findByDateRange(startDate.get(), endDate.get(), teamId)
             : paymentRepository.findAllByTeamId(teamId);
 
     for (Payment payment : payments) {
@@ -73,12 +72,12 @@ class TransactionDataLoader {
 
   private void addExpenses(
       List<TransactionRecord> transactions,
-      @Nullable LocalDate startDate,
-      @Nullable LocalDate endDate,
+      Optional<LocalDate> startDate,
+      Optional<LocalDate> endDate,
       UUID teamId) {
     List<Expense> expenses =
-        (startDate != null && endDate != null)
-            ? expenseRepository.findByDateRange(startDate, endDate, teamId)
+        (startDate.isPresent() && endDate.isPresent())
+            ? expenseRepository.findByDateRange(startDate.get(), endDate.get(), teamId)
             : expenseRepository.findAllByTeamId(teamId);
 
     for (Expense expense : expenses) {

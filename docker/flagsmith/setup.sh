@@ -23,7 +23,7 @@ PROJECT_NAME = "Buurman"
 FEATURE_FLAGS_FILE = "/FeatureFlags.java"
 _FLAG_PATTERN = re.compile(r'public static final String \w+\s*=\s*"([^"]+)"')
 # Flags that should be disabled by default (opt-in features)
-DISABLED_BY_DEFAULT = {"sms_notifications", "block_email_notifications", "block_sms_notifications"}
+DISABLED_BY_DEFAULT = {"sms_notifications", "block_email_notifications", "block_sms_notifications", "excel_export"}
 # Flags with initial remote config values (key → value)
 INITIAL_VALUES = {"takeout_max_exports": "3"}
 

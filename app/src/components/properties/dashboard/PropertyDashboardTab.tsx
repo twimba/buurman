@@ -33,8 +33,10 @@ import { usePropertyDashboard } from '@/hooks/usePropertyHooks';
 import {
   exportPropertyDashboardPDF,
   exportPropertyDashboardCSV,
+  exportPropertyDashboardExcel,
 } from '@/api/properties';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { ExportDropdown } from '@/components/common/ExportDropdown';
 import { MetricHint } from '@/components/common/MetricHint';
 import type {
   DashboardSummaryMetrics,
@@ -283,8 +285,9 @@ export const PropertyDashboardTab = ({
   const { effectiveTheme } = useTheme();
   const isDark = effectiveTheme === 'dark';
 
-  const [exporting, setExporting] = useState<'pdf' | 'csv' | null>(null);
-
+  const [exporting, setExporting] = useState<'pdf' | 'csv' | 'excel' | null>(
+    null
+  );
   const handlePeriodChange = useCallback((type: PeriodType) => {
     setPeriodType(type);
   }, []);
@@ -300,19 +303,31 @@ export const PropertyDashboardTab = ({
     [isDark]
   );
 
-  const handleExport = async (format: 'pdf' | 'csv') => {
+  const handleExport = async (format: 'pdf' | 'csv' | 'excel') => {
     setExporting(format);
     try {
-      const blob =
-        format === 'pdf'
-          ? await exportPropertyDashboardPDF(propertyId, months)
-          : await exportPropertyDashboardCSV(propertyId, months);
-      const mimeType = format === 'pdf' ? 'application/pdf' : 'text/csv';
+      let blob: Blob;
+      let mimeType: string;
+      let ext: string;
+      if (format === 'pdf') {
+        blob = await exportPropertyDashboardPDF(propertyId, months);
+        mimeType = 'application/pdf';
+        ext = 'pdf';
+      } else if (format === 'excel') {
+        blob = await exportPropertyDashboardExcel(propertyId, months);
+        mimeType =
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+        ext = 'xlsx';
+      } else {
+        blob = await exportPropertyDashboardCSV(propertyId, months);
+        mimeType = 'text/csv';
+        ext = 'csv';
+      }
       const file = new Blob([blob], { type: mimeType });
       const url = window.URL.createObjectURL(file);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `property-dashboard-${propertyId}.${format}`;
+      link.download = `property-dashboard-${propertyId}.${ext}`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -402,14 +417,15 @@ export const PropertyDashboardTab = ({
           )}
         </div>
         <div className="flex gap-2 shrink-0">
-          <button
-            onClick={() => handleExport('csv')}
+          <ExportDropdown
+            size="sm"
             disabled={exporting !== null}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-[#e2e6f0] dark:border-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f5f7fa] dark:hover:bg-[#1e2130] transition-colors disabled:opacity-50"
-          >
-            <Download className="h-3.5 w-3.5" />
-            {exporting === 'csv' ? 'Exporting...' : 'CSV'}
-          </button>
+            exporting={exporting === 'csv' || exporting === 'excel'}
+            options={[
+              { label: 'CSV', onExport: () => handleExport('csv') },
+              { label: 'Excel', onExport: () => handleExport('excel') },
+            ]}
+          />
           <button
             onClick={() => handleExport('pdf')}
             disabled={exporting !== null}

@@ -4,6 +4,7 @@
  */
 export const FeatureFlags = {
   REPORTS: 'reports',
+  EXCEL_EXPORT: 'excel_export',
   SMS_NOTIFICATIONS: 'sms_notifications',
   EMAIL_NOTIFICATIONS: 'email_notifications',
   BLOCK_EMAIL_NOTIFICATIONS: 'block_email_notifications',

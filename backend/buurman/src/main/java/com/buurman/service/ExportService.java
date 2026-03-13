@@ -1,9 +1,8 @@
 package com.buurman.service;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.jspecify.annotations.Nullable;
 
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
@@ -14,10 +13,10 @@ import com.buurman.dto.response.PropertyDashboardResponse;
 public interface ExportService {
 
   byte[] generateTransactionHistoryCSV(
-      @Nullable LocalDate startDate, @Nullable LocalDate endDate, UUID teamId);
+      Optional<LocalDate> startDate, Optional<LocalDate> endDate, UUID teamId);
 
   byte[] generateTransactionHistoryPDF(
-      @Nullable LocalDate startDate, @Nullable LocalDate endDate, UUID teamId);
+      Optional<LocalDate> startDate, Optional<LocalDate> endDate, UUID teamId);
 
   byte[] generatePropertyBrochurePDF(PropertyIdentifier propertyIdentifier, UUID teamId);
 
@@ -32,4 +31,11 @@ public interface ExportService {
   byte[] generatePortfolioDashboardPDF(PortfolioDashboardResponse dashboard);
 
   byte[] generatePortfolioDashboardCSV(PortfolioDashboardResponse dashboard);
+
+  byte[] generateTransactionHistoryExcel(
+      Optional<LocalDate> startDate, Optional<LocalDate> endDate, UUID teamId);
+
+  byte[] generatePropertyDashboardExcel(PropertyDashboardResponse dashboard);
+
+  byte[] generatePortfolioDashboardExcel(PortfolioDashboardResponse dashboard);
 }

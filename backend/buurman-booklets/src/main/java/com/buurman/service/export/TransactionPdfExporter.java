@@ -7,9 +7,9 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.util.CurrencyUtils;
@@ -24,7 +24,7 @@ public class TransactionPdfExporter {
   private final PdfRenderer pdfRenderer;
   private final Clock clock;
 
-  public byte[] generate(@Nullable LocalDate startDate, @Nullable LocalDate endDate, UUID teamId) {
+  public byte[] generate(Optional<LocalDate> startDate, Optional<LocalDate> endDate, UUID teamId) {
     List<TransactionRecord> transactions = dataLoader.load(startDate, endDate, teamId);
 
     BigDecimal totalIncome =
@@ -47,15 +47,15 @@ public class TransactionPdfExporter {
 
   private String buildHtml(
       List<TransactionRecord> transactions,
-      @Nullable LocalDate startDate,
-      @Nullable LocalDate endDate,
+      Optional<LocalDate> startDate,
+      Optional<LocalDate> endDate,
       BigDecimal totalIncome,
       BigDecimal totalExpenses,
       BigDecimal netTotal) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d, yyyy");
     String periodText =
-        startDate != null && endDate != null
-            ? startDate.format(formatter) + " to " + endDate.format(formatter)
+        startDate.isPresent() && endDate.isPresent()
+            ? startDate.get().format(formatter) + " to " + endDate.get().format(formatter)
             : "All Time";
 
     StringBuilder html = new StringBuilder();

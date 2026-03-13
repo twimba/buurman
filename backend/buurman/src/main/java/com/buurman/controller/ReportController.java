@@ -1,5 +1,6 @@
 package com.buurman.controller;
 
+import static com.buurman.util.FeatureFlags.EXCEL_EXPORT;
 import static com.buurman.util.FeatureFlags.REPORTS;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
@@ -126,8 +127,7 @@ public class ReportController implements ReportsApi {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     httpServletResponse.setHeader(CONTENT_DISPOSITION, "attachment; filename=transactions.csv");
     httpServletResponse.setContentType("text/csv");
-    return exportService.generateTransactionHistoryCSV(
-        startDate.orElse(null), endDate.orElse(null), principal.requireTeamId());
+    return exportService.generateTransactionHistoryCSV(startDate, endDate, principal.requireTeamId());
   }
 
   @Override
@@ -137,8 +137,21 @@ public class ReportController implements ReportsApi {
     httpServletResponse.setHeader(
         CONTENT_DISPOSITION, "attachment; filename=transaction-history.pdf");
     httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
-    return exportService.generateTransactionHistoryPDF(
-        startDate.orElse(null), endDate.orElse(null), principal.requireTeamId());
+    return exportService.generateTransactionHistoryPDF(startDate, endDate, principal.requireTeamId());
+  }
+
+  @Override
+  public byte[] exportTransactionHistoryExcel(
+      Optional<LocalDate> startDate, Optional<LocalDate> endDate) {
+    if (featureFlagService.isDisabled(EXCEL_EXPORT, SecurityUtils.getCurrentPrincipal())) {
+      throw new ForbiddenException("Excel export feature is not available");
+    }
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    httpServletResponse.setHeader(CONTENT_DISPOSITION, "attachment; filename=transactions.xlsx");
+    httpServletResponse.setContentType(
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    return exportService.generateTransactionHistoryExcel(
+        startDate, endDate, principal.requireTeamId());
   }
 
   private @Nullable List<UUID> resolvePropertyIdentifiers(

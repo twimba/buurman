@@ -317,6 +317,8 @@ paths:
     $ref: 'paths/dashboard.yaml#/reports-export-transactions-pdf'
   /reports/export/transactions/csv:
     $ref: 'paths/dashboard.yaml#/reports-export-transactions-csv'
+  /reports/export/transactions/excel:
+    $ref: 'paths/dashboard.yaml#/reports-export-transactions-excel'
   /reports/date-range:
     $ref: 'paths/dashboard.yaml#/reports-date-range'
   /reports/charts/property-comparison:
@@ -347,12 +349,16 @@ paths:
     $ref: 'paths/properties.yaml#/dashboard-export-pdf'
   /properties/{identifier}/dashboard/export/csv:
     $ref: 'paths/properties.yaml#/dashboard-export-csv'
+  /properties/{identifier}/dashboard/export/excel:
+    $ref: 'paths/properties.yaml#/dashboard-export-excel'
   /portfolio/dashboard:
     $ref: 'paths/portfolio-dashboard.yaml#/portfolio-dashboard'
   /portfolio/dashboard/export/pdf:
     $ref: 'paths/portfolio-dashboard.yaml#/portfolio-dashboard-export-pdf'
   /portfolio/dashboard/export/csv:
     $ref: 'paths/portfolio-dashboard.yaml#/portfolio-dashboard-export-csv'
+  /portfolio/dashboard/export/excel:
+    $ref: 'paths/portfolio-dashboard.yaml#/portfolio-dashboard-export-excel'
   /wws/calculate:
     $ref: 'paths/reference.yaml#/wws-calculate'
   /wws/calculate-and-save:
