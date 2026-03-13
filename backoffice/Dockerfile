@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM node:25.8.0-alpine3.22 AS build
+FROM --platform=$BUILDPLATFORM node:25.8.1-alpine3.22 AS build
 WORKDIR /monorepo
 
 ARG GIT_COMMIT=""
