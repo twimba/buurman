@@ -49,7 +49,7 @@ const PropagationBanner = ({
     <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-info-bg border border-info-border text-sm text-info-text">
       <Info className="h-4 w-4 flex-shrink-0" />
       <span className="flex-1">
-        Flag updated in Flagsmith. The app will pick up this change within ~60
+        Flag updated in PostHog. The app will pick up this change within ~60
         seconds.
       </span>
       <button
@@ -1216,7 +1216,7 @@ export const SegmentFeatureFlags = () => {
         <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
           <div className="text-center py-12 text-text-muted">
             <Layers className="h-10 w-10 mx-auto mb-3 opacity-40" />
-            <p className="text-sm">No segments configured in Flagsmith</p>
+            <p className="text-sm">No cohorts configured in PostHog</p>
           </div>
         </div>
       )}

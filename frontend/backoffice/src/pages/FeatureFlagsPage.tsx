@@ -150,19 +150,11 @@ export const FeatureFlagsPage = () => {
               Feature flag management unavailable
             </p>
             <p className="text-sm text-warning-text mt-1">
-              No Flagsmith admin credentials configured. Set{" "}
+              No PostHog admin credentials configured. Set{" "}
               <code className="text-xs bg-warning-bg px-1 py-0.5 rounded">
-                FLAGSMITH_API_TOKEN
+                POSTHOG_PERSONAL_API_KEY
               </code>{" "}
-              (Cloud) or{" "}
-              <code className="text-xs bg-warning-bg px-1 py-0.5 rounded">
-                FLAGSMITH_ADMIN_EMAIL
-              </code>{" "}
-              +{" "}
-              <code className="text-xs bg-warning-bg px-1 py-0.5 rounded">
-                FLAGSMITH_ADMIN_PASSWORD
-              </code>{" "}
-              (self-hosted).
+              to enable feature flag management.
             </p>
           </div>
         </div>

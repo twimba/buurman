@@ -522,7 +522,7 @@ paths:
       parameters:
         - name: segmentId
           in: path
-          description: Flagsmith segment ID
+          description: PostHog cohort ID
           required: true
           schema:
             type: integer
@@ -593,7 +593,7 @@ paths:
       parameters:
         - name: segmentId
           in: path
-          description: Flagsmith segment ID
+          description: PostHog cohort ID
           required: true
           schema:
             type: integer
@@ -3408,7 +3408,7 @@ paths:
       tags:
         - Backoffice - Feature Flags
       summary: Get all segments with their feature flag overrides
-      description: Returns segments configured in Flagsmith with any feature flag overrides they define
+      description: Returns cohorts configured in PostHog with any feature flag overrides they define
       operationId: getSegmentOverrides
       responses:
         "200":
@@ -3461,7 +3461,7 @@ paths:
     get:
       tags:
         - Backoffice - Feature Flags
-      summary: Check if Flagsmith admin operations are available
+      summary: Check if PostHog admin operations are available
       description: Returns whether the backend has admin credentials configured for flag management
       operationId: getAdminStatus
       responses:

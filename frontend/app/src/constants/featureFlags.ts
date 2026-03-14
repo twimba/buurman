@@ -1,6 +1,6 @@
 /**
  * Feature flag key constants. Prevents typos and enables IDE navigation.
- * Keep in sync with Flagsmith dashboard and backend FeatureFlags.java.
+ * Keep in sync with PostHog dashboard and backend FeatureFlags.java.
  */
 export const FeatureFlags = {
   REPORTS: 'reports',

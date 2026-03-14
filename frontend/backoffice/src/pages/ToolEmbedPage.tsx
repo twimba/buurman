@@ -21,7 +21,6 @@ const getToolsConfig = (): Record<string, ToolConfig> => {
     keycloak: { name: "Keycloak", subdomain: "keycloak" },
     prometheus: { name: "Prometheus", subdomain: "prometheus" },
     traefik: { name: "Traefik", subdomain: "traefik" },
-    flagsmith: { name: "Flagsmith", subdomain: "flagsmith" },
     ...(local
       ? {
           mailpit: { name: "Mailpit", subdomain: "mailpit" },

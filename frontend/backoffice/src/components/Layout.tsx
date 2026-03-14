@@ -39,7 +39,7 @@ import {
   TwilioIcon,
   SendGridIcon,
   AwsIcon,
-  FlagsmithIcon,
+  PostHogIcon,
   HetznerIcon,
 } from "./ToolIcons";
 import { useGrafanaDashboards } from "../hooks/useGrafanaDashboards";
@@ -83,14 +83,12 @@ type ToolItem = {
 const getTools = (): ToolItem[] => {
   const local = isLocalEnv();
   return [
-    local
-      ? { name: "Flagsmith", href: "/tools/flagsmith", icon: FlagsmithIcon }
-      : {
-          name: "Flagsmith",
-          href: "https://app.flagsmith.com/project/34353/environment/QjT99rGBHX7Q8FP8538yZb/features",
-          icon: FlagsmithIcon,
-          external: true,
-        },
+    {
+      name: "PostHog",
+      href: "https://us.posthog.com",
+      icon: PostHogIcon,
+      external: true,
+    },
     { name: "Keycloak", href: "/tools/keycloak", icon: KeycloakIcon },
     { name: "Prometheus", href: "/tools/prometheus", icon: PrometheusIcon },
     ...(local
