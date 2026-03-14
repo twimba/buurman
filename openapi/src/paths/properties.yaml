@@ -2621,7 +2621,7 @@ financials-financings-payments-documents:
           type: string
     requestBody:
       content:
-        application/json:
+        multipart/form-data:
           schema:
             type: object
             properties:
@@ -3091,7 +3091,7 @@ photos:
           type: string
     requestBody:
       content:
-        application/json:
+        multipart/form-data:
           schema:
             type: object
             properties:
@@ -3235,7 +3235,7 @@ documents:
           type: string
     requestBody:
       content:
-        application/json:
+        multipart/form-data:
           schema:
             type: object
             properties:
