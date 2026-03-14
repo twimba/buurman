@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buurman — Design System Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   BUURMAN DESIGN SYSTEM — CSS CUSTOM PROPERTIES
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Primary: Ocean ("Maritime") ── */
+  --primary-50:  #f0f9ff;
+  --primary-100: #e0f2fe;
+  --primary-200: #bae6fd;
+  --primary-300: #7dd3fc;
+  --primary-400: #38bdf8;
+  --primary-500: #0284c7;
+  --primary-600: #0369a1;
+  --primary-700: #075985;
+  --primary-800: #0c4a6e;
+  --primary-900: #082f49;
+  --primary-950: #041c2c;
+
+  /* ── Accent: Warm Amber ("Hearth") ── */
+  --accent-50:  #fffbeb;
+  --accent-100: #fef3c7;
+  --accent-200: #fde68a;
+  --accent-300: #fcd34d;
+  --accent-400: #fbbf24;
+  --accent-500: #f59e0b;
+  --accent-600: #d97706;
+  --accent-700: #b45309;
+  --accent-800: #92400e;
+  --accent-900: #78350f;
+
+  /* ── Neutral: Warm Stone ── */
+  --neutral-0:   #ffffff;
+  --neutral-25:  #fafaf9;
+  --neutral-50:  #f5f5f4;
+  --neutral-100: #e7e5e4;
+  --neutral-200: #d6d3d1;
+  --neutral-300: #a8a29e;
+  --neutral-400: #78716c;
+  --neutral-500: #57534e;
+  --neutral-600: #44403c;
+  --neutral-700: #292524;
+  --neutral-800: #1c1917;
+  --neutral-900: #171412;
+  --neutral-950: #0c0a09;
+
+  /* ── Semantic ── */
+  --success:    #059669;
+  --success-bg: #ecfdf5;
+  --success-border: #a7f3d0;
+  --warning:    #d97706;
+  --warning-bg: #fffbeb;
+  --warning-border: #fde68a;
+  --error:      #dc2626;
+  --error-bg:   #fef2f2;
+  --error-border: #fecaca;
+  --info:       #0284c7;
+  --info-bg:    #f0f9ff;
+  --info-border: #bae6fd;
+
+  /* ── Semantic Surface Tokens (auto-swap in dark) ── */
+  --surface-page:    var(--neutral-25);
+  --surface-card:    var(--neutral-0);
+  --surface-raised:  var(--neutral-0);
+  --surface-overlay: rgba(12, 10, 9, 0.4);
+  --surface-inset:   var(--neutral-50);
+
+  --text-primary:   var(--neutral-800);
+  --text-secondary: var(--neutral-500);
+  --text-muted:     var(--neutral-400);
+  --text-disabled:  var(--neutral-300);
+  --text-inverse:   var(--neutral-25);
+  --text-link:      #0284c7;
+
+  --border-default: var(--neutral-100);
+  --border-subtle:  var(--neutral-50);
+  --border-strong:  var(--neutral-200);
+
+  /* ── Shadows (warm-tinted) ── */
+  --shadow-xs:  0 1px 2px rgba(28,25,23,0.04);
+  --shadow-sm:  0 1px 3px rgba(28,25,23,0.06), 0 1px 2px rgba(28,25,23,0.04);
+  --shadow-md:  0 4px 8px -2px rgba(28,25,23,0.06), 0 2px 4px -2px rgba(28,25,23,0.04);
+  --shadow-lg:  0 12px 24px -4px rgba(28,25,23,0.08), 0 4px 8px -4px rgba(28,25,23,0.03);
+  --shadow-xl:  0 24px 48px -8px rgba(28,25,23,0.10), 0 8px 16px -4px rgba(28,25,23,0.04);
+  --shadow-ring: 0 0 0 3px rgba(2,132,199,0.15);
+
+  /* ── Radius ── */
+  --radius-sm:   4px;
+  --radius-md:   6px;
+  --radius-lg:   8px;
+  --radius-xl:   12px;
+  --radius-2xl:  16px;
+  --radius-full: 9999px;
+
+  /* ── Sidebar ── */
+  --sidebar-bg: var(--neutral-0);
+  --sidebar-border: var(--border-default);
+  --sidebar-active-bg: var(--primary-50);
+  --sidebar-active-text: var(--primary-700);
+  --sidebar-text: var(--neutral-500);
+  --sidebar-hover-bg: var(--neutral-50);
+}
+
+/* ── Dark Mode ── */
+.dark {
+  --primary-500: #38bdf8;
+  --primary-600: #7dd3fc;
+
+  --success:    #34d399;
+  --success-bg: rgba(6, 78, 59, 0.2);
+  --success-border: #065f46;
+  --warning:    #fbbf24;
+  --warning-bg: rgba(120, 53, 15, 0.2);
+  --warning-border: #92400e;
+  --error:      #f87171;
+  --error-bg:   rgba(127, 29, 29, 0.2);
+  --error-border: #991b1b;
+  --info:       #38bdf8;
+  --info-bg:    rgba(12, 74, 110, 0.2);
+  --info-border: #075985;
+
+  --surface-page:    var(--neutral-950);
+  --surface-card:    var(--neutral-900);
+  --surface-raised:  var(--neutral-800);
+  --surface-overlay: rgba(0, 0, 0, 0.6);
+  --surface-inset:   var(--neutral-950);
+
+  --text-primary:   #e7e5e4;
+  --text-secondary: #a8a29e;
+  --text-muted:     #78716c;
+  --text-disabled:  #57534e;
+  --text-inverse:   var(--neutral-800);
+  --text-link:      #38bdf8;
+
+  --border-default: #292524;
+  --border-subtle:  var(--neutral-900);
+  --border-strong:  #44403c;
+
+  --shadow-xs:  0 1px 2px rgba(0,0,0,0.2);
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+  --shadow-md:  0 4px 8px -2px rgba(0,0,0,0.4), 0 2px 4px -2px rgba(0,0,0,0.3);
+  --shadow-lg:  0 12px 24px -4px rgba(0,0,0,0.5), 0 4px 8px -4px rgba(0,0,0,0.3);
+  --shadow-ring: 0 0 0 3px rgba(56,189,248,0.2);
+
+  --sidebar-bg: var(--neutral-950);
+  --sidebar-border: var(--neutral-800);
+  --sidebar-active-bg: #041c2c;
+  --sidebar-active-text: #38bdf8;
+  --sidebar-text: var(--neutral-400);
+  --sidebar-hover-bg: var(--neutral-900);
+}
+
+/* ── Backoffice indigo variant ── */
+.theme-backoffice {
+  --primary-50:  #eef2ff;
+  --primary-100: #e0e7ff;
+  --primary-200: #c7d2fe;
+  --primary-300: #a5b4fc;
+  --primary-400: #818cf8;
+  --primary-500: #6366f1;
+  --primary-600: #4f46e5;
+  --primary-700: #4338ca;
+  --primary-800: #3730a3;
+  --primary-900: #312e81;
+  --primary-950: #1e1b4b;
+  --text-link:   #6366f1;
+  --shadow-ring: 0 0 0 3px rgba(99,102,241,0.15);
+  --sidebar-bg: #f5f3ff;
+  --sidebar-border: #e0e7ff;
+  --sidebar-active-bg: #eef2ff;
+  --sidebar-active-text: #4338ca;
+  --sidebar-text: #6b7280;
+  --sidebar-hover-bg: #ede9fe;
+}
+.dark.theme-backoffice {
+  --text-link: #818cf8;
+  --shadow-ring: 0 0 0 3px rgba(129,140,248,0.2);
+  --sidebar-active-bg: #1e1b4b;
+  --sidebar-active-text: #818cf8;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESET + BASE
+   ═══════════════════════════════════════════════════════════════ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--surface-page);
+  color: var(--text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LAYOUT
+   ═══════════════════════════════════════════════════════════════ */
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 256px;
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--sidebar-border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 40;
+  transition: width 0.2s ease-out;
+  overflow: hidden;
+}
+
+.sidebar-header {
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.sidebar-logo {
+  width: 32px;
+  height: 32px;
+  background: var(--primary-500);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.sidebar-brand {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--text-primary);
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+}
+
+.sidebar-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  padding: 16px 12px 8px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  color: var(--sidebar-text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+  position: relative;
+}
+
+.nav-item:hover {
+  background: var(--sidebar-hover-bg);
+  color: var(--text-primary);
+}
+
+/* ── Accent Style: Pill (default) ── */
+.nav-item.active {
+  background: var(--sidebar-active-bg);
+  color: var(--sidebar-active-text);
+  font-weight: 600;
+}
+
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  stroke-width: 2;
+}
+
+.sidebar-footer {
+  padding: 16px;
+  border-top: 1px solid var(--border-default);
+}
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+.sidebar-user:hover { background: var(--sidebar-hover-bg); }
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--primary-100);
+  color: var(--primary-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.avatar-name { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+.avatar-email { font-size: 12px; color: var(--text-muted); }
+
+/* ── Main content ── */
+.main-content {
+  flex: 1;
+  margin-left: 256px;
+  min-height: 100vh;
+}
+
+.page-wrapper {
+  padding: 32px;
+  max-width: 1536px;
+  margin: 0 auto;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PAGE HEADER
+   ═══════════════════════════════════════════════════════════════ */
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.page-header-left h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  color: var(--text-primary);
+}
+
+.page-header-left p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.page-header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BUTTONS
+   ═══════════════════════════════════════════════════════════════ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background-color 0.1s ease, box-shadow 0.15s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-ring);
+}
+
+.btn-primary {
+  background: var(--primary-500);
+  color: white;
+  border-color: var(--primary-500);
+}
+.btn-primary:hover { background: var(--primary-600); border-color: var(--primary-600); }
+
+.btn-secondary {
+  background: var(--surface-card);
+  color: var(--text-primary);
+  border-color: var(--border-default);
+  box-shadow: var(--shadow-xs);
+}
+.btn-secondary:hover { background: var(--surface-inset); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+}
+.btn-ghost:hover { background: var(--surface-inset); color: var(--text-primary); }
+
+.btn-danger {
+  background: var(--error);
+  color: white;
+  border-color: var(--error);
+}
+.btn-danger:hover { background: #b91c1c; }
+
+.btn-sm { padding: 6px 12px; font-size: 13px; }
+.btn-icon { padding: 8px; }
+.btn-icon svg { width: 18px; height: 18px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   CARDS
+   ═══════════════════════════════════════════════════════════════ */
+
+.card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 24px;
+  transition: box-shadow 0.15s ease;
+}
+
+.card-hover:hover { box-shadow: var(--shadow-md); }
+
+/* ═══════════════════════════════════════════════════════════════
+   METRIC CARDS
+   ═══════════════════════════════════════════════════════════════ */
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.metric-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 24px;
+  display: flex;
+  gap: 16px;
+}
+
+.metric-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.metric-icon-wrap svg { width: 24px; height: 24px; }
+.metric-icon-primary { background: var(--primary-50); color: var(--primary-500); }
+.metric-icon-success { background: var(--success-bg); color: var(--success); }
+.metric-icon-warning { background: var(--warning-bg); color: var(--warning); }
+.metric-icon-accent  { background: var(--accent-50); color: var(--accent-600); }
+
+.metric-body { flex: 1; min-width: 0; }
+
+.metric-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.metric-value {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 6px;
+}
+.metric-trend svg { width: 14px; height: 14px; }
+.trend-up { color: var(--success); }
+.trend-down { color: var(--error); }
+
+.metric-alert {
+  background: var(--error-bg);
+  border-color: var(--error-border);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STATUS BADGES
+   ═══════════════════════════════════════════════════════════════ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.badge-emerald { background: var(--success-bg); color: var(--success); }
+.badge-emerald .badge-dot { background: var(--success); }
+
+.badge-amber { background: var(--warning-bg); color: var(--warning); }
+.badge-amber .badge-dot { background: var(--warning); }
+
+.badge-red { background: var(--error-bg); color: var(--error); }
+.badge-red .badge-dot { background: var(--error); }
+
+.badge-blue { background: var(--info-bg); color: var(--info); }
+.badge-blue .badge-dot { background: var(--info); }
+
+.badge-gray {
+  background: var(--neutral-50);
+  color: var(--neutral-500);
+}
+.badge-gray .badge-dot { background: var(--neutral-400); }
+
+.badge-teal { background: var(--primary-50); color: var(--primary-700); }
+.badge-teal .badge-dot { background: var(--primary-500); }
+
+.badge-purple { background: #f5f3ff; color: #7c3aed; }
+.badge-purple .badge-dot { background: #7c3aed; }
+
+/* ═══════════════════════════════════════════════════════════════
+   FILTER BAR
+   ═══════════════════════════════════════════════════════════════ */
+
+.filter-bar {
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filter-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-right: 4px;
+}
+
+.filter-btn {
+  padding: 6px 14px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--border-default);
+  background: var(--surface-card);
+  color: var(--text-secondary);
+  transition: all 0.1s ease;
+}
+.filter-btn:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+.filter-btn.active {
+  background: var(--primary-50);
+  border-color: var(--primary-200);
+  color: var(--primary-700);
+  font-weight: 600;
+}
+
+.filter-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: var(--surface-inset);
+  color: var(--text-secondary);
+  margin-left: auto;
+  min-width: 240px;
+}
+.filter-search svg { width: 16px; height: 16px; color: var(--text-muted); flex-shrink: 0; }
+.filter-search input {
+  border: none;
+  background: none;
+  font-size: 13px;
+  color: var(--text-primary);
+  outline: none;
+  width: 100%;
+  font-family: inherit;
+}
+.filter-search input::placeholder { color: var(--text-muted); }
+
+.filter-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border-default);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DATA TABLE
+   ═══════════════════════════════════════════════════════════════ */
+
+.data-table-wrap {
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+
+.data-table-header {
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.data-table-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.data-table-count {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+thead th {
+  text-align: left;
+  padding: 12px 24px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  background: var(--surface-inset);
+  border-bottom: 1px solid var(--border-default);
+  white-space: nowrap;
+  cursor: default;
+  user-select: none;
+}
+
+thead th.sortable {
+  cursor: pointer;
+}
+thead th.sortable:hover {
+  color: var(--text-primary);
+}
+
+thead th .sort-icon {
+  display: inline-flex;
+  margin-left: 4px;
+  opacity: 0.4;
+  vertical-align: middle;
+}
+thead th.sorted .sort-icon { opacity: 1; color: var(--primary-500); }
+
+tbody td {
+  padding: 14px 24px;
+  font-size: 14px;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+tbody tr {
+  transition: background-color 0.1s ease;
+}
+tbody tr:hover { background: var(--primary-50); }
+tbody tr:last-child td { border-bottom: none; }
+
+.cell-property {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.property-thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--surface-inset);
+  border: 1px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+.property-thumb svg { width: 18px; height: 18px; }
+
+.cell-property-name {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+.cell-property-addr {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.cell-money {
+  font-weight: 500;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.cell-money.positive { color: var(--success); }
+.cell-money.negative { color: var(--error); }
+
+.cell-actions {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+tbody tr:hover .cell-actions { opacity: 1; }
+
+.cell-actions button {
+  padding: 6px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.1s ease, color 0.1s ease;
+}
+.cell-actions button:hover { background: var(--surface-inset); color: var(--text-primary); }
+.cell-actions button svg { width: 16px; height: 16px; }
+
+td.align-right, th.align-right { text-align: right; }
+td.align-center, th.align-center { text-align: center; }
+
+/* ═══════════════════════════════════════════════════════════════
+   PAGINATION
+   ═══════════════════════════════════════════════════════════════ */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  border-top: 1px solid var(--border-default);
+  background: var(--surface-inset);
+}
+
+.pagination-info {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.pagination-buttons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.page-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  background: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all 0.1s ease;
+}
+.page-btn:hover { background: var(--surface-card); border-color: var(--border-default); }
+.page-btn.active {
+  background: var(--primary-500);
+  color: white;
+  border-color: var(--primary-500);
+}
+.page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.page-btn svg { width: 16px; height: 16px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   MODAL
+   ═══════════════════════════════════════════════════════════════ */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--surface-overlay);
+  backdrop-filter: blur(4px);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fade-in 0.15s ease-out;
+}
+
+.modal-panel {
+  background: var(--surface-card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 512px;
+  max-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  animation: scale-in 0.15s ease-out;
+}
+
+.modal-header {
+  padding: 24px 24px 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.modal-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.modal-close {
+  padding: 4px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: all 0.1s ease;
+}
+.modal-close:hover { background: var(--surface-inset); color: var(--text-primary); }
+.modal-close svg { width: 20px; height: 20px; }
+
+.modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-default);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scale-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+/* ═══════════════════════════════════════════════════════════════
+   FORM FIELDS
+   ═══════════════════════════════════════════════════════════════ */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-field { display: flex; flex-direction: column; }
+.form-field.col-span-2 { grid-column: span 2; }
+
+.form-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+.form-label .required { color: var(--error); margin-left: 2px; }
+
+.form-input {
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: var(--surface-card);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  outline: none;
+}
+.form-input::placeholder { color: var(--text-muted); }
+.form-input:focus {
+  border-color: var(--primary-500);
+  box-shadow: var(--shadow-ring);
+}
+
+.form-input.has-error {
+  border-color: var(--error);
+  box-shadow: 0 0 0 3px rgba(220,38,38,0.15);
+}
+
+.form-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.form-error {
+  font-size: 12px;
+  color: var(--error);
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.form-error svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+select.form-input {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2378716c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   EMPTY STATE
+   ═══════════════════════════════════════════════════════════════ */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+  text-align: center;
+}
+
+.empty-state-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  background: var(--surface-inset);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  color: var(--text-muted);
+}
+.empty-state-icon svg { width: 24px; height: 24px; }
+
+.empty-state-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.empty-state-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  max-width: 360px;
+  margin-bottom: 16px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CONTROLS BAR (top right toggles)
+   ═══════════════════════════════════════════════════════════════ */
+
+.controls-bar {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 100;
+  display: flex;
+  gap: 8px;
+}
+
+.control-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-default);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--text-primary);
+  transition: all 0.15s ease;
+}
+.control-toggle:hover { box-shadow: var(--shadow-lg); }
+.control-toggle svg { width: 16px; height: 16px; }
+.control-toggle.active {
+  background: var(--primary-500);
+  color: white;
+  border-color: var(--primary-500);
+}
+/* ═══════════════════════════════════════════════════════════════
+   TWO-COLUMN CHARTS AREA
+   ═══════════════════════════════════════════════════════════════ */
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.chart-card { padding: 0; overflow: hidden; }
+
+.chart-header {
+  padding: 20px 24px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chart-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.chart-body {
+  padding: 0 24px 24px;
+}
+
+/* Fake chart bars */
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  height: 160px;
+}
+
+.bar-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.bar {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.3s ease;
+}
+
+.bar-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Fake donut chart */
+.donut-chart {
+  width: 160px;
+  height: 160px;
+  border-radius: var(--radius-full);
+  margin: 0 auto;
+  position: relative;
+  background: conic-gradient(
+    var(--primary-500) 0deg 194deg,
+    var(--accent-400) 194deg 252deg,
+    var(--success) 252deg 310deg,
+    var(--neutral-200) 310deg 360deg
+  );
+}
+.donut-chart::after {
+  content: '';
+  position: absolute;
+  inset: 40px;
+  border-radius: var(--radius-full);
+  background: var(--surface-card);
+}
+
+.donut-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+.donut-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+.donut-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.donut-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 20px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+.section-divider {
+  border: none;
+  border-top: 1px solid var(--border-default);
+  margin: 48px 0;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SKELETON SHIMMER
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-inset) 25%, var(--border-default) 50%, var(--surface-inset) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1280px) {
+  .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+  .charts-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 1024px) {
+  .sidebar { display: none; }
+  .main-content { margin-left: 0; }
+}
+
+@media (max-width: 768px) {
+  .metrics-grid { grid-template-columns: 1fr; }
+  .page-wrapper { padding: 16px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-field.col-span-2 { grid-column: span 1; }
+  .filter-bar { flex-direction: column; align-items: stretch; }
+  .filter-search { margin-left: 0; min-width: auto; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ CONTROLS ═══════════════ -->
+<div class="controls-bar">
+  <button class="control-toggle" id="themeToggle" onclick="toggleTheme()">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+    Dark
+  </button>
+  <button class="control-toggle" id="variantToggle" onclick="toggleVariant()">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 12h18"/></svg>
+    Backoffice
+  </button>
+  <button class="control-toggle" id="modalToggle" onclick="toggleModal()">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M8 7v7"/><path d="M12 7v4"/><path d="M16 7v7"/></svg>
+    Modal
+  </button>
+</div>
+
+<!-- ═══════════════ APP LAYOUT ═══════════════ -->
+<div class="app-layout">
+
+  <!-- ═══════════════ SIDEBAR ═══════════════ -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo" id="sidebarLogo">B</div>
+      <span class="sidebar-brand" id="sidebarBrand">Buurman</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Overview</div>
+      <a class="nav-item active" href="#">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+        Dashboard
+      </a>
+      <a class="nav-item" href="#">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Properties
+      </a>
+      <a class="nav-item" href="#">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Tenants
+      </a>
+
+      <div class="sidebar-section-label">Finance</div>
+      <a class="nav-item" href="#">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+        Contracts
+      </a>
+      <a class="nav-item" href="#">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg>
+        Payments
+      </a>
+      <a class="nav-item" href="#">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+        Expenses
+      </a>
+      <a class="nav-item" href="#">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+        Reports
+      </a>
+
+      <div class="sidebar-section-label">Manage</div>
+      <a class="nav-item" href="#">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+        Documents
+      </a>
+      <a class="nav-item" href="#">
+        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        Settings
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="avatar">LS</div>
+        <div>
+          <div class="avatar-name">Luis Santos</div>
+          <div class="avatar-email">luis@buurman.io</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════ MAIN CONTENT ═══════════════ -->
+  <main class="main-content">
+    <div class="page-wrapper">
+
+      <!-- PAGE HEADER -->
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1>Portfolio Dashboard</h1>
+          <p>Overview of your property portfolio performance</p>
+        </div>
+        <div class="page-header-actions">
+          <button class="btn btn-secondary btn-sm">
+            <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+            Export
+          </button>
+          <button class="btn btn-primary btn-sm">
+            <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            Add Property
+          </button>
+        </div>
+      </div>
+
+      <!-- METRIC CARDS -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-icon-wrap metric-icon-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <div class="metric-body">
+            <div class="metric-label">Portfolio Value</div>
+            <div class="metric-value">&euro;2,847,500</div>
+            <div class="metric-trend trend-up">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+              +12.4% from last year
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon-wrap metric-icon-success">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="metric-body">
+            <div class="metric-label">Occupancy Rate</div>
+            <div class="metric-value">94.2%</div>
+            <div class="metric-trend trend-up">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+              +2.1% from last quarter
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon-wrap metric-icon-accent">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg>
+          </div>
+          <div class="metric-body">
+            <div class="metric-label">Monthly Income</div>
+            <div class="metric-value">&euro;18,640</div>
+            <div class="metric-trend trend-up">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+              +&euro;1,200 from last month
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card metric-alert">
+          <div class="metric-icon-wrap" style="background: var(--error-bg); color: var(--error);">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+          </div>
+          <div class="metric-body">
+            <div class="metric-label">Overdue Payments</div>
+            <div class="metric-value" style="color: var(--error);">3</div>
+            <div class="metric-trend trend-down">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              &euro;4,350 outstanding
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHARTS ROW -->
+      <div class="charts-grid">
+        <div class="card chart-card">
+          <div class="chart-header">
+            <span class="chart-title">Monthly Revenue</span>
+            <span class="badge badge-teal"><span class="badge-dot"></span> Last 8 months</span>
+          </div>
+          <div class="chart-body">
+            <div class="bar-chart">
+              <div class="bar-group"><div class="bar" style="height:55%; background: var(--primary-200);"></div><span class="bar-label">Aug</span></div>
+              <div class="bar-group"><div class="bar" style="height:62%; background: var(--primary-200);"></div><span class="bar-label">Sep</span></div>
+              <div class="bar-group"><div class="bar" style="height:58%; background: var(--primary-200);"></div><span class="bar-label">Oct</span></div>
+              <div class="bar-group"><div class="bar" style="height:70%; background: var(--primary-300);"></div><span class="bar-label">Nov</span></div>
+              <div class="bar-group"><div class="bar" style="height:75%; background: var(--primary-300);"></div><span class="bar-label">Dec</span></div>
+              <div class="bar-group"><div class="bar" style="height:68%; background: var(--primary-400);"></div><span class="bar-label">Jan</span></div>
+              <div class="bar-group"><div class="bar" style="height:82%; background: var(--primary-400);"></div><span class="bar-label">Feb</span></div>
+              <div class="bar-group"><div class="bar" style="height:90%; background: var(--primary-500);"></div><span class="bar-label">Mar</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card chart-card">
+          <div class="chart-header">
+            <span class="chart-title">Portfolio Allocation</span>
+            <span class="badge badge-gray">By type</span>
+          </div>
+          <div class="chart-body" style="display:flex; flex-direction:column; align-items:center;">
+            <div class="donut-chart">
+              <div class="donut-center">
+                <span class="donut-value">12</span>
+                <span class="donut-label">Properties</span>
+              </div>
+            </div>
+            <div class="donut-legend">
+              <div class="legend-item"><span class="legend-dot" style="background:var(--primary-500)"></span> Apartments (54%)</div>
+              <div class="legend-item"><span class="legend-dot" style="background:var(--accent-400)"></span> Houses (16%)</div>
+              <div class="legend-item"><span class="legend-dot" style="background:var(--success)"></span> Commercial (16%)</div>
+              <div class="legend-item"><span class="legend-dot" style="background:var(--neutral-200)"></span> Vacant (14%)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FILTER BAR -->
+      <div class="filter-bar">
+        <div class="filter-group">
+          <span class="filter-label">Status</span>
+          <button class="filter-btn active">All</button>
+          <button class="filter-btn">Occupied</button>
+          <button class="filter-btn">Vacant</button>
+          <button class="filter-btn">Maintenance</button>
+        </div>
+        <div class="filter-divider"></div>
+        <div class="filter-group">
+          <span class="filter-label">Type</span>
+          <button class="filter-btn">Apartment</button>
+          <button class="filter-btn">House</button>
+          <button class="filter-btn">Commercial</button>
+        </div>
+        <div class="filter-search">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" placeholder="Search properties...">
+        </div>
+      </div>
+
+      <!-- DATA TABLE -->
+      <div class="data-table-wrap">
+        <div class="data-table-header">
+          <span class="data-table-title">Property Performance</span>
+          <span class="data-table-count">12 properties</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th class="sortable sorted">Property <span class="sort-icon"><svg width="14" height="14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg></span></th>
+              <th>Tenant</th>
+              <th>Status</th>
+              <th>Contract</th>
+              <th class="sortable align-right">Rent <span class="sort-icon"><svg width="14" height="14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg></span></th>
+              <th class="sortable align-right">Payment <span class="sort-icon"><svg width="14" height="14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg></span></th>
+              <th class="align-right" style="width:80px"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="cell-property">
+                  <div class="property-thumb"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+                  <div><div class="cell-property-name">Herengracht 124</div><div class="cell-property-addr">Amsterdam, 1015 BT</div></div>
+                </div>
+              </td>
+              <td>Jan de Vries</td>
+              <td><span class="badge badge-emerald"><span class="badge-dot"></span> Occupied</span></td>
+              <td><span class="badge badge-blue"><span class="badge-dot"></span> Active</span></td>
+              <td class="cell-money">&euro;2,450</td>
+              <td class="cell-money positive">&euro;2,450</td>
+              <td class="cell-actions">
+                <button title="View"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                <button title="Edit"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>
+                <button title="More"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="cell-property">
+                  <div class="property-thumb"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+                  <div><div class="cell-property-name">Keizersgracht 560</div><div class="cell-property-addr">Amsterdam, 1017 EM</div></div>
+                </div>
+              </td>
+              <td>Sophie Bakker</td>
+              <td><span class="badge badge-emerald"><span class="badge-dot"></span> Occupied</span></td>
+              <td><span class="badge badge-blue"><span class="badge-dot"></span> Active</span></td>
+              <td class="cell-money">&euro;1,875</td>
+              <td class="cell-money positive">&euro;1,875</td>
+              <td class="cell-actions">
+                <button title="View"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                <button title="Edit"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>
+                <button title="More"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="cell-property">
+                  <div class="property-thumb"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+                  <div><div class="cell-property-name">Prinsengracht 882</div><div class="cell-property-addr">Amsterdam, 1017 JL</div></div>
+                </div>
+              </td>
+              <td>Emma Jansen</td>
+              <td><span class="badge badge-emerald"><span class="badge-dot"></span> Occupied</span></td>
+              <td><span class="badge badge-amber"><span class="badge-dot"></span> Expiring</span></td>
+              <td class="cell-money">&euro;2,100</td>
+              <td class="cell-money negative">-&euro;2,100</td>
+              <td class="cell-actions">
+                <button title="View"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                <button title="Edit"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>
+                <button title="More"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="cell-property">
+                  <div class="property-thumb"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+                  <div><div class="cell-property-name">Vondelstraat 47</div><div class="cell-property-addr">Amsterdam, 1054 GJ</div></div>
+                </div>
+              </td>
+              <td>—</td>
+              <td><span class="badge badge-red"><span class="badge-dot"></span> Vacant</span></td>
+              <td><span class="badge badge-gray"><span class="badge-dot"></span> None</span></td>
+              <td class="cell-money" style="color:var(--text-muted)">&euro;1,950</td>
+              <td class="cell-money" style="color:var(--text-muted)">—</td>
+              <td class="cell-actions">
+                <button title="View"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                <button title="Edit"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>
+                <button title="More"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="cell-property">
+                  <div class="property-thumb"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+                  <div><div class="cell-property-name">Reguliersgracht 31</div><div class="cell-property-addr">Amsterdam, 1017 LK</div></div>
+                </div>
+              </td>
+              <td>Pieter van Dijk</td>
+              <td><span class="badge badge-amber"><span class="badge-dot"></span> Maintenance</span></td>
+              <td><span class="badge badge-blue"><span class="badge-dot"></span> Active</span></td>
+              <td class="cell-money">&euro;3,200</td>
+              <td class="cell-money positive">&euro;3,200</td>
+              <td class="cell-actions">
+                <button title="View"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                <button title="Edit"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>
+                <button title="More"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <span class="pagination-info">Showing 1–5 of 12 properties</span>
+          <div class="pagination-buttons">
+            <button class="page-btn" disabled><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <button class="page-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORM EXAMPLE + EMPTY STATE -->
+      <div class="charts-grid">
+        <!-- FORM SECTION -->
+        <div class="card">
+          <div style="margin-bottom:20px;">
+            <h3 style="font-size:18px; font-weight:600; color:var(--text-primary);">Add New Tenant</h3>
+            <p style="font-size:13px; color:var(--text-secondary); margin-top:4px;">FormField component example</p>
+          </div>
+          <div class="form-grid">
+            <div class="form-field">
+              <label class="form-label">First Name <span class="required">*</span></label>
+              <input type="text" class="form-input" value="Maria" placeholder="Enter first name">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Last Name <span class="required">*</span></label>
+              <input type="text" class="form-input" value="van den Berg" placeholder="Enter last name">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Email <span class="required">*</span></label>
+              <input type="email" class="form-input has-error" value="maria@invalid">
+              <div class="form-error">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+                Please enter a valid email address
+              </div>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Phone</label>
+              <input type="tel" class="form-input" placeholder="+31 6 1234 5678">
+              <div class="form-hint">Include country code</div>
+            </div>
+            <div class="form-field col-span-2">
+              <label class="form-label">Property <span class="required">*</span></label>
+              <select class="form-input">
+                <option>Select a property...</option>
+                <option>Herengracht 124, Amsterdam</option>
+                <option>Keizersgracht 560, Amsterdam</option>
+                <option selected>Vondelstraat 47, Amsterdam</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:24px; padding-top:24px; border-top:1px solid var(--border-default);">
+            <button class="btn btn-secondary">Cancel</button>
+            <button class="btn btn-primary">Save Tenant</button>
+          </div>
+        </div>
+
+        <!-- EMPTY STATE -->
+        <div class="card">
+          <div style="margin-bottom:20px;">
+            <h3 style="font-size:18px; font-weight:600; color:var(--text-primary);">Upcoming Payments</h3>
+            <p style="font-size:13px; color:var(--text-secondary); margin-top:4px;">EmptyState component example</p>
+          </div>
+          <div class="empty-state">
+            <div class="empty-state-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+            </div>
+            <div class="empty-state-title">No upcoming payments</div>
+            <div class="empty-state-desc">All payments for this period have been collected. Check back next month for new invoices.</div>
+            <button class="btn btn-primary btn-sm">
+              <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+              Generate Payments
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- BADGE SHOWCASE -->
+      <div class="card" style="margin-bottom:32px;">
+        <h3 style="font-size:18px; font-weight:600; color:var(--text-primary); margin-bottom:16px;">Status Badges</h3>
+        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+          <span class="badge badge-emerald"><span class="badge-dot"></span> Paid</span>
+          <span class="badge badge-amber"><span class="badge-dot"></span> Pending</span>
+          <span class="badge badge-red"><span class="badge-dot"></span> Overdue</span>
+          <span class="badge badge-blue"><span class="badge-dot"></span> Active</span>
+          <span class="badge badge-gray"><span class="badge-dot"></span> Draft</span>
+          <span class="badge badge-teal"><span class="badge-dot"></span> Occupied</span>
+          <span class="badge badge-purple"><span class="badge-dot"></span> Reviewing</span>
+          <span class="badge badge-emerald">Paid</span>
+          <span class="badge badge-amber">Partial</span>
+          <span class="badge badge-red">Cancelled</span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════ MODAL ═══════════════ -->
+<div class="modal-overlay" id="modal" style="display:none;" onclick="if(event.target===this)toggleModal()">
+  <div class="modal-panel" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Record Payment</div>
+        <div class="modal-subtitle">Herengracht 124 — Jan de Vries</div>
+      </div>
+      <button class="modal-close" onclick="toggleModal()" aria-label="Close">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-field">
+          <label class="form-label">Amount <span class="required">*</span></label>
+          <input type="text" class="form-input" value="€2,450.00" style="font-variant-numeric:tabular-nums;">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Date <span class="required">*</span></label>
+          <input type="date" class="form-input" value="2026-03-14">
+        </div>
+        <div class="form-field col-span-2">
+          <label class="form-label">Payment Method</label>
+          <select class="form-input">
+            <option selected>Bank Transfer</option>
+            <option>Direct Debit</option>
+            <option>Cash</option>
+            <option>iDEAL</option>
+          </select>
+        </div>
+        <div class="form-field col-span-2">
+          <label class="form-label">Notes</label>
+          <input type="text" class="form-input" placeholder="Optional payment reference or notes">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="toggleModal()">Cancel</button>
+      <button class="btn btn-primary">
+        <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Record Payment
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleTheme() {
+  document.documentElement.classList.toggle('dark');
+  const btn = document.getElementById('themeToggle');
+  const isDark = document.documentElement.classList.contains('dark');
+  btn.textContent = isDark ? '☀ Light' : '🌙 Dark';
+  btn.classList.toggle('active', isDark);
+}
+
+function toggleVariant() {
+  const root = document.documentElement;
+  root.classList.toggle('theme-backoffice');
+  const isBo = root.classList.contains('theme-backoffice');
+
+  // Backoffice is permanently light — force remove dark mode
+  if (isBo) {
+    root.classList.remove('dark');
+    const themeBtn = document.getElementById('themeToggle');
+    themeBtn.textContent = '🌙 Dark';
+    themeBtn.classList.remove('active');
+    themeBtn.disabled = true;
+    themeBtn.style.opacity = '0.4';
+    themeBtn.style.cursor = 'not-allowed';
+  } else {
+    const themeBtn = document.getElementById('themeToggle');
+    themeBtn.disabled = false;
+    themeBtn.style.opacity = '';
+    themeBtn.style.cursor = '';
+  }
+
+  const btn = document.getElementById('variantToggle');
+  btn.classList.toggle('active', isBo);
+  document.getElementById('sidebarBrand').textContent = isBo ? 'Backoffice' : 'Buurman';
+  document.getElementById('sidebarLogo').style.background = isBo ? 'var(--primary-500)' : '';
+
+  const h1 = document.querySelector('.page-header-left h1');
+  if (h1) h1.textContent = isBo ? 'Admin Dashboard' : 'Portfolio Dashboard';
+}
+
+function toggleModal() {
+  const modal = document.getElementById('modal');
+  modal.style.display = modal.style.display === 'none' ? 'flex' : 'none';
+}
+
+// Filter toggle
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    this.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// Escape to close modal
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('modal').style.display !== 'none') {
+    toggleModal();
+  }
+});
+</script>
+</body>
+</html>
