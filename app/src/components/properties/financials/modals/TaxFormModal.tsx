@@ -109,7 +109,7 @@ function MonthMultiSelect({
         type="button"
         onClick={() => onChange(undefined)}
         disabled={disabled}
-        className={`text-xs px-2 py-1 rounded transition-colors ${allSelected ? 'bg-[#5c7cfa] text-white' : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db]'} disabled:opacity-50`}
+        className={`text-xs px-2 py-1 rounded transition-colors ${allSelected ? 'bg-primary-500 text-white' : 'bg-surface-inset text-text-secondary '} disabled:opacity-50`}
       >
         All
       </button>
@@ -119,7 +119,7 @@ function MonthMultiSelect({
           type="button"
           onClick={() => toggle(m.value)}
           disabled={disabled}
-          className={`text-xs px-2 py-1 rounded transition-colors ${!allSelected && selected.has(m.value) ? 'bg-[#5c7cfa] text-white' : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db]'} disabled:opacity-50`}
+          className={`text-xs px-2 py-1 rounded transition-colors ${!allSelected && selected.has(m.value) ? 'bg-primary-500 text-white' : 'bg-surface-inset text-text-secondary '} disabled:opacity-50`}
         >
           {m.label}
         </button>
@@ -198,15 +198,15 @@ export const TaxFormModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-xl dark:shadow-black/20 max-w-lg w-full mx-4 max-h-[90vh] flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b border-[#c9cfd9] dark:border-[#3a3f54] flex-shrink-0">
-          <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+      <div className="bg-surface-card rounded-lg shadow-xl dark:shadow-black/20 max-w-lg w-full mx-4 max-h-[90vh] flex flex-col">
+        <div className="flex items-center justify-between p-4 border-b border-border-strong flex-shrink-0">
+          <h2 className="text-lg font-semibold text-text-primary">
             {isEdit ? 'Edit Tax' : 'Add Tax'}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="text-[#6b7194] hover:text-[#3d4463] dark:text-[#8b90a8] dark:hover:text-[#c4c8db]"
+            className="text-text-secondary hover:text-text-secondary"
           >
             <X className="h-5 w-5" />
           </button>
@@ -219,7 +219,7 @@ export const TaxFormModal = ({
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+              <label className="block text-sm font-medium text-text-secondary mb-1">
                 Tax Type *
               </label>
               <select
@@ -231,7 +231,7 @@ export const TaxFormModal = ({
                   })
                 }
                 required
-                className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md px-3 py-2 bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+                className="w-full border border-border-strong rounded-md px-3 py-2 bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               >
                 {Object.values(TaxType).map((type) => (
                   <option key={type} value={type}>
@@ -242,7 +242,7 @@ export const TaxFormModal = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+              <label className="block text-sm font-medium text-text-secondary mb-1">
                 Authority
               </label>
               <input
@@ -251,12 +251,12 @@ export const TaxFormModal = ({
                 onChange={(e) =>
                   setFormData({ ...formData, authority: e.target.value })
                 }
-                className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md px-3 py-2 bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+                className="w-full border border-border-strong rounded-md px-3 py-2 bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               />
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+              <label className="block text-sm font-medium text-text-secondary mb-1">
                 Annual Amount *
               </label>
               <MoneyInput
@@ -269,7 +269,7 @@ export const TaxFormModal = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+              <label className="block text-sm font-medium text-text-secondary mb-1">
                 Payment Frequency
               </label>
               <select
@@ -286,7 +286,7 @@ export const TaxFormModal = ({
                     });
                   }
                 }}
-                className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md px-3 py-2 bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+                className="w-full border border-border-strong rounded-md px-3 py-2 bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               >
                 {Object.values(PaymentFrequency).map((freq) => (
                   <option key={freq} value={freq}>
@@ -297,7 +297,7 @@ export const TaxFormModal = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+              <label className="block text-sm font-medium text-text-secondary mb-1">
                 Tax Year
               </label>
               <input
@@ -313,12 +313,12 @@ export const TaxFormModal = ({
                       : undefined,
                   })
                 }
-                className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md px-3 py-2 bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+                className="w-full border border-border-strong rounded-md px-3 py-2 bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               />
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+              <label className="block text-sm font-medium text-text-secondary mb-1">
                 Due Months
               </label>
               <MonthMultiSelect
@@ -341,7 +341,7 @@ export const TaxFormModal = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+              <label className="block text-sm font-medium text-text-secondary mb-1">
                 Start Date
               </label>
               <input
@@ -350,12 +350,12 @@ export const TaxFormModal = ({
                 onChange={(e) =>
                   setFormData({ ...formData, startDate: e.target.value })
                 }
-                className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md px-3 py-2 bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+                className="w-full border border-border-strong rounded-md px-3 py-2 bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+              <label className="block text-sm font-medium text-text-secondary mb-1">
                 End Date
               </label>
               <input
@@ -364,12 +364,12 @@ export const TaxFormModal = ({
                 onChange={(e) =>
                   setFormData({ ...formData, endDate: e.target.value })
                 }
-                className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md px-3 py-2 bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+                className="w-full border border-border-strong rounded-md px-3 py-2 bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+              <label className="block text-sm font-medium text-text-secondary mb-1">
                 Status
               </label>
               <select
@@ -380,7 +380,7 @@ export const TaxFormModal = ({
                     status: e.target.value as TaxStatus,
                   })
                 }
-                className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md px-3 py-2 bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+                className="w-full border border-border-strong rounded-md px-3 py-2 bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               >
                 {Object.values(TaxStatus).map((s) => (
                   <option key={s} value={s}>
@@ -391,7 +391,7 @@ export const TaxFormModal = ({
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+              <label className="block text-sm font-medium text-text-secondary mb-1">
                 Notes
               </label>
               <RichTextEditor
@@ -405,11 +405,11 @@ export const TaxFormModal = ({
           </div>
         </form>
 
-        <div className="flex justify-end gap-3 p-4 border-t border-[#c9cfd9] dark:border-[#3a3f54] flex-shrink-0">
+        <div className="flex justify-end gap-3 p-4 border-t border-border-strong flex-shrink-0">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+            className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset"
           >
             Cancel
           </button>
@@ -417,7 +417,7 @@ export const TaxFormModal = ({
             type="submit"
             form="tax-form"
             disabled={isPending}
-            className="bg-[#5c7cfa] text-white px-4 py-2 text-sm font-medium rounded-md hover:bg-[#4c6ef5] disabled:opacity-50"
+            className="bg-primary-500 text-white px-4 py-2 text-sm font-medium rounded-md hover:bg-primary-600 disabled:opacity-50"
           >
             {isPending ? 'Saving...' : 'Save'}
           </button>

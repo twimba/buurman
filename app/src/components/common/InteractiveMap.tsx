@@ -50,7 +50,7 @@ interface InteractiveMapProps {
 }
 
 const placeholderCls =
-  'bg-[#f8f9fc] dark:bg-[#1a1d28] rounded-lg flex flex-col items-center justify-center text-center';
+  'bg-surface-page rounded-lg flex flex-col items-center justify-center text-center';
 
 function getAccuracyMessage(
   accuracy: string | null | undefined
@@ -164,14 +164,14 @@ export const InteractiveMap = ({
   if (!apiKey) {
     return (
       <div className={`${height} ${placeholderCls}`}>
-        <MapPin className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] mb-3" />
-        <p className="text-[#6b7194] dark:text-[#8b90a8] font-medium mb-1">
+        <MapPin className="h-12 w-12 text-text-disabled mb-3" />
+        <p className="text-text-secondary font-medium mb-1">
           Map Preview Unavailable
         </p>
-        <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+        <p className="text-sm text-text-secondary">
           Configure VITE_GOOGLE_MAPS_API_KEY to enable maps
         </p>
-        <div className="mt-3 text-xs text-[#9ca0b8] dark:text-[#5c6180] bg-[#f1f3f9] dark:bg-[#1e2130] rounded p-2 font-mono">
+        <div className="mt-3 text-xs text-text-muted bg-surface-inset rounded p-2 font-mono">
           {street}, {city}
         </div>
       </div>
@@ -182,11 +182,11 @@ export const InteractiveMap = ({
   if (isGeocoding) {
     return (
       <div className={`${height} ${placeholderCls}`}>
-        <Loader2 className="h-10 w-10 text-[#5c7cfa] animate-spin mb-3" />
-        <p className="text-[#6b7194] dark:text-[#8b90a8] font-medium mb-1">
+        <Loader2 className="h-10 w-10 text-primary-500 animate-spin mb-3" />
+        <p className="text-text-secondary font-medium mb-1">
           Finding location...
         </p>
-        <div className="mt-3 text-xs text-[#9ca0b8] dark:text-[#5c6180] bg-[#f1f3f9] dark:bg-[#1e2130] rounded p-2 font-mono">
+        <div className="mt-3 text-xs text-text-muted bg-surface-inset rounded p-2 font-mono">
           {street}, {city}
         </div>
       </div>
@@ -197,14 +197,14 @@ export const InteractiveMap = ({
   if (mapsApiLoadError) {
     return (
       <div className={`${height} ${placeholderCls}`}>
-        <MapPin className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] mb-3" />
-        <p className="text-[#6b7194] dark:text-[#8b90a8] font-medium mb-1">
+        <MapPin className="h-12 w-12 text-text-disabled mb-3" />
+        <p className="text-text-secondary font-medium mb-1">
           Map Preview Unavailable
         </p>
-        <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+        <p className="text-sm text-text-secondary">
           Could not load Google Maps right now
         </p>
-        <div className="mt-3 text-xs text-[#9ca0b8] dark:text-[#5c6180] bg-[#f1f3f9] dark:bg-[#1e2130] rounded p-2 font-mono">
+        <div className="mt-3 text-xs text-text-muted bg-surface-inset rounded p-2 font-mono">
           {street}, {city}
         </div>
       </div>
@@ -217,7 +217,7 @@ export const InteractiveMap = ({
     return (
       <div className="space-y-2">
         <div
-          className={`w-full ${height} rounded-lg overflow-hidden border border-[#e2e6f0] dark:border-[#2a2e3f]`}
+          className={`w-full ${height} rounded-lg overflow-hidden border border-border-default `}
         >
           <APIProvider {...apiProviderProps}>
             <Map
@@ -230,7 +230,7 @@ export const InteractiveMap = ({
             />
           </APIProvider>
         </div>
-        <p className="text-sm text-[#5c7cfa] dark:text-[#7b9cff] text-center">
+        <p className="text-sm text-primary-500 dark:text-primary-300 text-center">
           Our map skills failed us this time. Click anywhere on the map to place
           your property pin.
         </p>
@@ -242,17 +242,17 @@ export const InteractiveMap = ({
   if ((latitude == null || longitude == null) && isInteractive) {
     return (
       <div className={`${height} ${placeholderCls}`}>
-        <MapPin className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] mb-3" />
-        <p className="text-[#6b7194] dark:text-[#8b90a8] font-medium mb-1">
+        <MapPin className="h-12 w-12 text-text-disabled mb-3" />
+        <p className="text-text-secondary font-medium mb-1">
           Location Not Found
         </p>
-        <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-3">
+        <p className="text-sm text-text-secondary mb-3">
           We couldn&apos;t find this address on the map
         </p>
         <button
           type="button"
           onClick={() => setClickToPlaceActive(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors text-sm font-medium"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm font-medium"
         >
           <MousePointerClick className="h-4 w-4" />
           Place pin manually
@@ -265,14 +265,14 @@ export const InteractiveMap = ({
   if (latitude == null || longitude == null) {
     return (
       <div className={`${height} ${placeholderCls}`}>
-        <MapPin className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] mb-3" />
-        <p className="text-[#6b7194] dark:text-[#8b90a8] font-medium mb-1">
+        <MapPin className="h-12 w-12 text-text-disabled mb-3" />
+        <p className="text-text-secondary font-medium mb-1">
           Location Not Found
         </p>
-        <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+        <p className="text-sm text-text-secondary">
           Could not find this address on the map
         </p>
-        <div className="mt-3 text-xs text-[#9ca0b8] dark:text-[#5c6180] bg-[#f1f3f9] dark:bg-[#1e2130] rounded p-2 font-mono">
+        <div className="mt-3 text-xs text-text-muted bg-surface-inset rounded p-2 font-mono">
           {street}, {city}
         </div>
       </div>
@@ -289,7 +289,7 @@ export const InteractiveMap = ({
   return (
     <div className="space-y-2">
       <div
-        className={`w-full ${height} rounded-lg overflow-hidden border border-[#e2e6f0] dark:border-[#2a2e3f]`}
+        className={`w-full ${height} rounded-lg overflow-hidden border border-border-default `}
       >
         <APIProvider {...apiProviderProps}>
           <Map
@@ -309,7 +309,7 @@ export const InteractiveMap = ({
         </APIProvider>
       </div>
       {accuracyMessage && (
-        <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] text-center">
+        <p className="text-sm text-text-secondary text-center">
           {accuracyMessage}
         </p>
       )}

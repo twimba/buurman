@@ -29,17 +29,17 @@ export const RequestCountryCard = () => {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="group text-left p-5 rounded-xl border-2 border-dashed border-[#e2e6f0] dark:border-[#2a2e3f] bg-[#f8f9fc]/50 dark:bg-[#0c0d14]/50 hover:border-[#5c7cfa]/40 dark:hover:border-[#748ffc]/40 hover:bg-[#f0f4ff] dark:hover:bg-[#5c7cfa]/[0.05] transition-all duration-200"
+        className="group text-left p-5 rounded-lg border-2 border-dashed border-border-default bg-surface-page/50 hover:border-primary-500/40 dark:hover:border-primary-400/40 hover:bg-primary-50 dark:hover:bg-primary-500/[0.05] transition-all duration-200"
       >
         <div className="flex items-center gap-3 mb-2">
-          <span className="flex items-center justify-center w-[46px] h-[46px] rounded-xl bg-[#f1f3f9] dark:bg-[#1e2130] text-[#9ca0b8] dark:text-[#5c6180] group-hover:bg-[#5c7cfa]/10 dark:group-hover:bg-[#5c7cfa]/20 group-hover:text-[#5c7cfa] dark:group-hover:text-[#91a7ff] transition-colors">
+          <span className="flex items-center justify-center w-[46px] h-[46px] rounded-xl bg-surface-inset text-text-muted group-hover:bg-primary-500/10 group-hover:text-primary-500 transition-colors">
             <Globe className="h-5 w-5" />
           </span>
-          <span className="font-semibold text-[#6b7194] dark:text-[#8b90a8] group-hover:text-[#5c7cfa] dark:group-hover:text-[#91a7ff] transition-colors">
+          <span className="font-semibold text-text-secondary group-hover:text-primary-500 transition-colors">
             Missing a country?
           </span>
         </div>
-        <p className="text-sm text-[#9ca0b8] dark:text-[#5c6180] leading-relaxed">
+        <p className="text-sm text-text-muted leading-relaxed">
           Don&apos;t see your country listed? Let us know and we&apos;ll work on
           adding it!
         </p>
@@ -52,18 +52,18 @@ export const RequestCountryCard = () => {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setIsOpen(false)}
           />
-          <div className="relative w-full max-w-md bg-white dark:bg-[#14161f] rounded-2xl border border-[#e2e6f0] dark:border-[#2a2e3f] shadow-xl overflow-hidden">
+          <div className="relative w-full max-w-md bg-surface-card rounded-2xl border border-border-default shadow-xl overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border-default">
               <div className="flex items-center gap-2">
-                <MessageCircleHeart className="h-5 w-5 text-[#5c7cfa] dark:text-[#91a7ff]" />
-                <h3 className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                <MessageCircleHeart className="h-5 w-5 text-primary-500 dark:text-primary-300" />
+                <h3 className="font-semibold text-text-primary">
                   Request a Country
                 </h3>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1 rounded-lg text-[#9ca0b8] hover:text-[#3d4463] hover:bg-[#f1f3f9] dark:hover:text-[#c4c8db] dark:hover:bg-[#1e2130] transition-colors"
+                className="p-1 rounded-lg text-text-muted hover:text-text-secondary hover:bg-surface-inset transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -71,14 +71,14 @@ export const RequestCountryCard = () => {
 
             {/* Body */}
             <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
-              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] leading-relaxed">
+              <p className="text-sm text-text-secondary leading-relaxed">
                 We&apos;re always expanding our coverage. Tell us which country
                 you&apos;d like regulation data for, and we&apos;ll bump it up
                 the priority list!
               </p>
 
               <div>
-                <label className="block text-xs font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+                <label className="block text-xs font-semibold text-text-secondary mb-1.5">
                   Country name
                 </label>
                 <input
@@ -89,14 +89,16 @@ export const RequestCountryCard = () => {
                   autoFocus
                   required
                   maxLength={255}
-                  className="w-full h-10 px-3 rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#0c0d14] text-[#1a1d2e] dark:text-[#eef0f6] text-sm placeholder:text-[#9ca0b8] dark:placeholder:text-[#5c6180] focus:outline-none focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa]/20 transition-colors"
+                  className="w-full h-10 px-3 rounded-lg border border-border-default bg-surface-card text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+                <label className="block text-xs font-semibold text-text-secondary mb-1.5">
                   Anything else we should know?{' '}
-                  <span className="font-normal text-[#9ca0b8]">(optional)</span>
+                  <span className="font-normal text-text-muted">
+                    (optional)
+                  </span>
                 </label>
                 <textarea
                   value={notes}
@@ -104,7 +106,7 @@ export const RequestCountryCard = () => {
                   placeholder="Specific regions, property types, urgency..."
                   rows={3}
                   maxLength={1000}
-                  className="w-full px-3 py-2 rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#0c0d14] text-[#1a1d2e] dark:text-[#eef0f6] text-sm placeholder:text-[#9ca0b8] dark:placeholder:text-[#5c6180] focus:outline-none focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa]/20 transition-colors resize-none"
+                  className="w-full px-3 py-2 rounded-lg border border-border-default bg-surface-card text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors resize-none"
                 />
               </div>
 
@@ -112,14 +114,14 @@ export const RequestCountryCard = () => {
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="px-4 py-2 rounded-lg text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-text-secondary hover:bg-surface-inset transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={!countryName.trim() || mutation.isPending}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-gradient-to-b from-[#5c7cfa] to-[#4c6ef5] text-white border border-[#4263eb] shadow-sm shadow-[#5c7cfa]/20 hover:from-[#4c6ef5] hover:to-[#4263eb] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-gradient-to-b from-primary-500 to-primary-600 text-white border border-primary-600 shadow-sm shadow-primary-500/20 hover:from-primary-400 hover:to-primary-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Send className="h-3.5 w-3.5" />
                   {mutation.isPending ? 'Sending...' : 'Send Request'}

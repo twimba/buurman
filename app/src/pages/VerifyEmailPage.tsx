@@ -150,12 +150,12 @@ export const VerifyEmailPage: React.FC = () => {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-50">
         <div className="w-full max-w-md p-8">
-          <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
-            <Loader2 className="h-12 w-12 text-blue-600 animate-spin mx-auto mb-5" />
-            <h2 className="text-2xl font-bold text-[#1a1d2e] mb-2">
+          <div className="bg-surface-card rounded-2xl shadow-xl p-8 text-center">
+            <Loader2 className="h-12 w-12 text-primary-500 animate-spin mx-auto mb-5" />
+            <h2 className="text-2xl font-bold text-text-primary mb-2">
               Verifying your email...
             </h2>
-            <p className="text-[#6b7194]">Please wait a moment.</p>
+            <p className="text-text-secondary">Please wait a moment.</p>
           </div>
         </div>
       </div>
@@ -166,14 +166,14 @@ export const VerifyEmailPage: React.FC = () => {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-50">
         <div className="w-full max-w-md p-8">
-          <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
-            <div className="bg-green-100 rounded-full p-4 inline-flex mb-5">
-              <CheckCircle className="h-12 w-12 text-green-600" />
+          <div className="bg-surface-card rounded-2xl shadow-xl p-8 text-center">
+            <div className="bg-success-bg rounded-full p-4 inline-flex mb-5">
+              <CheckCircle className="h-12 w-12 text-success-text" />
             </div>
-            <h2 className="text-2xl font-bold text-[#1a1d2e] mb-2">
+            <h2 className="text-2xl font-bold text-text-primary mb-2">
               Email verified!
             </h2>
-            <p className="text-[#6b7194]">Redirecting to dashboard...</p>
+            <p className="text-text-secondary">Redirecting to dashboard...</p>
           </div>
         </div>
       </div>
@@ -183,21 +183,19 @@ export const VerifyEmailPage: React.FC = () => {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-50">
       <div className="w-full max-w-md p-8">
-        <div className="bg-white dark:bg-[#14161f] rounded-2xl shadow-xl p-8">
+        <div className="bg-surface-card rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
-            <div className="bg-blue-100 dark:bg-blue-900/30 rounded-full p-4 inline-flex mb-5">
-              <Mail className="h-10 w-10 text-blue-600 dark:text-blue-400" />
+            <div className="bg-info-bg rounded-full p-4 inline-flex mb-5">
+              <Mail className="h-10 w-10 text-info-text" />
             </div>
-            <h2 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
+            <h2 className="text-2xl font-bold text-text-primary mb-2">
               Check your email
             </h2>
-            <p className="text-[#6b7194] dark:text-[#8b90a8]">
+            <p className="text-text-secondary">
               We sent a 6-digit verification code to
             </p>
             {user?.email && (
-              <p className="text-[#1a1d2e] dark:text-[#eef0f6] font-medium mt-1">
-                {user.email}
-              </p>
+              <p className="text-text-primary font-medium mt-1">{user.email}</p>
             )}
           </div>
 
@@ -218,36 +216,34 @@ export const VerifyEmailPage: React.FC = () => {
                   value={digit}
                   onChange={(e) => handleChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
-                  className="w-12 h-14 text-center text-2xl font-bold border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors bg-white dark:bg-[#1a1d2e] text-[#1a1d2e] dark:text-[#eef0f6]"
+                  className="w-12 h-14 text-center text-2xl font-bold border border-border-strong rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-20 transition-colors bg-surface-card text-text-primary"
                 />
               ))}
             </div>
 
             {error && (
-              <div className="flex items-center gap-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 mb-4">
-                <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400 flex-shrink-0" />
-                <p className="text-red-600 dark:text-red-400 text-sm">
-                  {error}
-                </p>
+              <div className="flex items-center gap-2 bg-error-bg border border-error-border rounded-lg p-3 mb-4">
+                <AlertCircle className="h-4 w-4 text-error-text flex-shrink-0" />
+                <p className="text-error-text text-sm">{error}</p>
               </div>
             )}
 
             <button
               type="submit"
               disabled={verifyMutation.isPending || digits.some((d) => !d)}
-              className="w-full bg-[#5c7cfa] text-white py-3 px-6 rounded-lg hover:bg-[#4c6ef5] transition-all duration-200 font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-primary-500 text-white py-3 px-6 rounded-lg hover:bg-primary-600 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {verifyMutation.isPending ? 'Verifying...' : 'Verify email'}
             </button>
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+            <p className="text-sm text-text-secondary">
               Didn&apos;t receive the code?{' '}
               <button
                 onClick={handleResend}
                 disabled={cooldown > 0 || resendMutation.isPending}
-                className="text-[#5c7cfa] hover:text-[#4263eb] font-semibold hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                className="text-primary-500 hover:text-primary-600 font-semibold hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {cooldown > 0
                   ? `Resend in ${cooldown}s`

@@ -20,25 +20,23 @@ export const CollapsibleSection = ({
   const panelId = `section-${title.replace(/\s+/g, '-').toLowerCase()}`;
 
   return (
-    <div className="border border-[#e2e6f0] dark:border-[#2a2e3f] rounded-lg overflow-hidden">
+    <div className="border border-border-default rounded-lg overflow-hidden">
       <button
         type="button"
         aria-expanded={isOpen}
         aria-controls={panelId}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-3 bg-[#f8f9fc] dark:bg-[#1a1d28] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] focus-visible:ring-2 focus-visible:ring-[#5c7cfa] focus-visible:ring-offset-1 transition-colors text-left"
+        className="w-full flex items-center justify-between px-4 py-3 bg-surface-page hover:bg-surface-inset focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1 transition-colors text-left"
       >
         <div className="flex items-center gap-2">
           {isOpen ? (
-            <ChevronDown className="h-4 w-4 text-[#6b7194] dark:text-[#8b90a8]" />
+            <ChevronDown className="h-4 w-4 text-text-secondary " />
           ) : (
-            <ChevronRight className="h-4 w-4 text-[#6b7194] dark:text-[#8b90a8]" />
+            <ChevronRight className="h-4 w-4 text-text-secondary " />
           )}
-          <span className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
-            {title}
-          </span>
+          <span className="font-medium text-text-primary">{title}</span>
         </div>
-        <span className="text-sm text-[#9ca0b8] dark:text-[#5c6180]">
+        <span className="text-sm text-text-muted">
           {filledCount} of {totalCount} filled
         </span>
       </button>

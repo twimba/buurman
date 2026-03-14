@@ -7,7 +7,7 @@
     position: relative;
     overflow: hidden;
     background:
-        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(92, 124, 250, 0.10), transparent),
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(2, 132, 199, 0.10), transparent),
         linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
     padding: 5.5rem 0 4rem;
     text-align: center;
@@ -20,7 +20,7 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(92, 124, 250, 0.2), transparent);
+    background: linear-gradient(90deg, transparent, rgba(2, 132, 199, 0.2), transparent);
 }
 
 .changelog-hero::after {
@@ -31,7 +31,7 @@
     width: 240px;
     height: 240px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(92, 124, 250, 0.05) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(2, 132, 199, 0.05) 0%, transparent 70%);
     animation: float-orb 10s ease-in-out infinite;
     pointer-events: none;
 }
@@ -221,7 +221,7 @@
 
 .week-entry:hover::before {
     border-color: var(--primary-light);
-    box-shadow: 0 0 0 3px rgba(92, 124, 250, 0.08);
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.08);
 }
 
 /* Latest entry: pulsing primary dot */
@@ -230,13 +230,13 @@
     height: 13px;
     background: var(--primary);
     border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(92, 124, 250, 0.12);
+    box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.12);
     animation: pulse-node 2.5s ease-in-out infinite;
 }
 
 @keyframes pulse-node {
-    0%, 100% { box-shadow: 0 0 0 4px rgba(92, 124, 250, 0.12), 0 0 12px rgba(92, 124, 250, 0.15); }
-    50%       { box-shadow: 0 0 0 8px rgba(92, 124, 250, 0.06), 0 0 20px rgba(92, 124, 250, 0.10); }
+    0%, 100% { box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.12), 0 0 12px rgba(2, 132, 199, 0.15); }
+    50%       { box-shadow: 0 0 0 8px rgba(2, 132, 199, 0.06), 0 0 20px rgba(2, 132, 199, 0.10); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -278,7 +278,7 @@
     background: var(--primary-50);
     border-color: var(--primary-100);
     color: var(--primary-dark);
-    box-shadow: 0 2px 14px rgba(92, 124, 250, 0.12);
+    box-shadow: 0 2px 14px rgba(2, 132, 199, 0.12);
 }
 
 .week-date:focus-visible {
@@ -406,7 +406,7 @@
 /* Hover glow matches border color */
 .feature-entry:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(92, 124, 250, 0.08);
+    box-shadow: 0 12px 32px rgba(2, 132, 199, 0.08);
 }
 
 .feature-entry--new:hover {
@@ -416,9 +416,9 @@
 }
 
 .feature-entry--improved:hover {
-    border-color: rgba(92, 124, 250, 0.22);
+    border-color: rgba(2, 132, 199, 0.22);
     border-left-color: var(--primary);
-    box-shadow: 0 12px 32px rgba(92, 124, 250, 0.09);
+    box-shadow: 0 12px 32px rgba(2, 132, 199, 0.09);
 }
 
 .feature-entry--fixed:hover {
@@ -430,7 +430,7 @@
 /* Hero feature card — headline features */
 .feature-entry--hero {
     border-color: var(--primary-100);
-    background: linear-gradient(160deg, #f8faff 0%, var(--surface) 55%);
+    background: linear-gradient(160deg, #f0f9ff 0%, var(--surface) 55%);
 }
 
 .feature-entry--hero::before {
@@ -446,7 +446,7 @@
 
 .feature-entry--hero:hover {
     border-color: var(--primary);
-    box-shadow: 0 16px 48px rgba(92, 124, 250, 0.13);
+    box-shadow: 0 16px 48px rgba(2, 132, 199, 0.13);
     transform: translateY(-3px);
 }
 
@@ -524,7 +524,7 @@
 }
 
 .feature-tag--geo {
-    background: rgba(92, 124, 250, 0.06);
+    background: rgba(2, 132, 199, 0.06);
     border-color: var(--primary-100);
     color: var(--primary-dark);
 }
@@ -547,7 +547,7 @@
 .compact-list a {
     color: var(--primary);
     text-decoration: underline;
-    text-decoration-color: rgba(92, 124, 250, 0.3);
+    text-decoration-color: rgba(2, 132, 199, 0.3);
     text-underline-offset: 2px;
     transition: text-decoration-color 0.2s;
 }
@@ -577,9 +577,9 @@
 }
 
 .badge-improved {
-    background: rgba(92, 124, 250, 0.09);
+    background: rgba(2, 132, 199, 0.09);
     color: var(--primary-dark);
-    border: 1px solid rgba(92, 124, 250, 0.18);
+    border: 1px solid rgba(2, 132, 199, 0.18);
 }
 
 .badge-fixed {
@@ -598,10 +598,10 @@
 }
 
 .compact-group:hover {
-    box-shadow: 0 10px 28px rgba(92, 124, 250, 0.07);
+    box-shadow: 0 10px 28px rgba(2, 132, 199, 0.07);
 }
 
-.compact-group--improved:hover { border-color: rgba(92, 124, 250, 0.2); }
+.compact-group--improved:hover { border-color: rgba(2, 132, 199, 0.2); }
 .compact-group--fixed:hover    { border-color: rgba(245, 159, 0, 0.2); }
 .compact-group--new:hover      { border-color: rgba(16, 185, 129, 0.2); }
 

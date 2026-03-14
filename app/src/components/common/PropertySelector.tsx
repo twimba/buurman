@@ -186,9 +186,9 @@ export const PropertySelector = ({
         onMouseEnter={() => setHighlightedIndex(flatIndex)}
         className={`w-full text-left px-3 py-3 flex items-center gap-3 ${
           highlightedIndex === flatIndex
-            ? 'bg-blue-50 dark:bg-blue-900/30'
+            ? 'bg-primary-50'
             : property.identifier === value
-              ? 'bg-blue-100 dark:bg-blue-900'
+              ? 'bg-primary-100'
               : ''
         }`}
       >
@@ -204,22 +204,22 @@ export const PropertySelector = ({
             loading="lazy"
           />
         ) : (
-          <div className="w-10 h-10 rounded bg-[#e8ecf4] dark:bg-[#3a3f54] flex items-center justify-center flex-shrink-0">
-            <Icon className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+          <div className="w-10 h-10 rounded bg-neutral-100 flex items-center justify-center flex-shrink-0">
+            <Icon className="h-5 w-5 text-text-muted " />
           </div>
         )}
         <div className="min-w-0 flex-1">
-          <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+          <div className="text-sm font-medium text-text-primary">
             {property.street}
           </div>
-          <div className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+          <div className="text-xs text-text-secondary">
             {property.city}, {property.postalCode}
           </div>
           <div className="flex items-center gap-1.5 mt-0.5">
-            <span className="text-[10px] text-[#9ca0b8] dark:text-[#5c6180] font-mono">
+            <span className="text-[10px] text-text-muted font-mono">
               #{property.identifier}
             </span>
-            <span className="text-[10px] bg-[#f1f3f9] dark:bg-[#1a1d28] text-[#6b7194] dark:text-[#8b90a8] px-1.5 py-0.5 rounded">
+            <span className="text-[10px] bg-surface-inset text-text-secondary px-1.5 py-0.5 rounded">
               {PROPERTY_TYPE_LABELS[property.propertyType] ??
                 property.propertyType}
             </span>
@@ -259,24 +259,24 @@ export const PropertySelector = ({
             isOpen ? 'Type to search...' : (placeholder ?? 'Select a property')
           }
           autoComplete="off"
-          className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 pr-8 bg-white dark:bg-[#1e2130] hover:border-[#5c7cfa] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] disabled:bg-[#f1f3f9] dark:disabled:bg-[#3a3f54] disabled:cursor-not-allowed text-left text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
+          className="w-full border border-border-strong rounded px-3 py-2 pr-8 bg-surface-card hover:border-primary-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 disabled:bg-surface-inset disabled:cursor-not-allowed text-left text-sm text-text-primary"
         />
         <ChevronDown
-          className={`absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9ca0b8] dark:text-[#5c6180] pointer-events-none transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted pointer-events-none transition-transform ${isOpen ? 'rotate-180' : ''}`}
         />
       </div>
 
       {isOpen && (
         <div
           ref={listRef}
-          className="absolute z-50 w-full mt-1 bg-white dark:bg-[#1e2130] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md shadow-lg max-h-80 overflow-y-auto"
+          className="absolute z-50 w-full mt-1 bg-surface-card border border-border-strong rounded-md shadow-lg max-h-80 overflow-y-auto"
         >
           {isLoading ? (
-            <div className="px-3 py-8 text-center text-sm text-[#6b7194] dark:text-[#8b90a8]">
+            <div className="px-3 py-8 text-center text-sm text-text-secondary">
               Loading properties...
             </div>
           ) : filtered.length === 0 ? (
-            <div className="px-3 py-8 text-center text-sm text-[#6b7194] dark:text-[#8b90a8]">
+            <div className="px-3 py-8 text-center text-sm text-text-secondary">
               No properties found
             </div>
           ) : (
@@ -286,10 +286,10 @@ export const PropertySelector = ({
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => handleSelect('')}
-                  className={`w-full text-left px-3 py-2.5 text-sm hover:bg-[#f1f3f9] dark:hover:bg-[#14161f] border-b border-[#e2e6f0] dark:border-[#2a2e3f] ${
+                  className={`w-full text-left px-3 py-2.5 text-sm hover:bg-surface-inset border-b border-border-default ${
                     !value
-                      ? 'text-[#1a1d2e] dark:text-[#eef0f6] font-medium'
-                      : 'text-[#6b7194] dark:text-[#8b90a8]'
+                      ? 'text-text-primary font-medium'
+                      : 'text-text-secondary'
                   }`}
                 >
                   All Properties
@@ -302,7 +302,7 @@ export const PropertySelector = ({
                 const header = showGroupHeaders ? (
                   <div
                     key={`header-${group.category}`}
-                    className="px-3 py-2 text-xs font-semibold text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide bg-[#f8f9fc] dark:bg-[#0c0d14] sticky top-0 border-b border-[#e2e6f0] dark:border-[#2a2e3f] flex items-center gap-1.5"
+                    className="px-3 py-2 text-xs font-semibold text-text-secondary uppercase tracking-wide bg-surface-page sticky top-0 border-b border-border-default flex items-center gap-1.5"
                   >
                     <CatIcon size={11} />
                     {PROPERTY_CATEGORY_LABELS[

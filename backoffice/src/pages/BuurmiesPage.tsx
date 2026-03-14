@@ -123,7 +123,7 @@ const ACTION_CONFIG: Record<
 };
 
 const TH_CLASS =
-  "text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]";
+  "text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary";
 
 const ACTION_LABELS: Record<string, string> = {
   UPDATE_PASSWORD: "Password Reset",
@@ -221,9 +221,7 @@ export const BuurmiesPage = () => {
   if (error) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-600 dark:text-red-400">
-          Failed to load buurmies.
-        </p>
+        <p className="text-error-text">Failed to load buurmies.</p>
       </div>
     );
   }
@@ -240,10 +238,8 @@ export const BuurmiesPage = () => {
         }}
       >
         <div>
-          <h1 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-            Buurmies
-          </h1>
-          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+          <h1 className="text-2xl font-bold text-text-primary">Buurmies</h1>
+          <p className="text-sm text-text-secondary mt-1">
             Manage users registered in the Keycloak backoffice realm.
           </p>
         </div>
@@ -262,22 +258,22 @@ export const BuurmiesPage = () => {
 
       {/* Search */}
       <div className="mb-4 relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9ca0b8]" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
         <input
           type="search"
           placeholder="Search by email, username or name..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] placeholder-[#9ca0b8] focus:outline-none focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa]/20 transition-colors"
+          className="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary placeholder-text-muted focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors"
         />
       </div>
 
       {/* Table */}
-      <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden">
+      <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+              <tr className="border-b border-border-default">
                 <SortableHeader
                   field="email"
                   label="Email"
@@ -324,7 +320,7 @@ export const BuurmiesPage = () => {
                 <tr>
                   <td
                     colSpan={9}
-                    className="px-4 py-12 text-center text-sm text-[#9ca0b8] dark:text-[#5c6180]"
+                    className="px-4 py-12 text-center text-sm text-text-muted"
                   >
                     No buurmies found.
                   </td>
@@ -429,53 +425,51 @@ const BuurmyRow = ({
   };
 
   return (
-    <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0 hover:bg-[#f8f9fc] dark:hover:bg-[#1a1d28] transition-colors">
+    <tr className="border-b border-border-default last:border-b-0 hover:bg-surface-page transition-colors">
       <td className="px-4 py-3">
-        <span className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+        <span className="text-sm font-medium text-text-primary">
           {buurmy.email}
         </span>
       </td>
       <td className="px-4 py-3">
-        <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-          {buurmy.username}
-        </span>
+        <span className="text-sm text-text-secondary">{buurmy.username}</span>
       </td>
       <td className="px-4 py-3">
-        <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
+        <span className="text-sm text-text-secondary">
           {buurmy.firstName} {buurmy.lastName}
         </span>
       </td>
       <td className="px-4 py-3">
         {buurmy.enabled ? (
-          <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-700">
+          <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-success-bg text-success-text ring-1 ring-success-border">
             Active
           </span>
         ) : (
-          <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-red-50 text-red-700 ring-1 ring-red-200 dark:bg-red-900/30 dark:text-red-300 dark:ring-red-700">
+          <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-error-bg text-error-text ring-1 ring-error-border">
             Disabled
           </span>
         )}
       </td>
       <td className="px-4 py-3">
         {buurmy.emailVerified ? (
-          <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-700">
+          <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-success-bg text-success-text ring-1 ring-success-border">
             Verified
           </span>
         ) : (
-          <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-amber-50 text-amber-700 ring-1 ring-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:ring-amber-700">
+          <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-warning-bg text-warning-text ring-1 ring-warning-border">
             Unverified
           </span>
         )}
       </td>
       <td className="px-4 py-3">
-        <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+        <span className="text-sm text-text-secondary">
           {buurmy.createdAt
             ? format(new Date(buurmy.createdAt), "dd MMM yyyy")
             : "-"}
         </span>
       </td>
       <td className="px-4 py-3">
-        <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+        <span className="text-sm text-text-secondary">
           {buurmy.lastLogin
             ? format(new Date(buurmy.lastLogin), "dd MMM yyyy HH:mm")
             : "Never"}
@@ -486,7 +480,7 @@ const BuurmyRow = ({
           {buurmy.requiredActions?.map((action) => (
             <span
               key={action}
-              className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-orange-50 text-orange-700 ring-1 ring-orange-200 dark:bg-orange-900/30 dark:text-orange-300 dark:ring-orange-700"
+              className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-orange-50 text-orange-700 ring-1 ring-orange-200"
             >
               {ACTION_LABELS[action] ?? action}
             </span>
@@ -500,7 +494,7 @@ const BuurmyRow = ({
           aria-label={`Actions for ${buurmy.email}`}
           aria-expanded={isOpen}
           aria-haspopup="menu"
-          className="p-1.5 rounded-md text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:hover:text-[#eef0f6] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+          className="p-1.5 rounded-md text-text-secondary hover:text-text-primary hover:bg-surface-inset transition-colors"
         >
           <MoreHorizontal className="h-4 w-4" />
         </button>
@@ -519,7 +513,7 @@ const BuurmyRow = ({
                 top: menuPos.top,
                 right: menuPos.right,
               }}
-              className="z-50 w-56 text-left bg-white dark:bg-[#1a1d28] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] shadow-lg py-1"
+              className="z-50 w-56 text-left bg-surface-card rounded-lg border border-border-default shadow-lg py-1"
             >
               {!isSelf &&
                 (buurmy.enabled ? (
@@ -580,7 +574,7 @@ const BuurmyRow = ({
               )}
               {!isSelf && (
                 <>
-                  <div className="my-1 border-t border-[#e2e6f0] dark:border-[#2a2e3f]" />
+                  <div className="my-1 border-t border-border-default " />
                   <MenuButton
                     icon={<Trash2 className="h-3.5 w-3.5" />}
                     label="Delete"
@@ -613,12 +607,9 @@ const MenuButton = ({
   variant = "default",
 }: MenuButtonProps) => {
   const colorClasses = {
-    default:
-      "text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#262a3a]",
-    danger:
-      "text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20",
-    success:
-      "text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20",
+    default: "text-text-secondary hover:bg-surface-inset",
+    danger: "text-error-text hover:bg-error-bg",
+    success: "text-success-text hover:bg-success-bg",
   };
 
   return (

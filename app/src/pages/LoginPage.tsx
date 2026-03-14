@@ -45,9 +45,9 @@ const LoginPage: React.FC = () => {
   }, [isAuthenticated, navigate, redirect]);
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-[#f0f4ff] via-white to-[#f8f9fc]">
+    <div className="flex min-h-screen bg-gradient-to-br from-primary-50 via-white to-neutral-25">
       {/* Left Side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#364fc7] via-[#4c6ef5] to-[#5c7cfa] p-12 flex-col justify-between text-white">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-800 via-primary-500 to-primary-400 p-12 flex-col justify-between text-white">
         <div>
           <div className="flex items-center gap-4 mb-8">
             <img
@@ -55,63 +55,63 @@ const LoginPage: React.FC = () => {
               alt="Buurman"
               className="h-20 w-20 rounded-xl shadow-2xl ring-4 ring-white ring-opacity-30"
             />
-            <h1 className="text-4xl font-black tracking-tight bg-gradient-to-r from-white to-[#bac8ff] bg-clip-text text-transparent">
+            <h1 className="text-4xl font-black tracking-tight bg-gradient-to-r from-white to-primary-200 bg-clip-text text-transparent">
               Buurman
             </h1>
           </div>
-          <p className="text-xl text-[#bac8ff] mb-12">
+          <p className="text-xl text-primary-200 mb-12">
             Property management made simple for small landlords
           </p>
 
           {/* Features */}
           <div className="space-y-6">
             <div className="flex items-start gap-4">
-              <div className="bg-[#5c7cfa]/30 p-3 rounded-lg">
+              <div className="bg-primary-500/30 p-3 rounded-lg">
                 <Home className="h-6 w-6" />
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">
                   Manage Properties
                 </h3>
-                <p className="text-[#bac8ff]">
+                <p className="text-primary-200">
                   Keep track of all your rental properties in one place
                 </p>
               </div>
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="bg-[#5c7cfa]/30 p-3 rounded-lg">
+              <div className="bg-primary-500/30 p-3 rounded-lg">
                 <Users className="h-6 w-6" />
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">Track Tenants</h3>
-                <p className="text-[#bac8ff]">
+                <p className="text-primary-200">
                   Manage tenant information and lease agreements
                 </p>
               </div>
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="bg-[#5c7cfa]/30 p-3 rounded-lg">
+              <div className="bg-primary-500/30 p-3 rounded-lg">
                 <FileText className="h-6 w-6" />
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">Handle Finances</h3>
-                <p className="text-[#bac8ff]">
+                <p className="text-primary-200">
                   Monitor payments, expenses, and financial reports
                 </p>
               </div>
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="bg-[#5c7cfa]/30 p-3 rounded-lg">
+              <div className="bg-primary-500/30 p-3 rounded-lg">
                 <TrendingUp className="h-6 w-6" />
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">
                   Grow Your Business
                 </h3>
-                <p className="text-[#bac8ff]">
+                <p className="text-primary-200">
                   Scale your rental portfolio with confidence
                 </p>
               </div>
@@ -119,7 +119,7 @@ const LoginPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="text-sm text-[#91a7ff]">
+        <div className="text-sm text-primary-300">
           © 2026 Buurman. Simple property management.
         </div>
       </div>
@@ -135,61 +135,61 @@ const LoginPage: React.FC = () => {
               alt="Buurman"
               className="h-24 w-24 rounded-xl shadow-2xl mb-4"
             />
-            <h1 className="text-4xl font-black tracking-tight bg-gradient-to-r from-[#5c7cfa] to-[#364fc7] bg-clip-text text-transparent">
+            <h1 className="text-4xl font-black tracking-tight bg-gradient-to-r from-primary-500 to-primary-800 bg-clip-text text-transparent">
               Buurman
             </h1>
-            <p className="text-[#6b7194] dark:text-[#8b90a8] mt-2 text-center">
+            <p className="text-text-secondary mt-2 text-center">
               Property management for small landlords
             </p>
           </div>
 
-          <div className="bg-white dark:bg-[#14161f] rounded-2xl shadow-xl p-8 lg:p-10 relative overflow-hidden">
+          <div className="bg-surface-card rounded-2xl shadow-xl p-8 lg:p-10 relative overflow-hidden">
             {/* Decorative gradient accent */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#364fc7] via-[#5c7cfa] to-[#91a7ff]" />
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-900 via-primary-500 to-primary-300" />
 
             {isDemo ? (
               <>
                 <div className="mb-6 text-center">
-                  <div className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-amber-200">
+                  <div className="inline-flex items-center gap-1.5 bg-warning-bg text-warning-text px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-warning-border">
                     <Play className="h-3.5 w-3.5" />
                     Live Demo
                   </div>
-                  <h2 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
+                  <h2 className="text-2xl font-bold text-text-primary mb-2">
                     Take It for a Spin!
                   </h2>
-                  <p className="text-[#6b7194] dark:text-[#8b90a8]">
+                  <p className="text-text-secondary">
                     Fully loaded demo &mdash; poke around, we won&apos;t judge
                   </p>
                 </div>
 
-                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 text-left">
-                  <p className="text-xs font-semibold text-amber-700 uppercase tracking-wider mb-3">
+                <div className="bg-warning-bg border border-warning-border rounded-xl p-4 mb-6 text-left">
+                  <p className="text-xs font-semibold text-warning-text uppercase tracking-wider mb-3">
                     Demo credentials
                   </p>
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between bg-white rounded-lg px-3 py-2 border border-amber-100">
+                    <div className="flex items-center justify-between bg-surface-card rounded-lg px-3 py-2 border border-warning-border">
                       <div>
-                        <span className="text-[10px] text-amber-600 font-medium uppercase tracking-wider">
+                        <span className="text-[10px] text-warning-text font-medium uppercase tracking-wider">
                           Email
                         </span>
-                        <p className="text-sm font-mono font-semibold text-[#1a1d2e]">
+                        <p className="text-sm font-mono font-semibold text-text-primary">
                           {DEMO_EMAIL}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between bg-white rounded-lg px-3 py-2 border border-amber-100">
+                    <div className="flex items-center justify-between bg-surface-card rounded-lg px-3 py-2 border border-warning-border">
                       <div>
-                        <span className="text-[10px] text-amber-600 font-medium uppercase tracking-wider">
+                        <span className="text-[10px] text-warning-text font-medium uppercase tracking-wider">
                           Password
                         </span>
-                        <p className="text-sm font-mono font-semibold text-[#1a1d2e]">
+                        <p className="text-sm font-mono font-semibold text-text-primary">
                           {showPassword ? DEMO_PASSWORD : '••••••••'}
                         </p>
                       </div>
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="text-amber-500 hover:text-amber-700 transition-colors p-1"
+                        className="text-warning-text hover:text-warning-text/80 transition-colors p-1"
                       >
                         {showPassword ? (
                           <EyeOff className="h-4 w-4" />
@@ -210,16 +210,16 @@ const LoginPage: React.FC = () => {
                   <ArrowRight className="h-4 w-4 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200" />
                 </button>
 
-                <p className="text-center text-xs text-[#6b7194] mt-3 italic">
+                <p className="text-center text-xs text-text-secondary mt-3 italic">
                   Use the credentials above on the Keycloak login screen
                 </p>
 
                 <div className="mt-5 relative">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-[#e2e6f0] dark:border-[#2a2e3f]" />
+                    <div className="w-full border-t border-border-default " />
                   </div>
                   <div className="relative flex justify-center text-xs">
-                    <span className="bg-white dark:bg-[#14161f] px-3 text-[#6b7194] dark:text-[#8b90a8]">
+                    <span className="bg-surface-card px-3 text-text-secondary">
                       or create your own account
                     </span>
                   </div>
@@ -227,7 +227,7 @@ const LoginPage: React.FC = () => {
 
                 <a
                   href="/register"
-                  className="mt-5 w-full py-3 px-6 rounded-xl border-2 border-[#e2e6f0] dark:border-[#2a2e3f] text-[#3d4463] dark:text-[#c4c8db] font-semibold flex items-center justify-center gap-2 hover:border-[#5c7cfa] hover:text-[#5c7cfa] transition-all duration-200 hover:bg-[#f0f4ff] dark:hover:bg-[#5c7cfa]/10"
+                  className="mt-5 w-full py-3 px-6 rounded-lg border-2 border-border-default text-text-secondary font-semibold flex items-center justify-center gap-2 hover:border-primary-500 hover:text-primary-500 transition-all duration-200 hover:bg-primary-50"
                 >
                   Get Started Free
                   <ArrowRight className="h-4 w-4" />
@@ -236,14 +236,14 @@ const LoginPage: React.FC = () => {
             ) : (
               <>
                 <div className="mb-8 text-center">
-                  <div className="inline-flex items-center gap-1.5 bg-[#5c7cfa]/10 text-[#4c6ef5] px-3 py-1 rounded-full text-xs font-medium mb-4">
+                  <div className="inline-flex items-center gap-1.5 bg-primary-500/10 text-primary-600 px-3 py-1 rounded-full text-xs font-medium mb-4">
                     <Sparkles className="h-3.5 w-3.5" />
                     Free for small landlords
                   </div>
-                  <h2 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
+                  <h2 className="text-2xl font-bold text-text-primary mb-2">
                     Welcome back
                   </h2>
-                  <p className="text-[#6b7194] dark:text-[#8b90a8]">
+                  <p className="text-text-secondary">
                     Your properties are waiting for you
                   </p>
                 </div>
@@ -256,7 +256,7 @@ const LoginPage: React.FC = () => {
                         : undefined
                     )
                   }
-                  className="group w-full bg-gradient-to-r from-[#4263eb] to-[#5c7cfa] text-white py-3.5 px-6 rounded-xl hover:from-[#3b5bdb] hover:to-[#4c6ef5] transition-all duration-200 font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  className="group w-full bg-gradient-to-r from-primary-600 to-primary-500 text-white py-3.5 px-6 rounded-xl hover:from-primary-700 hover:to-primary-600 transition-all duration-200 font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                 >
                   <LogIn className="h-5 w-5" />
                   Sign in to your account
@@ -265,10 +265,10 @@ const LoginPage: React.FC = () => {
 
                 <div className="mt-6 relative">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-[#e2e6f0] dark:border-[#2a2e3f]" />
+                    <div className="w-full border-t border-border-default " />
                   </div>
                   <div className="relative flex justify-center text-xs">
-                    <span className="bg-white dark:bg-[#14161f] px-3 text-[#6b7194] dark:text-[#8b90a8]">
+                    <span className="bg-surface-card px-3 text-text-secondary">
                       or
                     </span>
                   </div>
@@ -276,7 +276,7 @@ const LoginPage: React.FC = () => {
 
                 <a
                   href="/register"
-                  className="mt-6 w-full py-3 px-6 rounded-xl border-2 border-[#e2e6f0] dark:border-[#2a2e3f] text-[#3d4463] dark:text-[#c4c8db] font-semibold flex items-center justify-center gap-2 hover:border-[#5c7cfa] hover:text-[#5c7cfa] transition-all duration-200 hover:bg-[#f0f4ff] dark:hover:bg-[#5c7cfa]/10"
+                  className="mt-6 w-full py-3 px-6 rounded-lg border-2 border-border-default text-text-secondary font-semibold flex items-center justify-center gap-2 hover:border-primary-500 hover:text-primary-500 transition-all duration-200 hover:bg-primary-50"
                 >
                   Create a free account
                   <ArrowRight className="h-4 w-4" />
@@ -287,13 +287,13 @@ const LoginPage: React.FC = () => {
 
           {/* Additional Info */}
           <div className="mt-6 text-center">
-            <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+            <p className="text-sm text-text-secondary">
               Need help?{' '}
               <a
                 href="https://www.buurman.io/support"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#5c7cfa] hover:underline"
+                className="text-primary-500 hover:underline"
               >
                 Contact support
               </a>

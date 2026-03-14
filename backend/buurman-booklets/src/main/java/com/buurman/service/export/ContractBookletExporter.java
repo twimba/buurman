@@ -471,7 +471,7 @@ public class ContractBookletExporter {
       }
       html.append(
               "<tr><td class='pd-label'>Reference</td><td class='pd-value'"
-                  + " style='color:#a0aec0;font-size:11px;'>")
+                  + " style='color:#a8a29e;font-size:11px;'>")
           .append(t.getIdentifier().orElseThrow().value())
           .append("</td><td></td><td></td></tr>");
       html.append("</table></div>");
@@ -540,7 +540,7 @@ public class ContractBookletExporter {
               .append("%</span>");
         }
       } else {
-        html.append("<span style='color:#718096;font-size:12px;'>Initial</span>");
+        html.append("<span style='color:#78716c;font-size:12px;'>Initial</span>");
       }
       html.append("</td>");
 
@@ -626,7 +626,7 @@ public class ContractBookletExporter {
               : (tpl != null ? tpl.getAdditionalDetails().orElse(null) : null);
 
       boolean isCurrent = cpi.getEffectiveTo().isEmpty();
-      String accentColor = isCurrent ? "#2b6cb0" : "#a0aec0";
+      String accentColor = isCurrent ? "#0284c7" : "#a8a29e";
 
       html.append("<div class='pi-card' style='border-left-color:")
           .append(accentColor)
@@ -694,7 +694,7 @@ public class ContractBookletExporter {
       if (piDetails != null && !piDetails.isBlank()) {
         html.append(
             "<div class='pi-details'><span class='fg-label'>Additional Details</span><br/>");
-        html.append("<span style='font-size:13px;color:#2d3748;'>")
+        html.append("<span style='font-size:13px;color:#44403c;'>")
             .append(escapeHtml(piDetails))
             .append("</span></div>");
       }
@@ -703,7 +703,7 @@ public class ContractBookletExporter {
           .ifPresent(
               n -> {
                 html.append("<div class='pi-details'><span class='fg-label'>Notes</span><br/>");
-                html.append("<span style='font-size:13px;color:#2d3748;'>")
+                html.append("<span style='font-size:13px;color:#44403c;'>")
                     .append(escapeHtml(n))
                     .append("</span></div>");
               });
@@ -754,9 +754,9 @@ public class ContractBookletExporter {
                 .map(p -> p.getAmount().value())
                 .reduce(BigDecimal.ZERO, BigDecimal::add),
             ccy),
-        "#eff6ff",
-        "#3b82f6",
-        "#1e40af");
+        "#f0f9ff",
+        "#0284c7",
+        "#0c4a6e");
     appendSummaryCard(
         html,
         "Overdue",
@@ -774,7 +774,7 @@ public class ContractBookletExporter {
 
     if (payments.isEmpty()) {
       html.append(
-          "<p style='color:#718096;font-style:italic;'>No payments recorded for this"
+          "<p style='color:#78716c;font-style:italic;'>No payments recorded for this"
               + " contract.</p>");
     } else {
       List<Payment> sortedPayments = new ArrayList<>(payments);
@@ -878,7 +878,7 @@ public class ContractBookletExporter {
 
   private String getPartyRoleColor(ContractPartyRole role) {
     return switch (role) {
-      case PRIMARY_TENANT -> "#2b6cb0";
+      case PRIMARY_TENANT -> "#0284c7";
       case GUARANTOR -> "#b45309";
       case COSIGNER -> "#6d28d9";
       case EXTRA_TENANT -> "#0f766e";
@@ -887,7 +887,7 @@ public class ContractBookletExporter {
 
   private String getPartyRoleBgColor(ContractPartyRole role) {
     return switch (role) {
-      case PRIMARY_TENANT -> "#eff6ff";
+      case PRIMARY_TENANT -> "#f0f9ff";
       case GUARANTOR -> "#fffbeb";
       case COSIGNER -> "#f5f3ff";
       case EXTRA_TENANT -> "#f0fdfa";

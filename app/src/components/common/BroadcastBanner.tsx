@@ -10,25 +10,25 @@ import type { BroadcastMessage } from '../../api/broadcasts';
 
 const severityConfig = {
   INFO: {
-    bg: 'bg-blue-50',
-    border: 'border-blue-200',
-    text: 'text-blue-800',
+    bg: 'bg-info-bg',
+    border: 'border-info-border',
+    text: 'text-info-text',
     icon: Info,
-    iconColor: 'text-blue-500',
+    iconColor: 'text-info-text',
   },
   WARNING: {
-    bg: 'bg-amber-50',
-    border: 'border-amber-200',
-    text: 'text-amber-800',
+    bg: 'bg-warning-bg',
+    border: 'border-warning-border',
+    text: 'text-warning-text',
     icon: AlertTriangle,
-    iconColor: 'text-amber-500',
+    iconColor: 'text-warning-text',
   },
   CRITICAL: {
-    bg: 'bg-red-50',
-    border: 'border-red-200',
-    text: 'text-red-800',
+    bg: 'bg-error-bg',
+    border: 'border-error-border',
+    text: 'text-error-text',
     icon: AlertCircle,
-    iconColor: 'text-red-500',
+    iconColor: 'text-error-text',
   },
 } as const;
 

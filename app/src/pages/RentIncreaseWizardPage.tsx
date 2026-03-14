@@ -112,11 +112,11 @@ export const RentIncreaseWizardPage = () => {
         <div className="mb-6">
           <div className="flex items-center gap-3 mb-1">
             <Scale className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-            <h1 className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+            <h1 className="text-3xl font-bold text-text-primary">
               Rent Adjustment Wizard
             </h1>
           </div>
-          <p className="text-[#6b7194] dark:text-[#8b90a8] ml-11">
+          <p className="text-text-secondary ml-11">
             Apply regulated rent adjustments across your portfolio
           </p>
         </div>
@@ -129,10 +129,10 @@ export const RentIncreaseWizardPage = () => {
                 <div
                   className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm ${
                     i === stepIndex
-                      ? 'bg-[#5c7cfa] text-white font-semibold'
+                      ? 'bg-primary-500 text-white font-semibold'
                       : i < stepIndex
-                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                        : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8]'
+                        ? 'bg-success-bg text-success-text'
+                        : 'bg-surface-inset text-text-secondary'
                   }`}
                 >
                   <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold border border-current">
@@ -141,7 +141,7 @@ export const RentIncreaseWizardPage = () => {
                   <span className="hidden sm:inline">{s.label}</span>
                 </div>
                 {i < STEPS.length - 1 && (
-                  <ChevronRight className="h-4 w-4 mx-1 text-[#9ca0b8] dark:text-[#5c6180]" />
+                  <ChevronRight className="h-4 w-4 mx-1 text-text-muted " />
                 )}
               </div>
             ))}

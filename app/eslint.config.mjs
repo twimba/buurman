@@ -30,6 +30,10 @@ export default tseslint.config(
     rules: {
       'react/prop-types': 'off', // Using TypeScript for type checking
       '@typescript-eslint/no-non-null-assertion': 'warn',
+      'no-restricted-syntax': ['warn', {
+        selector: 'Literal[value=/\\[#[0-9a-fA-F]{3,8}\\]/]',
+        message: 'Use design tokens instead of hardcoded hex values in Tailwind classes. See docs/DESIGN_SYSTEM.md.',
+      }],
     },
   },
   {

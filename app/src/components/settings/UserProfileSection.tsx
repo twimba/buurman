@@ -59,7 +59,7 @@ function validatePhoneAgainstPolicy(
     const phoneType = parsed.getType();
     if (phoneType) {
       const mappedType = phoneType
-        .replace(/_/g, ' ')
+        .replace(/_/g, '')
         .replace(/\s+/g, '_')
         .toUpperCase();
       const typeMap: Record<string, string> = {
@@ -311,7 +311,7 @@ export const UserProfileSection = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-[#5c7cfa] dark:text-[#91a7ff]" />
+        <Loader2 className="h-8 w-8 animate-spin text-primary-500 dark:text-primary-300" />
       </div>
     );
   }
@@ -319,13 +319,13 @@ export const UserProfileSection = () => {
   if (isError) {
     return (
       <div className="flex flex-col items-center justify-center py-12 gap-4">
-        <AlertTriangle className="h-8 w-8 text-amber-500" />
-        <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+        <AlertTriangle className="h-8 w-8 text-warning-text" />
+        <p className="text-sm text-text-secondary">
           Failed to load profile data
         </p>
         <button
           onClick={() => refetch()}
-          className="px-4 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors text-sm"
+          className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm"
         >
           Try Again
         </button>
@@ -336,21 +336,21 @@ export const UserProfileSection = () => {
   return (
     <div className="space-y-6">
       {/* Profile Information Card */}
-      <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-sm">
-        <div className="p-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+      <div className="bg-surface-card rounded-lg shadow-sm">
+        <div className="p-6 border-b border-border-default">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+              <h2 className="text-xl font-semibold text-text-primary">
                 Profile Information
               </h2>
-              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+              <p className="text-sm text-text-secondary mt-1">
                 Update your personal information and avatar
               </p>
             </div>
             {!isEditing && (
               <button
                 onClick={handleStartEdit}
-                className="px-4 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] dark:hover:bg-[#5c7cfa] transition-colors"
+                className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
               >
                 Edit Profile
               </button>
@@ -360,7 +360,7 @@ export const UserProfileSection = () => {
 
         <div className="p-6">
           {/* Avatar Section */}
-          <div className="flex items-center gap-6 mb-6 pb-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+          <div className="flex items-center gap-6 mb-6 pb-6 border-b border-border-default">
             <div className="relative">
               {userData.avatarUrl ? (
                 <img
@@ -369,14 +369,14 @@ export const UserProfileSection = () => {
                   className="h-24 w-24 rounded-full object-cover"
                 />
               ) : (
-                <div className="h-24 w-24 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                <div className="h-24 w-24 rounded-full bg-info-bg flex items-center justify-center">
                   <User className="h-12 w-12 text-primary-500 dark:text-primary-300" />
                 </div>
               )}
               {isEditing && (
                 <label
                   htmlFor="avatar-upload"
-                  className="absolute bottom-0 right-0 h-8 w-8 bg-[#5c7cfa] dark:bg-blue-700 rounded-full flex items-center justify-center cursor-pointer hover:bg-[#4c6ef5] dark:hover:bg-[#5c7cfa] transition-colors"
+                  className="absolute bottom-0 right-0 h-8 w-8 bg-primary-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-primary-600 transition-colors"
                 >
                   <Camera className="h-4 w-4 text-white" />
                   <input
@@ -390,12 +390,10 @@ export const UserProfileSection = () => {
               )}
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+              <h3 className="text-lg font-semibold text-text-primary">
                 {userData.firstName} {userData.lastName}
               </h3>
-              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                {userData.email}
-              </p>
+              <p className="text-sm text-text-secondary">{userData.email}</p>
             </div>
           </div>
 
@@ -403,7 +401,7 @@ export const UserProfileSection = () => {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                <label className="block text-sm font-medium text-text-secondary mb-1">
                   First Name
                 </label>
                 <input
@@ -413,11 +411,11 @@ export const UserProfileSection = () => {
                     setUserData({ ...userData, firstName: e.target.value })
                   }
                   disabled={!isEditing}
-                  className="w-full px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] dark:bg-[#1e2130] dark:text-[#eef0f6] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-[#f1f3f9] dark:bg-[#1e2130] dark:disabled:bg-[#3a3f54] disabled:cursor-not-allowed"
+                  className="w-full px-3 py-2 border border-border-strong rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-surface-inset disabled:cursor-not-allowed"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                <label className="block text-sm font-medium text-text-secondary mb-1">
                   Last Name
                 </label>
                 <input
@@ -427,25 +425,25 @@ export const UserProfileSection = () => {
                     setUserData({ ...userData, lastName: e.target.value })
                   }
                   disabled={!isEditing}
-                  className="w-full px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] dark:bg-[#1e2130] dark:text-[#eef0f6] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-[#f1f3f9] dark:bg-[#1e2130] dark:disabled:bg-[#3a3f54] disabled:cursor-not-allowed"
+                  className="w-full px-3 py-2 border border-border-strong rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-surface-inset disabled:cursor-not-allowed"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+              <label className="block text-sm font-medium text-text-secondary mb-1">
                 Email Address
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-muted " />
                 <input
                   type="email"
                   value={userData.email}
                   disabled
-                  className="w-full pl-10 pr-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg bg-[#f1f3f9] dark:bg-[#1e2130] dark:text-[#8b90a8] cursor-not-allowed"
+                  className="w-full pl-10 pr-3 py-2 border border-border-strong rounded-lg bg-surface-inset cursor-not-allowed"
                 />
               </div>
-              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] dark:text-[#5c6180] mt-1">
+              <p className="text-xs text-text-secondary mt-1">
                 Email address cannot be changed. Contact support if you need to
                 update it.
               </p>
@@ -453,18 +451,18 @@ export const UserProfileSection = () => {
 
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db]">
+                <label className="block text-sm font-medium text-text-secondary">
                   Phone Number
                 </label>
                 {hasPhone &&
                   !isEditing &&
                   (phoneVerified ? (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-success-bg text-success-text">
                       <CheckCircle2 className="h-3 w-3" />
                       Verified
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-warning-bg text-warning-text">
                       <AlertTriangle className="h-3 w-3" />
                       Unverified
                     </span>
@@ -486,14 +484,16 @@ export const UserProfileSection = () => {
 
             {/* Phone Verification UI */}
             {!isEditing && (needsVerification || showVerification) && (
-              <div className="rounded-xl border border-[#5c7cfa]/20 dark:border-[#5c7cfa]/15 bg-gradient-to-br from-[#f0f4ff] to-white dark:from-[#5c7cfa]/5 dark:to-transparent p-4">
+              <div className="rounded-lg border border-primary-500/20 bg-gradient-to-br from-primary-50 to-white dark:from-primary-500/5 dark:to-transparent p-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-[#5c7cfa]/10 shrink-0">
-                    <MessageSquare className="h-4 w-4 text-[#5c7cfa]" />
+                  <div className="p-2 rounded-lg bg-primary-500/10 shrink-0">
+                    <MessageSquare className="h-4 w-4 text-primary-500" />
                   </div>
-                  <p className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                  <p className="text-sm font-semibold text-text-primary">
                     Almost there! Enter the code sent to{' '}
-                    <span className="text-[#5c7cfa]">{currentUser?.phone}</span>
+                    <span className="text-primary-500">
+                      {currentUser?.phone}
+                    </span>
                   </p>
                 </div>
                 <div className="flex items-center gap-2 mt-3 ml-11">
@@ -506,14 +506,14 @@ export const UserProfileSection = () => {
                     value={verificationCode}
                     onChange={(e) => handleCodeChange(e.target.value)}
                     disabled={verifyPhoneMutation.isPending}
-                    className="w-28 px-3 py-1.5 text-center text-base font-mono tracking-[0.3em] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg bg-white dark:bg-[#1a1d2e] text-[#1a1d2e] dark:text-[#eef0f6] focus:ring-2 focus:ring-[#5c7cfa]/20 focus:border-[#5c7cfa] disabled:opacity-50 transition-colors"
+                    className="w-28 px-3 py-1.5 text-center text-base font-mono tracking-[0.3em] border border-border-strong rounded-lg bg-surface-card text-text-primary focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 disabled:opacity-50 transition-colors"
                   />
                   {verifyPhoneMutation.isPending && (
-                    <Loader2 className="h-4 w-4 animate-spin text-[#5c7cfa]" />
+                    <Loader2 className="h-4 w-4 animate-spin text-primary-500" />
                   )}
                 </div>
                 {verifyPhoneMutation.isError && (
-                  <p className="text-xs text-red-600 dark:text-red-400 mt-2 ml-11">
+                  <p className="text-xs text-error-text mt-2 ml-11">
                     Invalid or expired code. Please try again.
                   </p>
                 )}
@@ -521,7 +521,7 @@ export const UserProfileSection = () => {
                   <button
                     onClick={handleResend}
                     disabled={cooldown > 0 || resendMutation.isPending}
-                    className="font-medium text-[#5c7cfa] hover:text-[#4263eb] disabled:text-[#6b7194] dark:disabled:text-[#5c6180] disabled:cursor-not-allowed transition-colors"
+                    className="font-medium text-primary-500 hover:text-primary-600 disabled:text-text-secondary disabled:cursor-not-allowed transition-colors"
                   >
                     {resendMutation.isPending
                       ? 'Sending...'
@@ -529,7 +529,7 @@ export const UserProfileSection = () => {
                         ? `Resend in ${cooldown}s`
                         : 'Resend code'}
                   </button>
-                  <span className="text-[#c9cfd9] dark:text-[#3a3f54]">|</span>
+                  <span className="text-text-disabled">|</span>
                   <button
                     onClick={() => {
                       cancelVerificationMutation.mutate(undefined, {
@@ -541,7 +541,7 @@ export const UserProfileSection = () => {
                       });
                     }}
                     disabled={cancelVerificationMutation.isPending}
-                    className="font-medium text-[#6b7194] dark:text-[#8b90a8] hover:text-[#3d4463] dark:hover:text-[#c4c8db] disabled:cursor-not-allowed transition-colors"
+                    className="font-medium text-text-secondary hover:text-text-secondary disabled:cursor-not-allowed transition-colors"
                   >
                     {cancelVerificationMutation.isPending
                       ? 'Cancelling...'
@@ -552,10 +552,10 @@ export const UserProfileSection = () => {
             )}
 
             {isEditing && (
-              <div className="flex justify-end gap-3 pt-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
+              <div className="flex justify-end gap-3 pt-4 border-t border-border-default">
                 <button
                   onClick={handleCancelEdit}
-                  className="px-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] text-[#3d4463] dark:text-[#c4c8db] rounded-lg hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors flex items-center gap-2"
+                  className="px-4 py-2 border border-border-strong text-text-secondary rounded-lg hover:bg-surface-inset transition-colors flex items-center gap-2"
                 >
                   <X className="h-4 w-4" />
                   Cancel
@@ -563,7 +563,7 @@ export const UserProfileSection = () => {
                 <button
                   onClick={handleSaveProfile}
                   disabled={updateProfileMutation.isPending}
-                  className="px-4 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 disabled:opacity-50"
+                  className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50"
                 >
                   {updateProfileMutation.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -579,14 +579,14 @@ export const UserProfileSection = () => {
       </div>
 
       {/* Security Settings Card */}
-      <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-sm">
-        <div className="p-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+      <div className="bg-surface-card rounded-lg shadow-sm">
+        <div className="p-6 border-b border-border-default">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+              <h2 className="text-xl font-semibold text-text-primary">
                 Security Settings
               </h2>
-              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+              <p className="text-sm text-text-secondary mt-1">
                 Manage your password and security preferences
               </p>
             </div>
@@ -594,21 +594,19 @@ export const UserProfileSection = () => {
         </div>
 
         <div className="p-6">
-          <div className="flex items-center justify-between p-4 bg-[#f8f9fc] dark:bg-[#0c0d14] dark:bg-[#1e2130] rounded-lg">
+          <div className="flex items-center justify-between p-4 bg-surface-page rounded-lg">
             <div className="flex items-center gap-3">
-              <Lock className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
+              <Lock className="h-5 w-5 text-text-secondary " />
               <div>
-                <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
-                  Password
-                </p>
-                <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                <p className="font-medium text-text-primary">Password</p>
+                <p className="text-sm text-text-secondary">
                   Password changes are managed through your identity provider
                 </p>
               </div>
             </div>
             <a
               href="/auth/change-password"
-              className="px-4 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors"
+              className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
             >
               Change Password
             </a>

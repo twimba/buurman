@@ -46,7 +46,7 @@ const PropagationBanner = ({
     return null;
   }
   return (
-    <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 text-sm text-blue-700 dark:text-blue-400">
+    <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-info-bg border border-info-border text-sm text-info-text">
       <Info className="h-4 w-4 flex-shrink-0" />
       <span className="flex-1">
         Flag updated in Flagsmith. The app will pick up this change within ~60
@@ -54,7 +54,7 @@ const PropagationBanner = ({
       </span>
       <button
         onClick={onDismiss}
-        className="flex-shrink-0 p-0.5 rounded hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-colors"
+        className="flex-shrink-0 p-0.5 rounded hover:bg-info-bg transition-colors"
       >
         <X className="h-3.5 w-3.5" />
       </button>
@@ -76,19 +76,17 @@ const ToggleSwitch = ({
   <button
     onClick={() => !loading && onChange(!enabled)}
     disabled={loading}
-    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#5c7cfa]/30 disabled:opacity-50 ${
-      enabled
-        ? "bg-emerald-500 dark:bg-emerald-600"
-        : "bg-[#c9cfd9] dark:bg-[#3a3f54]"
+    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 disabled:opacity-50 ${
+      enabled ? "bg-emerald-500" : "bg-neutral-200"
     }`}
   >
     <span
-      className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-200 ${
+      className={`inline-block h-4 w-4 transform rounded-full bg-surface-card shadow transition-transform duration-200 ${
         enabled ? "translate-x-6" : "translate-x-1"
       }`}
     />
     {loading && (
-      <Loader2 className="absolute -right-6 h-3.5 w-3.5 animate-spin text-[#9ca0b8]" />
+      <Loader2 className="absolute -right-6 h-3.5 w-3.5 animate-spin text-text-muted" />
     )}
   </button>
 );
@@ -152,7 +150,7 @@ const InlineValueEditor = ({
           }}
           onBlur={save}
           disabled={loading}
-          className="w-32 px-2 py-1 text-sm font-mono rounded border border-[#5c7cfa] bg-white dark:bg-[#1a1d2e] text-[#1a1d2e] dark:text-[#eef0f6] focus:outline-none focus:ring-1 focus:ring-[#5c7cfa]/30"
+          className="w-32 px-2 py-1 text-sm font-mono rounded border border-primary-500 bg-surface-card text-text-primary focus:outline-none focus:ring-1 focus:ring-primary-500/30"
           placeholder="empty"
         />
       </div>
@@ -163,20 +161,20 @@ const InlineValueEditor = ({
     <div className="group/val flex items-center gap-1">
       <button
         onClick={startEdit}
-        className="flex items-center gap-1.5 text-sm font-mono text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:hover:text-[#eef0f6] transition-colors"
+        className="flex items-center gap-1.5 text-sm font-mono text-text-secondary hover:text-text-primary transition-colors"
         title="Click to edit value"
       >
         {hasValue ? (
           String(value)
         ) : (
-          <Minus className="h-4 w-4 text-[#9ca0b8] dark:text-[#5c6180]" />
+          <Minus className="h-4 w-4 text-text-muted " />
         )}
         <Pencil className="h-3 w-3 opacity-0 group-hover/val:opacity-50 transition-opacity" />
       </button>
       {hasValue && !loading && (
         <button
           onClick={() => onSave("")}
-          className="p-0.5 rounded text-[#9ca0b8] hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover/val:opacity-100 transition-all"
+          className="p-0.5 rounded text-text-muted hover:text-error-text opacity-0 group-hover/val:opacity-100 transition-all"
           title="Clear value"
         >
           <XCircle className="h-3.5 w-3.5" />
@@ -192,8 +190,8 @@ const FlagBadge = ({ enabled }: { enabled: boolean }) => (
   <span
     className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold tracking-wide ${
       enabled
-        ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400"
-        : "bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400"
+        ? "bg-success-bg text-success-text"
+        : "bg-error-bg text-error-text"
     }`}
   >
     {enabled ? (
@@ -206,7 +204,7 @@ const FlagBadge = ({ enabled }: { enabled: boolean }) => (
 );
 
 const OverrideBadge = () => (
-  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20">
+  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-warning-bg text-warning-text border border-warning-border">
     Override
   </span>
 );
@@ -214,12 +212,9 @@ const OverrideBadge = () => (
 const RoleBadge = ({ role }: { role: string }) => {
   const label = role.replace("TEAM_", "");
   const colors: Record<string, string> = {
-    ADMIN:
-      "bg-violet-50 text-violet-700 dark:bg-violet-500/10 dark:text-violet-400 border-violet-200 dark:border-violet-500/20",
-    EDITOR:
-      "bg-sky-50 text-sky-700 dark:bg-sky-500/10 dark:text-sky-400 border-sky-200 dark:border-sky-500/20",
-    VIEWER:
-      "bg-slate-50 text-slate-600 dark:bg-slate-500/10 dark:text-slate-400 border-slate-200 dark:border-slate-500/20",
+    ADMIN: "bg-violet-50 text-violet-700 border-violet-200",
+    EDITOR: "bg-sky-50 text-sky-700 border-sky-200",
+    VIEWER: "bg-slate-50 text-slate-600 border-slate-200",
   };
   return (
     <span
@@ -232,11 +227,11 @@ const RoleBadge = ({ role }: { role: string }) => {
 };
 
 const ValueCell = ({ value }: { value: unknown }) => (
-  <td className="px-5 py-3.5 text-sm text-[#6b7194] dark:text-[#8b90a8] font-mono">
+  <td className="px-5 py-3.5 text-sm text-text-secondary font-mono">
     {value != null ? (
       String(value)
     ) : (
-      <Minus className="h-4 w-4 text-[#9ca0b8] dark:text-[#5c6180]" />
+      <Minus className="h-4 w-4 text-text-muted " />
     )}
   </td>
 );
@@ -272,9 +267,9 @@ const GlobalFlagRow = ({
   mutating?: boolean;
 }) => {
   return (
-    <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0 hover:bg-[#f1f3f9]/50 dark:hover:bg-[#1a1d2e]/50 transition-colors">
+    <tr className="border-b border-border-default last:border-b-0 hover:bg-surface-inset/50 transition-colors">
       <td className="px-5 py-3.5">
-        <code className="text-sm font-mono font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+        <code className="text-sm font-mono font-medium text-text-primary">
           {name}
         </code>
       </td>
@@ -338,10 +333,10 @@ const UserFlagRow = ({
 
   return (
     <>
-      <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0 hover:bg-[#f1f3f9]/50 dark:hover:bg-[#1a1d2e]/50 transition-colors">
+      <tr className="border-b border-border-default last:border-b-0 hover:bg-surface-inset/50 transition-colors">
         <td className="px-5 py-3.5">
           <div className="flex items-center gap-2.5">
-            <code className="text-sm font-mono font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+            <code className="text-sm font-mono font-medium text-text-primary">
               {name}
             </code>
             {override && <OverrideBadge />}
@@ -388,7 +383,7 @@ const UserFlagRow = ({
             <button
               onClick={() => setConfirmDelete(true)}
               disabled={mutating}
-              className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium text-error-text hover:bg-error-bg transition-colors disabled:opacity-50"
               title="Remove override"
             >
               <Trash2 className="h-3 w-3" />
@@ -406,7 +401,7 @@ const UserFlagRow = ({
                 )
               }
               disabled={mutating}
-              className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium text-[#5c7cfa] hover:bg-[#5c7cfa]/10 transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium text-primary-500 hover:bg-primary-500/10 transition-colors disabled:opacity-50"
               title="Create override"
             >
               <Plus className="h-3 w-3" />
@@ -454,7 +449,7 @@ const GlobalFlagTable = ({
 
   if (sortedNames.length === 0) {
     return (
-      <div className="text-center py-12 text-[#9ca0b8] dark:text-[#5c6180]">
+      <div className="text-center py-12 text-text-muted">
         <Flag className="h-10 w-10 mx-auto mb-3 opacity-40" />
         <p className="text-sm">No feature flags configured</p>
       </div>
@@ -465,14 +460,14 @@ const GlobalFlagTable = ({
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
-          <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-[#9ca0b8] dark:text-[#5c6180]">
+          <tr className="border-b border-border-default">
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
               Flag
             </th>
-            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-[#9ca0b8] dark:text-[#5c6180]">
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
               Enabled
             </th>
-            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-[#9ca0b8] dark:text-[#5c6180]">
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
               Value
             </th>
           </tr>
@@ -533,7 +528,7 @@ const UserFlagTable = ({
 
   if (sortedNames.length === 0) {
     return (
-      <div className="text-center py-12 text-[#9ca0b8] dark:text-[#5c6180]">
+      <div className="text-center py-12 text-text-muted">
         <Flag className="h-10 w-10 mx-auto mb-3 opacity-40" />
         <p className="text-sm">No feature flags configured</p>
       </div>
@@ -542,7 +537,7 @@ const UserFlagTable = ({
 
   if (showOverrideOnly && visibleCount === 0) {
     return (
-      <div className="text-center py-12 text-[#9ca0b8] dark:text-[#5c6180]">
+      <div className="text-center py-12 text-text-muted">
         <CheckCircle2 className="h-10 w-10 mx-auto mb-3 opacity-40" />
         <p className="text-sm">All flags match the global defaults</p>
       </div>
@@ -553,23 +548,23 @@ const UserFlagTable = ({
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
-          <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-[#9ca0b8] dark:text-[#5c6180]">
+          <tr className="border-b border-border-default">
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
               Flag
             </th>
-            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-[#9ca0b8] dark:text-[#5c6180]">
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
               User Status
             </th>
-            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-[#9ca0b8] dark:text-[#5c6180]">
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
               Global Status
             </th>
-            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-[#9ca0b8] dark:text-[#5c6180]">
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
               User Value
             </th>
-            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-[#9ca0b8] dark:text-[#5c6180]">
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
               Global Value
             </th>
-            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-[#9ca0b8] dark:text-[#5c6180]">
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
               Actions
             </th>
           </tr>
@@ -631,11 +626,11 @@ const TeamFlagSection = ({
     : 0;
 
   return (
-    <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden">
-      <div className="flex items-center justify-between px-5 py-3 border-b border-[#e2e6f0] dark:border-[#2a2e3f] bg-[#f8f9fc] dark:bg-[#0f1120]">
+    <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
+      <div className="flex items-center justify-between px-5 py-3 border-b border-border-default bg-surface-page">
         <div className="flex items-center gap-2.5 flex-wrap">
-          <Building2 className="h-4 w-4 text-[#5c7cfa]" />
-          <span className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+          <Building2 className="h-4 w-4 text-primary-500" />
+          <span className="text-sm font-semibold text-text-primary">
             {evaluation.teamName}
           </span>
           <RoleBadge role={evaluation.role} />
@@ -643,17 +638,17 @@ const TeamFlagSection = ({
             <Crown className="h-3.5 w-3.5 text-amber-500" />
           )}
           {evaluation.isActive && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-success-bg text-success-text border border-success-border">
               Active
             </span>
           )}
           {overrideCount > 0 && (
-            <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
+            <span className="text-xs font-medium text-amber-600">
               {overrideCount} override{overrideCount !== 1 ? "s" : ""}
             </span>
           )}
         </div>
-        <span className="text-[10px] font-mono text-[#9ca0b8] dark:text-[#5c6180] flex-shrink-0 ml-3">
+        <span className="text-[10px] font-mono text-text-muted flex-shrink-0 ml-3">
           {evaluation.teamIdentifier}
         </span>
       </div>
@@ -759,15 +754,15 @@ export const UserFeatureFlags = ({
       {/* Section header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <Flag className="h-4 w-4 text-[#5c7cfa]" />
-          <h2 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+          <Flag className="h-4 w-4 text-primary-500" />
+          <h2 className="text-sm font-semibold text-text-primary">
             Feature Flags
           </h2>
-          <span className="text-[10px] font-mono text-[#9ca0b8] dark:text-[#5c6180]">
+          <span className="text-[10px] font-mono text-text-muted">
             {userIdentifier}
           </span>
           {totalOverrides > 0 && (
-            <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
+            <span className="text-xs font-medium text-amber-600">
               {totalOverrides} override{totalOverrides !== 1 ? "s" : ""} across{" "}
               {teamEvaluations?.length} team
               {(teamEvaluations?.length ?? 0) !== 1 ? "s" : ""}
@@ -779,8 +774,8 @@ export const UserFeatureFlags = ({
             onClick={() => setShowOverrideOnly(!showOverrideOnly)}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               showOverrideOnly
-                ? "bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20"
-                : "text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] border border-[#e2e6f0] dark:border-[#2a2e3f]"
+                ? "bg-amber-50 text-amber-700 border border-amber-200"
+                : "text-text-secondary hover:bg-surface-inset border border-border-default"
             }`}
           >
             <Filter className="h-3 w-3" />
@@ -798,8 +793,8 @@ export const UserFeatureFlags = ({
 
       {/* Per-team evaluations */}
       {userLoading ? (
-        <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden">
-          <div className="text-center py-12 text-[#9ca0b8] dark:text-[#5c6180] text-sm">
+        <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
+          <div className="text-center py-12 text-text-muted text-sm">
             Evaluating flags...
           </div>
         </div>
@@ -819,8 +814,8 @@ export const UserFeatureFlags = ({
           ))}
         </div>
       ) : (
-        <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden">
-          <div className="text-center py-12 text-[#9ca0b8] dark:text-[#5c6180]">
+        <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
+          <div className="text-center py-12 text-text-muted">
             <User className="h-10 w-10 mx-auto mb-3 opacity-40" />
             <p className="text-sm">This user has no team memberships</p>
           </div>
@@ -865,10 +860,10 @@ const SegmentOverrideRow = ({
 
   return (
     <>
-      <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0 hover:bg-[#f1f3f9]/50 dark:hover:bg-[#1a1d2e]/50 transition-colors">
+      <tr className="border-b border-border-default last:border-b-0 hover:bg-surface-inset/50 transition-colors">
         <td className="px-5 py-3.5">
           <div className="flex items-center gap-2.5">
-            <code className="text-sm font-mono font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+            <code className="text-sm font-mono font-medium text-text-primary">
               {name}
             </code>
             {override && <OverrideBadge />}
@@ -907,7 +902,7 @@ const SegmentOverrideRow = ({
           <button
             onClick={() => setConfirmDelete(true)}
             disabled={mutating}
-            className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium text-error-text hover:bg-error-bg transition-colors disabled:opacity-50"
             title="Remove segment override"
           >
             <Trash2 className="h-3 w-3" />
@@ -965,7 +960,7 @@ const SegmentFlagTable = ({
 
   if (sortedNames.length === 0) {
     return (
-      <div className="text-center py-8 text-[#9ca0b8] dark:text-[#5c6180]">
+      <div className="text-center py-8 text-text-muted">
         <Flag className="h-8 w-8 mx-auto mb-2 opacity-40" />
         <p className="text-sm">No overrides for this segment</p>
       </div>
@@ -980,7 +975,7 @@ const SegmentFlagTable = ({
 
   if (showOverrideOnly && visibleCount === 0) {
     return (
-      <div className="text-center py-8 text-[#9ca0b8] dark:text-[#5c6180]">
+      <div className="text-center py-8 text-text-muted">
         <CheckCircle2 className="h-8 w-8 mx-auto mb-2 opacity-40" />
         <p className="text-sm">All overrides match global defaults</p>
       </div>
@@ -991,23 +986,23 @@ const SegmentFlagTable = ({
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
-          <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-[#9ca0b8] dark:text-[#5c6180]">
+          <tr className="border-b border-border-default">
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
               Flag
             </th>
-            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-[#9ca0b8] dark:text-[#5c6180]">
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
               Segment Status
             </th>
-            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-[#9ca0b8] dark:text-[#5c6180]">
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
               Global Status
             </th>
-            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-[#9ca0b8] dark:text-[#5c6180]">
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
               Segment Value
             </th>
-            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-[#9ca0b8] dark:text-[#5c6180]">
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
               Global Value
             </th>
-            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-[#9ca0b8] dark:text-[#5c6180]">
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
               Actions
             </th>
           </tr>
@@ -1057,21 +1052,21 @@ const SegmentFlagSection = ({
   const overrideCount = Object.keys(segment.overrides).length;
 
   return (
-    <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden">
-      <div className="flex items-center justify-between px-5 py-3 border-b border-[#e2e6f0] dark:border-[#2a2e3f] bg-[#f8f9fc] dark:bg-[#0f1120]">
+    <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
+      <div className="flex items-center justify-between px-5 py-3 border-b border-border-default bg-surface-page">
         <div className="flex items-center gap-2.5 flex-wrap">
-          <Layers className="h-4 w-4 text-[#5c7cfa]" />
-          <span className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+          <Layers className="h-4 w-4 text-primary-500" />
+          <span className="text-sm font-semibold text-text-primary">
             {segment.segmentName}
           </span>
           {overrideCount > 0 && (
-            <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
+            <span className="text-xs font-medium text-amber-600">
               {overrideCount} override{overrideCount !== 1 ? "s" : ""}
             </span>
           )}
         </div>
         {segment.description && (
-          <span className="text-xs text-[#9ca0b8] dark:text-[#5c6180] flex-shrink-0 ml-3 max-w-xs truncate">
+          <span className="text-xs text-text-muted flex-shrink-0 ml-3 max-w-xs truncate">
             {segment.description}
           </span>
         )}
@@ -1161,16 +1156,16 @@ export const SegmentFeatureFlags = () => {
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <Layers className="h-4 w-4 text-[#5c7cfa]" />
-          <h2 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+          <Layers className="h-4 w-4 text-primary-500" />
+          <h2 className="text-sm font-semibold text-text-primary">
             Segment Overrides
           </h2>
-          <span className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
+          <span className="text-xs text-text-muted">
             {segments?.length ?? 0} segment
             {(segments?.length ?? 0) !== 1 ? "s" : ""}
           </span>
           {totalOverrides > 0 && (
-            <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
+            <span className="text-xs font-medium text-amber-600">
               {totalOverrides} override{totalOverrides !== 1 ? "s" : ""} total
             </span>
           )}
@@ -1180,8 +1175,8 @@ export const SegmentFeatureFlags = () => {
             onClick={() => setShowOverrideOnly(!showOverrideOnly)}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               showOverrideOnly
-                ? "bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20"
-                : "text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] border border-[#e2e6f0] dark:border-[#2a2e3f]"
+                ? "bg-amber-50 text-amber-700 border border-amber-200"
+                : "text-text-secondary hover:bg-surface-inset border border-border-default"
             }`}
           >
             <Filter className="h-3 w-3" />
@@ -1198,8 +1193,8 @@ export const SegmentFeatureFlags = () => {
       </div>
 
       {segmentsLoading ? (
-        <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden">
-          <div className="text-center py-12 text-[#9ca0b8] dark:text-[#5c6180] text-sm">
+        <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
+          <div className="text-center py-12 text-text-muted text-sm">
             Loading segments...
           </div>
         </div>
@@ -1218,8 +1213,8 @@ export const SegmentFeatureFlags = () => {
           ))}
         </div>
       ) : (
-        <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden">
-          <div className="text-center py-12 text-[#9ca0b8] dark:text-[#5c6180]">
+        <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
+          <div className="text-center py-12 text-text-muted">
             <Layers className="h-10 w-10 mx-auto mb-3 opacity-40" />
             <p className="text-sm">No segments configured in Flagsmith</p>
           </div>

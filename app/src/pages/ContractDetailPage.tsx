@@ -17,7 +17,7 @@ import {
   usePaymentsByContract,
   useDeletePayment,
 } from '@/hooks/usePaymentHooks';
-import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { ConfirmDialog } from '@buurman/ui';
 import { ContractPaymentInstructionSection } from '@/components/contracts/ContractPaymentInstructionSection';
 import { CalendarFeedResponseFeedType as CalendarFeedType } from '@/generated/models';
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
@@ -29,7 +29,7 @@ import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge'
 import { ChangeContractStatusModal } from '@/components/contracts/ChangeContractStatusModal';
 import GeneratePaymentsModal from '@/components/contracts/GeneratePaymentsModal';
 import { RentTimeline } from '@/components/contracts/RentTimeline';
-import { Button, PageHeader } from '@/components/ui';
+import { Button, PageHeader } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import client from '@/api/client';
 import {
@@ -292,7 +292,7 @@ export const ContractDetailPage = () => {
         {/* Header */}
         <PageHeader
           title={`Contract #${contract.identifier}`}
-          subtitle={contract.contractType.replace('_', ' ')}
+          subtitle={contract.contractType.replace('_', '')}
           backTo="/contracts"
           badge={<ContractStatusBadge status={contract.status} />}
           actions={
@@ -384,14 +384,14 @@ export const ContractDetailPage = () => {
         />
 
         {/* Tabs */}
-        <div className="border-b border-[#e2e6f0] mb-6">
+        <div className="border-b border-border-default mb-6">
           <div className="flex gap-6">
             <button
               onClick={() => setActiveTab('overview')}
               className={`pb-3 px-1 font-medium transition-colors ${
                 activeTab === 'overview'
-                  ? 'border-b-2 border-[#5c7cfa] text-blue-600'
-                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
+                  ? 'border-b-2 border-primary-500 text-primary-500'
+                  : 'text-text-secondary hover:text-text-primary'
               }`}
             >
               Overview
@@ -400,8 +400,8 @@ export const ContractDetailPage = () => {
               onClick={() => setActiveTab('payments')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'payments'
-                  ? 'border-b-2 border-[#5c7cfa] text-blue-600'
-                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
+                  ? 'border-b-2 border-primary-500 text-primary-500'
+                  : 'text-text-secondary hover:text-text-primary'
               }`}
             >
               <DollarSign className="h-4 w-4" />
@@ -411,8 +411,8 @@ export const ContractDetailPage = () => {
               onClick={() => setActiveTab('documents')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'documents'
-                  ? 'border-b-2 border-[#5c7cfa] text-blue-600'
-                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
+                  ? 'border-b-2 border-primary-500 text-primary-500'
+                  : 'text-text-secondary hover:text-text-primary'
               }`}
             >
               <FileText className="h-4 w-4" />
@@ -422,8 +422,8 @@ export const ContractDetailPage = () => {
               onClick={() => setActiveTab('history')}
               className={`pb-3 px-1 font-medium transition-colors ${
                 activeTab === 'history'
-                  ? 'border-b-2 border-[#5c7cfa] text-blue-600'
-                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
+                  ? 'border-b-2 border-primary-500 text-primary-500'
+                  : 'text-text-secondary hover:text-text-primary'
               }`}
             >
               History {auditLog.length > 0 && `(${auditLog.length})`}
@@ -435,26 +435,24 @@ export const ContractDetailPage = () => {
         {activeTab === 'overview' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Property and Tenant */}
-            <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+              <h2 className="text-lg font-semibold text-text-primary mb-4">
                 Contract Parties
               </h2>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <Home className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180] mt-1" />
+                  <Home className="h-5 w-5 text-text-muted mt-1" />
                   <div className="flex-1">
-                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                      Property
-                    </p>
+                    <p className="text-sm text-text-secondary">Property</p>
                     <button
                       onClick={() =>
                         navigate(`/properties/${contract.property.identifier}`)
                       }
-                      className="font-medium text-[#5c7cfa] hover:underline text-left"
+                      className="font-medium text-primary-500 hover:underline text-left"
                     >
                       {contract.property.street}, {contract.property.city}
                     </button>
-                    <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                    <p className="text-xs text-text-secondary">
                       #{contract.property.identifier}
                     </p>
                   </div>
@@ -465,9 +463,9 @@ export const ContractDetailPage = () => {
                     key={party.identifier}
                     className="flex items-start gap-3"
                   >
-                    <User className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180] mt-1" />
+                    <User className="h-5 w-5 text-text-muted mt-1" />
                     <div className="flex-1">
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      <p className="text-sm text-text-secondary">
                         {PARTY_ROLE_LABELS[party.role as ContractPartyRole] ??
                           party.role}
                       </p>
@@ -475,11 +473,11 @@ export const ContractDetailPage = () => {
                         onClick={() =>
                           navigate(`/tenants/${party.tenant.identifier}`)
                         }
-                        className="font-medium text-[#5c7cfa] hover:underline text-left"
+                        className="font-medium text-primary-500 hover:underline text-left"
                       >
                         {party.tenant.firstName} {party.tenant.lastName}
                       </button>
-                      <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                      <p className="text-xs text-text-secondary">
                         #{party.tenant.identifier}
                       </p>
                     </div>
@@ -489,9 +487,9 @@ export const ContractDetailPage = () => {
             </div>
 
             {/* Contract Dates */}
-            <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                <h2 className="text-lg font-semibold text-text-primary">
                   Important Dates
                 </h2>
                 {contract && (
@@ -503,24 +501,20 @@ export const ContractDetailPage = () => {
               </div>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <Calendar className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+                  <Calendar className="h-5 w-5 text-text-muted " />
                   <div>
-                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                      Start Date
-                    </p>
-                    <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <p className="text-sm text-text-secondary">Start Date</p>
+                    <p className="font-medium text-text-primary">
                       {formatDate(contract.startDate)}
                     </p>
                   </div>
                 </div>
                 {contract.endDate && (
                   <div className="flex items-center gap-3">
-                    <Calendar className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+                    <Calendar className="h-5 w-5 text-text-muted " />
                     <div>
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                        End Date
-                      </p>
-                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <p className="text-sm text-text-secondary">End Date</p>
+                      <p className="font-medium text-text-primary">
                         {formatDate(contract.endDate)}
                       </p>
                     </div>
@@ -528,12 +522,10 @@ export const ContractDetailPage = () => {
                 )}
                 {contract.signedDate && (
                   <div className="flex items-center gap-3">
-                    <Calendar className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+                    <Calendar className="h-5 w-5 text-text-muted " />
                     <div>
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                        Signed Date
-                      </p>
-                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <p className="text-sm text-text-secondary">Signed Date</p>
+                      <p className="font-medium text-text-primary">
                         {formatDate(contract.signedDate)}
                       </p>
                     </div>
@@ -543,8 +535,8 @@ export const ContractDetailPage = () => {
             </div>
 
             {/* Financial Terms */}
-            <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+              <h2 className="text-lg font-semibold text-text-primary mb-4">
                 Financial Terms
               </h2>
               <div className="space-y-4">
@@ -557,12 +549,10 @@ export const ContractDetailPage = () => {
                 />
                 {contract.depositAmount && (
                   <div className="flex items-center gap-3">
-                    <DollarSign className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+                    <DollarSign className="h-5 w-5 text-text-muted " />
                     <div>
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                        Deposit
-                      </p>
-                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <p className="text-sm text-text-secondary">Deposit</p>
+                      <p className="font-medium text-text-primary">
                         {contract.depositAmountCurrency ??
                           contract.rentAmountCurrency}{' '}
                         {contract.depositAmount.toFixed(2)}
@@ -572,12 +562,12 @@ export const ContractDetailPage = () => {
                 )}
                 {contract.securityDeposit && (
                   <div className="flex items-center gap-3">
-                    <DollarSign className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+                    <DollarSign className="h-5 w-5 text-text-muted " />
                     <div>
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      <p className="text-sm text-text-secondary">
                         Security Deposit
                       </p>
-                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <p className="font-medium text-text-primary">
                         {contract.securityDepositCurrency ??
                           contract.rentAmountCurrency}{' '}
                         {contract.securityDeposit.toFixed(2)}
@@ -587,10 +577,10 @@ export const ContractDetailPage = () => {
                 )}
                 {contract.paymentDueDay && (
                   <div>
-                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                    <p className="text-sm text-text-secondary">
                       Payment Due Day
                     </p>
-                    <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <p className="font-medium text-text-primary">
                       Day {contract.paymentDueDay} of each period
                     </p>
                   </div>
@@ -607,45 +597,41 @@ export const ContractDetailPage = () => {
             />
 
             {/* Additional Terms */}
-            <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+              <h2 className="text-lg font-semibold text-text-primary mb-4">
                 Additional Terms
               </h2>
               <div className="space-y-3">
                 <div>
-                  <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                    Auto-renewal
-                  </p>
-                  <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                  <p className="text-sm text-text-secondary">Auto-renewal</p>
+                  <p className="font-medium text-text-primary">
                     {contract.autoRenewal ? 'Yes' : 'No'}
                   </p>
                 </div>
                 {contract.renewalNoticeDays && (
                   <div>
-                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                    <p className="text-sm text-text-secondary">
                       Renewal Notice
                     </p>
-                    <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <p className="font-medium text-text-primary">
                       {contract.renewalNoticeDays} days
                     </p>
                   </div>
                 )}
                 {contract.terminationNoticeDays && (
                   <div>
-                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                    <p className="text-sm text-text-secondary">
                       Termination Notice
                     </p>
-                    <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <p className="font-medium text-text-primary">
                       {contract.terminationNoticeDays} days
                     </p>
                   </div>
                 )}
                 {contract.lateFeePercentage && (
                   <div>
-                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                      Late Fee
-                    </p>
-                    <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <p className="text-sm text-text-secondary">Late Fee</p>
+                    <p className="font-medium text-text-primary">
                       {contract.lateFeePercentage}%
                     </p>
                   </div>
@@ -655,8 +641,8 @@ export const ContractDetailPage = () => {
 
             {/* Terms and Conditions */}
             {contract.termsAndConditions && (
-              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6 lg:col-span-2">
-                <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 lg:col-span-2">
+                <h2 className="text-lg font-semibold text-text-primary mb-4">
                   Terms and Conditions
                 </h2>
                 <RichTextDisplay content={contract.termsAndConditions} />
@@ -665,8 +651,8 @@ export const ContractDetailPage = () => {
 
             {/* Notes */}
             {contract.notes && (
-              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6 lg:col-span-2">
-                <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 lg:col-span-2">
+                <h2 className="text-lg font-semibold text-text-primary mb-4">
                   Notes
                 </h2>
                 <RichTextDisplay content={contract.notes} />
@@ -677,8 +663,8 @@ export const ContractDetailPage = () => {
             {contract.countryCode &&
               contract.countryMetadata &&
               Object.keys(contract.countryMetadata).length > 0 && (
-                <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6 lg:col-span-2">
-                  <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+                <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 lg:col-span-2">
+                  <h2 className="text-lg font-semibold text-text-primary mb-4">
                     {countryName
                       ? `${countryName} Rental Details`
                       : 'Country-Specific Details'}
@@ -694,36 +680,32 @@ export const ContractDetailPage = () => {
               )}
 
             {/* Metadata */}
-            <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6 lg:col-span-2">
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 lg:col-span-2">
               <button
                 onClick={() => setIsMetadataExpanded(!isMetadataExpanded)}
                 className="w-full flex items-center justify-between text-left group"
               >
-                <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                <h2 className="text-lg font-semibold text-text-primary">
                   Metadata
                 </h2>
                 {isMetadataExpanded ? (
-                  <ChevronUp className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8] group-hover:text-[#3d4463] dark:group-hover:text-[#c4c8db]" />
+                  <ChevronUp className="h-5 w-5 text-text-secondary group-hover:text-text-secondary " />
                 ) : (
-                  <ChevronDown className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8] group-hover:text-[#3d4463] dark:group-hover:text-[#c4c8db]" />
+                  <ChevronDown className="h-5 w-5 text-text-secondary group-hover:text-text-secondary " />
                 )}
               </button>
               {isMetadataExpanded && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-4">
                   <div>
-                    <span className="text-[#6b7194] dark:text-[#8b90a8]">
-                      Created:
-                    </span>{' '}
-                    <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <span className="text-text-secondary">Created:</span>{' '}
+                    <span className="text-text-primary">
                       {formatDate(contract.createdAt)} at{' '}
                       {new Date(contract.createdAt).toLocaleTimeString()}
                     </span>
                   </div>
                   <div>
-                    <span className="text-[#6b7194] dark:text-[#8b90a8]">
-                      Last Updated:
-                    </span>{' '}
-                    <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <span className="text-text-secondary">Last Updated:</span>{' '}
+                    <span className="text-text-primary">
                       {formatDate(contract.updatedAt)} at{' '}
                       {new Date(contract.updatedAt).toLocaleTimeString()}
                     </span>
@@ -735,9 +717,9 @@ export const ContractDetailPage = () => {
         )}
 
         {activeTab === 'payments' && (
-          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+              <h2 className="text-xl font-semibold text-text-primary">
                 Payments ({filteredAndSortedPayments.length})
               </h2>
               <div className="flex items-center gap-2">
@@ -778,8 +760,8 @@ export const ContractDetailPage = () => {
               <ErrorMessage message="Failed to load payments" />
             ) : payments.length === 0 ? (
               <div className="text-center py-12">
-                <DollarSign className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] mx-auto mb-3" />
-                <p className="text-[#6b7194] dark:text-[#8b90a8] mb-4">
+                <DollarSign className="h-12 w-12 text-text-disabled mx-auto mb-3" />
+                <p className="text-text-secondary mb-4">
                   No payments for this contract
                 </p>
                 <Button
@@ -796,7 +778,7 @@ export const ContractDetailPage = () => {
                 {/* Search Bar */}
                 <div className="mb-4">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-text-muted " />
                     <input
                       type="text"
                       placeholder="Search by payment #, status..."
@@ -805,21 +787,21 @@ export const ContractDetailPage = () => {
                         setPaymentsSearchTerm(e.target.value);
                         setPaymentsCurrentPage(1);
                       }}
-                      className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                 </div>
 
                 {/* Table */}
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
-                    <thead className="bg-[#f8f9fc] dark:bg-[#0c0d14]">
+                  <table className="min-w-full divide-y divide-border-default">
+                    <thead className="bg-surface-page">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                           Payment #
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                           onClick={() => handlePaymentsSort('dueDate')}
                         >
                           <div className="flex items-center gap-1">
@@ -833,7 +815,7 @@ export const ContractDetailPage = () => {
                           </div>
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                           onClick={() => handlePaymentsSort('amount')}
                         >
                           <div className="flex items-center gap-1">
@@ -847,7 +829,7 @@ export const ContractDetailPage = () => {
                           </div>
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                           onClick={() => handlePaymentsSort('status')}
                         >
                           <div className="flex items-center gap-1">
@@ -861,7 +843,7 @@ export const ContractDetailPage = () => {
                           </div>
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                           onClick={() => handlePaymentsSort('paymentDate')}
                         >
                           <div className="flex items-center gap-1">
@@ -874,17 +856,17 @@ export const ContractDetailPage = () => {
                               ))}
                           </div>
                         </th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                        <th className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
                           Actions
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white dark:bg-[#14161f] divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
+                    <tbody className="bg-surface-card divide-y divide-border-default">
                       {paginatedPayments.length === 0 ? (
                         <tr>
                           <td
                             colSpan={5}
-                            className="px-6 py-12 text-center text-[#6b7194] dark:text-[#8b90a8]"
+                            className="px-6 py-12 text-center text-text-secondary"
                           >
                             No payments found matching your search
                           </td>
@@ -893,25 +875,25 @@ export const ContractDetailPage = () => {
                         paginatedPayments.map((payment) => (
                           <tr
                             key={payment.identifier}
-                            className="hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] cursor-pointer"
+                            className="hover:bg-primary-50 cursor-pointer"
                             onClick={() =>
                               navigate(`/payments/${payment.identifier}`)
                             }
                           >
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#5c7cfa] dark:text-[#91a7ff]">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-500 dark:text-primary-300">
                               #{payment.identifier}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
                               {formatDate(payment.dueDate)}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
                               <div>
-                                <span className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                                <span className="font-semibold text-text-primary">
                                   {payment.currency} {payment.amount.toFixed(2)}
                                 </span>
                                 {payment.receivedAmount > 0 &&
                                   payment.status !== PaymentStatus.PAID && (
-                                    <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                                    <p className="text-xs text-text-secondary">
                                       Balance: {payment.currency}{' '}
                                       {(payment.balance ?? 0).toFixed(2)}
                                     </p>
@@ -921,7 +903,7 @@ export const ContractDetailPage = () => {
                             <td className="px-6 py-4 whitespace-nowrap">
                               <PaymentStatusBadge status={payment.status} />
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
                               {payment.paymentDate
                                 ? formatDate(payment.paymentDate)
                                 : '-'}
@@ -933,7 +915,7 @@ export const ContractDetailPage = () => {
                                     e.stopPropagation();
                                     setDeletePaymentTarget(payment.identifier);
                                   }}
-                                  className="p-1.5 rounded hover:bg-red-50 dark:hover:bg-red-900/20 text-[#6b7194] dark:text-[#8b90a8] hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                                  className="p-1.5 rounded hover:bg-error-bg text-text-secondary hover:text-error-text transition-colors"
                                   title="Delete payment"
                                 >
                                   <Trash2 className="h-4 w-4" />
@@ -949,8 +931,8 @@ export const ContractDetailPage = () => {
 
                 {/* Pagination */}
                 {paymentsTotalPages > 1 && (
-                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
-                    <div className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-border-default">
+                    <div className="text-sm text-text-secondary">
                       Showing {(paymentsCurrentPage - 1) * paymentsPerPage + 1}{' '}
                       to{' '}
                       {Math.min(
@@ -965,11 +947,11 @@ export const ContractDetailPage = () => {
                           setPaymentsCurrentPage(paymentsCurrentPage - 1)
                         }
                         disabled={paymentsCurrentPage === 1}
-                        className="px-3 py-1 border border-[#c9cfd9] rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                        className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
                       >
                         Previous
                       </button>
-                      <span className="px-3 py-1 text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      <span className="px-3 py-1 text-sm text-text-secondary">
                         Page {paymentsCurrentPage} of {paymentsTotalPages}
                       </span>
                       <button
@@ -977,7 +959,7 @@ export const ContractDetailPage = () => {
                           setPaymentsCurrentPage(paymentsCurrentPage + 1)
                         }
                         disabled={paymentsCurrentPage === paymentsTotalPages}
-                        className="px-3 py-1 border border-[#c9cfd9] rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                        className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
                       >
                         Next
                       </button>
@@ -990,7 +972,7 @@ export const ContractDetailPage = () => {
         )}
 
         {activeTab === 'documents' && (
-          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
             <DocumentList
               documents={documents}
               onUpload={handleUploadDocument}
@@ -1005,8 +987,8 @@ export const ContractDetailPage = () => {
         )}
 
         {activeTab === 'history' && (
-          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+            <h2 className="text-xl font-semibold text-text-primary mb-4">
               Contract History
             </h2>
             {auditLoading ? (
@@ -1028,12 +1010,12 @@ export const ContractDetailPage = () => {
                   return (
                     <div
                       key={activityKey}
-                      className="border border-[#e2e6f0] rounded-lg overflow-hidden"
+                      className="border border-border-default rounded-lg overflow-hidden"
                     >
                       <div
                         className={`flex items-start gap-4 p-4 transition-colors ${
                           hasChanges
-                            ? 'cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]'
+                            ? 'cursor-pointer hover:bg-surface-inset'
                             : ''
                         }`}
                         onClick={() =>
@@ -1052,35 +1034,35 @@ export const ContractDetailPage = () => {
                         <div
                           className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
                             activity.action === 'CREATE'
-                              ? 'bg-green-100 dark:bg-green-900/30'
+                              ? 'bg-success-bg'
                               : activity.action === 'UPDATE'
-                                ? 'bg-blue-100 dark:bg-blue-900/30'
-                                : 'bg-red-100 dark:bg-red-900/30'
+                                ? 'bg-info-bg'
+                                : 'bg-error-bg'
                           }`}
                         >
                           <span
                             className={`text-xs font-semibold ${
                               activity.action === 'CREATE'
-                                ? 'text-green-700'
+                                ? 'text-success-text'
                                 : activity.action === 'UPDATE'
-                                  ? 'text-blue-700'
-                                  : 'text-red-700'
+                                  ? 'text-info-text'
+                                  : 'text-error-text'
                             }`}
                           >
                             {activity.action.charAt(0)}
                           </span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                          <p className="text-sm font-medium text-text-primary">
                             {activity.description}
                           </p>
-                          <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                          <p className="text-xs text-text-secondary mt-1">
                             {formatDistanceToNow(new Date(activity.timestamp), {
                               addSuffix: true,
                             })}
                           </p>
                           {hasChanges && (
-                            <p className="text-xs text-[#5c7cfa] mt-1">
+                            <p className="text-xs text-primary-500 mt-1">
                               {isExpanded
                                 ? 'Click to hide changes'
                                 : 'Click to view changes'}
@@ -1090,8 +1072,8 @@ export const ContractDetailPage = () => {
                       </div>
 
                       {isExpanded && hasChanges && (
-                        <div className="bg-[#f8f9fc] dark:bg-[#0c0d14] px-4 py-3 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
-                          <h4 className="text-xs font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-2 uppercase">
+                        <div className="bg-surface-page px-4 py-3 border-t border-border-default">
+                          <h4 className="text-xs font-semibold text-text-secondary mb-2 uppercase">
                             Changed Fields
                           </h4>
                           <div className="space-y-2">
@@ -1114,28 +1096,28 @@ export const ContractDetailPage = () => {
                                   return (
                                     <div
                                       key={field}
-                                      className="bg-white dark:bg-[#14161f] dark:text-[#eef0f6] rounded p-2 text-xs"
+                                      className="bg-surface-card rounded p-2 text-xs"
                                     >
-                                      <div className="font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                                      <div className="font-semibold text-text-secondary mb-1">
                                         File Name
                                       </div>
-                                      <div className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                                      <div className="text-text-primary">
                                         {String(value)}
                                       </div>
                                       {title ? (
                                         <>
-                                          <div className="font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1 mt-2">
+                                          <div className="font-semibold text-text-secondary mb-1 mt-2">
                                             Title
                                           </div>
-                                          <div className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                                          <div className="text-text-primary">
                                             {String(title)}
                                           </div>
                                         </>
                                       ) : null}
-                                      <div className="font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1 mt-2">
+                                      <div className="font-semibold text-text-secondary mb-1 mt-2">
                                         Type
                                       </div>
-                                      <div className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                                      <div className="text-text-primary">
                                         {category === 'PHOTO'
                                           ? 'Photo'
                                           : 'Document'}
@@ -1156,9 +1138,9 @@ export const ContractDetailPage = () => {
                                 return (
                                   <div
                                     key={field}
-                                    className="bg-white dark:bg-[#14161f] dark:text-[#eef0f6] rounded p-2 text-xs"
+                                    className="bg-surface-card rounded p-2 text-xs"
                                   >
-                                    <div className="font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                                    <div className="font-semibold text-text-secondary mb-1">
                                       {field
                                         .replace(/([A-Z])/g, ' $1')
                                         .replace(/^./, (str) =>
@@ -1168,7 +1150,7 @@ export const ContractDetailPage = () => {
                                     </div>
                                     <div className="grid grid-cols-2 gap-2">
                                       <div>
-                                        <span className="text-[#6b7194] dark:text-[#8b90a8]">
+                                        <span className="text-text-secondary">
                                           Old:{' '}
                                         </span>
                                         {typeof activity.oldValues?.[field] ===
@@ -1178,10 +1160,10 @@ export const ContractDetailPage = () => {
                                         ) ? (
                                           <RichTextDisplay
                                             content={activity.oldValues[field]}
-                                            className="text-xs text-red-600 line-through [&_p]:m-0 inline"
+                                            className="text-xs text-error-text line-through [&_p]:m-0 inline"
                                           />
                                         ) : (
-                                          <span className="text-red-600 line-through">
+                                          <span className="text-error-text line-through">
                                             {String(
                                               activity.oldValues?.[field] ??
                                                 'N/A'
@@ -1190,7 +1172,7 @@ export const ContractDetailPage = () => {
                                         )}
                                       </div>
                                       <div>
-                                        <span className="text-[#6b7194] dark:text-[#8b90a8]">
+                                        <span className="text-text-secondary">
                                           New:{' '}
                                         </span>
                                         {typeof activity.newValues?.[field] ===
@@ -1200,10 +1182,10 @@ export const ContractDetailPage = () => {
                                         ) ? (
                                           <RichTextDisplay
                                             content={activity.newValues[field]}
-                                            className="text-xs text-green-600 font-medium [&_p]:m-0 inline"
+                                            className="text-xs text-success-text font-medium [&_p]:m-0 inline"
                                           />
                                         ) : (
-                                          <span className="text-green-600 font-medium">
+                                          <span className="text-success-text font-medium">
                                             {String(
                                               activity.newValues?.[field] ??
                                                 'N/A'
@@ -1224,11 +1206,9 @@ export const ContractDetailPage = () => {
               </div>
             ) : (
               <div className="text-center py-8">
-                <History className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] mx-auto mb-3" />
-                <p className="text-[#6b7194] dark:text-[#8b90a8]">
-                  No history available
-                </p>
-                <p className="text-sm text-[#9ca0b8] dark:text-[#5c6180] mt-1">
+                <History className="h-12 w-12 text-text-disabled mx-auto mb-3" />
+                <p className="text-text-secondary">No history available</p>
+                <p className="text-sm text-text-muted mt-1">
                   Changes to this contract will appear here
                 </p>
               </div>
@@ -1240,11 +1220,11 @@ export const ContractDetailPage = () => {
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-xl max-w-md w-full mx-4 p-6">
-            <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+          <div className="bg-surface-card rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+            <h2 className="text-lg font-semibold text-text-primary mb-4">
               Delete Contract
             </h2>
-            <p className="text-[#3d4463] dark:text-[#c4c8db] mb-6">
+            <p className="text-text-secondary mb-6">
               Are you sure you want to delete this contract? This action cannot
               be undone.
             </p>

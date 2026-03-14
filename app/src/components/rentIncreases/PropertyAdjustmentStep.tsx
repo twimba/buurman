@@ -58,22 +58,22 @@ const formatPct = (pct: number) => {
 
 const pctColor = (pct: number) => {
   if (pct > 0) {
-    return 'text-emerald-600 dark:text-emerald-400';
+    return 'text-success-text';
   }
   if (pct < 0) {
-    return 'text-red-500 dark:text-red-400';
+    return 'text-error-text';
   }
-  return 'text-[#6b7194] dark:text-[#8b90a8]';
+  return 'text-text-secondary';
 };
 
 const pctBgColor = (pct: number) => {
   if (pct > 0) {
-    return 'bg-emerald-50 dark:bg-emerald-500/10 ring-1 ring-emerald-200 dark:ring-emerald-500/25';
+    return 'bg-success-bg ring-1 ring-success-border';
   }
   if (pct < 0) {
-    return 'bg-red-50 dark:bg-red-500/10 ring-1 ring-red-200 dark:ring-red-500/25';
+    return 'bg-error-bg ring-1 ring-error-border';
   }
-  return 'bg-[#f1f3f9] dark:bg-[#1e2130] ring-1 ring-[#e2e6f0] dark:ring-[#2a2e3f]';
+  return 'bg-surface-inset ring-1 ring-border-default dark:ring-border-strong';
 };
 
 const PctIcon = ({ pct }: { pct: number }) => {
@@ -87,7 +87,7 @@ const PctIcon = ({ pct }: { pct: number }) => {
 };
 
 const TH =
-  'px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]';
+  'px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-text-secondary';
 
 export const PropertyAdjustmentStep = ({
   contracts,
@@ -247,24 +247,24 @@ export const PropertyAdjustmentStep = ({
   return (
     <div className="space-y-5">
       {/* Controls toolbar */}
-      <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] shadow-sm">
+      <div className="bg-surface-card rounded-lg border border-border-default shadow-sm">
         <div className="p-5">
           <div className="flex flex-wrap items-start gap-6">
             {/* Strategy selector */}
             <div className="flex-1 min-w-[280px]">
-              <label className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8] mb-2.5">
+              <label className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-text-secondary mb-2.5">
                 <Sparkles className="h-3.5 w-3.5" />
                 Adjustment Strategy
               </label>
-              <div className="grid grid-cols-4 gap-1.5 p-1 rounded-lg bg-[#f1f3f9] dark:bg-[#0c0d14]">
+              <div className="grid grid-cols-4 gap-1.5 p-1 rounded-lg bg-surface-inset">
                 {strategies.map((s) => (
                   <button
                     key={s.value}
                     onClick={() => applyStrategy(s.value)}
                     className={`relative inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium transition-all duration-150 ${
                       strategy === s.value
-                        ? 'bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] shadow-sm ring-1 ring-[#e2e6f0] dark:ring-[#2a2e3f]'
-                        : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#3d4463] dark:hover:text-[#c4c8db]'
+                        ? 'bg-surface-card text-text-primary shadow-sm ring-1 ring-border-default dark:ring-border-strong'
+                        : 'text-text-secondary hover:text-text-secondary'
                     }`}
                   >
                     {s.icon}
@@ -276,7 +276,7 @@ export const PropertyAdjustmentStep = ({
 
             {/* Bulk date */}
             <div className="min-w-[200px]">
-              <label className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8] mb-2.5">
+              <label className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-text-secondary mb-2.5">
                 <CalendarDays className="h-3.5 w-3.5" />
                 Bulk Effective Date
               </label>
@@ -284,22 +284,22 @@ export const PropertyAdjustmentStep = ({
                 type="date"
                 value={bulkEffectiveDate}
                 onChange={(e) => applyBulkDate(e.target.value)}
-                className="w-full h-9 px-3 rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#0c0d14] text-[#1a1d2e] dark:text-[#eef0f6] text-sm focus:outline-none focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa]/20 transition-colors"
+                className="w-full h-9 px-3 rounded-lg border border-border-default bg-surface-card text-text-primary text-sm focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors"
               />
             </div>
           </div>
         </div>
 
         {/* Mini summary bar */}
-        <div className="flex items-center gap-5 px-5 py-2.5 border-t border-[#e2e6f0] dark:border-[#2a2e3f] bg-[#f8f9fc] dark:bg-[#0c0d14] rounded-b-xl">
-          <span className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
-            <span className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+        <div className="flex items-center gap-5 px-5 py-2.5 border-t border-border-default bg-surface-page rounded-b-xl">
+          <span className="text-xs text-text-secondary">
+            <span className="font-semibold text-text-primary">
               {summary.activeCount}
             </span>{' '}
             of {contracts.length} contracts adjusted
           </span>
-          <span className="w-px h-3.5 bg-[#e2e6f0] dark:bg-[#2a2e3f]" />
-          <span className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+          <span className="w-px h-3.5 bg-border-default" />
+          <span className="text-xs text-text-secondary">
             Avg change:{' '}
             <span className={`font-semibold ${pctColor(summary.avgPct)}`}>
               {formatPct(summary.avgPct)}
@@ -307,8 +307,8 @@ export const PropertyAdjustmentStep = ({
           </span>
           {summary.warningCount > 0 && (
             <>
-              <span className="w-px h-3.5 bg-[#e2e6f0] dark:bg-[#2a2e3f]" />
-              <span className="inline-flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
+              <span className="w-px h-3.5 bg-border-default" />
+              <span className="inline-flex items-center gap-1 text-xs text-warning-text">
                 <AlertTriangle className="h-3 w-3" />
                 <span className="font-semibold">
                   {summary.warningCount}
@@ -319,14 +319,14 @@ export const PropertyAdjustmentStep = ({
           )}
           {summary.retroactiveCount > 0 && (
             <>
-              <span className="w-px h-3.5 bg-[#e2e6f0] dark:bg-[#2a2e3f]" />
-              <span className="group/retro relative inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 cursor-help">
+              <span className="w-px h-3.5 bg-border-default" />
+              <span className="group/retro relative inline-flex items-center gap-1 text-xs text-info-text cursor-help">
                 <Info className="h-3 w-3" />
                 <span className="font-semibold">
                   {summary.retroactiveCount}
                 </span>{' '}
                 retroactive
-                <span className="hidden group-hover/retro:block absolute left-0 top-full mt-1 z-10 w-64 p-2.5 rounded-lg bg-white dark:bg-[#1e2130] border border-blue-200 dark:border-blue-500/30 text-xs text-blue-700 dark:text-blue-300 shadow-lg">
+                <span className="hidden group-hover/retro:block absolute left-0 top-full mt-1 z-10 w-64 p-2.5 rounded-lg bg-surface-card border border-info-border text-xs text-info-text shadow-lg">
                   Adjustment payments will be created for any already settled
                   payments affected by retroactive date changes.
                 </span>
@@ -337,11 +337,11 @@ export const PropertyAdjustmentStep = ({
       </div>
 
       {/* Table */}
-      <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] shadow-sm overflow-hidden">
+      <div className="bg-surface-card rounded-lg border border-border-default shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b-2 border-[#e2e6f0] dark:border-[#2a2e3f] bg-[#f8f9fc] dark:bg-[#0c0d14]">
+              <tr className="border-b-2 border-border-default bg-surface-page">
                 <th className={`${TH} text-left`}>Property</th>
                 <th className={`${TH} text-right`}>Current Rent</th>
                 <th className={`${TH} text-center`}>Regulated Range</th>
@@ -351,7 +351,7 @@ export const PropertyAdjustmentStep = ({
                 <th className={`${TH} w-10`} />
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#e2e6f0] dark:divide-[#2a2e3f]">
+            <tbody className="divide-y divide-border-default">
               {contracts.map((contract) => {
                 const inc = increases.find(
                   (i) => i.contractIdentifier === contract.contractIdentifier
@@ -372,23 +372,23 @@ export const PropertyAdjustmentStep = ({
                       isApplied
                         ? 'opacity-50'
                         : warning
-                          ? 'bg-amber-50/50 dark:bg-amber-500/[0.03] hover:bg-amber-50 dark:hover:bg-amber-500/[0.06]'
-                          : 'hover:bg-[#f8f9fc] dark:hover:bg-[#1a1c28]'
+                          ? 'bg-warning-bg/50 hover:bg-warning-bg'
+                          : 'hover:bg-surface-page dark:hover:bg-surface-card'
                     }`}
                   >
                     {/* Property */}
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-2">
                         <div>
-                          <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6] leading-tight">
+                          <p className="font-medium text-text-primary leading-tight">
                             {contract.propertyName}
                           </p>
-                          <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180] mt-0.5">
+                          <p className="text-xs text-text-muted mt-0.5">
                             {contract.propertyAddress}
                           </p>
                         </div>
                         {isApplied && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 ring-1 ring-green-200 dark:ring-green-500/30 whitespace-nowrap">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-success-bg text-success-text ring-1 ring-success-border whitespace-nowrap">
                             <CheckCircle2 className="h-3 w-3" />
                             Applied
                           </span>
@@ -398,7 +398,7 @@ export const PropertyAdjustmentStep = ({
 
                     {/* Current rent */}
                     <td className="px-5 py-4 text-right">
-                      <span className="font-mono text-sm text-[#3d4463] dark:text-[#c4c8db]">
+                      <span className="font-mono text-sm text-text-secondary">
                         {formatMoney(
                           contract.currentRentAmount,
                           contract.currency
@@ -410,17 +410,17 @@ export const PropertyAdjustmentStep = ({
                     <td className="px-5 py-4 text-center">
                       {contract.regulationMinPercent != null &&
                       contract.regulationMaxPercent != null ? (
-                        <span className="inline-flex items-center justify-center gap-1 w-[120px] rounded-full px-2.5 py-1 text-xs font-medium bg-[#f1f3f9] dark:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8] ring-1 ring-[#e2e6f0] dark:ring-[#2a2e3f]">
+                        <span className="inline-flex items-center justify-center gap-1 w-[120px] rounded-full px-2.5 py-1 text-xs font-medium bg-surface-inset text-text-secondary ring-1 ring-border-default dark:ring-border-strong">
                           <span className="w-[32px] text-right">
                             {contract.regulationMinPercent}%
                           </span>
-                          <ArrowRight className="h-3 w-3 flex-shrink-0 text-[#9ca0b8]" />
+                          <ArrowRight className="h-3 w-3 flex-shrink-0 text-text-muted" />
                           <span className="w-[32px] text-left">
                             {contract.regulationMaxPercent}%
                           </span>
                         </span>
                       ) : (
-                        <span className="inline-flex items-center justify-center w-[120px] text-xs text-[#9ca0b8] dark:text-[#5c6180]">
+                        <span className="inline-flex items-center justify-center w-[120px] text-xs text-text-muted">
                           No data
                         </span>
                       )}
@@ -459,7 +459,7 @@ export const PropertyAdjustmentStep = ({
                     {/* New rent */}
                     <td className="px-5 py-4 text-right">
                       <div>
-                        <span className="font-mono text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                        <span className="font-mono text-sm font-semibold text-text-primary">
                           {formatMoney(newRent, contract.currency)}
                         </span>
                         {pct !== 0 && (
@@ -486,7 +486,7 @@ export const PropertyAdjustmentStep = ({
                           )
                         }
                         disabled={isApplied}
-                        className="h-8 px-2.5 rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#0c0d14] text-[#1a1d2e] dark:text-[#eef0f6] text-sm focus:outline-none focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa]/20 disabled:opacity-50 disabled:cursor-default transition-colors"
+                        className="h-8 px-2.5 rounded-lg border border-border-default bg-surface-card text-text-primary text-sm focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 disabled:opacity-50 disabled:cursor-default transition-colors"
                       />
                     </td>
 
@@ -494,10 +494,10 @@ export const PropertyAdjustmentStep = ({
                     <td className="px-3 py-4">
                       {warning && !isApplied && (
                         <div className="group/tip relative flex items-center justify-center">
-                          <div className="p-1 rounded-full bg-amber-100 dark:bg-amber-500/20">
-                            <AlertTriangle className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+                          <div className="p-1 rounded-full bg-warning-bg">
+                            <AlertTriangle className="h-3.5 w-3.5 text-warning-text" />
                           </div>
-                          <div className="hidden group-hover/tip:block absolute right-0 top-full mt-1 z-10 w-60 p-3 rounded-lg bg-white dark:bg-[#1e2130] border border-amber-200 dark:border-amber-500/30 text-xs text-amber-700 dark:text-amber-300 shadow-lg shadow-amber-500/10">
+                          <div className="hidden group-hover/tip:block absolute right-0 top-full mt-1 z-10 w-60 p-3 rounded-lg bg-surface-card border border-warning-border text-xs text-warning-text shadow-lg">
                             <div className="flex items-start gap-2">
                               <AlertTriangle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
                               <span>{warning}</span>
@@ -518,13 +518,13 @@ export const PropertyAdjustmentStep = ({
       <div className="flex justify-between pt-1">
         <button
           onClick={onBack}
-          className="inline-flex items-center h-10 px-5 rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] bg-white dark:bg-[#14161f] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] hover:border-[#c9cfd9] dark:hover:border-[#3a3f54] shadow-sm transition-all"
+          className="inline-flex items-center h-10 px-5 rounded-lg border border-border-default text-sm font-medium text-text-secondary bg-surface-card hover:bg-surface-inset hover:border-border-strong shadow-sm transition-all"
         >
           Back
         </button>
         <button
           onClick={onNext}
-          className="inline-flex items-center gap-2 h-10 px-6 rounded-lg text-sm font-medium bg-gradient-to-b from-[#5c7cfa] to-[#4c6ef5] text-white border border-[#4263eb] shadow-sm shadow-[#5c7cfa]/20 hover:from-[#4c6ef5] hover:to-[#4263eb] hover:shadow-md hover:shadow-[#5c7cfa]/30 transition-all"
+          className="inline-flex items-center gap-2 h-10 px-6 rounded-lg text-sm font-medium bg-gradient-to-b from-primary-500 to-primary-600 text-white border border-primary-600 shadow-sm shadow-primary-500/20 hover:from-primary-400 hover:to-primary-600 hover:shadow-md hover:shadow-primary-500/30 transition-all"
         >
           Next: Review
           <ArrowRight className="h-4 w-4" />

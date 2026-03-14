@@ -17,40 +17,8 @@ body {
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
-/* Dark mode base styles */
-.dark body,
-.dark {
-  color-scheme: dark;
-  --color-background: #0c0d14;
-  --color-surface: #14161f;
-  --color-text-primary: #eef0f6;
-  --color-text-secondary: #8b90a8;
-  --color-text-muted: #5c6180;
-  --color-success: #34d399;
-  --color-warning: #fbbf24;
-  --color-error: #f87171;
-  --color-info: #91a7ff;
-}
-
 #root {
   min-height: 100vh;
-}
-
-/* Dark mode form element overrides */
-.dark select,
-.dark input[type="text"],
-.dark input[type="search"],
-.dark textarea {
-  background-color: #1a1d28;
-  border-color: #2a2e3f;
-  color: #eef0f6;
-}
-
-.dark select:focus,
-.dark input:focus,
-.dark textarea:focus {
-  border-color: #748ffc;
-  box-shadow: 0 0 0 2px rgba(116, 143, 252, 0.15);
 }
 
 /* ── TipTap Editor ── */
@@ -114,33 +82,24 @@ body {
 }
 
 .tiptap blockquote {
-  border-left: 3px solid #c9cfd9;
+  border-left: 3px solid var(--border-strong);
   padding-left: 1em;
   margin: 0.5em 0;
-  color: #6b7194;
+  color: var(--text-muted);
   font-style: italic;
 }
 
-.dark .tiptap blockquote {
-  border-left-color: #3a3f54;
-  color: #8b90a8;
-}
-
 .tiptap code {
-  background-color: #f1f3f9;
+  background-color: var(--surface-inset);
   border-radius: 0.25em;
   padding: 0.15em 0.35em;
   font-size: 0.875em;
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
 }
 
-.dark .tiptap code {
-  background-color: #1e2130;
-}
-
 .tiptap pre {
-  background-color: #1a1d2e;
-  color: #eef0f6;
+  background-color: var(--color-neutral-800);
+  color: var(--color-neutral-50);
   border-radius: 0.5em;
   padding: 0.75em 1em;
   margin: 0.5em 0;
@@ -159,33 +118,20 @@ body {
 
 .tiptap hr {
   border: none;
-  border-top: 1px solid #e2e6f0;
+  border-top: 1px solid var(--border-default);
   margin: 1em 0;
 }
 
-.dark .tiptap hr {
-  border-top-color: #2a2e3f;
-}
-
 .tiptap mark {
-  background-color: #fef08a;
+  background-color: var(--color-accent-200);
   border-radius: 0.15em;
   padding: 0.05em 0.1em;
 }
 
-.dark .tiptap mark {
-  background-color: #854d0e;
-  color: #fef9c3;
-}
-
 .tiptap a {
-  color: #4c6ef5;
+  color: var(--text-link);
   text-decoration: underline;
   cursor: pointer;
-}
-
-.dark .tiptap a {
-  color: #91a7ff;
 }
 
 .tiptap p {
@@ -203,13 +149,9 @@ body {
 .tiptap p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
   float: left;
-  color: #9ca0b8;
+  color: var(--text-muted);
   pointer-events: none;
   height: 0;
-}
-
-.dark .tiptap p.is-editor-empty:first-child::before {
-  color: #5c6180;
 }
 
 /* ── RichTextDisplay (read-only rendered HTML) ── */
@@ -251,33 +193,24 @@ body {
 }
 
 .rich-text-display blockquote {
-  border-left: 3px solid #c9cfd9;
+  border-left: 3px solid var(--border-strong);
   padding-left: 1em;
   margin: 0.4em 0;
-  color: #6b7194;
+  color: var(--text-muted);
   font-style: italic;
 }
 
-.dark .rich-text-display blockquote {
-  border-left-color: #3a3f54;
-  color: #8b90a8;
-}
-
 .rich-text-display code {
-  background-color: #f1f3f9;
+  background-color: var(--surface-inset);
   border-radius: 0.25em;
   padding: 0.15em 0.35em;
   font-size: 0.875em;
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
 }
 
-.dark .rich-text-display code {
-  background-color: #1e2130;
-}
-
 .rich-text-display pre {
-  background-color: #1a1d2e;
-  color: #eef0f6;
+  background-color: var(--color-neutral-800);
+  color: var(--color-neutral-50);
   border-radius: 0.5em;
   padding: 0.75em 1em;
   margin: 0.4em 0;
@@ -295,29 +228,16 @@ body {
 
 .rich-text-display hr {
   border: none;
-  border-top: 1px solid #e2e6f0;
+  border-top: 1px solid var(--border-default);
   margin: 0.75em 0;
 }
 
-.dark .rich-text-display hr {
-  border-top-color: #2a2e3f;
-}
-
 .rich-text-display mark {
-  background-color: #fef08a;
+  background-color: var(--color-accent-200);
   border-radius: 0.15em;
 }
 
-.dark .rich-text-display mark {
-  background-color: #854d0e;
-  color: #fef9c3;
-}
-
 .rich-text-display a {
-  color: #4c6ef5;
+  color: var(--text-link);
   text-decoration: underline;
-}
-
-.dark .rich-text-display a {
-  color: #91a7ff;
 }

@@ -25,7 +25,7 @@ const humanizeEnum = (value: string): string => {
   };
   return (
     labels[value] ??
-    value.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+    value.replace(/_/g, '').replace(/\b\w/g, (c) => c.toUpperCase())
   );
 };
 
@@ -89,17 +89,17 @@ export const RentRegulationsPage = () => {
           <div>
             <div className="flex items-center gap-3 mb-1">
               <Scale className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-              <h1 className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+              <h1 className="text-3xl font-bold text-text-primary">
                 Rent Regulations
               </h1>
             </div>
-            <p className="text-[#6b7194] dark:text-[#8b90a8] ml-11">
+            <p className="text-text-secondary ml-11">
               Reference data for rent adjustment rules by country
             </p>
           </div>
           <button
             onClick={() => navigate('/rent-increases/apply')}
-            className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg bg-gradient-to-b from-[#5c7cfa] to-[#4c6ef5] text-white border border-[#4263eb] shadow-sm shadow-[#5c7cfa]/20 hover:from-[#4c6ef5] hover:to-[#4263eb] hover:shadow-md transition-all"
+            className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg bg-gradient-to-b from-primary-500 to-primary-600 text-white border border-primary-600 shadow-sm shadow-primary-500/20 hover:from-primary-400 hover:to-primary-600 hover:shadow-md transition-all"
           >
             <TrendingUp className="h-4 w-4" />
             Apply Rent Adjustments
@@ -139,45 +139,45 @@ export const RentRegulationsPage = () => {
 
                   {/* Current year highlight */}
                   {currentYearRule && (
-                    <div className="bg-gradient-to-r from-[#f0f4ff] to-[#f5f0ff] dark:from-[#5c7cfa]/[0.08] dark:to-[#845ef7]/[0.08] rounded-xl border border-[#5c7cfa]/20 dark:border-[#5c7cfa]/15 p-5">
+                    <div className="bg-gradient-to-r from-primary-50 to-purple-50 dark:from-primary-500/[0.08] dark:to-purple-500/[0.08] rounded-lg border border-primary-500/20 p-5">
                       <div className="flex items-center gap-2 mb-3">
-                        <CalendarDays className="h-4 w-4 text-[#5c7cfa] dark:text-[#91a7ff]" />
-                        <h3 className="text-sm font-semibold text-[#5c7cfa] dark:text-[#91a7ff]">
+                        <CalendarDays className="h-4 w-4 text-primary-500 dark:text-primary-300" />
+                        <h3 className="text-sm font-semibold text-primary-500 dark:text-primary-300">
                           {currentYear} Current Rules
                         </h3>
                       </div>
                       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                         <div>
-                          <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mb-0.5">
+                          <p className="text-xs text-text-secondary mb-0.5">
                             Max Increase
                           </p>
-                          <p className="text-lg font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+                          <p className="text-lg font-bold text-text-primary">
                             {currentYearRule.maxIncreasePercentage != null
                               ? `${currentYearRule.maxIncreasePercentage}%`
                               : 'N/A'}
                           </p>
                         </div>
                         <div>
-                          <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mb-0.5">
+                          <p className="text-xs text-text-secondary mb-0.5">
                             Type
                           </p>
-                          <p className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                          <p className="text-sm font-semibold text-text-primary">
                             {humanizeEnum(currentYearRule.maxIncreaseType)}
                           </p>
                         </div>
                         <div>
-                          <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mb-0.5">
+                          <p className="text-xs text-text-secondary mb-0.5">
                             Effective Date
                           </p>
-                          <p className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                          <p className="text-sm font-semibold text-text-primary">
                             {currentYearRule.effectiveDate ?? 'Not set'}
                           </p>
                         </div>
                         <div>
-                          <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mb-0.5">
+                          <p className="text-xs text-text-secondary mb-0.5">
                             Notice Period
                           </p>
-                          <p className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                          <p className="text-sm font-semibold text-text-primary">
                             {currentYearRule.noticePeriodDays != null
                               ? `${currentYearRule.noticePeriodDays} days`
                               : 'N/A'}
@@ -189,7 +189,7 @@ export const RentRegulationsPage = () => {
 
                   {/* Rules table */}
                   <div>
-                    <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-3">
+                    <h3 className="text-lg font-semibold text-text-primary mb-3">
                       {selectedRegion ? 'Regional Rules' : 'Regulation History'}
                     </h3>
                     {displayRules && <RuleHistoryTable rules={displayRules} />}
@@ -202,12 +202,12 @@ export const RentRegulationsPage = () => {
 
         {/* Empty State */}
         {!selectedCountry && countries && countries.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f]">
-            <Scale className="h-16 w-16 text-[#c9cfd9] dark:text-[#3a3f54] mb-4" />
-            <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
+          <div className="flex flex-col items-center justify-center py-16 bg-surface-card rounded-lg border border-border-default">
+            <Scale className="h-16 w-16 text-text-disabled mb-4" />
+            <h3 className="text-lg font-semibold text-text-primary mb-2">
               No regulation data available
             </h3>
-            <p className="text-[#6b7194] dark:text-[#8b90a8]">
+            <p className="text-text-secondary">
               Regulation data can be managed from the backoffice
             </p>
           </div>

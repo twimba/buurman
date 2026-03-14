@@ -344,7 +344,7 @@ export const PropertyDashboardTab = ({
   }
   if (error) {
     return (
-      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg text-sm">
+      <div className="bg-error-bg border border-error-border text-error-text px-4 py-3 rounded-lg text-sm">
         Failed to load dashboard data.{' '}
         <button
           onClick={() => refetch()}
@@ -374,7 +374,7 @@ export const PropertyDashboardTab = ({
       {/* Toolbar: period selector + export buttons */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2 flex-wrap">
-          <Calendar className="h-4 w-4 text-[#6b7194] dark:text-[#8b90a8] shrink-0" />
+          <Calendar className="h-4 w-4 text-text-secondary shrink-0" />
           <div className="flex gap-1 flex-wrap">
             {PERIOD_OPTIONS.map((opt) => (
               <button
@@ -382,8 +382,8 @@ export const PropertyDashboardTab = ({
                 onClick={() => handlePeriodChange(opt.value)}
                 className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                   periodType === opt.value
-                    ? 'bg-[#5c7cfa] text-white'
-                    : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#e8ecf4] dark:hover:bg-[#3a3f54]'
+                    ? 'bg-primary-500 text-white'
+                    : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
                 }`}
               >
                 {opt.label}
@@ -399,11 +399,9 @@ export const PropertyDashboardTab = ({
                   setCustomStartDate(e.target.value);
                   setPeriodType('custom');
                 }}
-                className="px-2 py-1.5 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
+                className="px-2 py-1.5 border border-border-strong rounded-md text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-surface-card text-text-primary"
               />
-              <span className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
-                to
-              </span>
+              <span className="text-xs text-text-secondary">to</span>
               <input
                 type="date"
                 value={customEndDate}
@@ -411,7 +409,7 @@ export const PropertyDashboardTab = ({
                   setCustomEndDate(e.target.value);
                   setPeriodType('custom');
                 }}
-                className="px-2 py-1.5 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
+                className="px-2 py-1.5 border border-border-strong rounded-md text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-surface-card text-text-primary"
               />
             </div>
           )}
@@ -429,7 +427,7 @@ export const PropertyDashboardTab = ({
           <button
             onClick={() => handleExport('pdf')}
             disabled={exporting !== null}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-[#e2e6f0] dark:border-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f5f7fa] dark:hover:bg-[#1e2130] transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-border-default text-text-secondary hover:bg-surface-inset transition-colors disabled:opacity-50"
           >
             <Download className="h-3.5 w-3.5" />
             {exporting === 'pdf' ? 'Exporting...' : 'PDF'}
@@ -591,31 +589,31 @@ function SummaryCards({ metrics }: { metrics: DashboardSummaryMetrics }) {
       {cards.map((card) => (
         <div
           key={card.label}
-          className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4"
+          className="bg-surface-card rounded-lg border border-border-default p-4"
         >
           <div className="flex items-center gap-2 mb-2">
             <span
               className={
                 card.value === 'N/A'
-                  ? 'text-[#9ca0b8]'
+                  ? 'text-text-muted'
                   : card.positive
-                    ? 'text-emerald-500'
-                    : 'text-red-500'
+                    ? 'text-success-text'
+                    : 'text-error-text'
               }
             >
               {card.icon}
             </span>
-            <span className="text-xs text-[#6b7194] dark:text-[#8b90a8] font-medium">
+            <span className="text-xs text-text-secondary font-medium">
               <MetricHint label={card.label} />
             </span>
           </div>
           <div
             className={`text-base lg:text-lg font-bold truncate ${
               card.value === 'N/A'
-                ? 'text-[#9ca0b8] dark:text-[#5c6180]'
+                ? 'text-text-muted'
                 : card.positive
-                  ? 'text-[#1a1d2e] dark:text-[#eef0f6]'
-                  : 'text-red-600 dark:text-red-400'
+                  ? 'text-text-primary'
+                  : 'text-error-text'
             }`}
             title={card.value}
           >
@@ -639,12 +637,10 @@ function ChartCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-6 overflow-hidden">
+    <div className="bg-surface-card rounded-lg border border-border-default p-6 overflow-hidden">
       <div className="flex items-center gap-2 mb-4">
-        <span className="text-[#9ca0b8] dark:text-[#5c6180]">{icon}</span>
-        <h3 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-          {title}
-        </h3>
+        <span className="text-text-muted">{icon}</span>
+        <h3 className="text-sm font-semibold text-text-primary">{title}</h3>
       </div>
       {children}
     </div>
@@ -713,7 +709,7 @@ function makeOutflowShape(dataKey: 'expenses' | 'mortgage') {
       `L ${x + clampedR},${bottom}`,
       `Q ${x},${bottom} ${x},${bottom - clampedR}`,
       `Z`,
-    ].join(' ');
+    ].join('');
 
     return <path d={d} fill={fill} fillOpacity={fillOpacity} />;
   }
@@ -1038,7 +1034,7 @@ function OccupancyAndTrendChart({
       {/* Occupancy Timeline */}
       {occupancy.months.length > 0 && (
         <div>
-          <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mb-1.5 font-medium">
+          <p className="text-xs text-text-secondary mb-1.5 font-medium">
             Occupancy
           </p>
           <div className="flex h-6 rounded overflow-hidden">
@@ -1092,7 +1088,7 @@ function OccupancyAndTrendChart({
                 return months.map((m) => (
                   <span
                     key={m.month}
-                    className="text-[10px] text-[#6b7194] dark:text-[#8b90a8] flex-1 text-center"
+                    className="text-[10px] text-text-secondary flex-1 text-center"
                   >
                     {formatMonthTick(m.month)}
                   </span>
@@ -1108,7 +1104,7 @@ function OccupancyAndTrendChart({
                   {indices.map((idx) => (
                     <span
                       key={months[idx]?.month ?? idx}
-                      className="text-[10px] text-[#6b7194] dark:text-[#8b90a8]"
+                      className="text-[10px] text-text-secondary"
                     >
                       {formatMonthTick(months[idx]?.month ?? '')}
                     </span>
@@ -1118,21 +1114,21 @@ function OccupancyAndTrendChart({
             })()}
           </div>
           <div className="flex gap-3 mt-1.5">
-            <span className="inline-flex items-center gap-1 text-[10px] text-[#6b7194] dark:text-[#8b90a8]">
+            <span className="inline-flex items-center gap-1 text-[10px] text-text-secondary">
               <span
                 className="inline-block w-2.5 h-2.5 rounded-sm"
                 style={{ backgroundColor: COLORS.income }}
               />
               Tenant
             </span>
-            <span className="inline-flex items-center gap-1 text-[10px] text-[#6b7194] dark:text-[#8b90a8]">
+            <span className="inline-flex items-center gap-1 text-[10px] text-text-secondary">
               <span
                 className="inline-block w-2.5 h-2.5 rounded-sm"
                 style={{ backgroundColor: '#6366f1' }}
               />
               Self-occupied
             </span>
-            <span className="inline-flex items-center gap-1 text-[10px] text-[#6b7194] dark:text-[#8b90a8]">
+            <span className="inline-flex items-center gap-1 text-[10px] text-text-secondary">
               <span
                 className="inline-block w-2.5 h-2.5 rounded-sm"
                 style={{ backgroundColor: vacantColor }}
@@ -1146,7 +1142,7 @@ function OccupancyAndTrendChart({
       {/* Net Income Trend */}
       {cashFlow.months.length > 0 && (
         <div>
-          <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mb-1.5 font-medium">
+          <p className="text-xs text-text-secondary mb-1.5 font-medium">
             Net Income Trend
           </p>
           <ResponsiveContainer width="100%" height={220}>
@@ -1440,14 +1436,12 @@ function EquityBreakdownCard({
       {bars.map((bar) => (
         <div key={bar.label}>
           <div className="flex justify-between text-sm mb-1">
-            <span className="text-[#6b7194] dark:text-[#8b90a8]">
-              {bar.label}
-            </span>
-            <span className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+            <span className="text-text-secondary">{bar.label}</span>
+            <span className="font-medium text-text-primary">
               {fmt(bar.value)}
             </span>
           </div>
-          <div className="h-3 bg-[#f1f3f9] dark:bg-[#1e2130] rounded-full overflow-hidden">
+          <div className="h-3 bg-surface-inset rounded-full overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-700"
               style={{
@@ -1479,16 +1473,16 @@ function DataCompletenessCard({ data }: { data: DashboardDataCompleteness }) {
   ];
 
   return (
-    <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 rounded-lg p-4">
+    <div className="bg-warning-bg border border-warning-border rounded-lg p-4">
       <div className="flex items-center gap-2 mb-3">
-        <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-        <span className="font-semibold text-amber-800 dark:text-amber-300 text-sm">
+        <AlertCircle className="h-5 w-5 text-warning-text" />
+        <span className="font-semibold text-warning-text text-sm">
           Data Completeness: {data.completenessPercent}%
         </span>
       </div>
-      <div className="h-2 bg-amber-200 dark:bg-amber-900/40 rounded-full mb-3">
+      <div className="h-2 bg-warning-border rounded-full mb-3">
         <div
-          className="h-full bg-amber-500 rounded-full transition-all duration-500"
+          className="h-full bg-warning-text rounded-full transition-all duration-500"
           style={{ width: `${data.completenessPercent}%` }}
         />
       </div>
@@ -1497,9 +1491,7 @@ function DataCompletenessCard({ data }: { data: DashboardDataCompleteness }) {
           <span
             key={item.label}
             className={`inline-flex items-center gap-1 text-xs ${
-              item.done
-                ? 'text-emerald-700 dark:text-emerald-400'
-                : 'text-[#9ca0b8] dark:text-[#5c6180]'
+              item.done ? 'text-success-text' : 'text-text-muted'
             }`}
           >
             {item.done ? (
@@ -1537,7 +1529,7 @@ function FutureTrendChart({
 
   return (
     <div>
-      <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mb-2 font-medium">
+      <p className="text-xs text-text-secondary mb-2 font-medium">
         Projected income & expenses based on active contracts and operating
         costs
       </p>
@@ -1603,7 +1595,7 @@ function FutureTrendChart({
 
 function EmptyChart({ message }: { message: string }) {
   return (
-    <div className="flex flex-col items-center justify-center h-[300px] text-[#9ca0b8] dark:text-[#5c6180]">
+    <div className="flex flex-col items-center justify-center h-[300px] text-text-muted">
       <BarChart3 className="h-10 w-10 mb-2 opacity-40" />
       <span className="text-sm">{message}</span>
     </div>
@@ -1614,7 +1606,7 @@ function EmptyChart({ message }: { message: string }) {
 
 function humanizeCategory(val: string): string {
   return val
-    .replace(/_/g, ' ')
+    .replace(/_/g, '')
     .toLowerCase()
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }

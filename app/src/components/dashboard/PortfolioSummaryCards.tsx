@@ -1,4 +1,5 @@
 import { Building2, TrendingUp, DollarSign, Percent, Home } from 'lucide-react';
+import { MetricCard } from '@buurman/ui';
 import type { PortfolioSummary } from '@/types/portfolio';
 import { MetricHint } from '@/components/common/MetricHint';
 
@@ -36,104 +37,111 @@ function formatPercent(value: number | undefined): string {
   return `${value.toFixed(1)}%`;
 }
 
+type IconBgVariant =
+  | 'primary'
+  | 'accent'
+  | 'success'
+  | 'warning'
+  | 'error'
+  | 'info';
+
 function rateColor(
   value: number | undefined,
   greenThreshold: number,
   yellowThreshold: number
 ): string {
   if (value == null) {
-    return 'text-[#6b7194] dark:text-[#8b90a8]';
+    return '';
   }
   if (value >= greenThreshold) {
-    return 'text-green-600 dark:text-green-400';
+    return 'text-success';
   }
   if (value >= yellowThreshold) {
-    return 'text-yellow-600 dark:text-yellow-400';
+    return 'text-warning';
   }
-  return 'text-red-600 dark:text-red-400';
+  return 'text-error';
 }
 
 function cashFlowColor(value: number | undefined): string {
   if (value == null) {
-    return 'text-[#6b7194] dark:text-[#8b90a8]';
+    return '';
   }
-  return value >= 0
-    ? 'text-green-600 dark:text-green-400'
-    : 'text-red-600 dark:text-red-400';
+  return value >= 0 ? 'text-success' : 'text-error';
 }
 
 export const PortfolioSummaryCards = ({
   summary,
   currency,
 }: PortfolioSummaryCardsProps) => {
-  const cards = [
+  const cards: {
+    key: string;
+    label: React.ReactNode;
+    value: string;
+    valueClassName: string;
+    icon: React.ReactNode;
+    iconBgVariant: IconBgVariant;
+  }[] = [
     {
-      label: 'Portfolio Value',
+      key: 'portfolio-value',
+      label: <MetricHint label="Portfolio Value" />,
       value: formatMoney(summary.totalPortfolioValue, currency),
-      color: 'text-[#1a1d2e] dark:text-[#eef0f6]',
-      icon: <Building2 className="h-5 w-5 text-blue-500 dark:text-blue-400" />,
-      bg: 'bg-blue-100 dark:bg-blue-900/30',
+      valueClassName: '',
+      icon: <Building2 />,
+      iconBgVariant: 'primary',
     },
     {
-      label: 'Total Equity',
+      key: 'total-equity',
+      label: <MetricHint label="Total Equity" />,
       value: formatMoney(summary.totalEquity, currency),
-      color: 'text-[#1a1d2e] dark:text-[#eef0f6]',
-      icon: (
-        <TrendingUp className="h-5 w-5 text-emerald-500 dark:text-emerald-400" />
-      ),
-      bg: 'bg-emerald-100 dark:bg-emerald-900/30',
+      valueClassName: '',
+      icon: <TrendingUp />,
+      iconBgVariant: 'success',
     },
     {
-      label: 'Monthly Cash Flow',
+      key: 'monthly-cash-flow',
+      label: <MetricHint label="Monthly Cash Flow" />,
       value: formatMoney(summary.monthlyCashFlow, currency),
-      color: cashFlowColor(summary.monthlyCashFlow),
-      icon: (
-        <DollarSign className="h-5 w-5 text-green-500 dark:text-green-400" />
-      ),
-      bg: 'bg-green-100 dark:bg-green-900/30',
+      valueClassName: cashFlowColor(summary.monthlyCashFlow),
+      icon: <DollarSign />,
+      iconBgVariant: 'success',
     },
     {
-      label: 'Wtd Cap Rate',
+      key: 'wtd-cap-rate',
+      label: <MetricHint label="Wtd Cap Rate" />,
       value: formatPercent(summary.weightedCapRate),
-      color: rateColor(summary.weightedCapRate, 5, 3),
-      icon: (
-        <Percent className="h-5 w-5 text-purple-500 dark:text-purple-400" />
-      ),
-      bg: 'bg-purple-100 dark:bg-purple-900/30',
+      valueClassName: rateColor(summary.weightedCapRate, 5, 3),
+      icon: <Percent />,
+      iconBgVariant: 'accent',
     },
     {
-      label: 'Wtd Cash-on-Cash',
+      key: 'wtd-cash-on-cash',
+      label: <MetricHint label="Wtd Cash-on-Cash" />,
       value: formatPercent(summary.weightedCashOnCash),
-      color: rateColor(summary.weightedCashOnCash, 8, 4),
-      icon: (
-        <Percent className="h-5 w-5 text-indigo-500 dark:text-indigo-400" />
-      ),
-      bg: 'bg-indigo-100 dark:bg-indigo-900/30',
+      valueClassName: rateColor(summary.weightedCashOnCash, 8, 4),
+      icon: <Percent />,
+      iconBgVariant: 'accent',
     },
     {
-      label: 'Occupancy',
+      key: 'occupancy',
+      label: <MetricHint label="Occupancy" />,
       value: formatPercent(summary.portfolioOccupancy),
-      color: rateColor(summary.portfolioOccupancy, 90, 75),
-      icon: <Home className="h-5 w-5 text-cyan-500 dark:text-cyan-400" />,
-      bg: 'bg-cyan-100 dark:bg-cyan-900/30',
+      valueClassName: rateColor(summary.portfolioOccupancy, 90, 75),
+      icon: <Home />,
+      iconBgVariant: 'info',
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {cards.map((card) => (
-        <div
-          key={card.label}
-          className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-5 border border-[#edf0f7] dark:border-[#2a2e3f]"
-        >
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-[#6b7194] dark:text-[#8b90a8]">
-              <MetricHint label={card.label} />
-            </span>
-            <div className={`p-2 rounded-lg ${card.bg}`}>{card.icon}</div>
-          </div>
-          <div className={`text-2xl font-bold ${card.color}`}>{card.value}</div>
-        </div>
+        <MetricCard
+          key={card.key}
+          label={card.label}
+          value={card.value}
+          icon={card.icon}
+          iconBgVariant={card.iconBgVariant}
+          valueClassName={card.valueClassName}
+        />
       ))}
     </div>
   );

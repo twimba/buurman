@@ -30,9 +30,7 @@ import { getNotification } from '@/api/notifications';
 import { NotificationStatusBadge } from '@/components/notifications/NotificationStatusBadge';
 import { NotificationFilters } from '@/components/notifications/NotificationFilters';
 import { NotificationDetailModal } from '@/components/notifications/NotificationDetailModal';
-import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
-import { Pagination } from '@/components/ui/Pagination';
-import { RefreshButton } from '@/components/ui/RefreshButton';
+import { ConfirmDialog, Pagination, RefreshButton } from '@buurman/ui';
 
 const typeLabels: Record<string, string> = {
   WELCOME: 'Welcome',
@@ -144,11 +142,11 @@ export const AdminNotificationsPage = () => {
           <div>
             <div className="flex items-center gap-3 mb-1">
               <Bell className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-              <h1 className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+              <h1 className="text-3xl font-bold text-text-primary">
                 Notifications
               </h1>
             </div>
-            <p className="text-[#6b7194] dark:text-[#8b90a8] ml-11">
+            <p className="text-text-secondary ml-11">
               Track and manage all notifications sent across your team
             </p>
           </div>
@@ -183,48 +181,48 @@ export const AdminNotificationsPage = () => {
         {/* Stats Cards */}
         {stats && (
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-            <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
-              <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] text-sm mb-1">
+            <div className="bg-surface-card rounded-lg border border-border-default p-4">
+              <div className="flex items-center gap-2 text-text-secondary text-sm mb-1">
                 <Mail className="h-4 w-4" />
                 Total
               </div>
-              <div className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+              <div className="text-2xl font-bold text-text-primary">
                 {stats.totalCount}
               </div>
             </div>
-            <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
-              <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] text-sm mb-1">
-                <CheckCircle className="h-4 w-4 text-emerald-500" />
+            <div className="bg-surface-card rounded-lg border border-border-default p-4">
+              <div className="flex items-center gap-2 text-text-secondary text-sm mb-1">
+                <CheckCircle className="h-4 w-4 text-success-text" />
                 Delivered
               </div>
-              <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+              <div className="text-2xl font-bold text-success-text">
                 {stats.deliveredCount}
               </div>
             </div>
-            <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
-              <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] text-sm mb-1">
-                <Clock className="h-4 w-4 text-blue-500" />
+            <div className="bg-surface-card rounded-lg border border-border-default p-4">
+              <div className="flex items-center gap-2 text-text-secondary text-sm mb-1">
+                <Clock className="h-4 w-4 text-info-text" />
                 Pending
               </div>
-              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+              <div className="text-2xl font-bold text-info-text">
                 {stats.pendingCount}
               </div>
             </div>
-            <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
-              <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] text-sm mb-1">
-                <AlertTriangle className="h-4 w-4 text-red-500" />
+            <div className="bg-surface-card rounded-lg border border-border-default p-4">
+              <div className="flex items-center gap-2 text-text-secondary text-sm mb-1">
+                <AlertTriangle className="h-4 w-4 text-error-text" />
                 Failed
               </div>
-              <div className="text-2xl font-bold text-red-600 dark:text-red-400">
+              <div className="text-2xl font-bold text-error-text">
                 {stats.failedCount}
               </div>
             </div>
-            <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
-              <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] text-sm mb-1">
+            <div className="bg-surface-card rounded-lg border border-border-default p-4">
+              <div className="flex items-center gap-2 text-text-secondary text-sm mb-1">
                 <Phone className="h-4 w-4" />
                 By Channel
               </div>
-              <div className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+              <div className="text-sm text-text-primary">
                 {Object.entries(stats.byChannel).map(([ch, count]) => (
                   <span key={ch} className="mr-3">
                     {ch}: <span className="font-bold">{count}</span>
@@ -233,8 +231,8 @@ export const AdminNotificationsPage = () => {
               </div>
             </div>
             {stats.demoBlockedCount > 0 && (
-              <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
-                <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] text-sm mb-1">
+              <div className="bg-surface-card rounded-lg border border-border-default p-4">
+                <div className="flex items-center gap-2 text-text-secondary text-sm mb-1">
                   <ShieldOff className="h-4 w-4 text-violet-500" />
                   Demo Blocked
                 </div>
@@ -255,30 +253,30 @@ export const AdminNotificationsPage = () => {
         </div>
 
         {/* Table */}
-        <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden">
+        <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] bg-[#f8f9fc] dark:bg-[#1a1d2e]">
-                  <th className="text-left px-4 py-3 font-medium text-[#6b7194] dark:text-[#8b90a8]">
+                <tr className="border-b border-border-default bg-surface-page dark:bg-surface-card">
+                  <th className="text-left px-4 py-3 font-medium text-text-secondary">
                     Type
                   </th>
-                  <th className="text-left px-4 py-3 font-medium text-[#6b7194] dark:text-[#8b90a8]">
+                  <th className="text-left px-4 py-3 font-medium text-text-secondary">
                     Channel
                   </th>
-                  <th className="text-left px-4 py-3 font-medium text-[#6b7194] dark:text-[#8b90a8]">
+                  <th className="text-left px-4 py-3 font-medium text-text-secondary">
                     Recipient
                   </th>
-                  <th className="text-left px-4 py-3 font-medium text-[#6b7194] dark:text-[#8b90a8]">
+                  <th className="text-left px-4 py-3 font-medium text-text-secondary">
                     Subject / Body
                   </th>
-                  <th className="text-left px-4 py-3 font-medium text-[#6b7194] dark:text-[#8b90a8]">
+                  <th className="text-left px-4 py-3 font-medium text-text-secondary">
                     Status
                   </th>
-                  <th className="text-left px-4 py-3 font-medium text-[#6b7194] dark:text-[#8b90a8]">
+                  <th className="text-left px-4 py-3 font-medium text-text-secondary">
                     Date
                   </th>
-                  <th className="text-right px-4 py-3 font-medium text-[#6b7194] dark:text-[#8b90a8]">
+                  <th className="text-right px-4 py-3 font-medium text-text-secondary">
                     Actions
                   </th>
                 </tr>
@@ -288,7 +286,7 @@ export const AdminNotificationsPage = () => {
                   <tr>
                     <td
                       colSpan={7}
-                      className="px-4 py-12 text-center text-[#6b7194] dark:text-[#8b90a8]"
+                      className="px-4 py-12 text-center text-text-secondary"
                     >
                       Loading notifications...
                     </td>
@@ -297,7 +295,7 @@ export const AdminNotificationsPage = () => {
                   <tr>
                     <td
                       colSpan={7}
-                      className="px-4 py-12 text-center text-[#6b7194] dark:text-[#8b90a8]"
+                      className="px-4 py-12 text-center text-text-secondary"
                     >
                       No notifications found
                     </td>
@@ -306,15 +304,15 @@ export const AdminNotificationsPage = () => {
                   notifications.content.map((notif) => (
                     <tr
                       key={notif.identifier}
-                      className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] hover:bg-[#f8f9fc] dark:hover:bg-[#1a1d2e] cursor-pointer transition-colors"
+                      className="border-b border-border-default hover:bg-surface-page dark:hover:bg-surface-card cursor-pointer transition-colors"
                       onClick={() => setSelectedNotification(notif)}
                     >
-                      <td className="px-4 py-3 text-[#1a1d2e] dark:text-[#eef0f6] font-medium">
+                      <td className="px-4 py-3 text-text-primary font-medium">
                         {typeLabels[notif.notificationType] ??
                           notif.notificationType}
                       </td>
                       <td className="px-4 py-3">
-                        <span className="inline-flex items-center gap-1 text-[#3d4463] dark:text-[#c4c8db]">
+                        <span className="inline-flex items-center gap-1 text-text-secondary">
                           {notif.channel === NotificationChannel.EMAIL ? (
                             <Mail className="h-3.5 w-3.5" />
                           ) : (
@@ -323,12 +321,12 @@ export const AdminNotificationsPage = () => {
                           {notif.channel}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-[#3d4463] dark:text-[#c4c8db] max-w-[200px] truncate">
+                      <td className="px-4 py-3 text-text-secondary max-w-[200px] truncate">
                         {notif.channel === NotificationChannel.SMS
                           ? notif.recipientPhone || notif.recipientEmail || '-'
                           : notif.recipientEmail || '-'}
                       </td>
-                      <td className="px-4 py-3 text-[#3d4463] dark:text-[#c4c8db] max-w-[250px] truncate">
+                      <td className="px-4 py-3 text-text-secondary max-w-[250px] truncate">
                         {notif.channel === NotificationChannel.EMAIL
                           ? notif.subject || '-'
                           : notif.body || notif.subject || '-'}
@@ -336,7 +334,7 @@ export const AdminNotificationsPage = () => {
                       <td className="px-4 py-3">
                         <NotificationStatusBadge status={notif.status} />
                       </td>
-                      <td className="px-4 py-3 text-[#6b7194] dark:text-[#8b90a8] whitespace-nowrap">
+                      <td className="px-4 py-3 text-text-secondary whitespace-nowrap">
                         {formatDate(notif.createdAt)}
                       </td>
                       <td className="px-4 py-3 text-right">
@@ -346,7 +344,7 @@ export const AdminNotificationsPage = () => {
                               e.stopPropagation();
                               setSelectedNotification(notif);
                             }}
-                            className="inline-flex items-center gap-1 text-xs font-medium text-[#6b7194] hover:text-[#3d4463] dark:text-[#8b90a8] dark:hover:text-[#eef0f6] transition-colors"
+                            className="inline-flex items-center gap-1 text-xs font-medium text-text-secondary hover:text-text-secondary transition-colors"
                             title="View details"
                           >
                             <Eye className="h-3.5 w-3.5" />
@@ -357,7 +355,7 @@ export const AdminNotificationsPage = () => {
                               e.stopPropagation();
                               setResendTarget(notif.identifier);
                             }}
-                            className="inline-flex items-center gap-1 text-xs font-medium text-[#5c7cfa] hover:text-[#4c6ef5] transition-colors"
+                            className="inline-flex items-center gap-1 text-xs font-medium text-primary-500 hover:text-primary-600 transition-colors"
                             title="Resend notification"
                           >
                             <RotateCcw className="h-3.5 w-3.5" />
@@ -373,7 +371,7 @@ export const AdminNotificationsPage = () => {
           </div>
 
           {notifications && notifications.totalPages > 0 && (
-            <div className="px-4 py-3 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
+            <div className="px-4 py-3 border-t border-border-default">
               <Pagination
                 page={page}
                 totalPages={notifications.totalPages}

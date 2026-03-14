@@ -35,33 +35,27 @@ const triggerStateBadgeConfig: Record<
 > = {
   NORMAL: {
     label: "Normal",
-    className:
-      "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-700",
+    className: "bg-success-bg text-success-text ring-1 ring-success-border",
   },
   PAUSED: {
     label: "Paused",
-    className:
-      "bg-amber-50 text-amber-700 ring-1 ring-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:ring-amber-700",
+    className: "bg-warning-bg text-warning-text ring-1 ring-warning-border",
   },
   BLOCKED: {
     label: "Blocked",
-    className:
-      "bg-blue-50 text-blue-700 ring-1 ring-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:ring-blue-700",
+    className: "bg-info-bg text-info-text ring-1 ring-info-border",
   },
   COMPLETE: {
     label: "Complete",
-    className:
-      "bg-slate-50 text-slate-700 ring-1 ring-slate-200 dark:bg-slate-900/30 dark:text-slate-300 dark:ring-slate-700",
+    className: "bg-slate-50 text-slate-700 ring-1 ring-slate-200",
   },
   ERROR: {
     label: "Error",
-    className:
-      "bg-red-50 text-red-700 ring-1 ring-red-200 dark:bg-red-900/30 dark:text-red-300 dark:ring-red-700",
+    className: "bg-error-bg text-error-text ring-1 ring-error-border",
   },
   NONE: {
     label: "None",
-    className:
-      "bg-slate-50 text-slate-700 ring-1 ring-slate-200 dark:bg-slate-900/30 dark:text-slate-300 dark:ring-slate-700",
+    className: "bg-slate-50 text-slate-700 ring-1 ring-slate-200",
   },
 };
 
@@ -71,18 +65,15 @@ const execStatusBadgeConfig: Record<
 > = {
   SUCCESS: {
     label: "Success",
-    className:
-      "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-700",
+    className: "bg-success-bg text-success-text ring-1 ring-success-border",
   },
   FAILED: {
     label: "Failed",
-    className:
-      "bg-red-50 text-red-700 ring-1 ring-red-200 dark:bg-red-900/30 dark:text-red-300 dark:ring-red-700",
+    className: "bg-error-bg text-error-text ring-1 ring-error-border",
   },
   RUNNING: {
     label: "Running",
-    className:
-      "bg-blue-50 text-blue-700 ring-1 ring-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:ring-blue-700",
+    className: "bg-info-bg text-info-text ring-1 ring-info-border",
   },
 };
 
@@ -92,13 +83,11 @@ const triggerTypeBadgeConfig: Record<
 > = {
   cron: {
     label: "Cron",
-    className:
-      "bg-violet-50 text-violet-700 ring-1 ring-violet-200 dark:bg-violet-900/30 dark:text-violet-300 dark:ring-violet-700",
+    className: "bg-violet-50 text-violet-700 ring-1 ring-violet-200",
   },
   simple: {
     label: "Simple",
-    className:
-      "bg-sky-50 text-sky-700 ring-1 ring-sky-200 dark:bg-sky-900/30 dark:text-sky-300 dark:ring-sky-700",
+    className: "bg-sky-50 text-sky-700 ring-1 ring-sky-200",
   },
 };
 
@@ -111,8 +100,7 @@ const StatusBadge = ({
 }) => {
   const c = config[status] ?? {
     label: status,
-    className:
-      "bg-slate-50 text-slate-700 ring-1 ring-slate-200 dark:bg-slate-900/30 dark:text-slate-300 dark:ring-slate-700",
+    className: "bg-slate-50 text-slate-700 ring-1 ring-slate-200",
   };
   return (
     <span
@@ -124,10 +112,10 @@ const StatusBadge = ({
 };
 
 const selectClass =
-  "px-3 py-2 text-sm rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] focus:outline-none focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa]/20 transition-colors";
+  "px-3 py-2 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors";
 
 const thClass =
-  "text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]";
+  "text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary";
 
 const formatDuration = (ms?: number): string => {
   if (ms == null) {
@@ -165,13 +153,13 @@ const describeCron = (expr: string): string => {
 
 const CRON_FIELD_LABELS = ["SEC", "MIN", "HOUR", "DAY", "MON", "DOW", "YEAR"];
 const CRON_FIELD_COLORS = [
-  "from-slate-400 to-slate-500 dark:from-slate-500 dark:to-slate-400",
-  "from-blue-400 to-blue-500 dark:from-blue-500 dark:to-blue-400",
-  "from-indigo-400 to-indigo-500 dark:from-indigo-500 dark:to-indigo-400",
-  "from-violet-400 to-violet-500 dark:from-violet-500 dark:to-violet-400",
-  "from-purple-400 to-purple-500 dark:from-purple-500 dark:to-purple-400",
-  "from-fuchsia-400 to-fuchsia-500 dark:from-fuchsia-500 dark:to-fuchsia-400",
-  "from-slate-400 to-slate-500 dark:from-slate-500 dark:to-slate-400",
+  "from-slate-400 to-slate-500",
+  "from-blue-400 to-blue-500",
+  "from-primary-400 to-primary-500",
+  "from-violet-400 to-violet-500",
+  "from-purple-400 to-purple-500",
+  "from-fuchsia-400 to-fuchsia-500",
+  "from-slate-400 to-slate-500",
 ];
 
 const CronTooltip = ({ expression }: { expression: string }) => {
@@ -207,7 +195,7 @@ const CronTooltip = ({ expression }: { expression: string }) => {
       }}
       onMouseLeave={() => setOpen(false)}
     >
-      <span className="cursor-help p-0.5 rounded-md text-[#9ca0b8] dark:text-[#5c6180] hover:text-[#5c7cfa] dark:hover:text-[#91a7ff] hover:bg-[#5c7cfa]/10 transition-all duration-200">
+      <span className="cursor-help p-0.5 rounded-md text-text-muted hover:text-primary-500 hover:bg-primary-500/10 transition-all duration-200">
         <Clock className="h-3.5 w-3.5" />
       </span>
       {open &&
@@ -222,9 +210,9 @@ const CronTooltip = ({ expression }: { expression: string }) => {
             }}
           >
             <div className="mb-2.5">
-              <div className="relative bg-[#1a1d2e] dark:bg-[#0c0d14] rounded-xl shadow-xl shadow-black/20 border border-[#2a2e3f] dark:border-[#1e2130] px-4 py-3.5 min-w-[260px]">
+              <div className="relative bg-neutral-900 rounded-lg shadow-xl shadow-black/20 border border-border-default px-4 py-3.5 min-w-[260px]">
                 {/* Arrow */}
-                <div className="absolute left-1/2 -translate-x-1/2 -bottom-1.5 w-3 h-3 rotate-45 bg-[#1a1d2e] dark:bg-[#0c0d14] border-r border-b border-[#2a2e3f] dark:border-[#1e2130]" />
+                <div className="absolute left-1/2 -translate-x-1/2 -bottom-1.5 w-3 h-3 rotate-45 bg-neutral-900 border-r border-b border-border-default" />
 
                 {/* Human-readable description */}
                 <p className="text-[13px] font-medium text-white leading-snug mb-3">
@@ -238,7 +226,7 @@ const CronTooltip = ({ expression }: { expression: string }) => {
                       key={i}
                       className="flex flex-col items-center gap-1 flex-1 min-w-0"
                     >
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-[#6b7194]">
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-text-secondary">
                         {CRON_FIELD_LABELS[i]}
                       </span>
                       <span
@@ -404,9 +392,7 @@ export const SchedulerPage = () => {
   if (error) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-600 dark:text-red-400">
-          Failed to load scheduler data.
-        </p>
+        <p className="text-error-text">Failed to load scheduler data.</p>
       </div>
     );
   }
@@ -425,10 +411,8 @@ export const SchedulerPage = () => {
         }}
       >
         <div>
-          <h1 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-            Scheduler
-          </h1>
-          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+          <h1 className="text-2xl font-bold text-text-primary">Scheduler</h1>
+          <p className="text-sm text-text-secondary mt-1">
             View and manage Quartz scheduled jobs across the platform.
           </p>
         </div>
@@ -437,69 +421,69 @@ export const SchedulerPage = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
+        <div className="bg-surface-card rounded-lg border border-border-default p-4">
           <div
             style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
-            className="text-[#6b7194] dark:text-[#8b90a8] text-sm mb-1"
+            className="text-text-secondary text-sm mb-1"
           >
             <Timer className="h-4 w-4" />
             Total Jobs
           </div>
-          <div className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+          <div className="text-2xl font-bold text-text-primary">
             {allJobs.length}
           </div>
         </div>
-        <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
+        <div className="bg-surface-card rounded-lg border border-border-default p-4">
           <div
             style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
-            className="text-[#6b7194] dark:text-[#8b90a8] text-sm mb-1"
+            className="text-text-secondary text-sm mb-1"
           >
-            <Play className="h-4 w-4 text-emerald-500" />
+            <Play className="h-4 w-4 text-success-text" />
             Active
           </div>
-          <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+          <div className="text-2xl font-bold text-success-text">
             {allJobs.filter((j) => j.triggerState === "NORMAL").length}
           </div>
         </div>
-        <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
+        <div className="bg-surface-card rounded-lg border border-border-default p-4">
           <div
             style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
-            className="text-[#6b7194] dark:text-[#8b90a8] text-sm mb-1"
+            className="text-text-secondary text-sm mb-1"
           >
-            <Pause className="h-4 w-4 text-amber-500" />
+            <Pause className="h-4 w-4 text-warning-text" />
             Paused
           </div>
-          <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">
+          <div className="text-2xl font-bold text-warning-text">
             {allJobs.filter((j) => j.triggerState === "PAUSED").length}
           </div>
         </div>
-        <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
+        <div className="bg-surface-card rounded-lg border border-border-default p-4">
           <div
             style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
-            className="text-[#6b7194] dark:text-[#8b90a8] text-sm mb-1"
+            className="text-text-secondary text-sm mb-1"
           >
-            <Clock className="h-4 w-4 text-blue-500" />
+            <Clock className="h-4 w-4 text-info-text" />
             Blocked
           </div>
-          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+          <div className="text-2xl font-bold text-info-text">
             {allJobs.filter((j) => j.triggerState === "BLOCKED").length}
           </div>
         </div>
       </div>
 
       {/* Jobs Table */}
-      <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden mb-8">
+      <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden mb-8">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+              <tr className="border-b border-border-default">
                 <th className={thClass}>Job Name</th>
                 <th className={thClass}>Group</th>
                 <th className={thClass}>Type</th>
                 <th className={thClass}>Schedule</th>
                 <th className={thClass}>Status</th>
                 <th className={thClass}>Next Fire</th>
-                <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+                <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                   Actions
                 </th>
               </tr>
@@ -509,7 +493,7 @@ export const SchedulerPage = () => {
                 <tr>
                   <td
                     colSpan={7}
-                    className="px-4 py-12 text-center text-sm text-[#9ca0b8] dark:text-[#5c6180]"
+                    className="px-4 py-12 text-center text-sm text-text-muted"
                   >
                     No scheduled jobs found.
                   </td>
@@ -518,15 +502,15 @@ export const SchedulerPage = () => {
                 allJobs.map((job) => (
                   <tr
                     key={`${job.jobGroup}.${job.jobName}.${job.triggerName}`}
-                    className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0 hover:bg-[#f8f9fc] dark:hover:bg-[#1a1d28] transition-colors"
+                    className="border-b border-border-default last:border-b-0 hover:bg-surface-page transition-colors"
                   >
                     <td className="px-4 py-3">
-                      <span className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <span className="text-sm font-medium text-text-primary">
                         {job.jobName}
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      <span className="text-sm text-text-secondary">
                         {job.jobGroup}
                       </span>
                     </td>
@@ -540,7 +524,7 @@ export const SchedulerPage = () => {
                     </td>
                     <td className="px-4 py-3">
                       <span className="inline-flex items-center">
-                        <span className="text-sm text-[#3d4463] dark:text-[#c4c8db] font-mono">
+                        <span className="text-sm text-text-secondary font-mono">
                           {job.scheduleExpression ?? "-"}
                         </span>
                         {job.triggerType === "cron" &&
@@ -556,7 +540,7 @@ export const SchedulerPage = () => {
                       />
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-sm text-[#6b7194] dark:text-[#8b90a8] whitespace-nowrap">
+                      <span className="text-sm text-text-secondary whitespace-nowrap">
                         {formatFireTime(job.nextFireTime)}
                       </span>
                     </td>
@@ -578,7 +562,7 @@ export const SchedulerPage = () => {
                                 group: job.jobGroup,
                               })
                             }
-                            className="p-2 rounded-lg text-[#6b7194] dark:text-[#8b90a8] hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                            className="p-2 rounded-lg text-text-secondary hover:text-success-text hover:bg-surface-inset transition-colors"
                             title="Resume job"
                           >
                             <Play className="h-4 w-4" />
@@ -592,7 +576,7 @@ export const SchedulerPage = () => {
                                 group: job.jobGroup,
                               })
                             }
-                            className="p-2 rounded-lg text-[#6b7194] dark:text-[#8b90a8] hover:text-amber-600 dark:hover:text-amber-400 hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                            className="p-2 rounded-lg text-text-secondary hover:text-warning-text hover:bg-surface-inset transition-colors"
                             title="Pause job"
                           >
                             <Pause className="h-4 w-4" />
@@ -606,7 +590,7 @@ export const SchedulerPage = () => {
                               group: job.jobGroup,
                             })
                           }
-                          className="p-2 rounded-lg text-[#6b7194] dark:text-[#8b90a8] hover:text-[#5c7cfa] dark:hover:text-[#91a7ff] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                          className="p-2 rounded-lg text-text-secondary hover:text-primary-500 hover:bg-surface-inset transition-colors"
                           title="Run now"
                         >
                           <PlayCircle className="h-4 w-4" />
@@ -621,7 +605,7 @@ export const SchedulerPage = () => {
                               });
                               setCronInput(job.scheduleExpression ?? "");
                             }}
-                            className="p-2 rounded-lg text-[#6b7194] dark:text-[#8b90a8] hover:text-[#5c7cfa] dark:hover:text-[#91a7ff] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                            className="p-2 rounded-lg text-text-secondary hover:text-primary-500 hover:bg-surface-inset transition-colors"
                             title="Edit schedule"
                           >
                             <Pencil className="h-4 w-4" />
@@ -640,7 +624,7 @@ export const SchedulerPage = () => {
       {/* Execution History Section */}
       <div className="mb-4">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+          <h2 className="text-lg font-semibold text-text-primary">
             Execution History
           </h2>
           <RefreshButton
@@ -664,19 +648,19 @@ export const SchedulerPage = () => {
               <ChevronDown className="h-4 w-4 shrink-0" />
             </button>
             {jobDropdownOpen && (
-              <div className="absolute z-50 mt-1 w-64 bg-white dark:bg-[#14161f] border border-[#e2e6f0] dark:border-[#2a2e3f] rounded-lg shadow-lg max-h-64 overflow-y-auto">
+              <div className="absolute z-50 mt-1 w-64 bg-surface-card border border-border-default rounded-lg shadow-lg max-h-64 overflow-y-auto">
                 <button
                   onClick={toggleAllJobs}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors border-b border-[#e2e6f0] dark:border-[#2a2e3f]"
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-surface-inset transition-colors border-b border-border-default"
                 >
                   <span
-                    className={`flex items-center justify-center h-4 w-4 rounded border ${activeSelectedJobs.length === uniqueJobNames.length ? "bg-[#5c7cfa] border-[#5c7cfa] text-white" : "border-[#d1d5e0] dark:border-[#3a3f52]"}`}
+                    className={`flex items-center justify-center h-4 w-4 rounded border ${activeSelectedJobs.length === uniqueJobNames.length ? "bg-primary-500 border-primary-500 text-white" : "border-border-strong"}`}
                   >
                     {activeSelectedJobs.length === uniqueJobNames.length && (
                       <Check className="h-3 w-3" />
                     )}
                   </span>
-                  <span className="text-[#1a1d2e] dark:text-[#eef0f6] font-medium">
+                  <span className="text-text-primary font-medium">
                     Select All
                   </span>
                 </button>
@@ -684,18 +668,16 @@ export const SchedulerPage = () => {
                   <button
                     key={name}
                     onClick={() => toggleJob(name)}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                    className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-surface-inset transition-colors"
                   >
                     <span
-                      className={`flex items-center justify-center h-4 w-4 rounded border ${activeSelectedJobs.includes(name) ? "bg-[#5c7cfa] border-[#5c7cfa] text-white" : "border-[#d1d5e0] dark:border-[#3a3f52]"}`}
+                      className={`flex items-center justify-center h-4 w-4 rounded border ${activeSelectedJobs.includes(name) ? "bg-primary-500 border-primary-500 text-white" : "border-border-strong"}`}
                     >
                       {activeSelectedJobs.includes(name) && (
                         <Check className="h-3 w-3" />
                       )}
                     </span>
-                    <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
-                      {name}
-                    </span>
+                    <span className="text-text-primary">{name}</span>
                   </button>
                 ))}
               </div>
@@ -717,11 +699,11 @@ export const SchedulerPage = () => {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden">
+      <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+              <tr className="border-b border-border-default">
                 <th className={thClass}>Job Name</th>
                 <th className={thClass}>Group</th>
                 <SortableHeader
@@ -753,7 +735,7 @@ export const SchedulerPage = () => {
                 <tr>
                   <td
                     colSpan={6}
-                    className="px-4 py-12 text-center text-sm text-[#9ca0b8] dark:text-[#5c6180]"
+                    className="px-4 py-12 text-center text-sm text-text-muted"
                   >
                     No execution history found.
                   </td>
@@ -765,7 +747,7 @@ export const SchedulerPage = () => {
                   return (
                     <Fragment key={exec.id}>
                       <tr
-                        className={`border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0 hover:bg-[#f8f9fc] dark:hover:bg-[#1a1d28] transition-colors ${hasError ? "cursor-pointer" : ""} ${isExpanded ? "!border-b-0" : ""}`}
+                        className={`border-b border-border-default last:border-b-0 hover:bg-surface-page transition-colors ${hasError ? "cursor-pointer" : ""} ${isExpanded ? "!border-b-0" : ""}`}
                         onClick={
                           hasError
                             ? () => {
@@ -783,17 +765,17 @@ export const SchedulerPage = () => {
                         }
                       >
                         <td className="px-4 py-3">
-                          <span className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                          <span className="text-sm font-medium text-text-primary">
                             {exec.jobName}
                           </span>
                         </td>
                         <td className="px-4 py-3">
-                          <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                          <span className="text-sm text-text-secondary">
                             {exec.jobGroup}
                           </span>
                         </td>
                         <td className="px-4 py-3">
-                          <span className="text-sm text-[#6b7194] dark:text-[#8b90a8] whitespace-nowrap">
+                          <span className="text-sm text-text-secondary whitespace-nowrap">
                             {format(
                               new Date(exec.startedAt),
                               "dd MMM yyyy HH:mm:ss",
@@ -801,7 +783,7 @@ export const SchedulerPage = () => {
                           </span>
                         </td>
                         <td className="px-4 py-3">
-                          <span className="text-sm text-[#3d4463] dark:text-[#c4c8db] font-mono">
+                          <span className="text-sm text-text-secondary font-mono">
                             {formatDuration(exec.durationMs)}
                           </span>
                         </td>
@@ -813,7 +795,7 @@ export const SchedulerPage = () => {
                         </td>
                         <td className="px-4 py-3">
                           {hasError && (
-                            <div className="flex items-center gap-1.5 text-red-500 dark:text-red-400">
+                            <div className="flex items-center gap-1.5 text-error-text">
                               <AlertCircle className="h-4 w-4 shrink-0" />
                               {isExpanded ? (
                                 <ChevronDown className="h-3.5 w-3.5 shrink-0" />
@@ -825,10 +807,10 @@ export const SchedulerPage = () => {
                         </td>
                       </tr>
                       {isExpanded && (
-                        <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0">
+                        <tr className="border-b border-border-default last:border-b-0">
                           <td colSpan={6} className="px-4 pb-4 pt-0">
-                            <div className="rounded-lg border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/30 p-4">
-                              <pre className="text-xs font-mono text-red-700 dark:text-red-300 whitespace-pre-wrap break-words leading-relaxed">
+                            <div className="rounded-lg border border-error-border bg-error-bg p-4">
+                              <pre className="text-xs font-mono text-error-text whitespace-pre-wrap break-words leading-relaxed">
                                 {exec.errorMessage}
                               </pre>
                             </div>
@@ -877,19 +859,19 @@ export const SchedulerPage = () => {
       {/* Edit Schedule Modal */}
       {editingJob && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] shadow-2xl w-full max-w-lg mx-4">
-            <div className="flex items-center justify-between p-5 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+          <div className="bg-surface-card rounded-lg border border-border-default shadow-2xl w-full max-w-lg mx-4">
+            <div className="flex items-center justify-between p-5 border-b border-border-default">
               <div>
-                <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                <h3 className="text-lg font-semibold text-text-primary">
                   Edit Schedule
                 </h3>
-                <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-0.5">
+                <p className="text-sm text-text-secondary mt-0.5">
                   {editingJob.jobName}
                 </p>
               </div>
               <button
                 onClick={() => setEditingJob(null)}
-                className="p-1.5 rounded-lg text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                className="p-1.5 rounded-lg text-text-secondary hover:bg-surface-inset transition-colors"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -897,7 +879,7 @@ export const SchedulerPage = () => {
 
             <div className="p-5 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+                <label className="block text-sm font-medium text-text-secondary mb-1.5">
                   Cron Expression
                 </label>
                 <input
@@ -905,23 +887,23 @@ export const SchedulerPage = () => {
                   value={cronInput}
                   onChange={(e) => setCronInput(e.target.value)}
                   placeholder="0 0 * * * ?"
-                  className="w-full px-3 py-2.5 text-sm font-mono border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] outline-none focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+                  className="w-full px-3 py-2.5 text-sm font-mono border border-border-strong rounded-lg bg-surface-card text-text-primary outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
                 />
               </div>
 
               {/* Cron Explanation Panel */}
-              <div className="rounded-lg bg-[#f8f9fc] dark:bg-[#0c0d14] border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
-                <div className="text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8] mb-2">
+              <div className="rounded-lg bg-surface-page border border-border-default p-4">
+                <div className="text-xs font-semibold uppercase tracking-wider text-text-secondary mb-2">
                   Explanation
                 </div>
-                <p className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                <p className="text-sm text-text-primary">
                   {cronInput.trim()
                     ? describeCron(cronInput.trim())
                     : "Enter a cron expression above"}
                 </p>
                 {editingJob.currentExpression !== cronInput.trim() &&
                   cronInput.trim() && (
-                    <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180] mt-2">
+                    <p className="text-xs text-text-muted mt-2">
                       Current:{" "}
                       <span className="font-mono">
                         {editingJob.currentExpression}
@@ -931,17 +913,14 @@ export const SchedulerPage = () => {
                   )}
               </div>
 
-              <div className="rounded-lg bg-[#f8f9fc] dark:bg-[#0c0d14] border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
-                <div className="text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8] mb-2">
+              <div className="rounded-lg bg-surface-page border border-border-default p-4">
+                <div className="text-xs font-semibold uppercase tracking-wider text-text-secondary mb-2">
                   Quartz Cron Format
                 </div>
                 <div className="grid grid-cols-7 gap-1 text-center text-[11px]">
                   {["SEC", "MIN", "HOUR", "DAY", "MON", "DOW", "YEAR"].map(
                     (f) => (
-                      <span
-                        key={f}
-                        className="font-mono text-[#6b7194] dark:text-[#8b90a8]"
-                      >
+                      <span key={f} className="font-mono text-text-secondary">
                         {f}
                       </span>
                     ),
@@ -954,7 +933,7 @@ export const SchedulerPage = () => {
                     .map((part, i) => (
                       <span
                         key={i}
-                        className="font-mono font-medium text-[#1a1d2e] dark:text-[#eef0f6] bg-white dark:bg-[#1e2130] rounded px-1 py-0.5 border border-[#e2e6f0] dark:border-[#2a2e3f]"
+                        className="font-mono font-medium text-text-primary bg-surface-card rounded px-1 py-0.5 border border-border-default"
                       >
                         {part}
                       </span>
@@ -963,10 +942,10 @@ export const SchedulerPage = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 p-5 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
+            <div className="flex items-center justify-end gap-3 p-5 border-t border-border-default">
               <button
                 onClick={() => setEditingJob(null)}
-                className="px-4 py-2 text-sm font-medium text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:hover:text-[#eef0f6] transition-colors"
+                className="px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
               >
                 Cancel
               </button>
@@ -986,7 +965,7 @@ export const SchedulerPage = () => {
                   !cronInput.trim() ||
                   cronInput.trim() === editingJob.currentExpression
                 }
-                className="px-4 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 disabled:opacity-50 text-sm font-medium"
+                className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 text-sm font-medium"
               >
                 {rescheduleJob.isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin" />

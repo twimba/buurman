@@ -30,14 +30,10 @@ import { SendRegistrationInvitationModal } from "../components/SendRegistrationI
 import type { RegistrationInvitation } from "../api/registrationInvitations";
 
 const STATUS_STYLES: Record<string, string> = {
-  ACTIVE:
-    "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800",
-  EXPIRED:
-    "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800",
-  EXHAUSTED:
-    "bg-zinc-50 text-zinc-600 border-zinc-200 dark:bg-zinc-800/40 dark:text-zinc-400 dark:border-zinc-700",
-  REVOKED:
-    "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800",
+  ACTIVE: "bg-success-bg text-success-text border-success-border",
+  EXPIRED: "bg-warning-bg text-warning-text border-warning-border",
+  EXHAUSTED: "bg-surface-inset text-text-secondary border-border-default",
+  REVOKED: "bg-error-bg text-error-text border-error-border",
 };
 
 export function RegistrationInvitationsPage() {
@@ -151,8 +147,8 @@ export function RegistrationInvitationsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Ticket className="h-6 w-6 text-indigo-500" />
-          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+          <Ticket className="h-6 w-6 text-primary-500" />
+          <h1 className="text-2xl font-bold text-text-primary">
             Registration Invitations
           </h1>
         </div>
@@ -160,7 +156,7 @@ export function RegistrationInvitationsPage() {
           <RefreshButton onClick={() => refetch()} />
           <button
             onClick={() => setShowCreate(true)}
-            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition-colors"
+            className="inline-flex items-center gap-2 rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 transition-colors"
           >
             <Plus className="h-4 w-4" />
             Create Invitation
@@ -170,28 +166,28 @@ export function RegistrationInvitationsPage() {
 
       {/* Rate Limit Settings */}
       {rlLoading ? (
-        <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-6">
+        <div className="bg-surface-card rounded-lg border border-border-default p-6">
           <div className="animate-pulse flex space-x-4">
             <div className="flex-1 space-y-3 py-1">
-              <div className="h-4 bg-zinc-200 dark:bg-zinc-700 rounded w-1/4" />
-              <div className="h-3 bg-zinc-200 dark:bg-zinc-700 rounded w-1/2" />
+              <div className="h-4 bg-surface-inset rounded w-1/4" />
+              <div className="h-3 bg-surface-inset rounded w-1/2" />
             </div>
           </div>
         </div>
       ) : rlConfig ? (
-        <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f]">
-          <div className="p-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-            <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+        <div className="bg-surface-card rounded-lg border border-border-default">
+          <div className="p-6 border-b border-border-default">
+            <h2 className="text-lg font-semibold text-text-primary">
               Rate Limit Settings
             </h2>
-            <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+            <p className="text-sm text-text-secondary mt-1">
               {rlConfig.description ||
                 "Configure rate limiting for code validation requests."}
             </p>
           </div>
           <div className="p-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div>
-              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+              <label className="block text-sm font-medium text-text-secondary mb-1.5">
                 Max requests per period
               </label>
               <input
@@ -204,14 +200,14 @@ export function RegistrationInvitationsPage() {
                     Math.max(1, Math.min(10000, Number(e.target.value) || 1)),
                   )
                 }
-                className="w-full px-3 py-2 text-sm border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] outline-none focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+                className="w-full px-3 py-2 text-sm border border-border-strong rounded-lg bg-surface-card text-text-primary outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               />
-              <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180] mt-1">
+              <p className="text-xs text-text-muted mt-1">
                 Maximum validation attempts per IP per period (1–10,000).
               </p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+              <label className="block text-sm font-medium text-text-secondary mb-1.5">
                 Period (seconds)
               </label>
               <input
@@ -224,14 +220,14 @@ export function RegistrationInvitationsPage() {
                     Math.max(10, Math.min(86400, Number(e.target.value) || 10)),
                   )
                 }
-                className="w-full px-3 py-2 text-sm border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] outline-none focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+                className="w-full px-3 py-2 text-sm border border-border-strong rounded-lg bg-surface-card text-text-primary outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               />
-              <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180] mt-1">
+              <p className="text-xs text-text-muted mt-1">
                 Time window in seconds (10–86,400).
               </p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+              <label className="block text-sm font-medium text-text-secondary mb-1.5">
                 Enabled
               </label>
               <button
@@ -239,29 +235,27 @@ export function RegistrationInvitationsPage() {
                 role="switch"
                 aria-checked={displayEnabled}
                 onClick={() => setRlEnabled(!displayEnabled)}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#5c7cfa] focus:ring-offset-2 ${
-                  displayEnabled
-                    ? "bg-[#5c7cfa]"
-                    : "bg-[#c9cfd9] dark:bg-[#3a3f54]"
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${
+                  displayEnabled ? "bg-primary-500" : "bg-neutral-200"
                 }`}
               >
                 <span
-                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-surface-card shadow ring-0 transition duration-200 ease-in-out ${
                     displayEnabled ? "translate-x-5" : "translate-x-0"
                   }`}
                 />
               </button>
-              <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180] mt-1">
+              <p className="text-xs text-text-muted mt-1">
                 {displayEnabled
                   ? "Rate limiting is active."
                   : "Rate limiting is disabled — all requests pass through."}
               </p>
             </div>
           </div>
-          <div className="px-6 py-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f] flex items-center justify-between">
+          <div className="px-6 py-4 border-t border-border-default flex items-center justify-between">
             <div>
               {rlConfig.updatedAt && (
-                <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
+                <p className="text-xs text-text-muted">
                   Last updated{" "}
                   {format(new Date(rlConfig.updatedAt), "dd MMM yyyy HH:mm")}
                   {rlConfig.updatedBy ? ` by ${rlConfig.updatedBy}` : ""}
@@ -271,7 +265,7 @@ export function RegistrationInvitationsPage() {
             <button
               onClick={handleSaveRateLimit}
               disabled={updateRateLimit.isPending}
-              className="px-4 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 disabled:opacity-50 text-sm font-medium"
+              className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 text-sm font-medium"
             >
               {updateRateLimit.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -286,7 +280,7 @@ export function RegistrationInvitationsPage() {
 
       {/* Search */}
       <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
         <input
           type="text"
           placeholder="Search by code or creator..."
@@ -295,7 +289,7 @@ export function RegistrationInvitationsPage() {
             setSearch(e.target.value);
             resetPage();
           }}
-          className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 pl-10 pr-4 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
+          className="w-full rounded-md border border-border-default bg-surface-card pl-10 pr-4 py-2 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
         />
       </div>
 
@@ -304,9 +298,9 @@ export function RegistrationInvitationsPage() {
         <LoadingSpinner />
       ) : (
         <>
-          <div className="overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/50">
-            <table className="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-              <thead className="bg-zinc-50 dark:bg-zinc-800">
+          <div className="overflow-hidden rounded-lg border border-border-default bg-surface-card">
+            <table className="min-w-full divide-y divide-border-default">
+              <thead className="bg-surface-inset">
                 <tr>
                   <SortableHeader
                     label="Code"
@@ -315,7 +309,7 @@ export function RegistrationInvitationsPage() {
                     direction={direction}
                     onSortChange={handleSortChange}
                   />
-                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                     Status
                   </th>
                   <SortableHeader
@@ -325,10 +319,10 @@ export function RegistrationInvitationsPage() {
                     direction={direction}
                     onSortChange={handleSortChange}
                   />
-                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                     Expires
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                     Created By
                   </th>
                   <SortableHeader
@@ -338,22 +332,22 @@ export function RegistrationInvitationsPage() {
                     direction={direction}
                     onSortChange={handleSortChange}
                   />
-                  <th className="px-4 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-100 dark:divide-zinc-700/50">
+              <tbody className="divide-y divide-border-subtle">
                 {data?.content?.map((inv) => (
                   <tr
                     key={inv.identifier}
-                    className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors"
+                    className="hover:bg-surface-inset/50 transition-colors"
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1.5">
                         <Link
                           to={`/registration-invitations/${inv.identifier}`}
-                          className="font-mono text-sm font-semibold text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 hover:underline"
+                          className="font-mono text-sm font-semibold text-primary-600 hover:text-primary-800 hover:underline"
                         >
                           {inv.code}
                         </Link>
@@ -371,27 +365,27 @@ export function RegistrationInvitationsPage() {
                         {inv.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400 font-mono">
+                    <td className="px-4 py-3 text-sm text-text-secondary font-mono">
                       {formatUsage(inv)}
                     </td>
-                    <td className="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400">
+                    <td className="px-4 py-3 text-sm text-text-secondary">
                       {inv.expiresAt
                         ? format(new Date(inv.expiresAt), "MMM d, yyyy HH:mm")
                         : "Never"}
                     </td>
-                    <td className="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400">
+                    <td className="px-4 py-3 text-sm text-text-secondary">
                       {inv.createdBy}
                     </td>
-                    <td className="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400">
+                    <td className="px-4 py-3 text-sm text-text-secondary">
                       {format(new Date(inv.createdAt), "MMM d, yyyy HH:mm")}
                     </td>
                     <td className="px-4 py-3 text-right">
                       <button
                         data-menu-trigger={inv.identifier}
                         onClick={() => handleToggleMenu(inv.identifier)}
-                        className="p-1.5 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+                        className="p-1.5 rounded-md hover:bg-surface-inset transition-colors"
                       >
-                        <MoreHorizontal className="h-4 w-4 text-zinc-500" />
+                        <MoreHorizontal className="h-4 w-4 text-text-secondary" />
                       </button>
                       {openMenu === inv.identifier && menuPos && (
                         <>
@@ -405,14 +399,14 @@ export function RegistrationInvitationsPage() {
                               top: menuPos.top,
                               right: menuPos.right,
                             }}
-                            className="z-50 w-48 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 shadow-lg py-1"
+                            className="z-50 w-48 rounded-lg border border-border-default bg-surface-card shadow-lg py-1"
                           >
                             <button
                               onClick={() => {
                                 handleCopyLink(inv.code);
                                 setOpenMenu(null);
                               }}
-                              className="flex w-full items-center gap-2 px-3 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700"
+                              className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-primary hover:bg-surface-inset"
                             >
                               <Copy className="h-4 w-4" />
                               Copy Link
@@ -424,7 +418,7 @@ export function RegistrationInvitationsPage() {
                                     setSendTarget(inv);
                                     setOpenMenu(null);
                                   }}
-                                  className="flex w-full items-center gap-2 px-3 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700"
+                                  className="flex w-full items-center gap-2 px-3 py-2 text-sm text-text-primary hover:bg-surface-inset"
                                 >
                                   <Send className="h-4 w-4" />
                                   Send Invitation
@@ -434,7 +428,7 @@ export function RegistrationInvitationsPage() {
                                     setRevokeTarget(inv);
                                     setOpenMenu(null);
                                   }}
-                                  className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                  className="flex w-full items-center gap-2 px-3 py-2 text-sm text-error-text hover:bg-error-bg"
                                 >
                                   <Ban className="h-4 w-4" />
                                   Revoke
@@ -451,7 +445,7 @@ export function RegistrationInvitationsPage() {
                   <tr>
                     <td
                       colSpan={7}
-                      className="px-4 py-12 text-center text-sm text-zinc-500"
+                      className="px-4 py-12 text-center text-sm text-text-secondary"
                     >
                       No invitations found
                     </td>

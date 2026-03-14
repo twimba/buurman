@@ -188,11 +188,9 @@ export const PhoneInput = ({
     <div ref={containerRef} className="relative">
       <div
         className={`flex border rounded ${
-          error ? 'border-red-500' : 'border-[#c9cfd9] dark:border-[#3a3f54]'
-        } focus-within:border-[#5c7cfa] focus-within:ring-1 focus-within:ring-[#5c7cfa] bg-white dark:bg-[#1e2130] ${
-          disabled
-            ? 'bg-[#f1f3f9] dark:bg-[#1e2130] cursor-not-allowed opacity-70'
-            : ''
+          error ? 'border-error-border' : 'border-border-strong'
+        } focus-within:border-primary-500 focus-within:ring-1 focus-within:ring-primary-500 bg-surface-card ${
+          disabled ? 'bg-surface-inset cursor-not-allowed opacity-70' : ''
         }`}
       >
         <button
@@ -205,14 +203,14 @@ export const PhoneInput = ({
             }
           }}
           disabled={disabled}
-          className="flex items-center gap-1 px-3 py-2 border-r border-[#c9cfd9] dark:border-[#3a3f54] text-sm shrink-0 hover:bg-[#f8f9fc] dark:hover:bg-[#1a1d2e] disabled:hover:bg-transparent dark:disabled:hover:bg-transparent disabled:cursor-not-allowed"
+          className="flex items-center gap-1 px-3 py-2 border-r border-border-strong text-sm shrink-0 hover:bg-surface-page dark:hover:bg-surface-card disabled:hover:bg-transparent dark:disabled:hover:bg-transparent disabled:cursor-not-allowed"
         >
           <span>{selectedCountry?.flag || '🏳️'}</span>
-          <span className="text-[#6b7194] dark:text-[#8b90a8]">
+          <span className="text-text-secondary">
             +{selectedCountry?.callingCode || '?'}
           </span>
           <ChevronDown
-            className={`h-3 w-3 text-[#9ca0b8] dark:text-[#5c6180] transition-transform ${
+            className={`h-3 w-3 text-text-muted transition-transform ${
               dropdownOpen ? 'rotate-180' : ''
             }`}
           />
@@ -224,13 +222,13 @@ export const PhoneInput = ({
           onChange={handleNationalNumberChange}
           disabled={disabled}
           placeholder="Phone number"
-          className="flex-1 px-3 py-2 bg-transparent text-sm text-[#1a1d2e] dark:text-[#eef0f6] outline-none disabled:cursor-not-allowed"
+          className="flex-1 px-3 py-2 bg-transparent text-sm text-text-primary outline-none disabled:cursor-not-allowed"
         />
       </div>
 
       {dropdownOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md shadow-lg max-h-80 overflow-hidden flex flex-col">
-          <div className="p-2 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+        <div className="absolute z-50 w-full mt-1 bg-surface-card border border-border-strong rounded-md shadow-lg max-h-80 overflow-hidden flex flex-col">
+          <div className="p-2 border-b border-border-default">
             <input
               ref={searchInputRef}
               type="text"
@@ -242,7 +240,7 @@ export const PhoneInput = ({
               onKeyDown={handleDropdownKeyDown}
               placeholder="Search country or code..."
               autoComplete="off"
-              className="w-full px-2 py-1.5 text-sm border border-[#c9cfd9] dark:border-[#3a3f54] rounded bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] outline-none focus:border-[#5c7cfa]"
+              className="w-full px-2 py-1.5 text-sm border border-border-strong rounded bg-surface-card text-text-primary outline-none focus:border-primary-500"
             />
           </div>
 
@@ -257,24 +255,22 @@ export const PhoneInput = ({
                 onMouseEnter={() => setHighlightedIndex(index)}
                 className={`w-full text-left px-3 py-2 text-sm flex items-center gap-2 ${
                   highlightedIndex === index
-                    ? 'bg-blue-50 dark:bg-blue-900/30'
+                    ? 'bg-primary-50'
                     : country.code === selectedCountryCode
                       ? 'bg-primary-100 dark:bg-primary-500/10'
                       : ''
                 }`}
               >
                 <span>{country.flag}</span>
-                <span className="text-[#6b7194] dark:text-[#8b90a8] w-12">
+                <span className="text-text-secondary w-12">
                   +{country.callingCode}
                 </span>
-                <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
-                  {country.name}
-                </span>
+                <span className="text-text-primary">{country.name}</span>
               </button>
             ))}
 
             {filtered.length === 0 && (
-              <div className="px-3 py-8 text-center text-sm text-[#6b7194] dark:text-[#8b90a8]">
+              <div className="px-3 py-8 text-center text-sm text-text-secondary">
                 No countries found
               </div>
             )}
@@ -282,7 +278,7 @@ export const PhoneInput = ({
         </div>
       )}
 
-      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+      {error && <p className="text-error-text text-xs mt-1">{error}</p>}
     </div>
   );
 };

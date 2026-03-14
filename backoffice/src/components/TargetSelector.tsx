@@ -8,14 +8,13 @@ interface TargetSelectorProps {
   onChange: (selected: string[]) => void;
 }
 
-const LABEL_CLASS =
-  "block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1";
+const LABEL_CLASS = "block text-sm font-medium text-text-secondary mb-1";
 const INPUT_CLASS =
-  "w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#0c0d14] text-[#1a1d2e] dark:text-[#eef0f6] placeholder-[#9ca0b8] focus:outline-none focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa]/20 transition-colors";
+  "w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary placeholder-text-muted focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors";
 const PILL_CLASS =
-  "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium bg-[#5c7cfa]/10 text-[#4263eb] dark:bg-[#5c7cfa]/20 dark:text-[#91a7ff]";
+  "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium bg-primary-500/10 text-primary-600";
 const CHECK_ITEM_CLASS =
-  "flex items-center gap-2 px-3 py-1.5 text-sm text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f8f9fc] dark:hover:bg-[#1a1d28] cursor-pointer rounded transition-colors";
+  "flex items-center gap-2 px-3 py-1.5 text-sm text-text-secondary hover:bg-surface-page cursor-pointer rounded transition-colors";
 
 export const TargetTeamSelector = ({
   selected,
@@ -48,7 +47,7 @@ export const TargetTeamSelector = ({
                 <button
                   type="button"
                   onClick={() => toggle(id)}
-                  className="hover:text-red-500 transition-colors"
+                  className="hover:text-error-text transition-colors"
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -59,7 +58,7 @@ export const TargetTeamSelector = ({
       )}
 
       <div className="relative mb-2">
-        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#9ca0b8]" />
+        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-muted" />
         <input
           type="text"
           placeholder="Search teams..."
@@ -69,9 +68,9 @@ export const TargetTeamSelector = ({
         />
       </div>
 
-      <div className="max-h-40 overflow-y-auto border border-[#e2e6f0] dark:border-[#2a2e3f] rounded-lg">
+      <div className="max-h-40 overflow-y-auto border border-border-default rounded-lg">
         {teams.length === 0 ? (
-          <p className="px-3 py-2 text-sm text-[#9ca0b8]">No teams found.</p>
+          <p className="px-3 py-2 text-sm text-text-muted">No teams found.</p>
         ) : (
           teams.map((team) => (
             <label key={team.identifier} className={CHECK_ITEM_CLASS}>
@@ -79,10 +78,10 @@ export const TargetTeamSelector = ({
                 type="checkbox"
                 checked={selected.includes(team.identifier)}
                 onChange={() => toggle(team.identifier)}
-                className="rounded border-[#cdd3e6] text-[#5c7cfa] focus:ring-[#5c7cfa]/20"
+                className="rounded border-border-default text-primary-500 focus:ring-primary-500/20"
               />
               <span>{team.teamName}</span>
-              <span className="text-[#9ca0b8] text-xs ml-auto">
+              <span className="text-text-muted text-xs ml-auto">
                 {team.memberCount} member{team.memberCount !== 1 ? "s" : ""}
               </span>
             </label>
@@ -124,7 +123,7 @@ export const TargetUserSelector = ({
                 <button
                   type="button"
                   onClick={() => toggle(id)}
-                  className="hover:text-red-500 transition-colors"
+                  className="hover:text-error-text transition-colors"
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -135,7 +134,7 @@ export const TargetUserSelector = ({
       )}
 
       <div className="relative mb-2">
-        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#9ca0b8]" />
+        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-muted" />
         <input
           type="text"
           placeholder="Search users..."
@@ -145,9 +144,9 @@ export const TargetUserSelector = ({
         />
       </div>
 
-      <div className="max-h-40 overflow-y-auto border border-[#e2e6f0] dark:border-[#2a2e3f] rounded-lg">
+      <div className="max-h-40 overflow-y-auto border border-border-default rounded-lg">
         {users.length === 0 ? (
-          <p className="px-3 py-2 text-sm text-[#9ca0b8]">No users found.</p>
+          <p className="px-3 py-2 text-sm text-text-muted">No users found.</p>
         ) : (
           users.map((user) => (
             <label key={user.identifier} className={CHECK_ITEM_CLASS}>
@@ -155,12 +154,12 @@ export const TargetUserSelector = ({
                 type="checkbox"
                 checked={selected.includes(user.identifier)}
                 onChange={() => toggle(user.identifier)}
-                className="rounded border-[#cdd3e6] text-[#5c7cfa] focus:ring-[#5c7cfa]/20"
+                className="rounded border-border-default text-primary-500 focus:ring-primary-500/20"
               />
               <span>
                 {user.firstName} {user.lastName}
               </span>
-              <span className="text-[#9ca0b8] text-xs ml-auto">
+              <span className="text-text-muted text-xs ml-auto">
                 {user.email}
               </span>
             </label>

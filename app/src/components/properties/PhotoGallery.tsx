@@ -4,7 +4,7 @@ import { Upload, X, Loader2 } from 'lucide-react';
 import { RichTextEditor } from '../common/RichTextEditor';
 import { PhotoGrid } from '../photos/PhotoGrid';
 import { DocumentPreviewModal } from '../documents/DocumentPreviewModal';
-import { ConfirmDialog } from '../ui/ConfirmDialog';
+import { ConfirmDialog } from '@buurman/ui';
 import { EditMetadataModal } from '../ui/EditMetadataModal';
 import { usePhotoSelection } from '@/hooks/usePhotoSelection';
 import { useBulkDownloadPhotos, useUpdatePhoto } from '@/hooks/usePhotoHooks';
@@ -137,11 +137,9 @@ export const PhotoGallery = ({
     <div className="space-y-4">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-          Photos
-        </h3>
+        <h3 className="text-lg font-semibold text-text-primary">Photos</h3>
         {!readOnly && (
-          <label className="cursor-pointer bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors flex items-center gap-2">
+          <label className="cursor-pointer bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2">
             <Upload className="h-4 w-4" />
             Upload Photo
             <input
@@ -260,21 +258,21 @@ export const PhotoGallery = ({
           className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           onKeyDown={handleCmdEnterUpload}
         >
-          <div className="bg-white dark:bg-[#14161f] rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-surface-card rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-2">
-                <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                <h3 className="text-lg font-semibold text-text-primary">
                   Upload {selectedFiles.length === 1 ? 'Photo' : 'Photos'}
                 </h3>
                 {selectedFiles.length > 1 && (
-                  <span className="px-2 py-0.5 text-xs font-medium bg-[#5c7cfa]/10 text-[#5c7cfa] rounded-full">
+                  <span className="px-2 py-0.5 text-xs font-medium bg-primary-500/10 text-primary-500 rounded-full">
                     {selectedFiles.length} files
                   </span>
                 )}
               </div>
               <button
                 onClick={handleCancelUpload}
-                className="p-2 hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded transition-colors"
+                className="p-2 hover:bg-surface-inset rounded transition-colors"
                 disabled={!!uploadProgress}
               >
                 <X className="h-5 w-5" />
@@ -305,21 +303,21 @@ export const PhotoGallery = ({
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                <label className="block text-sm font-medium text-text-secondary mb-1">
                   Title (optional)
                 </label>
                 <input
                   type="text"
                   value={uploadTitle}
                   onChange={(e) => setUploadTitle(e.target.value)}
-                  className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] dark:bg-[#1e2130] dark:text-[#eef0f6] rounded px-3 py-2"
+                  className="w-full border border-border-strong rounded px-3 py-2"
                   placeholder="e.g., Living room"
                   disabled={!!uploadProgress}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                <label className="block text-sm font-medium text-text-secondary mb-1">
                   Notes (optional)
                 </label>
                 <RichTextEditor
@@ -335,14 +333,14 @@ export const PhotoGallery = ({
             <div className="flex gap-2 justify-end mt-6">
               <button
                 onClick={handleCancelUpload}
-                className="border border-[#c9cfd9] dark:border-[#3a3f54] dark:text-[#c4c8db] px-4 py-2 rounded hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                className="border border-border-strong px-4 py-2 rounded hover:bg-surface-inset transition-colors"
                 disabled={!!uploadProgress}
               >
                 Cancel
               </button>
               <button
                 onClick={handleUpload}
-                className="relative overflow-hidden bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="relative overflow-hidden bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors disabled:opacity-50 flex items-center gap-2"
                 disabled={!!uploadProgress || selectedFiles.length === 0}
                 aria-busy={!!uploadProgress}
               >
@@ -356,7 +354,7 @@ export const PhotoGallery = ({
                       aria-valuenow={uploadProgress.current}
                       aria-valuemin={0}
                       aria-valuemax={uploadProgress.total}
-                      className="absolute bottom-0 left-0 h-0.5 bg-white/30 transition-all duration-300"
+                      className="absolute bottom-0 left-0 h-0.5 bg-surface-card/30 transition-all duration-300"
                       style={{
                         width: `${(uploadProgress.current / uploadProgress.total) * 100}%`,
                       }}

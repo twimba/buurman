@@ -71,12 +71,10 @@ export const RentTimeline = ({
     <>
       {/* Current Rent */}
       <div className="flex items-center gap-3">
-        <DollarSign className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+        <DollarSign className="h-5 w-5 text-text-muted " />
         <div className="flex-1">
-          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-            Rent Amount
-          </p>
-          <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+          <p className="text-sm text-text-secondary">Rent Amount</p>
+          <p className="font-medium text-text-primary">
             {currency} {currentRentAmount.toFixed(2)} /{' '}
             {paymentFrequency.toLowerCase()}
           </p>
@@ -84,7 +82,7 @@ export const RentTimeline = ({
         {canAdjustRent && (
           <button
             onClick={() => setShowAdjustModal(true)}
-            className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-[#5c7cfa] bg-[#5c7cfa]/10 rounded-md hover:bg-[#5c7cfa]/20 transition-colors"
+            className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-primary-500 bg-primary-500/10 rounded-md hover:bg-primary-500/20 transition-colors"
           >
             <Plus className="h-3.5 w-3.5" />
             Adjust
@@ -97,7 +95,7 @@ export const RentTimeline = ({
         <div className="mt-2">
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="flex items-center gap-1.5 text-sm text-[#6b7194] dark:text-[#8b90a8] hover:text-[#3d4463] dark:hover:text-[#c4c8db] transition-colors"
+            className="flex items-center gap-1.5 text-sm text-text-secondary hover:text-text-secondary transition-colors"
           >
             {isExpanded ? (
               <ChevronUp className="h-4 w-4" />
@@ -111,7 +109,7 @@ export const RentTimeline = ({
           {isExpanded && (
             <div className="mt-3 space-y-2">
               {isLoading ? (
-                <p className="text-sm text-[#9ca0b8]">Loading...</p>
+                <p className="text-sm text-text-muted">Loading...</p>
               ) : (
                 periods.map((period) => (
                   <RentPeriodRow
@@ -158,24 +156,24 @@ function RentPeriodRow({
   onDelete?: () => void;
 }) {
   return (
-    <div className="flex items-start gap-3 p-3 bg-[#f8f9fc] dark:bg-[#1a1d28] rounded-lg">
+    <div className="flex items-start gap-3 p-3 bg-surface-page rounded-lg">
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="font-medium text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+          <span className="font-medium text-sm text-text-primary">
             {currency} {period.rentAmount.toFixed(2)}
           </span>
           {period.percentageChange != null && (
             <PercentageChangeBadge change={period.percentageChange} />
           )}
         </div>
-        <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180] mt-0.5">
+        <p className="text-xs text-text-muted mt-0.5">
           {formatDate(period.effectiveFrom)}
           {period.effectiveTo
             ? ` - ${formatDate(period.effectiveTo)}`
             : ' - Present'}
         </p>
         {period.notes && (
-          <div className="mt-1 text-xs text-[#6b7194] dark:text-[#8b90a8]">
+          <div className="mt-1 text-xs text-text-secondary">
             <RichTextDisplay content={period.notes} />
           </div>
         )}
@@ -183,7 +181,7 @@ function RentPeriodRow({
       {onDelete && (
         <button
           onClick={onDelete}
-          className="p-1 text-[#9ca0b8] dark:text-[#5c6180] hover:text-red-500 dark:hover:text-red-400 transition-colors shrink-0"
+          className="p-1 text-text-muted hover:text-error-text transition-colors shrink-0"
           title="Delete rent period"
         >
           <Trash2 className="h-3.5 w-3.5" />
@@ -196,14 +194,14 @@ function RentPeriodRow({
 function PercentageChangeBadge({ change }: { change: number }) {
   if (change > 0) {
     return (
-      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-xs font-medium rounded-full bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
+      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-xs font-medium rounded-full bg-success-bg text-success-text">
         <TrendingUp className="h-3 w-3" />+{change.toFixed(1)}%
       </span>
     );
   }
   if (change < 0) {
     return (
-      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-xs font-medium rounded-full bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400">
+      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-xs font-medium rounded-full bg-error-bg text-error-text">
         <TrendingDown className="h-3 w-3" />
         {change.toFixed(1)}%
       </span>

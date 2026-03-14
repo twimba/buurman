@@ -106,12 +106,10 @@ export const InvitationPage = () => {
 
   if (isLoading || authLoading) {
     return (
-      <div className="min-h-screen bg-[#f1f3f9] dark:bg-[#1e2130] flex items-center justify-center">
+      <div className="min-h-screen bg-surface-inset flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin text-[#5c7cfa] mx-auto" />
-          <p className="mt-4 text-[#6b7194] dark:text-[#8b90a8]">
-            Loading invitation...
-          </p>
+          <Loader2 className="h-12 w-12 animate-spin text-primary-500 mx-auto" />
+          <p className="mt-4 text-text-secondary">Loading invitation...</p>
         </div>
       </div>
     );
@@ -119,19 +117,19 @@ export const InvitationPage = () => {
 
   if (error || !invitation) {
     return (
-      <div className="min-h-screen bg-[#f1f3f9] dark:bg-[#1e2130] flex items-center justify-center p-4">
-        <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-lg p-8 max-w-md w-full text-center">
-          <XCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
+      <div className="min-h-screen bg-surface-inset flex items-center justify-center p-4">
+        <div className="bg-surface-card rounded-lg shadow-lg p-8 max-w-md w-full text-center">
+          <XCircle className="h-16 w-16 text-error-text mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-text-primary mb-2">
             Invalid Invitation
           </h1>
-          <p className="text-[#6b7194] dark:text-[#8b90a8] mb-6">
+          <p className="text-text-secondary mb-6">
             This invitation link is invalid, has already been used, or has
             expired.
           </p>
           <button
             onClick={() => navigate('/login')}
-            className="px-6 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors"
+            className="px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
           >
             Go to Login
           </button>
@@ -142,19 +140,19 @@ export const InvitationPage = () => {
 
   if (invitation.isAccepted) {
     return (
-      <div className="min-h-screen bg-[#f1f3f9] dark:bg-[#1e2130] flex items-center justify-center p-4">
-        <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-lg p-8 max-w-md w-full text-center">
-          <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
+      <div className="min-h-screen bg-surface-inset flex items-center justify-center p-4">
+        <div className="bg-surface-card rounded-lg shadow-lg p-8 max-w-md w-full text-center">
+          <CheckCircle className="h-16 w-16 text-success-text mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-text-primary mb-2">
             Already Accepted
           </h1>
-          <p className="text-[#6b7194] dark:text-[#8b90a8] mb-6">
+          <p className="text-text-secondary mb-6">
             This invitation has already been accepted. You can log in to access
             the team.
           </p>
           <button
             onClick={() => navigate('/login')}
-            className="px-6 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors"
+            className="px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
           >
             Go to Login
           </button>
@@ -165,19 +163,19 @@ export const InvitationPage = () => {
 
   if (invitation.isExpired) {
     return (
-      <div className="min-h-screen bg-[#f1f3f9] dark:bg-[#1e2130] flex items-center justify-center p-4">
-        <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-lg p-8 max-w-md w-full text-center">
-          <Clock className="h-16 w-16 text-yellow-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
+      <div className="min-h-screen bg-surface-inset flex items-center justify-center p-4">
+        <div className="bg-surface-card rounded-lg shadow-lg p-8 max-w-md w-full text-center">
+          <Clock className="h-16 w-16 text-warning-text mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-text-primary mb-2">
             Invitation Expired
           </h1>
-          <p className="text-[#6b7194] dark:text-[#8b90a8] mb-6">
+          <p className="text-text-secondary mb-6">
             This invitation has expired. Please contact the team administrator
             to request a new invitation.
           </p>
           <button
             onClick={() => navigate('/login')}
-            className="px-6 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors"
+            className="px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
           >
             Go to Login
           </button>
@@ -187,26 +185,26 @@ export const InvitationPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#f1f3f9] dark:bg-[#1e2130] flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-lg p-8 max-w-md w-full">
+    <div className="min-h-screen bg-surface-inset flex items-center justify-center p-4">
+      <div className="bg-surface-card rounded-lg shadow-lg p-8 max-w-md w-full">
         <div className="text-center mb-6">
-          <div className="h-16 w-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Users className="h-8 w-8 text-[#5c7cfa] dark:text-[#91a7ff]" />
+          <div className="h-16 w-16 bg-info-bg rounded-full flex items-center justify-center mx-auto mb-4">
+            <Users className="h-8 w-8 text-primary-500 dark:text-primary-300" />
           </div>
-          <h1 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
+          <h1 className="text-2xl font-bold text-text-primary mb-2">
             You&apos;re Invited!
           </h1>
-          <p className="text-[#6b7194] dark:text-[#8b90a8]">
+          <p className="text-text-secondary">
             <span className="font-medium">{invitation.inviterName}</span> has
             invited you to join
           </p>
         </div>
 
-        <div className="bg-[#f8f9fc] dark:bg-[#0c0d14] rounded-lg p-4 mb-6">
-          <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
+        <div className="bg-surface-page rounded-lg p-4 mb-6">
+          <h2 className="text-xl font-semibold text-text-primary mb-2">
             {invitation.teamName}
           </h2>
-          <div className="space-y-2 text-sm text-[#6b7194] dark:text-[#8b90a8]">
+          <div className="space-y-2 text-sm text-text-secondary">
             <p>
               <span className="font-medium">Your role:</span>{' '}
               {formatRole(invitation.role)}
@@ -223,8 +221,8 @@ export const InvitationPage = () => {
         </div>
 
         {acceptMutation.isError && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
-            <p className="text-sm text-red-600">
+          <div className="bg-error-bg border border-error-border rounded-lg p-3 mb-4">
+            <p className="text-sm text-error-text">
               {(acceptMutation.error as Error)?.message ||
                 'Failed to accept invitation. Please try again.'}
             </p>
@@ -236,7 +234,7 @@ export const InvitationPage = () => {
             <button
               onClick={handleAccept}
               disabled={acceptMutation.isPending}
-              className="w-full px-6 py-3 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {acceptMutation.isPending ? (
                 <>
@@ -250,25 +248,25 @@ export const InvitationPage = () => {
                 </>
               )}
             </button>
-            <p className="text-xs text-center text-[#6b7194] dark:text-[#8b90a8]">
+            <p className="text-xs text-center text-text-secondary">
               By accepting, you&apos;ll join this team with the specified role.
             </p>
           </div>
         ) : (
           <div className="space-y-3">
-            <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] text-center mb-4">
+            <p className="text-sm text-text-secondary text-center mb-4">
               To accept this invitation, please log in or create an account.
             </p>
             <button
               onClick={handleLogin}
-              className="w-full px-6 py-3 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors flex items-center justify-center gap-2"
+              className="w-full px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center justify-center gap-2"
             >
               <LogIn className="h-5 w-5" />
               Log In to Accept
             </button>
             <button
               onClick={handleRegister}
-              className="w-full px-6 py-3 border border-[#c9cfd9] dark:border-[#3a3f54] text-[#3d4463] dark:text-[#c4c8db] rounded-lg hover:bg-[#f8f9fc] dark:bg-[#0c0d14] dark:hover:bg-[#1e2130] transition-colors flex items-center justify-center gap-2"
+              className="w-full px-6 py-3 border border-border-strong text-text-secondary rounded-lg hover:bg-surface-page transition-colors flex items-center justify-center gap-2"
             >
               <UserPlus className="h-5 w-5" />
               Create Account

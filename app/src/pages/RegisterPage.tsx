@@ -198,9 +198,9 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-[#f0f4ff] via-white to-[#f8f9fc]">
+    <div className="flex min-h-screen bg-gradient-to-br from-primary-50 via-white to-neutral-25">
       {/* Left Side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#364fc7] via-[#4c6ef5] to-[#5c7cfa] p-12 flex-col justify-between text-white">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-800 via-primary-500 to-primary-400 p-12 flex-col justify-between text-white">
         <div>
           <div className="flex items-center gap-4 mb-8">
             <img
@@ -208,63 +208,63 @@ const RegisterPage: React.FC = () => {
               alt="Buurman"
               className="h-20 w-20 rounded-xl shadow-2xl ring-4 ring-white ring-opacity-30"
             />
-            <h1 className="text-4xl font-black tracking-tight bg-gradient-to-r from-white to-[#bac8ff] bg-clip-text text-transparent">
+            <h1 className="text-4xl font-black tracking-tight bg-gradient-to-r from-white to-primary-200 bg-clip-text text-transparent">
               Buurman
             </h1>
           </div>
-          <p className="text-xl text-[#bac8ff] mb-12">
+          <p className="text-xl text-primary-200 mb-12">
             Property management made simple for small landlords
           </p>
 
           {/* Features */}
           <div className="space-y-6">
             <div className="flex items-start gap-4">
-              <div className="bg-[#5c7cfa]/30 p-3 rounded-lg">
+              <div className="bg-primary-500/30 p-3 rounded-lg">
                 <Home className="h-6 w-6" />
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">
                   Manage Properties
                 </h3>
-                <p className="text-[#bac8ff]">
+                <p className="text-primary-200">
                   Keep track of all your rental properties in one place
                 </p>
               </div>
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="bg-[#5c7cfa]/30 p-3 rounded-lg">
+              <div className="bg-primary-500/30 p-3 rounded-lg">
                 <Users className="h-6 w-6" />
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">Track Tenants</h3>
-                <p className="text-[#bac8ff]">
+                <p className="text-primary-200">
                   Manage tenant information and lease agreements
                 </p>
               </div>
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="bg-[#5c7cfa]/30 p-3 rounded-lg">
+              <div className="bg-primary-500/30 p-3 rounded-lg">
                 <FileText className="h-6 w-6" />
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">Handle Finances</h3>
-                <p className="text-[#bac8ff]">
+                <p className="text-primary-200">
                   Monitor payments, expenses, and financial reports
                 </p>
               </div>
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="bg-[#5c7cfa]/30 p-3 rounded-lg">
+              <div className="bg-primary-500/30 p-3 rounded-lg">
                 <TrendingUp className="h-6 w-6" />
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">
                   Grow Your Business
                 </h3>
-                <p className="text-[#bac8ff]">
+                <p className="text-primary-200">
                   Scale your rental portfolio with confidence
                 </p>
               </div>
@@ -272,7 +272,7 @@ const RegisterPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="text-sm text-[#91a7ff]">
+        <div className="text-sm text-primary-300">
           © 2026 Buurman. Simple property management.
         </div>
       </div>
@@ -288,39 +288,39 @@ const RegisterPage: React.FC = () => {
               alt="Buurman"
               className="h-24 w-24 rounded-xl shadow-2xl mb-4"
             />
-            <h1 className="text-4xl font-black tracking-tight bg-gradient-to-r from-[#5c7cfa] to-[#364fc7] bg-clip-text text-transparent">
+            <h1 className="text-4xl font-black tracking-tight bg-gradient-to-r from-primary-500 to-primary-800 bg-clip-text text-transparent">
               Buurman
             </h1>
-            <p className="text-[#6b7194] dark:text-[#8b90a8] mt-2 text-center">
+            <p className="text-text-secondary mt-2 text-center">
               Property management for small landlords
             </p>
           </div>
 
-          <div className="bg-white dark:bg-[#14161f] rounded-2xl shadow-xl p-8 lg:p-10 relative overflow-hidden">
+          <div className="bg-surface-card rounded-2xl shadow-xl p-8 lg:p-10 relative overflow-hidden">
             {/* Decorative gradient accent */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#364fc7] via-[#5c7cfa] to-[#91a7ff]" />
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-900 via-primary-500 to-primary-300" />
 
             {registrationSuccess ? (
               <div className="flex flex-col items-center text-center py-8">
                 <div className="relative mb-5">
-                  <div className="bg-emerald-100 dark:bg-emerald-900/30 rounded-full p-5">
-                    <PartyPopper className="h-10 w-10 text-emerald-600 dark:text-emerald-400" />
+                  <div className="bg-success-bg rounded-full p-5">
+                    <PartyPopper className="h-10 w-10 text-success-text" />
                   </div>
-                  <div className="absolute -top-1 -right-1 bg-emerald-500 rounded-full p-1">
+                  <div className="absolute -top-1 -right-1 bg-success-text rounded-full p-1">
                     <Check className="h-3.5 w-3.5 text-white" />
                   </div>
                 </div>
-                <h2 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
+                <h2 className="text-2xl font-bold text-text-primary mb-2">
                   You&apos;re all set!
                 </h2>
-                <p className="text-[#6b7194] dark:text-[#8b90a8] mb-6">
+                <p className="text-text-secondary mb-6">
                   We&apos;ve sent a verification email to your inbox.
                   <br />
                   Check it and you&apos;re ready to go!
                 </p>
                 <a
                   href="/login"
-                  className="group inline-flex items-center gap-2 bg-gradient-to-r from-[#4263eb] to-[#5c7cfa] text-white py-2.5 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5"
+                  className="group inline-flex items-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 text-white py-2.5 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5"
                 >
                   Sign in now
                   <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
@@ -329,14 +329,14 @@ const RegisterPage: React.FC = () => {
             ) : (
               <>
                 <div className="mb-8 text-center">
-                  <div className="inline-flex items-center gap-1.5 bg-[#5c7cfa]/10 text-[#4c6ef5] px-3 py-1 rounded-full text-xs font-medium mb-4">
+                  <div className="inline-flex items-center gap-1.5 bg-primary-500/10 text-primary-600 px-3 py-1 rounded-full text-xs font-medium mb-4">
                     <Sparkles className="h-3.5 w-3.5" />
                     Takes less than a minute
                   </div>
-                  <h2 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
+                  <h2 className="text-2xl font-bold text-text-primary mb-2">
                     Create your free account
                   </h2>
-                  <p className="text-[#6b7194] dark:text-[#8b90a8]">
+                  <p className="text-text-secondary">
                     Join landlords who manage smarter, not harder
                   </p>
                 </div>
@@ -349,19 +349,19 @@ const RegisterPage: React.FC = () => {
                   {/* Invitation Code Gate — skip when user has a team invitation */}
                   {invitationRequired && !invitationToken && (
                     <div
-                      className={`rounded-xl border-2 p-4 transition-all duration-300 ${
+                      className={`rounded-lg border-2 p-4 transition-all duration-300 ${
                         codeValidated
-                          ? 'border-emerald-200 bg-emerald-50/50 dark:border-emerald-800 dark:bg-emerald-900/20'
-                          : 'border-[#c3cbf9] bg-[#f0f4ff]/50 dark:border-[#3a3f54] dark:bg-[#1e2130]'
+                          ? 'border-success-border bg-success-bg'
+                          : 'border-primary-200 bg-primary-50/50'
                       }`}
                     >
                       <div className="flex items-center gap-2 mb-3">
-                        <Ticket className="h-4 w-4 text-[#5c7cfa]" />
-                        <span className="text-sm font-medium text-[#3d4463] dark:text-[#c4c8db]">
+                        <Ticket className="h-4 w-4 text-primary-500" />
+                        <span className="text-sm font-medium text-text-secondary">
                           Invitation Code
                         </span>
                         {codeValidated && (
-                          <span className="ml-auto inline-flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                          <span className="ml-auto inline-flex items-center gap-1 text-xs font-medium text-success-text">
                             <ShieldCheck className="h-3.5 w-3.5" />
                             Verified
                           </span>
@@ -379,8 +379,8 @@ const RegisterPage: React.FC = () => {
                           disabled={codeValidated}
                           className={`flex-1 border rounded-lg px-4 py-2.5 text-sm transition-colors ${
                             codeValidated
-                              ? 'border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
-                              : 'border-[#c9cfd9] dark:border-[#3a3f54] focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20'
+                              ? 'border-success-border bg-success-bg text-success-text'
+                              : 'border-border-strong focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-20'
                           }`}
                           placeholder="e.g. snowy-cat"
                         />
@@ -392,7 +392,7 @@ const RegisterPage: React.FC = () => {
                               !invitationCode.trim() ||
                               validateCodeMutation.isPending
                             }
-                            className="px-4 py-2.5 bg-[#5c7cfa] text-white text-sm font-medium rounded-lg hover:bg-[#4c6ef5] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2 shrink-0"
+                            className="px-4 py-2.5 bg-primary-500 text-white text-sm font-medium rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2 shrink-0"
                           >
                             {validateCodeMutation.isPending ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
@@ -409,7 +409,7 @@ const RegisterPage: React.FC = () => {
                               setInvitationCode('');
                               setCodeError('');
                             }}
-                            className="px-3 py-2.5 text-[#6b7194] hover:text-[#3d4463] text-sm rounded-lg hover:bg-white/50 transition-colors shrink-0"
+                            className="px-3 py-2.5 text-text-secondary hover:text-text-secondary text-sm rounded-lg hover:bg-surface-card/50 transition-colors shrink-0"
                           >
                             Change
                           </button>
@@ -417,14 +417,14 @@ const RegisterPage: React.FC = () => {
                       </div>
                       {codeError && (
                         <div className="flex items-center gap-1.5 mt-2">
-                          <XCircle className="h-3.5 w-3.5 text-red-500 shrink-0" />
-                          <span className="text-xs text-red-600 dark:text-red-400">
+                          <XCircle className="h-3.5 w-3.5 text-error-text shrink-0" />
+                          <span className="text-xs text-error-text">
                             {codeError}
                           </span>
                         </div>
                       )}
                       {!codeValidated && !codeError && (
-                        <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-2">
+                        <p className="text-xs text-text-secondary mt-2">
                           Enter the invitation code you received to continue
                         </p>
                       )}
@@ -440,7 +440,7 @@ const RegisterPage: React.FC = () => {
                   >
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+                        <label className="block text-sm font-medium text-text-secondary mb-1.5">
                           First Name
                         </label>
                         <input
@@ -448,18 +448,18 @@ const RegisterPage: React.FC = () => {
                           name="firstName"
                           value={formData.firstName}
                           onChange={handleChange}
-                          className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors"
+                          className="w-full border border-border-strong rounded-lg px-4 py-2.5 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-20 transition-colors"
                           placeholder="John"
                         />
                         {errors.firstName && (
-                          <p className="text-red-600 text-xs mt-1">
+                          <p className="text-error-text text-xs mt-1">
                             {errors.firstName}
                           </p>
                         )}
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+                        <label className="block text-sm font-medium text-text-secondary mb-1.5">
                           Last Name
                         </label>
                         <input
@@ -467,11 +467,11 @@ const RegisterPage: React.FC = () => {
                           name="lastName"
                           value={formData.lastName}
                           onChange={handleChange}
-                          className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors"
+                          className="w-full border border-border-strong rounded-lg px-4 py-2.5 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-20 transition-colors"
                           placeholder="Doe"
                         />
                         {errors.lastName && (
-                          <p className="text-red-600 text-xs mt-1">
+                          <p className="text-error-text text-xs mt-1">
                             {errors.lastName}
                           </p>
                         )}
@@ -479,7 +479,7 @@ const RegisterPage: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+                      <label className="block text-sm font-medium text-text-secondary mb-1.5">
                         Email
                       </label>
                       <input
@@ -488,23 +488,23 @@ const RegisterPage: React.FC = () => {
                         value={formData.email}
                         onChange={handleChange}
                         readOnly={!!invitationToken && !!invitation?.email}
-                        className={`w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-4 py-2.5 focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors ${invitationToken && invitation?.email ? 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8] cursor-not-allowed' : ''}`}
+                        className={`w-full border border-border-strong rounded-lg px-4 py-2.5 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-20 transition-colors ${invitationToken && invitation?.email ? 'bg-surface-inset text-text-secondary cursor-not-allowed' : ''}`}
                         placeholder="john.doe@example.com"
                       />
                       {invitationToken && invitation?.email && (
-                        <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                        <p className="text-xs text-text-secondary mt-1">
                           Email is pre-filled from your invitation
                         </p>
                       )}
                       {errors.email && (
-                        <p className="text-red-600 text-xs mt-1">
+                        <p className="text-error-text text-xs mt-1">
                           {errors.email}
                         </p>
                       )}
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+                      <label className="block text-sm font-medium text-text-secondary mb-1.5">
                         Password
                       </label>
                       <div className="relative">
@@ -513,17 +513,17 @@ const RegisterPage: React.FC = () => {
                           name="password"
                           value={formData.password}
                           onChange={handleChange}
-                          className={`w-full border rounded-lg px-4 py-2.5 pr-11 focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors ${
+                          className={`w-full border rounded-lg px-4 py-2.5 pr-11 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-20 transition-colors ${
                             formData.password.length > 0 && allRulesMet
-                              ? 'border-emerald-300 dark:border-emerald-700 focus:border-emerald-400'
-                              : 'border-[#c9cfd9] dark:border-[#3a3f54] focus:border-[#5c7cfa]'
+                              ? 'border-success-border focus:border-success-text'
+                              : 'border-border-strong focus:border-primary-500'
                           }`}
                           placeholder="Create a strong password"
                         />
                         <button
                           type="button"
                           onClick={() => setShowPassword((prev) => !prev)}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md border border-transparent text-[#9ca3af] hover:text-[#5c7cfa] hover:bg-[#eff3ff] hover:border-[#c3cbf9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7cfa]/20 focus-visible:border-[#5c7cfa] transition-colors"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md border border-transparent text-text-muted hover:text-primary-500 hover:bg-primary-50 hover:border-primary-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/20 focus-visible:border-primary-500 transition-colors"
                           aria-label="Toggle password visibility"
                         >
                           {showPassword ? (
@@ -534,7 +534,7 @@ const RegisterPage: React.FC = () => {
                         </button>
                       </div>
                       {errors.password && (
-                        <p className="text-red-600 text-xs mt-1">
+                        <p className="text-error-text text-xs mt-1">
                           {errors.password}
                         </p>
                       )}
@@ -545,12 +545,12 @@ const RegisterPage: React.FC = () => {
                             className="flex items-center gap-1.5"
                           >
                             {rule.met ? (
-                              <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                              <Check className="h-3.5 w-3.5 text-success-text shrink-0" />
                             ) : (
-                              <Circle className="h-3.5 w-3.5 text-[#c9cfd9] dark:text-[#3a3f54] shrink-0" />
+                              <Circle className="h-3.5 w-3.5 text-text-disabled shrink-0" />
                             )}
                             <span
-                              className={`text-xs ${rule.met ? 'text-emerald-600 dark:text-emerald-400' : 'text-[#6b7194] dark:text-[#8b90a8]'}`}
+                              className={`text-xs ${rule.met ? 'text-success-text' : 'text-text-secondary '}`}
                             >
                               {rule.label}
                             </span>
@@ -560,7 +560,7 @@ const RegisterPage: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+                      <label className="block text-sm font-medium text-text-secondary mb-1.5">
                         Confirm Password
                       </label>
                       <div className="relative">
@@ -569,12 +569,12 @@ const RegisterPage: React.FC = () => {
                           name="confirmPassword"
                           value={formData.confirmPassword}
                           onChange={handleChange}
-                          className={`w-full border rounded-lg px-4 py-2.5 pr-11 focus:ring-2 focus:ring-[#5c7cfa] focus:ring-opacity-20 transition-colors ${
+                          className={`w-full border rounded-lg px-4 py-2.5 pr-11 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-20 transition-colors ${
                             passwordsMatch
-                              ? 'border-emerald-300 dark:border-emerald-700 focus:border-emerald-400'
+                              ? 'border-success-border focus:border-success-text'
                               : passwordsMismatch
-                                ? 'border-red-300 dark:border-red-700 focus:border-red-400'
-                                : 'border-[#c9cfd9] dark:border-[#3a3f54] focus:border-[#5c7cfa]'
+                                ? 'border-error-border focus:border-error-text'
+                                : 'border-border-strong focus:border-primary-500'
                           }`}
                           placeholder="Re-enter your password"
                         />
@@ -583,7 +583,7 @@ const RegisterPage: React.FC = () => {
                           onClick={() =>
                             setShowConfirmPassword((prev) => !prev)
                           }
-                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md border border-transparent text-[#9ca3af] hover:text-[#5c7cfa] hover:bg-[#eff3ff] hover:border-[#c3cbf9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7cfa]/20 focus-visible:border-[#5c7cfa] transition-colors"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md border border-transparent text-text-muted hover:text-primary-500 hover:bg-primary-50 hover:border-primary-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/20 focus-visible:border-primary-500 transition-colors"
                           aria-label="Toggle password visibility"
                         >
                           {showConfirmPassword ? (
@@ -597,15 +597,15 @@ const RegisterPage: React.FC = () => {
                         <div className="flex items-center gap-1.5 mt-1.5">
                           {passwordsMatch ? (
                             <>
-                              <Check className="h-3.5 w-3.5 text-emerald-500" />
-                              <span className="text-xs text-emerald-600 dark:text-emerald-400">
+                              <Check className="h-3.5 w-3.5 text-success-text" />
+                              <span className="text-xs text-success-text">
                                 Passwords match
                               </span>
                             </>
                           ) : (
                             <>
-                              <Circle className="h-3.5 w-3.5 text-red-400" />
-                              <span className="text-xs text-red-500 dark:text-red-400">
+                              <Circle className="h-3.5 w-3.5 text-error-text" />
+                              <span className="text-xs text-error-text">
                                 Passwords do not match
                               </span>
                             </>
@@ -614,15 +614,15 @@ const RegisterPage: React.FC = () => {
                       )}
                       {errors.confirmPassword &&
                         !formData.confirmPassword.length && (
-                          <p className="text-red-600 text-xs mt-1">
+                          <p className="text-error-text text-xs mt-1">
                             {errors.confirmPassword}
                           </p>
                         )}
                     </div>
 
                     {errors.submit && (
-                      <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                        <p className="text-red-600 text-sm">
+                      <div className="bg-error-bg border border-error-border rounded-lg p-3">
+                        <p className="text-error-text text-sm">
                           {errors.submit}
                           {errors.submit
                             .toLowerCase()
@@ -631,7 +631,7 @@ const RegisterPage: React.FC = () => {
                               {' '}
                               <a
                                 href="/login"
-                                className="text-[#5c7cfa] hover:text-[#4263eb] font-semibold hover:underline"
+                                className="text-primary-500 hover:text-primary-600 font-semibold hover:underline"
                               >
                                 Go to login
                               </a>
@@ -651,7 +651,7 @@ const RegisterPage: React.FC = () => {
                           !codeValidated &&
                           !invitationToken)
                       }
-                      className="group w-full mt-3 bg-gradient-to-r from-[#4263eb] to-[#5c7cfa] text-white py-3.5 px-6 rounded-xl hover:from-[#3b5bdb] hover:to-[#4c6ef5] transition-all duration-200 font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg"
+                      className="group w-full mt-3 bg-gradient-to-r from-primary-600 to-primary-500 text-white py-3.5 px-6 rounded-xl hover:from-primary-700 hover:to-primary-600 transition-all duration-200 font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg"
                     >
                       <UserPlus className="h-5 w-5" />
                       {registerMutation.isPending
@@ -666,10 +666,10 @@ const RegisterPage: React.FC = () => {
 
                 <div className="mt-6 relative">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-[#e2e6f0] dark:border-[#2a2e3f]" />
+                    <div className="w-full border-t border-border-default " />
                   </div>
                   <div className="relative flex justify-center text-xs">
-                    <span className="bg-white dark:bg-[#14161f] px-3 text-[#6b7194] dark:text-[#8b90a8]">
+                    <span className="bg-surface-card px-3 text-text-secondary">
                       already have an account?
                     </span>
                   </div>
@@ -677,19 +677,19 @@ const RegisterPage: React.FC = () => {
 
                 <a
                   href="/login"
-                  className="mt-6 w-full py-3 px-6 rounded-xl border-2 border-[#e2e6f0] dark:border-[#2a2e3f] text-[#3d4463] dark:text-[#c4c8db] font-semibold flex items-center justify-center gap-2 hover:border-[#5c7cfa] hover:text-[#5c7cfa] transition-all duration-200 hover:bg-[#f0f4ff] dark:hover:bg-[#5c7cfa]/10"
+                  className="mt-6 w-full py-3 px-6 rounded-lg border-2 border-border-default text-text-secondary font-semibold flex items-center justify-center gap-2 hover:border-primary-500 hover:text-primary-500 transition-all duration-200 hover:bg-primary-50"
                 >
                   Sign in instead
                   <ArrowRight className="h-4 w-4" />
                 </a>
 
-                <p className="mt-5 text-xs text-[#6b7194] dark:text-[#8b90a8] text-center">
+                <p className="mt-5 text-xs text-text-secondary text-center">
                   By creating an account, you agree to our{' '}
                   <a
                     href="https://www.buurman.io/terms"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#5c7cfa] hover:text-[#4263eb] hover:underline"
+                    className="text-primary-500 hover:text-primary-600 hover:underline"
                   >
                     Terms of Service
                   </a>
@@ -700,13 +700,13 @@ const RegisterPage: React.FC = () => {
 
           {/* Additional Info */}
           <div className="mt-6 text-center">
-            <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+            <p className="text-sm text-text-secondary">
               Need help?{' '}
               <a
                 href="https://www.buurman.io/support"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#5c7cfa] hover:underline"
+                className="text-primary-500 hover:underline"
               >
                 Contact support
               </a>

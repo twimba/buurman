@@ -35,15 +35,13 @@ export const CurrencySelector = ({
         disabled={disabled}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
-        className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 pr-8 bg-white dark:bg-[#14161f] hover:border-[#5c7cfa] dark:hover:border-[#748ffc] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] disabled:bg-[#f1f3f9] dark:disabled:bg-[#1e2130] disabled:cursor-not-allowed text-sm text-[#1a1d2e] dark:text-[#eef0f6] text-left relative"
+        className="w-full border border-border-strong rounded px-3 py-2 pr-8 bg-surface-card hover:border-primary-500 dark:hover:border-primary-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 disabled:bg-surface-inset disabled:cursor-not-allowed text-sm text-text-primary text-left relative"
       >
         {displayValue || (
-          <span className="text-[#9ca0b8] dark:text-[#5c6180]">
-            Select currency
-          </span>
+          <span className="text-text-muted">Select currency</span>
         )}
         <ChevronDown
-          className={`absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9ca0b8] dark:text-[#5c6180] transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted transition-transform ${isOpen ? 'rotate-180' : ''}`}
         />
       </button>
 

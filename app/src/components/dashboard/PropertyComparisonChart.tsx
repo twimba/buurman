@@ -55,7 +55,7 @@ export const PropertyComparisonChart = ({
 
   if (sorted.length === 0) {
     return (
-      <div className="flex items-center justify-center h-80 text-[#6b7194] dark:text-[#8b90a8] text-sm">
+      <div className="flex items-center justify-center h-80 text-text-secondary text-sm">
         No property comparison data available
       </div>
     );
@@ -92,7 +92,7 @@ export const PropertyComparisonChart = ({
           {sorted.map((entry) => (
             <Cell
               key={entry.identifier}
-              fill={(entry.monthlyCashFlow ?? 0) >= 0 ? '#10B981' : '#EF4444'}
+              fill={(entry.monthlyCashFlow ?? 0) >= 0 ? '#059669' : '#dc2626'}
             />
           ))}
         </Bar>

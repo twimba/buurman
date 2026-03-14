@@ -30,7 +30,7 @@ import {
   ContractPartyRole,
   PARTY_ROLE_LABELS,
 } from '@/types/contract';
-import { Button, PageHeader } from '@/components/ui';
+import { Button, PageHeader } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import {
   Edit,
@@ -56,19 +56,15 @@ import { useFormatDate } from '@/hooks/useFormatDate';
 import { getCurrencySymbol } from '@/utils/currencies';
 
 const ROLE_COLORS: Record<ContractPartyRole, string> = {
-  [ContractPartyRole.PRIMARY_TENANT]:
-    'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
-  [ContractPartyRole.GUARANTOR]:
-    'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
-  [ContractPartyRole.COSIGNER]:
-    'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300',
-  [ContractPartyRole.EXTRA_TENANT]:
-    'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300',
+  [ContractPartyRole.PRIMARY_TENANT]: 'bg-info-bg text-info-text',
+  [ContractPartyRole.GUARANTOR]: 'bg-warning-bg text-warning-text',
+  [ContractPartyRole.COSIGNER]: 'bg-info-bg text-info-text',
+  [ContractPartyRole.EXTRA_TENANT]: 'bg-success-bg text-success-text',
 };
 
 const RoleBadge = ({ role }: { role: ContractPartyRole }) => (
   <span
-    className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full ${ROLE_COLORS[role] ?? 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300'}`}
+    className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full ${ROLE_COLORS[role] ?? 'bg-surface-inset text-text-primary'}`}
   >
     {PARTY_ROLE_LABELS[role] ?? role}
   </span>
@@ -364,14 +360,14 @@ export const TenantDetailPage = () => {
         />
 
         {/* Tabs */}
-        <div className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] mb-6">
+        <div className="border-b border-border-default mb-6">
           <div className="flex gap-6">
             <button
               onClick={() => setActiveTab('info')}
               className={`pb-3 px-1 font-medium transition-colors ${
                 activeTab === 'info'
-                  ? 'border-b-2 border-[#5c7cfa] text-primary-500 dark:text-primary-300'
-                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
+                  ? 'border-b-2 border-primary-500 text-primary-500 dark:text-primary-300'
+                  : 'text-text-secondary hover:text-text-primary'
               }`}
             >
               Information
@@ -380,8 +376,8 @@ export const TenantDetailPage = () => {
               onClick={() => setActiveTab('photos')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'photos'
-                  ? 'border-b-2 border-[#5c7cfa] text-primary-500 dark:text-primary-300'
-                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
+                  ? 'border-b-2 border-primary-500 text-primary-500 dark:text-primary-300'
+                  : 'text-text-secondary hover:text-text-primary'
               }`}
             >
               <Image className="h-4 w-4" />
@@ -391,8 +387,8 @@ export const TenantDetailPage = () => {
               onClick={() => setActiveTab('documents')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'documents'
-                  ? 'border-b-2 border-[#5c7cfa] text-primary-500 dark:text-primary-300'
-                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
+                  ? 'border-b-2 border-primary-500 text-primary-500 dark:text-primary-300'
+                  : 'text-text-secondary hover:text-text-primary'
               }`}
             >
               <FileText className="h-4 w-4" />
@@ -402,8 +398,8 @@ export const TenantDetailPage = () => {
               onClick={() => setActiveTab('addresses')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'addresses'
-                  ? 'border-b-2 border-[#5c7cfa] text-primary-500 dark:text-primary-300'
-                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
+                  ? 'border-b-2 border-primary-500 text-primary-500 dark:text-primary-300'
+                  : 'text-text-secondary hover:text-text-primary'
               }`}
             >
               <MapPin className="h-4 w-4" />
@@ -413,8 +409,8 @@ export const TenantDetailPage = () => {
               onClick={() => setActiveTab('contracts')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'contracts'
-                  ? 'border-b-2 border-[#5c7cfa] text-primary-500 dark:text-primary-300'
-                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
+                  ? 'border-b-2 border-primary-500 text-primary-500 dark:text-primary-300'
+                  : 'text-text-secondary hover:text-text-primary'
               }`}
             >
               <FileText className="h-4 w-4" />
@@ -424,8 +420,8 @@ export const TenantDetailPage = () => {
               onClick={() => setActiveTab('history')}
               className={`pb-3 px-1 font-medium transition-colors ${
                 activeTab === 'history'
-                  ? 'border-b-2 border-[#5c7cfa] text-primary-500 dark:text-primary-300'
-                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
+                  ? 'border-b-2 border-primary-500 text-primary-500 dark:text-primary-300'
+                  : 'text-text-secondary hover:text-text-primary'
               }`}
             >
               History {auditLog.length > 0 && `(${auditLog.length})`}
@@ -437,41 +433,35 @@ export const TenantDetailPage = () => {
         {activeTab === 'info' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Contact Information */}
-            <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+              <h2 className="text-lg font-semibold text-text-primary mb-4">
                 Contact Information
               </h2>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <User className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+                  <User className="h-5 w-5 text-text-muted " />
                   <div>
-                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                      Name
-                    </p>
-                    <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <p className="text-sm text-text-secondary">Name</p>
+                    <p className="font-medium text-text-primary">
                       {tenant.firstName} {tenant.lastName}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Mail className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+                  <Mail className="h-5 w-5 text-text-muted " />
                   <div>
-                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                      Email
-                    </p>
-                    <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <p className="text-sm text-text-secondary">Email</p>
+                    <p className="font-medium text-text-primary">
                       {tenant.email}
                     </p>
                   </div>
                 </div>
                 {tenant.phone && (
                   <div className="flex items-center gap-3">
-                    <Phone className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+                    <Phone className="h-5 w-5 text-text-muted " />
                     <div>
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                        Phone
-                      </p>
-                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <p className="text-sm text-text-secondary">Phone</p>
+                      <p className="font-medium text-text-primary">
                         {tenant.phone}
                       </p>
                     </div>
@@ -479,12 +469,10 @@ export const TenantDetailPage = () => {
                 )}
                 {tenant.taxNumber && (
                   <div className="flex items-center gap-3">
-                    <FileText className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+                    <FileText className="h-5 w-5 text-text-muted " />
                     <div>
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                        Tax Number
-                      </p>
-                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <p className="text-sm text-text-secondary">Tax Number</p>
+                      <p className="font-medium text-text-primary">
                         {tenant.taxNumber}
                       </p>
                     </div>
@@ -492,12 +480,12 @@ export const TenantDetailPage = () => {
                 )}
                 {tenant.idNumber && (
                   <div className="flex items-center gap-3">
-                    <FileText className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+                    <FileText className="h-5 w-5 text-text-muted " />
                     <div>
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      <p className="text-sm text-text-secondary">
                         Government ID Number
                       </p>
-                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <p className="font-medium text-text-primary">
                         {tenant.idNumber}
                       </p>
                     </div>
@@ -507,22 +495,22 @@ export const TenantDetailPage = () => {
             </div>
 
             {/* Additional Information */}
-            <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+              <h2 className="text-lg font-semibold text-text-primary mb-4">
                 Additional Information
               </h2>
               {tenant.additionalInfo ? (
                 <RichTextDisplay content={tenant.additionalInfo} />
               ) : (
-                <p className="text-sm text-[#9ca0b8] dark:text-[#5c6180] italic">
+                <p className="text-sm text-text-muted italic">
                   No additional information available
                 </p>
               )}
             </div>
 
             {/* Current Properties (from Active Contracts) */}
-            <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6 lg:col-span-2">
-              <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 lg:col-span-2">
+              <h2 className="text-lg font-semibold text-text-primary mb-4">
                 Current Properties
               </h2>
               {contractsLoading ? (
@@ -532,10 +520,10 @@ export const TenantDetailPage = () => {
                   {activeContractProperties.map((item) => (
                     <div
                       key={item.property.identifier}
-                      className="flex items-center justify-between bg-green-50 dark:bg-green-900/30 p-4 rounded border border-green-200 dark:border-green-900/50"
+                      className="flex items-center justify-between bg-success-bg p-4 rounded border border-success-border"
                     >
                       <div className="flex items-center gap-3">
-                        <Home className="h-8 w-8 text-green-600" />
+                        <Home className="h-8 w-8 text-success-text" />
                         <div>
                           <button
                             onClick={() =>
@@ -543,11 +531,11 @@ export const TenantDetailPage = () => {
                                 `/properties/${item.property.identifier}`
                               )
                             }
-                            className="font-medium text-[#1a1d2e] dark:text-[#eef0f6] hover:text-[#5c7cfa] text-left"
+                            className="font-medium text-text-primary hover:text-primary-500 text-left"
                           >
                             {item.property.street}
                           </button>
-                          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                          <p className="text-sm text-text-secondary">
                             {item.property.city}, {item.property.postalCode}
                           </p>
                         </div>
@@ -557,43 +545,39 @@ export const TenantDetailPage = () => {
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-[#9ca0b8] dark:text-[#5c6180] italic">
+                <p className="text-sm text-text-muted italic">
                   No active contracts for this tenant
                 </p>
               )}
             </div>
 
             {/* Metadata */}
-            <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6 lg:col-span-2">
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 lg:col-span-2">
               <button
                 onClick={() => setIsMetadataExpanded(!isMetadataExpanded)}
                 className="w-full flex items-center justify-between text-left group"
               >
-                <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                <h2 className="text-lg font-semibold text-text-primary">
                   Metadata
                 </h2>
                 {isMetadataExpanded ? (
-                  <ChevronUp className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8] group-hover:text-[#3d4463] dark:group-hover:text-[#c4c8db]" />
+                  <ChevronUp className="h-5 w-5 text-text-secondary group-hover:text-text-secondary " />
                 ) : (
-                  <ChevronDown className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8] group-hover:text-[#3d4463] dark:group-hover:text-[#c4c8db]" />
+                  <ChevronDown className="h-5 w-5 text-text-secondary group-hover:text-text-secondary " />
                 )}
               </button>
               {isMetadataExpanded && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-4">
                   <div>
-                    <span className="text-[#6b7194] dark:text-[#8b90a8]">
-                      Created:
-                    </span>{' '}
-                    <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <span className="text-text-secondary">Created:</span>{' '}
+                    <span className="text-text-primary">
                       {formatDate(tenant.createdAt)} at{' '}
                       {new Date(tenant.createdAt).toLocaleTimeString()}
                     </span>
                   </div>
                   <div>
-                    <span className="text-[#6b7194] dark:text-[#8b90a8]">
-                      Last Updated:
-                    </span>{' '}
-                    <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <span className="text-text-secondary">Last Updated:</span>{' '}
+                    <span className="text-text-primary">
                       {tenant.updatedAt ? (
                         <>
                           {formatDate(tenant.updatedAt)} at{' '}
@@ -611,7 +595,7 @@ export const TenantDetailPage = () => {
         )}
 
         {activeTab === 'photos' && (
-          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
             <PhotoGallery
               photos={photos}
               isLoading={photosLoading}
@@ -640,21 +624,21 @@ export const TenantDetailPage = () => {
         )}
 
         {activeTab === 'addresses' && (
-          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
             <TenantAddressList tenantId={id} />
           </div>
         )}
 
         {activeTab === 'contracts' && (
-          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+              <h2 className="text-xl font-semibold text-text-primary">
                 Contracts ({filteredAndSortedContracts.length})
               </h2>
               <button
                 onClick={() => navigate(`/contracts/new?tenantId=${id}`)}
                 disabled={!canEditData}
-                className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5c7cfa]"
+                className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
               >
                 <Plus className="h-4 w-4" />
                 Add Contract
@@ -666,14 +650,14 @@ export const TenantDetailPage = () => {
               <ErrorMessage message="Failed to load contracts" />
             ) : contracts.length === 0 ? (
               <div className="text-center py-12">
-                <FileText className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] mx-auto mb-3" />
-                <p className="text-[#6b7194] dark:text-[#8b90a8] mb-4">
+                <FileText className="h-12 w-12 text-text-disabled mx-auto mb-3" />
+                <p className="text-text-secondary mb-4">
                   No contracts for this tenant
                 </p>
                 <button
                   onClick={() => navigate(`/contracts/new?tenantId=${id}`)}
                   disabled={!canEditData}
-                  className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5c7cfa]"
+                  className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
                 >
                   <Plus className="h-4 w-4" />
                   Create First Contract
@@ -684,7 +668,7 @@ export const TenantDetailPage = () => {
                 {/* Search Bar */}
                 <div className="mb-4">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-text-muted " />
                     <input
                       type="text"
                       placeholder="Search by contract #, property, type..."
@@ -693,18 +677,18 @@ export const TenantDetailPage = () => {
                         setContractsSearchTerm(e.target.value);
                         setContractsCurrentPage(1);
                       }}
-                      className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] dark:bg-[#1e2130] dark:text-[#eef0f6] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                 </div>
 
                 {/* Table */}
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
-                    <thead className="bg-[#f8f9fc] dark:bg-[#0c0d14]">
+                  <table className="min-w-full divide-y divide-border-default">
+                    <thead className="bg-surface-page">
                       <tr>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                           onClick={() => handleContractsSort('startDate')}
                         >
                           <div className="flex items-center gap-1">
@@ -718,7 +702,7 @@ export const TenantDetailPage = () => {
                           </div>
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                           onClick={() => handleContractsSort('property')}
                         >
                           <div className="flex items-center gap-1">
@@ -731,11 +715,11 @@ export const TenantDetailPage = () => {
                               ))}
                           </div>
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                           Role
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                           onClick={() => handleContractsSort('contractType')}
                         >
                           <div className="flex items-center gap-1">
@@ -749,7 +733,7 @@ export const TenantDetailPage = () => {
                           </div>
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                           onClick={() => handleContractsSort('startDate')}
                         >
                           <div className="flex items-center gap-1">
@@ -762,11 +746,11 @@ export const TenantDetailPage = () => {
                               ))}
                           </div>
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                           End Date
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                           onClick={() => handleContractsSort('rentAmount')}
                         >
                           <div className="flex items-center gap-1">
@@ -780,7 +764,7 @@ export const TenantDetailPage = () => {
                           </div>
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                           onClick={() => handleContractsSort('status')}
                         >
                           <div className="flex items-center gap-1">
@@ -795,12 +779,12 @@ export const TenantDetailPage = () => {
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white dark:bg-[#14161f] divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
+                    <tbody className="bg-surface-card divide-y divide-border-default">
                       {paginatedContracts.length === 0 ? (
                         <tr>
                           <td
                             colSpan={8}
-                            className="px-6 py-12 text-center text-[#6b7194] dark:text-[#8b90a8]"
+                            className="px-6 py-12 text-center text-text-secondary"
                           >
                             No contracts found matching your search
                           </td>
@@ -812,7 +796,7 @@ export const TenantDetailPage = () => {
                             onClick={() =>
                               navigate(`/contracts/${contract.identifier}`)
                             }
-                            className="hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] cursor-pointer transition-colors"
+                            className="hover:bg-primary-50 cursor-pointer transition-colors"
                           >
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm font-medium text-primary-500 dark:text-primary-300">
@@ -820,7 +804,7 @@ export const TenantDetailPage = () => {
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                              <div className="text-sm text-text-primary">
                                 {contract.property.street}
                               </div>
                             </td>
@@ -832,31 +816,31 @@ export const TenantDetailPage = () => {
                                 return party?.role ? (
                                   <RoleBadge role={party.role} />
                                 ) : (
-                                  <span className="text-sm text-[#9ca0b8]">
+                                  <span className="text-sm text-text-muted">
                                     -
                                   </span>
                                 );
                               })()}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
-                                {contract.contractType.replace('_', ' ')}
+                              <div className="text-sm text-text-primary">
+                                {contract.contractType.replace('_', '')}
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                              <div className="text-sm text-text-primary">
                                 {formatDate(contract.startDate)}
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                              <div className="text-sm text-text-primary">
                                 {contract.endDate
                                   ? formatDate(contract.endDate)
                                   : '-'}
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                              <div className="text-sm font-medium text-text-primary">
                                 {getCurrencySymbol(contract.rentAmountCurrency)}{' '}
                                 {contract.rentAmount.toFixed(2)}
                               </div>
@@ -873,8 +857,8 @@ export const TenantDetailPage = () => {
 
                 {/* Pagination */}
                 {contractsTotalPages > 1 && (
-                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
-                    <div className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-border-default">
+                    <div className="text-sm text-text-secondary">
                       Showing{' '}
                       {(contractsCurrentPage - 1) * contractsPerPage + 1} to{' '}
                       {Math.min(
@@ -889,11 +873,11 @@ export const TenantDetailPage = () => {
                           setContractsCurrentPage(contractsCurrentPage - 1)
                         }
                         disabled={contractsCurrentPage === 1}
-                        className="px-3 py-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] dark:text-[#c4c8db]"
+                        className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
                       >
                         Previous
                       </button>
-                      <span className="px-3 py-1 text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      <span className="px-3 py-1 text-sm text-text-secondary">
                         Page {contractsCurrentPage} of {contractsTotalPages}
                       </span>
                       <button
@@ -901,7 +885,7 @@ export const TenantDetailPage = () => {
                           setContractsCurrentPage(contractsCurrentPage + 1)
                         }
                         disabled={contractsCurrentPage === contractsTotalPages}
-                        className="px-3 py-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] dark:text-[#c4c8db]"
+                        className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
                       >
                         Next
                       </button>
@@ -914,8 +898,8 @@ export const TenantDetailPage = () => {
         )}
 
         {activeTab === 'history' && (
-          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+            <h2 className="text-xl font-semibold text-text-primary mb-4">
               Tenant History
             </h2>
             {auditLoading ? (
@@ -937,12 +921,12 @@ export const TenantDetailPage = () => {
                   return (
                     <div
                       key={activityKey}
-                      className="border border-[#e2e6f0] dark:border-[#2a2e3f] rounded-lg overflow-hidden"
+                      className="border border-border-default rounded-lg overflow-hidden"
                     >
                       <div
                         className={`flex items-start gap-4 p-4 transition-colors ${
                           hasChanges
-                            ? 'cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]'
+                            ? 'cursor-pointer hover:bg-surface-inset'
                             : ''
                         }`}
                         onClick={() =>
@@ -961,35 +945,35 @@ export const TenantDetailPage = () => {
                         <div
                           className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
                             activity.action === 'CREATE'
-                              ? 'bg-green-100 dark:bg-green-900/30'
+                              ? 'bg-success-bg'
                               : activity.action === 'UPDATE'
-                                ? 'bg-blue-100 dark:bg-blue-900/30'
-                                : 'bg-red-100 dark:bg-red-900/30'
+                                ? 'bg-info-bg'
+                                : 'bg-error-bg'
                           }`}
                         >
                           <span
                             className={`text-xs font-semibold ${
                               activity.action === 'CREATE'
-                                ? 'text-green-700'
+                                ? 'text-success-text'
                                 : activity.action === 'UPDATE'
-                                  ? 'text-blue-700'
-                                  : 'text-red-700'
+                                  ? 'text-info-text'
+                                  : 'text-error-text'
                             }`}
                           >
                             {activity.action.charAt(0)}
                           </span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                          <p className="text-sm font-medium text-text-primary">
                             {activity.description}
                           </p>
-                          <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                          <p className="text-xs text-text-secondary mt-1">
                             {formatDistanceToNow(new Date(activity.timestamp), {
                               addSuffix: true,
                             })}
                           </p>
                           {hasChanges && (
-                            <p className="text-xs text-[#5c7cfa] mt-1">
+                            <p className="text-xs text-primary-500 mt-1">
                               {isExpanded
                                 ? 'Click to hide changes'
                                 : 'Click to view changes'}
@@ -999,8 +983,8 @@ export const TenantDetailPage = () => {
                       </div>
 
                       {isExpanded && hasChanges && (
-                        <div className="bg-[#f8f9fc] dark:bg-[#0c0d14] px-4 py-3 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
-                          <h4 className="text-xs font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-2 uppercase">
+                        <div className="bg-surface-page px-4 py-3 border-t border-border-default">
+                          <h4 className="text-xs font-semibold text-text-secondary mb-2 uppercase">
                             Changed Fields
                           </h4>
                           <div className="space-y-2">
@@ -1040,28 +1024,28 @@ export const TenantDetailPage = () => {
                                   return (
                                     <div
                                       key={field}
-                                      className="bg-white dark:bg-[#14161f] dark:text-[#eef0f6] rounded p-2 text-xs"
+                                      className="bg-surface-card rounded p-2 text-xs"
                                     >
-                                      <div className="font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                                      <div className="font-semibold text-text-secondary mb-1">
                                         File Name
                                       </div>
-                                      <div className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                                      <div className="text-text-primary">
                                         {String(value)}
                                       </div>
                                       {title ? (
                                         <>
-                                          <div className="font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1 mt-2">
+                                          <div className="font-semibold text-text-secondary mb-1 mt-2">
                                             Title
                                           </div>
-                                          <div className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                                          <div className="text-text-primary">
                                             {String(title)}
                                           </div>
                                         </>
                                       ) : null}
-                                      <div className="font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1 mt-2">
+                                      <div className="font-semibold text-text-secondary mb-1 mt-2">
                                         Type
                                       </div>
-                                      <div className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                                      <div className="text-text-primary">
                                         {category === 'PHOTO'
                                           ? 'Photo'
                                           : 'Document'}
@@ -1084,9 +1068,9 @@ export const TenantDetailPage = () => {
                                 return (
                                   <div
                                     key={field}
-                                    className="bg-white dark:bg-[#14161f] dark:text-[#eef0f6] rounded p-2 text-xs"
+                                    className="bg-surface-card rounded p-2 text-xs"
                                   >
-                                    <div className="font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                                    <div className="font-semibold text-text-secondary mb-1">
                                       {field
                                         .replace(/([A-Z])/g, ' $1')
                                         .replace(/^./, (str) =>
@@ -1096,7 +1080,7 @@ export const TenantDetailPage = () => {
                                     </div>
                                     <div className="grid grid-cols-2 gap-2">
                                       <div>
-                                        <span className="text-[#6b7194] dark:text-[#8b90a8]">
+                                        <span className="text-text-secondary">
                                           Old:{' '}
                                         </span>
                                         {typeof activity.oldValues?.[field] ===
@@ -1106,10 +1090,10 @@ export const TenantDetailPage = () => {
                                         ) ? (
                                           <RichTextDisplay
                                             content={activity.oldValues[field]}
-                                            className="text-xs text-red-600 line-through [&_p]:m-0 inline"
+                                            className="text-xs text-error-text line-through [&_p]:m-0 inline"
                                           />
                                         ) : (
-                                          <span className="text-red-600 line-through">
+                                          <span className="text-error-text line-through">
                                             {String(
                                               activity.oldValues?.[field] ??
                                                 'N/A'
@@ -1118,7 +1102,7 @@ export const TenantDetailPage = () => {
                                         )}
                                       </div>
                                       <div>
-                                        <span className="text-[#6b7194] dark:text-[#8b90a8]">
+                                        <span className="text-text-secondary">
                                           New:{' '}
                                         </span>
                                         {typeof activity.newValues?.[field] ===
@@ -1128,10 +1112,10 @@ export const TenantDetailPage = () => {
                                         ) ? (
                                           <RichTextDisplay
                                             content={activity.newValues[field]}
-                                            className="text-xs text-green-600 font-medium [&_p]:m-0 inline"
+                                            className="text-xs text-success-text font-medium [&_p]:m-0 inline"
                                           />
                                         ) : (
-                                          <span className="text-green-600 font-medium">
+                                          <span className="text-success-text font-medium">
                                             {String(
                                               activity.newValues?.[field] ??
                                                 'N/A'
@@ -1152,11 +1136,9 @@ export const TenantDetailPage = () => {
               </div>
             ) : (
               <div className="text-center py-8">
-                <History className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] mx-auto mb-3" />
-                <p className="text-[#6b7194] dark:text-[#8b90a8]">
-                  No history available
-                </p>
-                <p className="text-sm text-[#9ca0b8] dark:text-[#5c6180] mt-1">
+                <History className="h-12 w-12 text-text-disabled mx-auto mb-3" />
+                <p className="text-text-secondary">No history available</p>
+                <p className="text-sm text-text-muted mt-1">
                   Changes to this tenant will appear here
                 </p>
               </div>
@@ -1167,19 +1149,19 @@ export const TenantDetailPage = () => {
         {/* Delete Confirmation Modal */}
         {showDeleteModal && (
           <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-[#14161f] rounded-xl p-6 max-w-md w-full mx-4">
+            <div className="bg-surface-card rounded-lg p-6 max-w-md w-full mx-4">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                <h3 className="text-lg font-semibold text-text-primary">
                   Delete Tenant
                 </h3>
                 <button
                   onClick={() => setShowDeleteModal(false)}
-                  className="text-[#9ca0b8] dark:text-[#5c6180] hover:text-[#3d4463] dark:hover:text-[#c4c8db]"
+                  className="text-text-muted hover:text-text-secondary"
                 >
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <p className="text-[#6b7194] dark:text-[#8b90a8] mb-6">
+              <p className="text-text-secondary mb-6">
                 Are you sure you want to delete this tenant? This action cannot
                 be undone.
               </p>

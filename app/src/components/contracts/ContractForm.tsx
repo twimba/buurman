@@ -75,14 +75,14 @@ const InlineTenantForm = ({
   disabled?: boolean;
 }) => {
   const inputClass =
-    'w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] text-sm';
+    'w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary text-sm';
 
   return (
-    <div className="rounded-lg border border-[#d4dae6] dark:border-[#3a3f54] bg-[#f8f9fc] dark:bg-[#14161f] p-4 space-y-3">
+    <div className="rounded-lg border border-border-strong bg-surface-page p-4 space-y-3">
       <button
         type="button"
         onClick={onSwitchToSelect}
-        className="flex items-center gap-1 text-xs text-[#5c7cfa] hover:text-[#4c6ef5] transition-colors"
+        className="flex items-center gap-1 text-xs text-primary-500 hover:text-primary-600 transition-colors"
         disabled={disabled}
       >
         <ArrowLeft className="h-3 w-3" />
@@ -91,8 +91,8 @@ const InlineTenantForm = ({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-            First Name <span className="text-red-500">*</span>
+          <label className="block text-xs font-medium text-text-secondary mb-1">
+            First Name <span className="text-error-text">*</span>
           </label>
           <input
             type="text"
@@ -103,13 +103,13 @@ const InlineTenantForm = ({
             disabled={disabled}
           />
           {errors[`${errorPrefix}_firstName`] && (
-            <p className="text-red-600 dark:text-red-400 text-xs mt-1">
+            <p className="text-error-text text-xs mt-1">
               {errors[`${errorPrefix}_firstName`]}
             </p>
           )}
         </div>
         <div>
-          <label className="block text-xs font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+          <label className="block text-xs font-medium text-text-secondary mb-1">
             Last Name
           </label>
           <input
@@ -122,7 +122,7 @@ const InlineTenantForm = ({
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+          <label className="block text-xs font-medium text-text-secondary mb-1">
             Email
           </label>
           <input
@@ -134,13 +134,13 @@ const InlineTenantForm = ({
             disabled={disabled}
           />
           {errors[`${errorPrefix}_email`] && (
-            <p className="text-red-600 dark:text-red-400 text-xs mt-1">
+            <p className="text-error-text text-xs mt-1">
               {errors[`${errorPrefix}_email`]}
             </p>
           )}
         </div>
         <div>
-          <label className="block text-xs font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+          <label className="block text-xs font-medium text-text-secondary mb-1">
             Phone
           </label>
           <PhoneInput
@@ -150,7 +150,7 @@ const InlineTenantForm = ({
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+          <label className="block text-xs font-medium text-text-secondary mb-1">
             Tax Number
           </label>
           <input
@@ -163,7 +163,7 @@ const InlineTenantForm = ({
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+          <label className="block text-xs font-medium text-text-secondary mb-1">
             ID Number
           </label>
           <input
@@ -543,13 +543,13 @@ export const ContractForm = ({
     >
       {/* Property Selection */}
       <div>
-        <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+        <h3 className="text-lg font-semibold text-text-primary mb-4">
           {isEditing ? 'Property' : 'Property & Parties'}
         </h3>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-              Property <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-text-secondary mb-1">
+              Property <span className="text-error-text">*</span>
             </label>
             <PropertySelector
               value={formData.propertyIdentifier}
@@ -557,7 +557,7 @@ export const ContractForm = ({
               disabled={isLoading}
             />
             {errors.propertyIdentifier && (
-              <p className="text-red-600 text-sm mt-1">
+              <p className="text-error-text text-sm mt-1">
                 {errors.propertyIdentifier}
               </p>
             )}
@@ -567,8 +567,8 @@ export const ContractForm = ({
           {!isEditing && (
             <>
               <div>
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-                  Primary Tenant <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-text-secondary mb-1">
+                  Primary Tenant <span className="text-error-text">*</span>
                 </label>
 
                 {primaryMode === 'select' ? (
@@ -588,7 +588,7 @@ export const ContractForm = ({
                       disabled={isLoading}
                     />
                     {errors.primaryTenant && (
-                      <p className="text-red-600 text-sm mt-1">
+                      <p className="text-error-text text-sm mt-1">
                         {errors.primaryTenant}
                       </p>
                     )}
@@ -603,7 +603,7 @@ export const ContractForm = ({
                           return next;
                         });
                       }}
-                      className="mt-2 flex items-center gap-1 text-xs text-[#5c7cfa] hover:text-[#4c6ef5] transition-colors"
+                      className="mt-2 flex items-center gap-1 text-xs text-primary-500 hover:text-primary-600 transition-colors"
                       disabled={isLoading}
                     >
                       <UserPlus className="h-3 w-3" />
@@ -662,7 +662,7 @@ export const ContractForm = ({
                               role: e.target.value as ContractPartyRole,
                             })
                           }
-                          className="w-40 border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] text-sm"
+                          className="w-40 border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary text-sm"
                           disabled={isLoading}
                         >
                           {ADDITIONAL_ROLES.map((role) => (
@@ -674,14 +674,14 @@ export const ContractForm = ({
                         <button
                           type="button"
                           onClick={() => removeParty(index)}
-                          className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                          className="p-2 text-error-text hover:bg-error-bg rounded transition-colors"
                           disabled={isLoading}
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
                       {errors[`party_${index}`] && (
-                        <p className="text-red-600 text-sm mt-1">
+                        <p className="text-error-text text-sm mt-1">
                           {errors[`party_${index}`]}
                         </p>
                       )}
@@ -693,7 +693,7 @@ export const ContractForm = ({
                             tenantIdentifier: '',
                           })
                         }
-                        className="mt-1 flex items-center gap-1 text-xs text-[#5c7cfa] hover:text-[#4c6ef5] transition-colors"
+                        className="mt-1 flex items-center gap-1 text-xs text-primary-500 hover:text-primary-600 transition-colors"
                         disabled={isLoading}
                       >
                         <UserPlus className="h-3 w-3" />
@@ -710,7 +710,7 @@ export const ContractForm = ({
                               role: e.target.value as ContractPartyRole,
                             })
                           }
-                          className="w-40 border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] text-sm"
+                          className="w-40 border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary text-sm"
                           disabled={isLoading}
                         >
                           {ADDITIONAL_ROLES.map((role) => (
@@ -723,7 +723,7 @@ export const ContractForm = ({
                         <button
                           type="button"
                           onClick={() => removeParty(index)}
-                          className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                          className="p-2 text-error-text hover:bg-error-bg rounded transition-colors"
                           disabled={isLoading}
                         >
                           <Trash2 className="h-4 w-4" />
@@ -755,7 +755,7 @@ export const ContractForm = ({
                     key={role}
                     type="button"
                     onClick={() => addParty(role)}
-                    className="flex items-center gap-1 text-sm text-[#5c7cfa] hover:text-[#4c6ef5] transition-colors"
+                    className="flex items-center gap-1 text-sm text-primary-500 hover:text-primary-600 transition-colors"
                     disabled={isLoading}
                   >
                     <Plus className="h-4 w-4" />
@@ -771,7 +771,7 @@ export const ContractForm = ({
       {/* Contract Parties — edit mode: separate section with live API calls */}
       {isEditing && contract && (
         <div>
-          <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+          <h3 className="text-lg font-semibold text-text-primary mb-4">
             Contract Parties
           </h3>
           <ContractPartiesEditor contract={contract} isLoading={isLoading} />
@@ -780,20 +780,20 @@ export const ContractForm = ({
 
       {/* Contract Details */}
       <div>
-        <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+        <h3 className="text-lg font-semibold text-text-primary mb-4">
           Contract Details
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-              Contract Type <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-text-secondary mb-1">
+              Contract Type <span className="text-error-text">*</span>
             </label>
             <select
               value={formData.contractType}
               onChange={(e) =>
                 handleChange('contractType', e.target.value as ContractType)
               }
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+              className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               disabled={isLoading}
             >
               <option value={ContractType.FIXED_TERM}>Fixed Term</option>
@@ -804,15 +804,15 @@ export const ContractForm = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-              Start Date <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-text-secondary mb-1">
+              Start Date <span className="text-error-text">*</span>
             </label>
             <div className="flex gap-2">
               <input
                 type="date"
                 value={formData.startDate}
                 onChange={(e) => handleChange('startDate', e.target.value)}
-                className="flex-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+                className="flex-1 border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
                 disabled={isLoading}
               />
               <button
@@ -823,38 +823,38 @@ export const ContractForm = ({
                     new Date().toISOString().split('T')[0]
                   )
                 }
-                className="px-3 py-2 text-sm bg-[#f1f3f9] dark:bg-[#1e2130] hover:bg-[#e8ecf4] dark:hover:bg-[#3a3f54] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md transition-colors"
+                className="px-3 py-2 text-sm bg-surface-inset hover:bg-neutral-100 border border-border-strong rounded-md transition-colors"
                 disabled={isLoading}
               >
                 Today
               </button>
             </div>
             {errors.startDate && (
-              <p className="text-red-600 text-sm mt-1">{errors.startDate}</p>
+              <p className="text-error-text text-sm mt-1">{errors.startDate}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               End Date{' '}
               {formData.contractType === ContractType.FIXED_TERM && (
-                <span className="text-red-500">*</span>
+                <span className="text-error-text">*</span>
               )}
             </label>
             <input
               type="date"
               value={formData.endDate}
               onChange={(e) => handleChange('endDate', e.target.value)}
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+              className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               disabled={isLoading}
             />
             {errors.endDate && (
-              <p className="text-red-600 text-sm mt-1">{errors.endDate}</p>
+              <p className="text-error-text text-sm mt-1">{errors.endDate}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Signed Date
             </label>
             <div className="flex gap-2">
@@ -862,7 +862,7 @@ export const ContractForm = ({
                 type="date"
                 value={formData.signedDate}
                 onChange={(e) => handleChange('signedDate', e.target.value)}
-                className="flex-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+                className="flex-1 border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
                 disabled={isLoading}
               />
               <button
@@ -873,7 +873,7 @@ export const ContractForm = ({
                     new Date().toISOString().split('T')[0]
                   )
                 }
-                className="px-3 py-2 text-sm bg-[#f1f3f9] dark:bg-[#1e2130] hover:bg-[#e8ecf4] dark:hover:bg-[#3a3f54] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md transition-colors"
+                className="px-3 py-2 text-sm bg-surface-inset hover:bg-neutral-100 border border-border-strong rounded-md transition-colors"
                 disabled={isLoading}
               >
                 Today
@@ -885,13 +885,13 @@ export const ContractForm = ({
 
       {/* Financial Terms */}
       <div>
-        <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+        <h3 className="text-lg font-semibold text-text-primary mb-4">
           Financial Terms
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-              Rent Amount <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-text-secondary mb-1">
+              Rent Amount <span className="text-error-text">*</span>
             </label>
             <MoneyInput
               value={formData.rentAmount || undefined}
@@ -901,14 +901,14 @@ export const ContractForm = ({
               error={!!errors.rentAmount || !!errors.rentAmountCurrency}
             />
             {(errors.rentAmount || errors.rentAmountCurrency) && (
-              <p className="text-red-600 text-sm mt-1">
+              <p className="text-error-text text-sm mt-1">
                 {errors.rentAmount || errors.rentAmountCurrency}
               </p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Deposit Amount
             </label>
             <MoneyInput
@@ -919,14 +919,14 @@ export const ContractForm = ({
               error={!!errors.depositAmountCurrency}
             />
             {errors.depositAmountCurrency && (
-              <p className="text-red-600 text-sm mt-1">
+              <p className="text-error-text text-sm mt-1">
                 {errors.depositAmountCurrency}
               </p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Security Deposit
             </label>
             <MoneyInput
@@ -939,7 +939,7 @@ export const ContractForm = ({
               error={!!errors.securityDepositCurrency}
             />
             {errors.securityDepositCurrency && (
-              <p className="text-red-600 text-sm mt-1">
+              <p className="text-error-text text-sm mt-1">
                 {errors.securityDepositCurrency}
               </p>
             )}
@@ -949,13 +949,13 @@ export const ContractForm = ({
 
       {/* Payment Terms */}
       <div>
-        <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+        <h3 className="text-lg font-semibold text-text-primary mb-4">
           Payment Terms
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-              Payment Frequency <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-text-secondary mb-1">
+              Payment Frequency <span className="text-error-text">*</span>
             </label>
             <select
               value={formData.paymentFrequency}
@@ -965,7 +965,7 @@ export const ContractForm = ({
                   e.target.value as PaymentFrequency
                 )
               }
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+              className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               disabled={isLoading}
             >
               <option value={PaymentFrequency.MONTHLY}>Monthly</option>
@@ -975,7 +975,7 @@ export const ContractForm = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Payment Due Day (1-31)
             </label>
             <input
@@ -989,19 +989,19 @@ export const ContractForm = ({
                   e.target.value ? parseInt(e.target.value) : undefined
                 )
               }
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+              className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               placeholder="1"
               disabled={isLoading}
             />
             {errors.paymentDueDay && (
-              <p className="text-red-600 text-sm mt-1">
+              <p className="text-error-text text-sm mt-1">
                 {errors.paymentDueDay}
               </p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Late Fee Percentage
             </label>
             <input
@@ -1016,7 +1016,7 @@ export const ContractForm = ({
                   e.target.value ? parseFloat(e.target.value) : undefined
                 )
               }
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+              className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               placeholder="2.5"
               disabled={isLoading}
             />
@@ -1026,7 +1026,7 @@ export const ContractForm = ({
 
       {/* Renewal and Termination */}
       <div>
-        <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+        <h3 className="text-lg font-semibold text-text-primary mb-4">
           Renewal and Termination
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -1036,19 +1036,19 @@ export const ContractForm = ({
               id="autoRenewal"
               checked={formData.autoRenewal}
               onChange={(e) => handleChange('autoRenewal', e.target.checked)}
-              className="h-4 w-4 text-[#5c7cfa] focus:ring-blue-500 border-[#c9cfd9] rounded"
+              className="h-4 w-4 text-primary-500 focus:ring-primary-500 border-border-strong rounded"
               disabled={isLoading}
             />
             <label
               htmlFor="autoRenewal"
-              className="ml-2 block text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
+              className="ml-2 block text-sm text-text-primary"
             >
               Auto-renewal
             </label>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Renewal Notice Days
             </label>
             <input
@@ -1061,14 +1061,14 @@ export const ContractForm = ({
                   e.target.value ? parseInt(e.target.value) : undefined
                 )
               }
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+              className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               placeholder="30"
               disabled={isLoading}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Termination Notice Days
             </label>
             <input
@@ -1081,7 +1081,7 @@ export const ContractForm = ({
                   e.target.value ? parseInt(e.target.value) : undefined
                 )
               }
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+              className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               placeholder="30"
               disabled={isLoading}
             />
@@ -1091,7 +1091,7 @@ export const ContractForm = ({
 
       {/* Terms and Conditions */}
       <div>
-        <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+        <h3 className="text-lg font-semibold text-text-primary mb-4">
           Terms and Conditions
         </h3>
         <div>
@@ -1106,9 +1106,7 @@ export const ContractForm = ({
 
       {/* Notes */}
       <div>
-        <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
-          Notes
-        </h3>
+        <h3 className="text-lg font-semibold text-text-primary mb-4">Notes</h3>
         <div>
           <RichTextEditor
             value={formData.notes ?? ''}
@@ -1122,12 +1120,12 @@ export const ContractForm = ({
       {/* Country-Specific Rental Details */}
       {propertyCountryCode ? (
         <div>
-          <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
+          <h3 className="text-lg font-semibold text-text-primary mb-2">
             {countryName
               ? `${countryName} Rental Details`
               : 'Country-Specific Details'}
           </h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+          <p className="text-sm text-text-secondary mb-4">
             Regulatory fields specific to {countryName || propertyCountryCode}
           </p>
           <CountryMetadataForm
@@ -1145,18 +1143,18 @@ export const ContractForm = ({
           />
         </div>
       ) : formData.propertyIdentifier ? (
-        <p className="text-sm text-gray-400 dark:text-gray-500 italic">
+        <p className="text-sm text-text-muted italic">
           Set a country on the selected property to see country-specific
           regulatory fields.
         </p>
       ) : null}
 
       {/* Actions */}
-      <div className="flex gap-2 justify-end mt-6 pt-6 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
+      <div className="flex gap-2 justify-end mt-6 pt-6 border-t border-border-default">
         <button
           type="button"
           onClick={() => navigate('/contracts')}
-          className="border border-[#c9cfd9] dark:border-[#3a3f54] px-4 py-2 rounded hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors flex items-center gap-2"
+          className="border border-border-strong px-4 py-2 rounded hover:bg-surface-inset transition-colors flex items-center gap-2"
           disabled={isLoading}
         >
           <X className="h-4 w-4" />
@@ -1164,7 +1162,7 @@ export const ContractForm = ({
         </button>
         <button
           type="submit"
-          className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors disabled:opacity-50 flex items-center gap-2"
+          className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors disabled:opacity-50 flex items-center gap-2"
           disabled={isLoading}
         >
           <Save className="h-4 w-4" />
@@ -1307,13 +1305,13 @@ const ContractPartiesEditor = ({
       {parties.map((party) => (
         <div
           key={party.identifier}
-          className="flex items-center gap-3 p-3 bg-[#f8f9fc] dark:bg-[#1a1d2e] rounded-lg"
+          className="flex items-center gap-3 p-3 bg-surface-page dark:bg-surface-card rounded-lg"
         >
           <div className="flex-1 min-w-0">
-            <span className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+            <span className="font-medium text-text-primary">
               {party.tenant.firstName} {party.tenant.lastName}
             </span>
-            <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-[#e8ecf4] dark:bg-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8]">
+            <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-neutral-100 text-text-secondary">
               {PARTY_ROLE_LABELS[party.role]}
             </span>
           </div>
@@ -1321,7 +1319,7 @@ const ContractPartiesEditor = ({
             <button
               type="button"
               onClick={() => setChangingPrimary(true)}
-              className="text-xs text-[#5c7cfa] hover:text-[#4c6ef5] transition-colors whitespace-nowrap"
+              className="text-xs text-primary-500 hover:text-primary-600 transition-colors whitespace-nowrap"
               disabled={isBusy}
             >
               Change
@@ -1330,7 +1328,7 @@ const ContractPartiesEditor = ({
             <button
               type="button"
               onClick={() => handleRemoveParty(party.identifier)}
-              className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+              className="p-2 text-error-text hover:bg-error-bg rounded transition-colors"
               disabled={isBusy}
             >
               <Trash2 className="h-4 w-4" />
@@ -1356,7 +1354,7 @@ const ContractPartiesEditor = ({
                     setChangePrimaryMode('create');
                     setNewPrimaryTenantId('');
                   }}
-                  className="mt-1 flex items-center gap-1 text-xs text-[#5c7cfa] hover:text-[#4c6ef5] transition-colors"
+                  className="mt-1 flex items-center gap-1 text-xs text-primary-500 hover:text-primary-600 transition-colors"
                   disabled={isBusy}
                 >
                   <UserPlus className="h-3 w-3" />
@@ -1366,7 +1364,7 @@ const ContractPartiesEditor = ({
               <button
                 type="button"
                 onClick={handleChangePrimary}
-                className="px-3 py-2 bg-[#5c7cfa] text-white rounded hover:bg-[#4c6ef5] transition-colors text-sm whitespace-nowrap"
+                className="px-3 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors text-sm whitespace-nowrap"
                 disabled={isBusy || !newPrimaryTenantId}
               >
                 Confirm
@@ -1374,7 +1372,7 @@ const ContractPartiesEditor = ({
               <button
                 type="button"
                 onClick={resetChangePrimaryForm}
-                className="p-2 text-[#6b7194] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded transition-colors"
+                className="p-2 text-text-secondary hover:bg-surface-inset rounded transition-colors"
                 disabled={isBusy}
               >
                 <X className="h-4 w-4" />
@@ -1401,7 +1399,7 @@ const ContractPartiesEditor = ({
                 <button
                   type="button"
                   onClick={resetChangePrimaryForm}
-                  className="px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded text-sm hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                  className="px-3 py-2 border border-border-strong rounded text-sm hover:bg-surface-inset transition-colors"
                   disabled={isBusy}
                 >
                   Cancel
@@ -1409,7 +1407,7 @@ const ContractPartiesEditor = ({
                 <button
                   type="button"
                   onClick={handleChangePrimary}
-                  className="px-3 py-2 bg-[#5c7cfa] text-white rounded hover:bg-[#4c6ef5] transition-colors text-sm"
+                  className="px-3 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors text-sm"
                   disabled={isBusy}
                 >
                   Confirm
@@ -1438,7 +1436,7 @@ const ContractPartiesEditor = ({
                   onChange={(e) =>
                     setNewRole(e.target.value as ContractPartyRole)
                   }
-                  className="w-40 border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] text-sm"
+                  className="w-40 border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary text-sm"
                   disabled={isBusy}
                 >
                   {ADDITIONAL_ROLES.map((role) => (
@@ -1450,7 +1448,7 @@ const ContractPartiesEditor = ({
                 <button
                   type="button"
                   onClick={handleAddParty}
-                  className="px-3 py-2 bg-[#5c7cfa] text-white rounded hover:bg-[#4c6ef5] transition-colors text-sm whitespace-nowrap"
+                  className="px-3 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors text-sm whitespace-nowrap"
                   disabled={isBusy || !newTenantId}
                 >
                   Add
@@ -1458,7 +1456,7 @@ const ContractPartiesEditor = ({
                 <button
                   type="button"
                   onClick={resetAddForm}
-                  className="p-2 text-[#6b7194] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded transition-colors"
+                  className="p-2 text-text-secondary hover:bg-surface-inset rounded transition-colors"
                   disabled={isBusy}
                 >
                   <X className="h-4 w-4" />
@@ -1470,7 +1468,7 @@ const ContractPartiesEditor = ({
                   setAddMode('create');
                   setNewTenantId('');
                 }}
-                className="mt-1 flex items-center gap-1 text-xs text-[#5c7cfa] hover:text-[#4c6ef5] transition-colors"
+                className="mt-1 flex items-center gap-1 text-xs text-primary-500 hover:text-primary-600 transition-colors"
                 disabled={isBusy}
               >
                 <UserPlus className="h-3 w-3" />
@@ -1485,7 +1483,7 @@ const ContractPartiesEditor = ({
                   onChange={(e) =>
                     setNewRole(e.target.value as ContractPartyRole)
                   }
-                  className="w-40 border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] text-sm"
+                  className="w-40 border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary text-sm"
                   disabled={isBusy}
                 >
                   {ADDITIONAL_ROLES.map((role) => (
@@ -1498,7 +1496,7 @@ const ContractPartiesEditor = ({
                 <button
                   type="button"
                   onClick={resetAddForm}
-                  className="p-2 text-[#6b7194] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded transition-colors"
+                  className="p-2 text-text-secondary hover:bg-surface-inset rounded transition-colors"
                   disabled={isBusy}
                 >
                   <X className="h-4 w-4" />
@@ -1523,7 +1521,7 @@ const ContractPartiesEditor = ({
                 <button
                   type="button"
                   onClick={resetAddForm}
-                  className="px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded text-sm hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                  className="px-3 py-2 border border-border-strong rounded text-sm hover:bg-surface-inset transition-colors"
                   disabled={isBusy}
                 >
                   Cancel
@@ -1531,7 +1529,7 @@ const ContractPartiesEditor = ({
                 <button
                   type="button"
                   onClick={handleAddParty}
-                  className="px-3 py-2 bg-[#5c7cfa] text-white rounded hover:bg-[#4c6ef5] transition-colors text-sm"
+                  className="px-3 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors text-sm"
                   disabled={isBusy}
                 >
                   Add
@@ -1552,7 +1550,7 @@ const ContractPartiesEditor = ({
                 setNewRole(role);
                 setShowAddForm(true);
               }}
-              className="flex items-center gap-1 text-sm text-[#5c7cfa] hover:text-[#4c6ef5] transition-colors"
+              className="flex items-center gap-1 text-sm text-primary-500 hover:text-primary-600 transition-colors"
               disabled={isBusy}
             >
               <Plus className="h-4 w-4" />

@@ -119,7 +119,7 @@ function TriStateCheckbox({
       type="checkbox"
       checked={state === "all"}
       onChange={onChange}
-      className={`rounded text-[#5c7cfa] focus:ring-[#5c7cfa] border-[#c9cfd9] dark:border-[#3a3f54] cursor-pointer ${className}`}
+      className={`rounded text-primary-500 focus:ring-primary-500 border-border-strong cursor-pointer ${className}`}
     />
   );
 }
@@ -148,13 +148,13 @@ function InfoTooltip({ text }: { text: string }) {
         onMouseLeave={() => setVisible(false)}
         className="inline-flex cursor-help"
       >
-        <Info className="h-3 w-3 text-[#9ca0b8] dark:text-[#5c6180]" />
+        <Info className="h-3 w-3 text-text-muted " />
       </span>
       {visible &&
         createPortal(
           <div
             style={{ top: pos.top, left: pos.left }}
-            className="fixed z-[9999] -translate-x-1/2 w-56 px-3 py-2 text-xs text-left font-normal leading-relaxed text-white bg-[#1a1d2e] dark:bg-[#2a2e3f] rounded-lg shadow-lg pointer-events-none"
+            className="fixed z-[9999] -translate-x-1/2 w-56 px-3 py-2 text-xs text-left font-normal leading-relaxed text-white bg-neutral-900 rounded-lg shadow-lg pointer-events-none"
           >
             {text}
           </div>,
@@ -283,9 +283,7 @@ export const SmsPolicyPage = () => {
   if (error) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-600 dark:text-red-400">
-          Failed to load settings.
-        </p>
+        <p className="text-error-text">Failed to load settings.</p>
       </div>
     );
   }
@@ -295,10 +293,8 @@ export const SmsPolicyPage = () => {
       {/* Header */}
       <div className="mb-6 flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-            SMS Policy
-          </h1>
-          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+          <h1 className="text-2xl font-bold text-text-primary">SMS Policy</h1>
+          <p className="text-sm text-text-secondary mt-1">
             Control which phone numbers users can register by country and type.
           </p>
         </div>
@@ -306,18 +302,18 @@ export const SmsPolicyPage = () => {
       </div>
 
       {/* Verification Settings Card */}
-      <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] mb-6">
-        <div className="p-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-          <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+      <div className="bg-surface-card rounded-lg border border-border-default mb-6">
+        <div className="p-6 border-b border-border-default">
+          <h2 className="text-lg font-semibold text-text-primary">
             Verification Settings
           </h2>
-          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+          <p className="text-sm text-text-secondary mt-1">
             Configure SMS verification code behavior.
           </p>
         </div>
         <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+            <label className="block text-sm font-medium text-text-secondary mb-1.5">
               Max verification codes per hour
             </label>
             <input
@@ -330,14 +326,14 @@ export const SmsPolicyPage = () => {
                   Math.max(1, Math.min(20, Number(e.target.value) || 1)),
                 )
               }
-              className="w-full px-3 py-2 text-sm border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] outline-none focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+              className="w-full px-3 py-2 text-sm border border-border-strong rounded-lg bg-surface-card text-text-primary outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
             />
-            <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180] mt-1">
+            <p className="text-xs text-text-muted mt-1">
               How many SMS codes a user can request within one hour (1–20).
             </p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+            <label className="block text-sm font-medium text-text-secondary mb-1.5">
               Verification code expiry (minutes)
             </label>
             <input
@@ -350,9 +346,9 @@ export const SmsPolicyPage = () => {
                   Math.max(1, Math.min(60, Number(e.target.value) || 1)),
                 )
               }
-              className="w-full px-3 py-2 text-sm border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] outline-none focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+              className="w-full px-3 py-2 text-sm border border-border-strong rounded-lg bg-surface-card text-text-primary outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
             />
-            <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180] mt-1">
+            <p className="text-xs text-text-muted mt-1">
               How long a verification code stays valid (1–60 minutes).
             </p>
           </div>
@@ -360,12 +356,12 @@ export const SmsPolicyPage = () => {
       </div>
 
       {/* Phone Number Policy Card */}
-      <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f]">
-        <div className="p-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-          <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+      <div className="bg-surface-card rounded-lg border border-border-default">
+        <div className="p-6 border-b border-border-default">
+          <h2 className="text-lg font-semibold text-text-primary">
             Phone Number Policy
           </h2>
-          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+          <p className="text-sm text-text-secondary mt-1">
             Control which phone numbers users can register by country and type.
             Changes take effect immediately.
           </p>
@@ -375,14 +371,14 @@ export const SmsPolicyPage = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-                <th className="text-left py-3 px-4 font-medium text-[#6b7194] dark:text-[#8b90a8] min-w-[220px] sticky left-0 bg-white dark:bg-[#14161f] z-10">
+              <tr className="border-b border-border-default">
+                <th className="text-left py-3 px-4 font-medium text-text-secondary min-w-[220px] sticky left-0 bg-surface-card z-10">
                   Region / Country
                 </th>
                 {numberTypes.map((type) => (
                   <th
                     key={type}
-                    className="py-3 px-2 text-center font-medium text-[#6b7194] dark:text-[#8b90a8] min-w-[70px]"
+                    className="py-3 px-2 text-center font-medium text-text-secondary min-w-[70px]"
                   >
                     <div className="flex flex-col items-center gap-1.5">
                       <span className="text-[11px] leading-tight flex items-center gap-0.5">
@@ -419,10 +415,10 @@ export const SmsPolicyPage = () => {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f] flex items-center justify-between">
+        <div className="px-6 py-4 border-t border-border-default flex items-center justify-between">
           <div>
             {data?.updatedAt && (
-              <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
+              <p className="text-xs text-text-muted">
                 Last updated{" "}
                 {format(new Date(data.updatedAt), "dd MMM yyyy HH:mm")}
                 {data.updatedBy ? ` by ${data.updatedBy}` : ""}
@@ -432,7 +428,7 @@ export const SmsPolicyPage = () => {
           <button
             onClick={handleSave}
             disabled={updatePolicy.isPending}
-            className="px-4 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 disabled:opacity-50 text-sm font-medium"
+            className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 text-sm font-medium"
           >
             {updatePolicy.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -477,8 +473,8 @@ function GroupRows({
   return (
     <>
       {/* Group header row */}
-      <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] bg-[#f8f9fc] dark:bg-[#0c0d14] hover:bg-[#f1f3f9] dark:hover:bg-[#12152a]">
-        <td className="py-2.5 px-4 sticky left-0 bg-[#f8f9fc] dark:bg-[#0c0d14] z-10">
+      <tr className="border-b border-border-default bg-surface-page hover:bg-surface-inset">
+        <td className="py-2.5 px-4 sticky left-0 bg-surface-page z-10">
           <div className="flex items-center gap-2">
             <TriStateCheckbox
               state={rowState}
@@ -486,14 +482,14 @@ function GroupRows({
             />
             <button
               onClick={onToggleExpand}
-              className="flex items-center gap-1.5 text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6] hover:text-[#5c7cfa] transition-colors"
+              className="flex items-center gap-1.5 text-sm font-semibold text-text-primary hover:text-primary-500 transition-colors"
             >
               <ChevronRight
                 className={`h-3.5 w-3.5 transition-transform duration-150 ${isExpanded ? "rotate-90" : ""}`}
               />
               {group.groupName}
             </button>
-            <span className="text-[11px] text-[#9ca0b8] dark:text-[#5c6180]">
+            <span className="text-[11px] text-text-muted">
               ({enabledCount}/{codes.length})
             </span>
           </div>
@@ -513,9 +509,9 @@ function GroupRows({
         group.countries.map((country) => (
           <tr
             key={country.code}
-            className="border-b border-[#e2e6f0]/50 dark:border-[#2a2e3f]/50 hover:bg-[#f8f9fc] dark:hover:bg-[#0c0d14]"
+            className="border-b border-border-default/50 hover:bg-surface-page"
           >
-            <td className="py-2 px-4 pl-12 sticky left-0 bg-white dark:bg-[#14161f] z-10">
+            <td className="py-2 px-4 pl-12 sticky left-0 bg-surface-card z-10">
               <div className="flex items-center gap-2">
                 <TriStateCheckbox
                   state={getRowCheckState([country.code], numberTypes, matrix)}
@@ -529,7 +525,7 @@ function GroupRows({
                 >
                   {countryCodeToFlag(country.code)}
                 </span>
-                <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
+                <span className="text-sm text-text-secondary">
                   {country.name}
                 </span>
               </div>
@@ -542,7 +538,7 @@ function GroupRows({
                     type="checkbox"
                     checked={checked}
                     onChange={() => onToggleCell(country.code, type)}
-                    className="rounded text-[#5c7cfa] focus:ring-[#5c7cfa] border-[#c9cfd9] dark:border-[#3a3f54] cursor-pointer"
+                    className="rounded text-primary-500 focus:ring-primary-500 border-border-strong cursor-pointer"
                   />
                 </td>
               );

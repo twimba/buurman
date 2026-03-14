@@ -808,7 +808,7 @@ public class PropertyBookletExporter {
           .append(escapeHtml(property.getEnergyEfficiencyRating().orElse(null)))
           .append("</span>");
       html.append(
-          "<span style='margin-left:12px;font-size:13px;color:#718096;'>Energy Efficiency"
+          "<span style='margin-left:12px;font-size:13px;color:#78716c;'>Energy Efficiency"
               + " Rating</span>");
       html.append("</div>");
     }
@@ -936,15 +936,15 @@ public class PropertyBookletExporter {
       for (Map.Entry<String, List<Amenity>> entry : grouped.entrySet()) {
         html.append(
                 "<div style='font-size:11px;font-weight:600;text-transform:uppercase;"
-                    + "letter-spacing:1.2px;color:#4a5568;margin:16px 0 6px 0;padding-bottom:4px;"
-                    + "border-bottom:1px solid #e2e8f0;'>")
+                    + "letter-spacing:1.2px;color:#57534e;margin:16px 0 6px 0;padding-bottom:4px;"
+                    + "border-bottom:1px solid #e7e5e4;'>")
             .append(escapeHtml(formatEnumValue(entry.getKey())))
             .append("</div>");
         html.append("<div style='margin-bottom:10px;'>");
         for (Amenity amenity : entry.getValue()) {
           html.append(
-                  "<span style='display:inline-block;background-color:#ebf4ff;border:1px solid"
-                      + " #bee3f8;color:#2b6cb0;padding:4px"
+                  "<span style='display:inline-block;background-color:#f0f9ff;border:1px solid"
+                      + " #bae6fd;color:#0284c7;padding:4px"
                       + " 10px;border-radius:12px;font-size:11px;font-weight:500;margin:2px"
                       + " 3px;'>")
               .append(escapeHtml(amenity.getName()))
@@ -958,14 +958,14 @@ public class PropertyBookletExporter {
       appendSectionTitle(html, "Outdoor Spaces");
       for (PropertyOutdoorArea oa : outdoorAreas) {
         html.append(
-            "<div style='border:1px solid #e2e8f0;border-radius:6px;padding:12px 16px;"
-                + "margin-bottom:8px;background-color:#f0fff4;'>");
-        html.append("<div style='font-size:15px;font-weight:600;color:#276749;'>")
+            "<div style='border:1px solid #e7e5e4;border-radius:6px;padding:12px 16px;"
+                + "margin-bottom:8px;background-color:#f0fdf4;'>");
+        html.append("<div style='font-size:15px;font-weight:600;color:#166534;'>")
             .append(escapeHtml(formatEnumValue(oa.getType())))
             .append("</div>");
         if (oa.getAreaValue().isPresent()) {
           String unit = oa.getAreaUnit() != null ? oa.getAreaUnit() : "sqm";
-          html.append("<div style='font-size:13px;color:#4a5568;margin-top:2px;'>")
+          html.append("<div style='font-size:13px;color:#57534e;margin-top:2px;'>")
               .append(oa.getAreaValue().get())
               .append(" ")
               .append(unit)
@@ -1010,7 +1010,7 @@ public class PropertyBookletExporter {
     if (hasSafetyData) {
       appendSectionTitle(html, "Safety &amp; Security");
       html.append(
-          "<div style='background-color:#f7fafc;border:1px solid #e2e8f0;border-radius:6px;"
+          "<div style='background-color:#fafaf9;border:1px solid #e7e5e4;border-radius:6px;"
               + "padding:16px 18px;margin-bottom:10px;'>");
       appendCheckItem(html, "Smoke Detectors", property.getHasSmokeDetectors().orElse(null));
       appendCheckItem(html, "CO Detectors", property.getHasCoDetectors().orElse(null));
@@ -1027,7 +1027,7 @@ public class PropertyBookletExporter {
     if (hasAccessibilityData) {
       appendSectionTitle(html, "Accessibility");
       html.append(
-          "<div style='background-color:#f7fafc;border:1px solid #e2e8f0;border-radius:6px;"
+          "<div style='background-color:#fafaf9;border:1px solid #e7e5e4;border-radius:6px;"
               + "padding:16px 18px;margin-bottom:10px;'>");
       appendCheckItem(
           html, "Wheelchair Accessible", property.getIsWheelchairAccessible().orElse(null));
@@ -1062,7 +1062,7 @@ public class PropertyBookletExporter {
     }
 
     appendPageStart(html, "Photo Gallery");
-    html.append("<p style='font-size:13px;color:#718096;margin-bottom:16px;'>")
+    html.append("<p style='font-size:13px;color:#78716c;margin-bottom:16px;'>")
         .append(photoEntries.size())
         .append(" photo")
         .append(photoEntries.size() != 1 ? "s" : "")
@@ -1078,16 +1078,16 @@ public class PropertyBookletExporter {
 
       html.append("<td style='width:33%;padding:6px;vertical-align:top;'>");
       html.append(
-          "<div style='border:1px solid #e2e8f0;border-radius:6px;overflow:hidden;"
-              + "background-color:#f7fafc;'>");
+          "<div style='border:1px solid #e7e5e4;border-radius:6px;overflow:hidden;"
+              + "background-color:#fafaf9;'>");
       html.append("<img src='")
           .append(entry[0])
           .append("' style='width:100%;height:140px;object-fit:cover;display:block;'/>");
-      html.append("<div style='padding:6px 8px;font-size:11px;color:#2d3748;'>");
+      html.append("<div style='padding:6px 8px;font-size:11px;color:#44403c;'>");
       if (isMain) {
         html.append(
             "<span"
-                + " style='display:inline-block;background-color:#ebf8ff;color:#2b6cb0;padding:1px"
+                + " style='display:inline-block;background-color:#f0f9ff;color:#0284c7;padding:1px"
                 + " 6px;border-radius:3px;font-size:9px;font-weight:600;"
                 + "text-transform:uppercase;letter-spacing:0.5px;margin-right:4px;'>Main</span>");
       }
@@ -1121,31 +1121,31 @@ public class PropertyBookletExporter {
     for (Map.Entry<Integer, FinancialYearSummary> entry : yearSummaries.entrySet()) {
       FinancialYearSummary summary = entry.getValue();
       html.append(
-          "<div style='background-color:#f7fafc;border:1px solid #e2e8f0;border-radius:6px;"
+          "<div style='background-color:#fafaf9;border:1px solid #e7e5e4;border-radius:6px;"
               + "padding:20px;margin:15px 0;'>");
-      html.append("<h3 style='margin:0 0 15px 0;color:#1a365d;font-size:18px;'>Year ")
+      html.append("<h3 style='margin:0 0 15px 0;color:#0c4a6e;font-size:18px;'>Year ")
           .append(entry.getKey())
           .append("</h3>");
       html.append("<table style='width:100%;border-collapse:collapse;'><tr>");
       html.append(
               "<td style='text-align:center;padding:10px;'><div"
-                  + " style='font-size:10px;color:#718096;text-transform:uppercase;"
+                  + " style='font-size:10px;color:#78716c;text-transform:uppercase;"
                   + "letter-spacing:1px;'>Income</div><div"
                   + " style='font-size:22px;font-weight:700;margin-top:4px;color:#059669;'>")
           .append(CurrencyUtils.formatCurrency(summary.income, ccy))
           .append("</div></td>");
       html.append(
               "<td style='text-align:center;padding:10px;'><div"
-                  + " style='font-size:10px;color:#718096;text-transform:uppercase;"
+                  + " style='font-size:10px;color:#78716c;text-transform:uppercase;"
                   + "letter-spacing:1px;'>Expenses</div><div"
                   + " style='font-size:22px;font-weight:700;margin-top:4px;color:#dc2626;'>")
           .append(CurrencyUtils.formatCurrency(summary.expenses, ccy))
           .append("</div></td>");
       html.append(
               "<td style='text-align:center;padding:10px;'><div"
-                  + " style='font-size:10px;color:#718096;text-transform:uppercase;letter-spacing:1px;'>Net"
+                  + " style='font-size:10px;color:#78716c;text-transform:uppercase;letter-spacing:1px;'>Net"
                   + " Profit</div><div"
-                  + " style='font-size:22px;font-weight:700;margin-top:4px;color:#2b6cb0;'>")
+                  + " style='font-size:22px;font-weight:700;margin-top:4px;color:#0284c7;'>")
           .append(CurrencyUtils.formatCurrency(summary.getNetProfit(), ccy))
           .append("</div></td>");
       html.append("</tr></table>");
@@ -1167,7 +1167,7 @@ public class PropertyBookletExporter {
         contractPartyService.getPrimaryTenantsForContracts(contractIds, teamId);
 
     appendPageStart(html, "Contracts");
-    html.append("<p style='font-size:13px;color:#718096;margin-bottom:12px;'>")
+    html.append("<p style='font-size:13px;color:#78716c;margin-bottom:12px;'>")
         .append(contracts.size())
         .append(" contract(s) on record</p>");
 
@@ -1301,10 +1301,10 @@ public class PropertyBookletExporter {
   private void appendMetricCell(StringBuilder html, String label, String value) {
     html.append(
             "<td style='padding:8px 10px;text-align:center;'>"
-                + "<div style='font-size:9px;color:#718096;text-transform:uppercase;"
+                + "<div style='font-size:9px;color:#78716c;text-transform:uppercase;"
                 + "letter-spacing:0.8px;'>")
         .append(escapeHtml(label))
-        .append("</div><div style='font-size:16px;font-weight:700;color:#1a365d;margin-top:2px;'>")
+        .append("</div><div style='font-size:16px;font-weight:700;color:#0c4a6e;margin-top:2px;'>")
         .append(escapeHtml(value))
         .append("</div></td>");
   }
@@ -1396,7 +1396,7 @@ public class PropertyBookletExporter {
 
   private String getEnergyRatingColor(@Nullable String rating) {
     if (rating == null) {
-      return "#6b7280";
+      return "#78716c";
     }
     return switch (rating) {
       case "A++" -> "#065f46";
@@ -1408,7 +1408,7 @@ public class PropertyBookletExporter {
       case "E" -> "#dc2626";
       case "F" -> "#b91c1c";
       case "G" -> "#991b1b";
-      default -> "#6b7280";
+      default -> "#78716c";
     };
   }
 

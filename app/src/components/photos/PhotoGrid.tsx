@@ -111,9 +111,9 @@ export const PhotoGrid = ({
 
   if (photos.length === 0) {
     return (
-      <div className="text-center py-12 bg-[#f8f9fc] dark:bg-[#1a1d28] rounded-lg">
-        <Upload className="h-12 w-12 text-[#9ca0b8] dark:text-[#5c6180] mx-auto mb-3" />
-        <p className="text-[#6b7194] dark:text-[#8b90a8]">{emptyMessage}</p>
+      <div className="text-center py-12 bg-surface-page rounded-lg">
+        <Upload className="h-12 w-12 text-text-muted mx-auto mb-3" />
+        <p className="text-text-secondary">{emptyMessage}</p>
       </div>
     );
   }
@@ -125,7 +125,7 @@ export const PhotoGrid = ({
         <div className="flex items-center gap-2">
           <button
             onClick={onSelectAll}
-            className="text-[#6b7194] dark:text-[#8b90a8] hover:text-[#3d4463] dark:hover:text-[#c4c8db]"
+            className="text-text-secondary hover:text-text-secondary"
           >
             {selectedPhotos.size === photos.length && photos.length > 0 ? (
               <CheckSquare className="h-5 w-5" />
@@ -133,7 +133,7 @@ export const PhotoGrid = ({
               <Square className="h-5 w-5" />
             )}
           </button>
-          <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+          <span className="text-sm text-text-secondary">
             {hasSelection
               ? `${selectedPhotos.size} of ${displayCount} selected`
               : `${displayCount} photo${displayCount !== 1 ? 's' : ''}`}
@@ -147,7 +147,7 @@ export const PhotoGrid = ({
               <button
                 onClick={() => onBulkDownload(selectedIds)}
                 disabled={isBulkDownloading}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] bg-white dark:bg-[#1e2130] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#2a2e3f] transition-colors disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset transition-colors disabled:opacity-50"
               >
                 {isBulkDownloading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -160,7 +160,7 @@ export const PhotoGrid = ({
             {onBulkDelete && (
               <button
                 onClick={() => onBulkDelete(selectedIds)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-red-600 bg-white dark:bg-[#1e2130] border border-red-200 dark:border-red-900/30 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-error-text bg-surface-card border border-error-border rounded-md hover:bg-error-bg transition-colors"
               >
                 <Trash2 className="h-4 w-4" />
                 Delete
@@ -181,31 +181,29 @@ export const PhotoGrid = ({
               key={photo.identifier}
               className={`relative group rounded-lg overflow-hidden border-2 transition-all ${
                 isSelected
-                  ? 'border-blue-500'
+                  ? 'border-primary-500'
                   : showMainBadge && photo.isMainPhoto
-                    ? 'border-[#3b82f6]'
-                    : 'border-[#e2e6f0] dark:border-[#2a2e3f] hover:border-[#c9cfd9] dark:hover:border-[#3a3f54]'
+                    ? 'border-primary-500'
+                    : 'border-border-default hover:border-border-strong'
               }`}
             >
               {/* Image */}
               <div
-                className={`aspect-square bg-[#f1f3f9] dark:bg-[#1e2130] ${onPreview && !hasError ? 'cursor-pointer' : ''}`}
+                className={`aspect-square bg-surface-inset ${onPreview && !hasError ? 'cursor-pointer' : ''}`}
                 onClick={() => onPreview && !hasError && onPreview(photo)}
               >
                 {!photo.downloadUrl ? (
                   <div className="flex items-center justify-center h-full">
                     <div className="text-center p-4">
-                      <AlertCircle className="h-8 w-8 text-[#9ca0b8] dark:text-[#5c6180] mx-auto mb-2" />
-                      <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
-                        No URL
-                      </p>
+                      <AlertCircle className="h-8 w-8 text-text-muted mx-auto mb-2" />
+                      <p className="text-xs text-text-secondary">No URL</p>
                     </div>
                   </div>
                 ) : hasError ? (
                   <div className="flex items-center justify-center h-full">
                     <div className="text-center p-4">
-                      <AlertCircle className="h-8 w-8 text-red-400 mx-auto mb-2" />
-                      <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] font-medium">
+                      <AlertCircle className="h-8 w-8 text-error-text mx-auto mb-2" />
+                      <p className="text-xs text-text-secondary font-medium">
                         Failed to load
                       </p>
                     </div>
@@ -228,7 +226,7 @@ export const PhotoGrid = ({
 
               {/* Main photo badge */}
               {showMainBadge && photo.isMainPhoto && (
-                <div className="absolute top-2 left-2 bg-[#5c7cfa] text-white px-2 py-1 rounded text-xs font-semibold flex items-center gap-1 z-10">
+                <div className="absolute top-2 left-2 bg-primary-500 text-white px-2 py-1 rounded text-xs font-semibold flex items-center gap-1 z-10">
                   <Star className="h-3 w-3 fill-white" />
                   Main
                 </div>
@@ -243,7 +241,7 @@ export const PhotoGrid = ({
                   }}
                   className={`absolute ${showMainBadge && photo.isMainPhoto ? 'top-10' : 'top-2'} left-2 z-20`}
                 >
-                  <div className="w-6 h-6 rounded bg-blue-500 flex items-center justify-center shadow">
+                  <div className="w-6 h-6 rounded bg-primary-500 flex items-center justify-center shadow">
                     <Check className="h-4 w-4 text-white" strokeWidth={3} />
                   </div>
                 </button>
@@ -268,7 +266,7 @@ export const PhotoGrid = ({
                         e.stopPropagation();
                         onSetMain(photo.identifier);
                       }}
-                      className="p-1.5 bg-white/80 dark:bg-[#14161f]/80 backdrop-blur-sm text-[#1a1d2e] dark:text-[#eef0f6] rounded-md hover:bg-white dark:hover:bg-[#1e2130] transition-colors shadow"
+                      className="p-1.5 bg-surface-card/80 backdrop-blur-sm text-text-primary rounded-md hover:bg-surface-card transition-colors shadow"
                       title="Set as main photo"
                       disabled={disableActions}
                     >
@@ -281,7 +279,7 @@ export const PhotoGrid = ({
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      className="p-1.5 bg-white/80 dark:bg-[#14161f]/80 backdrop-blur-sm text-[#3d4463] dark:text-[#c4c8db] rounded-md hover:bg-white dark:hover:bg-[#1e2130] transition-colors shadow"
+                      className="p-1.5 bg-surface-card/80 backdrop-blur-sm text-text-secondary rounded-md hover:bg-surface-card transition-colors shadow"
                       title="Download"
                     >
                       <Download className="h-4 w-4" />
@@ -293,7 +291,7 @@ export const PhotoGrid = ({
                         e.stopPropagation();
                         onEdit(photo);
                       }}
-                      className="p-1.5 bg-white/80 dark:bg-[#14161f]/80 backdrop-blur-sm text-[#3d4463] dark:text-[#c4c8db] rounded-md hover:bg-white dark:hover:bg-[#1e2130] transition-colors shadow"
+                      className="p-1.5 bg-surface-card/80 backdrop-blur-sm text-text-secondary rounded-md hover:bg-surface-card transition-colors shadow"
                       title="Edit title & notes"
                       disabled={disableActions}
                     >
@@ -306,7 +304,7 @@ export const PhotoGrid = ({
                         e.stopPropagation();
                         onDelete(photo.identifier);
                       }}
-                      className="p-1.5 bg-white/80 dark:bg-[#14161f]/80 backdrop-blur-sm text-red-600 rounded-md hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors shadow"
+                      className="p-1.5 bg-surface-card/80 backdrop-blur-sm text-error-text rounded-md hover:bg-error-bg transition-colors shadow"
                       title="Delete photo"
                       disabled={disableActions}
                     >
@@ -317,15 +315,15 @@ export const PhotoGrid = ({
               )}
 
               {/* Info bar */}
-              <div className="p-2 bg-white dark:bg-[#14161f]">
-                <p className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] truncate">
+              <div className="p-2 bg-surface-card">
+                <p className="text-sm font-medium text-text-primary truncate">
                   {photo.title ?? photo.fileName}
                 </p>
                 {photo.notes && (
                   <div className="mt-0.5">
                     <RichTextDisplay
                       html={photo.notes}
-                      className="text-xs text-[#6b7194] dark:text-[#8b90a8]"
+                      className="text-xs text-text-secondary"
                     />
                   </div>
                 )}
@@ -341,15 +339,15 @@ export const PhotoGrid = ({
                             navigate(`${basePath}/${photo.entityIdentifier}`);
                           }
                         }}
-                        className="text-xs text-[#5c7cfa] hover:underline"
+                        className="text-xs text-primary-500 hover:underline"
                       >
                         {photo.entityType}
                       </button>
-                      <span className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                      <span className="text-xs text-text-secondary">
                         {formatFileSize(photo.fileSize)}
                       </span>
                     </div>
-                    <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                    <p className="text-xs text-text-secondary mt-1">
                       {formatDate(photo.uploadedAt)}
                     </p>
                   </>

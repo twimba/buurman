@@ -71,46 +71,38 @@ const statusBadgeConfig: Record<string, { label: string; className: string }> =
   {
     PENDING: {
       label: "Pending",
-      className:
-        "bg-slate-50 text-slate-700 ring-1 ring-slate-200 dark:bg-slate-900/30 dark:text-slate-300 dark:ring-slate-700",
+      className: "bg-slate-50 text-slate-700 ring-1 ring-slate-200",
     },
     QUEUED: {
       label: "Queued",
-      className:
-        "bg-blue-50 text-blue-700 ring-1 ring-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:ring-blue-700",
+      className: "bg-blue-50 text-blue-700 ring-1 ring-blue-200",
     },
     SENT: {
       label: "Sent",
-      className:
-        "bg-sky-50 text-sky-700 ring-1 ring-sky-200 dark:bg-sky-900/30 dark:text-sky-300 dark:ring-sky-700",
+      className: "bg-sky-50 text-sky-700 ring-1 ring-sky-200",
     },
     DELIVERED: {
       label: "Delivered",
-      className:
-        "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-700",
+      className: "bg-success-bg text-success-text ring-1 ring-success-border",
     },
     FAILED: {
       label: "Failed",
-      className:
-        "bg-red-50 text-red-700 ring-1 ring-red-200 dark:bg-red-900/30 dark:text-red-300 dark:ring-red-700",
+      className: "bg-error-bg text-error-text ring-1 ring-error-border",
     },
     BOUNCED: {
       label: "Bounced",
-      className:
-        "bg-amber-50 text-amber-700 ring-1 ring-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:ring-amber-700",
+      className: "bg-warning-bg text-warning-text ring-1 ring-warning-border",
     },
     REJECTED: {
       label: "Rejected",
-      className:
-        "bg-red-50 text-red-700 ring-1 ring-red-200 dark:bg-red-900/30 dark:text-red-300 dark:ring-red-700",
+      className: "bg-error-bg text-error-text ring-1 ring-error-border",
     },
   };
 
 const StatusBadge = ({ status }: { status: string }) => {
   const config = statusBadgeConfig[status] ?? {
     label: status,
-    className:
-      "bg-slate-50 text-slate-700 ring-1 ring-slate-200 dark:bg-slate-900/30 dark:text-slate-300 dark:ring-slate-700",
+    className: "bg-slate-50 text-slate-700 ring-1 ring-slate-200",
   };
   return (
     <span
@@ -122,10 +114,10 @@ const StatusBadge = ({ status }: { status: string }) => {
 };
 
 const selectClass =
-  "px-3 py-2 text-sm rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] focus:outline-none focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa]/20 transition-colors";
+  "px-3 py-2 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors";
 
 const inputClass =
-  "px-3 py-2 text-sm rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] placeholder-[#9ca0b8] focus:outline-none focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa]/20 transition-colors";
+  "px-3 py-2 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary placeholder-text-muted focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors";
 
 export const NotificationsPage = () => {
   const navigate = useNavigate();
@@ -192,9 +184,7 @@ export const NotificationsPage = () => {
   if (error) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-600 dark:text-red-400">
-          Failed to load notifications.
-        </p>
+        <p className="text-error-text">Failed to load notifications.</p>
       </div>
     );
   }
@@ -213,10 +203,10 @@ export const NotificationsPage = () => {
         }}
       >
         <div>
-          <h1 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+          <h1 className="text-2xl font-bold text-text-primary">
             Notifications
           </h1>
-          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+          <p className="text-sm text-text-secondary mt-1">
             View and manage all notifications across the platform.
           </p>
         </div>
@@ -226,51 +216,51 @@ export const NotificationsPage = () => {
       {/* Stats Cards */}
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
+          <div className="bg-surface-card rounded-lg border border-border-default p-4">
             <div
               style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
-              className="text-[#6b7194] dark:text-[#8b90a8] text-sm mb-1"
+              className="text-text-secondary text-sm mb-1"
             >
               <Mail className="h-4 w-4" />
               Total
             </div>
-            <div className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+            <div className="text-2xl font-bold text-text-primary">
               {stats.totalCount}
             </div>
           </div>
-          <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
+          <div className="bg-surface-card rounded-lg border border-border-default p-4">
             <div
               style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
-              className="text-[#6b7194] dark:text-[#8b90a8] text-sm mb-1"
+              className="text-text-secondary text-sm mb-1"
             >
-              <CheckCircle className="h-4 w-4 text-emerald-500" />
+              <CheckCircle className="h-4 w-4 text-success-text" />
               Delivered
             </div>
-            <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+            <div className="text-2xl font-bold text-success-text">
               {stats.deliveredCount}
             </div>
           </div>
-          <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
+          <div className="bg-surface-card rounded-lg border border-border-default p-4">
             <div
               style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
-              className="text-[#6b7194] dark:text-[#8b90a8] text-sm mb-1"
+              className="text-text-secondary text-sm mb-1"
             >
-              <Clock className="h-4 w-4 text-blue-500" />
+              <Clock className="h-4 w-4 text-info-text" />
               Pending
             </div>
-            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+            <div className="text-2xl font-bold text-info-text">
               {stats.pendingCount}
             </div>
           </div>
-          <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
+          <div className="bg-surface-card rounded-lg border border-border-default p-4">
             <div
               style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
-              className="text-[#6b7194] dark:text-[#8b90a8] text-sm mb-1"
+              className="text-text-secondary text-sm mb-1"
             >
-              <AlertTriangle className="h-4 w-4 text-red-500" />
+              <AlertTriangle className="h-4 w-4 text-error-text" />
               Failed
             </div>
-            <div className="text-2xl font-bold text-red-600 dark:text-red-400">
+            <div className="text-2xl font-bold text-error-text">
               {stats.failedCount}
             </div>
           </div>
@@ -281,7 +271,7 @@ export const NotificationsPage = () => {
       <form onSubmit={handleRecipientSearch} className="mb-4">
         <div className="flex flex-wrap gap-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9ca0b8]" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
             <input
               type="search"
               placeholder="Recipient email..."
@@ -364,7 +354,7 @@ export const NotificationsPage = () => {
           />
           <button
             type="submit"
-            className="px-4 py-2 text-sm font-medium text-white bg-[#5c7cfa] hover:bg-[#4c6ef5] rounded-lg transition-colors"
+            className="px-4 py-2 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-lg transition-colors"
           >
             Search
           </button>
@@ -372,11 +362,11 @@ export const NotificationsPage = () => {
       </form>
 
       {/* Table */}
-      <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden">
+      <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+              <tr className="border-b border-border-default">
                 <SortableHeader
                   field="notificationType"
                   label="Type"
@@ -384,16 +374,16 @@ export const NotificationsPage = () => {
                   direction={direction}
                   onSortChange={handleSortChange}
                 />
-                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                   Channel
                 </th>
-                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                   Recipient
                 </th>
-                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                   Team
                 </th>
-                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                   Subject
                 </th>
                 <SortableHeader
@@ -410,7 +400,7 @@ export const NotificationsPage = () => {
                   direction={direction}
                   onSortChange={handleSortChange}
                 />
-                <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+                <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                   Actions
                 </th>
               </tr>
@@ -420,7 +410,7 @@ export const NotificationsPage = () => {
                 <tr>
                   <td
                     colSpan={8}
-                    className="px-4 py-12 text-center text-sm text-[#9ca0b8] dark:text-[#5c6180]"
+                    className="px-4 py-12 text-center text-sm text-text-muted"
                   >
                     No notifications found.
                   </td>
@@ -429,16 +419,16 @@ export const NotificationsPage = () => {
                 notifications.map((notif) => (
                   <tr
                     key={notif.identifier}
-                    className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0 hover:bg-[#f8f9fc] dark:hover:bg-[#1a1d28] transition-colors"
+                    className="border-b border-border-default last:border-b-0 hover:bg-surface-page transition-colors"
                   >
                     <td className="px-4 py-3">
-                      <span className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <span className="text-sm font-medium text-text-primary">
                         {typeLabels[notif.notificationType] ??
                           notif.notificationType}
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="inline-flex items-center gap-1 text-sm text-[#3d4463] dark:text-[#c4c8db]">
+                      <span className="inline-flex items-center gap-1 text-sm text-text-secondary">
                         {notif.channel === "EMAIL" ? (
                           <Mail className="h-3.5 w-3.5" />
                         ) : (
@@ -448,7 +438,7 @@ export const NotificationsPage = () => {
                       </span>
                     </td>
                     <td className="px-4 py-3 max-w-[200px]">
-                      <span className="text-sm text-[#3d4463] dark:text-[#c4c8db] truncate block">
+                      <span className="text-sm text-text-secondary truncate block">
                         {notif.channel === "SMS"
                           ? notif.recipientPhone || notif.recipientEmail || "-"
                           : notif.recipientEmail || "-"}
@@ -456,14 +446,14 @@ export const NotificationsPage = () => {
                     </td>
                     <td className="px-4 py-3">
                       <span
-                        className="text-sm text-[#6b7194] dark:text-[#8b90a8]"
+                        className="text-sm text-text-secondary"
                         title={notif.teamIdentifier}
                       >
                         {notif.teamName}
                       </span>
                     </td>
                     <td className="px-4 py-3 max-w-[200px]">
-                      <span className="text-sm text-[#3d4463] dark:text-[#c4c8db] truncate block">
+                      <span className="text-sm text-text-secondary truncate block">
                         {notif.subject || "-"}
                       </span>
                     </td>
@@ -471,7 +461,7 @@ export const NotificationsPage = () => {
                       <StatusBadge status={notif.status} />
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-sm text-[#6b7194] dark:text-[#8b90a8] whitespace-nowrap">
+                      <span className="text-sm text-text-secondary whitespace-nowrap">
                         {format(new Date(notif.createdAt), "dd MMM yyyy HH:mm")}
                       </span>
                     </td>
@@ -488,7 +478,7 @@ export const NotificationsPage = () => {
                           onClick={() =>
                             navigate(`/notifications/${notif.identifier}`)
                           }
-                          className="p-2 rounded-lg text-[#6b7194] dark:text-[#8b90a8] hover:text-[#5c7cfa] dark:hover:text-[#91a7ff] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                          className="p-2 rounded-lg text-text-secondary hover:text-primary-500 hover:bg-surface-inset transition-colors"
                           title="View notification"
                         >
                           <Eye className="h-4 w-4" />
@@ -496,7 +486,7 @@ export const NotificationsPage = () => {
                         {canResend(notif.status) && (
                           <button
                             onClick={() => setResendTarget(notif.identifier)}
-                            className="p-2 rounded-lg text-[#6b7194] dark:text-[#8b90a8] hover:text-[#5c7cfa] dark:hover:text-[#91a7ff] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                            className="p-2 rounded-lg text-text-secondary hover:text-primary-500 hover:bg-surface-inset transition-colors"
                             title="Resend notification"
                           >
                             <RefreshCw className="h-4 w-4" />

@@ -149,7 +149,7 @@ export const SubscriptionSection = () => {
   return (
     <div className="space-y-6">
       {/* Early Access Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#5c7cfa] via-[#845ef7] to-[#e64980] p-6 text-white shadow-lg">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary-500 via-purple-500 to-pink-500 p-6 text-white shadow-lg">
         <div className="absolute -right-6 -top-6 text-8xl opacity-20 rotate-12 select-none">
           🎉
         </div>
@@ -173,12 +173,12 @@ export const SubscriptionSection = () => {
       </div>
 
       {/* Current Plan Card */}
-      <div className="bg-white dark:bg-[#14161f] rounded-lg shadow">
-        <div className="p-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-          <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+      <div className="bg-surface-card rounded-lg shadow-sm border border-border-default">
+        <div className="p-6 border-b border-border-default">
+          <h2 className="text-xl font-semibold text-text-primary">
             Current Subscription
           </h2>
-          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+          <p className="text-sm text-text-secondary mt-1">
             Manage your subscription plan and billing
           </p>
         </div>
@@ -187,18 +187,18 @@ export const SubscriptionSection = () => {
           <div className="flex items-start justify-between">
             <div>
               <div className="flex items-center gap-3">
-                <h3 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+                <h3 className="text-2xl font-bold text-text-primary">
                   {currentSubscription.planName}
                 </h3>
-                <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-sm font-semibold rounded">
+                <span className="px-3 py-1 bg-success-bg text-success-text text-sm font-semibold rounded">
                   {currentSubscription.status === 'active'
                     ? 'Active'
                     : currentSubscription.status}
                 </span>
               </div>
-              <p className="text-3xl font-bold text-[#5c7cfa] mt-2">
+              <p className="text-3xl font-bold text-primary-500 mt-2">
                 €{currentSubscription.planPrice}
-                <span className="text-lg font-normal text-[#6b7194] dark:text-[#8b90a8]">
+                <span className="text-lg font-normal text-text-secondary">
                   /{currentSubscription.billingPeriod}
                 </span>
               </p>
@@ -206,17 +206,15 @@ export const SubscriptionSection = () => {
           </div>
 
           <div className="mt-6 grid grid-cols-3 gap-4">
-            <div className="p-4 bg-[#f8f9fc] dark:bg-[#0c0d14] dark:bg-[#1e2130] rounded-lg">
-              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                Properties
-              </p>
-              <p className="text-2xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+            <div className="p-4 bg-surface-page rounded-lg">
+              <p className="text-sm text-text-secondary">Properties</p>
+              <p className="text-2xl font-semibold text-text-primary mt-1">
                 {currentSubscription.currentProperties} /{' '}
                 {currentSubscription.propertiesLimit}
               </p>
-              <div className="mt-2 w-full bg-[#e8ecf4] dark:bg-[#1e2130] dark:bg-[#3a3f54] rounded-full h-2">
+              <div className="mt-2 w-full bg-neutral-100 rounded-full h-2">
                 <div
-                  className="bg-[#5c7cfa] h-2 rounded-full"
+                  className="bg-primary-500 h-2 rounded-full"
                   style={{
                     width: `${(currentSubscription.currentProperties / currentSubscription.propertiesLimit) * 100}%`,
                   }}
@@ -224,14 +222,12 @@ export const SubscriptionSection = () => {
               </div>
             </div>
 
-            <div className="p-4 bg-[#f8f9fc] dark:bg-[#0c0d14] dark:bg-[#1e2130] rounded-lg">
-              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                Team Members
-              </p>
-              <p className="text-2xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+            <div className="p-4 bg-surface-page rounded-lg">
+              <p className="text-sm text-text-secondary">Team Members</p>
+              <p className="text-2xl font-semibold text-text-primary mt-1">
                 3 / {currentSubscription.teamMembersLimit}
               </p>
-              <div className="mt-2 w-full bg-[#e8ecf4] dark:bg-[#1e2130] dark:bg-[#3a3f54] rounded-full h-2">
+              <div className="mt-2 w-full bg-neutral-100 rounded-full h-2">
                 <div
                   className="bg-green-600 h-2 rounded-full"
                   style={{
@@ -241,28 +237,24 @@ export const SubscriptionSection = () => {
               </div>
             </div>
 
-            <div className="p-4 bg-[#f8f9fc] dark:bg-[#0c0d14] dark:bg-[#1e2130] rounded-lg">
-              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                Next Renewal
-              </p>
+            <div className="p-4 bg-surface-page rounded-lg">
+              <p className="text-sm text-text-secondary">Next Renewal</p>
               <div className="flex items-center gap-2 mt-1">
-                <Calendar className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
-                <p className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                <Calendar className="h-5 w-5 text-text-secondary " />
+                <p className="text-lg font-semibold text-text-primary">
                   {formatDate(currentSubscription.nextRenewal)}
                 </p>
               </div>
-              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
-                Auto-renews
-              </p>
+              <p className="text-xs text-text-secondary mt-1">Auto-renews</p>
             </div>
           </div>
 
           <div className="mt-6 flex gap-3">
-            <button className="flex-1 px-4 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors flex items-center justify-center gap-2">
+            <button className="flex-1 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center justify-center gap-2">
               <Zap className="h-4 w-4" />
               Change Plan
             </button>
-            <button className="px-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] text-[#3d4463] dark:text-[#c4c8db] rounded-lg hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors">
+            <button className="px-4 py-2 border border-border-strong text-text-secondary rounded-lg hover:bg-surface-inset transition-colors">
               Cancel Subscription
             </button>
           </div>
@@ -270,12 +262,12 @@ export const SubscriptionSection = () => {
       </div>
 
       {/* Available Plans */}
-      <div className="bg-white dark:bg-[#14161f] rounded-lg shadow">
-        <div className="p-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-          <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+      <div className="bg-surface-card rounded-lg shadow-sm border border-border-default">
+        <div className="p-6 border-b border-border-default">
+          <h2 className="text-xl font-semibold text-text-primary">
             Available Plans
           </h2>
-          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+          <p className="text-sm text-text-secondary mt-1">
             Choose the plan that best fits your needs
           </p>
         </div>
@@ -284,29 +276,29 @@ export const SubscriptionSection = () => {
           {/* Billing Toggle */}
           <div className="flex items-center justify-center gap-3 mb-8">
             <span
-              className={`text-sm font-medium ${!isAnnual ? 'text-[#1a1d2e] dark:text-[#eef0f6]' : 'text-[#6b7194] dark:text-[#8b90a8]'}`}
+              className={`text-sm font-medium ${!isAnnual ? 'text-text-primary ' : 'text-text-secondary '}`}
             >
               Monthly
             </span>
             <button
               onClick={() => setIsAnnual(!isAnnual)}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                isAnnual ? 'bg-[#5c7cfa]' : 'bg-[#c9cfd9] dark:bg-[#3a3f54]'
+                isAnnual ? 'bg-primary-500' : 'bg-neutral-200'
               }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                className={`inline-block h-4 w-4 transform rounded-full bg-surface-card transition-transform ${
                   isAnnual ? 'translate-x-6' : 'translate-x-1'
                 }`}
               />
             </button>
             <span
-              className={`text-sm font-medium ${isAnnual ? 'text-[#1a1d2e] dark:text-[#eef0f6]' : 'text-[#6b7194] dark:text-[#8b90a8]'}`}
+              className={`text-sm font-medium ${isAnnual ? 'text-text-primary ' : 'text-text-secondary '}`}
             >
               Annual
             </span>
             {isAnnual && (
-              <span className="px-2 py-0.5 text-xs font-bold bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full">
+              <span className="px-2 py-0.5 text-xs font-bold bg-success-bg text-success-text rounded-full">
                 Save 20%
               </span>
             )}
@@ -320,10 +312,10 @@ export const SubscriptionSection = () => {
                   key={plan.id}
                   className={`relative border-2 rounded-2xl p-6 transition-all hover:shadow-lg ${
                     plan.id === 'free'
-                      ? 'border-green-500 bg-gradient-to-br from-white dark:from-[#14161f] to-green-50 dark:to-[#1e2130]'
+                      ? 'border-green-500 bg-gradient-to-br from-white dark:from-surface-page to-green-50 dark:to-surface-raised'
                       : plan.popular
-                        ? 'border-[#5c7cfa] shadow-lg bg-gradient-to-br from-white dark:from-[#14161f] to-blue-50 dark:to-[#1e2130]'
-                        : 'border-[#e2e6f0] dark:border-[#3a3f54] hover:border-[#c9cfd9]'
+                        ? 'border-primary-500 shadow-lg bg-gradient-to-br from-white dark:from-surface-page to-blue-50 dark:to-surface-raised'
+                        : 'border-border-default hover:border-border-strong'
                   }`}
                 >
                   {plan.badge && (
@@ -332,7 +324,7 @@ export const SubscriptionSection = () => {
                         className={`px-3 py-1 text-white text-xs font-bold rounded-full whitespace-nowrap ${
                           plan.badgeColor === 'green'
                             ? 'bg-green-500'
-                            : 'bg-[#5c7cfa]'
+                            : 'bg-primary-500'
                         }`}
                       >
                         {plan.badge}
@@ -340,26 +332,26 @@ export const SubscriptionSection = () => {
                     </div>
                   )}
 
-                  <h3 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+                  <h3 className="text-2xl font-bold text-text-primary">
                     {plan.name}
                   </h3>
                   <div className="mt-3">
-                    <span className="text-4xl font-black text-[#5c7cfa] dark:text-[#91a7ff]">
+                    <span className="text-4xl font-black text-primary-500 dark:text-primary-300">
                       €{price % 1 === 0 ? price : price.toFixed(2)}
                     </span>
-                    <span className="text-[#6b7194] dark:text-[#8b90a8]">
+                    <span className="text-text-secondary">
                       {plan.id === 'free' ? ' /forever' : ' /month'}
                     </span>
                   </div>
                   {plan.id !== 'free' && (
-                    <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                    <p className="text-xs text-text-secondary mt-1">
                       {isAnnual && plan.annualTotal
                         ? `Billed annually at €${plan.annualTotal}`
                         : 'Billed monthly, cancel anytime'}
                     </p>
                   )}
                   {plan.id === 'free' && (
-                    <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                    <p className="text-xs text-text-secondary mt-1">
                       Perfect to get started
                     </p>
                   )}
@@ -367,8 +359,8 @@ export const SubscriptionSection = () => {
                   <ul className="mt-6 space-y-3">
                     {plan.features.map((feature, index) => (
                       <li key={index} className="flex items-start gap-2">
-                        <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                        <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
+                        <Check className="h-5 w-5 text-success-text flex-shrink-0 mt-0.5" />
+                        <span className="text-sm text-text-secondary">
                           {feature}
                         </span>
                       </li>
@@ -378,8 +370,10 @@ export const SubscriptionSection = () => {
                         key={`neg-${index}`}
                         className="flex items-start gap-2"
                       >
-                        <XIcon className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-                        <span className="text-sm text-red-500">{feature}</span>
+                        <XIcon className="h-5 w-5 text-error-text flex-shrink-0 mt-0.5" />
+                        <span className="text-sm text-error-text">
+                          {feature}
+                        </span>
                       </li>
                     ))}
                   </ul>
@@ -389,12 +383,12 @@ export const SubscriptionSection = () => {
                     disabled={plan.name === currentSubscription.planName}
                     className={`mt-6 w-full px-4 py-2 rounded-lg transition-all font-semibold flex items-center justify-center gap-2 ${
                       plan.name === currentSubscription.planName
-                        ? 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#9ca0b8] dark:text-[#5c6180] cursor-not-allowed'
+                        ? 'bg-surface-inset text-text-muted cursor-not-allowed'
                         : plan.popular
-                          ? 'bg-[#5c7cfa] text-white hover:bg-[#4c6ef5] shadow-md hover:shadow-lg'
+                          ? 'bg-primary-500 text-white hover:bg-primary-600 shadow-md hover:shadow-lg'
                           : plan.id === 'free'
                             ? 'bg-green-600 text-white hover:bg-green-700'
-                            : 'bg-white dark:bg-[#14161f] border-2 border-[#c9cfd9] dark:border-[#3a3f54] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]'
+                            : 'bg-surface-card border-2 border-border-strong text-text-secondary hover:bg-surface-inset'
                     }`}
                   >
                     {plan.name === currentSubscription.planName ? (
@@ -418,14 +412,14 @@ export const SubscriptionSection = () => {
       </div>
 
       {/* Payment Methods */}
-      <div className="bg-white dark:bg-[#14161f] rounded-lg shadow">
-        <div className="p-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+      <div className="bg-surface-card rounded-lg shadow-sm border border-border-default">
+        <div className="p-6 border-b border-border-default">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+              <h2 className="text-xl font-semibold text-text-primary">
                 Payment Methods
               </h2>
-              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+              <p className="text-sm text-text-secondary mt-1">
                 Manage your payment methods
               </p>
             </div>
@@ -433,7 +427,7 @@ export const SubscriptionSection = () => {
               onClick={() => {
                 // TODO: Implement add payment method
               }}
-              className="px-4 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors flex items-center gap-2"
+              className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center gap-2"
             >
               <Plus className="h-4 w-4" />
               Add Payment Method
@@ -441,32 +435,29 @@ export const SubscriptionSection = () => {
           </div>
         </div>
 
-        <div className="divide-y divide-[#edf0f7] dark:divide-[#2a2e3f] dark:divide-[#2a2e3f]">
+        <div className="divide-y divide-border-default">
           {paymentMethods.map((method) => (
-            <div
-              key={method.id}
-              className="p-6 hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
-            >
+            <div key={method.id} className="p-6 hover:bg-surface-inset">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-lg bg-[#f1f3f9] dark:bg-[#1e2130] flex items-center justify-center">
-                    <CreditCard className="h-6 w-6 text-[#6b7194] dark:text-[#8b90a8]" />
+                  <div className="h-12 w-12 rounded-lg bg-surface-inset flex items-center justify-center">
+                    <CreditCard className="h-6 w-6 text-text-secondary " />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <p className="font-semibold text-text-primary">
                         {method.type === 'card'
                           ? `${method.brand} •••• ${method.last4}`
                           : `SEPA •••• ${method.last4}`}
                       </p>
                       {method.isDefault && (
-                        <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-xs font-semibold rounded">
+                        <span className="px-2 py-0.5 bg-info-bg text-info-text text-xs font-semibold rounded">
                           Default
                         </span>
                       )}
                     </div>
                     {method.type === 'card' && (
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      <p className="text-sm text-text-secondary">
                         Expires {method.expiryMonth}/{method.expiryYear}
                       </p>
                     )}
@@ -475,11 +466,11 @@ export const SubscriptionSection = () => {
 
                 <div className="flex items-center gap-2">
                   {!method.isDefault && (
-                    <button className="p-2 text-[#5c7cfa] hover:bg-blue-50 dark:hover:bg-blue-900 rounded-lg transition-colors">
+                    <button className="p-2 text-primary-500 hover:bg-primary-50 rounded-lg transition-colors">
                       <Edit className="h-4 w-4" />
                     </button>
                   )}
-                  <button className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900 rounded-lg transition-colors">
+                  <button className="p-2 text-error-text hover:bg-error-bg rounded-lg transition-colors">
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
@@ -492,23 +483,23 @@ export const SubscriptionSection = () => {
       {/* Upgrade Modal */}
       {showUpgradeModal && selectedPlan && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-xl max-w-md w-full mx-4">
-            <div className="p-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-              <h3 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+          <div className="bg-surface-card rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="p-6 border-b border-border-default">
+              <h3 className="text-xl font-semibold text-text-primary">
                 Confirm Plan Change
               </h3>
             </div>
 
             <div className="p-6">
-              <p className="text-[#3d4463] dark:text-[#c4c8db]">
+              <p className="text-text-secondary">
                 Are you sure you want to change to the{' '}
                 <strong>
                   {plans.find((p) => p.id === selectedPlan)?.name}
                 </strong>{' '}
                 plan? Your billing will be adjusted accordingly.
               </p>
-              <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <p className="text-sm text-blue-800 dark:text-blue-300">
+              <div className="mt-4 p-4 bg-info-bg rounded-lg">
+                <p className="text-sm text-info-text">
                   {(() => {
                     const plan = plans.find((p) => p.id === selectedPlan);
                     if (!plan) {
@@ -521,19 +512,19 @@ export const SubscriptionSection = () => {
               </div>
             </div>
 
-            <div className="p-6 border-t border-[#e2e6f0] flex justify-end gap-3">
+            <div className="p-6 border-t border-border-default flex justify-end gap-3">
               <button
                 onClick={() => {
                   setShowUpgradeModal(false);
                   setSelectedPlan(null);
                 }}
-                className="px-4 py-2 border border-[#c9cfd9] text-[#3d4463] dark:text-[#c4c8db] rounded-lg hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                className="px-4 py-2 border border-border-strong text-text-secondary rounded-lg hover:bg-surface-inset transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmUpgrade}
-                className="px-4 py-2 bg-[#5c7cfa] text-white rounded-lg hover:bg-[#4c6ef5] transition-colors"
+                className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
               >
                 Confirm Change
               </button>

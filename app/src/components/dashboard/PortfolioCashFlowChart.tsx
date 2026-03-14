@@ -13,10 +13,10 @@ import {
 import type { MonthlyDataPoint } from '@/types/property';
 
 const COLORS = {
-  income: '#10B981',
-  expenses: '#EF4444',
-  net: '#3B82F6',
-  mortgage: '#8B5CF6',
+  income: '#059669',
+  expenses: '#dc2626',
+  net: '#0284c7',
+  mortgage: '#7c3aed',
 };
 
 const MONTH_NAMES = [
@@ -115,7 +115,7 @@ export const PortfolioCashFlowChart = ({
 
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-80 text-[#6b7194] dark:text-[#8b90a8] text-sm">
+      <div className="flex items-center justify-center h-80 text-text-secondary text-sm">
         No cash flow data available
       </div>
     );

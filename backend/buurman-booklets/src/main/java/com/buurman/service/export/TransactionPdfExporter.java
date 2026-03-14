@@ -65,10 +65,10 @@ public class TransactionPdfExporter {
     html.append("</style></head><body>");
 
     html.append("<h1>Transaction History Report</h1>");
-    html.append("<p style='color: #6b7280; font-size: 14px;'>Period: ")
+    html.append("<p style='color: #78716c; font-size: 14px;'>Period: ")
         .append(periodText)
         .append("</p>");
-    html.append("<p style='color: #6b7280; font-size: 12px;'>Generated on: ")
+    html.append("<p style='color: #78716c; font-size: 12px;'>Generated on: ")
         .append(LocalDate.now(clock).format(formatter))
         .append("</p>");
 
@@ -124,22 +124,22 @@ public class TransactionPdfExporter {
   }
 
   private void appendCss(StringBuilder css) {
-    css.append("body { font-family: Arial, sans-serif; margin: 40px; color: #333; }");
-    css.append("h1 { color: #1e40af; border-bottom: 3px solid #3b82f6; padding-bottom: 10px; }");
-    css.append("h2 { color: #1e40af; margin-top: 30px; }");
+    css.append("body { font-family: 'Satoshi', 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 40px; color: #292524; }");
+    css.append("h1 { color: #0c4a6e; border-bottom: 3px solid #0284c7; padding-bottom: 10px; }");
+    css.append("h2 { color: #0c4a6e; margin-top: 30px; }");
     css.append(".summary { display: flex; gap: 20px; margin: 20px 0; }");
     css.append(".summary-card { flex: 1; padding: 15px; border-radius: 8px; }");
     css.append(".income { background-color: #d1fae5; border: 2px solid #10b981; }");
     css.append(".expense { background-color: #fee2e2; border: 2px solid #ef4444; }");
-    css.append(".net { background-color: #dbeafe; border: 2px solid #3b82f6; }");
-    css.append(".summary-card h3 { margin: 0 0 5px 0; font-size: 14px; color: #666; }");
+    css.append(".net { background-color: #e0f2fe; border: 2px solid #0284c7; }");
+    css.append(".summary-card h3 { margin: 0 0 5px 0; font-size: 14px; color: #78716c; }");
     css.append(".summary-card p { margin: 0; font-size: 24px; font-weight: bold; }");
     css.append("table { width: 100%; border-collapse: collapse; margin-top: 20px; }");
     css.append(
-        "th { background-color: #f3f4f6; padding: 12px; text-align: left; font-weight: 600;"
-            + " border-bottom: 2px solid #d1d5db; }");
-    css.append("td { padding: 10px; border-bottom: 1px solid #e5e7eb; }");
-    css.append("tr:hover { background-color: #f9fafb; }");
+        "th { background-color: #f5f5f4; padding: 12px; text-align: left; font-weight: 600;"
+            + " border-bottom: 2px solid #d6d3d1; }");
+    css.append("td { padding: 10px; border-bottom: 1px solid #e7e5e4; }");
+    css.append("tr:hover { background-color: #fafaf9; }");
     css.append(
         ".income-badge { background-color: #d1fae5; color: #065f46; padding: 4px 8px;"
             + " border-radius: 4px; font-size: 12px; font-weight: 600; }");
@@ -149,7 +149,7 @@ public class TransactionPdfExporter {
     css.append(".amount-income { color: #059669; font-weight: 600; }");
     css.append(".amount-expense { color: #dc2626; font-weight: 600; }");
     css.append(
-        ".footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #d1d5db; text-align:"
-            + " center; color: #6b7280; font-size: 12px; }");
+        ".footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #d6d3d1; text-align:"
+            + " center; color: #78716c; font-size: 12px; }");
   }
 }

@@ -139,8 +139,8 @@ export const ExpenseForm = ({
     >
       {/* Property */}
       <div>
-        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
-          Property <span className="text-red-500">*</span>
+        <label className="block text-sm font-medium text-text-secondary mb-2">
+          Property <span className="text-error-text">*</span>
         </label>
         <PropertySelector
           value={formData.propertyIdentifier ?? ''}
@@ -153,7 +153,7 @@ export const ExpenseForm = ({
           disabled={isLoading}
         />
         {errors.propertyIdentifier && (
-          <p className="mt-1 text-sm text-red-500">
+          <p className="mt-1 text-sm text-error-text">
             {errors.propertyIdentifier}
           </p>
         )}
@@ -161,8 +161,8 @@ export const ExpenseForm = ({
 
       {/* Category */}
       <div>
-        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
-          Category <span className="text-red-500">*</span>
+        <label className="block text-sm font-medium text-text-secondary mb-2">
+          Category <span className="text-error-text">*</span>
         </label>
         <select
           value={formData.category}
@@ -172,7 +172,7 @@ export const ExpenseForm = ({
               category: e.target.value as ExpenseCategory,
             })
           }
-          className="w-full px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md"
+          className="w-full px-3 py-2 border border-border-strong rounded-md"
           disabled={isLoading}
         >
           {Object.values(ExpenseCategory).map((cat) => (
@@ -185,8 +185,8 @@ export const ExpenseForm = ({
 
       {/* Amount */}
       <div>
-        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
-          Amount <span className="text-red-500">*</span>
+        <label className="block text-sm font-medium text-text-secondary mb-2">
+          Amount <span className="text-error-text">*</span>
         </label>
         <MoneyInput
           value={formData.amount ?? undefined}
@@ -196,7 +196,7 @@ export const ExpenseForm = ({
           error={!!errors.amount || !!errors.currency}
         />
         {(errors.amount || errors.currency) && (
-          <p className="mt-1 text-sm text-red-500">
+          <p className="mt-1 text-sm text-error-text">
             {errors.amount || errors.currency}
           </p>
         )}
@@ -204,8 +204,8 @@ export const ExpenseForm = ({
 
       {/* Expense Date */}
       <div>
-        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
-          Expense Date <span className="text-red-500">*</span>
+        <label className="block text-sm font-medium text-text-secondary mb-2">
+          Expense Date <span className="text-error-text">*</span>
         </label>
         <div className="flex gap-2">
           <input
@@ -216,8 +216,8 @@ export const ExpenseForm = ({
             }
             className={`flex-1 px-3 py-2 border rounded-md ${
               errors.expenseDate
-                ? 'border-red-500'
-                : 'border-[#c9cfd9] dark:border-[#3a3f54]'
+                ? 'border-error-border'
+                : 'border-border-strong'
             }`}
             disabled={isLoading}
           />
@@ -229,21 +229,21 @@ export const ExpenseForm = ({
                 expenseDate: new Date().toISOString().split('T')[0],
               })
             }
-            className="px-3 py-2 text-sm bg-[#f1f3f9] dark:bg-[#1e2130] hover:bg-[#e8ecf4] dark:bg-[#1e2130] dark:hover:bg-[#3a3f54] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md transition-colors"
+            className="px-3 py-2 text-sm bg-surface-inset hover:bg-neutral-100 border border-border-strong rounded-md transition-colors"
             disabled={isLoading}
           >
             Today
           </button>
         </div>
         {errors.expenseDate && (
-          <p className="mt-1 text-sm text-red-500">{errors.expenseDate}</p>
+          <p className="mt-1 text-sm text-error-text">{errors.expenseDate}</p>
         )}
       </div>
 
       {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
-          Description <span className="text-red-500">*</span>
+        <label className="block text-sm font-medium text-text-secondary mb-2">
+          Description <span className="text-error-text">*</span>
         </label>
         <input
           type="text"
@@ -252,21 +252,19 @@ export const ExpenseForm = ({
             setFormData({ ...formData, description: e.target.value })
           }
           className={`w-full px-3 py-2 border rounded-md ${
-            errors.description
-              ? 'border-red-500'
-              : 'border-[#c9cfd9] dark:border-[#3a3f54]'
+            errors.description ? 'border-error-border' : 'border-border-strong'
           }`}
           disabled={isLoading}
           placeholder="e.g., Plumbing repair in bathroom"
         />
         {errors.description && (
-          <p className="mt-1 text-sm text-red-500">{errors.description}</p>
+          <p className="mt-1 text-sm text-error-text">{errors.description}</p>
         )}
       </div>
 
       {/* Notes */}
       <div>
-        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
+        <label className="block text-sm font-medium text-text-secondary mb-2">
           Notes
         </label>
         <RichTextEditor
@@ -279,16 +277,16 @@ export const ExpenseForm = ({
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-3 pt-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
+      <div className="flex items-center gap-3 pt-4 border-t border-border-default">
         {onContinueAddingChange && (
           <label className="flex items-center gap-2 cursor-pointer select-none mr-auto">
             <input
               type="checkbox"
               checked={continueAdding ?? false}
               onChange={(e) => onContinueAddingChange(e.target.checked)}
-              className="h-4 w-4 rounded border-[#c9cfd9] dark:border-[#3a3f54] text-[#5c7cfa] focus:ring-[#5c7cfa]"
+              className="h-4 w-4 rounded border-border-strong text-primary-500 focus:ring-primary-500"
             />
-            <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
+            <span className="text-sm text-text-secondary">
               Continue adding more
             </span>
           </label>
@@ -296,7 +294,7 @@ export const ExpenseForm = ({
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 text-[#3d4463] dark:text-[#c4c8db] bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] flex items-center gap-2"
+          className="px-4 py-2 text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset flex items-center gap-2"
           disabled={isLoading}
         >
           <X className="h-4 w-4" />
@@ -304,7 +302,7 @@ export const ExpenseForm = ({
         </button>
         <button
           type="submit"
-          className="px-4 py-2 text-white bg-[#5c7cfa] rounded-md hover:bg-[#4c6ef5] flex items-center gap-2 disabled:opacity-50"
+          className="px-4 py-2 text-white bg-primary-500 rounded-md hover:bg-primary-600 flex items-center gap-2 disabled:opacity-50"
           disabled={isLoading}
         >
           <Save className="h-4 w-4" />

@@ -125,17 +125,17 @@ export const CountrySelector = ({
           disabled={disabled}
           placeholder={isOpen ? 'Type to search...' : placeholder}
           autoComplete="off"
-          className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 pr-8 bg-white dark:bg-[#14161f] hover:border-[#5c7cfa] dark:hover:border-[#748ffc] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] disabled:bg-[#f1f3f9] dark:disabled:bg-[#1e2130] disabled:cursor-not-allowed text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
+          className="w-full border border-border-strong rounded px-3 py-2 pr-8 bg-surface-card hover:border-primary-500 dark:hover:border-primary-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 disabled:bg-surface-inset disabled:cursor-not-allowed text-sm text-text-primary"
         />
         <ChevronDown
-          className={`absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9ca0b8] dark:text-[#5c6180] pointer-events-none transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted pointer-events-none transition-transform ${isOpen ? 'rotate-180' : ''}`}
         />
       </div>
 
       {isOpen && (
         <div
           ref={listRef}
-          className="absolute z-50 w-full mt-1 bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md shadow-lg max-h-80 overflow-y-auto"
+          className="absolute z-50 w-full mt-1 bg-surface-card border border-border-strong rounded-md shadow-lg max-h-80 overflow-y-auto"
         >
           {filtered.map((country, index) => (
             <button
@@ -147,7 +147,7 @@ export const CountrySelector = ({
               onMouseEnter={() => setHighlightedIndex(index)}
               className={`w-full text-left px-3 py-2 text-sm ${
                 highlightedIndex === index
-                  ? 'bg-blue-50 dark:bg-blue-900/30'
+                  ? 'bg-primary-50'
                   : country.code === value
                     ? 'bg-primary-100 dark:bg-primary-500/10'
                     : ''
@@ -158,7 +158,7 @@ export const CountrySelector = ({
           ))}
 
           {filtered.length === 0 && (
-            <div className="px-3 py-8 text-center text-sm text-[#6b7194] dark:text-[#8b90a8]">
+            <div className="px-3 py-8 text-center text-sm text-text-secondary">
               No countries found
             </div>
           )}

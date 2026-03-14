@@ -13,41 +13,33 @@ const LOG_LEVELS = ["TRACE", "DEBUG", "INFO", "WARN", "ERROR", "OFF"] as const;
 const levelBadgeConfig: Record<string, { label: string; className: string }> = {
   TRACE: {
     label: "TRACE",
-    className:
-      "bg-slate-50 text-slate-700 ring-1 ring-slate-200 dark:bg-slate-900/30 dark:text-slate-300 dark:ring-slate-700",
+    className: "bg-slate-50 text-slate-700 ring-1 ring-slate-200",
   },
   DEBUG: {
     label: "DEBUG",
-    className:
-      "bg-blue-50 text-blue-700 ring-1 ring-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:ring-blue-700",
+    className: "bg-blue-50 text-blue-700 ring-1 ring-blue-200",
   },
   INFO: {
     label: "INFO",
-    className:
-      "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-700",
+    className: "bg-success-bg text-success-text ring-1 ring-success-border",
   },
   WARN: {
     label: "WARN",
-    className:
-      "bg-amber-50 text-amber-700 ring-1 ring-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:ring-amber-700",
+    className: "bg-warning-bg text-warning-text ring-1 ring-warning-border",
   },
   ERROR: {
     label: "ERROR",
-    className:
-      "bg-red-50 text-red-700 ring-1 ring-red-200 dark:bg-red-900/30 dark:text-red-300 dark:ring-red-700",
+    className: "bg-error-bg text-error-text ring-1 ring-error-border",
   },
   OFF: {
     label: "OFF",
-    className:
-      "bg-gray-50 text-gray-700 ring-1 ring-gray-200 dark:bg-gray-900/30 dark:text-gray-300 dark:ring-gray-700",
+    className: "bg-gray-50 text-gray-700 ring-1 ring-gray-200",
   },
 };
 
 const LevelBadge = ({ level }: { level?: string }) => {
   if (!level) {
-    return (
-      <span className="text-xs text-[#6b7194] dark:text-[#8b90a8]">---</span>
-    );
+    return <span className="text-xs text-text-secondary">---</span>;
   }
   const c = levelBadgeConfig[level] ?? levelBadgeConfig.INFO;
   return (
@@ -60,10 +52,10 @@ const LevelBadge = ({ level }: { level?: string }) => {
 };
 
 const selectClass =
-  "px-2 py-1 text-xs rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] focus:outline-none focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa]/20 transition-colors cursor-pointer";
+  "px-2 py-1 text-xs rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors cursor-pointer";
 
 const thClass =
-  "text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]";
+  "text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary";
 
 export const LoggersPage = () => {
   const { data: loggers, isLoading, isFetching, refetch } = useLoggers();
@@ -143,14 +135,12 @@ export const LoggersPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f9fc] dark:bg-[#0c0d14] p-6">
+    <div className="min-h-screen bg-surface-page p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-            Loggers
-          </h1>
-          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+          <h1 className="text-2xl font-bold text-text-primary">Loggers</h1>
+          <p className="text-sm text-text-secondary mt-1">
             Runtime log level management
           </p>
         </div>
@@ -159,31 +149,29 @@ export const LoggersPage = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-        <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-5">
+        <div className="bg-surface-card rounded-lg border border-border-default p-5">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-[#5c7cfa] to-[#748ffc] text-white">
+            <div className="p-2 rounded-lg bg-gradient-to-br from-primary-500 to-primary-400 text-white">
               <ScrollText className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+              <p className="text-2xl font-bold text-text-primary">
                 {loggers?.length ?? 0}
               </p>
-              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
-                Total Loggers
-              </p>
+              <p className="text-xs text-text-secondary">Total Loggers</p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-5">
+        <div className="bg-surface-card rounded-lg border border-border-default p-5">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-gradient-to-br from-amber-400 to-amber-500 text-white">
               <Settings2 className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+              <p className="text-2xl font-bold text-text-primary">
                 {configuredCount}
               </p>
-              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+              <p className="text-xs text-text-secondary">
                 Configured (non-default)
               </p>
             </div>
@@ -194,7 +182,7 @@ export const LoggersPage = () => {
       {/* Toolbar */}
       <div className="flex items-center gap-3 mb-4 flex-wrap">
         <div className="relative flex-1 min-w-[200px] max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6b7194] dark:text-[#8b90a8]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-secondary " />
           <input
             type="text"
             value={searchInput}
@@ -204,10 +192,10 @@ export const LoggersPage = () => {
                 ? "Regex pattern (e.g. com\\.buurman\\..*Service)"
                 : "Filter loggers by name..."
             }
-            className={`w-full pl-9 pr-3 py-2 text-sm rounded-lg border bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] placeholder-[#6b7194] dark:placeholder-[#8b90a8] focus:outline-none focus:ring-2 transition-colors ${
+            className={`w-full pl-9 pr-3 py-2 text-sm rounded-lg border bg-surface-card text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 transition-colors ${
               regexError
-                ? "border-red-400 dark:border-red-600 focus:border-red-500 focus:ring-red-500/20"
-                : "border-[#e2e6f0] dark:border-[#2a2e3f] focus:border-[#5c7cfa] focus:ring-[#5c7cfa]/20"
+                ? "border-error-border focus:border-error-border focus:ring-error-border/20"
+                : "border-border-default focus:border-primary-500 focus:ring-primary-500/20"
             }`}
           />
         </div>
@@ -218,8 +206,8 @@ export const LoggersPage = () => {
           }
           className={`flex items-center justify-center h-9 w-9 rounded-lg border transition-colors ${
             isRegex
-              ? "bg-[#5c7cfa] border-[#5c7cfa] text-white"
-              : "bg-white dark:bg-[#14161f] border-[#e2e6f0] dark:border-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8] hover:border-[#5c7cfa] hover:text-[#5c7cfa]"
+              ? "bg-primary-500 border-primary-500 text-white"
+              : "bg-surface-card border-border-default text-text-secondary hover:border-primary-500 hover:text-primary-500"
           }`}
         >
           <Regex className="h-4 w-4" />
@@ -237,21 +225,19 @@ export const LoggersPage = () => {
           ))}
         </select>
         {(debouncedSearch || levelFilter !== "ALL") && (
-          <span className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+          <span className="text-xs text-text-secondary">
             {filtered.length} result{filtered.length !== 1 ? "s" : ""}
           </span>
         )}
         {regexError && (
-          <span className="text-xs text-red-500 dark:text-red-400">
-            Invalid regex
-          </span>
+          <span className="text-xs text-error-text">Invalid regex</span>
         )}
         <div className="flex-1" />
         {configuredCount > 0 && (
           <button
             onClick={() => setShowResetConfirm(true)}
             disabled={resetAll.isPending}
-            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-error-text bg-error-bg border border-error-border rounded-lg hover:bg-error-bg transition-colors disabled:opacity-50"
           >
             <RotateCcw className="h-4 w-4" />
             Reset All
@@ -260,32 +246,30 @@ export const LoggersPage = () => {
       </div>
 
       {/* Table */}
-      <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden">
+      <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+              <tr className="border-b border-border-default">
                 <th className={thClass}>Logger Name</th>
                 <th className={`${thClass} w-36`}>Configured</th>
                 <th className={`${thClass} w-36`}>Effective</th>
                 <th className={`${thClass} w-40`}>Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#e2e6f0] dark:divide-[#2a2e3f]">
+            <tbody className="divide-y divide-border-default">
               {filtered.map((logger) => (
                 <tr
                   key={logger.name}
-                  className="hover:bg-[#f8f9fc] dark:hover:bg-[#1a1d28] transition-colors"
+                  className="hover:bg-surface-page transition-colors"
                 >
                   <td className="px-4 py-3">
                     <span
-                      className="text-sm font-mono text-[#1a1d2e] dark:text-[#eef0f6]"
+                      className="text-sm font-mono text-text-primary"
                       title={logger.name}
                     >
                       {logger.name || (
-                        <em className="text-[#6b7194] dark:text-[#8b90a8]">
-                          ROOT
-                        </em>
+                        <em className="text-text-secondary">ROOT</em>
                       )}
                     </span>
                   </td>
@@ -321,7 +305,7 @@ export const LoggersPage = () => {
                 <tr>
                   <td
                     colSpan={4}
-                    className="px-4 py-12 text-center text-sm text-[#6b7194] dark:text-[#8b90a8]"
+                    className="px-4 py-12 text-center text-sm text-text-secondary"
                   >
                     {debouncedSearch
                       ? "No loggers match your search"

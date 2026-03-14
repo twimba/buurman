@@ -252,9 +252,9 @@ public class TenantBookletExporter {
         "Active Contracts",
         String.valueOf(activeContracts),
         null,
-        "#eff6ff",
-        "#1e40af",
-        "#2b6cb0");
+        "#f0f9ff",
+        "#0c4a6e",
+        "#0284c7");
     appendSummaryCard(
         html,
         "Total Contracts",
@@ -262,7 +262,7 @@ public class TenantBookletExporter {
         null,
         "#f9fafb",
         "#374151",
-        "#1a202c");
+        "#292524");
     html.append("</tr></table>");
 
     appendPageEnd(html);
@@ -276,7 +276,7 @@ public class TenantBookletExporter {
     }
 
     appendPageStart(html, "Addresses");
-    html.append("<p style='font-size:13px;color:#718096;margin-bottom:16px;'>")
+    html.append("<p style='font-size:13px;color:#78716c;margin-bottom:16px;'>")
         .append(addresses.size())
         .append(" address(es) on file</p>");
 
@@ -284,10 +284,10 @@ public class TenantBookletExporter {
       String type =
           addr.getAddressType() != null ? formatEnumValue(addr.getAddressType().name()) : "Other";
       boolean isActive = addr.getStatus() != null && addr.getStatus().name().equals("ACTIVE");
-      String borderColor = isActive ? "#2b6cb0" : "#a0aec0";
+      String borderColor = isActive ? "#0284c7" : "#a8a29e";
 
       html.append(
-              "<div style='background-color:#fff;border:1px solid #e2e8f0;border-left:3px solid ")
+              "<div style='background-color:#fff;border:1px solid #e7e5e4;border-left:3px solid ")
           .append(borderColor)
           .append(";border-radius:6px;padding:16px 20px;margin-bottom:12px;'>");
 
@@ -295,7 +295,7 @@ public class TenantBookletExporter {
               "<span"
                   + " style='display:inline-block;font-size:10px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;padding:2px"
                   + " 10px;"
-                  + "border-radius:3px;margin-bottom:6px;color:#2b6cb0;background-color:#eff6ff;'>")
+                  + "border-radius:3px;margin-bottom:6px;color:#0284c7;background-color:#f0f9ff;'>")
           .append(escapeHtml(type))
           .append("</span>");
       if (isActive) {
@@ -306,17 +306,17 @@ public class TenantBookletExporter {
                 + "Active</span>");
       }
 
-      html.append("<div style='font-size:15px;font-weight:600;color:#1a202c;margin-top:8px;'>")
+      html.append("<div style='font-size:15px;font-weight:600;color:#292524;margin-top:8px;'>")
           .append(escapeHtml(addr.getStreet()))
           .append("</div>");
-      html.append("<div style='font-size:13px;color:#4a5568;margin-top:2px;'>")
+      html.append("<div style='font-size:13px;color:#57534e;margin-top:2px;'>")
           .append(escapeHtml(addr.getCity()));
       if (addr.getPostalCode() != null) {
         html.append(", ").append(escapeHtml(addr.getPostalCode()));
       }
       html.append("</div>");
       if (addr.getCountryCode() != null) {
-        html.append("<div style='font-size:13px;color:#4a5568;'>")
+        html.append("<div style='font-size:13px;color:#57534e;'>")
             .append(escapeHtml(addr.getCountryCode()))
             .append("</div>");
       }
@@ -339,7 +339,7 @@ public class TenantBookletExporter {
     }
 
     appendPageStart(html, "Rental History");
-    html.append("<p style='font-size:13px;color:#718096;margin-bottom:16px;'>")
+    html.append("<p style='font-size:13px;color:#78716c;margin-bottom:16px;'>")
         .append(contracts.size())
         .append(" contract(s) on record</p>");
 
@@ -353,17 +353,17 @@ public class TenantBookletExporter {
       String roleLabel = role != null ? formatEnumValue(role.name()) : "—";
       String statusName = contract.getStatus() != null ? contract.getStatus().name() : "DRAFT";
       boolean isActive = statusName.equals("ACTIVE");
-      String borderColor = isActive ? "#2b6cb0" : "#a0aec0";
+      String borderColor = isActive ? "#0284c7" : "#a8a29e";
 
       html.append(
-              "<div style='background-color:#fff;border:1px solid #e2e8f0;border-left:3px solid ")
+              "<div style='background-color:#fff;border:1px solid #e7e5e4;border-left:3px solid ")
           .append(borderColor)
           .append(";border-radius:6px;padding:20px 24px;margin-bottom:14px;'>");
 
       html.append(
               "<span style='display:inline-block;font-size:10px;font-weight:600;"
                   + "letter-spacing:0.8px;text-transform:uppercase;padding:2px 10px;"
-                  + "border-radius:3px;color:#2b6cb0;background-color:#eff6ff;'>")
+                  + "border-radius:3px;color:#0284c7;background-color:#f0f9ff;'>")
           .append(roleLabel)
           .append("</span>");
 
@@ -381,8 +381,8 @@ public class TenantBookletExporter {
           .append("</span>");
 
       html.append(
-              "<div style='font-size:17px;font-weight:700;color:#1a202c;margin-top:10px;"
-                  + "margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #edf2f7;'>")
+              "<div style='font-size:17px;font-weight:700;color:#292524;margin-top:10px;"
+                  + "margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #f5f5f4;'>")
           .append(propertyName)
           .append("</div>");
 
@@ -452,11 +452,11 @@ public class TenantBookletExporter {
       html.append("<table class='summary-grid'><tr>");
       for (Map.Entry<Integer, BigDecimal[]> entry : yearPayments.entrySet()) {
         html.append(
-            "<td style='background-color:#f7fafc;border-radius:8px;padding:16px;"
+            "<td style='background-color:#fafaf9;border-radius:8px;padding:16px;"
                 + "text-align:center;vertical-align:top;'>");
         html.append(
                 "<div style='font-size:11px;text-transform:uppercase;letter-spacing:1px;"
-                    + "font-weight:600;color:#4a5568;margin-bottom:6px;'>")
+                    + "font-weight:600;color:#57534e;margin-bottom:6px;'>")
             .append(entry.getKey())
             .append("</div>");
         html.append("<div style='font-size:18px;font-weight:700;color:#059669;'>")

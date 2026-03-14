@@ -48,10 +48,9 @@ interface PropertyFormProps {
 }
 
 const selectCls =
-  'w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]';
+  'w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500';
 const inputCls = selectCls;
-const labelCls =
-  'block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1';
+const labelCls = 'block text-sm font-medium text-text-secondary mb-1';
 
 export const PropertyForm = ({
   property,
@@ -434,13 +433,13 @@ export const PropertyForm = ({
     >
       {/* Address Section */}
       <div>
-        <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+        <h3 className="text-lg font-semibold text-text-primary mb-4">
           Address
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
             <label className={labelCls}>
-              Street <span className="text-red-500">*</span>
+              Street <span className="text-error-text">*</span>
             </label>
             <input
               type="text"
@@ -450,13 +449,13 @@ export const PropertyForm = ({
               placeholder="Main Street 123"
             />
             {errors.street && (
-              <p className="text-red-600 text-sm mt-1">{errors.street}</p>
+              <p className="text-error-text text-sm mt-1">{errors.street}</p>
             )}
           </div>
 
           <div>
             <label className={labelCls}>
-              City <span className="text-red-500">*</span>
+              City <span className="text-error-text">*</span>
             </label>
             <input
               type="text"
@@ -466,13 +465,13 @@ export const PropertyForm = ({
               placeholder="Amsterdam"
             />
             {errors.city && (
-              <p className="text-red-600 text-sm mt-1">{errors.city}</p>
+              <p className="text-error-text text-sm mt-1">{errors.city}</p>
             )}
           </div>
 
           <div>
             <label className={labelCls}>
-              Postal Code <span className="text-red-500">*</span>
+              Postal Code <span className="text-error-text">*</span>
             </label>
             <input
               type="text"
@@ -482,13 +481,15 @@ export const PropertyForm = ({
               placeholder="1012 AB"
             />
             {errors.postalCode && (
-              <p className="text-red-600 text-sm mt-1">{errors.postalCode}</p>
+              <p className="text-error-text text-sm mt-1">
+                {errors.postalCode}
+              </p>
             )}
           </div>
 
           <div>
             <label className={labelCls}>
-              Country <span className="text-red-500">*</span>
+              Country <span className="text-error-text">*</span>
             </label>
             <CountrySelector
               value={formData.countryCode}
@@ -504,7 +505,9 @@ export const PropertyForm = ({
               }}
             />
             {errors.countryCode && (
-              <p className="text-red-600 text-sm mt-1">{errors.countryCode}</p>
+              <p className="text-error-text text-sm mt-1">
+                {errors.countryCode}
+              </p>
             )}
           </div>
 
@@ -533,7 +536,7 @@ export const PropertyForm = ({
         {/* Location Preview */}
         {formData.street && formData.city && formData.countryCode && (
           <div className="mt-6">
-            <h4 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-3">
+            <h4 className="text-sm font-semibold text-text-secondary mb-3">
               Location Preview
             </h4>
             <InteractiveMap
@@ -559,23 +562,23 @@ export const PropertyForm = ({
 
       {/* Specifications Section */}
       <div>
-        <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+        <h3 className="text-lg font-semibold text-text-primary mb-4">
           Specifications
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Property Category */}
           <div>
             <label className={labelCls}>
-              Category <span className="text-red-500">*</span>
+              Category <span className="text-error-text">*</span>
             </label>
             {isEditMode ? (
-              <div className="px-3 py-2 bg-[#f1f3f9] dark:bg-[#1e2130] border border-[#c9cfd9] dark:border-[#3a3f54] rounded flex items-center gap-2 text-[#3d4463] dark:text-[#c4c8db]">
+              <div className="px-3 py-2 bg-surface-inset border border-border-strong rounded flex items-center gap-2 text-text-secondary">
                 {(() => {
                   const cat =
                     formData.propertyCategory ?? PropertyCategory.RESIDENTIAL;
                   const CatIcon = PROPERTY_CATEGORY_ICONS[cat];
                   return CatIcon ? (
-                    <CatIcon size={14} className="text-[#9ca0b8]" />
+                    <CatIcon size={14} className="text-text-muted" />
                   ) : null;
                 })()}
                 {
@@ -583,7 +586,7 @@ export const PropertyForm = ({
                     formData.propertyCategory ?? PropertyCategory.RESIDENTIAL
                   ]
                 }
-                <span className="text-xs text-[#9ca0b8] ml-1">
+                <span className="text-xs text-text-muted ml-1">
                   (cannot be changed)
                 </span>
               </div>
@@ -599,7 +602,7 @@ export const PropertyForm = ({
           {/* Property Type (filtered by category) */}
           <div>
             <label className={labelCls}>
-              Type <span className="text-red-500">*</span>
+              Type <span className="text-error-text">*</span>
             </label>
             <IconSelect
               value={formData.propertyType ?? ''}
@@ -611,7 +614,7 @@ export const PropertyForm = ({
           {/* Status */}
           <div>
             <label className={labelCls}>
-              Status <span className="text-red-500">*</span>
+              Status <span className="text-error-text">*</span>
             </label>
             <select
               value={formData.status}
@@ -649,14 +652,14 @@ export const PropertyForm = ({
               <select
                 value={formData.areaUnit ?? 'sqm'}
                 onChange={(e) => handleChange('areaUnit', e.target.value)}
-                className="w-20 border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-2 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+                className="w-20 border border-border-strong rounded px-2 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               >
                 <option value="sqm">m²</option>
                 <option value="sqft">ft²</option>
               </select>
             </div>
             {errors.areaValue && (
-              <p className="text-red-600 text-sm mt-1">{errors.areaValue}</p>
+              <p className="text-error-text text-sm mt-1">{errors.areaValue}</p>
             )}
           </div>
         </div>
@@ -677,11 +680,11 @@ export const PropertyForm = ({
       />
 
       {/* Actions */}
-      <div className="flex gap-2 justify-end mt-6 pt-6 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
+      <div className="flex gap-2 justify-end mt-6 pt-6 border-t border-border-default">
         <button
           type="button"
           onClick={() => navigate('/properties')}
-          className="border border-[#c9cfd9] dark:border-[#3a3f54] px-4 py-2 rounded hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors flex items-center gap-2"
+          className="border border-border-strong px-4 py-2 rounded hover:bg-surface-inset transition-colors flex items-center gap-2"
           disabled={isLoading}
         >
           <X className="h-4 w-4" />
@@ -689,7 +692,7 @@ export const PropertyForm = ({
         </button>
         <button
           type="submit"
-          className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors disabled:opacity-50 flex items-center gap-2"
+          className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors disabled:opacity-50 flex items-center gap-2"
           disabled={isLoading}
         >
           <Save className="h-4 w-4" />

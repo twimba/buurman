@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui';
+import { Button } from '@buurman/ui';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
 import { useEndOccupancyPeriod } from '@/hooks/useOccupancyPeriodHooks';
 import {
@@ -43,14 +43,14 @@ export const EndSelfOccupancyModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-[#14161f] rounded-xl p-6 max-w-md w-full mx-4">
+      <div className="bg-surface-card rounded-lg p-6 max-w-md w-full mx-4">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+          <h3 className="text-lg font-semibold text-text-primary">
             End Self-Occupancy
           </h3>
           <button
             onClick={onClose}
-            className="text-[#6b7194] hover:text-[#1a1d2e] dark:hover:text-[#eef0f6]"
+            className="text-text-secondary hover:text-text-primary"
           >
             <X className="h-5 w-5" />
           </button>
@@ -58,7 +58,7 @@ export const EndSelfOccupancyModal = ({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               End Date *
             </label>
             <input
@@ -66,12 +66,12 @@ export const EndSelfOccupancyModal = ({
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
               required
-              className="w-full px-3 py-2 rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#0c0d14] text-[#1a1d2e] dark:text-[#eef0f6] focus:outline-none focus:ring-2 focus:ring-[#5c7cfa]"
+              className="w-full px-3 py-2 rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Reason
             </label>
             <select
@@ -79,7 +79,7 @@ export const EndSelfOccupancyModal = ({
               onChange={(e) =>
                 setEndReason(e.target.value as OccupancyEndReason | '')
               }
-              className="w-full px-3 py-2 rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#0c0d14] text-[#1a1d2e] dark:text-[#eef0f6] focus:outline-none focus:ring-2 focus:ring-[#5c7cfa]"
+              className="w-full px-3 py-2 rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="">Select a reason...</option>
               {Object.values(OccupancyEndReason).map((r) => (
@@ -91,7 +91,7 @@ export const EndSelfOccupancyModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Notes
             </label>
             <RichTextEditor

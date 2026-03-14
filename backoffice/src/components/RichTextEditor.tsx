@@ -59,8 +59,8 @@ const ToolbarButton = ({
     title={title}
     className={`p-1.5 rounded-md transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
       isActive
-        ? "bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300"
-        : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700"
+        ? "bg-primary-100 text-primary-700"
+        : "text-text-secondary hover:bg-surface-inset"
     }`}
   >
     {children}
@@ -68,7 +68,7 @@ const ToolbarButton = ({
 );
 
 const ToolbarDivider = () => (
-  <div className="w-px h-6 self-center bg-zinc-200 dark:bg-zinc-700 mx-0.5" />
+  <div className="w-px h-6 self-center bg-border-default mx-0.5" />
 );
 
 export const RichTextEditor = ({
@@ -97,8 +97,7 @@ export const RichTextEditor = ({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class:
-            "text-indigo-600 dark:text-indigo-400 underline cursor-pointer",
+          class: "text-primary-600 underline cursor-pointer",
         },
       }),
       Placeholder.configure({ placeholder }),
@@ -166,9 +165,9 @@ export const RichTextEditor = ({
   }
 
   return (
-    <div className="border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden focus-within:border-indigo-400 dark:focus-within:border-indigo-600 focus-within:ring-1 focus-within:ring-indigo-400/30 transition-colors">
+    <div className="border border-border-default rounded-lg overflow-hidden focus-within:border-primary-400 focus-within:ring-1 focus-within:ring-primary-400/30 transition-colors">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700">
+      <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 bg-surface-inset border-b border-border-default">
         {/* Headings */}
         <ToolbarButton
           onClick={() =>
@@ -351,8 +350,8 @@ export const RichTextEditor = ({
 
       {/* Link input popover */}
       {showLinkInput && (
-        <div className="flex items-center gap-2 px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700">
-          <LinkIcon className="h-4 w-4 text-zinc-400 flex-shrink-0" />
+        <div className="flex items-center gap-2 px-3 py-2 bg-surface-inset border-b border-border-default">
+          <LinkIcon className="h-4 w-4 text-text-muted flex-shrink-0" />
           <input
             type="url"
             value={linkUrl}
@@ -367,20 +366,20 @@ export const RichTextEditor = ({
               }
             }}
             placeholder="https://example.com"
-            className="flex-1 text-sm bg-white dark:bg-zinc-700 border border-zinc-200 dark:border-zinc-600 rounded px-2 py-1 outline-none focus:border-indigo-400 dark:focus:border-indigo-600"
+            className="flex-1 text-sm bg-surface-card border border-border-default rounded px-2 py-1 outline-none focus:border-primary-400"
             autoFocus
           />
           <button
             type="button"
             onClick={setLink}
-            className="text-xs font-medium px-2.5 py-1 rounded bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
+            className="text-xs font-medium px-2.5 py-1 rounded bg-primary-600 text-white hover:bg-primary-700 transition-colors"
           >
             Apply
           </button>
           <button
             type="button"
             onClick={() => setShowLinkInput(false)}
-            className="text-xs font-medium px-2.5 py-1 rounded text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+            className="text-xs font-medium px-2.5 py-1 rounded text-text-secondary hover:bg-surface-inset transition-colors"
           >
             Cancel
           </button>

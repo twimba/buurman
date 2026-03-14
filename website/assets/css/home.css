@@ -7,7 +7,7 @@
     position: relative;
     overflow: hidden;
     background:
-        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(92, 124, 250, 0.12), transparent),
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(2, 132, 199, 0.12), transparent),
         linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
     padding: 5rem 0 6rem;
 }
@@ -19,7 +19,7 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(92, 124, 250, 0.2), transparent);
+    background: linear-gradient(90deg, transparent, rgba(2, 132, 199, 0.2), transparent);
 }
 
 .hero-orb {
@@ -32,7 +32,7 @@
     right: -120px;
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, rgba(92, 124, 250, 0.08) 0%, transparent 60%);
+    background: radial-gradient(circle, rgba(2, 132, 199, 0.08) 0%, transparent 60%);
     animation: orb-drift 25s ease-in-out infinite;
 }
 .hero-orb-2 {
@@ -362,7 +362,7 @@
 }
 .feature-card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 20px 40px rgba(92, 124, 250, 0.12);
+    box-shadow: 0 20px 40px rgba(2, 132, 199, 0.12);
     border-color: var(--primary-100);
 }
 .feature-card:hover::before { transform: scaleX(1); }
@@ -431,15 +431,15 @@
 }
 .pricing-card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 20px 40px rgba(92, 124, 250, 0.12);
+    box-shadow: 0 20px 40px rgba(2, 132, 199, 0.12);
 }
 
 .pricing-card.featured {
     border-color: var(--primary);
-    box-shadow: 0 8px 30px rgba(92, 124, 250, 0.15);
+    box-shadow: 0 8px 30px rgba(2, 132, 199, 0.15);
 }
 .pricing-card.featured:hover {
-    box-shadow: 0 24px 50px rgba(92, 124, 250, 0.25);
+    box-shadow: 0 24px 50px rgba(2, 132, 199, 0.25);
     transform: translateY(-8px);
 }
 
@@ -512,7 +512,7 @@
     justify-content: center;
 }
 .check-green { background: rgba(16, 185, 129, 0.12); color: var(--success); }
-.check-blue { background: rgba(92, 124, 250, 0.12); color: var(--primary); }
+.check-blue { background: rgba(2, 132, 199, 0.12); color: var(--primary); }
 
 .pricing-cta { width: 100%; }
 

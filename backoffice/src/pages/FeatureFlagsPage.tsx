@@ -135,33 +135,31 @@ export const FeatureFlagsPage = () => {
     <div className="max-w-5xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-          Feature Flags
-        </h1>
-        <p className="mt-1 text-sm text-[#6b7194] dark:text-[#8b90a8]">
+        <h1 className="text-2xl font-bold text-text-primary">Feature Flags</h1>
+        <p className="mt-1 text-sm text-text-secondary">
           Manage feature flag status across the platform
         </p>
       </div>
 
       {/* Admin not configured warning */}
       {!adminConfigured && (
-        <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/50 rounded-xl">
-          <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+        <div className="flex items-start gap-3 p-4 bg-warning-bg border border-warning-border rounded-lg">
+          <AlertTriangle className="h-5 w-5 text-warning-text flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+            <p className="text-sm font-medium text-warning-text">
               Feature flag management unavailable
             </p>
-            <p className="text-sm text-amber-700 dark:text-amber-400 mt-1">
+            <p className="text-sm text-warning-text mt-1">
               No Flagsmith admin credentials configured. Set{" "}
-              <code className="text-xs bg-amber-100 dark:bg-amber-900/40 px-1 py-0.5 rounded">
+              <code className="text-xs bg-warning-bg px-1 py-0.5 rounded">
                 FLAGSMITH_API_TOKEN
               </code>{" "}
               (Cloud) or{" "}
-              <code className="text-xs bg-amber-100 dark:bg-amber-900/40 px-1 py-0.5 rounded">
+              <code className="text-xs bg-warning-bg px-1 py-0.5 rounded">
                 FLAGSMITH_ADMIN_EMAIL
               </code>{" "}
               +{" "}
-              <code className="text-xs bg-amber-100 dark:bg-amber-900/40 px-1 py-0.5 rounded">
+              <code className="text-xs bg-warning-bg px-1 py-0.5 rounded">
                 FLAGSMITH_ADMIN_PASSWORD
               </code>{" "}
               (self-hosted).
@@ -172,16 +170,14 @@ export const FeatureFlagsPage = () => {
 
       {/* Error banner */}
       {errorMessage && (
-        <div className="flex items-start gap-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/50 rounded-xl">
-          <XCircle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+        <div className="flex items-start gap-3 p-4 bg-error-bg border border-error-border rounded-lg">
+          <XCircle className="h-5 w-5 text-error-text flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <p className="text-sm text-red-800 dark:text-red-300">
-              {errorMessage}
-            </p>
+            <p className="text-sm text-error-text">{errorMessage}</p>
           </div>
           <button
             onClick={() => setErrorMessage(null)}
-            className="text-red-400 hover:text-red-600 dark:hover:text-red-300"
+            className="text-error-text hover:text-error-text"
           >
             <XCircle className="h-4 w-4" />
           </button>
@@ -197,11 +193,11 @@ export const FeatureFlagsPage = () => {
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <Flag className="h-4 w-4 text-[#5c7cfa]" />
-            <h2 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+            <Flag className="h-4 w-4 text-primary-500" />
+            <h2 className="text-sm font-semibold text-text-primary">
               Global Defaults
             </h2>
-            <span className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
+            <span className="text-xs text-text-muted">
               {globalFlagCount} flag{globalFlagCount !== 1 ? "s" : ""}
             </span>
           </div>
@@ -211,10 +207,10 @@ export const FeatureFlagsPage = () => {
           />
         </div>
         <div
-          className={`bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden${!adminConfigured ? " opacity-60 pointer-events-none" : ""}`}
+          className={`bg-surface-card rounded-lg border border-border-default overflow-hidden${!adminConfigured ? " opacity-60 pointer-events-none" : ""}`}
         >
           {globalLoading ? (
-            <div className="text-center py-12 text-[#9ca0b8] dark:text-[#5c6180] text-sm">
+            <div className="text-center py-12 text-text-muted text-sm">
               Loading flags...
             </div>
           ) : (
@@ -231,8 +227,8 @@ export const FeatureFlagsPage = () => {
       {/* User-specific Flags */}
       <section>
         <div className="flex items-center gap-2.5 mb-3">
-          <User className="h-4 w-4 text-[#5c7cfa]" />
-          <h2 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+          <User className="h-4 w-4 text-primary-500" />
+          <h2 className="text-sm font-semibold text-text-primary">
             User-Specific Evaluation
           </h2>
         </div>
@@ -240,7 +236,7 @@ export const FeatureFlagsPage = () => {
         {/* User search */}
         <div className="relative mb-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9ca0b8] dark:text-[#5c6180]" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted " />
             <input
               type="text"
               placeholder="Search by email, name, or identifier..."
@@ -253,12 +249,12 @@ export const FeatureFlagsPage = () => {
               }}
               onFocus={handleFocus}
               onBlur={handleBlur}
-              className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#14161f] text-sm text-[#1a1d2e] dark:text-[#eef0f6] placeholder:text-[#9ca0b8] dark:placeholder:text-[#5c6180] focus:outline-none focus:ring-2 focus:ring-[#5c7cfa]/30 focus:border-[#5c7cfa] transition-all"
+              className="w-full pl-10 pr-10 py-2.5 rounded-lg border border-border-default bg-surface-card text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 transition-all"
             />
             {selectedUser && (
               <button
                 onClick={handleClear}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9ca0b8] hover:text-[#6b7194] dark:hover:text-[#8b90a8] transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-secondary transition-colors"
               >
                 <XCircle className="h-4 w-4" />
               </button>
@@ -267,7 +263,7 @@ export const FeatureFlagsPage = () => {
 
           {/* Dropdown */}
           {showDropdown && !selectedUser && (
-            <div className="absolute z-20 mt-1 w-full bg-white dark:bg-[#14161f] border border-[#e2e6f0] dark:border-[#2a2e3f] rounded-xl shadow-lg overflow-hidden max-h-80 overflow-y-auto">
+            <div className="absolute z-20 mt-1 w-full bg-surface-card border border-border-default rounded-lg shadow-lg overflow-hidden max-h-80 overflow-y-auto">
               {usersData?.content && usersData.content.length > 0 ? (
                 usersData.content.map((user) => (
                   <button
@@ -279,28 +275,28 @@ export const FeatureFlagsPage = () => {
                         `${user.email} — ${user.firstName} ${user.lastName}`,
                       )
                     }
-                    className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-[#f1f3f9] dark:hover:bg-[#1a1d2e] transition-colors"
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-surface-inset transition-colors"
                   >
-                    <div className="h-7 w-7 rounded-full bg-[#5c7cfa]/10 flex items-center justify-center flex-shrink-0">
-                      <span className="text-xs font-semibold text-[#5c7cfa]">
+                    <div className="h-7 w-7 rounded-full bg-primary-500/10 flex items-center justify-center flex-shrink-0">
+                      <span className="text-xs font-semibold text-primary-500">
                         {(user.firstName?.[0] ?? user.email[0]).toUpperCase()}
                       </span>
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] truncate">
+                      <p className="text-sm font-medium text-text-primary truncate">
                         {user.email}
                       </p>
-                      <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] truncate">
+                      <p className="text-xs text-text-secondary truncate">
                         {user.firstName} {user.lastName}
                       </p>
                     </div>
-                    <span className="text-[10px] font-mono text-[#9ca0b8] dark:text-[#5c6180] flex-shrink-0">
+                    <span className="text-[10px] font-mono text-text-muted flex-shrink-0">
                       {user.identifier.slice(0, 8)}...
                     </span>
                   </button>
                 ))
               ) : (
-                <div className="px-4 py-3 text-sm text-[#9ca0b8] dark:text-[#5c6180]">
+                <div className="px-4 py-3 text-sm text-text-muted">
                   No users found
                 </div>
               )}
@@ -312,8 +308,8 @@ export const FeatureFlagsPage = () => {
         {selectedUser ? (
           <UserFeatureFlags userIdentifier={selectedUser} />
         ) : (
-          <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden">
-            <div className="text-center py-12 text-[#9ca0b8] dark:text-[#5c6180]">
+          <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
+            <div className="text-center py-12 text-text-muted">
               <User className="h-10 w-10 mx-auto mb-3 opacity-40" />
               <p className="text-sm">
                 Select a user to see their feature flag evaluation per team

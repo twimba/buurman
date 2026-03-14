@@ -164,13 +164,13 @@ export const OnboardingWizard = ({
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-[#14161f] rounded-2xl shadow-xl max-w-lg w-full overflow-hidden">
+      <div className="bg-surface-card rounded-2xl shadow-xl max-w-lg w-full overflow-hidden">
         {/* Header */}
         <div className="px-8 pt-8 pb-4">
-          <h2 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+          <h2 className="text-2xl font-bold text-text-primary">
             Welcome to Buurman
           </h2>
-          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+          <p className="text-sm text-text-secondary mt-1">
             Let&apos;s set up your team preferences
           </p>
 
@@ -181,10 +181,10 @@ export const OnboardingWizard = ({
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
                     i < stepIndex
-                      ? 'bg-green-500 text-white'
+                      ? 'bg-success-text text-white'
                       : i === stepIndex
-                        ? 'bg-[#5c7cfa] text-white'
-                        : 'bg-[#edf0f7] dark:bg-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8]'
+                        ? 'bg-primary-500 text-white'
+                        : 'bg-neutral-50 text-text-secondary'
                   }`}
                 >
                   {i < stepIndex ? <Check className="h-4 w-4" /> : i + 1}
@@ -192,9 +192,7 @@ export const OnboardingWizard = ({
                 {i < STEPS.length - 1 && (
                   <div
                     className={`w-12 h-0.5 ${
-                      i < stepIndex
-                        ? 'bg-green-500'
-                        : 'bg-[#edf0f7] dark:bg-[#2a2e3f]'
+                      i < stepIndex ? 'bg-success-text' : 'bg-neutral-50'
                     }`}
                   />
                 )}
@@ -208,12 +206,12 @@ export const OnboardingWizard = ({
           {currentStep === 'country' && (
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <Globe className="h-5 w-5 text-[#5c7cfa]" />
-                <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                <Globe className="h-5 w-5 text-primary-500" />
+                <h3 className="text-lg font-semibold text-text-primary">
                   Where are your properties?
                 </h3>
               </div>
-              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-4">
+              <p className="text-sm text-text-secondary mb-4">
                 This sets your default currency and date format.
               </p>
               <input
@@ -221,7 +219,7 @@ export const OnboardingWizard = ({
                 placeholder="Search countries..."
                 value={countrySearch}
                 onChange={(e) => setCountrySearch(e.target.value)}
-                className="w-full px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] mb-3 focus:outline-none focus:ring-1 focus:ring-[#5c7cfa]"
+                className="w-full px-3 py-2 border border-border-strong rounded-lg bg-surface-card text-text-primary mb-3 focus:outline-none focus:ring-1 focus:ring-primary-500"
               />
               <div className="max-h-48 overflow-y-auto space-y-1">
                 {filteredCountries.map((c) => {
@@ -232,8 +230,8 @@ export const OnboardingWizard = ({
                       onClick={() => handleCountrySelect(c.code)}
                       className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2.5 ${
                         country === c.code
-                          ? 'bg-[#5c7cfa] text-white'
-                          : 'hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]'
+                          ? 'bg-primary-500 text-white'
+                          : 'hover:bg-surface-inset text-text-primary'
                       }`}
                     >
                       {flag && <span className="text-base">{flag}</span>}
@@ -260,12 +258,12 @@ export const OnboardingWizard = ({
               return (
                 <div>
                   <div className="flex items-center gap-2 mb-4">
-                    <Coins className="h-5 w-5 text-[#5c7cfa]" />
-                    <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <Coins className="h-5 w-5 text-primary-500" />
+                    <h3 className="text-lg font-semibold text-text-primary">
                       Team Currency
                     </h3>
                   </div>
-                  <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-4">
+                  <p className="text-sm text-text-secondary mb-4">
                     All financial data will use this currency. You can change it
                     later in settings.
                   </p>
@@ -277,18 +275,18 @@ export const OnboardingWizard = ({
                     {/* Suggested */}
                     <button
                       onClick={() => setCurrency(suggestedCurrency)}
-                      className={`rounded-xl border-2 p-4 text-left transition-all ${
+                      className={`rounded-lg border-2 p-4 text-left transition-all ${
                         isSuggested
-                          ? 'border-[#5c7cfa] bg-[#5c7cfa]/5 dark:bg-[#5c7cfa]/10'
-                          : 'border-[#e2e6f0] dark:border-[#2a2e3f] hover:border-[#5c7cfa]/40'
+                          ? 'border-primary-500 bg-primary-500/5 dark:bg-primary-500/10'
+                          : 'border-border-default hover:border-primary-500/40'
                       }`}
                     >
                       <div className="flex items-center gap-1.5 mb-2">
-                        <span className="text-[10px] font-semibold uppercase tracking-wider text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded">
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-success-text bg-success-bg px-1.5 py-0.5 rounded">
                           Suggested for {countryName}
                         </span>
                         {isSuggested && (
-                          <span className="text-[10px] font-semibold uppercase tracking-wider text-[#5c7cfa] bg-[#5c7cfa]/10 px-1.5 py-0.5 rounded">
+                          <span className="text-[10px] font-semibold uppercase tracking-wider text-primary-500 bg-primary-500/10 px-1.5 py-0.5 rounded">
                             Selected
                           </span>
                         )}
@@ -298,16 +296,16 @@ export const OnboardingWizard = ({
                           {getCurrencyFlag(suggestedCurrency)}
                         </span>
                         <div>
-                          <div className="text-lg font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+                          <div className="text-lg font-bold text-text-primary">
                             {suggestedCurrency}
                             {suggestedInfo && (
-                              <span className="ml-1.5 text-sm font-normal text-[#6b7194] dark:text-[#8b90a8]">
+                              <span className="ml-1.5 text-sm font-normal text-text-secondary">
                                 {suggestedInfo.symbol}
                               </span>
                             )}
                           </div>
                           {suggestedInfo && (
-                            <div className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                            <div className="text-xs text-text-secondary">
                               {suggestedInfo.name}
                             </div>
                           )}
@@ -317,9 +315,9 @@ export const OnboardingWizard = ({
 
                     {/* Selected (only when different from suggested) */}
                     {!isSuggested && (
-                      <div className="rounded-xl border-2 border-[#5c7cfa] bg-[#5c7cfa]/5 dark:bg-[#5c7cfa]/10 p-4">
+                      <div className="rounded-lg border-2 border-primary-500 bg-primary-500/5 dark:bg-primary-500/10 p-4">
                         <div className="mb-2">
-                          <span className="text-[10px] font-semibold uppercase tracking-wider text-[#5c7cfa] bg-[#5c7cfa]/10 px-1.5 py-0.5 rounded">
+                          <span className="text-[10px] font-semibold uppercase tracking-wider text-primary-500 bg-primary-500/10 px-1.5 py-0.5 rounded">
                             Selected
                           </span>
                         </div>
@@ -328,16 +326,16 @@ export const OnboardingWizard = ({
                             {getCurrencyFlag(currency)}
                           </span>
                           <div>
-                            <div className="text-lg font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+                            <div className="text-lg font-bold text-text-primary">
                               {currency}
                               {selectedInfo && (
-                                <span className="ml-1.5 text-sm font-normal text-[#6b7194] dark:text-[#8b90a8]">
+                                <span className="ml-1.5 text-sm font-normal text-text-secondary">
                                   {selectedInfo.symbol}
                                 </span>
                               )}
                             </div>
                             {selectedInfo && (
-                              <div className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                              <div className="text-xs text-text-secondary">
                                 {selectedInfo.name}
                               </div>
                             )}
@@ -357,8 +355,8 @@ export const OnboardingWizard = ({
                           onClick={() => setCurrency(c)}
                           className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left ${
                             currency === c
-                              ? 'bg-[#5c7cfa] text-white'
-                              : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] hover:bg-[#e2e6f0] dark:hover:bg-[#262a3a]'
+                              ? 'bg-primary-500 text-white'
+                              : 'bg-surface-inset text-text-primary hover:bg-neutral-100 dark:hover:bg-surface-raised'
                           }`}
                         >
                           <div className="flex items-center gap-1.5">
@@ -372,7 +370,7 @@ export const OnboardingWizard = ({
                               className={`text-[10px] mt-0.5 truncate ${
                                 currency === c
                                   ? 'text-white/70'
-                                  : 'text-[#6b7194] dark:text-[#8b90a8]'
+                                  : 'text-text-secondary'
                               }`}
                             >
                               {info.symbol}
@@ -389,12 +387,12 @@ export const OnboardingWizard = ({
           {currentStep === 'dateFormat' && (
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <Calendar className="h-5 w-5 text-[#5c7cfa]" />
-                <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                <Calendar className="h-5 w-5 text-primary-500" />
+                <h3 className="text-lg font-semibold text-text-primary">
                   Date Format
                 </h3>
               </div>
-              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-4">
+              <p className="text-sm text-text-secondary mb-4">
                 How should dates be displayed?
               </p>
               <div className="space-y-3">
@@ -404,14 +402,14 @@ export const OnboardingWizard = ({
                     onClick={() => setDateFormat(fmt.value)}
                     className={`w-full flex items-center justify-between px-4 py-3 rounded-lg border transition-colors ${
                       dateFormat === fmt.value
-                        ? 'border-[#5c7cfa] bg-[#5c7cfa]/5'
-                        : 'border-[#edf0f7] dark:border-[#2a2e3f] hover:border-[#5c7cfa]/50'
+                        ? 'border-primary-500 bg-primary-500/5'
+                        : 'border-border-default hover:border-primary-500/50'
                     }`}
                   >
-                    <span className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <span className="font-medium text-text-primary">
                       {fmt.label}
                     </span>
-                    <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                    <span className="text-sm text-text-secondary">
                       {fmt.example}
                     </span>
                   </button>
@@ -419,38 +417,32 @@ export const OnboardingWizard = ({
               </div>
 
               {/* Summary */}
-              <div className="mt-6 bg-[#f1f3f9] dark:bg-[#1e2130] rounded-lg p-4">
-                <h4 className="text-sm font-medium text-[#6b7194] dark:text-[#8b90a8] mb-2">
+              <div className="mt-6 bg-surface-inset rounded-lg p-4">
+                <h4 className="text-sm font-medium text-text-secondary mb-2">
                   Summary
                 </h4>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-[#6b7194] dark:text-[#8b90a8]">
-                      Country
-                    </span>
-                    <span className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <span className="text-text-secondary">Country</span>
+                    <span className="font-medium text-text-primary">
                       {getCountryByCode(country)?.flag}{' '}
                       {COUNTRIES.find((c) => c.code === country)?.name}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#6b7194] dark:text-[#8b90a8]">
-                      Currency
-                    </span>
-                    <span className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <span className="text-text-secondary">Currency</span>
+                    <span className="font-medium text-text-primary">
                       {getCurrencyFlag(currency)} {currency}
                       {getCurrencyByCode(currencyList, currency) && (
-                        <span className="text-[#6b7194] dark:text-[#8b90a8] font-normal ml-1">
+                        <span className="text-text-secondary font-normal ml-1">
                           ({getCurrencyByCode(currencyList, currency)?.symbol})
                         </span>
                       )}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#6b7194] dark:text-[#8b90a8]">
-                      Date format
-                    </span>
-                    <span className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <span className="text-text-secondary">Date format</span>
+                    <span className="font-medium text-text-primary">
                       {dateFormat}
                     </span>
                   </div>
@@ -464,7 +456,7 @@ export const OnboardingWizard = ({
         <div className="px-8 pb-8 flex items-center justify-between">
           <button
             onClick={stepIndex === 0 ? onComplete : handleBack}
-            className="px-4 py-2 text-sm font-medium text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:hover:text-[#eef0f6] transition-colors flex items-center gap-1"
+            className="px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors flex items-center gap-1"
           >
             {stepIndex === 0 ? (
               'Skip for now'
@@ -478,7 +470,7 @@ export const OnboardingWizard = ({
           <button
             onClick={isLastStep ? handleComplete : handleNext}
             disabled={completeMutation.isPending}
-            className="px-6 py-2.5 bg-[#5c7cfa] hover:bg-[#4263eb] text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2 disabled:opacity-50"
+            className="px-6 py-2.5 bg-primary-500 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2 disabled:opacity-50"
           >
             {completeMutation.isPending ? (
               'Saving...'

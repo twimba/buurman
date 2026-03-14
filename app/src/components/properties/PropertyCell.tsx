@@ -19,16 +19,16 @@ interface PropertyCellProps {
 }
 
 const statusColors: Record<string, string> = {
-  [PropertyStatus.VACANT]: 'bg-emerald-500',
-  [PropertyStatus.OCCUPIED]: 'bg-blue-500',
-  [PropertyStatus.MAINTENANCE]: 'bg-amber-500',
-  [PropertyStatus.UNAVAILABLE]: 'bg-[#9ca0b8] dark:bg-[#5c6180]',
-  [PropertyStatus.UNDER_RENOVATION]: 'bg-orange-500',
-  [PropertyStatus.FALLOW]: 'bg-stone-500',
-  [PropertyStatus.LISTED]: 'bg-purple-500',
+  [PropertyStatus.VACANT]: 'bg-success-text',
+  [PropertyStatus.OCCUPIED]: 'bg-info-text',
+  [PropertyStatus.MAINTENANCE]: 'bg-warning-text',
+  [PropertyStatus.UNAVAILABLE]: 'bg-neutral-400',
+  [PropertyStatus.UNDER_RENOVATION]: 'bg-warning-text',
+  [PropertyStatus.FALLOW]: 'bg-neutral-500',
+  [PropertyStatus.LISTED]: 'bg-info-text',
 };
 
-const iconCls = 'h-3.5 w-3.5 text-[#9ca0b8] dark:text-[#5c6180] flex-shrink-0';
+const iconCls = 'h-3.5 w-3.5 text-text-muted flex-shrink-0';
 
 const CategoryIcon = ({
   category,
@@ -82,12 +82,12 @@ export const PropertyCell = ({
         p-2
         -m-2
         rounded-lg
-        hover:bg-blue-50 dark:hover:bg-[#1e2130]
+        hover:bg-primary-50
         transition-colors
         focus:outline-none
         focus:ring-2
-        focus:ring-blue-500/20
-      "
+        focus:ring-primary-500/20
+"
     >
       <div className="flex items-start gap-3">
         {/* Status indicator */}
@@ -101,13 +101,13 @@ export const PropertyCell = ({
         {/* Content */}
         <div className="min-w-0 flex-1">
           {/* Street */}
-          <div className="flex items-center gap-1.5 text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] group-hover:text-[#5c7cfa] dark:group-hover:text-blue-400 transition-colors">
+          <div className="flex items-center gap-1.5 text-sm font-medium text-text-primary group-hover:text-primary-500 transition-colors">
             <CategoryIcon category={propertyCategory} type={propertyType} />
             <span className="truncate">{street}</span>
           </div>
 
           {/* City & Postal */}
-          <div className="flex items-center gap-1 mt-0.5 text-xs text-[#6b7194] dark:text-[#8b90a8]">
+          <div className="flex items-center gap-1 mt-0.5 text-xs text-text-secondary">
             <MapPin className="h-3 w-3 flex-shrink-0" />
             <span className="truncate">
               {city}, {postalCode}
@@ -115,7 +115,7 @@ export const PropertyCell = ({
           </div>
 
           {/* Property ID */}
-          <div className="text-[10px] text-[#9ca0b8] dark:text-[#5c6180] mt-0.5 font-mono">
+          <div className="text-[10px] text-text-muted mt-0.5 font-mono">
             #{propertyIdentifier}
           </div>
         </div>

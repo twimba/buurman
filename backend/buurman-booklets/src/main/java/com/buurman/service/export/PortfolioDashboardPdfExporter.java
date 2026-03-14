@@ -157,17 +157,17 @@ public class PortfolioDashboardPdfExporter {
   private void appendCss(StringBuilder css) {
     css.append(
         """
-        body { font-family: 'Helvetica', sans-serif; font-size: 11px; color: #1a1d2e; padding: 20px; }
-        h1 { font-size: 20px; margin-bottom: 4px; color: #1a1d2e; }
-        h2 { font-size: 14px; margin: 20px 0 8px 0; color: #3d4463; border-bottom: 1px solid #e2e6f0; padding-bottom: 4px; }
-        .subtitle { font-size: 11px; color: #6b7194; margin-bottom: 16px; }
+        body { font-family: 'Satoshi', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 11px; color: #292524; padding: 20px; }
+        h1 { font-size: 20px; margin-bottom: 4px; color: #292524; }
+        h2 { font-size: 14px; margin: 20px 0 8px 0; color: #44403c; border-bottom: 1px solid #e7e5e4; padding-bottom: 4px; }
+        .subtitle { font-size: 11px; color: #78716c; margin-bottom: 16px; }
         .summary { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
-        .metric-card { border: 1px solid #e2e6f0; border-radius: 6px; padding: 8px 12px; min-width: 100px; }
-        .metric-label { font-size: 9px; color: #6b7194; text-transform: uppercase; }
-        .metric-value { font-size: 14px; font-weight: bold; color: #1a1d2e; }
+        .metric-card { border: 1px solid #e7e5e4; border-radius: 6px; padding: 8px 12px; min-width: 100px; }
+        .metric-label { font-size: 9px; color: #78716c; text-transform: uppercase; }
+        .metric-value { font-size: 14px; font-weight: bold; color: #292524; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
-        th { background: #f1f3f9; text-align: left; padding: 6px 8px; font-size: 10px; color: #3d4463; }
-        td { padding: 5px 8px; border-bottom: 1px solid #f1f3f9; }
+        th { background: #f5f5f4; text-align: left; padding: 6px 8px; font-size: 10px; color: #44403c; }
+        td { padding: 5px 8px; border-bottom: 1px solid #f5f5f4; }
         .right { text-align: right; }
         .positive { color: #10B981; }
         .negative { color: #EF4444; }

@@ -42,7 +42,7 @@ export const ToolEmbedPage = () => {
   if (!tool) {
     return (
       <div className="flex items-center justify-center h-full">
-        <p className="text-[#6b7194] dark:text-[#8b90a8]">Tool not found.</p>
+        <p className="text-text-secondary">Tool not found.</p>
       </div>
     );
   }
@@ -61,16 +61,16 @@ export const ToolEmbedPage = () => {
           justifyContent: "space-between",
           flexShrink: 0,
         }}
-        className="px-4 py-2 border-b border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#14161f]"
+        className="px-4 py-2 border-b border-border-default bg-surface-card"
       >
-        <span className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+        <span className="text-sm font-semibold text-text-primary">
           {tool.name}
         </span>
         <a
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#5c7cfa] dark:text-[#91a7ff] bg-[#f0f4ff] dark:bg-[#5c7cfa]/10 rounded-lg hover:bg-[#e0e7ff] dark:hover:bg-[#5c7cfa]/20 transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary-500 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors"
         >
           Open in new tab
           <ExternalLink className="h-3 w-3" />

@@ -13,8 +13,7 @@ import {
 import { usePayments } from '@/hooks/usePaymentHooks';
 import { useExpenses } from '@/hooks/useExpenseHooks';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { RefreshButton } from '@/components/ui/RefreshButton';
-import { Pagination } from '@/components/ui/Pagination';
+import { RefreshButton, Pagination } from '@buurman/ui';
 import { PaymentStatus } from '@/types/payment';
 import client from '@/api/client';
 import { useFormatDate } from '@/hooks/useFormatDate';
@@ -320,12 +319,12 @@ export const TransactionHistoryPage = () => {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <List className="h-8 w-8 text-[#5c7cfa] dark:text-[#91a7ff]" />
-            <h1 className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+            <List className="h-8 w-8 text-primary-500 dark:text-primary-300" />
+            <h1 className="text-3xl font-bold text-text-primary">
               Transaction History
             </h1>
           </div>
-          <p className="text-[#6b7194] dark:text-[#8b90a8] ml-11">
+          <p className="text-text-secondary ml-11">
             Complete history of income and expenses
           </p>
         </div>
@@ -348,7 +347,7 @@ export const TransactionHistoryPage = () => {
               />
               <button
                 onClick={handleDownloadPDF}
-                className="flex items-center gap-2 px-4 py-2 bg-[#5c7cfa] text-white rounded-md hover:bg-[#4c6ef5] transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600 transition-colors"
               >
                 <FileText className="h-4 w-4" />
                 PDF
@@ -360,53 +359,53 @@ export const TransactionHistoryPage = () => {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-sm p-6 border border-green-200">
+        <div className="bg-success-bg rounded-lg shadow-sm p-6 border border-success-border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-green-700 font-medium mb-1">
+              <p className="text-sm text-success-text font-medium mb-1">
                 Total Income
               </p>
-              <p className="text-2xl font-bold text-green-900">
+              <p className="text-2xl font-bold text-success-text">
                 {formatCurrency(totals.income, defaultCurrency)}
               </p>
             </div>
-            <TrendingUp className="h-8 w-8 text-green-500" />
+            <TrendingUp className="h-8 w-8 text-success-text" />
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl shadow-sm p-6 border border-red-200">
+        <div className="bg-error-bg rounded-lg shadow-sm p-6 border border-error-border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-red-700 font-medium mb-1">
+              <p className="text-sm text-error-text font-medium mb-1">
                 Total Expenses
               </p>
-              <p className="text-2xl font-bold text-red-900">
+              <p className="text-2xl font-bold text-error-text">
                 {formatCurrency(totals.expenses, defaultCurrency)}
               </p>
             </div>
-            <TrendingDown className="h-8 w-8 text-red-500" />
+            <TrendingDown className="h-8 w-8 text-error-text" />
           </div>
         </div>
 
         <div
           className={`bg-gradient-to-br ${
             totals.net >= 0
-              ? 'from-blue-50 to-blue-100 border-blue-200'
-              : 'from-orange-50 to-orange-100 border-orange-200'
-          } rounded-xl shadow-sm p-6 border`}
+              ? 'bg-info-bg border-info-border'
+              : 'bg-warning-bg border-warning-border'
+          } rounded-lg shadow-sm p-6 border`}
         >
           <div className="flex items-center justify-between">
             <div>
               <p
                 className={`text-sm font-medium mb-1 ${
-                  totals.net >= 0 ? 'text-blue-700' : 'text-orange-700'
+                  totals.net >= 0 ? 'text-info-text' : 'text-warning-text'
                 }`}
               >
                 Net Total
               </p>
               <p
                 className={`text-2xl font-bold ${
-                  totals.net >= 0 ? 'text-blue-900' : 'text-orange-900'
+                  totals.net >= 0 ? 'text-info-text' : 'text-warning-text'
                 }`}
               >
                 {formatCurrency(totals.net, defaultCurrency)}
@@ -414,7 +413,7 @@ export const TransactionHistoryPage = () => {
             </div>
             <ArrowUpDown
               className={`h-8 w-8 ${
-                totals.net >= 0 ? 'text-blue-500' : 'text-orange-500'
+                totals.net >= 0 ? 'text-info-text' : 'text-warning-text'
               }`}
             />
           </div>
@@ -422,11 +421,11 @@ export const TransactionHistoryPage = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-6 mb-6">
+      <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-muted " />
             <input
               type="text"
               placeholder="Search transactions..."
@@ -435,20 +434,20 @@ export const TransactionHistoryPage = () => {
                 setSearchTerm(e.target.value);
                 setCurrentPage(0);
               }}
-              className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           {/* Type Filter */}
           <div className="relative">
-            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-muted " />
             <select
               value={typeFilter}
               onChange={(e) => {
                 setTypeFilter(e.target.value as TransactionType);
                 setCurrentPage(0);
               }}
-              className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="ALL">All Types</option>
               <option value="INCOME">Income Only</option>
@@ -458,7 +457,7 @@ export const TransactionHistoryPage = () => {
 
           {/* Start Date */}
           <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-muted " />
             <input
               type="date"
               value={startDate}
@@ -466,13 +465,13 @@ export const TransactionHistoryPage = () => {
                 setStartDate(e.target.value);
                 setCurrentPage(0);
               }}
-              className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           {/* End Date */}
           <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-muted " />
             <input
               type="date"
               value={endDate}
@@ -480,7 +479,7 @@ export const TransactionHistoryPage = () => {
                 setEndDate(e.target.value);
                 setCurrentPage(0);
               }}
-              className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
         </div>
@@ -492,18 +491,16 @@ export const TransactionHistoryPage = () => {
           <LoadingSpinner />
         </div>
       ) : filteredAndSortedTransactions.length === 0 ? (
-        <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-sm p-12 text-center">
-          <p className="text-[#6b7194] dark:text-[#8b90a8]">
-            No transactions found
-          </p>
+        <div className="bg-surface-card rounded-lg shadow-sm p-12 text-center">
+          <p className="text-text-secondary">No transactions found</p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-sm overflow-hidden">
-          <table className="min-w-full divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
-            <thead className="bg-[#f8f9fc] dark:bg-[#0c0d14]">
+        <div className="bg-surface-card rounded-lg shadow-sm overflow-hidden">
+          <table className="min-w-full divide-y divide-border-default">
+            <thead className="bg-surface-page">
               <tr>
                 <th
-                  className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] dark:bg-[#1e2130]"
+                  className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                   onClick={() => handleSort('date')}
                 >
                   <div className="flex items-center gap-1">
@@ -513,17 +510,17 @@ export const TransactionHistoryPage = () => {
                     )}
                   </div>
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                   Type
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                   Description
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                   Property
                 </th>
                 <th
-                  className="px-6 py-3 text-right text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] dark:bg-[#1e2130]"
+                  className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                   onClick={() => handleSort('amount')}
                 >
                   <div className="flex items-center justify-end gap-1">
@@ -535,22 +532,22 @@ export const TransactionHistoryPage = () => {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-[#14161f] divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
+            <tbody className="bg-surface-card divide-y divide-border-default">
               {paginatedTransactions.map((transaction) => (
                 <tr
                   key={`${transaction.type}-${transaction.id}`}
-                  className="hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] dark:bg-[#0c0d14] cursor-pointer transition-colors"
+                  className="hover:bg-primary-50 cursor-pointer transition-colors"
                   onClick={() => handleRowClick(transaction)}
                 >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
                     {formatDate(transaction.date)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
                       className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
                         transaction.type === 'INCOME'
-                          ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
-                          : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
+                          ? 'bg-success-bg text-success-text'
+                          : 'bg-error-bg text-error-text'
                       }`}
                     >
                       {transaction.type === 'INCOME' ? (
@@ -561,17 +558,17 @@ export const TransactionHistoryPage = () => {
                       {transaction.type}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                  <td className="px-6 py-4 text-sm text-text-primary">
                     {transaction.description}
                   </td>
-                  <td className="px-6 py-4 text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                  <td className="px-6 py-4 text-sm text-text-secondary">
                     {transaction.property}
                   </td>
                   <td
                     className={`px-6 py-4 whitespace-nowrap text-sm font-semibold text-right ${
                       transaction.type === 'INCOME'
-                        ? 'text-green-600'
-                        : 'text-red-600'
+                        ? 'text-success-text'
+                        : 'text-error-text'
                     }`}
                   >
                     {transaction.type === 'INCOME' ? '+' : '-'}

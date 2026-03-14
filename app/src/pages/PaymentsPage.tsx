@@ -6,9 +6,8 @@ import {
   usePaymentStats,
   useDeletePayment,
 } from '@/hooks/usePaymentHooks';
-import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { ConfirmDialog, Pagination } from '@buurman/ui';
 import { usePagination } from '@/hooks/usePagination';
-import { Pagination } from '@/components/ui/Pagination';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 import { ContractCell } from '@/components/contracts/ContractCell';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
@@ -43,7 +42,7 @@ import {
 } from 'recharts';
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { RefreshButton } from '@/components/ui/RefreshButton';
+import { RefreshButton } from '@buurman/ui';
 
 const statusFilters = [
   { value: undefined, label: 'All Statuses' },
@@ -138,11 +137,9 @@ export const PaymentsPage = () => {
           <div>
             <div className="flex items-center gap-3 mb-1">
               <DollarSign className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-              <h1 className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-                Payments
-              </h1>
+              <h1 className="text-3xl font-bold text-text-primary">Payments</h1>
             </div>
-            <p className="text-[#6b7194] dark:text-[#8b90a8] ml-11">
+            <p className="text-text-secondary ml-11">
               Track rent payments and income
             </p>
           </div>
@@ -154,7 +151,7 @@ export const PaymentsPage = () => {
             <button
               onClick={() => navigate('/payments/new')}
               disabled={!canEditData}
-              className="text-[#3d4463] dark:text-[#c4c8db] border border-[#c9cfd9] dark:border-[#3a3f54] px-4 py-2 rounded hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="text-text-secondary border border-border-strong px-4 py-2 rounded hover:bg-surface-inset transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Plus className="h-5 w-5" />
               Schedule Payment
@@ -162,7 +159,7 @@ export const PaymentsPage = () => {
             <button
               onClick={() => navigate('/payments/new?register=true')}
               disabled={!canEditData}
-              className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5c7cfa]"
+              className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
             >
               <CalendarCheck className="h-5 w-5" />
               Register Payment
@@ -174,17 +171,17 @@ export const PaymentsPage = () => {
         {paymentStats && (
           <div className="mb-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Pending Payments */}
-            <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-6">
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-medium text-[#6b7194] dark:text-[#8b90a8]">
+                <h3 className="text-sm font-medium text-text-secondary">
                   Pending Payments
                 </h3>
-                <Clock className="h-5 w-5 text-yellow-500" />
+                <Clock className="h-5 w-5 text-warning-text" />
               </div>
-              <p className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+              <p className="text-3xl font-bold text-text-primary">
                 {fmtMoney(paymentStats.pendingAmount, statsCurrency)}
               </p>
-              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+              <p className="text-sm text-text-secondary mt-1">
                 {paymentStats.pendingCount} payment
                 {paymentStats.pendingCount !== 1 ? 's' : ''}
               </p>
@@ -192,50 +189,50 @@ export const PaymentsPage = () => {
 
             {/* Overdue Payments */}
             <div
-              className={`rounded-xl shadow-sm p-6 transition-colors ${
+              className={`rounded-lg shadow-sm border border-border-default p-6 transition-colors ${
                 paymentStats.overdueCount > 0
-                  ? 'bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/30 dark:to-red-800/30 border-2 border-red-200 dark:border-red-800'
-                  : 'bg-white dark:bg-[#14161f]'
+                  ? 'bg-error-bg border-2 border-error-border'
+                  : 'bg-surface-card'
               }`}
             >
               <div className="flex items-center justify-between mb-2">
                 <h3
                   className={`text-sm font-medium ${
                     paymentStats.overdueCount > 0
-                      ? 'text-red-700 dark:text-red-300'
-                      : 'text-[#6b7194] dark:text-[#8b90a8]'
+                      ? 'text-error-text'
+                      : 'text-text-secondary'
                   }`}
                 >
                   Overdue Payments
                 </h3>
                 {paymentStats.overdueCount > 0 ? (
-                  <AlertTriangle className="h-5 w-5 text-red-600 animate-pulse" />
+                  <AlertTriangle className="h-5 w-5 text-error-text animate-pulse" />
                 ) : (
-                  <CheckCircle className="h-5 w-5 text-green-500" />
+                  <CheckCircle className="h-5 w-5 text-success-text" />
                 )}
               </div>
               {paymentStats.overdueCount > 0 ? (
                 <>
-                  <p className="text-3xl font-bold text-red-600 dark:text-red-400">
+                  <p className="text-3xl font-bold text-error-text">
                     {fmtMoney(paymentStats.overdueAmount, statsCurrency)}
                   </p>
-                  <p className="text-sm text-red-700 dark:text-red-300 mt-1 font-medium">
+                  <p className="text-sm text-error-text mt-1 font-medium">
                     {paymentStats.overdueCount} payment
                     {paymentStats.overdueCount !== 1 ? 's' : ''} past due
                   </p>
-                  <p className="text-xs text-red-600 dark:text-red-400 mt-2">
+                  <p className="text-xs text-error-text mt-2">
                     Action required: Review overdue payments
                   </p>
                 </>
               ) : (
                 <>
-                  <p className="text-3xl font-bold text-green-600 dark:text-green-400">
+                  <p className="text-3xl font-bold text-success-text">
                     {fmtMoney(0, statsCurrency)}
                   </p>
-                  <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                  <p className="text-sm text-text-secondary mt-1">
                     All caught up!
                   </p>
-                  <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-2">
+                  <p className="text-xs text-text-secondary mt-2">
                     No overdue payments. Keep up the great work!
                   </p>
                 </>
@@ -243,12 +240,12 @@ export const PaymentsPage = () => {
             </div>
 
             {/* 6-Month Revenue Chart */}
-            <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-6">
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-[#6b7194] dark:text-[#8b90a8]">
+                <h3 className="text-sm font-medium text-text-secondary">
                   Last 6 Months
                 </h3>
-                <TrendingUp className="h-5 w-5 text-green-500" />
+                <TrendingUp className="h-5 w-5 text-success-text" />
               </div>
               <ResponsiveContainer width="100%" height={80}>
                 <AreaChart data={paymentStats.monthlyTrend}>
@@ -289,12 +286,10 @@ export const PaymentsPage = () => {
         )}
 
         {/* Filter Bar */}
-        <div className="mb-6 bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
+        <div className="mb-6 bg-surface-card rounded-lg border border-border-default p-4">
           <div className="flex items-center gap-2 mb-3">
-            <Filter className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
-            <h3 className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-              Filters
-            </h3>
+            <Filter className="h-5 w-5 text-text-secondary " />
+            <h3 className="font-semibold text-text-primary">Filters</h3>
           </div>
 
           <div className="flex flex-col gap-4">
@@ -311,7 +306,7 @@ export const PaymentsPage = () => {
             <div className="flex flex-col lg:flex-row gap-4">
               {/* Property Filter */}
               <div className="lg:w-72">
-                <label className="block text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                <label className="block text-xs font-medium text-text-secondary mb-1">
                   Property
                 </label>
                 <PropertySelector
@@ -327,7 +322,7 @@ export const PaymentsPage = () => {
 
               {/* Contract Filter */}
               <div className="lg:w-72">
-                <label className="block text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                <label className="block text-xs font-medium text-text-secondary mb-1">
                   Contract
                 </label>
                 <ContractSelector
@@ -344,7 +339,7 @@ export const PaymentsPage = () => {
 
               {/* Status Filter */}
               <div className="flex-1">
-                <label className="block text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                <label className="block text-xs font-medium text-text-secondary mb-1">
                   Status
                 </label>
                 <div className="flex gap-2 flex-wrap">
@@ -357,8 +352,8 @@ export const PaymentsPage = () => {
                       }}
                       className={`px-4 py-2 rounded transition-colors text-sm ${
                         statusFilter === filter.value
-                          ? 'bg-[#5c7cfa] text-white'
-                          : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#e8ecf4] dark:bg-[#1e2130] dark:hover:bg-[#3a3f54]'
+                          ? 'bg-primary-500 text-white'
+                          : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
                       }`}
                     >
                       {filter.label}
@@ -373,12 +368,12 @@ export const PaymentsPage = () => {
         {/* Payments Table */}
         {paymentsData?.content && paymentsData.content.length > 0 ? (
           <>
-            <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-sm overflow-hidden mb-4">
-              <table className="min-w-full divide-y divide-[#edf0f7] dark:divide-[#2a2e3f] dark:divide-[#2a2e3f]">
-                <thead className="bg-[#f8f9fc] dark:bg-[#0c0d14]">
+            <div className="bg-surface-card rounded-lg shadow-sm overflow-hidden mb-4">
+              <table className="min-w-full divide-y divide-border-default">
+                <thead className="bg-surface-page">
                   <tr>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                      className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                       onClick={() => handleSortChange('dueDate')}
                     >
                       <div className="flex items-center gap-1">
@@ -386,14 +381,14 @@ export const PaymentsPage = () => {
                         <ArrowUpDown className="h-4 w-4" />
                       </div>
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                       Payment #
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider min-w-[280px]">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider min-w-[280px]">
                       Contract
                     </th>
                     <th
-                      className="px-6 py-3 text-right text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                      className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                       onClick={() => handleSortChange('amount')}
                     >
                       <div className="flex items-center justify-end gap-1">
@@ -402,7 +397,7 @@ export const PaymentsPage = () => {
                       </div>
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                      className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                       onClick={() => handleSortChange('status')}
                     >
                       <div className="flex items-center gap-1">
@@ -410,23 +405,23 @@ export const PaymentsPage = () => {
                         <ArrowUpDown className="h-4 w-4" />
                       </div>
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider"></th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider"></th>
                   </tr>
                 </thead>
-                <tbody className="bg-white dark:bg-[#14161f] divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
+                <tbody className="bg-surface-card divide-y divide-border-default">
                   {paymentsData.content.map((payment) => (
                     <tr
                       key={payment.identifier}
-                      className="hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] cursor-pointer"
+                      className="hover:bg-primary-50 cursor-pointer"
                       onClick={() =>
                         navigate(`/payments/${payment.identifier}`)
                       }
                     >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
                         {formatDate(payment.dueDate)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                        <span className="text-sm font-medium text-text-primary">
                           #{payment.identifier}
                         </span>
                       </td>
@@ -442,12 +437,12 @@ export const PaymentsPage = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right">
                         <div>
-                          <span className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                          <span className="text-sm font-semibold text-text-primary">
                             {fmtMoney(payment.amount, payment.currency)}
                           </span>
                           {payment.receivedAmount > 0 &&
                             payment.status !== PaymentStatus.PAID && (
-                              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                              <p className="text-xs text-text-secondary">
                                 Balance:{' '}
                                 {fmtMoney(
                                   payment.balance ?? 0,
@@ -467,7 +462,7 @@ export const PaymentsPage = () => {
                               e.stopPropagation();
                               navigate(`/payments/${payment.identifier}`);
                             }}
-                            className="p-1.5 rounded hover:bg-[#e8ecf4] dark:hover:bg-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8] hover:text-[#5c7cfa] dark:hover:text-[#748ffc] transition-colors"
+                            className="p-1.5 rounded hover:bg-neutral-100 text-text-secondary hover:text-primary-500 transition-colors"
                             title="View payment"
                           >
                             <Eye className="h-4 w-4" />
@@ -478,7 +473,7 @@ export const PaymentsPage = () => {
                                 e.stopPropagation();
                                 setDeleteTarget(payment.identifier);
                               }}
-                              className="p-1.5 rounded hover:bg-red-50 dark:hover:bg-red-900/20 text-[#6b7194] dark:text-[#8b90a8] hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                              className="p-1.5 rounded hover:bg-error-bg text-text-secondary hover:text-error-text transition-colors"
                               title="Delete payment"
                             >
                               <Trash2 className="h-4 w-4" />
@@ -504,12 +499,12 @@ export const PaymentsPage = () => {
             )}
           </>
         ) : (
-          <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] p-12 text-center">
-            <DollarSign className="h-12 w-12 text-[#9ca0b8] dark:text-[#5c6180] mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
+          <div className="bg-surface-card rounded-lg border border-border-default p-12 text-center">
+            <DollarSign className="h-12 w-12 text-text-muted mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-text-primary mb-2">
               No payments found
             </h3>
-            <p className="text-[#6b7194] dark:text-[#8b90a8] mb-6">
+            <p className="text-text-secondary mb-6">
               {statusFilter || propertyFilter || contractFilter
                 ? 'Try adjusting your filters'
                 : 'Get started by recording your first payment'}
@@ -519,7 +514,7 @@ export const PaymentsPage = () => {
                 <button
                   onClick={() => navigate('/payments/new')}
                   disabled={!canEditData}
-                  className="text-[#3d4463] dark:text-[#c4c8db] border border-[#c9cfd9] dark:border-[#3a3f54] px-4 py-2 rounded hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="text-text-secondary border border-border-strong px-4 py-2 rounded hover:bg-surface-inset transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Plus className="h-5 w-5" />
                   Schedule Payment
@@ -527,7 +522,7 @@ export const PaymentsPage = () => {
                 <button
                   onClick={() => navigate('/payments/new?register=true')}
                   disabled={!canEditData}
-                  className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5c7cfa]"
+                  className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
                 >
                   <CalendarCheck className="h-5 w-5" />
                   Register Payment

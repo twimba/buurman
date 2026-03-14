@@ -154,7 +154,7 @@ export const MoneyInput = ({
           <button
             type="button"
             onClick={() => setDropdownOpen((o) => !o)}
-            className="inline-flex items-center gap-1 px-3 h-full rounded-l-md border border-r-0 border-[#c9cfd9] dark:border-[#3a3f54] bg-[#f5f6fa] dark:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8] text-sm hover:bg-[#eef0f6] dark:hover:bg-[#262a3a] cursor-pointer transition-colors"
+            className="inline-flex items-center gap-1 px-3 h-full rounded-l-md border border-r-0 border-border-strong bg-surface-inset text-text-secondary text-sm hover:bg-neutral-100 dark:hover:bg-surface-raised cursor-pointer transition-colors"
           >
             {symbol}
             <ChevronDown
@@ -162,7 +162,7 @@ export const MoneyInput = ({
             />
           </button>
         ) : (
-          <span className="inline-flex items-center px-3 h-full rounded-l-md border border-r-0 border-[#c9cfd9] dark:border-[#3a3f54] bg-[#f5f6fa] dark:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8] text-sm">
+          <span className="inline-flex items-center px-3 h-full rounded-l-md border border-r-0 border-border-strong bg-surface-inset text-text-secondary text-sm">
             {symbol}
           </span>
         )}
@@ -190,8 +190,8 @@ export const MoneyInput = ({
         min={min}
         max={max}
         className={`flex-1 px-3 py-2 border rounded-r-md ${
-          error ? 'border-red-500' : 'border-[#c9cfd9] dark:border-[#3a3f54]'
-        } bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] focus:outline-none focus:ring-1 focus:ring-[#5c7cfa] focus:border-[#5c7cfa] ${className}`}
+          error ? 'border-error-border' : 'border-border-strong'
+        } bg-surface-card text-text-primary focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 ${className}`}
       />
     </div>
   );

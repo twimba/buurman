@@ -1,6 +1,7 @@
-import { ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+import { cn } from "../utils/cn";
 
 interface PageHeaderProps {
   /** Main title of the page */
@@ -31,22 +32,22 @@ export const PageHeader = ({
   const navigate = useNavigate();
 
   return (
-    <div className="bg-white/80 dark:bg-[#14161f]/80 backdrop-blur-sm border-b border-[#e2e6f0] dark:border-[#2a2e3f] -mx-4 px-4 py-4 mb-6">
+    <div className="bg-surface-card/80 backdrop-blur-sm border-b border-border-default -mx-4 px-4 py-4 mb-6">
       <div>
         <div className="flex items-center justify-between gap-6">
           {/* Left side: Back button + content */}
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <button
               onClick={() => navigate(backTo)}
-              className="
-                flex-shrink-0
-                p-2 -ml-2
-                text-[#9ca0b8] dark:text-[#5c6180]
-                hover:text-[#3d4463] dark:hover:text-[#c4c8db]
-                hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]
-                rounded-lg
-                transition-colors
-              "
+              className={cn(
+                "flex-shrink-0",
+                "p-2 -ml-2",
+                "text-text-muted",
+                "hover:text-text-primary",
+                "hover:bg-neutral-50",
+                "rounded-lg",
+                "transition-colors",
+              )}
               aria-label="Go back"
             >
               <ArrowLeft className="h-5 w-5" />
@@ -56,7 +57,7 @@ export const PageHeader = ({
 
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] truncate">
+                <h1 className="text-lg font-semibold text-text-primary truncate">
                   {title}
                 </h1>
                 {badge}
@@ -64,17 +65,15 @@ export const PageHeader = ({
               {(subtitle || description) && (
                 <div className="flex items-center gap-2 mt-0.5">
                   {subtitle && (
-                    <span className="text-sm text-[#6b7194] dark:text-[#8b90a8] font-medium">
+                    <span className="text-sm text-text-secondary font-medium">
                       {subtitle}
                     </span>
                   )}
                   {subtitle && description && (
-                    <span className="text-[#c9cfd9] dark:text-[#3a3f54]">
-                      ·
-                    </span>
+                    <span className="text-border-strong">·</span>
                   )}
                   {description && (
-                    <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                    <span className="text-sm text-text-secondary">
                       {description}
                     </span>
                   )}

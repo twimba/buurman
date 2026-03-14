@@ -63,10 +63,10 @@ export const TeamDetailPage = () => {
   if (error || !team) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-600 dark:text-red-400">Failed to load team.</p>
+        <p className="text-error-text">Failed to load team.</p>
         <button
           onClick={() => navigate("/teams")}
-          className="mt-4 text-sm text-[#5c7cfa] hover:underline"
+          className="mt-4 text-sm text-primary-500 hover:underline"
         >
           Back to teams
         </button>
@@ -130,8 +130,8 @@ export const TeamDetailPage = () => {
 
       {/* Inline Edit Form */}
       {isEditing && (
-        <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-5 mb-6">
-          <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+        <div className="bg-surface-card rounded-lg border border-border-default p-5 mb-6">
+          <label className="block text-sm font-medium text-text-secondary mb-1.5">
             Team Name
           </label>
           <div className="flex items-center gap-3">
@@ -139,7 +139,7 @@ export const TeamDetailPage = () => {
               type="text"
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
-              className="w-full max-w-md px-3 py-2.5 text-sm rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] focus:outline-none focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa]/20 transition-colors"
+              className="w-full max-w-md px-3 py-2.5 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors"
               autoFocus
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
@@ -241,15 +241,15 @@ export const TeamDetailPage = () => {
 
       {/* Financial Snapshot */}
       <SectionTitle title="Financial Snapshot" />
-      <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-5 mb-6">
+      <div className="bg-surface-card rounded-lg border border-border-default p-5 mb-6">
         <div className="flex flex-col lg:flex-row lg:items-start gap-6">
           {/* Total Active Rent */}
           <div className="flex-shrink-0">
-            <p className="text-xs font-medium uppercase tracking-wider text-[#9ca0b8] dark:text-[#5c6180] mb-1">
+            <p className="text-xs font-medium uppercase tracking-wider text-text-muted mb-1">
               Monthly Active Rent
             </p>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-emerald-700 dark:text-emerald-300">
+              <span className="text-3xl font-bold text-success-text">
                 {team.financialSnapshot.currency
                   ? formatMoney(
                       team.financialSnapshot.totalActiveRent,
@@ -288,24 +288,24 @@ export const TeamDetailPage = () => {
 
       {/* Members Table */}
       <SectionTitle title="Team Members" />
-      <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden mb-6">
+      <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden mb-6">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-                <th className="text-left px-5 py-3 text-xs font-medium uppercase tracking-wider text-[#9ca0b8] dark:text-[#5c6180]">
+              <tr className="border-b border-border-default">
+                <th className="text-left px-5 py-3 text-xs font-medium uppercase tracking-wider text-text-muted">
                   Member
                 </th>
-                <th className="text-left px-5 py-3 text-xs font-medium uppercase tracking-wider text-[#9ca0b8] dark:text-[#5c6180]">
+                <th className="text-left px-5 py-3 text-xs font-medium uppercase tracking-wider text-text-muted">
                   Email
                 </th>
-                <th className="text-left px-5 py-3 text-xs font-medium uppercase tracking-wider text-[#9ca0b8] dark:text-[#5c6180]">
+                <th className="text-left px-5 py-3 text-xs font-medium uppercase tracking-wider text-text-muted">
                   Role
                 </th>
-                <th className="text-left px-5 py-3 text-xs font-medium uppercase tracking-wider text-[#9ca0b8] dark:text-[#5c6180]">
+                <th className="text-left px-5 py-3 text-xs font-medium uppercase tracking-wider text-text-muted">
                   Joined
                 </th>
-                <th className="text-left px-5 py-3 text-xs font-medium uppercase tracking-wider text-[#9ca0b8] dark:text-[#5c6180]">
+                <th className="text-left px-5 py-3 text-xs font-medium uppercase tracking-wider text-text-muted">
                   Status
                 </th>
               </tr>
@@ -314,39 +314,39 @@ export const TeamDetailPage = () => {
               {team.members.map((member, idx) => (
                 <tr
                   key={idx}
-                  className={`border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0 ${member.disabled ? "opacity-50" : ""}`}
+                  className={`border-b border-border-default last:border-b-0 ${member.disabled ? "opacity-50" : ""}`}
                 >
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <span className="font-medium text-text-primary">
                         {member.firstName ?? ""} {member.lastName ?? ""}
                       </span>
                       {member.isOwner && (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 px-1.5 py-0.5 rounded">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded">
                           <Crown className="h-2.5 w-2.5" />
                           Owner
                         </span>
                       )}
                     </div>
                   </td>
-                  <td className="px-5 py-3 text-[#6b7194] dark:text-[#8b90a8]">
+                  <td className="px-5 py-3 text-text-secondary">
                     {member.email ?? "—"}
                   </td>
                   <td className="px-5 py-3">
                     <RoleBadge role={member.role} />
                   </td>
-                  <td className="px-5 py-3 text-[#6b7194] dark:text-[#8b90a8]">
+                  <td className="px-5 py-3 text-text-secondary">
                     {member.joinedAt
                       ? format(new Date(member.joinedAt), "dd MMM yyyy")
                       : "—"}
                   </td>
                   <td className="px-5 py-3">
                     {member.disabled ? (
-                      <span className="inline-flex items-center text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-2 py-0.5 rounded-full">
+                      <span className="inline-flex items-center text-xs font-medium bg-error-bg text-error-text px-2 py-0.5 rounded-full">
                         Disabled
                       </span>
                     ) : (
-                      <span className="inline-flex items-center text-xs font-medium bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full">
+                      <span className="inline-flex items-center text-xs font-medium bg-success-bg text-success-text px-2 py-0.5 rounded-full">
                         Active
                       </span>
                     )}
@@ -362,10 +362,10 @@ export const TeamDetailPage = () => {
       <SectionTitle title="Team Settings" />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
         {/* Payment Settings */}
-        <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-5">
+        <div className="bg-surface-card rounded-lg border border-border-default p-5">
           <div className="flex items-center gap-2 mb-4">
-            <Settings className="h-4 w-4 text-[#5c7cfa] dark:text-[#91a7ff]" />
-            <h3 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+            <Settings className="h-4 w-4 text-primary-500" />
+            <h3 className="text-sm font-semibold text-text-primary">
               Payment Settings
             </h3>
           </div>
@@ -378,13 +378,9 @@ export const TeamDetailPage = () => {
               label="Auto Generation"
               value={
                 team.settings.autoGenerationEnabled ? (
-                  <span className="text-emerald-600 dark:text-emerald-400">
-                    Enabled
-                  </span>
+                  <span className="text-success-text">Enabled</span>
                 ) : (
-                  <span className="text-red-600 dark:text-red-400">
-                    Disabled
-                  </span>
+                  <span className="text-error-text">Disabled</span>
                 )
               }
             />
@@ -392,10 +388,10 @@ export const TeamDetailPage = () => {
         </div>
 
         {/* Regional Settings */}
-        <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-5">
+        <div className="bg-surface-card rounded-lg border border-border-default p-5">
           <div className="flex items-center gap-2 mb-4">
-            <Globe className="h-4 w-4 text-[#5c7cfa] dark:text-[#91a7ff]" />
-            <h3 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+            <Globe className="h-4 w-4 text-primary-500" />
+            <h3 className="text-sm font-semibold text-text-primary">
               Regional Settings
             </h3>
           </div>
@@ -439,34 +435,34 @@ const colorClasses: Record<
   { bg: string; icon: string; value: string }
 > = {
   blue: {
-    bg: "bg-blue-50 dark:bg-blue-900/20",
-    icon: "text-blue-600 dark:text-blue-400",
-    value: "text-blue-700 dark:text-blue-300",
+    bg: "bg-blue-50",
+    icon: "text-blue-600",
+    value: "text-blue-700",
   },
   emerald: {
-    bg: "bg-emerald-50 dark:bg-emerald-900/20",
-    icon: "text-emerald-600 dark:text-emerald-400",
-    value: "text-emerald-700 dark:text-emerald-300",
+    bg: "bg-emerald-50",
+    icon: "text-emerald-600",
+    value: "text-emerald-700",
   },
   purple: {
-    bg: "bg-purple-50 dark:bg-purple-900/20",
-    icon: "text-purple-600 dark:text-purple-400",
-    value: "text-purple-700 dark:text-purple-300",
+    bg: "bg-purple-50",
+    icon: "text-purple-600",
+    value: "text-purple-700",
   },
   amber: {
-    bg: "bg-amber-50 dark:bg-amber-900/20",
-    icon: "text-amber-600 dark:text-amber-400",
-    value: "text-amber-700 dark:text-amber-300",
+    bg: "bg-amber-50",
+    icon: "text-amber-600",
+    value: "text-amber-700",
   },
   teal: {
-    bg: "bg-teal-50 dark:bg-teal-900/20",
-    icon: "text-teal-600 dark:text-teal-400",
-    value: "text-teal-700 dark:text-teal-300",
+    bg: "bg-teal-50",
+    icon: "text-teal-600",
+    value: "text-teal-700",
   },
   slate: {
-    bg: "bg-slate-100 dark:bg-slate-800/30",
-    icon: "text-slate-600 dark:text-slate-400",
-    value: "text-slate-700 dark:text-slate-300",
+    bg: "bg-slate-100",
+    icon: "text-slate-600",
+    value: "text-slate-700",
   },
 };
 
@@ -485,17 +481,17 @@ const IdentityCard = ({
 }) => {
   const c = colorClasses[color] ?? colorClasses.blue;
   return (
-    <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-5">
+    <div className="bg-surface-card rounded-lg border border-border-default p-5">
       <div className="flex items-start justify-between">
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-medium uppercase tracking-wider text-[#9ca0b8] dark:text-[#5c6180]">
+          <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
             {label}
           </p>
           <p className={`text-lg font-semibold mt-1 truncate ${c.value}`}>
             {value}
           </p>
           {subtitle && (
-            <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-0.5 truncate">
+            <p className="text-xs text-text-secondary mt-0.5 truncate">
               {subtitle}
             </p>
           )}
@@ -523,69 +519,51 @@ const DataCard = ({
 }) => {
   const c = colorClasses[color] ?? colorClasses.blue;
   return (
-    <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-4 text-center">
+    <div className="bg-surface-card rounded-lg border border-border-default p-4 text-center">
       <div
         className={`w-9 h-9 rounded-lg ${c.bg} flex items-center justify-center mx-auto mb-2`}
       >
         <Icon className={`h-4 w-4 ${c.icon}`} />
       </div>
       <p className={`text-2xl font-bold ${c.value}`}>{value}</p>
-      <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180] mt-0.5">
-        {label}
-      </p>
+      <p className="text-xs text-text-muted mt-0.5">{label}</p>
     </div>
   );
 };
 
 const SectionTitle = ({ title }: { title: string }) => (
-  <h2 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-3">
-    {title}
-  </h2>
+  <h2 className="text-sm font-semibold text-text-primary mb-3">{title}</h2>
 );
 
 const propertyStatusColors: Record<string, string> = {
-  VACANT:
-    "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300",
-  OCCUPIED: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
-  MAINTENANCE:
-    "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
-  UNAVAILABLE:
-    "bg-slate-100 text-slate-600 dark:bg-slate-800/30 dark:text-slate-400",
+  VACANT: "bg-emerald-100 text-emerald-700",
+  OCCUPIED: "bg-blue-100 text-blue-700",
+  MAINTENANCE: "bg-amber-100 text-amber-700",
+  UNAVAILABLE: "bg-slate-100 text-slate-600",
 };
 
 const propertyCategoryColors: Record<string, string> = {
-  RESIDENTIAL:
-    "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
-  COMMERCIAL:
-    "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300",
-  INDUSTRIAL:
-    "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
-  AGRICULTURAL:
-    "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300",
-  MIXED_USE:
-    "bg-slate-100 text-slate-600 dark:bg-slate-800/30 dark:text-slate-400",
+  RESIDENTIAL: "bg-blue-100 text-blue-700",
+  COMMERCIAL: "bg-orange-100 text-orange-700",
+  INDUSTRIAL: "bg-purple-100 text-purple-700",
+  AGRICULTURAL: "bg-emerald-100 text-emerald-700",
+  MIXED_USE: "bg-slate-100 text-slate-600",
 };
 
 const contractStatusColors: Record<string, string> = {
-  ACTIVE:
-    "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300",
-  DRAFT: "bg-slate-100 text-slate-600 dark:bg-slate-800/30 dark:text-slate-400",
-  PENDING_SIGNATURE:
-    "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
-  EXPIRED:
-    "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300",
-  TERMINATED: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300",
+  ACTIVE: "bg-emerald-100 text-emerald-700",
+  DRAFT: "bg-slate-100 text-slate-600",
+  PENDING_SIGNATURE: "bg-amber-100 text-amber-700",
+  EXPIRED: "bg-orange-100 text-orange-700",
+  TERMINATED: "bg-red-100 text-red-700",
 };
 
 const paymentStatusColors: Record<string, string> = {
-  PAID: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300",
-  PENDING:
-    "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
-  OVERDUE: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300",
-  CANCELLED:
-    "bg-slate-100 text-slate-600 dark:bg-slate-800/30 dark:text-slate-400",
-  PARTIALLY_PAID:
-    "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
+  PAID: "bg-emerald-100 text-emerald-700",
+  PENDING: "bg-amber-100 text-amber-700",
+  OVERDUE: "bg-red-100 text-red-700",
+  CANCELLED: "bg-slate-100 text-slate-600",
+  PARTIALLY_PAID: "bg-blue-100 text-blue-700",
 };
 
 const StatusDistribution = ({
@@ -601,24 +579,24 @@ const StatusDistribution = ({
   if (entries.length === 0) {
     return (
       <div>
-        <p className="text-xs font-medium uppercase tracking-wider text-[#9ca0b8] dark:text-[#5c6180] mb-2">
+        <p className="text-xs font-medium uppercase tracking-wider text-text-muted mb-2">
           {title}
         </p>
-        <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">No data</p>
+        <p className="text-xs text-text-secondary">No data</p>
       </div>
     );
   }
 
   return (
     <div>
-      <p className="text-xs font-medium uppercase tracking-wider text-[#9ca0b8] dark:text-[#5c6180] mb-2">
+      <p className="text-xs font-medium uppercase tracking-wider text-text-muted mb-2">
         {title}
       </p>
       <div className="flex flex-wrap gap-1.5">
         {entries.map(([status, count]) => (
           <span
             key={status}
-            className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded ${colorMap[status] ?? "bg-slate-100 text-slate-600 dark:bg-slate-800/30 dark:text-slate-400"}`}
+            className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded ${colorMap[status] ?? "bg-slate-100 text-slate-600"}`}
           >
             {formatStatus(status)}
             <span className="font-bold">{count}</span>
@@ -630,12 +608,9 @@ const StatusDistribution = ({
 };
 
 const roleColors: Record<string, string> = {
-  TEAM_ADMIN:
-    "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300",
-  TEAM_EDITOR:
-    "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300",
-  TEAM_VIEWER:
-    "bg-slate-100 dark:bg-slate-800/30 text-slate-600 dark:text-slate-400",
+  TEAM_ADMIN: "bg-purple-100 text-purple-700",
+  TEAM_EDITOR: "bg-blue-100 text-blue-700",
+  TEAM_VIEWER: "bg-slate-100 text-slate-600",
 };
 
 const RoleBadge = ({ role }: { role: string }) => (
@@ -654,16 +629,14 @@ const SettingsRow = ({
   label: string;
   value: React.ReactNode;
 }) => (
-  <div className="flex items-center justify-between py-1.5 border-b border-[#f1f3f9] dark:border-[#1e2130] last:border-b-0">
-    <span className="text-xs text-[#6b7194] dark:text-[#8b90a8]">{label}</span>
-    <span className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
-      {value}
-    </span>
+  <div className="flex items-center justify-between py-1.5 border-b border-border-subtle last:border-b-0">
+    <span className="text-xs text-text-secondary">{label}</span>
+    <span className="text-sm font-medium text-text-primary">{value}</span>
   </div>
 );
 
 const formatStatus = (status: string) =>
   status
-    .replace(/_/g, " ")
+    .replace(/_/g, "")
     .toLowerCase()
     .replace(/^\w/, (c) => c.toUpperCase());

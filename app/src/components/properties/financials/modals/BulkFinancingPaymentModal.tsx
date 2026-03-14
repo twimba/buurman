@@ -139,8 +139,7 @@ export const BulkFinancingPaymentModal = ({
       });
   };
 
-  const labelClass =
-    'block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1';
+  const labelClass = 'block text-sm font-medium text-text-secondary mb-1';
 
   return (
     <div
@@ -151,14 +150,14 @@ export const BulkFinancingPaymentModal = ({
         }
       }}
     >
-      <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-xl dark:shadow-black/20 max-w-5xl w-full mx-4 max-h-[90vh] flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b border-[#c9cfd9] dark:border-[#3a3f54] flex-shrink-0">
-          <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+      <div className="bg-surface-card rounded-lg shadow-xl dark:shadow-black/20 max-w-5xl w-full mx-4 max-h-[90vh] flex flex-col">
+        <div className="flex items-center justify-between p-4 border-b border-border-strong flex-shrink-0">
+          <h2 className="text-lg font-semibold text-text-primary">
             Bulk Add Payments
           </h2>
           <button
             onClick={onClose}
-            className="text-[#8a8fa8] hover:text-[#3d4463] dark:hover:text-[#eef0f6]"
+            className="text-text-muted hover:text-text-secondary"
           >
             <X className="w-5 h-5" />
           </button>
@@ -176,13 +175,13 @@ export const BulkFinancingPaymentModal = ({
               />
             </div>
             <div className="flex items-end pb-1">
-              <label className="flex items-center gap-2 text-sm text-[#3d4463] dark:text-[#c4c8db]">
+              <label className="flex items-center gap-2 text-sm text-text-secondary">
                 <input
                   type="checkbox"
                   checked={deductFromBalance}
                   onChange={(e) => setDeductFromBalance(e.target.checked)}
                   disabled={isSubmitting}
-                  className="h-4 w-4 rounded border-[#c9cfd9] dark:border-[#3a3f54] text-[#5c7cfa] focus:ring-[#5c7cfa]"
+                  className="h-4 w-4 rounded border-border-strong text-primary-500 focus:ring-primary-500"
                 />
                 Deduct principal from financing balance
               </label>

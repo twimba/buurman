@@ -59,7 +59,7 @@ main { flex: 1; }
     width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
     background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    box-shadow: 0 4px 12px rgba(92,124,250,0.2);
+    box-shadow: 0 4px 12px rgba(2,132,199,0.2);
 }
 .contact-method-content h3 { font-size: 0.9375rem; font-weight: 600; color: var(--text); margin-bottom: 0.25rem; }
 .contact-method-content p { font-size: 0.875rem; color: var(--text-muted); margin: 0; line-height: 1.5; }
@@ -76,11 +76,11 @@ main { flex: 1; }
     transition: border-color 0.2s, box-shadow 0.2s; appearance: none;
 }
 .form-input:focus, .form-textarea:focus, .form-select:focus {
-    outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(92,124,250,0.12);
+    outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(2,132,199,0.12);
 }
 .form-input::placeholder, .form-textarea::placeholder { color: var(--text-muted); }
 .form-textarea { min-height: 130px; resize: vertical; }
-.form-select { background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236b7194' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; padding-right: 2.5rem; cursor: pointer; }
+.form-select { background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%2378716c' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; padding-right: 2.5rem; cursor: pointer; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
 .form-note { font-size: 0.8125rem; color: var(--text-muted); text-align: center; margin-top: 1rem; }
@@ -138,11 +138,11 @@ main { flex: 1; }
     font-size: 1rem;
     border-radius: var(--radius-lg);
     transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
-    box-shadow: 0 4px 14px rgba(92,124,250,0.35);
+    box-shadow: 0 4px 14px rgba(2,132,199,0.35);
 }
 .coming-soon-cta:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(92,124,250,0.45);
+    box-shadow: 0 8px 25px rgba(2,132,199,0.45);
 }
 
 .coming-soon-note {

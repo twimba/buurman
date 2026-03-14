@@ -86,17 +86,17 @@ export function MetricHint({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <span className="underline decoration-dotted decoration-[#9ca0b8] dark:decoration-[#5c6180] underline-offset-2 decoration-1">
+      <span className="underline decoration-dotted decoration-neutral-400 dark:decoration-neutral-500 underline-offset-2 decoration-1">
         {label}
       </span>
       {pos && (
         <span
-          className="pointer-events-none fixed z-50 w-max max-w-[200px] -translate-x-1/2 px-2.5 py-1.5 rounded-md bg-[#1a1d2e] dark:bg-[#2a2e3f] border border-[#2a2e3f] dark:border-[#3a3f55] shadow-lg text-[10px] leading-snug text-[#d4d7e8] font-normal text-left"
+          className="pointer-events-none fixed z-50 w-max max-w-[200px] -translate-x-1/2 px-2.5 py-1.5 rounded-md bg-neutral-900 border border-border-default dark:border-border-strong shadow-lg text-[10px] leading-snug text-neutral-200 font-normal text-left"
           style={{ bottom: pos.bottom, left: pos.left }}
           role="tooltip"
         >
           {resolved}
-          <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#1a1d2e] dark:border-t-[#2a2e3f]" />
+          <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-neutral-900" />
         </span>
       )}
     </span>

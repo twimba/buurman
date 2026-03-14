@@ -92,23 +92,21 @@ export const PaymentHistorySection = () => {
   const statusConfig = {
     paid: {
       label: 'Paid',
-      color:
-        'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300',
+      color: 'bg-success-bg text-success-text',
       icon: CheckCircle,
-      iconColor: 'text-green-600',
+      iconColor: 'text-success-text',
     },
     pending: {
       label: 'Pending',
-      color:
-        'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300',
+      color: 'bg-warning-bg text-warning-text',
       icon: Clock,
-      iconColor: 'text-yellow-600',
+      iconColor: 'text-warning-text',
     },
     failed: {
       label: 'Failed',
-      color: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300',
+      color: 'bg-error-bg text-error-text',
       icon: XCircle,
-      iconColor: 'text-red-600',
+      iconColor: 'text-error-text',
     },
   };
 
@@ -149,50 +147,42 @@ export const PaymentHistorySection = () => {
     <div className="space-y-6">
       {/* Summary Cards */}
       <div className="grid md:grid-cols-3 gap-6">
-        <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+        <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                Next Payment
-              </p>
-              <p className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+              <p className="text-sm text-text-secondary">Next Payment</p>
+              <p className="text-2xl font-bold text-text-primary mt-1">
                 {nextPayment.currency} {nextPayment.amount.toFixed(2)}
               </p>
-              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+              <p className="text-xs text-text-secondary mt-1">
                 {formatDate(nextPayment.date)}
               </p>
             </div>
-            <Calendar className="h-12 w-12 text-[#5c7cfa] dark:text-[#91a7ff]" />
+            <Calendar className="h-12 w-12 text-primary-500 dark:text-primary-300" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+        <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                Total Paid
-              </p>
-              <p className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+              <p className="text-sm text-text-secondary">Total Paid</p>
+              <p className="text-2xl font-bold text-text-primary mt-1">
                 EUR {totalPaid.toFixed(2)}
               </p>
-              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
-                All time
-              </p>
+              <p className="text-xs text-text-secondary mt-1">All time</p>
             </div>
-            <CreditCard className="h-12 w-12 text-green-600" />
+            <CreditCard className="h-12 w-12 text-success-text" />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+        <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                Total Invoices
-              </p>
-              <p className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+              <p className="text-sm text-text-secondary">Total Invoices</p>
+              <p className="text-2xl font-bold text-text-primary mt-1">
                 {invoices.length}
               </p>
-              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+              <p className="text-xs text-text-secondary mt-1">
                 {invoices.filter((i) => i.status === 'paid').length} paid
               </p>
             </div>
@@ -202,32 +192,32 @@ export const PaymentHistorySection = () => {
       </div>
 
       {/* Payment History Table */}
-      <div className="bg-white dark:bg-[#14161f] rounded-lg shadow">
-        <div className="p-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-          <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+      <div className="bg-surface-card rounded-lg shadow-sm border border-border-default">
+        <div className="p-6 border-b border-border-default">
+          <h2 className="text-xl font-semibold text-text-primary">
             Payment History
           </h2>
-          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+          <p className="text-sm text-text-secondary mt-1">
             View and download your invoices
           </p>
         </div>
 
         {/* Search and Filters */}
-        <div className="p-6 border-b border-[#e2e6f0] dark:border-[#2a2e3f] space-y-4">
+        <div className="p-6 border-b border-border-default space-y-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-muted " />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search by invoice number, plan, or payment method..."
-              className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             />
           </div>
 
           <div className="flex items-center gap-2">
-            <Filter className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
-            <h3 className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6] text-sm">
+            <Filter className="h-5 w-5 text-text-secondary " />
+            <h3 className="font-semibold text-text-primary text-sm">
               Status Filter
             </h3>
           </div>
@@ -238,8 +228,8 @@ export const PaymentHistorySection = () => {
                 onClick={() => setStatusFilter(filter.value)}
                 className={`px-4 py-2 rounded transition-colors text-sm ${
                   statusFilter === filter.value
-                    ? 'bg-[#5c7cfa] text-white'
-                    : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#e8ecf4] dark:bg-[#1e2130] dark:hover:bg-[#3a3f54]'
+                    ? 'bg-primary-500 text-white'
+                    : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
                 }`}
               >
                 {filter.label}
@@ -250,58 +240,55 @@ export const PaymentHistorySection = () => {
 
         {/* Invoices List */}
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-[#edf0f7] dark:divide-[#2a2e3f] dark:divide-[#2a2e3f]">
-            <thead className="bg-[#f8f9fc] dark:bg-[#0c0d14] dark:bg-[#1e2130]">
+          <table className="min-w-full divide-y divide-border-default">
+            <thead className="bg-surface-page">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                   Invoice
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                   Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                   Plan
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                   Payment Method
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                   Amount
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-[#14161f] divide-y divide-[#edf0f7] dark:divide-[#2a2e3f] dark:divide-[#2a2e3f]">
+            <tbody className="bg-surface-card divide-y divide-border-default">
               {filteredInvoices.map((invoice) => {
                 const StatusIcon = statusConfig[invoice.status].icon;
                 return (
-                  <tr
-                    key={invoice.id}
-                    className="hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
-                  >
+                  <tr key={invoice.id} className="hover:bg-surface-inset">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-2">
-                        <Receipt className="h-4 w-4 text-[#9ca0b8] dark:text-[#5c6180]" />
-                        <span className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                        <Receipt className="h-4 w-4 text-text-muted " />
+                        <span className="text-sm font-medium text-text-primary">
                           {invoice.invoiceNumber}
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
                       {formatDate(invoice.date)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
                       {invoice.plan}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
                       {invoice.paymentMethod}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-text-primary">
                       {invoice.currency} {invoice.amount.toFixed(2)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -322,8 +309,8 @@ export const PaymentHistorySection = () => {
                         disabled={invoice.status !== 'paid'}
                         className={`flex items-center gap-1 ${
                           invoice.status === 'paid'
-                            ? 'text-primary-500 dark:text-primary-300 hover:text-blue-800 dark:hover:text-blue-300'
-                            : 'text-[#9ca0b8] dark:text-[#5c6180] cursor-not-allowed'
+                            ? 'text-primary-500 dark:text-primary-300 hover:text-primary-600'
+                            : 'text-text-muted cursor-not-allowed'
                         }`}
                       >
                         <Download className="h-4 w-4" />
@@ -339,11 +326,11 @@ export const PaymentHistorySection = () => {
 
         {filteredInvoices.length === 0 && (
           <div className="p-12 text-center">
-            <Receipt className="h-12 w-12 text-[#9ca0b8] dark:text-[#5c6180] mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
+            <Receipt className="h-12 w-12 text-text-muted mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-text-primary mb-2">
               No invoices found
             </h3>
-            <p className="text-[#6b7194] dark:text-[#8b90a8]">
+            <p className="text-text-secondary">
               {statusFilter || searchTerm
                 ? 'Try adjusting your filters or search'
                 : 'Your payment history will appear here'}

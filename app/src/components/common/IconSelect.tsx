@@ -53,10 +53,10 @@ export const IconSelect = ({
   }, [close]);
 
   const base =
-    'w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]';
+    'w-full border border-border-strong rounded bg-surface-card text-text-primary';
   const focusRing = open
-    ? 'border-[#5c7cfa] ring-1 ring-[#5c7cfa]'
-    : 'hover:border-[#9ca0b8] dark:hover:border-[#5c6180]';
+    ? 'border-primary-500 ring-1 ring-primary-500'
+    : 'hover:border-neutral-400 dark:hover:border-neutral-500';
 
   return (
     <div ref={containerRef} className={`relative ${className}`}>
@@ -68,20 +68,23 @@ export const IconSelect = ({
       >
         {selected ? (
           <>
-            <selected.Icon size={15} className="text-[#5c7cfa] flex-shrink-0" />
+            <selected.Icon
+              size={15}
+              className="text-primary-500 flex-shrink-0"
+            />
             <span className="flex-1 truncate">{selected.label}</span>
           </>
         ) : (
-          <span className="flex-1 text-[#9ca0b8]">Select…</span>
+          <span className="flex-1 text-text-muted">Select…</span>
         )}
         <ChevronDown
           size={14}
-          className={`flex-shrink-0 text-[#9ca0b8] transition-transform duration-150 ${open ? 'rotate-180' : ''}`}
+          className={`flex-shrink-0 text-text-muted transition-transform duration-150 ${open ? 'rotate-180' : ''}`}
         />
       </button>
 
       {open && (
-        <div className="absolute z-50 w-full mt-1 bg-white dark:bg-[#1e2130] border border-[#c9cfd9] dark:border-[#3a3f54] rounded shadow-lg max-h-64 overflow-y-auto">
+        <div className="absolute z-50 w-full mt-1 bg-surface-card border border-border-strong rounded shadow-lg max-h-64 overflow-y-auto">
           {options.map((opt) => {
             const isSelected = opt.value === value;
             return (
@@ -95,21 +98,19 @@ export const IconSelect = ({
                 }}
                 className={`w-full text-left px-3 py-2 flex items-center gap-2.5 text-sm transition-colors ${
                   isSelected
-                    ? 'bg-[#eef1ff] dark:bg-[#252a3d] text-[#5c7cfa]'
-                    : 'text-[#1a1d2e] dark:text-[#eef0f6] hover:bg-[#f1f3f9] dark:hover:bg-[#14161f]'
+                    ? 'bg-primary-50 dark:bg-surface-raised text-primary-500'
+                    : 'text-text-primary hover:bg-surface-inset'
                 }`}
               >
                 <opt.Icon
                   size={15}
                   className={
-                    isSelected
-                      ? 'text-[#5c7cfa]'
-                      : 'text-[#9ca0b8] dark:text-[#5c6180]'
+                    isSelected ? 'text-primary-500' : 'text-text-muted'
                   }
                 />
                 <span>{opt.label}</span>
                 {isSelected && (
-                  <span className="ml-auto text-[#5c7cfa] text-xs font-bold">
+                  <span className="ml-auto text-primary-500 text-xs font-bold">
                     ✓
                   </span>
                 )}

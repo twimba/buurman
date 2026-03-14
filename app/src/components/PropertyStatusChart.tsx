@@ -33,11 +33,9 @@ const CustomTooltip = ({
     const value = payload[0].value;
     const percentage = ((value / total) * 100).toFixed(1);
     return (
-      <div className="bg-white dark:bg-[#14161f] px-4 py-2 shadow-lg rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f]">
-        <p className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-          {payload[0].name}
-        </p>
-        <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+      <div className="bg-surface-card px-4 py-2 shadow-lg rounded-lg border border-border-default">
+        <p className="font-semibold text-text-primary">{payload[0].name}</p>
+        <p className="text-sm text-text-secondary">
           {value} {value === 1 ? 'property' : 'properties'} ({percentage}%)
         </p>
       </div>
@@ -56,11 +54,11 @@ export const PropertyStatusChart = ({
   const data = useMemo(
     () =>
       [
-        { name: 'Occupied', value: occupied, color: '#10b981' },
-        { name: 'Self-Occupied', value: selfOccupied, color: '#6366f1' },
-        { name: 'Vacant', value: vacant, color: '#fcc419' },
-        { name: 'Maintenance', value: maintenance, color: '#f59f00' },
-        { name: 'Unavailable', value: unavailable, color: '#6b7194' },
+        { name: 'Occupied', value: occupied, color: '#059669' },
+        { name: 'Self-Occupied', value: selfOccupied, color: '#0284c7' },
+        { name: 'Vacant', value: vacant, color: '#fbbf24' },
+        { name: 'Maintenance', value: maintenance, color: '#f59e0b' },
+        { name: 'Unavailable', value: unavailable, color: '#78716c' },
       ].filter((item) => item.value > 0),
     [occupied, selfOccupied, vacant, maintenance, unavailable]
   );
@@ -88,7 +86,7 @@ export const PropertyStatusChart = ({
                 className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: entry.color }}
               />
-              <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
+              <span className="text-sm text-text-secondary">
                 {entry.value} ({((value / total) * 100).toFixed(0)}%)
               </span>
             </div>
@@ -100,7 +98,7 @@ export const PropertyStatusChart = ({
 
   if (total === 0) {
     return (
-      <div className="flex items-center justify-center h-64 text-[#6b7194] dark:text-[#8b90a8]">
+      <div className="flex items-center justify-center h-64 text-text-secondary">
         <p>No properties to display</p>
       </div>
     );

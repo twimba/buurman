@@ -39,10 +39,10 @@ export const UserDetailPage = () => {
   if (error || !user) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-600 dark:text-red-400">Failed to load user.</p>
+        <p className="text-error-text">Failed to load user.</p>
         <button
           onClick={() => navigate("/users")}
-          className="mt-4 text-sm text-[#5c7cfa] hover:underline"
+          className="mt-4 text-sm text-primary-500 hover:underline"
         >
           Back to users
         </button>
@@ -83,17 +83,13 @@ export const UserDetailPage = () => {
       label: "Email Verified",
       value: user.emailVerified ? "Verified" : "Not verified",
       icon: user.emailVerified ? CheckCircle : XCircle,
-      valueClass: user.emailVerified
-        ? "text-emerald-600 dark:text-emerald-400"
-        : "text-red-600 dark:text-red-400",
+      valueClass: user.emailVerified ? "text-success-text" : "text-error-text",
     },
     {
       label: "Status",
       value: user.disabled ? "Disabled" : "Active",
       icon: Shield,
-      valueClass: user.disabled
-        ? "text-red-600 dark:text-red-400"
-        : "text-emerald-600 dark:text-emerald-400",
+      valueClass: user.disabled ? "text-error-text" : "text-success-text",
     },
     {
       label: "Teams",
@@ -146,19 +142,19 @@ export const UserDetailPage = () => {
       />
 
       {/* User Info Card */}
-      <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-6">
+      <div className="bg-surface-card rounded-lg border border-border-default p-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {infoItems.map((item) => (
             <div key={item.label} className="flex items-start gap-3">
-              <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#f0f4ff] dark:bg-[#5c7cfa]/10 flex items-center justify-center">
-                <item.icon className="h-5 w-5 text-[#5c7cfa] dark:text-[#91a7ff]" />
+              <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary-50 flex items-center justify-center">
+                <item.icon className="h-5 w-5 text-primary-500" />
               </div>
               <div>
-                <p className="text-xs font-medium uppercase tracking-wider text-[#9ca0b8] dark:text-[#5c6180]">
+                <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
                   {item.label}
                 </p>
                 <p
-                  className={`text-sm font-medium ${item.valueClass ?? "text-[#1a1d2e] dark:text-[#eef0f6]"}`}
+                  className={`text-sm font-medium ${item.valueClass ?? "text-text-primary "}`}
                 >
                   {item.value}
                 </p>

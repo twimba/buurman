@@ -50,44 +50,46 @@ export function SendRegistrationInvitationModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="fixed inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-md rounded-2xl bg-white dark:bg-zinc-800 shadow-xl">
-        <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-700 px-6 py-4">
+      <div className="relative z-10 w-full max-w-md rounded-lg bg-surface-card shadow-xl">
+        <div className="flex items-center justify-between border-b border-border-default px-6 py-4">
           <div className="flex items-center gap-2">
-            <Send className="h-5 w-5 text-indigo-500" />
-            <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+            <Send className="h-5 w-5 text-primary-500" />
+            <h2 className="text-lg font-semibold text-text-primary">
               Send Invitation
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+            className="p-1.5 rounded-md hover:bg-surface-inset transition-colors"
           >
-            <X className="h-5 w-5 text-zinc-400" />
+            <X className="h-5 w-5 text-text-muted" />
           </button>
         </div>
 
         {success ? (
           <div className="p-6 text-center">
-            <div className="text-emerald-500 text-lg font-semibold mb-1">
+            <div className="text-success-text text-lg font-semibold mb-1">
               Sent!
             </div>
-            <p className="text-sm text-zinc-500">
+            <p className="text-sm text-text-secondary">
               Invitation sent to {recipient}
             </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="p-6 space-y-5">
             {/* Code preview */}
-            <div className="rounded-lg bg-zinc-50 dark:bg-zinc-700/50 border border-zinc-200 dark:border-zinc-600 p-3">
-              <div className="text-xs text-zinc-500 mb-1">Invitation Code</div>
-              <div className="font-mono font-semibold text-indigo-600 dark:text-indigo-400">
+            <div className="rounded-lg bg-surface-inset border border-border-default p-3">
+              <div className="text-xs text-text-secondary mb-1">
+                Invitation Code
+              </div>
+              <div className="font-mono font-semibold text-primary-600">
                 {invitation.code}
               </div>
             </div>
 
             {/* Channel */}
             <div>
-              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+              <label className="block text-sm font-medium text-text-primary mb-2">
                 Send via
               </label>
               <div className="flex gap-2">
@@ -96,8 +98,8 @@ export function SendRegistrationInvitationModal({
                   onClick={() => setChannel("EMAIL")}
                   className={`flex-1 flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors ${
                     channel === "EMAIL"
-                      ? "border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400 dark:border-indigo-500"
-                      : "border-zinc-200 dark:border-zinc-600 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-700"
+                      ? "border-primary-500 bg-primary-50 text-primary-700"
+                      : "border-border-default text-text-secondary hover:bg-surface-inset"
                   }`}
                 >
                   <Mail className="h-4 w-4" />
@@ -108,8 +110,8 @@ export function SendRegistrationInvitationModal({
                   onClick={() => setChannel("SMS")}
                   className={`flex-1 flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors ${
                     channel === "SMS"
-                      ? "border-indigo-500 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400 dark:border-indigo-500"
-                      : "border-zinc-200 dark:border-zinc-600 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-700"
+                      ? "border-primary-500 bg-primary-50 text-primary-700"
+                      : "border-border-default text-text-secondary hover:bg-surface-inset"
                   }`}
                 >
                   <MessageSquare className="h-4 w-4" />
@@ -120,14 +122,14 @@ export function SendRegistrationInvitationModal({
 
             {/* Recipient */}
             <div>
-              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
+              <label className="block text-sm font-medium text-text-primary mb-1.5">
                 {channel === "EMAIL" ? "Email Address" : "Phone Number"}
               </label>
               <input
                 type={channel === "EMAIL" ? "email" : "tel"}
                 value={recipient}
                 onChange={(e) => setRecipient(e.target.value)}
-                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-700 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-md border border-border-default bg-surface-card px-3 py-2 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
                 placeholder={
                   channel === "EMAIL" ? "john@example.com" : "+1 (555) 123-4567"
                 }
@@ -135,11 +137,11 @@ export function SendRegistrationInvitationModal({
             </div>
 
             {/* Preview */}
-            <div className="rounded-lg bg-zinc-50 dark:bg-zinc-700/30 border border-zinc-200 dark:border-zinc-600 p-3">
-              <div className="text-xs text-zinc-500 mb-1.5">
+            <div className="rounded-lg bg-surface-inset border border-border-default p-3">
+              <div className="text-xs text-text-secondary mb-1.5">
                 Message preview
               </div>
-              <div className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              <div className="text-xs text-text-secondary leading-relaxed">
                 {channel === "EMAIL" ? (
                   <>
                     The recipient will receive an email with the code{" "}
@@ -161,10 +163,8 @@ export function SendRegistrationInvitationModal({
             </div>
 
             {error && (
-              <div className="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-3">
-                <p className="text-sm text-red-600 dark:text-red-400">
-                  {error}
-                </p>
+              <div className="rounded-lg bg-error-bg border border-error-border p-3">
+                <p className="text-sm text-error-text">{error}</p>
               </div>
             )}
 
@@ -172,14 +172,14 @@ export function SendRegistrationInvitationModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-lg border border-zinc-200 dark:border-zinc-600 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
+                className="rounded-md border border-border-default px-4 py-2 text-sm font-medium text-text-primary hover:bg-surface-inset transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={sendMutation.isPending}
-                className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+                className="inline-flex items-center gap-2 rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 disabled:opacity-50 transition-colors"
               >
                 {sendMutation.isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin" />

@@ -143,24 +143,24 @@ export const ContractSelector = ({
             isOpen ? 'Type to search...' : (placeholder ?? 'Select a contract')
           }
           autoComplete="off"
-          className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 pr-8 bg-white dark:bg-[#1e2130] hover:border-[#5c7cfa] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] disabled:bg-[#f1f3f9] dark:disabled:bg-[#3a3f54] disabled:cursor-not-allowed text-left text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
+          className="w-full border border-border-strong rounded px-3 py-2 pr-8 bg-surface-card hover:border-primary-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 disabled:bg-surface-inset disabled:cursor-not-allowed text-left text-sm text-text-primary"
         />
         <ChevronDown
-          className={`absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9ca0b8] dark:text-[#5c6180] pointer-events-none transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted pointer-events-none transition-transform ${isOpen ? 'rotate-180' : ''}`}
         />
       </div>
 
       {isOpen && (
         <div
           ref={listRef}
-          className="absolute z-50 w-full mt-1 bg-white dark:bg-[#1e2130] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md shadow-lg max-h-80 overflow-y-auto"
+          className="absolute z-50 w-full mt-1 bg-surface-card border border-border-strong rounded-md shadow-lg max-h-80 overflow-y-auto"
         >
           {isLoading ? (
-            <div className="px-3 py-8 text-center text-sm text-[#6b7194] dark:text-[#8b90a8]">
+            <div className="px-3 py-8 text-center text-sm text-text-secondary">
               Loading contracts...
             </div>
           ) : filtered.length === 0 ? (
-            <div className="px-3 py-8 text-center text-sm text-[#6b7194] dark:text-[#8b90a8]">
+            <div className="px-3 py-8 text-center text-sm text-text-secondary">
               {contracts.length === 0
                 ? 'No contracts available'
                 : 'No contracts found'}
@@ -172,7 +172,7 @@ export const ContractSelector = ({
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => handleSelect('')}
-                  className="w-full text-left px-3 py-2.5 text-sm text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f1f3f9] dark:hover:bg-[#14161f] border-b border-[#e2e6f0] dark:border-[#2a2e3f]"
+                  className="w-full text-left px-3 py-2.5 text-sm text-text-secondary hover:bg-surface-inset border-b border-border-default"
                 >
                   All Contracts
                 </button>
@@ -187,20 +187,20 @@ export const ContractSelector = ({
                   onMouseEnter={() => setHighlightedIndex(index)}
                   className={`w-full text-left px-3 py-3 flex items-center gap-3 ${
                     highlightedIndex === index
-                      ? 'bg-blue-50 dark:bg-blue-900/30'
+                      ? 'bg-primary-50'
                       : contract.identifier === value
-                        ? 'bg-blue-100 dark:bg-blue-900'
+                        ? 'bg-primary-100'
                         : ''
                   }`}
                 >
-                  <div className="w-10 h-10 rounded bg-blue-100 dark:bg-blue-900 flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 rounded bg-info-bg flex items-center justify-center flex-shrink-0">
                     <FileText className="h-5 w-5 text-primary-500 dark:text-primary-300" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <div className="text-sm font-medium text-text-primary">
                       {contract.property.street}
                     </div>
-                    <div className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                    <div className="text-xs text-text-secondary">
                       {contract.primaryTenant.firstName}{' '}
                       {contract.primaryTenant.lastName} &middot;{' '}
                       {getCurrencySymbol(contract.rentAmountCurrency)}{' '}
