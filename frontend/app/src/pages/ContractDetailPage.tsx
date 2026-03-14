@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTabState } from '@/hooks/useTabState';
 import {
@@ -31,6 +31,8 @@ import GeneratePaymentsModal from '@/components/contracts/GeneratePaymentsModal'
 import { RentTimeline } from '@/components/contracts/RentTimeline';
 import { Button, PageHeader } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
+import { trackEvent } from '@/utils/analytics';
+import { AnalyticsEvent } from '@/constants/analyticsEvents';
 import client from '@/api/client';
 import {
   Edit,
@@ -100,6 +102,13 @@ export const ContractDetailPage = () => {
   const paymentsPerPage = 10;
 
   const { data: contract, isLoading, error } = useContract(id);
+  const contractIdentifier = contract?.identifier;
+
+  useEffect(() => {
+    if (contractIdentifier) {
+      trackEvent(AnalyticsEvent.CONTRACT_VIEWED);
+    }
+  }, [contractIdentifier]);
   const countryName = useCountryName(contract?.countryCode);
   const {
     data: auditLog = [],

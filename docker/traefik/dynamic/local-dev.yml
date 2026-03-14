@@ -20,6 +20,8 @@ http:
       service: backend-local
       priority: 20
 
+    # PostHog ingest proxy — forwards /ingest/* to PostHog Cloud EU.
+    # For production, add rate-limiting middleware to prevent abuse.
     posthog-ingest-app-local:
       rule: "Host(`app.local.buurman.io`) && PathPrefix(`/ingest`)"
       entryPoints:

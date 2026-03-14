@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTabState } from '@/hooks/useTabState';
 import {
@@ -20,6 +20,8 @@ import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
+import { trackEvent } from '@/utils/analytics';
+import { AnalyticsEvent } from '@/constants/analyticsEvents';
 import { DocumentList } from '@/components/properties/DocumentList';
 import { PhotoGallery } from '@/components/properties/PhotoGallery';
 import { Avatar } from '@/components/common/Avatar';
@@ -102,6 +104,14 @@ export const TenantDetailPage = () => {
   const contractsPerPage = 10;
 
   const { data: tenant, isLoading, error } = useTenant(id);
+  const tenantIdentifier = tenant?.identifier;
+
+  useEffect(() => {
+    if (tenantIdentifier) {
+      trackEvent(AnalyticsEvent.TENANT_VIEWED);
+    }
+  }, [tenantIdentifier]);
+
   const {
     data: auditLog = [],
     isLoading: auditLoading,

@@ -5,3 +5,6 @@ export const AnalyticsEvent = {
   BO_INVITATION_SENT: 'bo_invitation_sent',
   BO_BROADCAST_CREATED: 'bo_broadcast_created',
 } as const;
+
+export type AnalyticsEventName =
+  (typeof AnalyticsEvent)[keyof typeof AnalyticsEvent];

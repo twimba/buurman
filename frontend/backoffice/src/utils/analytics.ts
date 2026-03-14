@@ -1,4 +1,5 @@
 import posthog from 'posthog-js';
+import type { AnalyticsEventName } from '../constants/analyticsEvents';
 
 let initialized = false;
 
@@ -26,6 +27,11 @@ export function initAnalytics(apiKey: string, apiHost: string): void {
   initialized = true;
 }
 
+/**
+ * Identify backoffice admin by Keycloak subject (UUID).
+ * Backoffice uses a separate Keycloak realm (buurman-backoffice) with no
+ * /users/me API, so the Keycloak sub claim is the only stable identifier.
+ */
 export function identifyUser(userSub: string): void {
   if (!initialized) {
     return;
@@ -43,7 +49,7 @@ export function resetAnalytics(): void {
 }
 
 export function trackEvent(
-  event: string,
+  event: AnalyticsEventName,
   properties?: Record<string, unknown>
 ): void {
   if (!initialized) {

@@ -58,11 +58,12 @@ export const TeamDetailPage = () => {
   const [editName, setEditName] = useState("");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
+  const teamIdentifier = team?.identifier;
   useEffect(() => {
-    if (team) {
+    if (teamIdentifier) {
       trackEvent(AnalyticsEvent.BO_TEAM_VIEWED);
     }
-  }, [team]);
+  }, [teamIdentifier]);
 
   if (isLoading) {
     return <LoadingSpinner message="Loading team..." />;

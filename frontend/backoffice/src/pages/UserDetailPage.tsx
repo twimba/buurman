@@ -34,11 +34,12 @@ export const UserDetailPage = () => {
   const [showDisableDialog, setShowDisableDialog] = useState(false);
   const [showResetDialog, setShowResetDialog] = useState(false);
 
+  const userIdentifier = user?.identifier;
   useEffect(() => {
-    if (user) {
+    if (userIdentifier) {
       trackEvent(AnalyticsEvent.BO_USER_VIEWED);
     }
-  }, [user]);
+  }, [userIdentifier]);
 
   if (isLoading) {
     return <LoadingSpinner message="Loading user..." />;

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTabState } from '@/hooks/useTabState';
@@ -56,6 +56,8 @@ import { PhotoGallery } from '@/components/properties/PhotoGallery';
 import { InteractiveMap } from '@/components/common/InteractiveMap';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
 import { Button, PageHeader } from '@buurman/ui';
+import { trackEvent } from '@/utils/analytics';
+import { AnalyticsEvent } from '@/constants/analyticsEvents';
 import { useTeam } from '@/context/TeamContext';
 import client from '@/api/client';
 import {
@@ -158,6 +160,14 @@ export const PropertyDetailPage = () => {
   const expensesPerPage = 10;
 
   const { data: property, isLoading, error } = useProperty(id);
+  const propertyIdentifier = property?.identifier;
+
+  useEffect(() => {
+    if (propertyIdentifier) {
+      trackEvent(AnalyticsEvent.PROPERTY_VIEWED);
+    }
+  }, [propertyIdentifier]);
+
   const isNlProperty = property?.countryCode === 'NL';
   const { data: latestWws } = useLatestWwsCalculation(
     isNlProperty ? id : undefined

@@ -1,4 +1,5 @@
 import posthog from 'posthog-js';
+import type { AnalyticsEventName } from '../constants/analyticsEvents';
 
 let initialized = false;
 
@@ -21,18 +22,18 @@ export function initAnalytics(apiKey: string, apiHost: string): void {
     },
   });
 
+  posthog.register({ app_name: 'app' });
+
   initialized = true;
 }
 
 export function identifyUser({
   userIdentifier,
   teamIdentifier,
-  teamName,
   role,
 }: {
   userIdentifier: string;
   teamIdentifier: string;
-  teamName: string;
   role: string;
 }): void {
   if (!initialized) {
@@ -40,7 +41,7 @@ export function identifyUser({
   }
 
   posthog.identify(userIdentifier, { role });
-  posthog.group('team', teamIdentifier, { name: teamName });
+  posthog.group('team', teamIdentifier);
 }
 
 export function resetAnalytics(): void {
@@ -52,7 +53,7 @@ export function resetAnalytics(): void {
 }
 
 export function trackEvent(
-  event: string,
+  event: AnalyticsEventName,
   properties?: Record<string, unknown>
 ): void {
   if (!initialized) {
@@ -66,6 +67,10 @@ export function trackEvent(
   }
 }
 
+/**
+ * Suppress or resume analytics capture during admin impersonation sessions.
+ * Stub for BUUR-20 — wire into ImpersonationContext when implemented.
+ */
 export function setImpersonating(active: boolean): void {
   if (!initialized) {
     return;
