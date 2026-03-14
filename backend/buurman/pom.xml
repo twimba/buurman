@@ -186,11 +186,7 @@
             <artifactId>libphonenumber</artifactId>
         </dependency>
 
-        <!-- Feature Flags -->
-        <dependency>
-            <groupId>com.flagsmith</groupId>
-            <artifactId>flagsmith-java-client</artifactId>
-        </dependency>
+        <!-- Feature Flags: PostHog (REST-based, no SDK dependency) -->
 
         <!-- AOP -->
         <dependency>

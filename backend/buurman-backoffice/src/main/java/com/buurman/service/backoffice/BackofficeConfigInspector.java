@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.buurman.config.models.AppProperties;
 import com.buurman.config.models.AwsS3Properties;
-import com.buurman.config.models.FlagsmithProperties;
+import com.buurman.config.models.PostHogProperties;
 import com.buurman.config.models.GoogleMapsProperties;
 import com.buurman.config.models.KeycloakProperties;
 import com.buurman.config.models.NotificationOutboxProperties;
@@ -33,7 +33,7 @@ public class BackofficeConfigInspector {
   private final ObjectProvider<TwilioProperties> twilioPropertiesProvider;
   private final ObjectProvider<SendGridProperties> sendGridPropertiesProvider;
   private final ObjectProvider<GoogleMapsProperties> googleMapsPropertiesProvider;
-  private final ObjectProvider<FlagsmithProperties> flagsmithPropertiesProvider;
+  private final ObjectProvider<PostHogProperties> postHogPropertiesProvider;
   private final ObjectProvider<NotificationOutboxProperties> notificationOutboxPropertiesProvider;
 
   public BackofficeConfigInspector(
@@ -44,7 +44,7 @@ public class BackofficeConfigInspector {
       ObjectProvider<TwilioProperties> twilioPropertiesProvider,
       ObjectProvider<SendGridProperties> sendGridPropertiesProvider,
       ObjectProvider<GoogleMapsProperties> googleMapsPropertiesProvider,
-      ObjectProvider<FlagsmithProperties> flagsmithPropertiesProvider,
+      ObjectProvider<PostHogProperties> postHogPropertiesProvider,
       ObjectProvider<NotificationOutboxProperties> notificationOutboxPropertiesProvider) {
     this.appProperties = appProperties;
     this.environment = environment;
@@ -53,7 +53,7 @@ public class BackofficeConfigInspector {
     this.twilioPropertiesProvider = twilioPropertiesProvider;
     this.sendGridPropertiesProvider = sendGridPropertiesProvider;
     this.googleMapsPropertiesProvider = googleMapsPropertiesProvider;
-    this.flagsmithPropertiesProvider = flagsmithPropertiesProvider;
+    this.postHogPropertiesProvider = postHogPropertiesProvider;
     this.notificationOutboxPropertiesProvider = notificationOutboxPropertiesProvider;
   }
 
@@ -68,7 +68,7 @@ public class BackofficeConfigInspector {
     addTwilioConfig(entries);
     addSendGridConfig(entries);
     addGoogleMapsConfig(entries);
-    addFlagsmithConfig(entries);
+    addPostHogConfig(entries);
     addNotificationOutboxConfig(entries);
     addMailConfig(entries);
 
@@ -173,20 +173,26 @@ public class BackofficeConfigInspector {
     }
   }
 
-  private void addFlagsmithConfig(List<ConfigEntry> entries) {
-    var fs = flagsmithPropertiesProvider.getIfAvailable();
-    if (fs != null) {
-      addEntry(entries, "Flagsmith", "apiUrl", fs.apiUrl());
-      addEntry(entries, "Flagsmith", "enableAnalytics", String.valueOf(fs.enableAnalytics()));
-      addEntry(
-          entries, "Flagsmith", "serverSideKey", obfuscate("key", fs.serverSideKey().orElse(null)));
+  private void addPostHogConfig(List<ConfigEntry> entries) {
+    var ph = postHogPropertiesProvider.getIfAvailable();
+    if (ph != null) {
+      addEntry(entries, "PostHog", "host", ph.host());
+      addEntry(entries, "PostHog", "projectApiKey", obfuscate("key", ph.projectApiKey()));
       addEntry(
           entries,
-          "Flagsmith",
-          "adminPassword",
-          obfuscate("password", fs.adminPassword().orElse(null)));
-      addEntry(entries, "Flagsmith", "projectName", fs.projectName());
-      addEntry(entries, "Flagsmith", "environmentName", fs.environmentName());
+          "PostHog",
+          "personalApiKey",
+          obfuscate("key", ph.personalApiKey().orElse(null)));
+      addEntry(
+          entries,
+          "PostHog",
+          "projectId",
+          ph.projectId().map(String::valueOf).orElse("auto-discover"));
+      addEntry(
+          entries,
+          "PostHog",
+          "pollIntervalSeconds",
+          String.valueOf(ph.pollIntervalSeconds()));
     }
   }
 

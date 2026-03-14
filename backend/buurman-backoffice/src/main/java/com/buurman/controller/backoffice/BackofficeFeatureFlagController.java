@@ -25,12 +25,9 @@ import com.buurman.repository.TeamMemberRepository;
 import com.buurman.repository.TeamRepository;
 import com.buurman.repository.UserRepository;
 import com.buurman.service.FeatureFlagService;
-import com.buurman.service.FlagsmithAdminService;
-import com.buurman.service.FlagsmithAdminService.FeatureStateInfo;
-import com.buurman.service.FlagsmithAdminService.IdentityInfo;
-import com.buurman.service.FlagsmithAdminService.IdentityOverrideInfo;
-import com.buurman.service.FlagsmithAdminService.SegmentOverrideState;
-import com.buurman.service.FlagsmithAdminService.SegmentWithOverrides;
+import com.buurman.service.PostHogAdminService;
+import com.buurman.service.PostHogAdminService.CohortInfo;
+import com.buurman.service.PostHogAdminService.FeatureFlagInfo;
 
 import lombok.RequiredArgsConstructor;
 
@@ -39,7 +36,7 @@ import lombok.RequiredArgsConstructor;
 public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsApi {
 
   private final FeatureFlagService featureFlagService;
-  private final FlagsmithAdminService flagsmithAdminService;
+  private final PostHogAdminService postHogAdminService;
   private final UserRepository userRepository;
   private final TeamMemberRepository teamMemberRepository;
   private final TeamRepository teamRepository;
@@ -49,8 +46,8 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
   @Override
   public Map<String, Object> getAdminStatus() {
     return Map.of(
-        "adminConfigured", flagsmithAdminService.isAdminConfigured(),
-        "authMethod", flagsmithAdminService.getAuthMethod());
+        "adminConfigured", postHogAdminService.isAdminConfigured(),
+        "authMethod", postHogAdminService.getAuthMethod());
   }
 
   @Override
@@ -107,21 +104,21 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
   public FeatureFlagUpdateResponse updateGlobalFlag(
       String flagName, UpdateFeatureFlagRequest updateFeatureFlagRequest) {
 
-    FeatureStateInfo current =
-        flagsmithAdminService
-            .findFeatureStateByName(flagName)
+    FeatureFlagInfo flag =
+        postHogAdminService
+            .findFeatureFlagByKey(flagName)
             .orElseThrow(
                 () ->
                     new IllegalArgumentException(
                         "Feature flag '%s' not found".formatted(flagName)));
 
-    FeatureStateInfo updated =
-        flagsmithAdminService.updateFeatureState(
-            current.featureStateId(),
+    FeatureFlagInfo updated =
+        postHogAdminService.updateFeatureFlag(
+            flag.id(),
             updateFeatureFlagRequest.enabled(),
             updateFeatureFlagRequest.value());
 
-    return new FeatureFlagUpdateResponse(updated.featureName(), updated.enabled(), updated.value());
+    return new FeatureFlagUpdateResponse(updated.key(), updated.active(), updated.payload());
   }
 
   @Override
@@ -134,55 +131,22 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
     String identity =
         FeatureFlagService.buildIdentity(teamIdentifier.value(), userIdentifier.value());
 
-    // Find the feature ID from the global feature states
-    FeatureStateInfo globalState =
-        flagsmithAdminService
-            .findFeatureStateByName(flagName)
+    FeatureFlagInfo flag =
+        postHogAdminService
+            .findFeatureFlagByKey(flagName)
             .orElseThrow(
                 () ->
                     new IllegalArgumentException(
                         "Feature flag '%s' not found".formatted(flagName)));
 
-    // Find or get the identity in Flagsmith
-    IdentityInfo identityInfo =
-        flagsmithAdminService
-            .findIdentity(identity)
-            .orElseThrow(
-                () ->
-                    new IllegalArgumentException(
-                        "Identity '%s' not found in Flagsmith. The user must have logged in at least once with this team."
-                            .formatted(identity)));
-
-    // Check if an override already exists
-    List<IdentityOverrideInfo> existing =
-        flagsmithAdminService.listIdentityOverrides(identityInfo.id());
-    IdentityOverrideInfo existingOverride =
-        existing.stream()
-            .filter(o -> o.featureId() == globalState.featureId())
-            .findFirst()
-            .orElse(null);
-
     boolean enabled =
         updateFeatureFlagRequest.enabled() != null
             ? updateFeatureFlagRequest.enabled()
-            : globalState.enabled();
-    String value = updateFeatureFlagRequest.value();
+            : flag.active();
 
-    IdentityOverrideInfo result;
-    if (existingOverride != null) {
-      result =
-          flagsmithAdminService.updateIdentityOverride(
-              identityInfo.id(),
-              existingOverride.featureStateId(),
-              updateFeatureFlagRequest.enabled(),
-              value);
-    } else {
-      result =
-          flagsmithAdminService.createIdentityOverride(
-              identityInfo.id(), globalState.featureId(), enabled, value);
-    }
+    postHogAdminService.upsertIdentityOverride(flag.id(), identity, enabled);
 
-    return new FeatureFlagUpdateResponse(flagName, result.enabled(), result.value());
+    return new FeatureFlagUpdateResponse(flagName, enabled, flag.payload());
   }
 
   @Override
@@ -192,61 +156,41 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
     String identity =
         FeatureFlagService.buildIdentity(teamIdentifier.value(), userIdentifier.value());
 
-    FeatureStateInfo globalState =
-        flagsmithAdminService
-            .findFeatureStateByName(flagName)
+    FeatureFlagInfo flag =
+        postHogAdminService
+            .findFeatureFlagByKey(flagName)
             .orElseThrow(
                 () ->
                     new IllegalArgumentException(
                         "Feature flag '%s' not found".formatted(flagName)));
 
-    IdentityInfo identityInfo =
-        flagsmithAdminService
-            .findIdentity(identity)
-            .orElseThrow(
-                () -> new IllegalArgumentException("Identity '%s' not found".formatted(identity)));
-
-    List<IdentityOverrideInfo> overrides =
-        flagsmithAdminService.listIdentityOverrides(identityInfo.id());
-    IdentityOverrideInfo target =
-        overrides.stream()
-            .filter(o -> o.featureId() == globalState.featureId())
-            .findFirst()
-            .orElseThrow(
-                () ->
-                    new IllegalArgumentException(
-                        "No override found for flag '%s' on identity '%s'"
-                            .formatted(flagName, identity)));
-
-    flagsmithAdminService.deleteIdentityOverride(identityInfo.id(), target.featureStateId());
+    postHogAdminService.deleteIdentityOverride(flag.id(), identity);
   }
 
-  // --- Segment endpoints ---
+  // --- Cohort (segment) endpoints ---
 
   @Override
   public List<SegmentEvaluation> getSegmentOverrides() {
-    List<SegmentWithOverrides> raw = flagsmithAdminService.getSegmentOverrides();
-    List<FeatureStateInfo> globalFlags = flagsmithAdminService.listFeatureStates();
+    List<CohortInfo> cohorts = postHogAdminService.listCohorts();
+    List<FeatureFlagInfo> allFlags = postHogAdminService.listFeatureFlags();
 
-    return raw.stream()
+    return cohorts.stream()
         .map(
-            seg -> {
-              // Start with global defaults for all flags
+            cohort -> {
+              Map<String, Boolean> cohortOverrides =
+                  postHogAdminService.getCohortOverridesFromFlags(cohort.id());
+
               Map<String, SegmentFlagOverride> overrides = new HashMap<>();
-              for (FeatureStateInfo global : globalFlags) {
+              for (FeatureFlagInfo flag : allFlags) {
+                Boolean overrideEnabled = cohortOverrides.get(flag.key());
+                boolean enabled = overrideEnabled != null ? overrideEnabled : flag.active();
                 overrides.put(
-                    global.featureName(),
-                    new SegmentFlagOverride(
-                        global.featureName(), global.enabled(), global.value()));
+                    flag.key(),
+                    new SegmentFlagOverride(flag.key(), enabled, flag.payload()));
               }
-              // Layer segment overrides on top
-              for (SegmentOverrideState state : seg.overrides()) {
-                overrides.put(
-                    state.featureName(),
-                    new SegmentFlagOverride(state.featureName(), state.enabled(), state.value()));
-              }
+
               return new SegmentEvaluation(
-                  seg.segmentId(), seg.segmentName(), seg.description(), overrides);
+                  cohort.id(), cohort.name(), cohort.description(), overrides);
             })
         .toList();
   }
@@ -255,68 +199,36 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
   public FeatureFlagUpdateResponse upsertSegmentOverride(
       Long segmentId, String flagName, UpdateFeatureFlagRequest updateFeatureFlagRequest) {
 
-    FeatureStateInfo globalState =
-        flagsmithAdminService
-            .findFeatureStateByName(flagName)
+    FeatureFlagInfo flag =
+        postHogAdminService
+            .findFeatureFlagByKey(flagName)
             .orElseThrow(
                 () ->
                     new IllegalArgumentException(
                         "Feature flag '%s' not found".formatted(flagName)));
 
-    // Ensure a feature-segment link exists, creating one if needed
-    long linkId =
-        flagsmithAdminService
-            .findFeatureSegmentId(globalState.featureId(), segmentId)
-            .orElseGet(
-                () ->
-                    flagsmithAdminService.createFeatureSegment(globalState.featureId(), segmentId));
+    boolean enabled =
+        updateFeatureFlagRequest.enabled() != null
+            ? updateFeatureFlagRequest.enabled()
+            : flag.active();
 
-    // Find the feature state for this segment override
-    var featureStateId =
-        flagsmithAdminService.findSegmentOverrideFeatureStateId(segmentId, globalState.featureId());
+    postHogAdminService.upsertCohortOverride(flag.id(), segmentId, enabled);
 
-    // Update existing feature state
-    // No auto-created feature state — create one explicitly with desired values
-    FeatureStateInfo updated =
-        featureStateId
-            .map(
-                aLong ->
-                    flagsmithAdminService.updateSegmentOverrideState(
-                        aLong,
-                        segmentId,
-                        updateFeatureFlagRequest.enabled(),
-                        updateFeatureFlagRequest.value()))
-            .orElseGet(
-                () ->
-                    flagsmithAdminService.createSegmentOverrideFeatureState(
-                        linkId,
-                        globalState.featureId(),
-                        updateFeatureFlagRequest.enabled(),
-                        updateFeatureFlagRequest.value()));
-    return new FeatureFlagUpdateResponse(flagName, updated.enabled(), updated.value());
+    return new FeatureFlagUpdateResponse(flagName, enabled, flag.payload());
   }
 
   @Override
   public void deleteSegmentOverride(Long segmentId, String flagName) {
 
-    FeatureStateInfo globalState =
-        flagsmithAdminService
-            .findFeatureStateByName(flagName)
+    FeatureFlagInfo flag =
+        postHogAdminService
+            .findFeatureFlagByKey(flagName)
             .orElseThrow(
                 () ->
                     new IllegalArgumentException(
                         "Feature flag '%s' not found".formatted(flagName)));
 
-    long featureSegmentId =
-        flagsmithAdminService
-            .findFeatureSegmentId(globalState.featureId(), segmentId)
-            .orElseThrow(
-                () ->
-                    new IllegalArgumentException(
-                        "No segment override found for flag '%s' on segment %d"
-                            .formatted(flagName, segmentId)));
-
-    flagsmithAdminService.deleteFeatureSegment(featureSegmentId);
+    postHogAdminService.deleteCohortOverride(flag.id(), segmentId);
   }
 
   // --- Internal ---

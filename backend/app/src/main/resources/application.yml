@@ -91,16 +91,14 @@ google:
   maps:
     api-key: ${GOOGLE_MAPS_API_KEY:}
 
-# Flagsmith Feature Flags
-flagsmith:
-  api-url: ${FLAGSMITH_API_URL:http://flagsmith:8000/api/v1/}
-  admin-email: ${FLAGSMITH_ADMIN_EMAIL:}
-  admin-password: ${FLAGSMITH_ADMIN_PASSWORD:}
-  api-token: ${FLAGSMITH_API_TOKEN:}
-  project-name: Buurman
-  environment-name: Local
-  enable-analytics: true
-  environment-refresh-interval-seconds: 300
+# PostHog Feature Flags
+posthog:
+  host: ${POSTHOG_HOST:https://us.i.posthog.com}
+  project-api-key: ${POSTHOG_PROJECT_API_KEY:}
+  personal-api-key: ${POSTHOG_PERSONAL_API_KEY:}
+  project-id: ${POSTHOG_PROJECT_ID:}
+  poll-interval-seconds: ${POSTHOG_POLL_INTERVAL_SECONDS:30}
+  send-feature-flag-events: false
 
 # Application Configuration
 app:

@@ -251,12 +251,7 @@
                 <version>9.0.26</version>
             </dependency>
 
-            <!-- Feature Flags -->
-            <dependency>
-                <groupId>com.flagsmith</groupId>
-                <artifactId>flagsmith-java-client</artifactId>
-                <version>8.0.0</version>
-            </dependency>
+            <!-- Feature Flags: PostHog (REST-based, no SDK dependency) -->
 
             <!-- PDF and CSV -->
             <dependency>
