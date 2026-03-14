@@ -4,8 +4,14 @@ import static com.buurman.domain.NotificationChannel.EMAIL;
 import static com.buurman.domain.NotificationChannel.SMS;
 import static com.buurman.domain.NotificationStatus.DEMO_BLOCKED;
 import static com.buurman.domain.NotificationStatus.PENDING;
+import static com.buurman.domain.NotificationType.PHONE_VERIFICATION_CODE;
+import static com.buurman.domain.NotificationType.VERIFICATION_CODE;
 import static com.buurman.domain.TeamRole.TEAM_ADMIN;
 import static com.buurman.domain.TeamRole.TEAM_EDITOR;
+import static com.buurman.util.FeatureFlags.BLOCK_EMAIL_NOTIFICATIONS;
+import static com.buurman.util.FeatureFlags.BLOCK_SMS_NOTIFICATIONS;
+import static com.buurman.util.FeatureFlags.EMAIL_NOTIFICATIONS;
+import static com.buurman.util.FeatureFlags.SMS_NOTIFICATIONS;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +42,6 @@ import com.buurman.repository.UserNotificationTypePreferenceRepository;
 import com.buurman.repository.UserPreferencesRepository;
 import com.buurman.repository.UserRepository;
 import com.buurman.service.FeatureFlagService;
-import com.buurman.util.FeatureFlags;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -120,6 +125,7 @@ public class NotificationServiceImpl implements NotificationService {
       notification.setContentTemplate(Optional.of(request.templateName()));
       notification.setContentVariables(Optional.of(request.templateVariables()));
       notification.setCreatedBy(Optional.of(request.createdBy()));
+      notification.setUrgency(request.urgency());
 
       if (deliveryBlocked) {
         notification.setStatus(DEMO_BLOCKED);
@@ -139,6 +145,11 @@ public class NotificationServiceImpl implements NotificationService {
       outbox.setNotificationId(notification.getId());
       outbox.setChannel(channel);
       outbox.setMaxRetries(3);
+      outbox.setNotificationType(Optional.of(request.notificationType()));
+      outbox.setRecipientUserId(request.recipientUserId());
+      outbox.setRecipientEmail(request.recipientEmail());
+      outbox.setTeamId(request.teamId());
+      outbox.setUrgency(request.urgency());
 
       NotificationSendRequest sendRequest =
           new NotificationSendRequest(
@@ -185,6 +196,7 @@ public class NotificationServiceImpl implements NotificationService {
                         .recipientPhone(user.getPhone())
                         .templateName(request.templateName())
                         .templateVariables(request.templateVariables())
+                        .urgency(request.urgency())
                         .createdBy(request.createdBy())
                         .build();
                 send(perUser);
@@ -250,6 +262,11 @@ public class NotificationServiceImpl implements NotificationService {
     outbox.setNotificationId(resent.getId());
     outbox.setChannel(resent.getChannel());
     outbox.setMaxRetries(3);
+    outbox.setNotificationType(Optional.of(resent.getNotificationType()));
+    outbox.setRecipientUserId(resent.getRecipientUserId());
+    outbox.setRecipientEmail(resent.getRecipientEmail());
+    outbox.setTeamId(resent.getTeamId());
+    outbox.setUrgency(resent.getUrgency());
 
     NotificationSendRequest sendRequest =
         new NotificationSendRequest(
@@ -281,15 +298,15 @@ public class NotificationServiceImpl implements NotificationService {
 
     // Verification notifications bypass preference checks entirely —
     // they must always be sent via their required channel regardless of user settings
-    if (type == NotificationType.VERIFICATION_CODE) {
+    if (type == VERIFICATION_CODE) {
       return List.of(EMAIL);
     }
-    if (type == NotificationType.PHONE_VERIFICATION_CODE) {
+    if (type == PHONE_VERIFICATION_CODE) {
       return List.of(SMS);
     }
 
-    boolean smsEnabled = featureFlagService.isEnabled(FeatureFlags.SMS_NOTIFICATIONS);
-    boolean emailFlagEnabled = featureFlagService.isEnabled(FeatureFlags.EMAIL_NOTIFICATIONS);
+    boolean smsEnabled = featureFlagService.isEnabled(SMS_NOTIFICATIONS);
+    boolean emailFlagEnabled = featureFlagService.isEnabled(EMAIL_NOTIFICATIONS);
 
     UserPreferences globalPrefs =
         userPreferencesRepository
@@ -347,6 +364,7 @@ public class NotificationServiceImpl implements NotificationService {
                     .recipientPhone(phone)
                     .templateName(request.templateName())
                     .templateVariables(request.templateVariables())
+                    .urgency(request.urgency())
                     .createdBy(request.createdBy())
                     .build())
         .orElse(request);
@@ -354,8 +372,8 @@ public class NotificationServiceImpl implements NotificationService {
 
   private boolean isDeliveryBlocked(NotificationChannel channel, UUID teamId) {
     return switch (channel) {
-      case EMAIL -> featureFlagService.isEnabled(FeatureFlags.BLOCK_EMAIL_NOTIFICATIONS, teamId);
-      case SMS -> featureFlagService.isEnabled(FeatureFlags.BLOCK_SMS_NOTIFICATIONS, teamId);
+      case EMAIL -> featureFlagService.isEnabled(BLOCK_EMAIL_NOTIFICATIONS, teamId);
+      case SMS -> featureFlagService.isEnabled(BLOCK_SMS_NOTIFICATIONS, teamId);
     };
   }
 
@@ -367,7 +385,7 @@ public class NotificationServiceImpl implements NotificationService {
           yield false;
         }
         // Allow phone verification SMS to unverified phones
-        if (request.notificationType() == NotificationType.PHONE_VERIFICATION_CODE) {
+        if (request.notificationType() == PHONE_VERIFICATION_CODE) {
           yield true;
         }
         // Block other SMS to users with unverified phones

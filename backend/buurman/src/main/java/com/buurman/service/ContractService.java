@@ -6,6 +6,9 @@ import static com.buurman.domain.Contract.ContractStatus.EXPIRED;
 import static com.buurman.domain.Contract.ContractStatus.PENDING_SIGNATURE;
 import static com.buurman.domain.Contract.ContractStatus.TERMINATED;
 import static com.buurman.domain.Contract.ContractType.FIXED_TERM;
+import static com.buurman.domain.NotificationType.CONTRACT_CREATED;
+import static com.buurman.domain.NotificationType.CONTRACT_REOPENED;
+import static com.buurman.domain.NotificationType.CONTRACT_STATUS_CHANGED;
 import static com.buurman.domain.Property.PropertyStatus.OCCUPIED;
 import static com.buurman.domain.Property.PropertyStatus.VACANT;
 import static com.buurman.util.SidGenerator.newContractId;
@@ -32,7 +35,6 @@ import com.buurman.domain.Contract;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Document;
-import com.buurman.domain.NotificationType;
 import com.buurman.domain.Property;
 import com.buurman.domain.Tenant;
 import com.buurman.domain.identifier.ContractIdentifier;
@@ -211,7 +213,7 @@ public class ContractService {
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
             .teamId(teamId)
-            .notificationType(NotificationType.CONTRACT_CREATED)
+            .notificationType(CONTRACT_CREATED)
             .templateName("contract-created")
             .templateVariables(contractVars)
             .createdBy(principal.getUserId())
@@ -607,7 +609,7 @@ public class ContractService {
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
             .teamId(teamId)
-            .notificationType(NotificationType.CONTRACT_STATUS_CHANGED)
+            .notificationType(CONTRACT_STATUS_CHANGED)
             .templateName("contract-status-changed")
             .templateVariables(
                 Map.of(
@@ -707,7 +709,7 @@ public class ContractService {
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
             .teamId(teamId)
-            .notificationType(NotificationType.CONTRACT_REOPENED)
+            .notificationType(CONTRACT_REOPENED)
             .templateName("contract-reopened")
             .templateVariables(
                 Map.of(

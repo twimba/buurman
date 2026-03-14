@@ -139,6 +139,15 @@ notification:
   outbox:
     batch-size: ${NOTIFICATION_OUTBOX_BATCH_SIZE:50}
     max-retries: ${NOTIFICATION_OUTBOX_MAX_RETRIES:5}
+  consolidation:
+    enabled: true
+    email:
+      enabled: true
+      min-group-size: 2
+      max-items-per-digest: 100
+    sms:
+      enabled: false
+      threshold: 3
 
 # Scheduling Configuration
 scheduling:

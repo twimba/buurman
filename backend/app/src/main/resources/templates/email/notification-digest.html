@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${count} + ' ' + ${typeName}">Notification Digest</title>
+</head>
+<body style="font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; padding: 0; background-color: #fafaf9;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+        <div th:replace="~{email/_email-base :: header}"></div>
+        <div style="background: #ffffff; border: 1px solid #e7e5e4; border-top: none; border-radius: 0 0 8px 8px; padding: 40px;">
+            <h1 style="color: #292524; margin: 0 0 24px 0; font-size: 24px;" th:text="${count} + ' ' + ${typeName}">3 Payment Reminders</h1>
+
+            <p style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
+                Hi <span th:text="${userName}">User</span>,
+            </p>
+
+            <p style="color: #292524; line-height: 1.6; margin: 0 0 24px 0;" th:text="${introText}">
+                You have 3 upcoming payment reminders.
+            </p>
+
+            <div th:each="item : ${items}" style="background: #fafaf9; border: 1px solid #e7e5e4; border-radius: 6px; padding: 16px 20px; margin: 0 0 12px 0;">
+                <p style="color: #292524; margin: 0 0 4px 0; font-weight: 600;" th:text="${item.itemTitle}">Keizersgracht 123</p>
+                <p style="color: #78716c; margin: 0 0 8px 0; font-size: 14px;" th:text="${item.itemSummary}">&#8364;850.00 &#8212; Due March 15, 2026</p>
+                <a th:href="${item.itemLink}" style="color: #0284c7; font-size: 14px; text-decoration: none;">View details &#8594;</a>
+            </div>
+
+            <p th:if="${truncatedCount > 0}" style="color: #78716c; font-size: 14px; margin: 8px 0 24px 0; text-align: center;">
+                ...and <span th:text="${truncatedCount}">5</span> more. View all in Buurman.
+            </p>
+
+            <div th:if="${truncatedCount == 0}" style="margin: 12px 0 0 0;"></div>
+
+            <a th:href="${ctaUrl}" style="display: inline-block; background: #0284c7; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500;" th:text="${ctaText}">
+                View All
+            </a>
+        </div>
+
+        <div th:replace="~{email/_email-base :: footer}"></div>
+    </div>
+</body>
+</html>

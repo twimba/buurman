@@ -1,6 +1,8 @@
 package com.buurman.service;
 
 import static com.buurman.domain.Contract.ContractStatus.ACTIVE;
+import static com.buurman.domain.NotificationType.PAYMENT_PAID;
+import static com.buurman.domain.NotificationType.PAYMENT_RECEIVAL;
 import static com.buurman.domain.Payment.PaymentStatus.CANCELLED;
 import static com.buurman.domain.Payment.PaymentStatus.OVERDUE;
 import static com.buurman.domain.Payment.PaymentStatus.PAID;
@@ -40,7 +42,6 @@ import com.buurman.config.models.AppProperties;
 import com.buurman.domain.AmountStats;
 import com.buurman.domain.Contract;
 import com.buurman.domain.Document;
-import com.buurman.domain.NotificationType;
 import com.buurman.domain.Payment;
 import com.buurman.domain.PaymentReceival;
 import com.buurman.domain.Property;
@@ -878,7 +879,7 @@ public class PaymentService {
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
             .teamId(teamId)
-            .notificationType(NotificationType.PAYMENT_PAID)
+            .notificationType(PAYMENT_PAID)
             .templateName("payment-paid")
             .templateVariables(
                 Map.of(
@@ -926,7 +927,7 @@ public class PaymentService {
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
             .teamId(teamId)
-            .notificationType(NotificationType.PAYMENT_RECEIVAL)
+            .notificationType(PAYMENT_RECEIVAL)
             .templateName("payment-receival")
             .templateVariables(vars)
             .createdBy(principal.getUserId())

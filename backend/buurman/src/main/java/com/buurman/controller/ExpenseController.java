@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.ExpenseIdentifier;
@@ -23,7 +24,6 @@ import com.buurman.dto.response.ExpenseStatsResponse;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.generated.api.ExpensesApi;
-import org.springframework.web.multipart.MultipartFile;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.DocumentService;

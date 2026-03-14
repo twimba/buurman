@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.buurman.domain.NotificationType;
+import com.buurman.domain.NotificationUrgency;
 
 public record SendNotificationRequest(
     Optional<UUID> teamId,
@@ -15,6 +16,7 @@ public record SendNotificationRequest(
     Optional<String> recipientPhone,
     String templateName,
     Map<String, Object> templateVariables,
+    NotificationUrgency urgency,
     UUID createdBy) {
 
   public static Builder builder() {
@@ -31,6 +33,7 @@ public record SendNotificationRequest(
     private Optional<String> recipientPhone = Optional.empty();
     private String templateName;
     private Map<String, Object> templateVariables;
+    private NotificationUrgency urgency = NotificationUrgency.NORMAL;
     private UUID createdBy;
 
     public Builder teamId(UUID teamId) {
@@ -98,6 +101,11 @@ public record SendNotificationRequest(
       return this;
     }
 
+    public Builder urgency(NotificationUrgency urgency) {
+      this.urgency = urgency;
+      return this;
+    }
+
     public Builder createdBy(UUID createdBy) {
       this.createdBy = createdBy;
       return this;
@@ -113,6 +121,7 @@ public record SendNotificationRequest(
           recipientPhone,
           templateName,
           templateVariables,
+          urgency,
           createdBy);
     }
   }

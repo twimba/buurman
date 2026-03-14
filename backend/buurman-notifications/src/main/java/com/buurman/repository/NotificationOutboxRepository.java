@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
+import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.NotificationOutbox;
@@ -42,6 +43,17 @@ public class NotificationOutboxRepository {
             NOTIFICATION_OUTBOX.MAX_RETRIES,
             outbox.getMaxRetries() > 0 ? outbox.getMaxRetries() : 3)
         .set(NOTIFICATION_OUTBOX.CREATED_AT, now)
+        .set(
+            DSL.field("notification_type", String.class),
+            outbox.getNotificationType().map(Enum::name).orElse(null))
+        .set(DSL.field("recipient_user_id", UUID.class), outbox.getRecipientUserId().orElse(null))
+        .set(DSL.field("recipient_email", String.class), outbox.getRecipientEmail().orElse(null))
+        .set(DSL.field("team_id", UUID.class), outbox.getTeamId().orElse(null))
+        .set(DSL.field("urgency", String.class), outbox.getUrgency().name())
+        .set(
+            DSL.field("consolidation_group_id", UUID.class),
+            outbox.getConsolidationGroupId().orElse(null))
+        .set(DSL.field("is_consolidated", Boolean.class), outbox.isConsolidated())
         .execute();
 
     outbox.setId(id);
@@ -107,6 +119,28 @@ public class NotificationOutboxRepository {
         .set(NOTIFICATION_OUTBOX.NEXT_RETRY_AT, nextRetry)
         .set(NOTIFICATION_OUTBOX.PROCESSED_AT, now)
         .where(NOTIFICATION_OUTBOX.ID.eq(id))
+        .execute();
+  }
+
+  public void markSentBatch(List<UUID> ids) {
+    if (ids.isEmpty()) {
+      return;
+    }
+    LocalDateTime now = LocalDateTime.now(clock);
+    dsl.update(NOTIFICATION_OUTBOX)
+        .set(NOTIFICATION_OUTBOX.STATUS, OutboxStatus.SENT.name())
+        .set(NOTIFICATION_OUTBOX.PROCESSED_AT, now)
+        .where(NOTIFICATION_OUTBOX.ID.in(ids))
+        .execute();
+  }
+
+  public void setConsolidationGroupId(List<UUID> ids, UUID groupId) {
+    if (ids.isEmpty()) {
+      return;
+    }
+    dsl.update(NOTIFICATION_OUTBOX)
+        .set(DSL.field("consolidation_group_id", UUID.class), groupId)
+        .where(NOTIFICATION_OUTBOX.ID.in(ids))
         .execute();
   }
 }

@@ -41,6 +41,7 @@ public class Notification {
   @Builder.Default private Optional<Instant> firstClickedAt = Optional.empty();
   @Builder.Default private Optional<UUID> resentFromId = Optional.empty();
   @Builder.Default private Optional<String> resendReason = Optional.empty();
+  @Builder.Default private NotificationUrgency urgency = NotificationUrgency.NORMAL;
   private Instant createdAt;
   @Builder.Default private Optional<UUID> createdBy = Optional.empty();
 }

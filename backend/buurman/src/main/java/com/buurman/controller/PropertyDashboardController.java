@@ -77,8 +77,7 @@ public class PropertyDashboardController implements PropertyDashboardApi {
     PropertyDashboardResponse dashboard =
         dashboardService.getDashboard(identifier, months.orElse(null), principal);
     httpServletResponse.setHeader(
-        CONTENT_DISPOSITION,
-        "attachment; filename=property-dashboard-" + identifier + ".xlsx");
+        CONTENT_DISPOSITION, "attachment; filename=property-dashboard-" + identifier + ".xlsx");
     httpServletResponse.setContentType(
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     return exportService.generatePropertyDashboardExcel(dashboard);

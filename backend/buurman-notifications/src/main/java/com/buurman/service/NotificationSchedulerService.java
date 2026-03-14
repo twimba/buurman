@@ -1,5 +1,7 @@
 package com.buurman.service;
 
+import static com.buurman.domain.NotificationType.CONTRACT_EXPIRY;
+import static com.buurman.domain.NotificationType.PAYMENT_REMINDER;
 import static com.buurman.domain.TeamRole.TEAM_EDITOR;
 import static com.buurman.util.Constants.SYSTEM_USER_ID;
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -18,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.config.models.AppProperties;
 import com.buurman.domain.Contract;
-import com.buurman.domain.NotificationType;
+import com.buurman.domain.NotificationUrgency;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamMember;
@@ -92,7 +94,7 @@ public class NotificationSchedulerService {
                       notificationService.send(
                           SendNotificationRequest.builder()
                               .teamId(team.getId())
-                              .notificationType(NotificationType.CONTRACT_EXPIRY)
+                              .notificationType(CONTRACT_EXPIRY)
                               .recipientUserId(user.getId())
                               .recipientEmail(user.getEmail())
                               .recipientPhone(user.getPhone())
@@ -104,6 +106,10 @@ public class NotificationSchedulerService {
                                       "daysUntilExpiry", daysUntilExpiry,
                                       "expiryDate", formatDate(endDate),
                                       "baseUrl", appProperties.email().baseUrl()))
+                              .urgency(
+                                  daysUntilExpiry <= 7
+                                      ? NotificationUrgency.URGENT
+                                      : NotificationUrgency.NORMAL)
                               .createdBy(SYSTEM_USER_ID)
                               .build()));
             }
@@ -156,7 +162,7 @@ public class NotificationSchedulerService {
                       notificationService.send(
                           SendNotificationRequest.builder()
                               .teamId(team.getId())
-                              .notificationType(NotificationType.PAYMENT_REMINDER)
+                              .notificationType(PAYMENT_REMINDER)
                               .recipientUserId(user.getId())
                               .recipientEmail(user.getEmail())
                               .recipientPhone(user.getPhone())
@@ -168,6 +174,7 @@ public class NotificationSchedulerService {
                                       "amount", formatCurrency(payment.getAmount().value()),
                                       "dueDate", formatDate(payment.getDueDate()),
                                       "baseUrl", appProperties.email().baseUrl()))
+                              .urgency(NotificationUrgency.URGENT)
                               .createdBy(SYSTEM_USER_ID)
                               .build()));
             }

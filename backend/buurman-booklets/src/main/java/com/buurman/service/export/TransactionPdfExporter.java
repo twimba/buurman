@@ -124,7 +124,9 @@ public class TransactionPdfExporter {
   }
 
   private void appendCss(StringBuilder css) {
-    css.append("body { font-family: 'Satoshi', 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 40px; color: #292524; }");
+    css.append(
+        "body { font-family: 'Satoshi', 'Helvetica Neue', Helvetica, Arial, sans-serif; margin:"
+            + " 40px; color: #292524; }");
     css.append("h1 { color: #0c4a6e; border-bottom: 3px solid #0284c7; padding-bottom: 10px; }");
     css.append("h2 { color: #0c4a6e; margin-top: 30px; }");
     css.append(".summary { display: flex; gap: 20px; margin: 20px 0; }");

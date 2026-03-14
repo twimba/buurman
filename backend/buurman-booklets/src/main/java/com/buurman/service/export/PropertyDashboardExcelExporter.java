@@ -53,7 +53,9 @@ public class PropertyDashboardExcelExporter {
       // Sheet 2: Monthly Cash Flow
       Sheet cashFlowSheet = workbook.createSheet("Monthly Cash Flow");
       int cr = 0;
-      cr = writeHeader(cashFlowSheet, cr, headerStyle, "Month", "Income", "Expenses", "Mortgage", "Net");
+      cr =
+          writeHeader(
+              cashFlowSheet, cr, headerStyle, "Month", "Income", "Expenses", "Mortgage", "Net");
       for (MonthlyDataPoint m : dashboard.cashFlow().months()) {
         Row row = cashFlowSheet.createRow(cr++);
         row.createCell(0).setCellValue(m.month());

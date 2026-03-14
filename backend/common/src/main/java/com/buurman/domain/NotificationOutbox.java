@@ -27,4 +27,11 @@ public class NotificationOutbox {
   @Builder.Default private Optional<String> lastError = Optional.empty();
   private Instant createdAt;
   @Builder.Default private Optional<Instant> processedAt = Optional.empty();
+  @Builder.Default private Optional<NotificationType> notificationType = Optional.empty();
+  @Builder.Default private Optional<UUID> recipientUserId = Optional.empty();
+  @Builder.Default private Optional<String> recipientEmail = Optional.empty();
+  @Builder.Default private Optional<UUID> teamId = Optional.empty();
+  @Builder.Default private NotificationUrgency urgency = NotificationUrgency.NORMAL;
+  @Builder.Default private Optional<UUID> consolidationGroupId = Optional.empty();
+  private boolean consolidated;
 }

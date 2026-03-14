@@ -1,6 +1,7 @@
 package com.buurman.service;
 
 import static com.buurman.domain.NotificationType.VERIFICATION_CODE;
+import static com.buurman.domain.NotificationType.WELCOME;
 import static com.buurman.domain.TeamRole.TEAM_ADMIN;
 import static com.buurman.util.FeatureFlags.INVITATION_REQUIRED;
 import static com.buurman.util.SidGenerator.newTeamId;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.EmailVerificationCode;
-import com.buurman.domain.NotificationType;
 import com.buurman.domain.Sid;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamInvitation;
@@ -477,7 +477,7 @@ public class AuthService {
                 notificationService.send(
                     SendNotificationRequest.builder()
                         .teamId(welcomeTeamId)
-                        .notificationType(NotificationType.WELCOME)
+                        .notificationType(WELCOME)
                         .recipientUserId(user.getId())
                         .recipientEmail(user.getEmail())
                         .recipientPhone(user.getPhone())

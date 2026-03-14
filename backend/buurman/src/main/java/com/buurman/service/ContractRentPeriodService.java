@@ -1,5 +1,6 @@
 package com.buurman.service;
 
+import static com.buurman.domain.NotificationType.CONTRACT_RENT_ADJUSTED;
 import static com.buurman.domain.Payment.PaymentStatus.CANCELLED;
 import static com.buurman.domain.Payment.PaymentStatus.PENDING;
 import static com.buurman.util.SidGenerator.newContractRentPeriodId;
@@ -22,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.buurman.config.models.AppProperties;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractRentPeriod;
-import com.buurman.domain.NotificationType;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
 import com.buurman.domain.Tenant;
@@ -504,7 +504,7 @@ public class ContractRentPeriodService {
       notificationService.sendToTeam(
           SendNotificationRequest.builder()
               .teamId(teamId)
-              .notificationType(NotificationType.CONTRACT_RENT_ADJUSTED)
+              .notificationType(CONTRACT_RENT_ADJUSTED)
               .templateName("contract-rent-adjusted")
               .templateVariables(vars)
               .createdBy(userId)

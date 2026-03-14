@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.ContractPartyIdentifier;
@@ -26,7 +27,6 @@ import com.buurman.dto.response.DocumentResponse;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.generated.api.ContractsApi;
-import org.springframework.web.multipart.MultipartFile;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.ContractPartyService;

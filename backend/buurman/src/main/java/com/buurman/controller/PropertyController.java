@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.PhotoIdentifier;
@@ -18,7 +19,6 @@ import com.buurman.dto.response.PhotoResponse;
 import com.buurman.dto.response.PropertyResponse;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.generated.api.PropertiesApi;
-import org.springframework.web.multipart.MultipartFile;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.PropertyService;

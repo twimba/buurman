@@ -37,11 +37,12 @@ public class PortfolioDashboardExcelExporter {
       int r = 0;
       r = writeHeader(summarySheet, r, headerStyle, "Metric", "Value");
       r = writeRow(summarySheet, r, "Currency", dashboard.currency().orElse("N/A"));
-      r = writeRow(
-          summarySheet,
-          r,
-          "Properties with Financial Data",
-          dashboard.propertiesWithFinancialData() + " / " + dashboard.totalProperties());
+      r =
+          writeRow(
+              summarySheet,
+              r,
+              "Properties with Financial Data",
+              dashboard.propertiesWithFinancialData() + " / " + dashboard.totalProperties());
       r = writeOptionalRow(summarySheet, r, "Total Portfolio Value", s.totalPortfolioValue());
       r = writeOptionalRow(summarySheet, r, "Total Equity", s.totalEquity());
       r = writeOptionalRow(summarySheet, r, "Monthly Cash Flow", s.monthlyCashFlow());
@@ -59,8 +60,9 @@ public class PortfolioDashboardExcelExporter {
       // Sheet 2: Monthly Cash Flow
       Sheet cashFlowSheet = workbook.createSheet("Monthly Cash Flow");
       int cr = 0;
-      cr = writeHeader(
-          cashFlowSheet, cr, headerStyle, "Month", "Income", "Expenses", "Mortgage", "Net");
+      cr =
+          writeHeader(
+              cashFlowSheet, cr, headerStyle, "Month", "Income", "Expenses", "Mortgage", "Net");
       for (MonthlyDataPoint m : dashboard.cashFlow().months()) {
         Row row = cashFlowSheet.createRow(cr++);
         row.createCell(0).setCellValue(m.month());

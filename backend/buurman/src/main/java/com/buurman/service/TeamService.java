@@ -1,5 +1,7 @@
 package com.buurman.service;
 
+import static com.buurman.domain.NotificationType.INVITATION_ACCEPTED;
+import static com.buurman.domain.NotificationType.TEAM_INVITATION;
 import static com.buurman.domain.TeamRole.TEAM_ADMIN;
 import static java.time.ZoneOffset.UTC;
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -20,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.config.models.AppProperties;
-import com.buurman.domain.NotificationType;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamInvitation;
 import com.buurman.domain.TeamMember;
@@ -134,7 +135,7 @@ public class TeamService {
     notificationService.send(
         SendNotificationRequest.builder()
             .teamId(team.getId())
-            .notificationType(NotificationType.TEAM_INVITATION)
+            .notificationType(TEAM_INVITATION)
             .recipientEmail(invitation.getEmail())
             .templateName("team-invitation")
             .templateVariables(
@@ -271,7 +272,7 @@ public class TeamService {
     notificationService.send(
         SendNotificationRequest.builder()
             .teamId(team.getId())
-            .notificationType(NotificationType.TEAM_INVITATION)
+            .notificationType(TEAM_INVITATION)
             .recipientEmail(invitation.getEmail())
             .templateName("team-invitation")
             .templateVariables(
@@ -349,7 +350,7 @@ public class TeamService {
                             notificationService.send(
                                 SendNotificationRequest.builder()
                                     .teamId(team.getId())
-                                    .notificationType(NotificationType.INVITATION_ACCEPTED)
+                                    .notificationType(INVITATION_ACCEPTED)
                                     .recipientUserId(inviter.getId())
                                     .recipientEmail(inviter.getEmail())
                                     .recipientPhone(inviter.getPhone())

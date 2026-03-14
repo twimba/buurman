@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.FinancingPaymentIdentifier;
@@ -21,7 +22,6 @@ import com.buurman.dto.response.DocumentResponse;
 import com.buurman.dto.response.FinancingPaymentResponse;
 import com.buurman.dto.response.PropertyFinancingResponse;
 import com.buurman.generated.api.PropertyFinancingsApi;
-import org.springframework.web.multipart.MultipartFile;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.DocumentService;

@@ -1,5 +1,6 @@
 package com.buurman.service;
 
+import static com.buurman.domain.NotificationType.PROPERTY_CREATED;
 import static com.buurman.util.SidGenerator.newPropertyId;
 
 import java.net.URL;
@@ -18,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
-import com.buurman.domain.NotificationType;
 import com.buurman.domain.Photo;
 import com.buurman.domain.Property;
 import com.buurman.domain.Property.PropertyCategory;
@@ -194,7 +194,7 @@ public class PropertyService {
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
             .teamId(principal.requireTeamId())
-            .notificationType(NotificationType.PROPERTY_CREATED)
+            .notificationType(PROPERTY_CREATED)
             .templateName("property-created")
             .templateVariables(
                 Map.of(

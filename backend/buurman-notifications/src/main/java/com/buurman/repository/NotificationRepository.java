@@ -17,6 +17,7 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.JSONB;
+import org.jooq.impl.DSL;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
@@ -80,6 +81,7 @@ public class NotificationRepository {
         .set(NOTIFICATIONS.STATUS, notification.getStatus().name())
         .set(NOTIFICATIONS.RESENT_FROM_ID, notification.getResentFromId().orElse(null))
         .set(NOTIFICATIONS.RESEND_REASON, notification.getResendReason().orElse(null))
+        .set(DSL.field("urgency", String.class), notification.getUrgency().name())
         .set(NOTIFICATIONS.CREATED_AT, createdAt)
         .set(NOTIFICATIONS.CREATED_BY, notification.getCreatedBy().orElse(null))
         .execute();

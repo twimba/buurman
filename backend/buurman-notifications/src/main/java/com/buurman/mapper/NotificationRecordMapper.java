@@ -12,6 +12,7 @@ import com.buurman.domain.Notification;
 import com.buurman.domain.NotificationChannel;
 import com.buurman.domain.NotificationStatus;
 import com.buurman.domain.NotificationType;
+import com.buurman.domain.NotificationUrgency;
 import com.buurman.jooq.generated.tables.records.NotificationsRecord;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -68,6 +69,11 @@ public class NotificationRecordMapper {
         Optional.ofNullable(record.getFirstClickedAt()).map(dt -> dt.toInstant(UTC)));
     notification.setResentFromId(Optional.ofNullable(record.getResentFromId()));
     notification.setResendReason(Optional.ofNullable(record.getResendReason()));
+
+    String urgencyStr = record.get("urgency", String.class);
+    notification.setUrgency(
+        urgencyStr != null ? NotificationUrgency.valueOf(urgencyStr) : NotificationUrgency.NORMAL);
+
     notification.setCreatedAt(record.getCreatedAt().toInstant(UTC));
     notification.setCreatedBy(Optional.ofNullable(record.getCreatedBy()));
 

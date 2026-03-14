@@ -1,5 +1,6 @@
 package com.buurman.service;
 
+import static com.buurman.domain.NotificationType.EXPENSE_CREATED;
 import static com.buurman.util.SidGenerator.newExpenseId;
 import static java.math.BigDecimal.ZERO;
 import static java.util.stream.Collectors.joining;
@@ -26,7 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.buurman.config.models.AppProperties;
 import com.buurman.domain.AmountStats;
 import com.buurman.domain.Expense;
-import com.buurman.domain.NotificationType;
 import com.buurman.domain.Property;
 import com.buurman.domain.identifier.ExpenseIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
@@ -378,7 +378,7 @@ public class ExpenseService {
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
             .teamId(principal.requireTeamId())
-            .notificationType(NotificationType.EXPENSE_CREATED)
+            .notificationType(EXPENSE_CREATED)
             .templateName("expense-created")
             .templateVariables(
                 Map.of(
@@ -417,7 +417,7 @@ public class ExpenseService {
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
             .teamId(principal.requireTeamId())
-            .notificationType(NotificationType.EXPENSE_CREATED)
+            .notificationType(EXPENSE_CREATED)
             .templateName("expenses-bulk-created")
             .templateVariables(vars)
             .createdBy(principal.getUserId())
