@@ -1,6 +1,12 @@
 # https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 
 version: 2
+registries:
+  ghcr:
+    type: docker-registry
+    url: https://ghcr.io
+    username: dependabot
+    password: ${{ secrets.GITHUB_TOKEN }}
 updates:
   - package-ecosystem: "maven"
     directories:
@@ -101,6 +107,8 @@ updates:
       - "/backoffice"
       - "/prometheus"
       - "/keycloak"
+    registries:
+      - ghcr
     schedule:
       interval: "daily"
     open-pull-requests-limit: 50
@@ -108,6 +116,8 @@ updates:
   - package-ecosystem: "docker-compose"
     directories:
       - "/"
+    registries:
+      - ghcr
     schedule:
       interval: "daily"
     open-pull-requests-limit: 50
