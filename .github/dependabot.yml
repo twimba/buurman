@@ -2,11 +2,11 @@
 
 version: 2
 registries:
-  dockerhub:
+  ghcr:
     type: docker-registry
-    url: https://registry.hub.docker.com
-    username: ${{ secrets.DOCKERHUB_USERNAME }}
-    password: ${{ secrets.DOCKERHUB_TOKEN }}
+    url: https://ghcr.io
+    username: ${{ secrets.GHCR_USERNAME }}
+    password: ${{ secrets.GHCR_TOKEN }}
 updates:
   - package-ecosystem: "maven"
     directories:
@@ -108,7 +108,7 @@ updates:
       - "/prometheus"
       - "/keycloak"
     registries:
-      - dockerhub
+      - ghcr
     schedule:
       interval: "daily"
     open-pull-requests-limit: 50
@@ -117,7 +117,7 @@ updates:
     directories:
       - "/"
     registries:
-      - dockerhub
+      - ghcr
     schedule:
       interval: "daily"
     open-pull-requests-limit: 50
