@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
+import { AnalyticsInitializer } from "./components/AnalyticsInitializer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Layout } from "./components/Layout";
 import { LoadingSpinner } from "./components/LoadingSpinner";
@@ -86,6 +87,7 @@ function App() {
       <EnvironmentBanner />
       <BrowserRouter>
         <AuthProvider>
+          <AnalyticsInitializer />
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
               <Route element={<ProtectedRoute />}>

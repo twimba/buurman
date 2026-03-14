@@ -5,6 +5,8 @@ import {
   type SendRegistrationInvitationRequest,
   type UpdateRegistrationInvitationNoteRequest,
 } from "../api/registrationInvitations";
+import { trackEvent } from "../utils/analytics";
+import { AnalyticsEvent } from "../constants/analyticsEvents";
 
 interface ListParams {
   page?: number;
@@ -64,6 +66,9 @@ export const useSendRegistrationInvitation = () => {
       identifier: string;
       data: SendRegistrationInvitationRequest;
     }) => registrationInvitationsApi.send(identifier, data),
+    onSuccess: () => {
+      trackEvent(AnalyticsEvent.BO_INVITATION_SENT);
+    },
   });
 };
 

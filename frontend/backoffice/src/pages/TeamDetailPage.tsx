@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import {
@@ -19,6 +19,8 @@ import {
 import { PageHeader, Button, ConfirmDialog, RefreshButton } from "@buurman/ui";
 import { useTeam, useUpdateTeam, useDeleteTeam } from "../hooks/useTeams";
 import { LoadingSpinner } from "../components/LoadingSpinner";
+import { trackEvent } from "../utils/analytics";
+import { AnalyticsEvent } from "../constants/analyticsEvents";
 
 function formatMoney(value: number, currencyCode: string | null): string {
   if (!currencyCode) {
@@ -55,6 +57,12 @@ export const TeamDetailPage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState("");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  useEffect(() => {
+    if (team) {
+      trackEvent(AnalyticsEvent.BO_TEAM_VIEWED);
+    }
+  }, [team]);
 
   if (isLoading) {
     return <LoadingSpinner message="Loading team..." />;
