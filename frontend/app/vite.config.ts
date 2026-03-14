@@ -55,6 +55,9 @@ export default defineConfig({
           if (id.includes('node_modules/@vis.gl/react-google-maps/')) {
             return 'vendor-maps';
           }
+          if (id.includes('node_modules/posthog-js/')) {
+            return 'vendor-analytics';
+          }
           if (id.includes('node_modules/date-fns/') || id.includes('node_modules/keycloak-js/') || id.includes('node_modules/dompurify/') || id.includes('node_modules/libphonenumber-js/')) {
             return 'vendor-utils';
           }

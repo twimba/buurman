@@ -73,6 +73,11 @@ All services are routed through Traefik with HTTPS (`*.local.buurman.io`). HTTP 
 | app | https://app.local.buurman.io | React app |
 | prometheus | https://prometheus.local.buurman.io | Metrics collection |
 | grafana | https://grafana.local.buurman.io | Dashboards |
+| PostHog | https://eu.posthog.com | Product analytics (cloud, EU) |
+
+Environment variables for analytics:
+- `VITE_POSTHOG_KEY` — PostHog project API key (empty = disabled)
+- `VITE_POSTHOG_HOST` — PostHog ingest endpoint (`/ingest` via Traefik proxy)
 
 Commands (via Makefile):
 - `make up` — start everything in Docker (including backend + app)
