@@ -140,14 +140,14 @@ export const PortfolioCashFlowChart = ({
         <Tooltip
           contentStyle={tooltipStyle}
           labelFormatter={(label) => formatMonthTick(String(label))}
-          formatter={(value?: number | string, name?: string) => {
+          formatter={(value, name) => {
             const labels: Record<string, string> = {
               income: 'Income',
               negExpenses: 'Expenses',
               negMortgage: 'Mortgage',
               net: 'Net',
             };
-            const num = Number(value ?? 0);
+            const num = typeof value === 'number' ? value : Number(value);
             const display =
               name === 'negExpenses' || name === 'negMortgage'
                 ? Math.abs(num)
@@ -159,7 +159,7 @@ export const PortfolioCashFlowChart = ({
           }}
         />
         <Legend
-          formatter={(value: string) => {
+          formatter={(value) => {
             const labels: Record<string, string> = {
               income: 'Income',
               negExpenses: 'Expenses',

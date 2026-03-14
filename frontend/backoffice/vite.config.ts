@@ -21,10 +21,16 @@ export default defineConfig({
     sourcemap: true,
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          'vendor-query': ['@tanstack/react-query', 'axios'],
-          'vendor-utils': ['date-fns', 'keycloak-js', 'cronstrue'],
+        manualChunks(id) {
+          if (id.includes('node_modules/react-dom/') || id.includes('node_modules/react/') || id.includes('node_modules/react-router-dom/')) {
+            return 'vendor-react';
+          }
+          if (id.includes('node_modules/@tanstack/react-query/') || id.includes('node_modules/axios/')) {
+            return 'vendor-query';
+          }
+          if (id.includes('node_modules/date-fns/') || id.includes('node_modules/keycloak-js/') || id.includes('node_modules/cronstrue/')) {
+            return 'vendor-utils';
+          }
         },
       },
     },

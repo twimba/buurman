@@ -24,7 +24,7 @@ import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.dto.response.TenantAddressResponse;
 import com.buurman.dto.response.TenantResponse;
 import com.buurman.generated.api.TenantsApi;
-import com.buurman.generated.model.UploadPhotoRequest;
+import org.springframework.web.multipart.MultipartFile;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.TenantService;
@@ -103,16 +103,14 @@ public class TenantController implements TenantsApi {
   }
 
   @Override
-  @SuppressWarnings("NullAway")
   public DocumentResponse uploadDocument(
       TenantIdentifier identifier,
+      MultipartFile file,
       Optional<String> title,
-      Optional<String> notes,
-      Optional<UploadPhotoRequest> uploadPhotoRequest) {
+      Optional<String> notes) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    // Generated interface mismodels multipart upload as JSON body
     return tenantService.uploadDocument(
-        identifier, null, title.orElse(null), notes.orElse(null), principal);
+        identifier, file, title.orElse(null), notes.orElse(null), principal);
   }
 
   @Override
@@ -140,16 +138,14 @@ public class TenantController implements TenantsApi {
   }
 
   @Override
-  @SuppressWarnings("NullAway")
   public PhotoResponse uploadPhoto(
       TenantIdentifier identifier,
+      MultipartFile file,
       Optional<String> title,
-      Optional<String> notes,
-      Optional<UploadPhotoRequest> uploadPhotoRequest) {
+      Optional<String> notes) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    // Generated interface mismodels multipart upload as JSON body
     return tenantService.uploadPhoto(
-        identifier, null, title.orElse(null), notes.orElse(null), principal);
+        identifier, file, title.orElse(null), notes.orElse(null), principal);
   }
 
   @Override

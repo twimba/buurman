@@ -10,7 +10,7 @@
     "build:app": "orval && yarn workspace buurman-app build",
     "build:backoffice": "orval && yarn workspace buurman-backoffice build",
     "build": "orval && yarn workspaces foreach -A --include 'buurman-app' --include 'buurman-backoffice' run build",
-    "dev": "dotenv -e .env -- yarn workspaces foreach -A -p -i --include 'buurman-app' --include 'buurman-backoffice' run dev",
+    "dev": "dotenv -e ../.env -- yarn workspaces foreach -A -p -i --include 'buurman-app' --include 'buurman-backoffice' run dev",
     "format": "yarn workspaces foreach -A -p run format",
     "lint": "yarn workspaces foreach -A -p run lint"
   },

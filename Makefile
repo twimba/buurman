@@ -53,7 +53,7 @@ bundle-openapi:
 	python3 scripts/bundle_openapi.py
 
 generate-api:
-	yarn generate:api
+	cd frontend && yarn generate:api
 
 deploy-prod:
 	git fetch origin main

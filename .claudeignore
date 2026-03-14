@@ -1,15 +1,15 @@
 # Dependency locks (Huge token sinks)
-app/package-lock.json
-app/yarn.lock
-app/pnpm-lock.yaml
+frontend/app/package-lock.json
+frontend/app/yarn.lock
+frontend/app/pnpm-lock.yaml
 
 # Build & Cache
-app/dist/
-app/build/
-app/.next/
-app/.cache/
-app/.yarn/
-app/node_modules/
+frontend/app/dist/
+frontend/app/build/
+frontend/app/.next/
+frontend/app/.cache/
+frontend/app/.yarn/
+frontend/app/node_modules/
 
 # Heavy Media & Data
 *.svg
@@ -26,8 +26,8 @@ backend/target/classes/
 **/.DS_Store
 
 # Generated API clients (Orval)
-app/src/generated/
-backoffice/src/generated/
+frontend/app/src/generated/
+frontend/backoffice/src/generated/
 
 # Documentation (If you don't need Claude to read it every time)
 docs/

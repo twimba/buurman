@@ -83,8 +83,11 @@ export const PropertyComparisonChart = ({
         />
         <Tooltip
           contentStyle={tooltipStyle}
-          formatter={(value?: number | string) => [
-            formatCurrency(Number(value ?? 0), currency),
+          formatter={(value) => [
+            formatCurrency(
+              typeof value === 'number' ? value : Number(value),
+              currency
+            ),
             'Monthly Cash Flow',
           ]}
         />

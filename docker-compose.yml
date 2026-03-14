@@ -64,6 +64,7 @@ services:
     volumes:
       - ./keycloak/buurman-realm.json:/opt/keycloak/data/import/buurman-realm.json
       - ./keycloak/buurman-backoffice-realm.json:/opt/keycloak/data/import/buurman-backoffice-realm.json
+      - ./keycloak/themes:/opt/keycloak/themes
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.keycloak.rule=Host(`keycloak.local.buurman.io`)"
@@ -375,7 +376,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: app/Dockerfile
+      dockerfile: frontend/app/Dockerfile
       args:
         VITE_KEYCLOAK_URL: ${VITE_KEYCLOAK_URL:-https://keycloak.local.buurman.io}
         VITE_KEYCLOAK_REALM: ${VITE_KEYCLOAK_REALM:-buurman}
@@ -407,7 +408,7 @@ services:
   backoffice:
     build:
       context: .
-      dockerfile: backoffice/Dockerfile
+      dockerfile: frontend/backoffice/Dockerfile
       args:
         VITE_BACKOFFICE_KEYCLOAK_URL: ${VITE_BACKOFFICE_KEYCLOAK_URL:-https://keycloak.local.buurman.io}
         VITE_BACKOFFICE_KEYCLOAK_REALM: ${VITE_BACKOFFICE_KEYCLOAK_REALM:-buurman-backoffice}

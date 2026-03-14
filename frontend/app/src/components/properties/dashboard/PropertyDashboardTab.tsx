@@ -1165,8 +1165,11 @@ function OccupancyAndTrendChart({
               />
               <Tooltip
                 contentStyle={tooltipStyle}
-                formatter={(value?: number | string) => [
-                  formatCurrency(Number(value ?? 0), currency),
+                formatter={(value) => [
+                  formatCurrency(
+                    typeof value === 'number' ? value : Number(value),
+                    currency
+                  ),
                   'Net Income',
                 ]}
               />
@@ -1315,9 +1318,12 @@ function ExpenseTimelineChart({
             <Tooltip
               contentStyle={tooltipStyle}
               labelFormatter={(label) => formatMonthTick(String(label))}
-              formatter={(value?: number | string, name?: string) => [
-                formatCurrency(Number(value ?? 0), currency),
-                humanizeCategory(name ?? ''),
+              formatter={(value, name) => [
+                formatCurrency(
+                  typeof value === 'number' ? value : Number(value),
+                  currency
+                ),
+                humanizeCategory(String(name ?? '')),
               ]}
             />
             {enabledCategories.map((cat, i) => {
@@ -1554,8 +1560,11 @@ function FutureTrendChart({
           <Tooltip
             contentStyle={tooltipStyle}
             labelFormatter={(label) => formatMonthTick(String(label))}
-            formatter={(value?: number | string, name?: string) => [
-              formatCurrency(Math.abs(Number(value ?? 0)), currency),
+            formatter={(value, name) => [
+              formatCurrency(
+                Math.abs(typeof value === 'number' ? value : Number(value)),
+                currency
+              ),
               name,
             ]}
           />

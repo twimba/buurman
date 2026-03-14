@@ -44,10 +44,10 @@ updates:
 
   - package-ecosystem: "npm"
     directories:
-      - "/"
-      - "/packages/ui"
-      - "/app"
-      - "/backoffice"
+      - "/frontend"
+      - "/frontend/packages/ui"
+      - "/frontend/app"
+      - "/frontend/backoffice"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 50
@@ -101,10 +101,10 @@ updates:
 
   - package-ecosystem: "docker"
     directories:
-      - "/app"
+      - "/frontend/app"
       - "/grafana"
       - "/backend"
-      - "/backoffice"
+      - "/frontend/backoffice"
       - "/prometheus"
       - "/keycloak"
     registries:

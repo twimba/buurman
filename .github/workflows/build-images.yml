@@ -92,10 +92,10 @@ jobs:
           mvn -f backend/pom.xml versions:set -DnewVersion="${NEW_VERSION}${SUFFIX}" -DgenerateBackupPoms=false -q
 
           # Bump app/package.json
-          node -e "const fs=require('fs'),p='app/package.json',j=JSON.parse(fs.readFileSync(p));j.version='${NEW_VERSION}';fs.writeFileSync(p,JSON.stringify(j,null,2)+'\n')"
+          node -e "const fs=require('fs'),p='frontend/app/package.json',j=JSON.parse(fs.readFileSync(p));j.version='${NEW_VERSION}';fs.writeFileSync(p,JSON.stringify(j,null,2)+'\n')"
 
           # Bump backoffice/package.json
-          node -e "const fs=require('fs'),p='backoffice/package.json',j=JSON.parse(fs.readFileSync(p));j.version='${NEW_VERSION}';fs.writeFileSync(p,JSON.stringify(j,null,2)+'\n')"
+          node -e "const fs=require('fs'),p='frontend/backoffice/package.json',j=JSON.parse(fs.readFileSync(p));j.version='${NEW_VERSION}';fs.writeFileSync(p,JSON.stringify(j,null,2)+'\n')"
 
       - name: Commit, tag and push
         id: push
@@ -106,7 +106,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add backend/pom.xml backend/common/pom.xml backend/jooq/pom.xml backend/buurman/pom.xml backend/buurman-notifications/pom.xml backend/buurman-backoffice/pom.xml backend/buurman-demo-data/pom.xml backend/buurman-takeout/pom.xml backend/buurman-booklets/pom.xml backend/app/pom.xml app/package.json backoffice/package.json
+          git add backend/pom.xml backend/common/pom.xml backend/jooq/pom.xml backend/buurman/pom.xml backend/buurman-notifications/pom.xml backend/buurman-backoffice/pom.xml backend/buurman-demo-data/pom.xml backend/buurman-takeout/pom.xml backend/buurman-booklets/pom.xml backend/app/pom.xml frontend/app/package.json frontend/backoffice/package.json
           git commit -m "chore: bump version to ${VERSION}"
           git tag "${TAG}"
           git push origin main --tags
@@ -231,7 +231,7 @@ jobs:
 
       - name: Resolve version
         id: version
-        working-directory: app
+        working-directory: frontend/app
         run: |
           VERSION=$(node -p "require('./package.json').version")
           SHA=${GITHUB_SHA::7}
@@ -256,7 +256,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./app/Dockerfile
+          file: ./frontend/app/Dockerfile
           push: true
           platforms: linux/arm64
           build-args: |
@@ -300,7 +300,7 @@ jobs:
 
       - name: Resolve version
         id: version
-        working-directory: backoffice
+        working-directory: frontend/backoffice
         run: |
           VERSION=$(node -p "require('./package.json').version")
           SHA=${GITHUB_SHA::7}
@@ -325,7 +325,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./backoffice/Dockerfile
+          file: ./frontend/backoffice/Dockerfile
           push: true
           platforms: linux/arm64
           build-args: |

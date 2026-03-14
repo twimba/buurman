@@ -619,8 +619,8 @@ export const FinancialReportsPage = () => {
                     tickFormatter={formatYAxis}
                   />
                   <Tooltip
-                    formatter={(value: number | undefined) =>
-                      value !== undefined ? formatCurrency(value) : 'N/A'
+                    formatter={(value) =>
+                      typeof value === 'number' ? formatCurrency(value) : 'N/A'
                     }
                     contentStyle={tooltipStyle}
                   />
@@ -667,8 +667,8 @@ export const FinancialReportsPage = () => {
                     tickFormatter={formatYAxis}
                   />
                   <Tooltip
-                    formatter={(value: number | undefined) =>
-                      value !== undefined ? formatCurrency(value) : 'N/A'
+                    formatter={(value) =>
+                      typeof value === 'number' ? formatCurrency(value) : 'N/A'
                     }
                     contentStyle={tooltipStyle}
                   />
@@ -763,8 +763,10 @@ export const FinancialReportsPage = () => {
                       ))}
                     </Pie>
                     <Tooltip
-                      formatter={(value: number | undefined) =>
-                        value !== undefined ? formatCurrency(value) : 'N/A'
+                      formatter={(value) =>
+                        typeof value === 'number'
+                          ? formatCurrency(value)
+                          : 'N/A'
                       }
                       contentStyle={tooltipStyle}
                     />
@@ -815,8 +817,8 @@ export const FinancialReportsPage = () => {
                     width={120}
                   />
                   <Tooltip
-                    formatter={(value: number | undefined) =>
-                      value !== undefined ? formatCurrency(value) : 'N/A'
+                    formatter={(value) =>
+                      typeof value === 'number' ? formatCurrency(value) : 'N/A'
                     }
                     contentStyle={tooltipStyle}
                   />
@@ -1003,11 +1005,8 @@ export const FinancialReportsPage = () => {
                   tickFormatter={formatPercent}
                 />
                 <Tooltip
-                  formatter={(
-                    value: number | undefined,
-                    name: string | undefined
-                  ) => {
-                    if (value === undefined) {
+                  formatter={(value, name) => {
+                    if (typeof value !== 'number') {
                       return 'N/A';
                     }
                     if (name === 'occupancyRate') {

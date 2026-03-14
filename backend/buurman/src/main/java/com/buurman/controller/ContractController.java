@@ -26,7 +26,7 @@ import com.buurman.dto.response.DocumentResponse;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.generated.api.ContractsApi;
-import com.buurman.generated.model.UploadPhotoRequest;
+import org.springframework.web.multipart.MultipartFile;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.ContractPartyService;
@@ -159,16 +159,14 @@ public class ContractController implements ContractsApi {
   }
 
   @Override
-  @SuppressWarnings("NullAway")
   public DocumentResponse uploadContractDocument(
       ContractIdentifier identifier,
+      MultipartFile file,
       Optional<String> title,
-      Optional<String> notes,
-      Optional<UploadPhotoRequest> uploadPhotoRequest) {
+      Optional<String> notes) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    // Generated interface mismodels multipart upload as JSON body
     return contractService.uploadDocument(
-        identifier, null, title.orElse(null), notes.orElse(null), principal);
+        identifier, file, title.orElse(null), notes.orElse(null), principal);
   }
 
   @Override

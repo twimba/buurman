@@ -93,19 +93,19 @@ export const PortfolioOccupancyChart = ({
         <Tooltip
           contentStyle={tooltipStyle}
           labelFormatter={(label) => formatMonthTick(String(label))}
-          formatter={(value?: number | string, name?: string) => {
+          formatter={(value, name) => {
             const labels: Record<string, string> = {
               tenantOccupancyPercent: 'Tenant Occupancy',
               selfOccupancyPercent: 'Self Occupancy',
             };
             return [
-              `${Number(value ?? 0).toFixed(1)}%`,
+              `${(typeof value === 'number' ? value : Number(value)).toFixed(1)}%`,
               labels[name ?? ''] ?? name,
             ];
           }}
         />
         <Legend
-          formatter={(value: string) => {
+          formatter={(value) => {
             const labels: Record<string, string> = {
               tenantOccupancyPercent: 'Tenant Occupancy',
               selfOccupancyPercent: 'Self Occupancy',

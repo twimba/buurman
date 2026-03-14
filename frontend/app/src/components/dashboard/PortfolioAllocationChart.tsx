@@ -109,8 +109,8 @@ export const PortfolioAllocationChart = ({
             </Pie>
             <Tooltip
               contentStyle={tooltipStyle}
-              formatter={(value?: number | string, name?: string) => [
-                `${Number(value ?? 0)} (${slices.find((s) => s.label === (name ?? ''))?.percentage.toFixed(1) ?? 0}%)`,
+              formatter={(value, name) => [
+                `${typeof value === 'number' ? value : Number(value)} (${slices.find((s) => s.label === (name ?? ''))?.percentage.toFixed(1) ?? 0}%)`,
                 name ?? '',
               ]}
             />

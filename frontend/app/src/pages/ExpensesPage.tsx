@@ -254,8 +254,8 @@ export const ExpensesPage = () => {
                   />
                   <YAxis hide />
                   <Tooltip
-                    formatter={(value: number | undefined) => [
-                      value !== undefined
+                    formatter={(value) => [
+                      typeof value === 'number'
                         ? fmtMoney(value, statsCurrency)
                         : 'N/A',
                       'Expenses',

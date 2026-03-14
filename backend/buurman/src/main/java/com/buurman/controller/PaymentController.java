@@ -29,7 +29,7 @@ import com.buurman.dto.response.PaymentResponse;
 import com.buurman.dto.response.PaymentStatsResponse;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.generated.api.PaymentsApi;
-import com.buurman.generated.model.UploadPhotoRequest;
+import org.springframework.web.multipart.MultipartFile;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.PaymentService;
@@ -158,16 +158,14 @@ public class PaymentController implements PaymentsApi {
   }
 
   @Override
-  @SuppressWarnings("NullAway")
   public DocumentResponse uploadPaymentDocument(
       PaymentIdentifier identifier,
+      MultipartFile file,
       Optional<String> title,
-      Optional<String> notes,
-      Optional<UploadPhotoRequest> uploadPhotoRequest) {
+      Optional<String> notes) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    // Generated interface mismodels multipart upload as JSON body
     return paymentService.uploadDocument(
-        identifier, null, title.orElse(null), notes.orElse(null), principal);
+        identifier, file, title.orElse(null), notes.orElse(null), principal);
   }
 
   @Override

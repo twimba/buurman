@@ -48,12 +48,14 @@ The backend is a 10-module Maven project:
 - Regenerate JOOQ after migration changes: `cd backend && mvn generate-sources -pl jooq -am`
 - Build cache: enabled locally (`.mvn/extensions.xml`), disabled in CI (`-Dmaven.build.cache.enabled=false`)
 
-### App (React/Vite/Yarn 4)
-- Install: `yarn install`
-- Dev server: `yarn dev` (port 5173)
-- Build: `yarn build`
-- Tests: `yarn test`
-- Lint: `yarn lint` / `yarn lint --fix`
+### Frontend (React/Vite/Yarn 4)
+All frontend code lives under `frontend/` (Yarn workspaces: `app`, `backoffice`, `packages/ui`).
+- Install: `cd frontend && yarn install`
+- Dev server: `cd frontend && yarn dev` (app on 5173, backoffice on 5174)
+- Build: `cd frontend && yarn build`
+- Tests: `cd frontend && yarn test`
+- Lint: `cd frontend && yarn lint` / `yarn lint --fix`
+- Generate API clients: `cd frontend && yarn generate:api` (or `make generate-api`)
 
 ### Docker Services (Traefik Reverse Proxy + HTTPS)
 
@@ -185,19 +187,28 @@ backend/
     └── com.buurman           BuurmanApplication.java + all resources
 ```
 
-### App Structure
+### Frontend Structure
 ```
-src/
-├── api/             Axios client + 16 API modules (properties.ts, tenants.ts, etc.)
-├── components/      Feature-organized React components
-├── pages/           31 page components
-├── hooks/           21 custom React Query hooks
-├── context/         AuthContext, TeamContext
-├── types/           TypeScript type definitions
-├── config/          Keycloak configuration
-├── utils/           Formatting, validation utilities
-├── App.tsx          Main component with routing
-└── main.tsx         Entry point
+frontend/
+├── package.json             Yarn workspace root
+├── .yarnrc.yml              Yarn config
+├── yarn.lock                Lock file
+├── orval.config.ts          OpenAPI client generation config
+├── scripts/vite-build-info.ts  Build info plugin
+├── app/                     Main React app
+│   └── src/
+│       ├── api/             Axios client + 16 API modules
+│       ├── components/      Feature-organized React components
+│       ├── pages/           31 page components
+│       ├── hooks/           21 custom React Query hooks
+│       ├── context/         AuthContext, TeamContext
+│       ├── types/           TypeScript type definitions
+│       ├── config/          Keycloak configuration
+│       ├── utils/           Formatting, validation utilities
+│       ├── App.tsx          Main component with routing
+│       └── main.tsx         Entry point
+├── backoffice/              Backoffice admin app
+└── packages/ui/             Shared UI component library
 ```
 
 ### Key Patterns
@@ -245,7 +256,7 @@ src/
 6. MapStruct mapper in `backend/buurman/src/.../mapper/`
 7. Service with `@Transactional` and `@PreAuthorize` in `backend/buurman/src/.../service/`
 8. REST controller (thin) in `backend/buurman/src/.../controller/`
-9. App: API module, React Query hook, page components, routes
+9. Frontend: API module in `frontend/app/src/`, React Query hook, page components, routes
 
 ## Important Rules
 
@@ -278,7 +289,7 @@ src/
 1. `make dev` (infrastructure + Traefik only, backend/app excluded)
 2. Wait ~30s for PostgreSQL + Keycloak
 3. `cd backend && mvn spring-boot:run` (backend on 8081)
-4. `cd app && yarn dev` (app on 5173)
+4. `cd frontend && yarn dev` (app on 5173, backoffice on 5174)
 5. Access everything via the same HTTPS URLs — Traefik routes to your host machine:
    - App: https://app.local.buurman.io | API: https://api.local.buurman.io
    - Keycloak: https://keycloak.local.buurman.io | Mailpit: https://mailpit.local.buurman.io

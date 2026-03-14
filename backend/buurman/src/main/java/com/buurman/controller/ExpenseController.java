@@ -23,7 +23,7 @@ import com.buurman.dto.response.ExpenseStatsResponse;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.generated.api.ExpensesApi;
-import com.buurman.generated.model.UploadPhotoRequest;
+import org.springframework.web.multipart.MultipartFile;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.DocumentService;
@@ -108,16 +108,14 @@ public class ExpenseController implements ExpensesApi {
   }
 
   @Override
-  @SuppressWarnings("NullAway")
   public DocumentResponse uploadExpenseDocument(
       ExpenseIdentifier identifier,
+      MultipartFile file,
       Optional<String> title,
-      Optional<String> notes,
-      Optional<UploadPhotoRequest> uploadPhotoRequest) {
+      Optional<String> notes) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    // Generated interface mismodels multipart upload as JSON body
     return expenseService.uploadExpenseDocument(
-        identifier, null, title.orElse(null), notes.orElse(null), principal);
+        identifier, file, title.orElse(null), notes.orElse(null), principal);
   }
 
   @Override

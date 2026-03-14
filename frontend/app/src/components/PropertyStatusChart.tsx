@@ -123,7 +123,15 @@ export const PropertyStatusChart = ({
             ))}
           </Pie>
           <Tooltip
-            content={(props) => <CustomTooltip {...props} total={total} />}
+            content={({ active, payload }) => (
+              <CustomTooltip
+                active={active}
+                payload={
+                  payload as ReadonlyArray<{ value: number; name: string }>
+                }
+                total={total}
+              />
+            )}
           />
           <Legend content={renderLegend} />
         </PieChart>

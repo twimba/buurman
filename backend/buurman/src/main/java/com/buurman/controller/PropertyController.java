@@ -18,7 +18,7 @@ import com.buurman.dto.response.PhotoResponse;
 import com.buurman.dto.response.PropertyResponse;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.generated.api.PropertiesApi;
-import com.buurman.generated.model.UploadPhotoRequest;
+import org.springframework.web.multipart.MultipartFile;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.PropertyService;
@@ -75,16 +75,14 @@ public class PropertyController implements PropertiesApi {
   }
 
   @Override
-  @SuppressWarnings(
-      "NullAway") // Generated interface uses UploadPhotoRequest instead of MultipartFile
   public DocumentResponse uploadPropertyDocument(
       PropertyIdentifier identifier,
+      MultipartFile file,
       Optional<String> title,
-      Optional<String> notes,
-      Optional<UploadPhotoRequest> uploadPhotoRequest) {
+      Optional<String> notes) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return propertyService.uploadDocument(
-        identifier, null, title.orElse(null), notes.orElse(null), principal);
+        identifier, file, title.orElse(null), notes.orElse(null), principal);
   }
 
   @Override
@@ -118,16 +116,14 @@ public class PropertyController implements PropertiesApi {
   }
 
   @Override
-  @SuppressWarnings(
-      "NullAway") // Generated interface uses UploadPhotoRequest instead of MultipartFile
   public PhotoResponse uploadPropertyPhoto(
       PropertyIdentifier identifier,
+      MultipartFile file,
       Optional<String> title,
-      Optional<String> notes,
-      Optional<UploadPhotoRequest> uploadPhotoRequest) {
+      Optional<String> notes) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return propertyService.uploadPhoto(
-        identifier, null, title.orElse(null), notes.orElse(null), principal);
+        identifier, file, title.orElse(null), notes.orElse(null), principal);
   }
 
   @Override

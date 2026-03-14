@@ -110,15 +110,16 @@ export const EquityCompositionChart = ({
         />
         <Tooltip
           contentStyle={tooltipStyle}
-          formatter={(value?: number | string, name?: string) => [
-            formatCurrency(Number(value ?? 0), currency),
+          formatter={(value, name) => [
+            formatCurrency(
+              typeof value === 'number' ? value : Number(value),
+              currency
+            ),
             name === 'equity' ? 'Equity' : 'Mortgage',
           ]}
         />
         <Legend
-          formatter={(value: string) =>
-            value === 'equity' ? 'Equity' : 'Mortgage'
-          }
+          formatter={(value) => (value === 'equity' ? 'Equity' : 'Mortgage')}
         />
         <Bar
           dataKey="equity"

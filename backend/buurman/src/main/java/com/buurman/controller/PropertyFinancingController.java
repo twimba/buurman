@@ -21,7 +21,7 @@ import com.buurman.dto.response.DocumentResponse;
 import com.buurman.dto.response.FinancingPaymentResponse;
 import com.buurman.dto.response.PropertyFinancingResponse;
 import com.buurman.generated.api.PropertyFinancingsApi;
-import com.buurman.generated.model.UploadPhotoRequest;
+import org.springframework.web.multipart.MultipartFile;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.DocumentService;
@@ -129,18 +129,16 @@ public class PropertyFinancingController implements PropertyFinancingsApi {
   // ===== Payment Documents =====
 
   @Override
-  @SuppressWarnings(
-      "NullAway") // Generated interface uses UploadPhotoRequest instead of MultipartFile
   public DocumentResponse uploadFinancingPaymentDocument(
       PropertyIdentifier propertyIdentifier,
       PropertyFinancingIdentifier financingIdentifier,
       FinancingPaymentIdentifier paymentIdentifier,
+      MultipartFile file,
       Optional<String> title,
-      Optional<String> notes,
-      Optional<UploadPhotoRequest> uploadPhotoRequest) {
+      Optional<String> notes) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return paymentService.uploadPaymentDocument(
-        paymentIdentifier, null, title.orElse(null), notes.orElse(null), principal);
+        paymentIdentifier, file, title.orElse(null), notes.orElse(null), principal);
   }
 
   @Override
