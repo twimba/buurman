@@ -15,6 +15,8 @@ import {
 import type { PageParams } from '@/types/common';
 import { useToast } from '../context/ToastContext';
 import { getErrorMessage } from '../utils/errorMessages';
+import { trackEvent } from '../utils/analytics';
+import { AnalyticsEvent } from '../constants/analyticsEvents';
 
 export const useProperties = (
   params?: {
@@ -49,6 +51,7 @@ export const useCreateProperty = () => {
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       showToast('Property created successfully', 'success');
+      trackEvent(AnalyticsEvent.PROPERTY_CREATED);
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -86,6 +89,7 @@ export const useDeleteProperty = () => {
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       showToast('Property deleted successfully', 'success');
+      trackEvent(AnalyticsEvent.PROPERTY_DELETED);
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -140,6 +144,7 @@ export const useUploadPropertyPhoto = (propertyId: string) => {
         queryKey: ['propertyAuditLog', propertyId],
       });
       queryClient.invalidateQueries({ queryKey: ['photos'] });
+      trackEvent(AnalyticsEvent.PHOTO_UPLOADED, { entity: 'property' });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -193,6 +198,7 @@ export const useUploadPropertyDocument = (propertyId: string) => {
       queryClient.invalidateQueries({
         queryKey: ['documents'],
       });
+      trackEvent(AnalyticsEvent.DOCUMENT_UPLOADED, { entity: 'property' });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');

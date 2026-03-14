@@ -13,6 +13,8 @@ import {
 import type { PageParams } from '@/types/common';
 import { useToast } from '../context/ToastContext';
 import { getErrorMessage } from '../utils/errorMessages';
+import { trackEvent } from '../utils/analytics';
+import { AnalyticsEvent } from '../constants/analyticsEvents';
 
 export const useExpenses = (params?: GetExpensesParams & PageParams) => {
   return useQuery({
@@ -74,6 +76,7 @@ export const useCreateExpense = () => {
       queryClient.invalidateQueries({ queryKey: ['expense-breakdown'] });
       queryClient.invalidateQueries({ queryKey: ['property-comparison'] });
       showToast('Expense created successfully', 'success');
+      trackEvent(AnalyticsEvent.EXPENSE_CREATED);
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');

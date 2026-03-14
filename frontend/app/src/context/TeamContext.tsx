@@ -7,6 +7,8 @@ import {
   UserTeamResponse,
 } from '../api/users';
 import { useAuth } from '../contexts/AuthContext';
+import { trackEvent } from '../utils/analytics';
+import { AnalyticsEvent } from '../constants/analyticsEvents';
 
 interface Team {
   identifier: string;
@@ -65,6 +67,7 @@ export const TeamProvider = ({ children }: { children: ReactNode }) => {
   const switchTeamMutation = useMutation({
     mutationFn: switchTeamApi,
     onSuccess: () => {
+      trackEvent(AnalyticsEvent.TEAM_SWITCHED);
       // Invalidate all team-dependent queries
       queryClient.invalidateQueries({ queryKey: ['user-teams'] });
       queryClient.invalidateQueries({ queryKey: ['properties'] });
