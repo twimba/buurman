@@ -220,12 +220,6 @@ export const Layout = () => {
             --bo-sidebar-bg: #12152a;
             --bo-sidebar-border: #1c2040;
           }
-          @media (prefers-color-scheme: dark) {
-            :root:not(.light) {
-              --bo-sidebar-bg: #111425;
-              --bo-sidebar-border: #1c2040;
-            }
-          }
         `}</style>
         <div className="flex flex-col h-full overflow-hidden">
           {/* Logo / Title */}
