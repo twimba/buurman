@@ -1,14 +1,14 @@
-import { useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { initAnalytics, identifyUser } from '../utils/analytics';
-import { env } from '../config/env';
+import { useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { initAnalytics, identifyUser } from "../utils/analytics";
+import { env } from "../config/env";
 
 export function AnalyticsInitializer() {
   const { isAuthenticated, keycloak } = useAuth();
 
   useEffect(() => {
-    const apiKey = env('VITE_POSTHOG_KEY');
-    const apiHost = env('VITE_POSTHOG_HOST');
+    const apiKey = env("VITE_POSTHOG_KEY");
+    const apiHost = env("VITE_POSTHOG_HOST");
     initAnalytics(apiKey, apiHost);
   }, []);
 

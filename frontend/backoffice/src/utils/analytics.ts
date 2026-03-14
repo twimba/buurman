@@ -1,5 +1,5 @@
-import posthog from 'posthog-js';
-import type { AnalyticsEventName } from '../constants/analyticsEvents';
+import posthog from "posthog-js";
+import type { AnalyticsEventName } from "../constants/analyticsEvents";
 
 let initialized = false;
 
@@ -10,7 +10,7 @@ export function initAnalytics(apiKey: string, apiHost: string): void {
 
   posthog.init(apiKey, {
     api_host: apiHost,
-    persistence: 'memory',
+    persistence: "memory",
     capture_pageview: true,
     autocapture: false,
     capture_pageleave: true,
@@ -18,11 +18,11 @@ export function initAnalytics(apiKey: string, apiHost: string): void {
     mask_all_element_attributes: false,
     session_recording: {
       maskAllInputs: true,
-      maskTextSelector: '[data-ph-mask]',
+      maskTextSelector: "[data-ph-mask]",
     },
   });
 
-  posthog.register({ app_name: 'backoffice' });
+  posthog.register({ app_name: "backoffice" });
 
   initialized = true;
 }
@@ -50,7 +50,7 @@ export function resetAnalytics(): void {
 
 export function trackEvent(
   event: AnalyticsEventName,
-  properties?: Record<string, unknown>
+  properties?: Record<string, unknown>,
 ): void {
   if (!initialized) {
     return;

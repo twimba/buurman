@@ -61,8 +61,14 @@ export const UserDetailPage = () => {
 
   const handleToggleDisable = () => {
     const mutation = user.disabled ? enableUser : disableUser;
+    const event = user.disabled
+      ? AnalyticsEvent.BO_USER_ENABLED
+      : AnalyticsEvent.BO_USER_DISABLED;
     mutation.mutate(identifier, {
-      onSuccess: () => setShowDisableDialog(false),
+      onSuccess: () => {
+        trackEvent(event);
+        setShowDisableDialog(false);
+      },
     });
   };
 

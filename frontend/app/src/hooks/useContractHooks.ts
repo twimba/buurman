@@ -294,7 +294,9 @@ export const useGenerateContractPayments = (contractId: string) => {
         result.markedAsPaid && result.markedAsPaid > 0
           ? ' and marked as paid'
           : '';
-      trackEvent(AnalyticsEvent.PAYMENTS_GENERATED, { count: result.generated });
+      trackEvent(AnalyticsEvent.PAYMENTS_GENERATED, {
+        count: result.generated,
+      });
       if (result.generated === result.requested) {
         showToast(
           `Scheduled ${result.generated} payment(s)${paidSuffix} successfully`,
