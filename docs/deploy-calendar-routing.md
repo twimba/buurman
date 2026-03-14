@@ -13,61 +13,45 @@ This requires a Traefik routing rule in Dokploy so that `app.buurman.io/calendar
 - Access to Dokploy dashboard at `https://dokploy.buurman.io`
 - Admin credentials for Dokploy
 
-## Steps
+## Steps (Dokploy v0.28.6)
 
-### 1. Open Dokploy Traefik Configuration
+### 1. Add Calendar Domain to the Backend Service
 
 1. Log in to `https://dokploy.buurman.io`
-2. Navigate to **Traefik** settings (typically under Server > Traefik or the Traefik tab)
+2. Navigate to your **Project** and click on the **backend** service
+3. Go to the **Domains** tab
+4. Click **"Add Domain"** and fill in:
 
-### 2. Identify Existing Routers
+| Field | Value |
+|-------|-------|
+| **Host** | `app.buurman.io` |
+| **Path** | `/calendar/` |
+| **Container Port** | `8081` |
+| **HTTPS** | Enabled |
+| **Certificate** | `letsencrypt` |
+| **Strip Path** | Disabled (backend expects the full `/calendar/ical/{token}` path) |
 
-Verify the current routing setup. You should see at least:
+5. Click **Save**
 
-| Router | Rule | Service |
-|--------|------|---------|
-| backend | `Host('api.buurman.io')` | backend (port 8081) |
-| app | `Host('app.buurman.io')` | app (port 80) |
+For Applications, Dokploy generates a Traefik file-provider config and hot-reloads immediately — no redeploy needed. For Compose services, a redeploy is required.
 
-Note the **exact service name** used for the backend — you will reference it in the next step.
+### 2. Verify Priority (automatic)
 
-### 3. Add Calendar Router to Backend Service
+Traefik auto-calculates priority based on rule length. The calendar router's rule (`Host('app.buurman.io') && PathPrefix('/calendar/')`) is longer than the app router's rule (`Host('app.buurman.io')`), so it automatically gets higher priority. No manual priority configuration needed.
 
-In the **backend service** configuration in Dokploy, add a new Traefik router with these labels:
+### 3. Verify via Traefik File System (optional)
 
-```
-traefik.http.routers.backend-calendar.rule=Host(`app.buurman.io`) && PathPrefix(`/calendar/`)
-traefik.http.routers.backend-calendar.entrypoints=websecure
-traefik.http.routers.backend-calendar.tls=true
-traefik.http.routers.backend-calendar.tls.certresolver=letsencrypt
-traefik.http.routers.backend-calendar.priority=200
-traefik.http.routers.backend-calendar.service=<backend-service-name>
-```
+To confirm the generated config:
 
-Replace `<backend-service-name>` with the actual Dokploy service name for the backend. To find it, check the existing `traefik.http.routers.backend.service` label on the backend service configuration in Dokploy — use the same value.
+1. In the Dokploy dashboard, navigate to **Traefik File System** (sidebar or Settings > Servers > Show Traefik File System)
+2. Browse the `dynamic/` directory
+3. Find the newly generated YAML file for the backend calendar domain
+4. Verify it contains a router with rule `Host('app.buurman.io') && PathPrefix('/calendar/')` pointing to the backend service on port 8081
 
-**Key points:**
-- `priority=200` must be **higher** than the app router's priority so `/calendar` paths are matched first
-- The `certresolver` should match the existing TLS configuration (typically `letsencrypt`)
-- The `service` must point to the backend, not the app
+### 4. Deploy and Verify
 
-### 4. Verify the App Router Priority
-
-Ensure the **app** router has a **lower** priority than 200. If the app router does not have an explicit priority, Traefik auto-calculates it based on rule length. Since `Host('app.buurman.io')` (shorter) has lower auto-priority than `Host('app.buurman.io') && PathPrefix('/calendar')` (longer), this should work by default. However, if the app router has an explicit priority >= 200, lower it.
-
-### 5. Verify in Traefik Dashboard
-
-If the Traefik dashboard is accessible, confirm the `backend-calendar` router appears with:
-- Status: active/green
-- Rule: `Host('app.buurman.io') && PathPrefix('/calendar/')`
-- Priority: 200 (higher than the app router)
-- Service: pointing to the backend
-
-### 6. Deploy and Verify
-
-1. Save the Traefik configuration changes in Dokploy
-2. Deploy all services via `make deploy-prod` (tags `main` as `prod`, triggers CI for backend + app + backoffice)
-3. Wait for the deployment to complete
+1. Deploy all services via `make deploy-prod` (tags `main` as `prod`, triggers CI for backend + app + backoffice)
+2. Wait for the deployment to complete
 
 ### 7. Post-Deployment Verification
 
