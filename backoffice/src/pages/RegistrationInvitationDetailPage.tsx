@@ -24,14 +24,10 @@ import { LoadingSpinner } from "../components/LoadingSpinner";
 import { SendRegistrationInvitationModal } from "../components/SendRegistrationInvitationModal";
 
 const STATUS_STYLES: Record<string, string> = {
-  ACTIVE:
-    "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800",
-  EXPIRED:
-    "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800",
-  EXHAUSTED:
-    "bg-zinc-50 text-zinc-600 border-zinc-200 dark:bg-zinc-800/40 dark:text-zinc-400 dark:border-zinc-700",
-  REVOKED:
-    "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800",
+  ACTIVE: "bg-success-bg text-success-text border-success-border",
+  EXPIRED: "bg-warning-bg text-warning-text border-warning-border",
+  EXHAUSTED: "bg-surface-inset text-text-secondary border-border-default",
+  REVOKED: "bg-error-bg text-error-text border-error-border",
 };
 
 export function RegistrationInvitationDetailPage() {
@@ -70,7 +66,7 @@ export function RegistrationInvitationDetailPage() {
     return <LoadingSpinner />;
   }
   if (!invitation) {
-    return <div className="text-zinc-500">Invitation not found</div>;
+    return <div className="text-text-secondary">Invitation not found</div>;
   }
 
   return (
@@ -80,13 +76,13 @@ export function RegistrationInvitationDetailPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate("/registration-invitations")}
-            className="p-1.5 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+            className="p-1.5 rounded-md hover:bg-surface-inset transition-colors"
           >
-            <ArrowLeft className="h-5 w-5 text-zinc-500" />
+            <ArrowLeft className="h-5 w-5 text-text-secondary" />
           </button>
-          <Ticket className="h-6 w-6 text-indigo-500" />
+          <Ticket className="h-6 w-6 text-primary-500" />
           <div>
-            <h1 className="text-2xl font-bold font-mono text-zinc-900 dark:text-zinc-100">
+            <h1 className="text-2xl font-bold font-mono text-text-primary">
               {invitation.code}
             </h1>
             <span
@@ -100,7 +96,7 @@ export function RegistrationInvitationDetailPage() {
           <RefreshButton onClick={() => refetch()} />
           <button
             onClick={handleCopyLink}
-            className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
+            className="inline-flex items-center gap-2 rounded-md border border-border-default px-3 py-2 text-sm font-medium text-text-primary hover:bg-surface-inset transition-colors"
           >
             <Copy className="h-4 w-4" />
             Copy Link
@@ -109,14 +105,14 @@ export function RegistrationInvitationDetailPage() {
             <>
               <button
                 onClick={() => setShowSend(true)}
-                className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition-colors"
+                className="inline-flex items-center gap-2 rounded-md bg-primary-600 px-3 py-2 text-sm font-medium text-white hover:bg-primary-700 transition-colors"
               >
                 <Send className="h-4 w-4" />
                 Send
               </button>
               <button
                 onClick={() => setShowRevoke(true)}
-                className="inline-flex items-center gap-2 rounded-lg border border-red-200 dark:border-red-800 px-3 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                className="inline-flex items-center gap-2 rounded-md border border-error-border px-3 py-2 text-sm font-medium text-error-text hover:bg-error-bg transition-colors"
               >
                 <Ban className="h-4 w-4" />
                 Revoke
@@ -128,44 +124,44 @@ export function RegistrationInvitationDetailPage() {
 
       {/* Info Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/50 p-4">
-          <div className="flex items-center gap-2 text-zinc-500 text-xs font-medium mb-1">
+        <div className="rounded-lg border border-border-default bg-surface-card p-4">
+          <div className="flex items-center gap-2 text-text-secondary text-xs font-medium mb-1">
             <Users className="h-3.5 w-3.5" />
             Usages
           </div>
-          <div className="text-xl font-bold font-mono text-zinc-900 dark:text-zinc-100">
+          <div className="text-xl font-bold font-mono text-text-primary">
             {invitation.usageCount}{" "}
-            <span className="text-zinc-400 text-sm font-normal">
+            <span className="text-text-muted text-sm font-normal">
               / {invitation.maxUsages ?? "\u221E"}
             </span>
           </div>
         </div>
-        <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/50 p-4">
-          <div className="flex items-center gap-2 text-zinc-500 text-xs font-medium mb-1">
+        <div className="rounded-lg border border-border-default bg-surface-card p-4">
+          <div className="flex items-center gap-2 text-text-secondary text-xs font-medium mb-1">
             <Clock className="h-3.5 w-3.5" />
             Expires
           </div>
-          <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+          <div className="text-sm font-medium text-text-primary">
             {invitation.expiresAt
               ? format(new Date(invitation.expiresAt), "MMM d, yyyy HH:mm")
               : "Never"}
           </div>
         </div>
-        <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/50 p-4">
-          <div className="flex items-center gap-2 text-zinc-500 text-xs font-medium mb-1">
+        <div className="rounded-lg border border-border-default bg-surface-card p-4">
+          <div className="flex items-center gap-2 text-text-secondary text-xs font-medium mb-1">
             <User className="h-3.5 w-3.5" />
             Created By
           </div>
-          <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">
+          <div className="text-sm font-medium text-text-primary truncate">
             {invitation.createdBy}
           </div>
         </div>
-        <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/50 p-4">
-          <div className="flex items-center gap-2 text-zinc-500 text-xs font-medium mb-1">
+        <div className="rounded-lg border border-border-default bg-surface-card p-4">
+          <div className="flex items-center gap-2 text-text-secondary text-xs font-medium mb-1">
             <Calendar className="h-3.5 w-3.5" />
             Created At
           </div>
-          <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+          <div className="text-sm font-medium text-text-primary">
             {format(new Date(invitation.createdAt), "MMM d, yyyy HH:mm")}
           </div>
         </div>
@@ -173,8 +169,8 @@ export function RegistrationInvitationDetailPage() {
 
       {/* Revocation Info */}
       {invitation.revokedAt && (
-        <div className="rounded-xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 p-4">
-          <div className="text-sm text-red-700 dark:text-red-400">
+        <div className="rounded-lg border border-error-border bg-error-bg p-4">
+          <div className="text-sm text-error-text">
             <strong>Revoked</strong> by {invitation.revokedBy} on{" "}
             {format(new Date(invitation.revokedAt), "MMM d, yyyy HH:mm")}
           </div>
@@ -182,9 +178,9 @@ export function RegistrationInvitationDetailPage() {
       )}
 
       {/* Internal Note */}
-      <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/50 p-5">
+      <div className="rounded-lg border border-border-default bg-surface-card p-5">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+          <h2 className="text-lg font-semibold text-text-primary">
             Internal Note
           </h2>
           {!editingNote ? (
@@ -193,7 +189,7 @@ export function RegistrationInvitationDetailPage() {
                 setNoteValue(invitation.note ?? "");
                 setEditingNote(true);
               }}
-              className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium transition-colors"
+              className="text-sm text-primary-600 hover:text-primary-800 font-medium transition-colors"
             >
               {invitation.note ? "Edit" : "Add Note"}
             </button>
@@ -201,7 +197,7 @@ export function RegistrationInvitationDetailPage() {
             <div className="flex gap-2">
               <button
                 onClick={() => setEditingNote(false)}
-                className="text-sm text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 font-medium transition-colors"
+                className="text-sm text-text-secondary hover:text-text-primary font-medium transition-colors"
               >
                 Cancel
               </button>
@@ -217,7 +213,7 @@ export function RegistrationInvitationDetailPage() {
                   setEditingNote(false);
                 }}
                 disabled={updateNoteMutation.isPending}
-                className="text-sm text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 px-3 py-1 rounded-md font-medium transition-colors"
+                className="text-sm text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50 px-3 py-1 rounded-md font-medium transition-colors"
               >
                 {updateNoteMutation.isPending ? "Saving..." : "Save"}
               </button>
@@ -233,43 +229,40 @@ export function RegistrationInvitationDetailPage() {
         ) : invitation.note ? (
           <RichTextDisplay content={invitation.note} />
         ) : (
-          <p className="text-sm text-zinc-400 italic">No note added</p>
+          <p className="text-sm text-text-muted italic">No note added</p>
         )}
       </div>
 
       {/* Usage History */}
       <div>
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-3">
+        <h2 className="text-lg font-semibold text-text-primary mb-3">
           Usage History
         </h2>
-        <div className="overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/50">
-          <table className="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-            <thead className="bg-zinc-50 dark:bg-zinc-800">
+        <div className="overflow-hidden rounded-lg border border-border-default bg-surface-card">
+          <table className="min-w-full divide-y divide-border-default">
+            <thead className="bg-surface-inset">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                   User
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                   Email
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                   Used At
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-100 dark:divide-zinc-700/50">
+            <tbody className="divide-y divide-border-subtle">
               {invitation.usages?.map((usage, idx) => (
-                <tr
-                  key={idx}
-                  className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30"
-                >
-                  <td className="px-4 py-3 text-sm text-zinc-900 dark:text-zinc-100">
+                <tr key={idx} className="hover:bg-surface-inset/50">
+                  <td className="px-4 py-3 text-sm text-text-primary">
                     {usage.userName}
                   </td>
-                  <td className="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400">
+                  <td className="px-4 py-3 text-sm text-text-secondary">
                     {usage.userEmail}
                   </td>
-                  <td className="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400">
+                  <td className="px-4 py-3 text-sm text-text-secondary">
                     {format(new Date(usage.usedAt), "MMM d, yyyy HH:mm")}
                   </td>
                 </tr>
@@ -278,7 +271,7 @@ export function RegistrationInvitationDetailPage() {
                 <tr>
                   <td
                     colSpan={3}
-                    className="px-4 py-8 text-center text-sm text-zinc-500"
+                    className="px-4 py-8 text-center text-sm text-text-secondary"
                   >
                     No usages yet
                   </td>

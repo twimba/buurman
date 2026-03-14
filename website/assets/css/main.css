@@ -2,30 +2,47 @@
    Buurman — Shared Styles (all pages)
    ══════════════════════════════════════════════════ */
 
+/* ── Satoshi Font ────────────────────────────────── */
+@font-face {
+    font-family: 'Satoshi';
+    src: url('../fonts/Satoshi-Variable.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Satoshi';
+    src: url('../fonts/Satoshi-VariableItalic.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: swap;
+}
+
 /* ── Reset & Base ────────────────────────────────── */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-    --primary: #5c7cfa;
-    --primary-dark: #4263eb;
-    --primary-darker: #364fc7;
-    --primary-light: #748ffc;
-    --primary-lighter: #91a7ff;
-    --primary-50: #edf2ff;
-    --primary-100: #dbe4ff;
-    --accent: #fcc419;
+    --primary: #0284c7;
+    --primary-dark: #0369a1;
+    --primary-darker: #075985;
+    --primary-light: #38bdf8;
+    --primary-lighter: #7dd3fc;
+    --primary-50: #f0f9ff;
+    --primary-100: #e0f2fe;
+    --accent: #f59e0b;
     --success: #10b981;
     --success-dark: #059669;
-    --bg: #f8f9fc;
+    --bg: #fafaf9;
     --bg-dark: #0c0d14;
     --surface: #ffffff;
-    --surface-dark: #14161f;
-    --text: #1a1d2e;
-    --text-secondary: #6b7194;
-    --text-muted: #9ca0b8;
-    --text-light: #3d4463;
-    --border: #e2e6f0;
-    --border-light: #f1f3f9;
+    --surface-dark: #1c1917;
+    --text: #1c1917;
+    --text-secondary: #57534e;
+    --text-muted: #78716c;
+    --text-light: #44403c;
+    --border: #e7e5e4;
+    --border-light: #f5f5f4;
     --radius: 0.75rem;
     --radius-lg: 1.25rem;
     --radius-xl: 1.5rem;
@@ -34,10 +51,9 @@
 html { scroll-behavior: smooth; }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     color: var(--text);
     line-height: 1.6;
     background: var(--surface);
@@ -79,12 +95,12 @@ body {
 .btn-primary {
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     color: white;
-    box-shadow: 0 4px 14px rgba(92, 124, 250, 0.35);
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
 }
 .btn-primary:hover {
     background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(92, 124, 250, 0.45);
+    box-shadow: 0 8px 25px rgba(2, 132, 199, 0.45);
 }
 
 .btn-secondary {
@@ -277,7 +293,7 @@ body {
 /* ── Footer ──────────────────────────────────────── */
 .footer {
     background: linear-gradient(135deg, var(--bg-dark) 0%, var(--surface-dark) 100%);
-    color: #8b90a8;
+    color: #a8a29e;
     padding: 4rem 0 2rem;
     position: relative;
 }
@@ -288,7 +304,7 @@ body {
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(92, 124, 250, 0.4), transparent);
+    background: linear-gradient(90deg, transparent, rgba(2, 132, 199, 0.4), transparent);
 }
 
 .footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
@@ -301,15 +317,15 @@ body {
 }
 
 .footer-brand { max-width: 320px; }
-.footer-brand-name { font-size: 1.25rem; font-weight: 800; color: #eef0f6; margin-bottom: 0.75rem; }
+.footer-brand-name { font-size: 1.25rem; font-weight: 800; color: #f5f5f4; margin-bottom: 0.75rem; }
 .footer-tagline {
     font-size: 0.9375rem;
-    color: #a0a4b8;
+    color: #a8a29e;
     line-height: 1.7;
 }
 
 .footer-col h4 {
-    color: #eef0f6;
+    color: #f5f5f4;
     font-size: 0.8125rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -320,7 +336,7 @@ body {
 .footer-links { list-style: none; }
 .footer-links li { margin-bottom: 0.625rem; }
 .footer-links a {
-    color: #8b90a8;
+    color: #a8a29e;
     text-decoration: none;
     font-size: 0.9375rem;
     transition: color 0.2s;
@@ -336,12 +352,12 @@ body {
     flex-wrap: wrap;
     gap: 1rem;
 }
-.footer-copy { font-size: 0.875rem; color: #6b7194; }
+.footer-copy { font-size: 0.875rem; color: #78716c; }
 .footer-status { display: flex; align-items: center; opacity: 0.85; transition: opacity 0.2s; }
 .footer-status:hover { opacity: 1; }
 .footer-contact a {
     font-size: 0.875rem;
-    color: #6b7194;
+    color: #78716c;
     text-decoration: none;
     transition: color 0.2s;
 }

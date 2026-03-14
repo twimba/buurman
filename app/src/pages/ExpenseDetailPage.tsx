@@ -16,7 +16,7 @@ import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import { ExpenseCategoryBadge } from '@/components/expenses/ExpenseCategoryBadge';
 import { ExpenseForm } from '@/components/expenses/ExpenseForm';
 import { DocumentList } from '@/components/properties/DocumentList';
-import { Button, PageHeader } from '@/components/ui';
+import { Button, PageHeader } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import {
   Edit,
@@ -150,14 +150,14 @@ export const ExpenseDetailPage = () => {
         />
 
         {/* Tabs */}
-        <div className="border-b border-[#e2e6f0] mb-6">
+        <div className="border-b border-border-default mb-6">
           <div className="flex gap-6">
             <button
               onClick={() => setActiveTab('details')}
               className={`pb-3 px-1 font-medium transition-colors ${
                 activeTab === 'details'
-                  ? 'border-b-2 border-[#5c7cfa] text-blue-600'
-                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
+                  ? 'border-b-2 border-primary-500 text-primary-500'
+                  : 'text-text-secondary hover:text-text-primary'
               }`}
             >
               Details
@@ -166,8 +166,8 @@ export const ExpenseDetailPage = () => {
               onClick={() => setActiveTab('documents')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'documents'
-                  ? 'border-b-2 border-[#5c7cfa] text-blue-600'
-                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
+                  ? 'border-b-2 border-primary-500 text-primary-500'
+                  : 'text-text-secondary hover:text-text-primary'
               }`}
             >
               <FileText className="h-4 w-4" />
@@ -177,8 +177,8 @@ export const ExpenseDetailPage = () => {
               onClick={() => setActiveTab('history')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'history'
-                  ? 'border-b-2 border-[#5c7cfa] text-blue-600'
-                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
+                  ? 'border-b-2 border-primary-500 text-primary-500'
+                  : 'text-text-secondary hover:text-text-primary'
               }`}
             >
               <History className="h-4 w-4" />
@@ -190,8 +190,8 @@ export const ExpenseDetailPage = () => {
         {/* Content */}
         {activeTab === 'details' &&
           (isEditing ? (
-            <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+              <h2 className="text-lg font-semibold text-text-primary mb-4">
                 Edit Expense
               </h2>
               <ExpenseForm
@@ -204,51 +204,45 @@ export const ExpenseDetailPage = () => {
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Expense Details */}
-              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-                <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+                <h2 className="text-lg font-semibold text-text-primary mb-4">
                   Expense Details
                 </h2>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <DollarSign className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+                    <DollarSign className="h-5 w-5 text-text-muted " />
                     <div>
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                        Amount
-                      </p>
-                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6] text-lg">
+                      <p className="text-sm text-text-secondary">Amount</p>
+                      <p className="font-medium text-text-primary text-lg">
                         {expense.currency} {expense.amount.toFixed(2)}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Calendar className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+                    <Calendar className="h-5 w-5 text-text-muted " />
                     <div>
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      <p className="text-sm text-text-secondary">
                         Expense Date
                       </p>
-                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <p className="font-medium text-text-primary">
                         {formatDate(expense.expenseDate)}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Package className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+                    <Package className="h-5 w-5 text-text-muted " />
                     <div>
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                        Category
-                      </p>
-                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <p className="text-sm text-text-secondary">Category</p>
+                      <p className="font-medium text-text-primary">
                         {formatExpenseCategory(expense.category)}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <Receipt className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180] mt-1" />
+                    <Receipt className="h-5 w-5 text-text-muted mt-1" />
                     <div>
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                        Description
-                      </p>
-                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <p className="text-sm text-text-secondary">Description</p>
+                      <p className="font-medium text-text-primary">
                         {expense.description}
                       </p>
                     </div>
@@ -257,26 +251,24 @@ export const ExpenseDetailPage = () => {
               </div>
 
               {/* Property Info */}
-              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-                <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+                <h2 className="text-lg font-semibold text-text-primary mb-4">
                   Property Information
                 </h2>
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
-                    <Home className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180] mt-1" />
+                    <Home className="h-5 w-5 text-text-muted mt-1" />
                     <div className="flex-1">
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                        Property
-                      </p>
+                      <p className="text-sm text-text-secondary">Property</p>
                       <button
                         onClick={() =>
                           navigate(`/properties/${expense.property.identifier}`)
                         }
-                        className="font-medium text-[#5c7cfa] hover:underline text-left"
+                        className="font-medium text-primary-500 hover:underline text-left"
                       >
                         {expense.property.street}, {expense.property.city}
                       </button>
-                      <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                      <p className="text-xs text-text-secondary mt-1">
                         #{expense.property.identifier}
                       </p>
                     </div>
@@ -286,8 +278,8 @@ export const ExpenseDetailPage = () => {
 
               {/* Notes */}
               {expense.notes && (
-                <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6 lg:col-span-2">
-                  <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+                <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 lg:col-span-2">
+                  <h2 className="text-lg font-semibold text-text-primary mb-4">
                     Notes
                   </h2>
                   <RichTextDisplay content={expense.notes} />
@@ -295,36 +287,32 @@ export const ExpenseDetailPage = () => {
               )}
 
               {/* Metadata */}
-              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6 lg:col-span-2">
+              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 lg:col-span-2">
                 <button
                   onClick={() => setIsMetadataExpanded(!isMetadataExpanded)}
                   className="w-full flex items-center justify-between text-left group"
                 >
-                  <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                  <h2 className="text-lg font-semibold text-text-primary">
                     Metadata
                   </h2>
                   {isMetadataExpanded ? (
-                    <ChevronUp className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8] group-hover:text-[#3d4463] dark:group-hover:text-[#c4c8db]" />
+                    <ChevronUp className="h-5 w-5 text-text-secondary group-hover:text-text-secondary " />
                   ) : (
-                    <ChevronDown className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8] group-hover:text-[#3d4463] dark:group-hover:text-[#c4c8db]" />
+                    <ChevronDown className="h-5 w-5 text-text-secondary group-hover:text-text-secondary " />
                   )}
                 </button>
                 {isMetadataExpanded && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-4">
                     <div>
-                      <span className="text-[#6b7194] dark:text-[#8b90a8]">
-                        Created:
-                      </span>{' '}
-                      <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <span className="text-text-secondary">Created:</span>{' '}
+                      <span className="text-text-primary">
                         {formatDate(expense.createdAt)} at{' '}
                         {new Date(expense.createdAt).toLocaleTimeString()}
                       </span>
                     </div>
                     <div>
-                      <span className="text-[#6b7194] dark:text-[#8b90a8]">
-                        Last Updated:
-                      </span>{' '}
-                      <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <span className="text-text-secondary">Last Updated:</span>{' '}
+                      <span className="text-text-primary">
                         {formatDate(expense.updatedAt)} at{' '}
                         {new Date(expense.updatedAt).toLocaleTimeString()}
                       </span>
@@ -353,8 +341,8 @@ export const ExpenseDetailPage = () => {
         )}
 
         {activeTab === 'history' && (
-          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+            <h2 className="text-xl font-semibold text-text-primary mb-4">
               Expense History
             </h2>
             {auditLoading ? (
@@ -376,12 +364,12 @@ export const ExpenseDetailPage = () => {
                   return (
                     <div
                       key={activityKey}
-                      className="border border-[#e2e6f0] rounded-lg overflow-hidden"
+                      className="border border-border-default rounded-lg overflow-hidden"
                     >
                       <div
                         className={`flex items-start gap-4 p-4 transition-colors ${
                           hasChanges
-                            ? 'cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]'
+                            ? 'cursor-pointer hover:bg-surface-inset'
                             : ''
                         }`}
                         onClick={() =>
@@ -400,35 +388,35 @@ export const ExpenseDetailPage = () => {
                         <div
                           className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
                             activity.action === 'CREATE'
-                              ? 'bg-green-100 dark:bg-green-900/30'
+                              ? 'bg-success-bg'
                               : activity.action === 'UPDATE'
-                                ? 'bg-blue-100 dark:bg-blue-900/30'
-                                : 'bg-red-100 dark:bg-red-900/30'
+                                ? 'bg-info-bg'
+                                : 'bg-error-bg'
                           }`}
                         >
                           <span
                             className={`text-xs font-semibold ${
                               activity.action === 'CREATE'
-                                ? 'text-green-700'
+                                ? 'text-success-text'
                                 : activity.action === 'UPDATE'
-                                  ? 'text-blue-700'
-                                  : 'text-red-700'
+                                  ? 'text-info-text'
+                                  : 'text-error-text'
                             }`}
                           >
                             {activity.action.charAt(0)}
                           </span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                          <p className="text-sm font-medium text-text-primary">
                             {activity.description}
                           </p>
-                          <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                          <p className="text-xs text-text-secondary mt-1">
                             {formatDistanceToNow(new Date(activity.timestamp), {
                               addSuffix: true,
                             })}
                           </p>
                           {hasChanges && (
-                            <p className="text-xs text-[#5c7cfa] mt-1">
+                            <p className="text-xs text-primary-500 mt-1">
                               {isExpanded
                                 ? 'Click to hide changes'
                                 : 'Click to view changes'}
@@ -438,8 +426,8 @@ export const ExpenseDetailPage = () => {
                       </div>
 
                       {isExpanded && hasChanges && (
-                        <div className="bg-[#f8f9fc] dark:bg-[#0c0d14] px-4 py-3 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
-                          <h4 className="text-xs font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-2 uppercase">
+                        <div className="bg-surface-page px-4 py-3 border-t border-border-default">
+                          <h4 className="text-xs font-semibold text-text-secondary mb-2 uppercase">
                             Changed Fields
                           </h4>
                           <div className="space-y-2">
@@ -447,9 +435,9 @@ export const ExpenseDetailPage = () => {
                               ([field]) => (
                                 <div
                                   key={field}
-                                  className="bg-white dark:bg-[#14161f] dark:text-[#eef0f6] rounded p-2 text-xs"
+                                  className="bg-surface-card rounded p-2 text-xs"
                                 >
-                                  <div className="font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                                  <div className="font-semibold text-text-secondary mb-1">
                                     {field
                                       .replace(/([A-Z])/g, ' $1')
                                       .replace(/^./, (str) => str.toUpperCase())
@@ -457,7 +445,7 @@ export const ExpenseDetailPage = () => {
                                   </div>
                                   <div className="grid grid-cols-2 gap-2">
                                     <div>
-                                      <span className="text-[#6b7194] dark:text-[#8b90a8]">
+                                      <span className="text-text-secondary">
                                         Old:{' '}
                                       </span>
                                       {typeof activity.oldValues?.[field] ===
@@ -467,10 +455,10 @@ export const ExpenseDetailPage = () => {
                                       ) ? (
                                         <RichTextDisplay
                                           content={activity.oldValues[field]}
-                                          className="text-xs text-red-600 line-through [&_p]:m-0 inline"
+                                          className="text-xs text-error-text line-through [&_p]:m-0 inline"
                                         />
                                       ) : (
-                                        <span className="text-red-600 line-through">
+                                        <span className="text-error-text line-through">
                                           {String(
                                             activity.oldValues?.[field] ?? 'N/A'
                                           )}
@@ -478,7 +466,7 @@ export const ExpenseDetailPage = () => {
                                       )}
                                     </div>
                                     <div>
-                                      <span className="text-[#6b7194] dark:text-[#8b90a8]">
+                                      <span className="text-text-secondary">
                                         New:{' '}
                                       </span>
                                       {typeof activity.newValues?.[field] ===
@@ -488,10 +476,10 @@ export const ExpenseDetailPage = () => {
                                       ) ? (
                                         <RichTextDisplay
                                           content={activity.newValues[field]}
-                                          className="text-xs text-green-600 font-medium [&_p]:m-0 inline"
+                                          className="text-xs text-success-text font-medium [&_p]:m-0 inline"
                                         />
                                       ) : (
-                                        <span className="text-green-600 font-medium">
+                                        <span className="text-success-text font-medium">
                                           {String(
                                             activity.newValues?.[field] ?? 'N/A'
                                           )}
@@ -511,11 +499,9 @@ export const ExpenseDetailPage = () => {
               </div>
             ) : (
               <div className="text-center py-8">
-                <History className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] mx-auto mb-3" />
-                <p className="text-[#6b7194] dark:text-[#8b90a8]">
-                  No history available
-                </p>
-                <p className="text-sm text-[#9ca0b8] dark:text-[#5c6180] mt-1">
+                <History className="h-12 w-12 text-text-disabled mx-auto mb-3" />
+                <p className="text-text-secondary">No history available</p>
+                <p className="text-sm text-text-muted mt-1">
                   Changes to this expense will appear here
                 </p>
               </div>
@@ -527,11 +513,11 @@ export const ExpenseDetailPage = () => {
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-xl max-w-md w-full mx-4 p-6">
-            <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+          <div className="bg-surface-card rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+            <h2 className="text-lg font-semibold text-text-primary mb-4">
               Delete Expense
             </h2>
-            <p className="text-[#3d4463] dark:text-[#c4c8db] mb-6">
+            <p className="text-text-secondary mb-6">
               Are you sure you want to delete this expense? This action cannot
               be undone.
             </p>

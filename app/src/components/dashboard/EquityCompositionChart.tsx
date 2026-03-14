@@ -72,7 +72,7 @@ export const EquityCompositionChart = ({
 
   if (chartData.length === 0) {
     return (
-      <div className="flex items-center justify-center h-80 text-[#6b7194] dark:text-[#8b90a8] text-sm">
+      <div className="flex items-center justify-center h-80 text-text-secondary text-sm">
         No equity data available
       </div>
     );
@@ -123,13 +123,13 @@ export const EquityCompositionChart = ({
         <Bar
           dataKey="equity"
           stackId="equity"
-          fill="#10B981"
+          fill="#059669"
           radius={[0, 0, 0, 0]}
         />
         <Bar
           dataKey="mortgage"
           stackId="equity"
-          fill="#8B5CF6"
+          fill="#0284c7"
           radius={[0, 4, 4, 0]}
         />
       </BarChart>

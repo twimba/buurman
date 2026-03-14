@@ -10,7 +10,7 @@ import {
   Building,
   Loader2,
 } from 'lucide-react';
-import { Button } from '../ui';
+import { Button } from '@buurman/ui';
 import { RichTextEditor } from '../common/RichTextEditor';
 import { RichTextDisplay } from '../common/RichTextDisplay';
 import {
@@ -182,10 +182,10 @@ export const ContractPaymentInstructionSection = ({
 
   if (loadingCurrent) {
     return (
-      <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+      <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
         <div className="flex items-center gap-2">
           <Loader2 className="h-4 w-4 animate-spin" />
-          <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+          <span className="text-sm text-text-secondary">
             Loading payment instructions...
           </span>
         </div>
@@ -194,10 +194,10 @@ export const ContractPaymentInstructionSection = ({
   }
 
   return (
-    <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+    <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] flex items-center gap-2">
-          <CreditCard className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+        <h2 className="text-lg font-semibold text-text-primary flex items-center gap-2">
+          <CreditCard className="h-5 w-5 text-text-muted " />
           Payment Instructions
         </h2>
         {canModify && !showForm && (
@@ -215,7 +215,7 @@ export const ContractPaymentInstructionSection = ({
       {current ? (
         <div className="space-y-3">
           <div className="flex items-start gap-3">
-            <div className="p-2 rounded-lg bg-[#f1f3f9] dark:bg-[#1e2130]">
+            <div className="p-2 rounded-lg bg-surface-inset">
               {current.paymentMethod === 'BANK_TRANSFER' ||
               current.paymentMethod === 'DIRECT_DEBIT' ||
               current.paymentMethod === 'IDEAL_WERO' ||
@@ -227,53 +227,53 @@ export const ContractPaymentInstructionSection = ({
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                <span className="font-medium text-text-primary">
                   {current.name || 'Unnamed'}
                 </span>
-                <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-[#f1f3f9] dark:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8]">
+                <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-surface-inset text-text-secondary">
                   {PaymentMethodLabels[
                     current.paymentMethod as PaymentMethod
                   ] || current.paymentMethod}
                 </span>
                 {!current.isCustom && current.paymentInstructionIdentifier && (
-                  <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300">
+                  <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-info-bg text-info-text">
                     Template
                   </span>
                 )}
                 {current.isCustom && (
-                  <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300">
+                  <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-info-bg text-info-text">
                     Custom
                   </span>
                 )}
               </div>
               {current.description && (
-                <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                <p className="text-sm text-text-secondary mt-1">
                   {current.description}
                 </p>
               )}
               {current.iban && (
-                <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1 font-mono">
-                  IBAN: {current.iban.replace(/(.{4})/g, '$1 ').trim()}
+                <p className="text-sm text-text-secondary mt-1 font-mono">
+                  IBAN: {current.iban.replace(/(.{4})/g, '$1').trim()}
                 </p>
               )}
               {current.accountNumber && (
-                <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1 font-mono">
+                <p className="text-sm text-text-secondary mt-1 font-mono">
                   Account: {current.accountNumber}
                   {current.routingNumber &&
                     ` / Routing: ${current.routingNumber}`}
                 </p>
               )}
               {current.accountHolderName && (
-                <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                <p className="text-sm text-text-secondary">
                   Holder: {current.accountHolderName}
                 </p>
               )}
               {current.paymentReference && (
-                <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                <p className="text-sm text-text-secondary">
                   Ref: {current.paymentReference}
                 </p>
               )}
-              <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180] mt-2">
+              <p className="text-xs text-text-muted mt-2">
                 Effective from {formatDate(current.effectiveFrom)}
               </p>
             </div>
@@ -297,7 +297,7 @@ export const ContractPaymentInstructionSection = ({
         </div>
       ) : (
         !showForm && (
-          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+          <p className="text-sm text-text-secondary">
             No payment instructions configured for this contract.
           </p>
         )
@@ -305,8 +305,8 @@ export const ContractPaymentInstructionSection = ({
 
       {/* History Timeline */}
       {showHistory && !loadingHistory && (
-        <div className="mt-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f] pt-4">
-          <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-3">
+        <div className="mt-4 border-t border-border-default pt-4">
+          <h3 className="text-sm font-semibold text-text-secondary mb-3">
             Payment Instruction History
           </h3>
           <div className="space-y-3">
@@ -335,8 +335,8 @@ export const ContractPaymentInstructionSection = ({
 
       {/* Create/Change Form */}
       {showForm && (
-        <div className="mt-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f] pt-4">
-          <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-3">
+        <div className="mt-4 border-t border-border-default pt-4">
+          <h3 className="text-sm font-semibold text-text-secondary mb-3">
             {editingId
               ? 'Change Payment Instructions'
               : 'Set Payment Instructions'}
@@ -347,13 +347,13 @@ export const ContractPaymentInstructionSection = ({
             className="space-y-4"
           >
             {/* Template vs Custom Toggle */}
-            <div className="flex rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden">
+            <div className="flex rounded-lg border border-border-default overflow-hidden">
               <button
                 type="button"
                 className={`flex-1 py-2 text-sm font-medium ${
                   useTemplate
                     ? 'bg-primary-500 text-white'
-                    : 'bg-white dark:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8]'
+                    : 'bg-surface-card text-text-secondary'
                 }`}
                 onClick={() => setUseTemplate(true)}
               >
@@ -364,7 +364,7 @@ export const ContractPaymentInstructionSection = ({
                 className={`flex-1 py-2 text-sm font-medium ${
                   !useTemplate
                     ? 'bg-primary-500 text-white'
-                    : 'bg-white dark:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8]'
+                    : 'bg-surface-card text-text-secondary'
                 }`}
                 onClick={() => setUseTemplate(false)}
               >
@@ -374,14 +374,14 @@ export const ContractPaymentInstructionSection = ({
 
             {useTemplate ? (
               <div>
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                <label className="block text-sm font-medium text-text-secondary mb-1">
                   Select Template *
                 </label>
                 <select
                   required
                   value={selectedTemplate}
                   onChange={(e) => setSelectedTemplate(e.target.value)}
-                  className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
+                  className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary"
                 >
                   <option value="">Choose a payment method...</option>
                   {templates.map((t) => (
@@ -394,17 +394,17 @@ export const ContractPaymentInstructionSection = ({
                   ))}
                 </select>
                 {selectedTemplateData && (
-                  <div className="mt-2 p-3 bg-[#f1f3f9] dark:bg-[#1e2130] rounded-lg text-sm">
-                    <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                  <div className="mt-2 p-3 bg-surface-inset rounded-lg text-sm">
+                    <p className="font-medium text-text-primary">
                       {selectedTemplateData.name}
                     </p>
                     {selectedTemplateData.description && (
-                      <p className="text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                      <p className="text-text-secondary mt-1">
                         {selectedTemplateData.description}
                       </p>
                     )}
                     {selectedTemplateData.iban && (
-                      <p className="text-[#6b7194] dark:text-[#8b90a8] font-mono mt-1">
+                      <p className="text-text-secondary font-mono mt-1">
                         IBAN: {selectedTemplateData.iban}
                       </p>
                     )}
@@ -415,7 +415,7 @@ export const ContractPaymentInstructionSection = ({
               <div className="space-y-3">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                    <label className="block text-sm font-medium text-text-secondary mb-1">
                       Name *
                     </label>
                     <input
@@ -423,18 +423,18 @@ export const ContractPaymentInstructionSection = ({
                       required
                       value={customName}
                       onChange={(e) => setCustomName(e.target.value)}
-                      className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
+                      className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                    <label className="block text-sm font-medium text-text-secondary mb-1">
                       Method *
                     </label>
                     <select
                       required
                       value={customPaymentMethod}
                       onChange={(e) => setCustomPaymentMethod(e.target.value)}
-                      className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
+                      className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary"
                     >
                       {Object.entries(PaymentMethodLabels).map(
                         ([val, label]) => (
@@ -447,14 +447,14 @@ export const ContractPaymentInstructionSection = ({
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
                     Description
                   </label>
                   <textarea
                     value={customDescription}
                     onChange={(e) => setCustomDescription(e.target.value)}
                     rows={2}
-                    className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
+                    className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary"
                   />
                 </div>
                 {(customPaymentMethod === 'BANK_TRANSFER' ||
@@ -463,18 +463,18 @@ export const ContractPaymentInstructionSection = ({
                   customPaymentMethod === 'ZELLE') && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                      <label className="block text-sm font-medium text-text-secondary mb-1">
                         Bank Name
                       </label>
                       <input
                         type="text"
                         value={customBankName}
                         onChange={(e) => setCustomBankName(e.target.value)}
-                        className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
+                        className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                      <label className="block text-sm font-medium text-text-secondary mb-1">
                         Account Holder
                       </label>
                       <input
@@ -483,11 +483,11 @@ export const ContractPaymentInstructionSection = ({
                         onChange={(e) =>
                           setCustomAccountHolderName(e.target.value)
                         }
-                        className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
+                        className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                      <label className="block text-sm font-medium text-text-secondary mb-1">
                         IBAN
                       </label>
                       <input
@@ -495,11 +495,11 @@ export const ContractPaymentInstructionSection = ({
                         value={customIban}
                         onChange={(e) => setCustomIban(e.target.value)}
                         maxLength={34}
-                        className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6] font-mono"
+                        className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary font-mono"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                      <label className="block text-sm font-medium text-text-secondary mb-1">
                         BIC / SWIFT
                       </label>
                       <input
@@ -507,49 +507,49 @@ export const ContractPaymentInstructionSection = ({
                         value={customBicSwift}
                         onChange={(e) => setCustomBicSwift(e.target.value)}
                         maxLength={11}
-                        className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6] font-mono"
+                        className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary font-mono"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                      <label className="block text-sm font-medium text-text-secondary mb-1">
                         Account Number
                       </label>
                       <input
                         type="text"
                         value={customAccountNumber}
                         onChange={(e) => setCustomAccountNumber(e.target.value)}
-                        className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6] font-mono"
+                        className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary font-mono"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                      <label className="block text-sm font-medium text-text-secondary mb-1">
                         Routing Number
                       </label>
                       <input
                         type="text"
                         value={customRoutingNumber}
                         onChange={(e) => setCustomRoutingNumber(e.target.value)}
-                        className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6] font-mono"
+                        className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary font-mono"
                       />
                     </div>
                   </div>
                 )}
                 <div>
-                  <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
                     Payment Reference
                   </label>
                   <input
                     type="text"
                     value={customPaymentReference}
                     onChange={(e) => setCustomPaymentReference(e.target.value)}
-                    className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
+                    className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary"
                   />
                 </div>
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+              <label className="block text-sm font-medium text-text-secondary mb-1">
                 Effective From *
               </label>
               <input
@@ -558,11 +558,11 @@ export const ContractPaymentInstructionSection = ({
                 min={minEffectiveDate}
                 value={effectiveFrom}
                 onChange={(e) => setEffectiveFrom(e.target.value)}
-                className="w-full md:w-1/2 rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
+                className="w-full md:w-1/2 rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+              <label className="block text-sm font-medium text-text-secondary mb-1">
                 Notes (reason for change)
               </label>
               <RichTextEditor
@@ -614,14 +614,14 @@ const HistoryEntry = ({
       className={`relative pl-6 pb-3 border-l-2 ${
         isCurrent
           ? 'border-primary-500 dark:border-primary-300'
-          : 'border-[#e2e6f0] dark:border-[#2a2e3f]'
+          : 'border-border-default'
       }`}
     >
       <div
         className={`absolute left-[-5px] top-1 h-2 w-2 rounded-full ${
           isCurrent
             ? 'bg-primary-500 dark:bg-primary-300'
-            : 'bg-[#9ca0b8] dark:bg-[#5c6180]'
+            : 'bg-neutral-400 dark:bg-neutral-500'
         }`}
       />
       <div className="flex items-start justify-between">
@@ -629,24 +629,22 @@ const HistoryEntry = ({
           <div className="flex items-center gap-2">
             <span
               className={`text-sm font-medium ${
-                isCurrent
-                  ? 'text-[#1a1d2e] dark:text-[#eef0f6]'
-                  : 'text-[#6b7194] dark:text-[#8b90a8]'
+                isCurrent ? 'text-text-primary' : 'text-text-secondary'
               }`}
             >
               {entry.name || 'Unnamed'}
             </span>
-            <span className="px-1.5 py-0.5 text-xs rounded bg-[#f1f3f9] dark:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8]">
+            <span className="px-1.5 py-0.5 text-xs rounded bg-surface-inset text-text-secondary">
               {PaymentMethodLabels[entry.paymentMethod as PaymentMethod] ||
                 entry.paymentMethod}
             </span>
             {isCurrent && (
-              <span className="px-1.5 py-0.5 text-xs rounded bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 font-medium">
+              <span className="px-1.5 py-0.5 text-xs rounded bg-success-bg text-success-text font-medium">
                 Current
               </span>
             )}
           </div>
-          <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180] mt-1">
+          <p className="text-xs text-text-muted mt-1">
             {formatDate(entry.effectiveFrom)}
             {entry.effectiveTo
               ? ` - ${formatDate(entry.effectiveTo)}`
@@ -655,14 +653,14 @@ const HistoryEntry = ({
           {entry.notes && (
             <RichTextDisplay
               content={entry.notes}
-              className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-0.5 italic"
+              className="text-xs text-text-secondary mt-0.5 italic"
             />
           )}
         </div>
         {canDelete && (
           <button
             onClick={onDelete}
-            className="p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20 text-[#9ca0b8] hover:text-red-600"
+            className="p-1 rounded hover:bg-error-bg text-text-muted hover:text-error-text"
           >
             <Trash2 className="h-3.5 w-3.5" />
           </button>

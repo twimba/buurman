@@ -204,7 +204,7 @@ const assignFinancingLanes = (
 // ─── Formatting helpers ─────────────────────────────────────────────────────────
 
 const formatEnumLabel = (s: string): string =>
-  s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  s.replace(/_/g, '').replace(/\b\w/g, (c) => c.toUpperCase());
 
 const formatCurrency = (amount: number, currency: string): string => {
   try {
@@ -602,7 +602,7 @@ const FinancingBarComponent = ({
       onMouseLeave={handleMouseLeave}
       onClick={onClick}
       onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === 'Enter' || e.key === '') {
           onClick();
         }
       }}
@@ -693,7 +693,7 @@ const PeriodBar = ({
       onKeyDown={
         isClickable
           ? (e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+              if (e.key === 'Enter' || e.key === '') {
                 onClick();
               }
             }

@@ -8,7 +8,7 @@ import {
   Building,
   Loader2,
 } from 'lucide-react';
-import { Button } from '../ui';
+import { Button } from '@buurman/ui';
 import { RichTextEditor } from '../common/RichTextEditor';
 import { RichTextDisplay } from '../common/RichTextDisplay';
 import {
@@ -117,23 +117,23 @@ export const PaymentInstructionsSection = () => {
 
   if (isLoading) {
     return (
-      <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-12 text-center">
+      <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-12 text-center">
         <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary-500" />
-        <p className="mt-2 text-[#6b7194] dark:text-[#8b90a8]">Loading...</p>
+        <p className="mt-2 text-text-secondary">Loading...</p>
       </div>
     );
   }
 
   return (
     <div className="mt-6 space-y-6">
-      <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-6">
+      <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
         <div className="flex items-center gap-3 mb-2">
           <CreditCard className="h-6 w-6 text-primary-500 dark:text-primary-300" />
-          <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+          <h2 className="text-xl font-semibold text-text-primary">
             Payment Instructions
           </h2>
         </div>
-        <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-4">
+        <p className="text-sm text-text-secondary mb-4">
           Define reusable payment instruction templates for your contracts
         </p>
         {canEditData && (
@@ -145,8 +145,8 @@ export const PaymentInstructionsSection = () => {
 
       {/* Form Modal */}
       {showForm && (
-        <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm border border-[#e2e6f0] dark:border-[#2a2e3f] p-6">
-          <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+        <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+          <h3 className="text-lg font-semibold text-text-primary mb-4">
             {editingId ? 'Edit Payment Instruction' : 'New Payment Instruction'}
           </h3>
           {editingId ? (
@@ -166,7 +166,7 @@ export const PaymentInstructionsSection = () => {
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
                     Name *
                   </label>
                   <input
@@ -176,12 +176,12 @@ export const PaymentInstructionsSection = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
-                    className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
+                    className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary"
                     placeholder="e.g., Main Bank Account"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
                     Payment Instruction *
                   </label>
                   <select
@@ -193,7 +193,7 @@ export const PaymentInstructionsSection = () => {
                         paymentMethod: e.target.value as PaymentMethod,
                       })
                     }
-                    className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
+                    className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary"
                   >
                     {Object.entries(PaymentMethodLabels).map(([val, label]) => (
                       <option key={val} value={val}>
@@ -205,7 +205,7 @@ export const PaymentInstructionsSection = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                <label className="block text-sm font-medium text-text-secondary mb-1">
                   Description
                 </label>
                 <RichTextEditor
@@ -221,7 +221,7 @@ export const PaymentInstructionsSection = () => {
               {showBankFields && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                    <label className="block text-sm font-medium text-text-secondary mb-1">
                       Bank Name
                     </label>
                     <input
@@ -230,11 +230,11 @@ export const PaymentInstructionsSection = () => {
                       onChange={(e) =>
                         setFormData({ ...formData, bankName: e.target.value })
                       }
-                      className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
+                      className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                    <label className="block text-sm font-medium text-text-secondary mb-1">
                       Account Holder
                     </label>
                     <input
@@ -246,11 +246,11 @@ export const PaymentInstructionsSection = () => {
                           accountHolderName: e.target.value,
                         })
                       }
-                      className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
+                      className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                    <label className="block text-sm font-medium text-text-secondary mb-1">
                       IBAN
                     </label>
                     <input
@@ -260,11 +260,11 @@ export const PaymentInstructionsSection = () => {
                         setFormData({ ...formData, iban: e.target.value })
                       }
                       maxLength={34}
-                      className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6] font-mono"
+                      className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary font-mono"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                    <label className="block text-sm font-medium text-text-secondary mb-1">
                       BIC / SWIFT
                     </label>
                     <input
@@ -274,11 +274,11 @@ export const PaymentInstructionsSection = () => {
                         setFormData({ ...formData, bicSwift: e.target.value })
                       }
                       maxLength={11}
-                      className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6] font-mono"
+                      className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary font-mono"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                    <label className="block text-sm font-medium text-text-secondary mb-1">
                       Account Number
                     </label>
                     <input
@@ -290,11 +290,11 @@ export const PaymentInstructionsSection = () => {
                           accountNumber: e.target.value,
                         })
                       }
-                      className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6] font-mono"
+                      className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary font-mono"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                    <label className="block text-sm font-medium text-text-secondary mb-1">
                       Routing Number
                     </label>
                     <input
@@ -306,14 +306,14 @@ export const PaymentInstructionsSection = () => {
                           routingNumber: e.target.value,
                         })
                       }
-                      className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6] font-mono"
+                      className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary font-mono"
                     />
                   </div>
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                <label className="block text-sm font-medium text-text-secondary mb-1">
                   Payment Reference
                 </label>
                 <input
@@ -325,7 +325,7 @@ export const PaymentInstructionsSection = () => {
                       paymentReference: e.target.value,
                     })
                   }
-                  className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
+                  className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary"
                   placeholder="Reference to include with payment"
                 />
               </div>
@@ -338,11 +338,11 @@ export const PaymentInstructionsSection = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, isDefault: e.target.checked })
                   }
-                  className="rounded border-[#e2e6f0] dark:border-[#2a2e3f]"
+                  className="rounded border-border-default"
                 />
                 <label
                   htmlFor="isDefault"
-                  className="text-sm text-[#3d4463] dark:text-[#c4c8db]"
+                  className="text-sm text-text-secondary"
                 >
                   Set as default payment method
                 </label>
@@ -370,12 +370,12 @@ export const PaymentInstructionsSection = () => {
 
       {/* Instruction List */}
       {instructions.length === 0 && !showForm ? (
-        <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-12 text-center">
-          <CreditCard className="h-12 w-12 mx-auto text-[#9ca0b8] dark:text-[#5c6180] mb-3" />
-          <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-1">
+        <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-12 text-center">
+          <CreditCard className="h-12 w-12 mx-auto text-text-muted mb-3" />
+          <h3 className="text-lg font-semibold text-text-primary mb-1">
             No Payment Instructions
           </h3>
-          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-4">
+          <p className="text-sm text-text-secondary mb-4">
             Add your first payment method to use with contracts.
           </p>
           {canEditData && (
@@ -393,11 +393,11 @@ export const PaymentInstructionsSection = () => {
           {instructions.map((pi) => (
             <div
               key={pi.identifier}
-              className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm border border-[#e2e6f0] dark:border-[#2a2e3f] p-5"
+              className="bg-surface-card rounded-lg shadow-sm border border-border-default p-5"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-lg bg-[#f1f3f9] dark:bg-[#1e2130]">
+                  <div className="p-2 rounded-lg bg-surface-inset">
                     {pi.paymentMethod === 'BANK_TRANSFER' ||
                     pi.paymentMethod === 'DIRECT_DEBIT' ||
                     pi.paymentMethod === 'IDEAL_WERO' ||
@@ -409,16 +409,16 @@ export const PaymentInstructionsSection = () => {
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <h3 className="font-semibold text-text-primary">
                         {pi.name}
                       </h3>
                       {pi.isDefault && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-warning-bg text-warning-text">
                           <Star className="h-3 w-3" />
                           Default
                         </span>
                       )}
-                      <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-[#f1f3f9] dark:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8]">
+                      <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-surface-inset text-text-secondary">
                         {PaymentMethodLabels[
                           pi.paymentMethod as PaymentMethod
                         ] || pi.paymentMethod}
@@ -427,22 +427,22 @@ export const PaymentInstructionsSection = () => {
                     {pi.description && (
                       <RichTextDisplay
                         content={pi.description}
-                        className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1"
+                        className="text-sm text-text-secondary mt-1"
                       />
                     )}
                     {pi.iban && (
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1 font-mono">
-                        IBAN: {pi.iban.replace(/(.{4})/g, '$1 ').trim()}
+                      <p className="text-sm text-text-secondary mt-1 font-mono">
+                        IBAN: {pi.iban.replace(/(.{4})/g, '$1').trim()}
                       </p>
                     )}
                     {pi.accountNumber && (
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1 font-mono">
+                      <p className="text-sm text-text-secondary mt-1 font-mono">
                         Account: {pi.accountNumber}
                         {pi.routingNumber && ` / Routing: ${pi.routingNumber}`}
                       </p>
                     )}
                     {pi.accountHolderName && (
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      <p className="text-sm text-text-secondary">
                         Holder: {pi.accountHolderName}
                       </p>
                     )}
@@ -452,7 +452,7 @@ export const PaymentInstructionsSection = () => {
                   <div className="flex gap-1">
                     <button
                       onClick={() => handleEdit(pi)}
-                      className="p-2 rounded-lg hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8] hover:text-primary-500"
+                      className="p-2 rounded-lg hover:bg-surface-inset text-text-secondary hover:text-primary-500"
                     >
                       <Edit className="h-4 w-4" />
                     </button>
@@ -460,14 +460,14 @@ export const PaymentInstructionsSection = () => {
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => handleDelete(pi.identifier)}
-                          className="px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
+                          className="px-2 py-1 text-xs font-medium text-error-text hover:bg-error-bg rounded"
                           disabled={deleteMutation.isPending}
                         >
                           Confirm
                         </button>
                         <button
                           onClick={() => setConfirmDeleteId(null)}
-                          className="px-2 py-1 text-xs text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded"
+                          className="px-2 py-1 text-xs text-text-secondary hover:bg-surface-inset rounded"
                         >
                           Cancel
                         </button>
@@ -475,7 +475,7 @@ export const PaymentInstructionsSection = () => {
                     ) : (
                       <button
                         onClick={() => setConfirmDeleteId(pi.identifier)}
-                        className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-[#6b7194] dark:text-[#8b90a8] hover:text-red-600"
+                        className="p-2 rounded-lg hover:bg-error-bg text-text-secondary hover:text-error-text"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -535,18 +535,18 @@ const PaymentInstructionEditForm = ({
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+          <label className="block text-sm font-medium text-text-secondary mb-1">
             Name
           </label>
           <input
             type="text"
             value={formData.name ?? ''}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
+            className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+          <label className="block text-sm font-medium text-text-secondary mb-1">
             Payment Instruction
           </label>
           <select
@@ -557,7 +557,7 @@ const PaymentInstructionEditForm = ({
                 paymentMethod: e.target.value as PaymentMethod,
               })
             }
-            className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
+            className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary"
           >
             {Object.entries(PaymentMethodLabels).map(([val, label]) => (
               <option key={val} value={val}>
@@ -569,7 +569,7 @@ const PaymentInstructionEditForm = ({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+        <label className="block text-sm font-medium text-text-secondary mb-1">
           Description
         </label>
         <RichTextEditor
@@ -583,7 +583,7 @@ const PaymentInstructionEditForm = ({
       {showBankFields && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Bank Name
             </label>
             <input
@@ -592,11 +592,11 @@ const PaymentInstructionEditForm = ({
               onChange={(e) =>
                 setFormData({ ...formData, bankName: e.target.value })
               }
-              className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
+              className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Account Holder
             </label>
             <input
@@ -608,11 +608,11 @@ const PaymentInstructionEditForm = ({
                   accountHolderName: e.target.value,
                 })
               }
-              className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
+              className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               IBAN
             </label>
             <input
@@ -622,11 +622,11 @@ const PaymentInstructionEditForm = ({
                 setFormData({ ...formData, iban: e.target.value })
               }
               maxLength={34}
-              className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6] font-mono"
+              className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary font-mono"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               BIC / SWIFT
             </label>
             <input
@@ -636,11 +636,11 @@ const PaymentInstructionEditForm = ({
                 setFormData({ ...formData, bicSwift: e.target.value })
               }
               maxLength={11}
-              className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6] font-mono"
+              className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary font-mono"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Account Number
             </label>
             <input
@@ -652,11 +652,11 @@ const PaymentInstructionEditForm = ({
                   accountNumber: e.target.value,
                 })
               }
-              className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6] font-mono"
+              className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary font-mono"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Routing Number
             </label>
             <input
@@ -668,14 +668,14 @@ const PaymentInstructionEditForm = ({
                   routingNumber: e.target.value,
                 })
               }
-              className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6] font-mono"
+              className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary font-mono"
             />
           </div>
         </div>
       )}
 
       <div>
-        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+        <label className="block text-sm font-medium text-text-secondary mb-1">
           Payment Reference
         </label>
         <input
@@ -684,7 +684,7 @@ const PaymentInstructionEditForm = ({
           onChange={(e) =>
             setFormData({ ...formData, paymentReference: e.target.value })
           }
-          className="w-full rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1e2130] px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
+          className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary"
         />
       </div>
 
@@ -696,12 +696,9 @@ const PaymentInstructionEditForm = ({
           onChange={(e) =>
             setFormData({ ...formData, isDefault: e.target.checked })
           }
-          className="rounded border-[#e2e6f0] dark:border-[#2a2e3f]"
+          className="rounded border-border-default"
         />
-        <label
-          htmlFor="editIsDefault"
-          className="text-sm text-[#3d4463] dark:text-[#c4c8db]"
-        >
+        <label htmlFor="editIsDefault" className="text-sm text-text-secondary">
           Set as default
         </label>
       </div>

@@ -75,7 +75,7 @@ function formatUptime(ms: number): string {
     parts.push(`${hours}h`);
   }
   parts.push(`${minutes}m`);
-  return parts.join(" ");
+  return parts.join("");
 }
 
 function formatBytes(bytes: number): string {
@@ -96,10 +96,10 @@ function formatNumber(n: number): string {
 }
 
 const statusDotClass: Record<ServiceHealthStatus, string> = {
-  UP: "bg-emerald-500",
-  DOWN: "bg-red-500",
-  DISABLED: "bg-slate-400 dark:bg-slate-600",
-  UNKNOWN: "bg-amber-500 animate-pulse",
+  UP: "bg-success-text",
+  DOWN: "bg-error-text",
+  DISABLED: "bg-slate-400",
+  UNKNOWN: "bg-warning-text animate-pulse",
 };
 
 const statusLabel: Record<ServiceHealthStatus, string> = {
@@ -110,47 +110,37 @@ const statusLabel: Record<ServiceHealthStatus, string> = {
 };
 
 const migrationBadgeClass: Record<string, string> = {
-  SUCCESS:
-    "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-700",
-  PENDING:
-    "bg-amber-50 text-amber-700 ring-1 ring-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:ring-amber-700",
-  FAILED:
-    "bg-red-50 text-red-700 ring-1 ring-red-200 dark:bg-red-900/30 dark:text-red-300 dark:ring-red-700",
-  OUT_OF_ORDER:
-    "bg-blue-50 text-blue-700 ring-1 ring-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:ring-blue-700",
+  SUCCESS: "bg-success-bg text-success-text ring-1 ring-success-border",
+  PENDING: "bg-warning-bg text-warning-text ring-1 ring-warning-border",
+  FAILED: "bg-error-bg text-error-text ring-1 ring-error-border",
+  OUT_OF_ORDER: "bg-blue-50 text-blue-700 ring-1 ring-blue-200",
 };
 
 function getMigrationBadge(state: string): string {
   return (
     migrationBadgeClass[state] ??
-    "bg-slate-50 text-slate-700 ring-1 ring-slate-200 dark:bg-slate-900/30 dark:text-slate-300 dark:ring-slate-700"
+    "bg-slate-50 text-slate-700 ring-1 ring-slate-200"
   );
 }
 
 const metricTypeBadge: Record<string, string> = {
-  COUNTER:
-    "bg-blue-50 text-blue-700 ring-1 ring-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:ring-blue-700",
-  GAUGE:
-    "bg-violet-50 text-violet-700 ring-1 ring-violet-200 dark:bg-violet-900/30 dark:text-violet-300 dark:ring-violet-700",
-  TIMER:
-    "bg-amber-50 text-amber-700 ring-1 ring-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:ring-amber-700",
-  DISTRIBUTION:
-    "bg-teal-50 text-teal-700 ring-1 ring-teal-200 dark:bg-teal-900/30 dark:text-teal-300 dark:ring-teal-700",
+  COUNTER: "bg-blue-50 text-blue-700 ring-1 ring-blue-200",
+  GAUGE: "bg-violet-50 text-violet-700 ring-1 ring-violet-200",
+  TIMER: "bg-amber-50 text-amber-700 ring-1 ring-amber-200",
+  DISTRIBUTION: "bg-teal-50 text-teal-700 ring-1 ring-teal-200",
 };
 
 // --- Skeleton components ---
 
 function SkeletonBlock({ className = "" }: { className?: string }) {
   return (
-    <div
-      className={`animate-pulse bg-[#e2e6f0] dark:bg-[#2a2e3f] rounded ${className}`}
-    />
+    <div className={`animate-pulse bg-surface-inset rounded ${className}`} />
   );
 }
 
 function SkeletonCard({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-5">
+    <div className="bg-surface-card rounded-lg border border-border-default p-5">
       {children}
     </div>
   );
@@ -174,19 +164,19 @@ function CollapsiblePanel({
   const [expanded, setExpanded] = useState(defaultExpanded);
 
   return (
-    <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] mb-6">
+    <div className="bg-surface-card rounded-lg border border-border-default mb-6">
       <button
         type="button"
-        className="w-full px-5 py-4 flex items-center justify-between cursor-pointer hover:bg-[#f8f9fc] dark:hover:bg-[#1a1d28] transition-colors rounded-t-xl"
+        className="w-full px-5 py-4 flex items-center justify-between cursor-pointer hover:bg-surface-page transition-colors rounded-t-xl"
         onClick={() => setExpanded(!expanded)}
       >
         <div className="flex items-center gap-2">
           {expanded ? (
-            <ChevronDown className="h-4 w-4 text-[#6b7194] dark:text-[#8b90a8]" />
+            <ChevronDown className="h-4 w-4 text-text-secondary " />
           ) : (
-            <ChevronRight className="h-4 w-4 text-[#6b7194] dark:text-[#8b90a8]" />
+            <ChevronRight className="h-4 w-4 text-text-secondary " />
           )}
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
             {title}
           </h2>
         </div>
@@ -226,14 +216,14 @@ function ProgressBar({
   return (
     <div>
       <div className="flex items-center justify-between mb-1.5">
-        <p className="text-xs font-medium uppercase tracking-wider text-[#9ca0b8] dark:text-[#5c6180]">
+        <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
           {label}
         </p>
-        <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] font-mono">
+        <p className="text-xs text-text-secondary font-mono">
           {formatFn(used)} / {formatFn(max)} ({pct.toFixed(0)}%)
         </p>
       </div>
-      <div className="h-2.5 rounded-full bg-[#e2e6f0] dark:bg-[#2a2e3f] overflow-hidden">
+      <div className="h-2.5 rounded-full bg-surface-inset overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-500 ${color}`}
           style={{ width: `${Math.min(pct, 100)}%` }}
@@ -284,8 +274,8 @@ function AlertBanner({
             key={i}
             className={`rounded-lg px-4 py-3 flex items-center gap-3 text-sm font-medium ${
               isError
-                ? "bg-red-50 text-red-800 border border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800"
-                : "bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-800"
+                ? "bg-error-bg text-error-text border border-error-border"
+                : "bg-warning-bg text-warning-text border border-warning-border"
             }`}
           >
             {isError ? (
@@ -305,31 +295,29 @@ function SessionsCard({ sessions }: { sessions: SessionInfo }) {
   return (
     <CollapsiblePanel title="Active Sessions">
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-[#f8f9fc] dark:bg-[#1a1d28] rounded-lg px-4 py-4 border border-[#e2e6f0] dark:border-[#2a2e3f]">
+        <div className="bg-surface-page rounded-lg px-4 py-4 border border-border-default">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
-              <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+              <Users className="h-5 w-5 text-blue-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+              <p className="text-2xl font-bold text-text-primary">
                 {sessions.appActiveUsers}
               </p>
-              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
-                App Users Online
-              </p>
+              <p className="text-xs text-text-secondary">App Users Online</p>
             </div>
           </div>
         </div>
-        <div className="bg-[#f8f9fc] dark:bg-[#1a1d28] rounded-lg px-4 py-4 border border-[#e2e6f0] dark:border-[#2a2e3f]">
+        <div className="bg-surface-page rounded-lg px-4 py-4 border border-border-default">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center">
-              <Users className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+            <div className="w-10 h-10 rounded-lg bg-violet-50 flex items-center justify-center">
+              <Users className="h-5 w-5 text-violet-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+              <p className="text-2xl font-bold text-text-primary">
                 {sessions.backofficeActiveUsers}
               </p>
-              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+              <p className="text-xs text-text-secondary">
                 Backoffice Users Online
               </p>
             </div>
@@ -391,20 +379,20 @@ function VersionsCard({
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+            <tr className="border-b border-border-default">
+              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                 Component
               </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                 Version
               </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                 Commit
               </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                 Branch
               </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                 Built
               </th>
             </tr>
@@ -413,12 +401,12 @@ function VersionsCard({
             {rows.map((row) => (
               <tr
                 key={row.component}
-                className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0 hover:bg-[#f8f9fc] dark:hover:bg-[#1a1d28] transition-colors"
+                className="border-b border-border-default last:border-b-0 hover:bg-surface-page transition-colors"
               >
-                <td className="px-5 py-3 text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                <td className="px-5 py-3 text-sm font-medium text-text-primary">
                   {row.component}
                 </td>
-                <td className="px-5 py-3 text-sm font-mono text-[#1a1d2e] dark:text-[#eef0f6]">
+                <td className="px-5 py-3 text-sm font-mono text-text-primary">
                   {row.version}
                 </td>
                 <td className="px-5 py-3 text-sm font-mono">
@@ -427,13 +415,13 @@ function VersionsCard({
                       href={`${GITHUB_REPO}/commit/${row.commitFull}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[#5c7cfa] dark:text-[#91a7ff] hover:underline"
+                      className="text-primary-500 hover:underline"
                       onClick={(e) => e.stopPropagation()}
                     >
                       {row.commit}
                     </a>
                   ) : (
-                    <span className="text-[#5c7cfa] dark:text-[#91a7ff]">
+                    <span className="text-primary-500">
                       {row.commit ?? "\u2014"}
                     </span>
                   )}
@@ -444,19 +432,17 @@ function VersionsCard({
                       href={`${GITHUB_REPO}/tree/${row.branch}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[#6b7194] dark:text-[#8b90a8] hover:text-[#5c7cfa] dark:hover:text-[#91a7ff] hover:underline"
+                      className="text-text-secondary hover:text-primary-500 hover:underline"
                       onClick={(e) => e.stopPropagation()}
                     >
                       {row.branch}
                     </a>
                   ) : (
-                    <span className="text-[#6b7194] dark:text-[#8b90a8]">
-                      {"\u2014"}
-                    </span>
+                    <span className="text-text-secondary">{"\u2014"}</span>
                   )}
                 </td>
                 <td
-                  className="px-5 py-3 text-sm text-[#6b7194] dark:text-[#8b90a8]"
+                  className="px-5 py-3 text-sm text-text-secondary"
                   title={row.buildTime ?? undefined}
                 >
                   {formatRelativeTime(row.buildTime)}
@@ -476,7 +462,7 @@ function ServiceHealthCard({ services }: { services: ServiceHealth[] }) {
     <CollapsiblePanel
       title="Service Health"
       headerRight={
-        <span className="text-xs font-mono text-[#6b7194] dark:text-[#8b90a8]">
+        <span className="text-xs font-mono text-text-secondary">
           {upCount}/{services.length} up
         </span>
       }
@@ -485,31 +471,31 @@ function ServiceHealthCard({ services }: { services: ServiceHealth[] }) {
         {services.map((svc) => (
           <div
             key={svc.name}
-            className="bg-[#f8f9fc] dark:bg-[#1a1d28] rounded-lg px-4 py-3 border border-[#e2e6f0] dark:border-[#2a2e3f] hover:shadow-md transition-shadow"
+            className="bg-surface-page rounded-lg px-4 py-3 border border-border-default hover:shadow-md transition-shadow"
             title={svc.error ?? svc.details ?? undefined}
           >
             <div className="flex items-center gap-2 mb-1">
               <div
                 className={`h-2.5 w-2.5 rounded-full flex-shrink-0 ${statusDotClass[svc.status]}`}
               />
-              <span className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] truncate">
+              <span className="text-sm font-medium text-text-primary truncate">
                 {svc.name}
               </span>
             </div>
             <div className="flex items-center gap-2">
               <span
-                className={`text-xs ${svc.status === "UP" ? "text-emerald-600 dark:text-emerald-400" : svc.status === "DOWN" ? "text-red-600 dark:text-red-400" : "text-[#9ca0b8] dark:text-[#5c6180]"}`}
+                className={`text-xs ${svc.status === "UP" ? "text-success-text" : svc.status === "DOWN" ? "text-error-text" : "text-text-muted "}`}
               >
                 {statusLabel[svc.status]}
               </span>
               {svc.latencyMs != null && svc.status === "UP" && (
-                <span className="text-xs text-[#9ca0b8] dark:text-[#5c6180] font-mono">
+                <span className="text-xs text-text-muted font-mono">
                   {svc.latencyMs}ms
                 </span>
               )}
             </div>
             {svc.details && svc.status === "UP" && (
-              <p className="text-[11px] text-[#9ca0b8] dark:text-[#5c6180] mt-1 truncate">
+              <p className="text-[11px] text-text-muted mt-1 truncate">
                 {svc.details}
               </p>
             )}
@@ -568,10 +554,10 @@ function RuntimeCard({
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-3 mb-5">
         {items.map((item) => (
           <div key={item.label}>
-            <p className="text-xs font-medium uppercase tracking-wider text-[#9ca0b8] dark:text-[#5c6180]">
+            <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
               {item.label}
             </p>
-            <p className="text-sm font-mono text-[#1a1d2e] dark:text-[#eef0f6] mt-0.5">
+            <p className="text-sm font-mono text-text-primary mt-0.5">
               {item.value}
             </p>
           </div>
@@ -582,14 +568,14 @@ function RuntimeCard({
       {cpuPct >= 0 && (
         <div className="mb-3">
           <div className="flex items-center justify-between mb-1.5">
-            <p className="text-xs font-medium uppercase tracking-wider text-[#9ca0b8] dark:text-[#5c6180]">
+            <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
               CPU Usage
             </p>
-            <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] font-mono">
+            <p className="text-xs text-text-secondary font-mono">
               {cpuPct.toFixed(1)}%
             </p>
           </div>
-          <div className="h-2.5 rounded-full bg-[#e2e6f0] dark:bg-[#2a2e3f] overflow-hidden">
+          <div className="h-2.5 rounded-full bg-surface-inset overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-500 ${cpuColor}`}
               style={{ width: `${Math.min(cpuPct, 100)}%` }}
@@ -620,21 +606,21 @@ function RuntimeCard({
 
       {/* Threads */}
       <div className="grid grid-cols-3 gap-4 mb-5">
-        <div className="bg-[#f8f9fc] dark:bg-[#1a1d28] rounded-lg px-3 py-2 border border-[#e2e6f0] dark:border-[#2a2e3f]">
-          <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">Threads</p>
-          <p className="text-lg font-bold font-mono text-[#1a1d2e] dark:text-[#eef0f6]">
+        <div className="bg-surface-page rounded-lg px-3 py-2 border border-border-default">
+          <p className="text-xs text-text-muted">Threads</p>
+          <p className="text-lg font-bold font-mono text-text-primary">
             {runtime.threadCount}
           </p>
         </div>
-        <div className="bg-[#f8f9fc] dark:bg-[#1a1d28] rounded-lg px-3 py-2 border border-[#e2e6f0] dark:border-[#2a2e3f]">
-          <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">Peak</p>
-          <p className="text-lg font-bold font-mono text-[#1a1d2e] dark:text-[#eef0f6]">
+        <div className="bg-surface-page rounded-lg px-3 py-2 border border-border-default">
+          <p className="text-xs text-text-muted">Peak</p>
+          <p className="text-lg font-bold font-mono text-text-primary">
             {runtime.peakThreadCount}
           </p>
         </div>
-        <div className="bg-[#f8f9fc] dark:bg-[#1a1d28] rounded-lg px-3 py-2 border border-[#e2e6f0] dark:border-[#2a2e3f]">
-          <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">Daemon</p>
-          <p className="text-lg font-bold font-mono text-[#1a1d2e] dark:text-[#eef0f6]">
+        <div className="bg-surface-page rounded-lg px-3 py-2 border border-border-default">
+          <p className="text-xs text-text-muted">Daemon</p>
+          <p className="text-lg font-bold font-mono text-text-primary">
             {runtime.daemonThreadCount}
           </p>
         </div>
@@ -643,20 +629,20 @@ function RuntimeCard({
       {/* GC table */}
       {runtime.garbageCollectors.length > 0 && (
         <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-[#9ca0b8] dark:text-[#5c6180] mb-2">
+          <p className="text-xs font-medium uppercase tracking-wider text-text-muted mb-2">
             Garbage Collectors
           </p>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-                  <th className="text-left px-3 py-2 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+                <tr className="border-b border-border-default">
+                  <th className="text-left px-3 py-2 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                     Collector
                   </th>
-                  <th className="text-right px-3 py-2 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+                  <th className="text-right px-3 py-2 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                     Collections
                   </th>
-                  <th className="text-right px-3 py-2 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+                  <th className="text-right px-3 py-2 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                     Time
                   </th>
                 </tr>
@@ -665,15 +651,15 @@ function RuntimeCard({
                 {runtime.garbageCollectors.map((gc) => (
                   <tr
                     key={gc.name}
-                    className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0"
+                    className="border-b border-border-default last:border-b-0"
                   >
-                    <td className="px-3 py-2 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <td className="px-3 py-2 text-sm text-text-primary">
                       {gc.name}
                     </td>
-                    <td className="px-3 py-2 text-sm font-mono text-right text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <td className="px-3 py-2 text-sm font-mono text-right text-text-primary">
                       {gc.collectionCount.toLocaleString()}
                     </td>
-                    <td className="px-3 py-2 text-sm font-mono text-right text-[#6b7194] dark:text-[#8b90a8]">
+                    <td className="px-3 py-2 text-sm font-mono text-right text-text-secondary">
                       {gc.collectionTimeMs.toLocaleString()}ms
                     </td>
                   </tr>
@@ -690,12 +676,12 @@ function RuntimeCard({
 function LatencyStat({ label, value }: { label: string; value: number }) {
   return (
     <div className="text-center">
-      <p className="text-[10px] font-medium uppercase tracking-wider text-[#9ca0b8] dark:text-[#5c6180]">
+      <p className="text-[10px] font-medium uppercase tracking-wider text-text-muted">
         {label}
       </p>
-      <p className="text-sm font-bold font-mono text-[#1a1d2e] dark:text-[#eef0f6]">
+      <p className="text-sm font-bold font-mono text-text-primary">
         {value.toFixed(1)}
-        <span className="text-[10px] font-normal text-[#9ca0b8] dark:text-[#5c6180] ml-0.5">
+        <span className="text-[10px] font-normal text-text-muted ml-0.5">
           ms
         </span>
       </p>
@@ -720,16 +706,16 @@ function LatencyBar({ latency }: { latency: HttpLatencyStats }) {
     <div className="space-y-1.5">
       {bars.map((bar) => (
         <div key={bar.label} className="flex items-center gap-2">
-          <span className="text-[10px] font-mono text-[#9ca0b8] dark:text-[#5c6180] w-8 text-right">
+          <span className="text-[10px] font-mono text-text-muted w-8 text-right">
             {bar.label}
           </span>
-          <div className="flex-1 h-3 rounded bg-[#e2e6f0] dark:bg-[#2a2e3f] overflow-hidden">
+          <div className="flex-1 h-3 rounded bg-surface-inset overflow-hidden">
             <div
               className={`h-full rounded transition-all duration-500 ${bar.color}`}
               style={{ width: `${Math.max((bar.value / maxVal) * 100, 0.5)}%` }}
             />
           </div>
-          <span className="text-[10px] font-mono text-[#6b7194] dark:text-[#8b90a8] w-16 text-right">
+          <span className="text-[10px] font-mono text-text-secondary w-16 text-right">
             {bar.value.toFixed(1)}ms
           </span>
         </div>
@@ -756,27 +742,21 @@ function MetricsCard({ metrics }: { metrics: MetricsSnapshot }) {
     <CollapsiblePanel title="Metrics">
       {/* HTTP summary */}
       <div className="grid grid-cols-3 gap-4 mb-5">
-        <div className="bg-[#f8f9fc] dark:bg-[#1a1d28] rounded-lg px-3 py-2 border border-[#e2e6f0] dark:border-[#2a2e3f]">
-          <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
-            HTTP Requests
-          </p>
-          <p className="text-lg font-bold font-mono text-[#1a1d2e] dark:text-[#eef0f6]">
+        <div className="bg-surface-page rounded-lg px-3 py-2 border border-border-default">
+          <p className="text-xs text-text-muted">HTTP Requests</p>
+          <p className="text-lg font-bold font-mono text-text-primary">
             {metrics.httpRequestCount.toLocaleString()}
           </p>
         </div>
-        <div className="bg-[#f8f9fc] dark:bg-[#1a1d28] rounded-lg px-3 py-2 border border-[#e2e6f0] dark:border-[#2a2e3f]">
-          <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
-            Total Time
-          </p>
-          <p className="text-lg font-bold font-mono text-[#1a1d2e] dark:text-[#eef0f6]">
+        <div className="bg-surface-page rounded-lg px-3 py-2 border border-border-default">
+          <p className="text-xs text-text-muted">Total Time</p>
+          <p className="text-lg font-bold font-mono text-text-primary">
             {metrics.httpRequestTotalTimeSeconds.toFixed(1)}s
           </p>
         </div>
-        <div className="bg-[#f8f9fc] dark:bg-[#1a1d28] rounded-lg px-3 py-2 border border-[#e2e6f0] dark:border-[#2a2e3f]">
-          <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
-            Mean Latency
-          </p>
-          <p className="text-lg font-bold font-mono text-[#1a1d2e] dark:text-[#eef0f6]">
+        <div className="bg-surface-page rounded-lg px-3 py-2 border border-border-default">
+          <p className="text-xs text-text-muted">Mean Latency</p>
+          <p className="text-lg font-bold font-mono text-text-primary">
             {httpLatency.meanMs.toFixed(1)}ms
           </p>
         </div>
@@ -785,7 +765,7 @@ function MetricsCard({ metrics }: { metrics: MetricsSnapshot }) {
       {/* Latency distribution */}
       {metrics.httpRequestCount > 0 && (
         <div className="mb-5">
-          <p className="text-xs font-medium uppercase tracking-wider text-[#9ca0b8] dark:text-[#5c6180] mb-3">
+          <p className="text-xs font-medium uppercase tracking-wider text-text-muted mb-3">
             Response Time Distribution
           </p>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -809,18 +789,18 @@ function MetricsCard({ metrics }: { metrics: MetricsSnapshot }) {
       {Object.keys(grouped).length > 0 && (
         <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
           <table className="w-full">
-            <thead className="sticky top-0 bg-white dark:bg-[#14161f]">
-              <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-                <th className="text-left px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+            <thead className="sticky top-0 bg-surface-card">
+              <tr className="border-b border-border-default">
+                <th className="text-left px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                   Metric
                 </th>
-                <th className="text-left px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+                <th className="text-left px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                   Type
                 </th>
-                <th className="text-right px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+                <th className="text-right px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                   Value
                 </th>
-                <th className="text-left px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+                <th className="text-left px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                   Tags
                 </th>
               </tr>
@@ -830,12 +810,10 @@ function MetricsCard({ metrics }: { metrics: MetricsSnapshot }) {
                 entries.map((m, i) => (
                   <tr
                     key={`${m.name}-${i}`}
-                    className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0 hover:bg-[#f8f9fc] dark:hover:bg-[#1a1d28]"
+                    className="border-b border-border-default last:border-b-0 hover:bg-surface-page"
                   >
-                    <td className="px-3 py-1.5 text-xs font-mono text-[#1a1d2e] dark:text-[#eef0f6]">
-                      <span className="text-[#9ca0b8] dark:text-[#5c6180]">
-                        {group}.
-                      </span>
+                    <td className="px-3 py-1.5 text-xs font-mono text-text-primary">
+                      <span className="text-text-muted">{group}.</span>
                       {m.name.replace(group + ".", "")}
                     </td>
                     <td className="px-3 py-1.5">
@@ -845,16 +823,16 @@ function MetricsCard({ metrics }: { metrics: MetricsSnapshot }) {
                         {m.type}
                       </span>
                     </td>
-                    <td className="px-3 py-1.5 text-xs font-mono text-right text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <td className="px-3 py-1.5 text-xs font-mono text-right text-text-primary">
                       {formatNumber(m.value)}
                     </td>
-                    <td className="px-3 py-1.5 text-[11px] text-[#6b7194] dark:text-[#8b90a8] max-w-xs truncate">
+                    <td className="px-3 py-1.5 text-[11px] text-text-secondary max-w-xs truncate">
                       {Object.entries(m.tags)
                         .filter(
                           ([k, v]) => !(k === "application" && v === "buurman"),
                         )
                         .map(([k, v]) => `${k}=${v}`)
-                        .join(", ") || "\u2014"}
+                        .join(",") || "\u2014"}
                     </td>
                   </tr>
                 )),
@@ -865,7 +843,7 @@ function MetricsCard({ metrics }: { metrics: MetricsSnapshot }) {
       )}
 
       {metrics.custom.length === 0 && (
-        <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] text-center py-4">
+        <p className="text-sm text-text-secondary text-center py-4">
           No custom metrics collected yet.
         </p>
       )}
@@ -893,22 +871,22 @@ function ConfigurationCard({
       defaultExpanded={false}
       noPadding
       headerRight={
-        <span className="text-xs font-mono text-[#6b7194] dark:text-[#8b90a8]">
+        <span className="text-xs font-mono text-text-secondary">
           {configuration.length} entries
         </span>
       }
     >
       <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
         <table className="w-full">
-          <thead className="sticky top-0 bg-white dark:bg-[#14161f]">
-            <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+          <thead className="sticky top-0 bg-surface-card">
+            <tr className="border-b border-border-default">
+              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                 Category
               </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                 Key
               </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                 Value
               </th>
             </tr>
@@ -918,19 +896,17 @@ function ConfigurationCard({
               entries.map((entry, i) => (
                 <tr
                   key={`${category}-${entry.key}`}
-                  className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0 hover:bg-[#f8f9fc] dark:hover:bg-[#1a1d28] transition-colors"
+                  className="border-b border-border-default last:border-b-0 hover:bg-surface-page transition-colors"
                 >
-                  <td className="px-5 py-2.5 text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                  <td className="px-5 py-2.5 text-sm font-medium text-text-primary">
                     {i === 0 ? category : ""}
                   </td>
-                  <td className="px-5 py-2.5 text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                  <td className="px-5 py-2.5 text-sm text-text-secondary">
                     {entry.key}
                   </td>
-                  <td className="px-5 py-2.5 text-sm font-mono text-[#1a1d2e] dark:text-[#eef0f6] max-w-md truncate">
+                  <td className="px-5 py-2.5 text-sm font-mono text-text-primary max-w-md truncate">
                     {entry.value.includes("***") ? (
-                      <span className="text-[#9ca0b8] dark:text-[#5c6180]">
-                        {entry.value}
-                      </span>
+                      <span className="text-text-muted">{entry.value}</span>
                     ) : (
                       entry.value
                     )}
@@ -970,16 +946,16 @@ function MigrationsCard({
       noPadding
       headerRight={
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="rounded-full px-2.5 py-0.5 text-xs font-medium bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-700">
+          <span className="rounded-full px-2.5 py-0.5 text-xs font-medium bg-success-bg text-success-text ring-1 ring-success-border">
             {migrations.appliedCount} Applied
           </span>
           {migrations.pendingCount > 0 && (
-            <span className="rounded-full px-2.5 py-0.5 text-xs font-medium bg-amber-50 text-amber-700 ring-1 ring-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:ring-amber-700">
+            <span className="rounded-full px-2.5 py-0.5 text-xs font-medium bg-warning-bg text-warning-text ring-1 ring-warning-border">
               {migrations.pendingCount} Pending
             </span>
           )}
           {migrations.failedCount > 0 && (
-            <span className="rounded-full px-2.5 py-0.5 text-xs font-medium bg-red-50 text-red-700 ring-1 ring-red-200 dark:bg-red-900/30 dark:text-red-300 dark:ring-red-700">
+            <span className="rounded-full px-2.5 py-0.5 text-xs font-medium bg-error-bg text-error-text ring-1 ring-error-border">
               {migrations.failedCount} Failed
             </span>
           )}
@@ -988,21 +964,21 @@ function MigrationsCard({
     >
       <div className="overflow-x-auto max-h-[480px] overflow-y-auto">
         <table className="w-full">
-          <thead className="sticky top-0 bg-white dark:bg-[#14161f]">
-            <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+          <thead className="sticky top-0 bg-surface-card">
+            <tr className="border-b border-border-default">
+              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                 Version
               </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                 Description
               </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                 State
               </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                 Duration
               </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+              <th className="text-left px-5 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                 Installed
               </th>
             </tr>
@@ -1011,12 +987,12 @@ function MigrationsCard({
             {sorted.map((m, i) => (
               <tr
                 key={i}
-                className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0 hover:bg-[#f8f9fc] dark:hover:bg-[#1a1d28] transition-colors"
+                className="border-b border-border-default last:border-b-0 hover:bg-surface-page transition-colors"
               >
-                <td className="px-5 py-3 text-sm font-mono text-[#1a1d2e] dark:text-[#eef0f6]">
+                <td className="px-5 py-3 text-sm font-mono text-text-primary">
                   {m.version ?? "\u2014"}
                 </td>
-                <td className="px-5 py-3 text-sm text-[#1a1d2e] dark:text-[#eef0f6] max-w-xs truncate">
+                <td className="px-5 py-3 text-sm text-text-primary max-w-xs truncate">
                   {m.description}
                 </td>
                 <td className="px-5 py-3">
@@ -1026,13 +1002,13 @@ function MigrationsCard({
                     {m.state}
                   </span>
                 </td>
-                <td className="px-5 py-3 text-sm font-mono text-[#6b7194] dark:text-[#8b90a8]">
+                <td className="px-5 py-3 text-sm font-mono text-text-secondary">
                   {m.executionTimeMs != null
                     ? `${m.executionTimeMs}ms`
                     : "\u2014"}
                 </td>
                 <td
-                  className="px-5 py-3 text-sm text-[#6b7194] dark:text-[#8b90a8]"
+                  className="px-5 py-3 text-sm text-text-secondary"
                   title={m.installedOn ?? undefined}
                 >
                   {formatRelativeTime(m.installedOn)}
@@ -1095,16 +1071,16 @@ function LoadingSkeleton() {
 function AccessDenied() {
   return (
     <div className="flex items-center justify-center min-h-[60vh]">
-      <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-8 text-center max-w-sm">
-        <div className="w-12 h-12 rounded-full bg-red-50 dark:bg-red-900/20 flex items-center justify-center mx-auto mb-4">
-          <Lock className="h-6 w-6 text-red-600 dark:text-red-400" />
+      <div className="bg-surface-card rounded-lg border border-border-default p-8 text-center max-w-sm">
+        <div className="w-12 h-12 rounded-full bg-error-bg flex items-center justify-center mx-auto mb-4">
+          <Lock className="h-6 w-6 text-error-text" />
         </div>
-        <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
+        <h2 className="text-lg font-semibold text-text-primary mb-2">
           Insufficient Permissions
         </h2>
-        <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+        <p className="text-sm text-text-secondary">
           You need the{" "}
-          <span className="font-mono text-xs bg-[#f8f9fc] dark:bg-[#1a1d28] px-1.5 py-0.5 rounded">
+          <span className="font-mono text-xs bg-surface-page px-1.5 py-0.5 rounded">
             BACKOFFICE_SYSTEM
           </span>{" "}
           role to view this page.
@@ -1139,56 +1115,48 @@ function SystemInfoContent() {
     return (
       <div>
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+          <h1 className="text-2xl font-bold text-text-primary">
             System Information
           </h1>
-          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+          <p className="text-sm text-text-secondary mt-1">
             Build versions, runtime, metrics, and service health.
           </p>
         </div>
 
         {/* Show backoffice build info even when backend is unreachable */}
-        <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-5 mb-6">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8] mb-3">
+        <div className="bg-surface-card rounded-lg border border-border-default p-5 mb-6">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-text-secondary mb-3">
             Backoffice Build
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div>
-              <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
-                Version
-              </p>
-              <p className="text-sm font-mono text-[#1a1d2e] dark:text-[#eef0f6]">
+              <p className="text-xs text-text-muted">Version</p>
+              <p className="text-sm font-mono text-text-primary">
                 {BUILD_INFO.version}
               </p>
             </div>
             <div>
-              <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
-                Commit
-              </p>
-              <p className="text-sm font-mono text-[#5c7cfa] dark:text-[#91a7ff]">
+              <p className="text-xs text-text-muted">Commit</p>
+              <p className="text-sm font-mono text-primary-500">
                 {BUILD_INFO.gitCommit}
               </p>
             </div>
             <div>
-              <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
-                Branch
-              </p>
-              <p className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+              <p className="text-xs text-text-muted">Branch</p>
+              <p className="text-sm text-text-primary">
                 {BUILD_INFO.gitBranch}
               </p>
             </div>
             <div>
-              <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
-                Built
-              </p>
-              <p className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+              <p className="text-xs text-text-muted">Built</p>
+              <p className="text-sm text-text-primary">
                 {formatRelativeTime(BUILD_INFO.buildTime)}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="rounded-lg px-4 py-3 bg-red-50 text-red-800 border border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800 flex items-center gap-3 text-sm font-medium">
+        <div className="rounded-lg px-4 py-3 bg-error-bg text-error-text border border-error-border flex items-center gap-3 text-sm font-medium">
           <XCircle className="h-4 w-4 flex-shrink-0" />
           Failed to load backend system information. The API may be unreachable.
         </div>
@@ -1210,10 +1178,10 @@ function SystemInfoContent() {
         }}
       >
         <div>
-          <h1 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+          <h1 className="text-2xl font-bold text-text-primary">
             System Information
           </h1>
-          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+          <p className="text-sm text-text-secondary mt-1">
             Build versions, runtime, metrics, and service health.
           </p>
         </div>

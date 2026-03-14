@@ -61,7 +61,7 @@ export const UsersPage = () => {
   if (error) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-600 dark:text-red-400">Failed to load users.</p>
+        <p className="text-error-text">Failed to load users.</p>
       </div>
     );
   }
@@ -80,10 +80,8 @@ export const UsersPage = () => {
         }}
       >
         <div>
-          <h1 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-            Users
-          </h1>
-          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+          <h1 className="text-2xl font-bold text-text-primary">Users</h1>
+          <p className="text-sm text-text-secondary mt-1">
             Manage all platform users across teams.
           </p>
         </div>
@@ -93,23 +91,23 @@ export const UsersPage = () => {
       {/* Search */}
       <form onSubmit={handleSearch} className="mb-4">
         <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9ca0b8]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
           <input
             type="search"
             placeholder="Search by email or name..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] placeholder-[#9ca0b8] focus:outline-none focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa]/20 transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary placeholder-text-muted focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors"
           />
         </div>
       </form>
 
       {/* Table */}
-      <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden">
+      <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+              <tr className="border-b border-border-default">
                 <SortableHeader
                   field="email"
                   label="Email"
@@ -124,16 +122,16 @@ export const UsersPage = () => {
                   direction={direction}
                   onSortChange={handleSortChange}
                 />
-                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                   Phone
                 </th>
-                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                   Verified
                 </th>
-                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                   Status
                 </th>
-                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+                <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                   Teams
                 </th>
                 <SortableHeader
@@ -143,7 +141,7 @@ export const UsersPage = () => {
                   direction={direction}
                   onSortChange={handleSortChange}
                 />
-                <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]">
+                <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                   Actions
                 </th>
               </tr>
@@ -153,7 +151,7 @@ export const UsersPage = () => {
                 <tr>
                   <td
                     colSpan={8}
-                    className="px-4 py-12 text-center text-sm text-[#9ca0b8] dark:text-[#5c6180]"
+                    className="px-4 py-12 text-center text-sm text-text-muted"
                   >
                     No users found.
                   </td>
@@ -162,63 +160,63 @@ export const UsersPage = () => {
                 users.map((user) => (
                   <tr
                     key={user.identifier}
-                    className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0 hover:bg-[#f8f9fc] dark:hover:bg-[#1a1d28] transition-colors"
+                    className="border-b border-border-default last:border-b-0 hover:bg-surface-page transition-colors"
                   >
                     <td className="px-4 py-3">
-                      <span className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <span className="text-sm font-medium text-text-primary">
                         {user.email}
                       </span>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <div
-                          className={`h-2 w-2 rounded-full flex-shrink-0 ${user.online ? "bg-emerald-500" : "bg-slate-300 dark:bg-slate-600"}`}
+                          className={`h-2 w-2 rounded-full flex-shrink-0 ${user.online ? "bg-emerald-500" : "bg-slate-300"}`}
                           title={user.online ? "Online" : "Offline"}
                         />
-                        <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
+                        <span className="text-sm text-text-secondary">
                           {user.firstName} {user.lastName}
                         </span>
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      <span className="text-sm text-text-secondary">
                         {user.phone || "-"}
                       </span>
                     </td>
                     <td className="px-4 py-3">
                       {user.emailVerified ? (
-                        <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-700">
+                        <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-success-bg text-success-text ring-1 ring-success-border">
                           Verified
                         </span>
                       ) : (
-                        <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-red-50 text-red-700 ring-1 ring-red-200 dark:bg-red-900/30 dark:text-red-300 dark:ring-red-700">
+                        <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-error-bg text-error-text ring-1 ring-error-border">
                           Unverified
                         </span>
                       )}
                     </td>
                     <td className="px-4 py-3">
                       {user.disabled ? (
-                        <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-red-50 text-red-700 ring-1 ring-red-200 dark:bg-red-900/30 dark:text-red-300 dark:ring-red-700">
+                        <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-error-bg text-error-text ring-1 ring-error-border">
                           Disabled
                         </span>
                       ) : (
-                        <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-700">
+                        <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-success-bg text-success-text ring-1 ring-success-border">
                           Active
                         </span>
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
+                      <span className="text-sm text-text-secondary">
                         {user.teamCount}
                         {user.demoTeamCount > 0 && (
-                          <span className="ml-1.5 inline-flex items-center rounded-full px-1.5 py-0.5 text-xs font-medium bg-amber-50 text-amber-700 ring-1 ring-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:ring-amber-700">
+                          <span className="ml-1.5 inline-flex items-center rounded-full px-1.5 py-0.5 text-xs font-medium bg-warning-bg text-warning-text ring-1 ring-warning-border">
                             {user.demoTeamCount} demo
                           </span>
                         )}
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      <span className="text-sm text-text-secondary">
                         {format(new Date(user.createdAt), "dd MMM yyyy")}
                       </span>
                     </td>
@@ -233,7 +231,7 @@ export const UsersPage = () => {
                       >
                         <button
                           onClick={() => navigate(`/users/${user.identifier}`)}
-                          className="p-2 rounded-lg text-[#6b7194] dark:text-[#8b90a8] hover:text-[#5c7cfa] dark:hover:text-[#91a7ff] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                          className="p-2 rounded-lg text-text-secondary hover:text-primary-500 hover:bg-surface-inset transition-colors"
                           title="View user"
                         >
                           <Eye className="h-4 w-4" />
@@ -246,7 +244,7 @@ export const UsersPage = () => {
                                 action: "enable",
                               })
                             }
-                            className="p-2 rounded-lg text-[#6b7194] dark:text-[#8b90a8] hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors"
+                            className="p-2 rounded-lg text-text-secondary hover:text-success-text hover:bg-success-bg transition-colors"
                             title="Enable user"
                           >
                             <UserCheck className="h-4 w-4" />
@@ -259,7 +257,7 @@ export const UsersPage = () => {
                                 action: "disable",
                               })
                             }
-                            className="p-2 rounded-lg text-[#6b7194] dark:text-[#8b90a8] hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                            className="p-2 rounded-lg text-text-secondary hover:text-error-text hover:bg-error-bg transition-colors"
                             title="Disable user"
                           >
                             <UserX className="h-4 w-4" />

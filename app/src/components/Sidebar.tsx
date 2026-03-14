@@ -99,8 +99,8 @@ const navLinkClass = (isActive: boolean, collapsed: boolean) => `
   ${collapsed ? 'lg:justify-center' : ''}
   ${
     isActive
-      ? 'bg-[#f0f4ff] dark:bg-[#5c7cfa]/10 text-[#5c7cfa] dark:text-[#91a7ff] font-semibold border-l-2 border-[#5c7cfa] dark:border-[#748ffc]'
-      : 'text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] hover:text-[#1a1d2e] dark:hover:text-[#eef0f6]'
+      ? 'bg-primary-50 text-primary-700 font-semibold'
+      : 'text-text-secondary hover:bg-neutral-50 hover:text-text-primary'
   }
 `;
 
@@ -155,7 +155,7 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
       {/* Mobile menu button */}
       <button
         onClick={() => setMobileOpen(!mobileOpen)}
-        className="lg:hidden fixed left-4 z-50 p-2 rounded-lg bg-white/95 dark:bg-[#14161f]/95 shadow-md backdrop-blur-sm hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+        className="lg:hidden fixed left-4 z-50 p-2 rounded-lg bg-surface-card/95 shadow-md backdrop-blur-sm hover:bg-surface-inset"
         style={{ top: 'calc(var(--env-banner-height, 0px) + 1rem)' }}
       >
         {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -164,7 +164,7 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
       {/* Sidebar */}
       <aside
         className={`
-          fixed left-0 bg-white/95 dark:bg-[#0c0d14]/95 backdrop-blur-xl border-r border-[#e2e6f0] dark:border-[#2a2e3f] z-40
+          fixed left-0 bg-surface-card/95 backdrop-blur-xl border-r border-border-default z-40
           transition-all duration-300 ease-in-out
           ${mobileOpen ? 'w-64 translate-x-0' : '-translate-x-full'}
           ${collapsed ? 'lg:w-20' : 'lg:w-64'}
@@ -178,7 +178,7 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
         <div className="flex flex-col h-full overflow-hidden">
           {/* Logo */}
           <div
-            className="flex items-center h-16 border-b border-[#e2e6f0] dark:border-[#2a2e3f] px-3"
+            className="flex items-center h-16 border-b border-border-default px-3"
             style={{ justifyContent: 'space-between' }}
           >
             <div style={{ minWidth: 0 }}>
@@ -209,7 +209,7 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
             </div>
             <button
               onClick={onToggleCollapse}
-              className="hidden lg:flex flex-shrink-0 p-1 rounded-md text-[#9ca0b8] dark:text-[#5c6180] hover:text-[#6b7194] dark:hover:text-[#8b90a8] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+              className="hidden lg:flex flex-shrink-0 p-1 rounded-md text-text-muted hover:text-text-secondary hover:bg-surface-inset transition-colors"
               title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
               {collapsed ? (
@@ -262,7 +262,7 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
                 <div className={collapsed ? 'lg:hidden' : ''}>
                   <button
                     onClick={() => setIsAdminOpen(!isAdminOpen)}
-                    className="w-full flex items-center justify-between px-3 py-2 mb-1 rounded-lg text-xs font-semibold uppercase tracking-wider text-[#9ca0b8] dark:text-[#5c6180] hover:text-[#6b7194] dark:hover:text-[#8b90a8] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                    className="w-full flex items-center justify-between px-3 py-2 mb-1 rounded-lg text-xs font-semibold uppercase tracking-wider text-text-muted hover:text-text-secondary hover:bg-surface-inset transition-colors"
                   >
                     <span className="flex items-center gap-2">
                       Administration
@@ -276,7 +276,7 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
 
                 {/* Divider when sidebar is collapsed (desktop only) */}
                 <div
-                  className={`mx-3 my-2 border-t border-[#e2e6f0] dark:border-[#2a2e3f] hidden ${collapsed ? 'lg:block' : ''}`}
+                  className={`mx-3 my-2 border-t border-border-default hidden ${collapsed ? 'lg:block' : ''}`}
                 />
 
                 {/* Admin Items */}
@@ -309,7 +309,7 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
           </nav>
 
           {/* Footer Actions */}
-          <div className="border-t border-[#e2e6f0] dark:border-[#2a2e3f] p-2 space-y-1">
+          <div className="border-t border-border-default p-2 space-y-1">
             {/* Team Switcher - only show when user has multiple teams and sidebar is expanded */}
             {!collapsed && teams.length > 1 && (
               <div className="px-1 py-2 mb-1">
@@ -333,7 +333,7 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
                 onClick={logout}
                 className={`
                   w-full flex items-center gap-3 px-3 py-2.5 rounded-lg
-                  text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20
+                  text-error-text hover:bg-error-bg
                   transition-all duration-200
                   ${collapsed ? 'lg:justify-center' : ''}
                 `}
@@ -405,10 +405,10 @@ function NavGroup({
           className={() =>
             `flex-1 flex items-center gap-3 px-3 py-2.5 rounded-l-lg transition-all duration-200 ${
               isParentActive
-                ? 'bg-[#f0f4ff] dark:bg-[#5c7cfa]/10 text-[#5c7cfa] dark:text-[#91a7ff] font-semibold border-l-2 border-[#5c7cfa] dark:border-[#748ffc]'
+                ? 'bg-primary-50 text-primary-700 font-semibold'
                 : isGroupActive
-                  ? 'text-[#5c7cfa] dark:text-[#91a7ff] font-medium'
-                  : 'text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] hover:text-[#1a1d2e] dark:hover:text-[#eef0f6]'
+                  ? 'text-primary-700 font-medium'
+                  : 'text-text-secondary hover:bg-neutral-50 hover:text-text-primary'
             }`
           }
           onClick={onMobileClose}
@@ -420,9 +420,9 @@ function NavGroup({
           onClick={onToggle}
           className={`p-2 rounded-r-lg transition-colors ${
             isGroupActive
-              ? 'text-[#5c7cfa] dark:text-[#91a7ff]'
-              : 'text-[#9ca0b8] dark:text-[#5c6180] hover:text-[#6b7194] dark:hover:text-[#8b90a8]'
-          } hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]`}
+              ? 'text-primary-700'
+              : 'text-text-muted hover:text-text-secondary'
+          } hover:bg-neutral-50`}
         >
           <ChevronDown
             className={`h-3.5 w-3.5 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
@@ -440,8 +440,8 @@ function NavGroup({
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 ${
                     isActive
-                      ? 'bg-[#f0f4ff] dark:bg-[#5c7cfa]/10 text-[#5c7cfa] dark:text-[#91a7ff] font-semibold'
-                      : 'text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] hover:text-[#3d4463] dark:hover:text-[#c4c8db]'
+                      ? 'bg-primary-50 text-primary-700 font-semibold'
+                      : 'text-text-secondary hover:bg-neutral-50 hover:text-text-secondary'
                   }`
                 }
                 onClick={onMobileClose}

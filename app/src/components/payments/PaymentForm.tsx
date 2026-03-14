@@ -171,8 +171,8 @@ export const PaymentForm = ({
     >
       {/* Amount */}
       <div>
-        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
-          Amount <span className="text-red-500">*</span>
+        <label className="block text-sm font-medium text-text-secondary mb-2">
+          Amount <span className="text-error-text">*</span>
         </label>
         <MoneyInput
           value={formData.amount ?? undefined}
@@ -182,7 +182,7 @@ export const PaymentForm = ({
           error={!!errors.amount || !!errors.currency}
         />
         {(errors.amount || errors.currency) && (
-          <p className="mt-1 text-sm text-red-500">
+          <p className="mt-1 text-sm text-error-text">
             {errors.amount || errors.currency}
           </p>
         )}
@@ -190,8 +190,8 @@ export const PaymentForm = ({
 
       {/* Due Date */}
       <div>
-        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
-          Due Date <span className="text-red-500">*</span>
+        <label className="block text-sm font-medium text-text-secondary mb-2">
+          Due Date <span className="text-error-text">*</span>
         </label>
         <div className="flex gap-2">
           <input
@@ -201,9 +201,7 @@ export const PaymentForm = ({
               setFormData({ ...formData, dueDate: e.target.value })
             }
             className={`flex-1 px-3 py-2 border rounded-md ${
-              errors.dueDate
-                ? 'border-red-500'
-                : 'border-[#c9cfd9] dark:border-[#3a3f54]'
+              errors.dueDate ? 'border-error-border' : 'border-border-strong'
             }`}
             disabled={isLoading}
           />
@@ -215,17 +213,17 @@ export const PaymentForm = ({
                 dueDate: new Date().toISOString().split('T')[0],
               })
             }
-            className="px-3 py-2 text-sm bg-[#f1f3f9] dark:bg-[#1e2130] hover:bg-[#e8ecf4] dark:bg-[#1e2130] border border-[#c9cfd9] rounded-md transition-colors"
+            className="px-3 py-2 text-sm bg-surface-inset hover:bg-neutral-100 border border-border-strong rounded-md transition-colors"
             disabled={isLoading}
           >
             Today
           </button>
         </div>
         {errors.dueDate && (
-          <p className="mt-1 text-sm text-red-500">{errors.dueDate}</p>
+          <p className="mt-1 text-sm text-error-text">{errors.dueDate}</p>
         )}
         {showRentNotice && rentPeriodForDate && (
-          <div className="mt-2 flex items-start gap-2 p-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded text-xs text-amber-700 dark:text-amber-300">
+          <div className="mt-2 flex items-start gap-2 p-2 bg-warning-bg border border-warning-border rounded text-xs text-warning-text">
             <Info className="h-3.5 w-3.5 flex-shrink-0 mt-0.5" />
             <span>
               This date falls in a different rent period (
@@ -251,7 +249,7 @@ export const PaymentForm = ({
       {/* Payment Date - only show when editing */}
       {payment && (
         <div>
-          <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
+          <label className="block text-sm font-medium text-text-secondary mb-2">
             Payment Date
           </label>
           <div className="flex gap-2">
@@ -261,14 +259,14 @@ export const PaymentForm = ({
               onChange={(e) =>
                 setFormData({ ...formData, paymentDate: e.target.value })
               }
-              className="flex-1 px-3 py-2 border border-[#c9cfd9] rounded-md"
+              className="flex-1 px-3 py-2 border border-border-strong rounded-md"
               disabled={isLoading}
             />
             {formData.paymentDate && (
               <button
                 type="button"
                 onClick={() => setFormData({ ...formData, paymentDate: '' })}
-                className="px-3 py-2 text-sm bg-[#f1f3f9] dark:bg-[#1e2130] hover:bg-[#e8ecf4] dark:bg-[#1e2130] border border-[#c9cfd9] rounded-md transition-colors"
+                className="px-3 py-2 text-sm bg-surface-inset hover:bg-neutral-100 border border-border-strong rounded-md transition-colors"
                 disabled={isLoading}
               >
                 Clear
@@ -280,7 +278,7 @@ export const PaymentForm = ({
 
       {/* Notes */}
       <div>
-        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
+        <label className="block text-sm font-medium text-text-secondary mb-2">
           Notes
         </label>
         <RichTextEditor
@@ -293,16 +291,16 @@ export const PaymentForm = ({
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-3 pt-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
+      <div className="flex items-center gap-3 pt-4 border-t border-border-default">
         {onContinueAddingChange && (
           <label className="flex items-center gap-2 cursor-pointer select-none mr-auto">
             <input
               type="checkbox"
               checked={continueAdding ?? false}
               onChange={(e) => onContinueAddingChange(e.target.checked)}
-              className="h-4 w-4 rounded border-[#c9cfd9] dark:border-[#3a3f54] text-[#5c7cfa] focus:ring-[#5c7cfa]"
+              className="h-4 w-4 rounded border-border-strong text-primary-500 focus:ring-primary-500"
             />
-            <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
+            <span className="text-sm text-text-secondary">
               Continue adding more
             </span>
           </label>
@@ -310,7 +308,7 @@ export const PaymentForm = ({
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 text-[#3d4463] dark:text-[#c4c8db] bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] flex items-center gap-2"
+          className="px-4 py-2 text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset flex items-center gap-2"
           disabled={isLoading}
         >
           <X className="h-4 w-4" />
@@ -318,7 +316,7 @@ export const PaymentForm = ({
         </button>
         <button
           type="submit"
-          className="px-4 py-2 text-white bg-[#5c7cfa] rounded-md hover:bg-[#4c6ef5] flex items-center gap-1.5 disabled:opacity-50"
+          className="px-4 py-2 text-white bg-primary-500 rounded-md hover:bg-primary-600 flex items-center gap-1.5 disabled:opacity-50"
           disabled={isLoading}
         >
           {payment ? (

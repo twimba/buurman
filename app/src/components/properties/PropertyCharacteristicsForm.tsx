@@ -34,13 +34,12 @@ import {
 
 // --- Shared small helpers ---
 
-const labelCls =
-  'block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1';
+const labelCls = 'block text-sm font-medium text-text-secondary mb-1';
 const inputCls =
-  'w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]';
+  'w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500';
 function humanize(val: string): string {
   return val
-    .replace(/_/g, ' ')
+    .replace(/_/g, '')
     .toLowerCase()
     .replace(/\b\w/g, (c) => c.toUpperCase())
     .replace(/\bAc\b/g, 'AC')
@@ -59,8 +58,8 @@ function arrayOptions(arr: readonly string[]): Record<string, string> {
 
 const Tooltip = ({ text }: { text: string }) => (
   <span className="relative group ml-1 inline-flex">
-    <Info className="h-3.5 w-3.5 text-[#9ca0b8] dark:text-[#5c6180] cursor-help" />
-    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 text-xs bg-[#1a1d2e] dark:bg-[#eef0f6] text-white dark:text-[#1a1d2e] rounded whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10">
+    <Info className="h-3.5 w-3.5 text-text-muted cursor-help" />
+    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 text-xs bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10">
       {text}
     </span>
   </span>
@@ -137,7 +136,7 @@ const NumberField = ({
         className={inputCls}
       />
       {suffix && (
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#9ca0b8] dark:text-[#5c6180]">
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-text-muted">
           {suffix}
         </span>
       )}
@@ -230,16 +229,16 @@ const ToggleField = ({ label, value, onChange }: ToggleFieldProps) => (
       aria-checked={!!value}
       onClick={() => onChange(!value)}
       className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-        value ? 'bg-[#5c7cfa]' : 'bg-[#c9cfd9] dark:bg-[#3a3f54]'
+        value ? 'bg-primary-500' : 'bg-neutral-200'
       }`}
     >
       <span
-        className={`inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform ${
+        className={`inline-block h-3.5 w-3.5 rounded-full bg-surface-card transition-transform ${
           value ? 'translate-x-4' : 'translate-x-0.5'
         }`}
       />
     </button>
-    <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">{label}</span>
+    <span className="text-sm text-text-secondary">{label}</span>
   </label>
 );
 
@@ -357,7 +356,7 @@ export const PropertyCharacteristicsForm = ({
 
   return (
     <div className="space-y-3">
-      <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
+      <h3 className="text-lg font-semibold text-text-primary mb-2">
         Property Characteristics
       </h3>
 
@@ -752,20 +751,20 @@ const OutdoorAreasSection = ({
           {areas.map((area) => (
             <div
               key={area.identifier}
-              className="flex items-center gap-3 bg-[#f8f9fc] dark:bg-[#1a1d28] rounded px-3 py-2"
+              className="flex items-center gap-3 bg-surface-page rounded px-3 py-2"
             >
-              <span className="text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] flex-1">
+              <span className="text-sm font-medium text-text-secondary flex-1">
                 {humanize(area.type)}
               </span>
               {area.areaValue && (
-                <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                <span className="text-sm text-text-secondary">
                   {area.areaValue} {area.areaUnit === 'sqft' ? 'ft²' : 'm²'}
                 </span>
               )}
               <button
                 type="button"
                 onClick={() => onDelete?.(area.identifier)}
-                className="text-red-500 hover:text-red-700 p-1"
+                className="text-error-text hover:opacity-80 p-1"
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
@@ -799,14 +798,14 @@ const OutdoorAreasSection = ({
             <button
               type="button"
               onClick={handleAdd}
-              className="bg-[#5c7cfa] text-white px-3 py-2 rounded text-sm hover:bg-[#4c6ef5] transition-colors"
+              className="bg-primary-500 text-white px-3 py-2 rounded text-sm hover:bg-primary-600 transition-colors"
             >
               Add
             </button>
             <button
               type="button"
               onClick={() => setShowAdd(false)}
-              className="border border-[#c9cfd9] dark:border-[#3a3f54] px-3 py-2 rounded text-sm hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+              className="border border-border-strong px-3 py-2 rounded text-sm hover:bg-surface-inset transition-colors"
             >
               Cancel
             </button>
@@ -816,7 +815,7 @@ const OutdoorAreasSection = ({
         <button
           type="button"
           onClick={() => setShowAdd(true)}
-          className="flex items-center gap-1.5 text-sm text-[#5c7cfa] hover:text-[#4c6ef5] pt-1"
+          className="flex items-center gap-1.5 text-sm text-primary-500 hover:text-primary-600 pt-1"
         >
           <Plus className="h-3.5 w-3.5" />
           Add outdoor area
@@ -1370,7 +1369,7 @@ const AmenitiesSection = ({
           .sort(([a], [b]) => a.localeCompare(b))
           .map(([category, amenities]) => (
             <div key={category}>
-              <h4 className="text-sm font-semibold text-[#6b7194] dark:text-[#8b90a8] mb-2 uppercase tracking-wide">
+              <h4 className="text-sm font-semibold text-text-secondary mb-2 uppercase tracking-wide">
                 {humanize(category)}
               </h4>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1">
@@ -1388,14 +1387,14 @@ const AmenitiesSection = ({
                           onChange={() =>
                             toggleAmenity(amenity.identifier, !checked)
                           }
-                          className="rounded border-[#c9cfd9] dark:border-[#3a3f54] text-[#5c7cfa] focus:ring-[#5c7cfa]"
+                          className="rounded border-border-strong text-primary-500 focus:ring-primary-500"
                         />
-                        <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
+                        <span className="text-sm text-text-secondary">
                           {amenity.name}
                         </span>
                       </label>
                       {checked && existing?.notes && (
-                        <p className="ml-6 text-xs text-[#9ca0b8] dark:text-[#5c6180] mb-1">
+                        <p className="ml-6 text-xs text-text-muted mb-1">
                           {existing.notes}
                         </p>
                       )}

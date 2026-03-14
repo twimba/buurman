@@ -5,42 +5,42 @@
   <g transform="translate(20, 20)">
     <rect width="170" height="120" rx="12" fill="white" filter="url(#shadow)"/>
     <!-- Property Image -->
-    <rect x="12" y="12" width="146" height="70" rx="6" fill="#e2e6f0"/>
-    <path d="M 60 40 L 80 25 L 100 40 L 100 65 L 60 65 Z" fill="#5c7cfa" opacity="0.3"/>
-    <rect x="72" y="48" width="16" height="17" fill="#5c7cfa" opacity="0.5"/>
+    <rect x="12" y="12" width="146" height="70" rx="6" fill="#e7e5e4"/>
+    <path d="M 60 40 L 80 25 L 100 40 L 100 65 L 60 65 Z" fill="#0284c7" opacity="0.3"/>
+    <rect x="72" y="48" width="16" height="17" fill="#0284c7" opacity="0.5"/>
     <!-- Property Info -->
     <rect x="12" y="90" width="100" height="8" rx="4" fill="#1a1d2e"/>
-    <rect x="12" y="103" width="70" height="6" rx="3" fill="#6b7194"/>
+    <rect x="12" y="103" width="70" height="6" rx="3" fill="#78716c"/>
   </g>
 
   <!-- Card 2 -->
   <g transform="translate(210, 20)">
     <rect width="170" height="120" rx="12" fill="white" filter="url(#shadow)"/>
-    <rect x="12" y="12" width="146" height="70" rx="6" fill="#e2e6f0"/>
-    <path d="M 60 40 L 80 25 L 100 40 L 100 65 L 60 65 Z" fill="#5c7cfa" opacity="0.3"/>
-    <rect x="72" y="48" width="16" height="17" fill="#5c7cfa" opacity="0.5"/>
+    <rect x="12" y="12" width="146" height="70" rx="6" fill="#e7e5e4"/>
+    <path d="M 60 40 L 80 25 L 100 40 L 100 65 L 60 65 Z" fill="#0284c7" opacity="0.3"/>
+    <rect x="72" y="48" width="16" height="17" fill="#0284c7" opacity="0.5"/>
     <rect x="12" y="90" width="100" height="8" rx="4" fill="#1a1d2e"/>
-    <rect x="12" y="103" width="70" height="6" rx="3" fill="#6b7194"/>
+    <rect x="12" y="103" width="70" height="6" rx="3" fill="#78716c"/>
   </g>
 
   <!-- Card 3 -->
   <g transform="translate(20, 160)">
     <rect width="170" height="120" rx="12" fill="white" filter="url(#shadow)"/>
-    <rect x="12" y="12" width="146" height="70" rx="6" fill="#e2e6f0"/>
+    <rect x="12" y="12" width="146" height="70" rx="6" fill="#e7e5e4"/>
     <path d="M 60 40 L 80 25 L 100 40 L 100 65 L 60 65 Z" fill="#10b981" opacity="0.3"/>
     <rect x="72" y="48" width="16" height="17" fill="#10b981" opacity="0.5"/>
     <rect x="12" y="90" width="100" height="8" rx="4" fill="#1a1d2e"/>
-    <rect x="12" y="103" width="70" height="6" rx="3" fill="#6b7194"/>
+    <rect x="12" y="103" width="70" height="6" rx="3" fill="#78716c"/>
   </g>
 
   <!-- Card 4 -->
   <g transform="translate(210, 160)">
     <rect width="170" height="120" rx="12" fill="white" filter="url(#shadow)"/>
-    <rect x="12" y="12" width="146" height="70" rx="6" fill="#e2e6f0"/>
+    <rect x="12" y="12" width="146" height="70" rx="6" fill="#e7e5e4"/>
     <path d="M 60 40 L 80 25 L 100 40 L 100 65 L 60 65 Z" fill="#748ffc" opacity="0.3"/>
     <rect x="72" y="48" width="16" height="17" fill="#748ffc" opacity="0.5"/>
     <rect x="12" y="90" width="100" height="8" rx="4" fill="#1a1d2e"/>
-    <rect x="12" y="103" width="70" height="6" rx="3" fill="#6b7194"/>
+    <rect x="12" y="103" width="70" height="6" rx="3" fill="#78716c"/>
   </g>
 
   <defs>

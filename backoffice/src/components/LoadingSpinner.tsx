@@ -1,4 +1,4 @@
-import { Loader2 } from "lucide-react";
+import { LoadingSpinner as SharedLoadingSpinner } from "@buurman/ui";
 
 interface LoadingSpinnerProps {
   message?: string;
@@ -6,13 +6,6 @@ interface LoadingSpinnerProps {
 
 export const LoadingSpinner = ({
   message = "Loading...",
-}: LoadingSpinnerProps) => {
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen gap-3">
-      <Loader2 className="h-8 w-8 animate-spin text-[#5c7cfa]" />
-      <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-        {message}
-      </span>
-    </div>
-  );
-};
+}: LoadingSpinnerProps) => (
+  <SharedLoadingSpinner message={message} fullScreen />
+);

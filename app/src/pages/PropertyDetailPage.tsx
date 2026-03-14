@@ -55,7 +55,7 @@ import { DocumentList } from '@/components/properties/DocumentList';
 import { PhotoGallery } from '@/components/properties/PhotoGallery';
 import { InteractiveMap } from '@/components/common/InteractiveMap';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
-import { Button, PageHeader } from '@/components/ui';
+import { Button, PageHeader } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import client from '@/api/client';
 import {
@@ -86,22 +86,14 @@ import { formatDistanceToNow } from 'date-fns';
 import { useFormatDate } from '@/hooks/useFormatDate';
 
 const statusColors: Record<string, string> = {
-  VACANT:
-    'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300',
-  OCCUPIED:
-    'bg-primary-100 dark:bg-primary-500/10 text-blue-800 dark:text-blue-300',
-  MAINTENANCE:
-    'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300',
-  UNAVAILABLE:
-    'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#c4c8db]',
-  UNDER_RENOVATION:
-    'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300',
-  FALLOW:
-    'bg-stone-100 dark:bg-stone-900/30 text-stone-800 dark:text-stone-300',
-  LISTED:
-    'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300',
-  SELF_OCCUPIED:
-    'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300',
+  VACANT: 'bg-success-bg text-success-text',
+  OCCUPIED: 'bg-info-bg text-info-text',
+  MAINTENANCE: 'bg-warning-bg text-warning-text',
+  UNAVAILABLE: 'bg-surface-inset text-text-primary',
+  UNDER_RENOVATION: 'bg-warning-bg text-warning-text',
+  FALLOW: 'bg-surface-inset text-text-primary',
+  LISTED: 'bg-info-bg text-info-text',
+  SELF_OCCUPIED: 'bg-info-bg text-info-text',
 };
 
 export const PropertyDetailPage = () => {
@@ -478,7 +470,7 @@ export const PropertyDetailPage = () => {
       return '';
     }
     return value
-      .replace(/_/g, ' ')
+      .replace(/_/g, '')
       .replace(/\b\w/g, (c) => c.toUpperCase())
       .replace(/\bAc\b/g, 'AC')
       .replace(/\bCo\b/g, 'CO')
@@ -583,8 +575,8 @@ export const PropertyDetailPage = () => {
               onClick={() => setActiveTab('info')}
               className={`px-4 py-2 border-b-2 transition-colors ${
                 activeTab === 'info'
-                  ? 'border-[#5c7cfa] text-[#5c7cfa] font-semibold'
-                  : 'border-transparent text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
+                  ? 'border-primary-500 text-primary-500 font-semibold'
+                  : 'border-transparent text-text-secondary hover:text-text-primary'
               }`}
             >
               Info
@@ -594,8 +586,8 @@ export const PropertyDetailPage = () => {
                 onClick={() => setActiveTab('dashboard')}
                 className={`px-4 py-2 border-b-2 transition-colors flex items-center gap-2 ${
                   activeTab === 'dashboard'
-                    ? 'border-[#5c7cfa] text-[#5c7cfa] font-semibold'
-                    : 'border-transparent text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
+                    ? 'border-primary-500 text-primary-500 font-semibold'
+                    : 'border-transparent text-text-secondary hover:text-text-primary'
                 }`}
               >
                 <BarChart3 className="h-4 w-4" />
@@ -606,8 +598,8 @@ export const PropertyDetailPage = () => {
               onClick={() => setActiveTab('financials')}
               className={`px-4 py-2 border-b-2 transition-colors flex items-center gap-2 ${
                 activeTab === 'financials'
-                  ? 'border-[#5c7cfa] text-[#5c7cfa] font-semibold'
-                  : 'border-transparent text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
+                  ? 'border-primary-500 text-primary-500 font-semibold'
+                  : 'border-transparent text-text-secondary hover:text-text-primary'
               }`}
             >
               <Wallet className="h-4 w-4" />
@@ -617,8 +609,8 @@ export const PropertyDetailPage = () => {
               onClick={() => setActiveTab('photos')}
               className={`px-4 py-2 border-b-2 transition-colors flex items-center gap-2 ${
                 activeTab === 'photos'
-                  ? 'border-[#5c7cfa] text-[#5c7cfa] font-semibold'
-                  : 'border-transparent text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
+                  ? 'border-primary-500 text-primary-500 font-semibold'
+                  : 'border-transparent text-text-secondary hover:text-text-primary'
               }`}
             >
               <Image className="h-4 w-4" />
@@ -628,8 +620,8 @@ export const PropertyDetailPage = () => {
               onClick={() => setActiveTab('documents')}
               className={`px-4 py-2 border-b-2 transition-colors ${
                 activeTab === 'documents'
-                  ? 'border-[#5c7cfa] text-[#5c7cfa] font-semibold'
-                  : 'border-transparent text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
+                  ? 'border-primary-500 text-primary-500 font-semibold'
+                  : 'border-transparent text-text-secondary hover:text-text-primary'
               }`}
             >
               Documents {documents.length > 0 && `(${documents.length})`}
@@ -638,8 +630,8 @@ export const PropertyDetailPage = () => {
               onClick={() => setActiveTab('contracts')}
               className={`px-4 py-2 border-b-2 transition-colors flex items-center gap-2 ${
                 activeTab === 'contracts'
-                  ? 'border-[#5c7cfa] text-[#5c7cfa] font-semibold'
-                  : 'border-transparent text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
+                  ? 'border-primary-500 text-primary-500 font-semibold'
+                  : 'border-transparent text-text-secondary hover:text-text-primary'
               }`}
             >
               <FileText className="h-4 w-4" />
@@ -649,8 +641,8 @@ export const PropertyDetailPage = () => {
               onClick={() => setActiveTab('expenses')}
               className={`px-4 py-2 border-b-2 transition-colors flex items-center gap-2 ${
                 activeTab === 'expenses'
-                  ? 'border-[#5c7cfa] text-[#5c7cfa] font-semibold'
-                  : 'border-transparent text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
+                  ? 'border-primary-500 text-primary-500 font-semibold'
+                  : 'border-transparent text-text-secondary hover:text-text-primary'
               }`}
             >
               <Receipt className="h-4 w-4" />
@@ -660,8 +652,8 @@ export const PropertyDetailPage = () => {
               onClick={() => setActiveTab('audit')}
               className={`px-4 py-2 border-b-2 transition-colors flex items-center gap-2 ${
                 activeTab === 'audit'
-                  ? 'border-[#5c7cfa] text-[#5c7cfa] font-semibold'
-                  : 'border-transparent text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:text-[#eef0f6] dark:hover:text-[#c4c8db]'
+                  ? 'border-primary-500 text-primary-500 font-semibold'
+                  : 'border-transparent text-text-secondary hover:text-text-primary'
               }`}
             >
               <History className="h-4 w-4" />
@@ -674,12 +666,12 @@ export const PropertyDetailPage = () => {
         {activeTab === 'info' && (
           <div className="space-y-6">
             {/* Property Lifecycle Timeline */}
-            <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                <span className="text-sm font-semibold text-text-primary">
                   Property Timeline
                 </span>
-                <div className="flex items-center gap-4 text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                <div className="flex items-center gap-4 text-xs text-text-secondary">
                   <span className="flex items-center gap-1.5">
                     <span
                       className="inline-block w-3 h-2.5 rounded-full"
@@ -728,32 +720,32 @@ export const PropertyDetailPage = () => {
                 }
               />
             )}
-            <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6 space-y-6">
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 space-y-6">
               {/* Status & Category — elegant inline display */}
-              <div className="flex items-center gap-4 text-sm pb-2 border-b border-[#f0f2f8] dark:border-[#1e2130]">
+              <div className="flex items-center gap-4 text-sm pb-2 border-b border-border-subtle">
                 <div className="flex items-center gap-2">
                   <span
                     className={`inline-block w-2.5 h-2.5 rounded-full flex-shrink-0 ${
                       {
-                        VACANT: 'bg-green-400',
-                        OCCUPIED: 'bg-blue-400',
-                        MAINTENANCE: 'bg-yellow-400',
-                        UNAVAILABLE: 'bg-gray-400',
-                        UNDER_RENOVATION: 'bg-orange-400',
-                        FALLOW: 'bg-stone-400',
-                        LISTED: 'bg-purple-400',
-                        SELF_OCCUPIED: 'bg-indigo-400',
+                        VACANT: 'bg-success-text',
+                        OCCUPIED: 'bg-info-text',
+                        MAINTENANCE: 'bg-warning-text',
+                        UNAVAILABLE: 'bg-text-disabled',
+                        UNDER_RENOVATION: 'bg-warning-text',
+                        FALLOW: 'bg-text-disabled',
+                        LISTED: 'bg-info-text',
+                        SELF_OCCUPIED: 'bg-info-text',
                       }[property.status] ?? 'bg-gray-400'
                     }`}
                   />
-                  <span className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                  <span className="font-semibold text-text-primary">
                     {PROPERTY_STATUS_LABELS[
                       property.status as PropertyStatus
                     ] ?? property.status}
                   </span>
                 </div>
-                <span className="text-[#d1d5db] dark:text-[#374151]">·</span>
-                <span className="inline-flex items-center gap-1 text-[#6b7194] dark:text-[#8b90a8]">
+                <span className="text-text-disabled">·</span>
+                <span className="inline-flex items-center gap-1 text-text-secondary">
                   <PropertyTypeIcon
                     category={property.propertyCategory}
                     size={13}
@@ -762,8 +754,8 @@ export const PropertyDetailPage = () => {
                     property.propertyCategory as PropertyCategory
                   ] ?? property.propertyCategory}
                 </span>
-                <span className="text-[#d1d5db] dark:text-[#374151]">·</span>
-                <span className="inline-flex items-center gap-1 text-[#6b7194] dark:text-[#8b90a8]">
+                <span className="text-text-disabled">·</span>
+                <span className="inline-flex items-center gap-1 text-text-secondary">
                   <PropertyTypeIcon type={property.propertyType} size={13} />
                   {PROPERTY_TYPE_LABELS[property.propertyType] ??
                     property.propertyType}
@@ -774,11 +766,11 @@ export const PropertyDetailPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {property.residentialDetails?.bedrooms != null && (
                   <div>
-                    <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                    <div className="flex items-center gap-2 text-text-secondary mb-1">
                       <Bed className="h-5 w-5" />
                       <span className="text-sm font-medium">Bedrooms</span>
                     </div>
-                    <p className="text-2xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <p className="text-2xl font-semibold text-text-primary">
                       {property.residentialDetails.bedrooms}
                     </p>
                   </div>
@@ -786,11 +778,11 @@ export const PropertyDetailPage = () => {
 
                 {property.residentialDetails?.bathrooms != null && (
                   <div>
-                    <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                    <div className="flex items-center gap-2 text-text-secondary mb-1">
                       <Bath className="h-5 w-5" />
                       <span className="text-sm font-medium">Bathrooms</span>
                     </div>
-                    <p className="text-2xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <p className="text-2xl font-semibold text-text-primary">
                       {property.residentialDetails.bathrooms}
                     </p>
                   </div>
@@ -798,11 +790,11 @@ export const PropertyDetailPage = () => {
 
                 {property.areaValue != null && (
                   <div>
-                    <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                    <div className="flex items-center gap-2 text-text-secondary mb-1">
                       <Ruler className="h-5 w-5" />
                       <span className="text-sm font-medium">Area</span>
                     </div>
-                    <p className="text-2xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <p className="text-2xl font-semibold text-text-primary">
                       {property.areaValue}
                       {property.areaUnit === 'sqft' ? 'ft²' : 'm²'}
                     </p>
@@ -810,52 +802,48 @@ export const PropertyDetailPage = () => {
                 )}
 
                 <div>
-                  <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                  <div className="flex items-center gap-2 text-text-secondary mb-1">
                     <PropertyTypeIcon type={property.propertyType} size={20} />
                     <span className="text-sm font-medium">Type</span>
                   </div>
-                  <p className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                  <p className="text-lg font-semibold text-text-primary">
                     {PROPERTY_TYPE_LABELS[property.propertyType] ??
                       property.propertyType}
                   </p>
                 </div>
 
                 <div>
-                  <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                  <div className="flex items-center gap-2 text-text-secondary mb-1">
                     <MapPin className="h-5 w-5" />
                     <span className="text-sm font-medium">Street</span>
                   </div>
-                  <p className="text-lg text-[#1a1d2e] dark:text-[#eef0f6]">
-                    {property.street}
-                  </p>
+                  <p className="text-lg text-text-primary">{property.street}</p>
                 </div>
 
                 <div>
-                  <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                  <div className="flex items-center gap-2 text-text-secondary mb-1">
                     <MapPin className="h-5 w-5" />
                     <span className="text-sm font-medium">City</span>
                   </div>
-                  <p className="text-lg text-[#1a1d2e] dark:text-[#eef0f6]">
-                    {property.city}
-                  </p>
+                  <p className="text-lg text-text-primary">{property.city}</p>
                 </div>
 
                 <div>
-                  <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                  <div className="flex items-center gap-2 text-text-secondary mb-1">
                     <MapPin className="h-5 w-5" />
                     <span className="text-sm font-medium">Postal Code</span>
                   </div>
-                  <p className="text-lg text-[#1a1d2e] dark:text-[#eef0f6]">
+                  <p className="text-lg text-text-primary">
                     {property.postalCode}
                   </p>
                 </div>
 
                 <div>
-                  <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] mb-1">
+                  <div className="flex items-center gap-2 text-text-secondary mb-1">
                     <MapPin className="h-5 w-5" />
                     <span className="text-sm font-medium">Country</span>
                   </div>
-                  <p className="text-lg text-[#1a1d2e] dark:text-[#eef0f6]">
+                  <p className="text-lg text-text-primary">
                     {property.countryCode}
                   </p>
                 </div>
@@ -863,7 +851,7 @@ export const PropertyDetailPage = () => {
 
               {/* Map */}
               <div className="pt-6 border-t">
-                <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-3">
+                <h3 className="text-sm font-semibold text-text-secondary mb-3">
                   Location
                 </h3>
                 <InteractiveMap
@@ -887,97 +875,97 @@ export const PropertyDetailPage = () => {
               property.windowType ||
               property.numberOfFloors != null ||
               property.structuralNotes) && (
-              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-                <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide mb-4">
+              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+                <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
                   Construction &amp; Structure
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {property.yearBuilt != null && (
                     <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         Year Built
                       </div>
-                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                      <div className="text-sm font-medium text-text-primary mt-1">
                         {property.yearBuilt}
                       </div>
                     </div>
                   )}
                   {property.yearLastRenovated != null && (
                     <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         Last Renovated
                       </div>
-                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                      <div className="text-sm font-medium text-text-primary mt-1">
                         {property.yearLastRenovated}
                       </div>
                     </div>
                   )}
                   {property.constructionType && (
                     <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         Construction
                       </div>
-                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                      <div className="text-sm font-medium text-text-primary mt-1">
                         {formatEnumValue(property.constructionType)}
                       </div>
                     </div>
                   )}
                   {property.foundationType && (
                     <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         Foundation
                       </div>
-                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                      <div className="text-sm font-medium text-text-primary mt-1">
                         {formatEnumValue(property.foundationType)}
                       </div>
                     </div>
                   )}
                   {property.roofType && (
                     <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         Roof
                       </div>
-                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                      <div className="text-sm font-medium text-text-primary mt-1">
                         {formatEnumValue(property.roofType)}
                       </div>
                     </div>
                   )}
                   {property.wallConstruction && (
                     <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         Wall Construction
                       </div>
-                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                      <div className="text-sm font-medium text-text-primary mt-1">
                         {formatEnumValue(property.wallConstruction)}
                       </div>
                     </div>
                   )}
                   {property.flooringType && (
                     <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         Flooring
                       </div>
-                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                      <div className="text-sm font-medium text-text-primary mt-1">
                         {formatEnumValue(property.flooringType)}
                       </div>
                     </div>
                   )}
                   {property.windowType && (
                     <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         Windows
                       </div>
-                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                      <div className="text-sm font-medium text-text-primary mt-1">
                         {formatEnumValue(property.windowType)}
                       </div>
                     </div>
                   )}
                   {property.numberOfFloors != null && (
                     <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         Floors
                       </div>
-                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                      <div className="text-sm font-medium text-text-primary mt-1">
                         {property.numberOfFloors}
                       </div>
                     </div>
@@ -985,11 +973,11 @@ export const PropertyDetailPage = () => {
                 </div>
                 {property.structuralNotes && (
                   <div className="mt-4">
-                    <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                    <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                       Structural Notes
                     </div>
                     <div
-                      className="text-sm text-[#1a1d2e] dark:text-[#eef0f6] mt-1 prose prose-sm dark:prose-invert max-w-none"
+                      className="text-sm text-text-primary mt-1 prose prose-sm dark:prose-invert max-w-none"
                       dangerouslySetInnerHTML={{
                         __html: DOMPurify.sanitize(property.structuralNotes),
                       }}
@@ -1006,14 +994,14 @@ export const PropertyDetailPage = () => {
               property.coolingType ||
               property.hotWaterSystem ||
               property.insulationNotes) && (
-              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-                <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide mb-4">
+              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+                <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
                   Energy &amp; Climate
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {property.energyEfficiencyRating && (
                     <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         Energy Rating
                       </div>
                       <div className="mt-1">
@@ -1041,40 +1029,40 @@ export const PropertyDetailPage = () => {
                   )}
                   {property.energyCertificateExpiryDate && (
                     <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         Certificate Expiry
                       </div>
-                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                      <div className="text-sm font-medium text-text-primary mt-1">
                         {formatDate(property.energyCertificateExpiryDate)}
                       </div>
                     </div>
                   )}
                   {property.heatingType && (
                     <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         Heating
                       </div>
-                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                      <div className="text-sm font-medium text-text-primary mt-1">
                         {formatEnumValue(property.heatingType)}
                       </div>
                     </div>
                   )}
                   {property.coolingType && (
                     <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         Cooling
                       </div>
-                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                      <div className="text-sm font-medium text-text-primary mt-1">
                         {formatEnumValue(property.coolingType)}
                       </div>
                     </div>
                   )}
                   {property.hotWaterSystem && (
                     <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         Hot Water
                       </div>
-                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                      <div className="text-sm font-medium text-text-primary mt-1">
                         {formatEnumValue(property.hotWaterSystem)}
                       </div>
                     </div>
@@ -1082,11 +1070,11 @@ export const PropertyDetailPage = () => {
                 </div>
                 {property.insulationNotes && (
                   <div className="mt-4">
-                    <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                    <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                       Insulation Notes
                     </div>
                     <div
-                      className="text-sm text-[#1a1d2e] dark:text-[#eef0f6] mt-1 prose prose-sm dark:prose-invert max-w-none"
+                      className="text-sm text-text-primary mt-1 prose prose-sm dark:prose-invert max-w-none"
                       dangerouslySetInnerHTML={{
                         __html: DOMPurify.sanitize(property.insulationNotes),
                       }}
@@ -1104,27 +1092,27 @@ export const PropertyDetailPage = () => {
               property.internetConnectionType ||
               property.internetMaxSpeedValue != null ||
               property.internetStatus) && (
-              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-                <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide mb-4">
+              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+                <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
                   Utilities &amp; Connections
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {property.electricityConnectionType && (
                     <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         Electricity
                       </div>
-                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                      <div className="text-sm font-medium text-text-primary mt-1">
                         {formatEnumValue(property.electricityConnectionType)}
                       </div>
                     </div>
                   )}
                   {property.electricityCapacityValue != null && (
                     <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         Capacity
                       </div>
-                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                      <div className="text-sm font-medium text-text-primary mt-1">
                         {property.electricityCapacityValue}{' '}
                         {(
                           property.electricityCapacityUnit ?? 'A'
@@ -1134,48 +1122,48 @@ export const PropertyDetailPage = () => {
                   )}
                   {property.waterConnectionType && (
                     <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         Water
                       </div>
-                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                      <div className="text-sm font-medium text-text-primary mt-1">
                         {formatEnumValue(property.waterConnectionType)}
                       </div>
                     </div>
                   )}
                   <div>
-                    <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                    <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                       Gas Connection
                     </div>
-                    <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                    <div className="text-sm font-medium text-text-primary mt-1">
                       {property.hasGasConnection ? 'Yes' : 'No'}
                     </div>
                   </div>
                   {property.sewageType && (
                     <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         Sewage
                       </div>
-                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                      <div className="text-sm font-medium text-text-primary mt-1">
                         {formatEnumValue(property.sewageType)}
                       </div>
                     </div>
                   )}
                   {property.internetConnectionType && (
                     <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         Internet
                       </div>
-                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                      <div className="text-sm font-medium text-text-primary mt-1">
                         {formatEnumValue(property.internetConnectionType)}
                       </div>
                     </div>
                   )}
                   {property.internetMaxSpeedValue != null && (
                     <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         Internet Speed
                       </div>
-                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                      <div className="text-sm font-medium text-text-primary mt-1">
                         {property.internetMaxSpeedValue}{' '}
                         {(
                           property.internetMaxSpeedUnit ?? 'Mbps'
@@ -1185,10 +1173,10 @@ export const PropertyDetailPage = () => {
                   )}
                   {property.internetStatus && (
                     <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         Internet Status
                       </div>
-                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                      <div className="text-sm font-medium text-text-primary mt-1">
                         {formatEnumValue(property.internetStatus)}
                       </div>
                     </div>
@@ -1199,27 +1187,27 @@ export const PropertyDetailPage = () => {
 
             {/* Parking */}
             {(property.parkingSpaces != null || property.parkingType) && (
-              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-                <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide mb-4">
+              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+                <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
                   Parking
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {property.parkingSpaces != null && (
                     <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         Parking Spaces
                       </div>
-                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                      <div className="text-sm font-medium text-text-primary mt-1">
                         {property.parkingSpaces}
                       </div>
                     </div>
                   )}
                   {property.parkingType && (
                     <div>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                         Parking Type
                       </div>
-                      <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] mt-1">
+                      <div className="text-sm font-medium text-text-primary mt-1">
                         {formatEnumValue(property.parkingType)}
                       </div>
                     </div>
@@ -1230,17 +1218,17 @@ export const PropertyDetailPage = () => {
 
             {/* Outdoor Areas */}
             {property.outdoorAreas && property.outdoorAreas.length > 0 && (
-              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-                <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide mb-4">
+              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+                <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
                   Outdoor Areas
                 </h3>
                 <div className="flex flex-wrap gap-x-6 gap-y-2">
                   {property.outdoorAreas.map((area) => (
                     <span
                       key={area.identifier}
-                      className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
+                      className="inline-flex items-center gap-1.5 text-sm text-text-primary"
                     >
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                         {'\u2713'}
                       </span>
                       {formatEnumValue(area.type)}
@@ -1255,8 +1243,8 @@ export const PropertyDetailPage = () => {
 
             {/* Amenities */}
             {property.amenities && property.amenities.length > 0 && (
-              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-                <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide mb-4">
+              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+                <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
                   Amenities
                 </h3>
                 <div className="space-y-4">
@@ -1273,16 +1261,16 @@ export const PropertyDetailPage = () => {
                     }, {})
                   ).map(([category, items]) => (
                     <div key={category}>
-                      <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide mb-2">
+                      <div className="text-xs font-medium text-text-secondary uppercase tracking-wide mb-2">
                         {formatEnumValue(category)}
                       </div>
                       <div className="flex flex-wrap gap-x-6 gap-y-2">
                         {(items ?? []).map((amenity) => (
                           <span
                             key={amenity.amenityIdentifier}
-                            className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]"
+                            className="inline-flex items-center gap-1.5 text-sm text-text-primary"
                           >
-                            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                               {'\u2713'}
                             </span>
                             {amenity.amenityName}
@@ -1304,62 +1292,62 @@ export const PropertyDetailPage = () => {
               property.hasSecurityCameras ||
               property.hasSecureEntry ||
               property.safetyNotes) && (
-              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-                <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide mb-4">
+              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+                <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
                   Safety &amp; Security
                 </h3>
                 <div className="flex flex-wrap gap-x-6 gap-y-2">
                   {property.hasSmokeDetectors && (
-                    <span className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                    <span className="inline-flex items-center gap-1.5 text-sm text-text-primary">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                         {'\u2713'}
                       </span>
                       Smoke Detectors
                     </span>
                   )}
                   {property.hasCoDetectors && (
-                    <span className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                    <span className="inline-flex items-center gap-1.5 text-sm text-text-primary">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                         {'\u2713'}
                       </span>
                       CO Detectors
                     </span>
                   )}
                   {property.hasFireExtinguisher && (
-                    <span className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                    <span className="inline-flex items-center gap-1.5 text-sm text-text-primary">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                         {'\u2713'}
                       </span>
                       Fire Extinguisher
                     </span>
                   )}
                   {property.hasSprinklerSystem && (
-                    <span className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                    <span className="inline-flex items-center gap-1.5 text-sm text-text-primary">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                         {'\u2713'}
                       </span>
                       Sprinkler System
                     </span>
                   )}
                   {property.hasAlarmSystem && (
-                    <span className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                    <span className="inline-flex items-center gap-1.5 text-sm text-text-primary">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                         {'\u2713'}
                       </span>
                       Alarm System
                     </span>
                   )}
                   {property.hasSecurityCameras && (
-                    <span className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                    <span className="inline-flex items-center gap-1.5 text-sm text-text-primary">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                         {'\u2713'}
                       </span>
                       Security Cameras
                     </span>
                   )}
                   {property.hasSecureEntry && (
-                    <span className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                    <span className="inline-flex items-center gap-1.5 text-sm text-text-primary">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                         {'\u2713'}
                       </span>
                       Secure Entry
@@ -1368,11 +1356,11 @@ export const PropertyDetailPage = () => {
                 </div>
                 {property.safetyNotes && (
                   <div className="mt-4">
-                    <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                    <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                       Safety Notes
                     </div>
                     <div
-                      className="text-sm text-[#1a1d2e] dark:text-[#eef0f6] mt-1 prose prose-sm dark:prose-invert max-w-none"
+                      className="text-sm text-text-primary mt-1 prose prose-sm dark:prose-invert max-w-none"
                       dangerouslySetInnerHTML={{
                         __html: DOMPurify.sanitize(property.safetyNotes),
                       }}
@@ -1388,38 +1376,38 @@ export const PropertyDetailPage = () => {
               property.hasStepFreeEntrance ||
               property.hasAdaptedBathroom ||
               property.accessibilityNotes) && (
-              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-                <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide mb-4">
+              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+                <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
                   Accessibility
                 </h3>
                 <div className="flex flex-wrap gap-x-6 gap-y-2">
                   {property.isWheelchairAccessible && (
-                    <span className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                    <span className="inline-flex items-center gap-1.5 text-sm text-text-primary">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                         {'\u2713'}
                       </span>
                       Wheelchair Accessible
                     </span>
                   )}
                   {property.hasElevator && (
-                    <span className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                    <span className="inline-flex items-center gap-1.5 text-sm text-text-primary">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                         {'\u2713'}
                       </span>
                       Elevator
                     </span>
                   )}
                   {property.hasStepFreeEntrance && (
-                    <span className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                    <span className="inline-flex items-center gap-1.5 text-sm text-text-primary">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                         {'\u2713'}
                       </span>
                       Step-Free Entrance
                     </span>
                   )}
                   {property.hasAdaptedBathroom && (
-                    <span className="inline-flex items-center gap-1.5 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs font-bold">
+                    <span className="inline-flex items-center gap-1.5 text-sm text-text-primary">
+                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                         {'\u2713'}
                       </span>
                       Adapted Bathroom
@@ -1428,11 +1416,11 @@ export const PropertyDetailPage = () => {
                 </div>
                 {property.accessibilityNotes && (
                   <div className="mt-4">
-                    <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                    <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                       Accessibility Notes
                     </div>
                     <div
-                      className="text-sm text-[#1a1d2e] dark:text-[#eef0f6] mt-1 prose prose-sm dark:prose-invert max-w-none"
+                      className="text-sm text-text-primary mt-1 prose prose-sm dark:prose-invert max-w-none"
                       dangerouslySetInnerHTML={{
                         __html: DOMPurify.sanitize(property.accessibilityNotes),
                       }}
@@ -1446,23 +1434,23 @@ export const PropertyDetailPage = () => {
 
             {/* WWS Points Calculator — NL properties only */}
             {isNlProperty && (
-              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide">
+                  <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide">
                     WWS Points
                   </h3>
                   <div className="flex items-center gap-3">
                     {latestWws?.identifier && (
                       <button
                         onClick={() => setShowDeleteWwsConfirm(true)}
-                        className="inline-flex items-center gap-1.5 text-xs font-medium text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+                        className="inline-flex items-center gap-1.5 text-xs font-medium text-error-text hover:text-error-text/80 transition-colors"
                       >
                         Delete
                       </button>
                     )}
                     <button
                       onClick={() => setShowWwsModal(true)}
-                      className="inline-flex items-center gap-1.5 text-xs font-medium text-[#5c7cfa] hover:text-[#4263d8] transition-colors"
+                      className="inline-flex items-center gap-1.5 text-xs font-medium text-primary-500 hover:text-primary-600 transition-colors"
                     >
                       <Calculator className="h-3.5 w-3.5" />
                       {latestWws ? 'Recalculate' : 'Calculate'}
@@ -1472,19 +1460,19 @@ export const PropertyDetailPage = () => {
                 {latestWws ? (
                   <div className="space-y-4">
                     <div className="flex items-baseline justify-between">
-                      <div className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <div className="text-2xl font-bold text-text-primary">
                         {latestWws.totalPoints}
-                        <span className="text-sm font-normal text-[#6b7194] dark:text-[#8b90a8] ml-1.5">
+                        <span className="text-sm font-normal text-text-secondary ml-1.5">
                           points
                         </span>
                       </div>
                       <span
                         className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
                           latestWws.sectorClassification === 'REGULATED'
-                            ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                            ? 'bg-success-bg text-success-text'
                             : latestWws.sectorClassification === 'MID_SEGMENT'
-                              ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300'
-                              : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
+                              ? 'bg-warning-bg text-warning-text'
+                              : 'bg-error-bg text-error-text'
                         }`}
                       >
                         {latestWws.sectorClassification === 'REGULATED' &&
@@ -1498,19 +1486,19 @@ export const PropertyDetailPage = () => {
                     <div className="grid grid-cols-2 gap-4">
                       {latestWws.maxRentIndication != null && (
                         <div>
-                          <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                          <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                             Max Rent
                           </div>
-                          <div className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mt-0.5">
+                          <div className="text-sm font-semibold text-text-primary mt-0.5">
                             EUR {latestWws.maxRentIndication.toFixed(2)}
                           </div>
                         </div>
                       )}
                       <div>
-                        <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                        <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                           Calculated
                         </div>
-                        <div className="text-sm text-[#1a1d2e] dark:text-[#eef0f6] mt-0.5">
+                        <div className="text-sm text-text-primary mt-0.5">
                           {new Date(
                             latestWws.calculationDate
                           ).toLocaleDateString()}
@@ -1521,7 +1509,7 @@ export const PropertyDetailPage = () => {
                     {/* History toggle */}
                     <button
                       onClick={() => setShowWwsHistory(!showWwsHistory)}
-                      className="flex items-center gap-1.5 text-xs text-[#6b7194] dark:text-[#8b90a8] hover:text-[#3d4463] dark:hover:text-[#c4c8db] transition-colors mt-1"
+                      className="flex items-center gap-1.5 text-xs text-text-secondary hover:text-text-secondary transition-colors mt-1"
                     >
                       <History className="h-3 w-3" />
                       History
@@ -1537,20 +1525,20 @@ export const PropertyDetailPage = () => {
                           .map((calc) => (
                             <div
                               key={calc.identifier}
-                              className="flex items-center justify-between px-3 py-2 rounded-lg bg-[#f7f8fb] dark:bg-[#1a1c28] border border-[#e2e6f0] dark:border-[#2a2e3f]"
+                              className="flex items-center justify-between px-3 py-2 rounded-lg bg-surface-inset dark:bg-surface-card border border-border-default"
                             >
                               <div className="flex items-baseline gap-2">
-                                <span className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                                <span className="text-sm font-semibold text-text-primary">
                                   {calc.totalPoints} pts
                                 </span>
                                 <span
                                   className={`text-xs font-medium ${
                                     calc.sectorClassification === 'REGULATED'
-                                      ? 'text-green-700 dark:text-green-400'
+                                      ? 'text-success-text'
                                       : calc.sectorClassification ===
                                           'MID_SEGMENT'
-                                        ? 'text-amber-700 dark:text-amber-400'
-                                        : 'text-red-700 dark:text-red-400'
+                                        ? 'text-warning-text'
+                                        : 'text-error-text'
                                   }`}
                                 >
                                   {calc.sectorClassification === 'REGULATED' &&
@@ -1562,7 +1550,7 @@ export const PropertyDetailPage = () => {
                                 </span>
                               </div>
                               <div className="flex items-center gap-2">
-                                <span className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                                <span className="text-xs text-text-secondary">
                                   v{calc.systemVersion} &middot;{' '}
                                   {new Date(
                                     calc.calculationDate
@@ -1575,7 +1563,7 @@ export const PropertyDetailPage = () => {
                                         calc.identifier ?? null
                                       )
                                     }
-                                    className="text-[#6b7194] hover:text-red-500 dark:text-[#8b90a8] dark:hover:text-red-400 transition-colors"
+                                    className="text-text-secondary hover:text-error-text transition-colors"
                                   >
                                     <X className="h-3.5 w-3.5" />
                                   </button>
@@ -1586,7 +1574,7 @@ export const PropertyDetailPage = () => {
                         {wwsHistory.filter(
                           (c) => c.identifier !== latestWws?.identifier
                         ).length === 0 && (
-                          <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                          <p className="text-xs text-text-secondary">
                             No previous calculations.
                           </p>
                         )}
@@ -1594,20 +1582,20 @@ export const PropertyDetailPage = () => {
                     )}
 
                     {showWwsHistory && wwsHistory.length <= 1 && (
-                      <p className="mt-3 text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                      <p className="mt-3 text-xs text-text-secondary">
                         No previous calculations.
                       </p>
                     )}
                   </div>
                 ) : (
                   <div className="text-center py-4">
-                    <div className="w-10 h-10 rounded-lg bg-[#f1f3f9] dark:bg-[#1e2130] flex items-center justify-center mx-auto mb-3">
-                      <Calculator className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
+                    <div className="w-10 h-10 rounded-lg bg-surface-inset flex items-center justify-center mx-auto mb-3">
+                      <Calculator className="h-5 w-5 text-text-secondary " />
                     </div>
-                    <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                    <p className="text-sm text-text-secondary">
                       No calculation yet
                     </p>
-                    <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                    <p className="text-xs text-text-secondary mt-1">
                       Calculate the WWS points to determine the maximum
                       regulated rent for this property.
                     </p>
@@ -1617,36 +1605,32 @@ export const PropertyDetailPage = () => {
             )}
 
             {/* Metadata */}
-            <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <button
                 onClick={() => setIsMetadataExpanded(!isMetadataExpanded)}
                 className="w-full flex items-center justify-between text-left group"
               >
-                <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                <h2 className="text-lg font-semibold text-text-primary">
                   Metadata
                 </h2>
                 {isMetadataExpanded ? (
-                  <ChevronUp className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8] group-hover:text-[#3d4463] dark:group-hover:text-[#c4c8db]" />
+                  <ChevronUp className="h-5 w-5 text-text-secondary group-hover:text-text-secondary " />
                 ) : (
-                  <ChevronDown className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8] group-hover:text-[#3d4463] dark:group-hover:text-[#c4c8db]" />
+                  <ChevronDown className="h-5 w-5 text-text-secondary group-hover:text-text-secondary " />
                 )}
               </button>
               {isMetadataExpanded && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-4">
                   <div>
-                    <span className="text-[#6b7194] dark:text-[#8b90a8]">
-                      Created:
-                    </span>{' '}
-                    <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <span className="text-text-secondary">Created:</span>{' '}
+                    <span className="text-text-primary">
                       {formatDate(property.createdAt)} at{' '}
                       {new Date(property.createdAt).toLocaleTimeString()}
                     </span>
                   </div>
                   <div>
-                    <span className="text-[#6b7194] dark:text-[#8b90a8]">
-                      Last Updated:
-                    </span>{' '}
-                    <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <span className="text-text-secondary">Last Updated:</span>{' '}
+                    <span className="text-text-primary">
                       {formatDate(property.updatedAt)} at{' '}
                       {new Date(property.updatedAt).toLocaleTimeString()}
                     </span>
@@ -1664,7 +1648,7 @@ export const PropertyDetailPage = () => {
         )}
 
         {activeTab === 'photos' && (
-          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
             <PhotoGallery
               photos={photos}
               isLoading={photosLoading}
@@ -1693,15 +1677,15 @@ export const PropertyDetailPage = () => {
         )}
 
         {activeTab === 'contracts' && (
-          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+              <h2 className="text-xl font-semibold text-text-primary">
                 Contracts ({filteredAndSortedContracts.length})
               </h2>
               <button
                 onClick={() => navigate(`/contracts/new?propertyId=${id}`)}
                 disabled={!canEditData}
-                className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5c7cfa]"
+                className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
               >
                 <Plus className="h-4 w-4" />
                 Add Contract
@@ -1714,14 +1698,14 @@ export const PropertyDetailPage = () => {
               <ErrorMessage message="Failed to load contracts" />
             ) : contracts.length === 0 ? (
               <div className="text-center py-12">
-                <FileText className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] dark:text-[#6b7194] dark:text-[#8b90a8] mx-auto mb-3" />
-                <p className="text-[#6b7194] dark:text-[#8b90a8] mb-4">
+                <FileText className="h-12 w-12 text-text-disabled mx-auto mb-3" />
+                <p className="text-text-secondary mb-4">
                   No contracts for this property
                 </p>
                 <button
                   onClick={() => navigate(`/contracts/new?propertyId=${id}`)}
                   disabled={!canEditData}
-                  className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5c7cfa]"
+                  className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
                 >
                   <Plus className="h-4 w-4" />
                   Create First Contract
@@ -1732,7 +1716,7 @@ export const PropertyDetailPage = () => {
                 {/* Search Bar */}
                 <div className="mb-4">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-text-muted " />
                     <input
                       type="text"
                       placeholder="Search by contract #, tenant, type..."
@@ -1741,18 +1725,18 @@ export const PropertyDetailPage = () => {
                         setContractsSearchTerm(e.target.value);
                         setContractsCurrentPage(1);
                       }}
-                      className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] dark:bg-[#1e2130] dark:text-[#eef0f6] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                 </div>
 
                 {/* Table */}
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-[#edf0f7] dark:divide-[#2a2e3f] dark:divide-[#2a2e3f]">
-                    <thead className="bg-[#f8f9fc] dark:bg-[#0c0d14]">
+                  <table className="min-w-full divide-y divide-border-default">
+                    <thead className="bg-surface-page">
                       <tr>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                           onClick={() => handleContractsSort('startDate')}
                         >
                           <div className="flex items-center gap-1">
@@ -1766,7 +1750,7 @@ export const PropertyDetailPage = () => {
                           </div>
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                           onClick={() => handleContractsSort('tenant')}
                         >
                           <div className="flex items-center gap-1">
@@ -1780,7 +1764,7 @@ export const PropertyDetailPage = () => {
                           </div>
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                           onClick={() => handleContractsSort('contractType')}
                         >
                           <div className="flex items-center gap-1">
@@ -1794,7 +1778,7 @@ export const PropertyDetailPage = () => {
                           </div>
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                           onClick={() => handleContractsSort('startDate')}
                         >
                           <div className="flex items-center gap-1">
@@ -1807,11 +1791,11 @@ export const PropertyDetailPage = () => {
                               ))}
                           </div>
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                           End Date
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                           onClick={() => handleContractsSort('rentAmount')}
                         >
                           <div className="flex items-center gap-1">
@@ -1825,7 +1809,7 @@ export const PropertyDetailPage = () => {
                           </div>
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                           onClick={() => handleContractsSort('status')}
                         >
                           <div className="flex items-center gap-1">
@@ -1840,12 +1824,12 @@ export const PropertyDetailPage = () => {
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white dark:bg-[#14161f] divide-y divide-[#edf0f7] dark:divide-[#2a2e3f] dark:divide-[#2a2e3f]">
+                    <tbody className="bg-surface-card divide-y divide-border-default">
                       {paginatedContracts.length === 0 ? (
                         <tr>
                           <td
                             colSpan={7}
-                            className="px-6 py-12 text-center text-[#6b7194] dark:text-[#8b90a8]"
+                            className="px-6 py-12 text-center text-text-secondary"
                           >
                             No contracts found matching your search
                           </td>
@@ -1857,7 +1841,7 @@ export const PropertyDetailPage = () => {
                             onClick={() =>
                               navigate(`/contracts/${contract.identifier}`)
                             }
-                            className="hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] cursor-pointer transition-colors"
+                            className="hover:bg-primary-50 cursor-pointer transition-colors"
                           >
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm font-medium text-primary-500 dark:text-primary-300">
@@ -1865,30 +1849,30 @@ export const PropertyDetailPage = () => {
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                              <div className="text-sm text-text-primary">
                                 {contract.primaryTenant.firstName}{' '}
                                 {contract.primaryTenant.lastName}
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
-                                {contract.contractType.replace('_', ' ')}
+                              <div className="text-sm text-text-primary">
+                                {contract.contractType.replace('_', '')}
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                              <div className="text-sm text-text-primary">
                                 {formatDate(contract.startDate)}
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                              <div className="text-sm text-text-primary">
                                 {contract.endDate
                                   ? formatDate(contract.endDate)
                                   : '-'}
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                              <div className="text-sm font-medium text-text-primary">
                                 {contract.rentAmountCurrency}{' '}
                                 {contract.rentAmount.toFixed(2)}
                               </div>
@@ -1905,8 +1889,8 @@ export const PropertyDetailPage = () => {
 
                 {/* Pagination */}
                 {contractsTotalPages > 1 && (
-                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
-                    <div className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-border-default">
+                    <div className="text-sm text-text-secondary">
                       Showing{' '}
                       {(contractsCurrentPage - 1) * contractsPerPage + 1} to{' '}
                       {Math.min(
@@ -1921,11 +1905,11 @@ export const PropertyDetailPage = () => {
                           setContractsCurrentPage(contractsCurrentPage - 1)
                         }
                         disabled={contractsCurrentPage === 1}
-                        className="px-3 py-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] dark:text-[#c4c8db]"
+                        className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
                       >
                         Previous
                       </button>
-                      <span className="px-3 py-1 text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      <span className="px-3 py-1 text-sm text-text-secondary">
                         Page {contractsCurrentPage} of {contractsTotalPages}
                       </span>
                       <button
@@ -1933,7 +1917,7 @@ export const PropertyDetailPage = () => {
                           setContractsCurrentPage(contractsCurrentPage + 1)
                         }
                         disabled={contractsCurrentPage === contractsTotalPages}
-                        className="px-3 py-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] dark:text-[#c4c8db]"
+                        className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
                       >
                         Next
                       </button>
@@ -1944,15 +1928,15 @@ export const PropertyDetailPage = () => {
             )}
 
             {/* Self-Occupancy Periods Section */}
-            <div className="mt-8 pt-6 border-t border-[#edf0f7] dark:border-[#2a2e3f]">
+            <div className="mt-8 pt-6 border-t border-border-default">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Home className="h-5 w-5 text-indigo-500 dark:text-indigo-400" />
-                  <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                  <Home className="h-5 w-5 text-info-text" />
+                  <h2 className="text-lg font-semibold text-text-primary">
                     Self-Occupancy Periods
                   </h2>
                   {occupancyPeriods.length > 0 && (
-                    <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                    <span className="text-sm text-text-secondary">
                       ({occupancyPeriods.length})
                     </span>
                   )}
@@ -1960,7 +1944,7 @@ export const PropertyDetailPage = () => {
                 {canEditData && (
                   <button
                     onClick={() => setShowSelfOccupancyModal(true)}
-                    className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition-colors flex items-center gap-2 text-sm"
+                    className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 text-sm"
                   >
                     <Plus className="h-4 w-4" />
                     Add Self-Occupancy
@@ -1969,15 +1953,15 @@ export const PropertyDetailPage = () => {
               </div>
 
               {occupancyPeriods.length === 0 ? (
-                <div className="text-center py-8 border border-dashed border-[#e2e6f0] dark:border-[#2a2e3f] rounded-lg">
-                  <Home className="h-10 w-10 text-[#c9cfd9] dark:text-[#3a3f54] mx-auto mb-3" />
-                  <p className="text-[#6b7194] dark:text-[#8b90a8] text-sm mb-3">
+                <div className="text-center py-8 border border-dashed border-border-default rounded-lg">
+                  <Home className="h-10 w-10 text-text-disabled mx-auto mb-3" />
+                  <p className="text-text-secondary text-sm mb-3">
                     No self-occupancy periods recorded
                   </p>
                   {canEditData && (
                     <button
                       onClick={() => setShowSelfOccupancyModal(true)}
-                      className="text-indigo-600 dark:text-indigo-400 hover:underline text-sm font-medium inline-flex items-center gap-1"
+                      className="text-primary-500 hover:underline text-sm font-medium inline-flex items-center gap-1"
                     >
                       <Plus className="h-3.5 w-3.5" />
                       Record a self-occupancy period
@@ -1986,27 +1970,27 @@ export const PropertyDetailPage = () => {
                 </div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
-                    <thead className="bg-[#f8f9fc] dark:bg-[#0c0d14]">
+                  <table className="min-w-full divide-y divide-border-default">
+                    <thead className="bg-surface-page">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                           Period
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                           Type
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                           Occupant
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                           Status
                         </th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                        <th className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
                           Actions
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white dark:bg-[#14161f] divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
+                    <tbody className="bg-surface-card divide-y divide-border-default">
                       {occupancyPeriods.map((period) => {
                         const isPeriodActive =
                           !period.endDate ||
@@ -2014,32 +1998,30 @@ export const PropertyDetailPage = () => {
                         return (
                           <tr
                             key={period.identifier}
-                            className="hover:bg-[#f8f9fc] dark:hover:bg-[#1e2130] transition-colors"
+                            className="hover:bg-surface-page transition-colors"
                           >
-                            <td className="px-4 py-3 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                            <td className="px-4 py-3 text-sm text-text-primary">
                               {formatDate(period.startDate)} &mdash;{' '}
                               {period.endDate
                                 ? formatDate(period.endDate)
                                 : 'Ongoing'}
                             </td>
-                            <td className="px-4 py-3 text-sm text-[#3d4463] dark:text-[#c4c8db]">
+                            <td className="px-4 py-3 text-sm text-text-secondary">
                               {OCCUPANCY_TYPE_LABELS[period.type]}
                             </td>
-                            <td className="px-4 py-3 text-sm text-[#3d4463] dark:text-[#c4c8db]">
+                            <td className="px-4 py-3 text-sm text-text-secondary">
                               {period.occupantName ?? (
-                                <span className="text-[#9ca0b8] dark:text-[#5c6180]">
-                                  —
-                                </span>
+                                <span className="text-text-muted">—</span>
                               )}
                             </td>
                             <td className="px-4 py-3">
                               {isPeriodActive ? (
-                                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-indigo-700 dark:text-indigo-300">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+                                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-info-text">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-primary-500 animate-pulse" />
                                   Active
                                 </span>
                               ) : (
-                                <span className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8]">
+                                <span className="text-xs font-medium text-text-secondary">
                                   Ended
                                 </span>
                               )}
@@ -2051,7 +2033,7 @@ export const PropertyDetailPage = () => {
                                     setEditOccupancyPeriodId(period.identifier)
                                   }
                                   title="Edit"
-                                  className="p-1.5 rounded-lg hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8] hover:text-[#5c7cfa] dark:hover:text-[#5c7cfa] transition-colors"
+                                  className="p-1.5 rounded-lg hover:bg-surface-inset text-text-secondary hover:text-primary-500 transition-colors"
                                 >
                                   <Edit className="h-4 w-4" />
                                 </button>
@@ -2064,7 +2046,7 @@ export const PropertyDetailPage = () => {
                                       setShowEndOccupancyModal(true);
                                     }}
                                     title="End occupancy"
-                                    className="p-1.5 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-900/20 text-[#6b7194] dark:text-[#8b90a8] hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
+                                    className="p-1.5 rounded-lg hover:bg-warning-bg text-text-secondary hover:text-warning-text transition-colors"
                                   >
                                     <Square className="h-4 w-4" />
                                   </button>
@@ -2077,7 +2059,7 @@ export const PropertyDetailPage = () => {
                                       )
                                     }
                                     title="Delete"
-                                    className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-[#6b7194] dark:text-[#8b90a8] hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                                    className="p-1.5 rounded-lg hover:bg-error-bg text-text-secondary hover:text-error-text transition-colors"
                                   >
                                     <Trash2 className="h-4 w-4" />
                                   </button>
@@ -2096,15 +2078,15 @@ export const PropertyDetailPage = () => {
         )}
 
         {activeTab === 'expenses' && (
-          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+              <h2 className="text-xl font-semibold text-text-primary">
                 Expenses ({filteredAndSortedExpenses.length})
               </h2>
               <button
                 onClick={() => navigate(`/expenses/new?propertyId=${id}`)}
                 disabled={!canEditData}
-                className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5c7cfa]"
+                className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
               >
                 <Plus className="h-4 w-4" />
                 Add Expense
@@ -2117,14 +2099,14 @@ export const PropertyDetailPage = () => {
               <ErrorMessage message="Failed to load expenses" />
             ) : expenses.length === 0 ? (
               <div className="text-center py-12">
-                <Receipt className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] dark:text-[#6b7194] dark:text-[#8b90a8] mx-auto mb-3" />
-                <p className="text-[#6b7194] dark:text-[#8b90a8] mb-4">
+                <Receipt className="h-12 w-12 text-text-disabled mx-auto mb-3" />
+                <p className="text-text-secondary mb-4">
                   No expenses for this property
                 </p>
                 <button
                   onClick={() => navigate(`/expenses/new?propertyId=${id}`)}
                   disabled={!canEditData}
-                  className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5c7cfa]"
+                  className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
                 >
                   <Plus className="h-4 w-4" />
                   Create First Expense
@@ -2135,7 +2117,7 @@ export const PropertyDetailPage = () => {
                 {/* Search Bar */}
                 <div className="mb-4">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-text-muted " />
                     <input
                       type="text"
                       placeholder="Search by expense #, description, category..."
@@ -2144,21 +2126,21 @@ export const PropertyDetailPage = () => {
                         setExpensesSearchTerm(e.target.value);
                         setExpensesCurrentPage(1);
                       }}
-                      className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] dark:bg-[#1e2130] dark:text-[#eef0f6] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                 </div>
 
                 {/* Table */}
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-[#edf0f7] dark:divide-[#2a2e3f] dark:divide-[#2a2e3f]">
-                    <thead className="bg-[#f8f9fc] dark:bg-[#0c0d14]">
+                  <table className="min-w-full divide-y divide-border-default">
+                    <thead className="bg-surface-page">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                           Expense #
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                           onClick={() => handleExpensesSort('expenseDate')}
                         >
                           <div className="flex items-center gap-1">
@@ -2172,7 +2154,7 @@ export const PropertyDetailPage = () => {
                           </div>
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                           onClick={() => handleExpensesSort('description')}
                         >
                           <div className="flex items-center gap-1">
@@ -2186,7 +2168,7 @@ export const PropertyDetailPage = () => {
                           </div>
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                           onClick={() => handleExpensesSort('category')}
                         >
                           <div className="flex items-center gap-1">
@@ -2200,7 +2182,7 @@ export const PropertyDetailPage = () => {
                           </div>
                         </th>
                         <th
-                          className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                           onClick={() => handleExpensesSort('amount')}
                         >
                           <div className="flex items-center gap-1">
@@ -2215,12 +2197,12 @@ export const PropertyDetailPage = () => {
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white dark:bg-[#14161f] divide-y divide-[#edf0f7] dark:divide-[#2a2e3f] dark:divide-[#2a2e3f]">
+                    <tbody className="bg-surface-card divide-y divide-border-default">
                       {paginatedExpenses.length === 0 ? (
                         <tr>
                           <td
                             colSpan={5}
-                            className="px-6 py-12 text-center text-[#6b7194] dark:text-[#8b90a8]"
+                            className="px-6 py-12 text-center text-text-secondary"
                           >
                             No expenses found matching your search
                           </td>
@@ -2229,7 +2211,7 @@ export const PropertyDetailPage = () => {
                         paginatedExpenses.map((expense) => (
                           <tr
                             key={expense.identifier}
-                            className="hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] cursor-pointer"
+                            className="hover:bg-primary-50 cursor-pointer"
                             onClick={() =>
                               navigate(`/expenses/${expense.identifier}`)
                             }
@@ -2237,10 +2219,10 @@ export const PropertyDetailPage = () => {
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-500 dark:text-primary-300">
                               #{expense.identifier}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
                               {formatDate(expense.expenseDate)}
                             </td>
-                            <td className="px-6 py-4 text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                            <td className="px-6 py-4 text-sm text-text-primary">
                               {expense.description}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
@@ -2248,7 +2230,7 @@ export const PropertyDetailPage = () => {
                                 category={expense.category}
                               />
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-text-primary">
                               {expense.currency} {expense.amount.toFixed(2)}
                             </td>
                           </tr>
@@ -2260,8 +2242,8 @@ export const PropertyDetailPage = () => {
 
                 {/* Pagination */}
                 {expensesTotalPages > 1 && (
-                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
-                    <div className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-border-default">
+                    <div className="text-sm text-text-secondary">
                       Showing {(expensesCurrentPage - 1) * expensesPerPage + 1}{' '}
                       to{' '}
                       {Math.min(
@@ -2276,11 +2258,11 @@ export const PropertyDetailPage = () => {
                           setExpensesCurrentPage(expensesCurrentPage - 1)
                         }
                         disabled={expensesCurrentPage === 1}
-                        className="px-3 py-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] dark:text-[#c4c8db]"
+                        className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
                       >
                         Previous
                       </button>
-                      <span className="px-3 py-1 text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      <span className="px-3 py-1 text-sm text-text-secondary">
                         Page {expensesCurrentPage} of {expensesTotalPages}
                       </span>
                       <button
@@ -2288,7 +2270,7 @@ export const PropertyDetailPage = () => {
                           setExpensesCurrentPage(expensesCurrentPage + 1)
                         }
                         disabled={expensesCurrentPage === expensesTotalPages}
-                        className="px-3 py-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] dark:text-[#c4c8db]"
+                        className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
                       >
                         Next
                       </button>
@@ -2301,8 +2283,8 @@ export const PropertyDetailPage = () => {
         )}
 
         {activeTab === 'audit' && (
-          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+            <h2 className="text-xl font-semibold text-text-primary mb-4">
               Property History
             </h2>
 
@@ -2325,13 +2307,11 @@ export const PropertyDetailPage = () => {
                   return (
                     <div
                       key={activityKey}
-                      className="border border-[#e2e6f0] dark:border-[#2a2e3f] rounded-lg overflow-hidden"
+                      className="border border-border-default rounded-lg overflow-hidden"
                     >
                       <div
                         className={`flex items-start gap-4 p-4 transition-colors cursor-pointer ${
-                          hasChanges
-                            ? 'hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]'
-                            : ''
+                          hasChanges ? 'hover:bg-surface-inset' : ''
                         }`}
                         onClick={() =>
                           hasChanges && toggleAuditItem(activityKey)
@@ -2342,10 +2322,10 @@ export const PropertyDetailPage = () => {
                             flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center
                             ${
                               activity.action === 'CREATE'
-                                ? 'bg-green-100 dark:bg-green-900/30'
+                                ? 'bg-success-bg'
                                 : activity.action === 'UPDATE'
                                   ? 'bg-primary-100 dark:bg-primary-500/10'
-                                  : 'bg-red-100 dark:bg-red-900/30'
+                                  : 'bg-error-bg'
                             }
                           `}
                         >
@@ -2354,10 +2334,10 @@ export const PropertyDetailPage = () => {
                               text-xs font-semibold
                               ${
                                 activity.action === 'CREATE'
-                                  ? 'text-green-700 dark:text-green-300'
+                                  ? 'text-success-text'
                                   : activity.action === 'UPDATE'
-                                    ? 'text-blue-700 dark:text-blue-300'
-                                    : 'text-red-700 dark:text-red-300'
+                                    ? 'text-info-text'
+                                    : 'text-error-text'
                               }
                             `}
                           >
@@ -2365,16 +2345,16 @@ export const PropertyDetailPage = () => {
                           </span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                          <p className="text-sm font-medium text-text-primary">
                             {activity.description}
                           </p>
-                          <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                          <p className="text-xs text-text-secondary mt-1">
                             {formatDistanceToNow(new Date(activity.timestamp), {
                               addSuffix: true,
                             })}
                           </p>
                           {hasChanges && (
-                            <p className="text-xs text-[#5c7cfa] mt-1">
+                            <p className="text-xs text-primary-500 mt-1">
                               {isExpanded
                                 ? 'Click to hide changes'
                                 : 'Click to view changes'}
@@ -2385,8 +2365,8 @@ export const PropertyDetailPage = () => {
 
                       {/* Expanded Details */}
                       {isExpanded && hasChanges && (
-                        <div className="bg-[#f8f9fc] dark:bg-[#0c0d14] px-4 py-3 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
-                          <h4 className="text-xs font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-2 uppercase">
+                        <div className="bg-surface-page px-4 py-3 border-t border-border-default">
+                          <h4 className="text-xs font-semibold text-text-secondary mb-2 uppercase">
                             Changed Fields
                           </h4>
                           <div className="space-y-2">
@@ -2425,28 +2405,28 @@ export const PropertyDetailPage = () => {
                                   return (
                                     <div
                                       key={field}
-                                      className="bg-white dark:bg-[#14161f] dark:text-[#eef0f6] rounded p-2 text-xs"
+                                      className="bg-surface-card rounded p-2 text-xs"
                                     >
-                                      <div className="font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                                      <div className="font-semibold text-text-secondary mb-1">
                                         File Name
                                       </div>
-                                      <div className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                                      <div className="text-text-primary">
                                         {String(value)}
                                       </div>
                                       {title ? (
                                         <>
-                                          <div className="font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1 mt-2">
+                                          <div className="font-semibold text-text-secondary mb-1 mt-2">
                                             Title
                                           </div>
-                                          <div className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                                          <div className="text-text-primary">
                                             {String(title)}
                                           </div>
                                         </>
                                       ) : null}
-                                      <div className="font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1 mt-2">
+                                      <div className="font-semibold text-text-secondary mb-1 mt-2">
                                         Type
                                       </div>
-                                      <div className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                                      <div className="text-text-primary">
                                         {category === 'PHOTO'
                                           ? 'Photo'
                                           : 'Document'}
@@ -2469,14 +2449,14 @@ export const PropertyDetailPage = () => {
                                 return (
                                   <div
                                     key={field}
-                                    className="bg-white dark:bg-[#14161f] dark:text-[#eef0f6] rounded p-2 text-xs"
+                                    className="bg-surface-card rounded p-2 text-xs"
                                   >
-                                    <div className="font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                                    <div className="font-semibold text-text-secondary mb-1">
                                       {formatFieldName(field)}
                                     </div>
                                     <div className="grid grid-cols-2 gap-2">
                                       <div>
-                                        <span className="text-[#6b7194] dark:text-[#8b90a8]">
+                                        <span className="text-text-secondary">
                                           Old:{' '}
                                         </span>
                                         {typeof activity.oldValues?.[field] ===
@@ -2486,10 +2466,10 @@ export const PropertyDetailPage = () => {
                                         ) ? (
                                           <RichTextDisplay
                                             content={activity.oldValues[field]}
-                                            className="text-xs text-red-600 line-through [&_p]:m-0 inline"
+                                            className="text-xs text-error-text line-through [&_p]:m-0 inline"
                                           />
                                         ) : (
-                                          <span className="text-red-600 line-through">
+                                          <span className="text-error-text line-through">
                                             {formatFieldValue(
                                               activity.oldValues?.[field]
                                             )}
@@ -2497,7 +2477,7 @@ export const PropertyDetailPage = () => {
                                         )}
                                       </div>
                                       <div>
-                                        <span className="text-[#6b7194] dark:text-[#8b90a8]">
+                                        <span className="text-text-secondary">
                                           New:{' '}
                                         </span>
                                         {typeof activity.newValues?.[field] ===
@@ -2507,10 +2487,10 @@ export const PropertyDetailPage = () => {
                                         ) ? (
                                           <RichTextDisplay
                                             content={activity.newValues[field]}
-                                            className="text-xs text-green-600 font-medium [&_p]:m-0 inline"
+                                            className="text-xs text-success-text font-medium [&_p]:m-0 inline"
                                           />
                                         ) : (
-                                          <span className="text-green-600 font-medium">
+                                          <span className="text-success-text font-medium">
                                             {formatFieldValue(
                                               activity.newValues?.[field]
                                             )}
@@ -2531,11 +2511,9 @@ export const PropertyDetailPage = () => {
               </div>
             ) : (
               <div className="text-center py-8">
-                <History className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] mx-auto mb-3" />
-                <p className="text-[#6b7194] dark:text-[#8b90a8]">
-                  No history available
-                </p>
-                <p className="text-sm text-[#9ca0b8] dark:text-[#5c6180] mt-1">
+                <History className="h-12 w-12 text-text-disabled mx-auto mb-3" />
+                <p className="text-text-secondary">No history available</p>
+                <p className="text-sm text-text-muted mt-1">
                   Changes to this property will appear here
                 </p>
               </div>
@@ -2595,14 +2573,14 @@ export const PropertyDetailPage = () => {
 
       {deleteOccupancyPeriodId && id && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-[#14161f] rounded-xl p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+          <div className="bg-surface-card rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold text-text-primary mb-4">
               Delete Self-Occupancy Period
             </h3>
-            <p className="text-[#6b7194] dark:text-[#8b90a8] mb-2">
+            <p className="text-text-secondary mb-2">
               Are you sure you want to delete this self-occupancy period?
             </p>
-            <p className="text-sm text-red-600 mb-6">
+            <p className="text-sm text-error-text mb-6">
               This action cannot be undone.
             </p>
             <div className="flex gap-3 justify-end">
@@ -2640,11 +2618,11 @@ export const PropertyDetailPage = () => {
 
       {showDeleteWwsConfirm && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-[#14161f] rounded-xl p-6 max-w-sm w-full mx-4">
-            <h3 className="text-base font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
+          <div className="bg-surface-card rounded-lg p-6 max-w-sm w-full mx-4">
+            <h3 className="text-base font-semibold text-text-primary mb-2">
               Delete WWS calculation?
             </h3>
-            <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-5">
+            <p className="text-sm text-text-secondary mb-5">
               This will permanently remove the saved calculation from this
               property.
             </p>
@@ -2666,7 +2644,7 @@ export const PropertyDetailPage = () => {
                   }
                 }}
                 isLoading={deleteWwsMutation.isPending}
-                className="bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
+                className="bg-error-text hover:bg-error-text/90"
               >
                 Delete
               </Button>
@@ -2677,11 +2655,11 @@ export const PropertyDetailPage = () => {
 
       {deleteWwsHistoryId && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-[#14161f] rounded-xl p-6 max-w-sm w-full mx-4">
-            <h3 className="text-base font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
+          <div className="bg-surface-card rounded-lg p-6 max-w-sm w-full mx-4">
+            <h3 className="text-base font-semibold text-text-primary mb-2">
               Delete WWS calculation?
             </h3>
-            <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-5">
+            <p className="text-sm text-text-secondary mb-5">
               This will permanently remove this historic calculation.
             </p>
             <div className="flex justify-end gap-2">
@@ -2699,7 +2677,7 @@ export const PropertyDetailPage = () => {
                   });
                 }}
                 isLoading={deleteWwsMutation.isPending}
-                className="bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
+                className="bg-error-text hover:bg-error-text/90"
               >
                 Delete
               </Button>
@@ -2710,14 +2688,14 @@ export const PropertyDetailPage = () => {
 
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-[#14161f] rounded-xl p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+          <div className="bg-surface-card rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold text-text-primary mb-4">
               Delete Property
             </h3>
-            <p className="text-[#6b7194] dark:text-[#8b90a8] mb-2">
+            <p className="text-text-secondary mb-2">
               Are you sure you want to delete this property?
             </p>
-            <p className="text-sm text-red-600 mb-6">
+            <p className="text-sm text-error-text mb-6">
               This action cannot be undone.
             </p>
             <div className="flex gap-3 justify-end">

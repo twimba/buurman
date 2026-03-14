@@ -11,26 +11,26 @@ const typeConfig = {
   SELF_OCCUPANCY: {
     label: 'Self-Occupancy',
     icon: Home,
-    bg: 'bg-indigo-50 dark:bg-indigo-900/20',
-    border: 'border-indigo-200 dark:border-indigo-800',
-    dot: 'bg-indigo-500',
-    text: 'text-indigo-700 dark:text-indigo-300',
+    bg: 'bg-info-bg',
+    border: 'border-info-border',
+    dot: 'bg-info-text',
+    text: 'text-info-text',
   },
   CONTRACT: {
     label: 'Contract',
     icon: FileText,
-    bg: 'bg-blue-50 dark:bg-blue-900/20',
-    border: 'border-blue-200 dark:border-blue-800',
-    dot: 'bg-blue-500',
-    text: 'text-blue-700 dark:text-blue-300',
+    bg: 'bg-info-bg',
+    border: 'border-info-border',
+    dot: 'bg-info-text',
+    text: 'text-info-text',
   },
   VACANCY: {
     label: 'Vacancy',
     icon: AlertCircle,
-    bg: 'bg-gray-50 dark:bg-gray-900/20',
-    border: 'border-gray-200 dark:border-gray-800',
-    dot: 'bg-gray-400',
-    text: 'text-gray-700 dark:text-gray-300',
+    bg: 'bg-surface-inset',
+    border: 'border-border-default',
+    dot: 'bg-neutral-400',
+    text: 'text-text-secondary',
   },
 };
 
@@ -46,7 +46,7 @@ export const PropertyTimeline = ({
 
   if (!timeline?.entries.length) {
     return (
-      <div className="text-center py-12 text-[#6b7194] dark:text-[#8b90a8]">
+      <div className="text-center py-12 text-text-secondary">
         No timeline entries yet
       </div>
     );
@@ -74,17 +74,17 @@ export const PropertyTimeline = ({
                   {config.label}
                 </span>
                 {entry.description && (
-                  <span className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                  <span className="text-xs text-text-secondary">
                     ({entry.description})
                   </span>
                 )}
               </div>
-              <div className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
+              <div className="text-sm text-text-secondary">
                 {formatDate(entry.startDate)} &mdash;{' '}
                 {entry.endDate ? formatDate(entry.endDate) : 'Ongoing'}
               </div>
               {entry.metadata && (
-                <div className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                <div className="text-xs text-text-secondary mt-1">
                   {entry.metadata}
                 </div>
               )}

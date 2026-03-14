@@ -7,8 +7,8 @@
 
     <!-- Shield Icon -->
     <g transform="translate(130, 40)">
-      <path d="M 50 0 L 80 15 L 80 55 Q 80 75 50 90 Q 20 75 20 55 L 20 15 Z" fill="#5c7cfa" opacity="0.15" stroke="#5c7cfa" stroke-width="3"/>
-      <path d="M 50 20 L 65 30 L 65 55 Q 65 65 50 75 Q 35 65 35 55 L 35 30 Z" fill="#5c7cfa"/>
+      <path d="M 50 0 L 80 15 L 80 55 Q 80 75 50 90 Q 20 75 20 55 L 20 15 Z" fill="#0284c7" opacity="0.15" stroke="#0284c7" stroke-width="3"/>
+      <path d="M 50 20 L 65 30 L 65 55 Q 65 65 50 75 Q 35 65 35 55 L 35 30 Z" fill="#0284c7"/>
       <circle cx="50" cy="50" r="8" fill="white"/>
       <path d="M 47 50 L 49 52 L 53 48" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
     </g>
@@ -50,8 +50,8 @@
 
     <!-- Lock Icon -->
     <g transform="translate(160, 228)">
-      <rect x="15" y="12" width="20" height="18" rx="3" fill="#5c7cfa"/>
-      <path d="M 20 12 L 20 8 Q 20 3 25 3 Q 30 3 30 8 L 30 12" stroke="#5c7cfa" stroke-width="3" fill="none"/>
+      <rect x="15" y="12" width="20" height="18" rx="3" fill="#0284c7"/>
+      <path d="M 20 12 L 20 8 Q 20 3 25 3 Q 30 3 30 8 L 30 12" stroke="#0284c7" stroke-width="3" fill="none"/>
       <circle cx="25" cy="21" r="2.5" fill="white"/>
     </g>
   </g>

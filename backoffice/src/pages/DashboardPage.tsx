@@ -21,9 +21,7 @@ export const DashboardPage = () => {
   if (error || !stats) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-600 dark:text-red-400">
-          Failed to load dashboard stats.
-        </p>
+        <p className="text-error-text">Failed to load dashboard stats.</p>
       </div>
     );
   }
@@ -42,9 +40,9 @@ export const DashboardPage = () => {
       subtitle: "Registered teams",
       icon: Users,
       color: "blue",
-      bgClass: "bg-blue-50 dark:bg-blue-900/20",
-      iconClass: "text-blue-600 dark:text-blue-400",
-      valueClass: "text-blue-700 dark:text-blue-300",
+      bgClass: "bg-blue-50",
+      iconClass: "text-blue-600",
+      valueClass: "text-blue-700",
     },
     {
       title: "Total Users",
@@ -52,9 +50,9 @@ export const DashboardPage = () => {
       subtitle: `${stats.disabledUsers} disabled`,
       icon: UserCog,
       color: "emerald",
-      bgClass: "bg-emerald-50 dark:bg-emerald-900/20",
-      iconClass: "text-emerald-600 dark:text-emerald-400",
-      valueClass: "text-emerald-700 dark:text-emerald-300",
+      bgClass: "bg-emerald-50",
+      iconClass: "text-emerald-600",
+      valueClass: "text-emerald-700",
     },
     {
       title: "Total Notifications",
@@ -62,9 +60,9 @@ export const DashboardPage = () => {
       subtitle: `${stats.pendingNotifications} pending, ${stats.failedNotifications} failed`,
       icon: Bell,
       color: "purple",
-      bgClass: "bg-purple-50 dark:bg-purple-900/20",
-      iconClass: "text-purple-600 dark:text-purple-400",
-      valueClass: "text-purple-700 dark:text-purple-300",
+      bgClass: "bg-purple-50",
+      iconClass: "text-purple-600",
+      valueClass: "text-purple-700",
     },
     {
       title: "Delivery Rate",
@@ -72,9 +70,9 @@ export const DashboardPage = () => {
       subtitle: `${stats.deliveredNotifications} delivered`,
       icon: TrendingUp,
       color: "amber",
-      bgClass: "bg-amber-50 dark:bg-amber-900/20",
-      iconClass: "text-amber-600 dark:text-amber-400",
-      valueClass: "text-amber-700 dark:text-amber-300",
+      bgClass: "bg-amber-50",
+      iconClass: "text-amber-600",
+      valueClass: "text-amber-700",
     },
   ];
 
@@ -100,10 +98,8 @@ export const DashboardPage = () => {
         }}
       >
         <div>
-          <h1 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-            Dashboard
-          </h1>
-          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+          <h1 className="text-2xl font-bold text-text-primary">Dashboard</h1>
+          <p className="text-sm text-text-secondary mt-1">
             Platform overview and key metrics.
           </p>
         </div>
@@ -115,7 +111,7 @@ export const DashboardPage = () => {
         {cards.map((card) => (
           <div
             key={card.title}
-            className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-5 hover:shadow-md transition-shadow"
+            className="bg-surface-card rounded-lg border border-border-default p-5 hover:shadow-md transition-shadow"
           >
             <div
               style={{
@@ -125,13 +121,13 @@ export const DashboardPage = () => {
               }}
             >
               <div>
-                <p className="text-xs font-medium uppercase tracking-wider text-[#9ca0b8] dark:text-[#5c6180]">
+                <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
                   {card.title}
                 </p>
                 <p className={`text-2xl font-bold mt-1 ${card.valueClass}`}>
                   {card.value}
                 </p>
-                <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                <p className="text-xs text-text-secondary mt-1">
                   {card.subtitle}
                 </p>
               </div>
@@ -147,8 +143,8 @@ export const DashboardPage = () => {
 
       {/* Channel Breakdown */}
       {Object.keys(stats.notificationsByChannel).length > 0 && (
-        <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-5 mb-8">
-          <h2 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-3">
+        <div className="bg-surface-card rounded-lg border border-border-default p-5 mb-8">
+          <h2 className="text-sm font-semibold text-text-primary mb-3">
             Notifications by Channel
           </h2>
           <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
@@ -156,12 +152,12 @@ export const DashboardPage = () => {
               ([channel, count]) => (
                 <div
                   key={channel}
-                  className="bg-[#f8f9fc] dark:bg-[#1a1d28] rounded-lg px-4 py-3 border border-[#e2e6f0] dark:border-[#2a2e3f]"
+                  className="bg-surface-page rounded-lg px-4 py-3 border border-border-default"
                 >
-                  <p className="text-xs font-medium uppercase tracking-wider text-[#9ca0b8] dark:text-[#5c6180]">
+                  <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
                     {channel}
                   </p>
-                  <p className="text-lg font-bold text-[#1a1d2e] dark:text-[#eef0f6] mt-0.5">
+                  <p className="text-lg font-bold text-text-primary mt-0.5">
                     {count}
                   </p>
                 </div>
@@ -173,7 +169,7 @@ export const DashboardPage = () => {
 
       {/* Quick Links */}
       <div>
-        <h2 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-3">
+        <h2 className="text-sm font-semibold text-text-primary mb-3">
           Quick Links
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -181,7 +177,7 @@ export const DashboardPage = () => {
             <button
               key={link.href}
               onClick={() => navigate(link.href)}
-              className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-4 text-left hover:shadow-md hover:border-[#5c7cfa]/30 dark:hover:border-[#5c7cfa]/30 transition-all group"
+              className="bg-surface-card rounded-lg border border-border-default p-4 text-left hover:shadow-md hover:border-primary-500/30 transition-all group"
             >
               <div
                 style={{
@@ -191,14 +187,14 @@ export const DashboardPage = () => {
                 }}
               >
                 <div>
-                  <p className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                  <p className="text-sm font-semibold text-text-primary">
                     {link.name}
                   </p>
-                  <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-0.5">
+                  <p className="text-xs text-text-secondary mt-0.5">
                     {link.description}
                   </p>
                 </div>
-                <ArrowRight className="h-4 w-4 text-[#9ca0b8] dark:text-[#5c6180] group-hover:text-[#5c7cfa] dark:group-hover:text-[#91a7ff] transition-colors" />
+                <ArrowRight className="h-4 w-4 text-text-muted group-hover:text-primary-500 transition-colors" />
               </div>
             </button>
           ))}

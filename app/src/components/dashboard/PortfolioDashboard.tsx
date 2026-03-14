@@ -15,6 +15,7 @@ import {
   exportPortfolioDashboardCSV,
   exportPortfolioDashboardExcel,
 } from '@/api/dashboard';
+import { Card } from '@buurman/ui';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ExportDropdown } from '@/components/common/ExportDropdown';
 import { PortfolioSummaryCards } from './PortfolioSummaryCards';
@@ -102,11 +103,11 @@ export const PortfolioDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-8 border border-[#edf0f7] dark:border-[#2a2e3f]">
+      <Card padding="lg">
         <div className="flex items-center justify-center min-h-[200px]">
           <LoadingSpinner />
         </div>
-      </div>
+      </Card>
     );
   }
 
@@ -120,40 +121,40 @@ export const PortfolioDashboard = () => {
 
   if (dashboard.totalProperties === 0) {
     return (
-      <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-8 border border-[#edf0f7] dark:border-[#2a2e3f] text-center">
-        <Home className="h-10 w-10 text-[#6b7194] dark:text-[#8b90a8] mx-auto mb-3" />
-        <p className="text-[#6b7194] dark:text-[#8b90a8]">
+      <Card padding="lg" className="text-center">
+        <Home className="h-10 w-10 text-text-secondary mx-auto mb-3" />
+        <p className="text-text-secondary">
           Add properties to see your portfolio dashboard.
         </p>
-      </div>
+      </Card>
     );
   }
 
   if (dashboard.propertiesWithFinancialData === 0) {
     return (
-      <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-8 border border-[#edf0f7] dark:border-[#2a2e3f] text-center">
-        <BarChart3 className="h-10 w-10 text-[#6b7194] dark:text-[#8b90a8] mx-auto mb-3" />
-        <p className="text-[#6b7194] dark:text-[#8b90a8]">
+      <Card padding="lg" className="text-center">
+        <BarChart3 className="h-10 w-10 text-text-secondary mx-auto mb-3" />
+        <p className="text-text-secondary">
           Add financial data to your properties to see portfolio analytics.
         </p>
-        <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180] mt-1">
+        <p className="text-xs text-text-muted mt-1">
           {dashboard.totalProperties} properties found, but none have financial
           data yet.
         </p>
-      </div>
+      </Card>
     );
   }
 
   return (
     <div className="space-y-6">
       {/* Header: period selector + export + data indicator */}
-      <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-5 border border-[#edf0f7] dark:border-[#2a2e3f]">
+      <Card>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3 flex-wrap">
-            <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+            <h2 className="text-lg font-semibold text-text-primary">
               Portfolio Overview
             </h2>
-            <span className="text-xs text-[#6b7194] dark:text-[#8b90a8] bg-[#f1f3f9] dark:bg-[#1e2130] px-2 py-1 rounded-md">
+            <span className="text-xs text-text-secondary bg-surface-inset px-2 py-1 rounded-md">
               {dashboard.propertiesWithFinancialData} of{' '}
               {dashboard.totalProperties} properties have financial data
             </span>
@@ -166,8 +167,8 @@ export const PortfolioDashboard = () => {
                   onClick={() => setMonths(opt.value)}
                   className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                     months === opt.value
-                      ? 'bg-[#5c7cfa] text-white'
-                      : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#e8ecf4] dark:hover:bg-[#3a3f54]'
+                      ? 'bg-primary-500 text-white'
+                      : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
                   }`}
                 >
                   {opt.label}
@@ -187,7 +188,7 @@ export const PortfolioDashboard = () => {
               <button
                 onClick={() => handleExport('pdf')}
                 disabled={exporting !== null}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-[#e2e6f0] dark:border-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f5f7fa] dark:hover:bg-[#1e2130] transition-colors disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-border-default text-text-secondary hover:bg-surface-inset transition-colors disabled:opacity-50"
               >
                 <Download className="h-3.5 w-3.5" />
                 {exporting === 'pdf' ? 'Exporting...' : 'PDF'}
@@ -195,7 +196,7 @@ export const PortfolioDashboard = () => {
             </div>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Summary Cards */}
       <PortfolioSummaryCards
@@ -275,7 +276,7 @@ export const PortfolioDashboard = () => {
       </ChartCard>
 
       {/* Disclaimer */}
-      <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180] text-center">
+      <p className="text-xs text-text-muted text-center">
         Metrics are for informational purposes only.
       </p>
     </div>
@@ -291,13 +292,11 @@ interface ChartCardProps {
 }
 
 const ChartCard = ({ title, icon, children }: ChartCardProps) => (
-  <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-5 border border-[#edf0f7] dark:border-[#2a2e3f]">
+  <Card>
     <div className="flex items-center gap-2 mb-4">
-      <span className="text-[#6b7194] dark:text-[#8b90a8]">{icon}</span>
-      <h3 className="text-base font-semibold text-[#1a1d2e] dark:text-[#c4c8db]">
-        {title}
-      </h3>
+      <span className="text-text-secondary">{icon}</span>
+      <h3 className="text-base font-semibold text-text-primary">{title}</h3>
     </div>
     {children}
-  </div>
+  </Card>
 );

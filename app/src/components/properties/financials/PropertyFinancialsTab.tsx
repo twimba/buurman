@@ -148,11 +148,10 @@ const formatPercent = (rate: number | undefined | null): string => {
 type StatusVariant = 'green' | 'gray' | 'red' | 'yellow';
 
 const STATUS_COLORS: Record<StatusVariant, string> = {
-  green: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300',
-  gray: 'bg-gray-100 dark:bg-gray-800/40 text-gray-700 dark:text-gray-300',
-  red: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300',
-  yellow:
-    'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300',
+  green: 'bg-success-bg text-success-text',
+  gray: 'bg-surface-inset text-text-secondary',
+  red: 'bg-error-bg text-error-text',
+  yellow: 'bg-warning-bg text-warning-text',
 };
 
 const financingStatusVariant = (status: FinancingStatus): StatusVariant => {
@@ -259,8 +258,8 @@ const ActionButton = ({
     title={label}
     className={`p-1 rounded transition-colors ${
       variant === 'danger'
-        ? 'text-[#9ca0b8] dark:text-[#5c6180] hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20'
-        : 'text-[#9ca0b8] dark:text-[#5c6180] hover:text-[#5c7cfa] dark:hover:text-[#91a7ff] hover:bg-[#f1f3f9] dark:hover:bg-[#2a2e3f]'
+        ? 'text-text-muted hover:text-error-text hover:bg-error-bg'
+        : 'text-text-muted hover:text-primary-500 hover:bg-surface-inset'
     }`}
   >
     <Icon className="h-3.5 w-3.5" />
@@ -288,10 +287,10 @@ const DetailRow = ({
   label: string;
   value: React.ReactNode;
 }) => (
-  <div className="flex justify-between py-2 border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-0">
-    <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">{label}</span>
-    <span className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
-      {value ?? <span className="text-[#6b7194] dark:text-[#8b90a8]">N/A</span>}
+  <div className="flex justify-between py-2 border-b border-border-default last:border-0">
+    <span className="text-sm text-text-secondary">{label}</span>
+    <span className="text-sm font-medium text-text-primary">
+      {value ?? <span className="text-text-secondary">N/A</span>}
     </span>
   </div>
 );
@@ -307,10 +306,8 @@ const SectionHeader = ({
 }) => (
   <div className="flex items-center justify-between mb-4">
     <div className="flex items-center gap-2">
-      <Icon className="h-5 w-5 text-[#5c7cfa] dark:text-[#91a7ff]" />
-      <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-        {title}
-      </h3>
+      <Icon className="h-5 w-5 text-primary-500 dark:text-primary-300" />
+      <h3 className="text-lg font-semibold text-text-primary">{title}</h3>
     </div>
     {action}
   </div>
@@ -326,7 +323,7 @@ const AddButton = ({
   <button
     type="button"
     onClick={onClick}
-    className="inline-flex items-center gap-1 text-xs font-medium text-[#5c7cfa] dark:text-[#91a7ff] hover:text-[#4c6ef5] dark:hover:text-[#b8c9ff] transition-colors"
+    className="inline-flex items-center gap-1 text-xs font-medium text-primary-500 dark:text-primary-300 hover:text-primary-600 dark:hover:text-primary-200 transition-colors"
   >
     <Plus className="h-3.5 w-3.5" />
     {label}
@@ -334,9 +331,7 @@ const AddButton = ({
 );
 
 const EmptyState = ({ message }: { message: string }) => (
-  <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] italic py-4">
-    {message}
-  </p>
+  <p className="text-sm text-text-secondary italic py-4">{message}</p>
 );
 
 // ============================================================
@@ -354,18 +349,14 @@ const MetricCard = ({
   value: string;
   muted?: boolean;
 }) => (
-  <div className="bg-white dark:bg-[#1e2235] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-5">
+  <div className="bg-surface-card dark:bg-surface-raised rounded-lg border border-border-default p-5">
     <div className="flex items-center gap-2 mb-2">
-      <Icon className="h-4 w-4 text-[#6b7194] dark:text-[#8b90a8]" />
-      <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-        {label}
-      </span>
+      <Icon className="h-4 w-4 text-text-secondary " />
+      <span className="text-sm text-text-secondary">{label}</span>
     </div>
     <p
       className={`text-xl font-semibold ${
-        muted
-          ? 'text-[#6b7194] dark:text-[#8b90a8]'
-          : 'text-[#1a1d2e] dark:text-[#eef0f6]'
+        muted ? 'text-text-secondary' : 'text-text-primary'
       }`}
     >
       {value}
@@ -450,7 +441,7 @@ const AcquisitionSection = ({
       }
     />
     {acquisition ? (
-      <div className="bg-white dark:bg-[#1e2235] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-6">
+      <div className="bg-surface-card dark:bg-surface-raised rounded-lg border border-border-default p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
           <div>
             <DetailRow
@@ -516,13 +507,13 @@ const AcquisitionSection = ({
           </div>
         </div>
         {acquisition.notes && (
-          <div className="mt-4 pt-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
-            <p className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] mb-1">
+          <div className="mt-4 pt-4 border-t border-border-default">
+            <p className="text-xs font-medium text-text-secondary mb-1">
               Notes
             </p>
             <RichTextDisplay
               content={acquisition.notes}
-              className="text-sm text-[#3d4463] dark:text-[#c4c8db]"
+              className="text-sm text-text-secondary"
             />
           </div>
         )}
@@ -560,9 +551,9 @@ const ValuationSection = ({
     />
     {latest ? (
       <div className="space-y-4">
-        <div className="bg-white dark:bg-[#1e2235] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-6">
+        <div className="bg-surface-card dark:bg-surface-raised rounded-lg border border-border-default p-6">
           <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+            <h4 className="text-sm font-semibold text-text-primary">
               Latest Valuation
             </h4>
             <div className="flex items-center gap-1">
@@ -601,27 +592,27 @@ const ValuationSection = ({
             </div>
           </div>
           {latest.notes && (
-            <div className="mt-4 pt-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
-              <p className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] mb-1">
+            <div className="mt-4 pt-4 border-t border-border-default">
+              <p className="text-xs font-medium text-text-secondary mb-1">
                 Notes
               </p>
               <RichTextDisplay
                 content={latest.notes}
-                className="text-sm text-[#3d4463] dark:text-[#c4c8db]"
+                className="text-sm text-text-secondary"
               />
             </div>
           )}
         </div>
 
         {history.length > 1 && (
-          <div className="bg-white dark:bg-[#1e2235] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-6">
-            <h4 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-3">
+          <div className="bg-surface-card dark:bg-surface-raised rounded-lg border border-border-default p-6">
+            <h4 className="text-sm font-semibold text-text-primary mb-3">
               Valuation History
             </h4>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-[#6b7194] dark:text-[#8b90a8] border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+                  <tr className="text-left text-text-secondary border-b border-border-default">
                     <th className="pb-2 pr-4 font-medium">Date</th>
                     <th className="pb-2 pr-4 font-medium">Type</th>
                     <th className="pb-2 pr-4 font-medium text-right">Amount</th>
@@ -633,18 +624,18 @@ const ValuationSection = ({
                   {history.map((v) => (
                     <React.Fragment key={v.identifier}>
                       <tr
-                        className={`border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-0 ${v.notes ? 'border-b-0' : ''}`}
+                        className={`border-b border-border-default last:border-0 ${v.notes ? 'border-b-0' : ''}`}
                       >
-                        <td className="py-2 pr-4 text-[#1a1d2e] dark:text-[#eef0f6]">
+                        <td className="py-2 pr-4 text-text-primary">
                           {formatDate(v.valuationDate)}
                         </td>
-                        <td className="py-2 pr-4 text-[#1a1d2e] dark:text-[#eef0f6]">
+                        <td className="py-2 pr-4 text-text-primary">
                           {formatValuationType(v.valuationType)}
                         </td>
-                        <td className="py-2 pr-4 text-right font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                        <td className="py-2 pr-4 text-right font-medium text-text-primary">
                           {formatMoney(v.amount, v.currency)}
                         </td>
-                        <td className="py-2 pr-4 text-[#6b7194] dark:text-[#8b90a8]">
+                        <td className="py-2 pr-4 text-text-secondary">
                           {v.source || 'N/A'}
                         </td>
                         <td className="py-2">
@@ -664,11 +655,11 @@ const ValuationSection = ({
                         </td>
                       </tr>
                       {v.notes && (
-                        <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-0">
+                        <tr className="border-b border-border-default last:border-0">
                           <td colSpan={5} className="pb-2 pt-0">
                             <RichTextDisplay
                               content={v.notes}
-                              className="text-xs text-[#6b7194] dark:text-[#8b90a8]"
+                              className="text-xs text-text-secondary"
                             />
                           </td>
                         </tr>
@@ -719,14 +710,14 @@ const FinancingCard = ({
   const [showPayments, setShowPayments] = useState(false);
 
   return (
-    <div className="bg-white dark:bg-[#1e2235] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-6">
+    <div className="bg-surface-card dark:bg-surface-raised rounded-lg border border-border-default p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <h4 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+          <h4 className="text-sm font-semibold text-text-primary">
             {formatFinancingType(financing.financingType)}
           </h4>
           {financing.lenderName && (
-            <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+            <span className="text-sm text-text-secondary">
               &middot; {financing.lenderName}
             </span>
           )}
@@ -793,33 +784,31 @@ const FinancingCard = ({
         </div>
       </div>
       {financing.notes && (
-        <div className="mt-4 pt-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
-          <p className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] mb-1">
-            Notes
-          </p>
+        <div className="mt-4 pt-4 border-t border-border-default">
+          <p className="text-xs font-medium text-text-secondary mb-1">Notes</p>
           <RichTextDisplay
             content={financing.notes}
-            className="text-sm text-[#3d4463] dark:text-[#c4c8db]"
+            className="text-sm text-text-secondary"
           />
         </div>
       )}
 
       {/* Payments Section */}
-      <div className="mt-4 pt-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
+      <div className="mt-4 pt-4 border-t border-border-default">
         <div className="flex items-center justify-between mb-3">
           <button
             type="button"
             onClick={() => setShowPayments(!showPayments)}
-            className="flex items-center gap-2 text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] hover:text-[#1a1d2e] dark:hover:text-[#eef0f6]"
+            className="flex items-center gap-2 text-sm font-medium text-text-secondary hover:text-text-primary"
           >
             <Wallet className="w-4 h-4" />
             Payments
             {payments.length > 0 && (
-              <span className="bg-[#5c7cfa]/10 text-[#5c7cfa] text-xs font-semibold px-1.5 py-0.5 rounded-full">
+              <span className="bg-primary-500/10 text-primary-500 text-xs font-semibold px-1.5 py-0.5 rounded-full">
                 {payments.length}
               </span>
             )}
-            <span className="text-xs text-[#8a8fa8]">
+            <span className="text-xs text-text-muted">
               {showPayments ? '▾' : '▸'}
             </span>
           </button>
@@ -827,7 +816,7 @@ const FinancingCard = ({
             <button
               type="button"
               onClick={onBulkAddPayment}
-              className="flex items-center gap-1 text-xs font-medium text-[#5c7cfa] hover:text-[#4c6ef5]"
+              className="flex items-center gap-1 text-xs font-medium text-primary-500 hover:text-primary-600"
             >
               <Plus className="w-3.5 h-3.5" />
               Bulk Add
@@ -835,7 +824,7 @@ const FinancingCard = ({
             <button
               type="button"
               onClick={onAddPayment}
-              className="flex items-center gap-1 text-xs font-medium text-[#5c7cfa] hover:text-[#4c6ef5]"
+              className="flex items-center gap-1 text-xs font-medium text-primary-500 hover:text-primary-600"
             >
               <Plus className="w-3.5 h-3.5" />
               Record Payment
@@ -846,7 +835,7 @@ const FinancingCard = ({
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-xs text-[#6b7194] dark:text-[#8b90a8] border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+                <tr className="text-left text-xs text-text-secondary border-b border-border-default">
                   <th className="pb-2 font-medium">Date</th>
                   <th className="pb-2 font-medium">Total</th>
                   <th className="pb-2 font-medium">Principal</th>
@@ -859,20 +848,20 @@ const FinancingCard = ({
                 {payments.map((p) => (
                   <tr
                     key={p.identifier}
-                    className="border-b border-[#e2e6f0]/50 dark:border-[#2a2e3f]/50 last:border-0"
+                    className="border-b border-border-default/50 last:border-0"
                   >
-                    <td className="py-2 text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <td className="py-2 text-text-primary">
                       {formatDate(p.paymentDate)}
                     </td>
-                    <td className="py-2 text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <td className="py-2 text-text-primary">
                       {formatMoney(p.totalAmount, p.currency)}
                     </td>
-                    <td className="py-2 text-[#3d4463] dark:text-[#c4c8db]">
+                    <td className="py-2 text-text-secondary">
                       {p.principalAmount != null
                         ? formatMoney(p.principalAmount, p.currency)
                         : '—'}
                     </td>
-                    <td className="py-2 text-[#3d4463] dark:text-[#c4c8db]">
+                    <td className="py-2 text-text-secondary">
                       {p.interestAmount != null
                         ? formatMoney(p.interestAmount, p.currency)
                         : '—'}
@@ -905,7 +894,7 @@ const FinancingCard = ({
           </div>
         )}
         {showPayments && payments.length === 0 && (
-          <p className="text-xs text-[#8a8fa8] dark:text-[#6b7194]">
+          <p className="text-xs text-text-muted dark:text-text-disabled">
             No payments recorded yet.
           </p>
         )}
@@ -983,9 +972,9 @@ const InsuranceCard = ({
   onEdit: () => void;
   onDelete: () => void;
 }) => (
-  <div className="bg-white dark:bg-[#1e2235] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
+  <div className="bg-surface-card dark:bg-surface-raised rounded-lg border border-border-default p-4">
     <div className="flex items-center justify-between mb-3">
-      <h5 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+      <h5 className="text-sm font-semibold text-text-primary">
         {formatInsuranceType(insurance.insuranceType)}
       </h5>
       <div className="flex items-center gap-2">
@@ -1025,13 +1014,11 @@ const InsuranceCard = ({
       <DetailRow label="End Date" value={formatDate(insurance.endDate)} />
     )}
     {insurance.notes && (
-      <div className="mt-3 pt-3 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
-        <p className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] mb-1">
-          Notes
-        </p>
+      <div className="mt-3 pt-3 border-t border-border-default">
+        <p className="text-xs font-medium text-text-secondary mb-1">Notes</p>
         <RichTextDisplay
           content={insurance.notes}
-          className="text-sm text-[#3d4463] dark:text-[#c4c8db]"
+          className="text-sm text-text-secondary"
         />
       </div>
     )}
@@ -1049,9 +1036,9 @@ const TaxCard = ({
   onEdit: () => void;
   onDelete: () => void;
 }) => (
-  <div className="bg-white dark:bg-[#1e2235] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
+  <div className="bg-surface-card dark:bg-surface-raised rounded-lg border border-border-default p-4">
     <div className="flex items-center justify-between mb-3">
-      <h5 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+      <h5 className="text-sm font-semibold text-text-primary">
         {formatTaxType(tax.taxType)}
       </h5>
       <div className="flex items-center gap-2">
@@ -1089,13 +1076,11 @@ const TaxCard = ({
       <DetailRow label="End Date" value={formatDate(tax.endDate)} />
     )}
     {tax.notes && (
-      <div className="mt-3 pt-3 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
-        <p className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] mb-1">
-          Notes
-        </p>
+      <div className="mt-3 pt-3 border-t border-border-default">
+        <p className="text-xs font-medium text-text-secondary mb-1">Notes</p>
         <RichTextDisplay
           content={tax.notes}
-          className="text-sm text-[#3d4463] dark:text-[#c4c8db]"
+          className="text-sm text-text-secondary"
         />
       </div>
     )}
@@ -1113,9 +1098,9 @@ const FeeCard = ({
   onEdit: () => void;
   onDelete: () => void;
 }) => (
-  <div className="bg-white dark:bg-[#1e2235] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
+  <div className="bg-surface-card dark:bg-surface-raised rounded-lg border border-border-default p-4">
     <div className="flex items-center justify-between mb-3">
-      <h5 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+      <h5 className="text-sm font-semibold text-text-primary">
         {formatFeeType(fee.feeType)}
       </h5>
       <div className="flex items-center gap-2">
@@ -1150,13 +1135,11 @@ const FeeCard = ({
       <DetailRow label="End Date" value={formatDate(fee.endDate)} />
     )}
     {fee.notes && (
-      <div className="mt-3 pt-3 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
-        <p className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] mb-1">
-          Notes
-        </p>
+      <div className="mt-3 pt-3 border-t border-border-default">
+        <p className="text-xs font-medium text-text-secondary mb-1">Notes</p>
         <RichTextDisplay
           content={fee.notes}
-          className="text-sm text-[#3d4463] dark:text-[#c4c8db]"
+          className="text-sm text-text-secondary"
         />
       </div>
     )}
@@ -1201,14 +1184,14 @@ const RecurringCostsSection = ({
       <div>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Shield className="h-4 w-4 text-[#6b7194] dark:text-[#8b90a8]" />
-            <h4 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+            <Shield className="h-4 w-4 text-text-secondary " />
+            <h4 className="text-sm font-semibold text-text-primary">
               Insurances
             </h4>
           </div>
           <div className="flex items-center gap-2">
             {summary.totalAnnualInsurance != null && (
-              <span className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8]">
+              <span className="text-xs font-medium text-text-secondary">
                 {formatMoney(summary.totalAnnualInsurance, summary.currency)}
                 /yr
               </span>
@@ -1237,14 +1220,12 @@ const RecurringCostsSection = ({
       <div>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Receipt className="h-4 w-4 text-[#6b7194] dark:text-[#8b90a8]" />
-            <h4 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-              Taxes
-            </h4>
+            <Receipt className="h-4 w-4 text-text-secondary " />
+            <h4 className="text-sm font-semibold text-text-primary">Taxes</h4>
           </div>
           <div className="flex items-center gap-2">
             {summary.totalAnnualTaxes != null && (
-              <span className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8]">
+              <span className="text-xs font-medium text-text-secondary">
                 {formatMoney(summary.totalAnnualTaxes, summary.currency)}/yr
               </span>
             )}
@@ -1272,14 +1253,12 @@ const RecurringCostsSection = ({
       <div>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Wallet className="h-4 w-4 text-[#6b7194] dark:text-[#8b90a8]" />
-            <h4 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-              Fees
-            </h4>
+            <Wallet className="h-4 w-4 text-text-secondary " />
+            <h4 className="text-sm font-semibold text-text-primary">Fees</h4>
           </div>
           <div className="flex items-center gap-2">
             {summary.totalAnnualFees != null && (
-              <span className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8]">
+              <span className="text-xs font-medium text-text-secondary">
                 {formatMoney(summary.totalAnnualFees, summary.currency)}/yr
               </span>
             )}
@@ -1405,7 +1384,7 @@ export const PropertyFinancialsTab = ({
 
   if (error) {
     return (
-      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg text-sm">
+      <div className="bg-error-bg border border-error-border text-error-text px-4 py-3 rounded-lg text-sm">
         Failed to load financial data.{' '}
         <button
           onClick={() => refetch()}

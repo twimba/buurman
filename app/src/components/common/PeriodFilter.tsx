@@ -159,7 +159,7 @@ export function PeriodFilter({
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
-      <Calendar className="h-4 w-4 text-[#6b7194] dark:text-[#8b90a8] shrink-0" />
+      <Calendar className="h-4 w-4 text-text-secondary shrink-0" />
       <div className="flex gap-1 flex-wrap">
         {presets.map((preset) => (
           <button
@@ -167,8 +167,8 @@ export function PeriodFilter({
             onClick={() => handlePresetChange(preset)}
             className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
               activePreset === preset
-                ? 'bg-[#5c7cfa] text-white'
-                : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#e8ecf4] dark:hover:bg-[#3a3f54]'
+                ? 'bg-primary-500 text-white'
+                : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
             }`}
           >
             {PRESET_LABELS[preset]}
@@ -181,14 +181,14 @@ export function PeriodFilter({
             type="date"
             value={customStartDate}
             onChange={(e) => handleCustomStartChange(e.target.value)}
-            className="px-2 py-1.5 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
+            className="px-2 py-1.5 border border-border-strong rounded-md text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-surface-card text-text-primary"
           />
-          <span className="text-xs text-[#6b7194] dark:text-[#8b90a8]">to</span>
+          <span className="text-xs text-text-secondary">to</span>
           <input
             type="date"
             value={customEndDate}
             onChange={(e) => handleCustomEndChange(e.target.value)}
-            className="px-2 py-1.5 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
+            className="px-2 py-1.5 border border-border-strong rounded-md text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-surface-card text-text-primary"
           />
         </div>
       )}

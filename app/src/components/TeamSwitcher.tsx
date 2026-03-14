@@ -33,13 +33,13 @@ export const TeamSwitcher = () => {
   const getRoleIcon = (role: string) => {
     switch (role) {
       case 'TEAM_ADMIN':
-        return (
-          <Shield className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-        );
+        return <Shield className="h-4 w-4 text-info-text" />;
       case 'TEAM_EDITOR':
-        return <Edit3 className="h-4 w-4 text-[#5c7cfa] dark:text-[#91a7ff]" />;
+        return (
+          <Edit3 className="h-4 w-4 text-primary-500 dark:text-primary-300" />
+        );
       case 'TEAM_VIEWER':
-        return <Eye className="h-4 w-4 text-[#6b7194] dark:text-[#8b90a8]" />;
+        return <Eye className="h-4 w-4 text-text-secondary " />;
       default:
         return null;
     }
@@ -74,32 +74,32 @@ export const TeamSwitcher = () => {
       <button
         ref={triggerRef}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center gap-2 px-3 py-2.5 bg-gradient-to-br from-[#f1f3f9] to-white dark:from-[#1a1d28] dark:to-[#14161f] border border-[#e2e6f0] dark:border-[#2a2e3f] rounded-lg hover:border-[#c9cfd9] dark:hover:border-[#3a3f54] hover:shadow-md transition-all"
+        className="w-full flex items-center gap-2 px-3 py-2.5 bg-gradient-to-br from-surface-inset to-white dark:from-surface-card dark:to-surface-page border border-border-default rounded-lg hover:border-border-strong hover:shadow-md transition-all"
       >
-        <div className="flex-shrink-0 h-8 w-8 rounded-lg bg-gradient-to-br from-[#5c7cfa] to-[#4263eb] flex items-center justify-center">
+        <div className="flex-shrink-0 h-8 w-8 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center">
           <Building className="h-5 w-5 text-white" />
         </div>
         <div className="flex-1 text-left min-w-0">
           <div className="flex items-center gap-1.5">
-            <p className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6] truncate">
+            <p className="text-sm font-semibold text-text-primary truncate">
               {activeTeam?.name}
             </p>
             {activeTeam?.isOwner && (
               <Crown className="h-3 w-3 text-accent-500 flex-shrink-0" />
             )}
             {activeTeam?.identifier === defaultTeamId && (
-              <Star className="h-3 w-3 text-[#5c7cfa] flex-shrink-0" />
+              <Star className="h-3 w-3 text-primary-500 flex-shrink-0" />
             )}
           </div>
           <div className="flex items-center gap-1.5 mt-0.5">
             {activeTeam && getRoleIcon(activeTeam.role)}
-            <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+            <p className="text-xs text-text-secondary">
               {activeTeam && getRoleLabel(activeTeam.role)}
             </p>
           </div>
         </div>
         <ChevronDown
-          className={`h-4 w-4 text-[#9ca0b8] dark:text-[#5c6180] transition-transform ${
+          className={`h-4 w-4 text-text-muted transition-transform ${
             isOpen ? 'transform rotate-180' : ''
           }`}
         />
@@ -117,11 +117,11 @@ export const TeamSwitcher = () => {
 
             {/* Menu */}
             <div
-              className="fixed w-72 bg-white dark:bg-[#14161f] border border-[#e2e6f0] dark:border-[#2a2e3f] rounded-xl shadow-lg z-[101] overflow-hidden"
+              className="fixed w-72 bg-surface-card border border-border-default rounded-lg shadow-lg z-[101] overflow-hidden"
               style={{ top: menuPos.top, left: menuPos.left }}
             >
-              <div className="p-2 border-b border-[#edf0f7] dark:border-[#2a2e3f] bg-[#f8f9fc] dark:bg-[#1a1d28]">
-                <p className="text-xs font-semibold text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide px-3 py-1">
+              <div className="p-2 border-b border-border-default bg-surface-page">
+                <p className="text-xs font-semibold text-text-secondary uppercase tracking-wide px-3 py-1">
                   Your Teams ({teams.length})
                 </p>
               </div>
@@ -135,29 +135,29 @@ export const TeamSwitcher = () => {
                     <div
                       key={team.identifier}
                       onClick={() => handleTeamSwitch(team.identifier)}
-                      className={`p-3 hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] cursor-pointer transition-colors border-b border-[#edf0f7] dark:border-[#2a2e3f] last:border-b-0 ${
-                        isActive ? 'bg-[#f0f4ff] dark:bg-[#5c7cfa]/10' : ''
+                      className={`p-3 hover:bg-surface-inset cursor-pointer transition-colors border-b border-border-default last:border-b-0 ${
+                        isActive ? 'bg-primary-50 dark:bg-primary-500/10' : ''
                       }`}
                     >
                       <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-gradient-to-br from-[#5c7cfa] to-[#4263eb] flex items-center justify-center">
+                        <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center">
                           <Building className="h-5 w-5 text-white" />
                         </div>
 
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <p className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6] truncate">
+                            <p className="text-sm font-semibold text-text-primary truncate">
                               {team.name}
                             </p>
                             {team.isOwner && (
                               <Crown className="h-3.5 w-3.5 text-accent-500 flex-shrink-0" />
                             )}
                             {isDefault && (
-                              <Star className="h-3.5 w-3.5 text-[#5c7cfa] flex-shrink-0" />
+                              <Star className="h-3.5 w-3.5 text-primary-500 flex-shrink-0" />
                             )}
                           </div>
 
-                          <div className="flex items-center gap-3 text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                          <div className="flex items-center gap-3 text-xs text-text-secondary">
                             <div className="flex items-center gap-1">
                               {getRoleIcon(team.role)}
                               <span>{getRoleLabel(team.role)}</span>
@@ -173,7 +173,7 @@ export const TeamSwitcher = () => {
                               onClick={(e) =>
                                 handleSetDefault(e, team.identifier)
                               }
-                              className="mt-2 text-xs text-[#5c7cfa] dark:text-[#91a7ff] hover:text-[#4263eb] dark:hover:text-[#bac8ff] font-medium"
+                              className="mt-2 text-xs text-primary-500 dark:text-primary-300 hover:text-primary-600 dark:hover:text-primary-200 font-medium"
                             >
                               Set as default
                             </button>
@@ -181,7 +181,7 @@ export const TeamSwitcher = () => {
                         </div>
 
                         {isActive && (
-                          <Check className="h-5 w-5 text-[#5c7cfa] dark:text-[#91a7ff] flex-shrink-0" />
+                          <Check className="h-5 w-5 text-primary-500 dark:text-primary-300 flex-shrink-0" />
                         )}
                       </div>
                     </div>
@@ -189,10 +189,10 @@ export const TeamSwitcher = () => {
                 })}
               </div>
 
-              <div className="p-3 border-t border-[#e2e6f0] dark:border-[#2a2e3f] bg-[#f8f9fc] dark:bg-[#1a1d28]">
-                <div className="flex items-start gap-2 text-xs text-[#6b7194] dark:text-[#8b90a8]">
+              <div className="p-3 border-t border-border-default bg-surface-page">
+                <div className="flex items-start gap-2 text-xs text-text-secondary">
                   <div className="flex-shrink-0 mt-0.5">
-                    <Star className="h-3.5 w-3.5 text-[#5c7cfa]" />
+                    <Star className="h-3.5 w-3.5 text-primary-500" />
                   </div>
                   <p>
                     <strong>Default team</strong> is used when you log in and

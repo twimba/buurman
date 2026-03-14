@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Copy, Check, X, Link, Calendar } from 'lucide-react';
-import { Button } from '../ui';
+import { Button } from '@buurman/ui';
 import { useToast } from '../../context/ToastContext';
 import {
   useCalendarFeeds,
@@ -90,39 +90,39 @@ export const CalendarFeedButton = ({
         Calendar Feed
       </Button>
       {showPopover && existingFeed && (
-        <div className="absolute right-0 top-full mt-2 w-96 bg-white dark:bg-[#1a1d28] rounded-xl shadow-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-4 z-50">
+        <div className="absolute right-0 top-full mt-2 w-96 bg-surface-card rounded-lg shadow-xl border border-border-default p-4 z-50">
           <div className="flex items-center justify-between mb-3">
-            <h4 className="font-medium text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+            <h4 className="font-medium text-sm text-text-primary">
               Calendar Subscription URL
             </h4>
             <button
               onClick={() => setShowPopover(false)}
-              className="p-1 rounded hover:bg-[#f1f3f9] dark:hover:bg-[#262a3a]"
+              className="p-1 rounded hover:bg-surface-inset dark:hover:bg-surface-raised"
             >
-              <X className="h-4 w-4 text-[#9ca0b8]" />
+              <X className="h-4 w-4 text-text-muted" />
             </button>
           </div>
           <div className="flex items-center gap-2 mb-3">
-            <code className="flex-1 text-xs bg-[#f1f3f9] dark:bg-[#14161f] text-[#3d4463] dark:text-[#c4c8db] px-3 py-2 rounded-lg truncate border border-[#e2e6f0] dark:border-[#2a2e3f]">
+            <code className="flex-1 text-xs bg-surface-inset text-text-secondary px-3 py-2 rounded-lg truncate border border-border-default">
               {existingFeed.feedUrl}
             </code>
             <button
               onClick={() => handleCopy(existingFeed.feedUrl)}
-              className="flex-shrink-0 p-2 rounded-lg hover:bg-[#f1f3f9] dark:hover:bg-[#262a3a] transition-colors"
+              className="flex-shrink-0 p-2 rounded-lg hover:bg-surface-inset dark:hover:bg-surface-raised transition-colors"
             >
               {copied ? (
-                <Check className="h-4 w-4 text-green-500" />
+                <Check className="h-4 w-4 text-success-text" />
               ) : (
-                <Copy className="h-4 w-4 text-[#6b7194]" />
+                <Copy className="h-4 w-4 text-text-secondary" />
               )}
             </button>
           </div>
-          <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
+          <p className="text-xs text-text-muted">
             Add this URL to Google Calendar (Settings &gt; Add calendar &gt;
             From URL) or Apple Calendar (File &gt; New Calendar Subscription).
           </p>
           {canEditTeamSettings && (
-            <div className="mt-3 pt-3 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
+            <div className="mt-3 pt-3 border-t border-border-default">
               <button
                 onClick={() => {
                   setShowPopover(false);

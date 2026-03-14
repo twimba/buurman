@@ -20,7 +20,6 @@ import {
   ScrollText,
   Monitor,
   LogOut,
-  Shield,
   ChevronsLeft,
   ChevronsRight,
   ChevronDown,
@@ -132,8 +131,8 @@ const navLinkClass = (isActive: boolean, collapsed: boolean) => `
   ${collapsed ? "justify-center" : ""}
   ${
     isActive
-      ? "bg-[#5c7cfa]/10 text-[#4263eb] dark:text-[#91a7ff] font-semibold border-l-2 border-[#5c7cfa] dark:border-[#748ffc]"
-      : "text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#5c7cfa]/5 hover:text-[#1a1d2e] dark:hover:text-[#eef0f6]"
+      ? "bg-primary-50 text-primary-700 font-semibold"
+      : "text-text-secondary hover:bg-neutral-50 hover:text-text-primary"
   }
 `;
 
@@ -143,8 +142,8 @@ const toolLinkClass = (isActive: boolean, collapsed: boolean) => `
   ${collapsed ? "justify-center" : ""}
   ${
     isActive
-      ? "bg-[#5c7cfa]/10 text-[#4263eb] dark:text-[#91a7ff] font-semibold border-l-2 border-[#5c7cfa] dark:border-[#748ffc]"
-      : "text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#5c7cfa]/5 hover:text-[#3d4463] dark:hover:text-[#c4c8db]"
+      ? "bg-primary-50 text-primary-700 font-semibold"
+      : "text-text-secondary hover:bg-neutral-50 hover:text-text-secondary"
   }
 `;
 
@@ -153,8 +152,8 @@ const dashboardLinkClass = (isActive: boolean) => `
   transition-all duration-200
   ${
     isActive
-      ? "bg-[#5c7cfa]/10 text-[#4263eb] dark:text-[#91a7ff] font-semibold"
-      : "text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#5c7cfa]/5 hover:text-[#3d4463] dark:hover:text-[#c4c8db]"
+      ? "bg-primary-50 text-primary-700 font-semibold"
+      : "text-text-secondary hover:bg-neutral-50 hover:text-text-secondary"
   }
 `;
 
@@ -190,53 +189,51 @@ export const Layout = () => {
     }
   };
 
-  const sidebarWidth = collapsed ? "w-16" : "w-64";
-  const mainMargin = collapsed ? "ml-16" : "ml-64";
+  const sidebarWidth = collapsed ? "w-20" : "w-64";
+  const mainMargin = collapsed ? "ml-20" : "ml-64";
 
   return (
     <div
-      className="flex overflow-hidden bg-[#f8f9fc] dark:bg-[#0c0d14]"
+      className="theme-backoffice flex overflow-hidden bg-surface-page"
       style={{
         height: "calc(100vh - var(--env-banner-height, 0px))",
         marginTop: "var(--env-banner-height, 0px)",
       }}
     >
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-md focus:bg-surface-card focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-text-primary focus:shadow-lg focus-ring"
+      >
+        Skip to main content
+      </a>
       {/* Sidebar — subtle blue-tinted background to distinguish from the app */}
       <aside
-        className={`fixed left-0 ${sidebarWidth} z-40 transition-all duration-300 ease-in-out`}
+        className={`fixed left-0 ${sidebarWidth} z-40 transition-[width] duration-300 ease-in-out`}
         style={{
           top: "var(--env-banner-height, 0px)",
           height: "calc(100vh - var(--env-banner-height, 0px))",
-          background: "var(--bo-sidebar-bg)",
-          borderRight: "1px solid var(--bo-sidebar-border)",
+          background: "var(--color-surface-page)",
+          borderRight: "1px solid var(--color-border-default)",
         }}
       >
-        <style>{`
-          :root {
-            --bo-sidebar-bg: #e4e8f4;
-            --bo-sidebar-border: #cdd3e6;
-          }
-          .dark {
-            --bo-sidebar-bg: #12152a;
-            --bo-sidebar-border: #1c2040;
-          }
-        `}</style>
         <div className="flex flex-col h-full overflow-hidden">
           {/* Logo / Title */}
           <div
-            className="flex items-center h-16 border-b border-[#cdd3e6] dark:border-[#1c2040] px-3"
+            className="flex items-center h-16 border-b border-border-default px-3"
             style={{ justifyContent: "space-between" }}
           >
             <div className="flex items-center gap-2.5" style={{ minWidth: 0 }}>
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#5c7cfa] to-[#4263eb] flex items-center justify-center flex-shrink-0">
-                <Shield className="h-4.5 w-4.5 text-white" />
-              </div>
+              <img
+                src="/assets/logo/logo_square_no_text.png"
+                alt="Buurman"
+                className="h-9 w-9 rounded-lg flex-shrink-0"
+              />
               {!collapsed && (
                 <div className="flex flex-col" style={{ minWidth: 0 }}>
-                  <span className="text-sm font-bold text-[#1a1d2e] dark:text-[#eef0f6] leading-tight">
+                  <span className="text-sm font-bold text-text-primary leading-tight">
                     Buurman
                   </span>
-                  <span className="text-[10px] font-semibold uppercase tracking-widest text-[#5c7cfa] dark:text-[#748ffc] leading-tight">
+                  <span className="text-[10px] font-semibold uppercase tracking-widest text-primary-500 leading-tight">
                     Backoffice
                   </span>
                 </div>
@@ -244,7 +241,7 @@ export const Layout = () => {
             </div>
             <button
               onClick={toggleCollapsed}
-              className="flex-shrink-0 p-1 rounded-md text-[#9ca0b8] dark:text-[#5c6180] hover:text-[#6b7194] dark:hover:text-[#8b90a8] hover:bg-[#5c7cfa]/5 transition-colors"
+              className="flex-shrink-0 p-1 rounded-md text-text-muted hover:text-text-secondary hover:bg-primary-500/5 transition-colors"
               title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
               {collapsed ? (
@@ -278,9 +275,9 @@ export const Layout = () => {
             </ul>
 
             {/* Administration Section */}
-            <div className="mt-6 pt-4 border-t border-[#cdd3e6] dark:border-[#1c2040]">
+            <div className="mt-6 pt-4 border-t border-border-default">
               {!collapsed && (
-                <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-widest text-[#9ca0b8] dark:text-[#5c6180]">
+                <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-widest text-text-muted">
                   Administration
                 </p>
               )}
@@ -308,9 +305,9 @@ export const Layout = () => {
             </div>
 
             {/* Tools Section */}
-            <div className="mt-6 pt-4 border-t border-[#cdd3e6] dark:border-[#1c2040]">
+            <div className="mt-6 pt-4 border-t border-border-default">
               {!collapsed && (
-                <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-widest text-[#9ca0b8] dark:text-[#5c6180]">
+                <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-widest text-text-muted">
                   Tools
                 </p>
               )}
@@ -333,7 +330,7 @@ export const Layout = () => {
                       {!collapsed && dashboards && dashboards.length > 0 && (
                         <button
                           onClick={() => setGrafanaOpen(!grafanaOpen)}
-                          className="p-1 mr-1 rounded text-[#9ca0b8] dark:text-[#5c6180] hover:text-[#6b7194] dark:hover:text-[#8b90a8] hover:bg-[#5c7cfa]/5 transition-colors"
+                          className="p-1 mr-1 rounded text-text-muted hover:text-text-secondary hover:bg-primary-500/5 transition-colors"
                         >
                           <ChevronDown
                             className={`h-3.5 w-3.5 transition-transform duration-200 ${grafanaOpen ? "rotate-180" : ""}`}
@@ -341,7 +338,7 @@ export const Layout = () => {
                         </button>
                       )}
                       {!collapsed && dashboardsLoading && (
-                        <Loader2 className="h-3 w-3 mr-2 animate-spin text-[#9ca0b8]" />
+                        <Loader2 className="h-3 w-3 mr-2 animate-spin text-text-muted" />
                       )}
                     </div>
                   </SidebarTooltip>
@@ -410,10 +407,10 @@ export const Layout = () => {
           </nav>
 
           {/* Footer */}
-          <div className="border-t border-[#cdd3e6] dark:border-[#1c2040] p-2 space-y-1">
+          <div className="border-t border-border-default p-2 space-y-1">
             {/* User email */}
             {!collapsed && (
-              <div className="px-3 py-2 text-xs text-[#6b7194] dark:text-[#8b90a8] truncate">
+              <div className="px-3 py-2 text-xs text-text-secondary truncate">
                 {userEmail}
               </div>
             )}
@@ -421,7 +418,7 @@ export const Layout = () => {
             <SidebarTooltip label="Logout" show={collapsed}>
               <button
                 onClick={logout}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50/50 dark:hover:bg-red-900/20 transition-all duration-200 ${collapsed ? "justify-center" : ""}`}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-error-text hover:bg-error-bg transition-all duration-200 ${collapsed ? "justify-center" : ""}`}
               >
                 <LogOut className="h-5 w-5 flex-shrink-0" />
                 {!collapsed && <span className="truncate">Logout</span>}
@@ -433,7 +430,8 @@ export const Layout = () => {
 
       {/* Main content */}
       <main
-        className={`flex-1 overflow-auto ${mainMargin} transition-all duration-300 ease-in-out`}
+        id="main-content"
+        className={`flex-1 overflow-auto ${mainMargin} transition-[margin] duration-300 ease-in-out`}
         style={
           isToolRoute ? { display: "flex", flexDirection: "column" } : undefined
         }
@@ -450,7 +448,7 @@ export const Layout = () => {
             <Outlet />
           </div>
         ) : (
-          <div className="p-4 lg:p-8">
+          <div className="max-w-screen-2xl mx-auto px-4 py-6 md:px-6 md:py-8 lg:px-8">
             <Outlet />
           </div>
         )}

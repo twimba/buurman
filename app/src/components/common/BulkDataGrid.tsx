@@ -371,7 +371,7 @@ export const BulkDataGrid = ({
     <div ref={containerRef} onPaste={handlePaste} className="space-y-4">
       {/* Hint */}
       {nonEmptyRows.length === 0 && (
-        <div className="flex items-center gap-2 p-3 bg-[#f1f3f9] dark:bg-[#1e2130] border border-dashed border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg text-sm text-[#6b7194] dark:text-[#8b90a8]">
+        <div className="flex items-center gap-2 p-3 bg-surface-inset border border-dashed border-border-strong rounded-lg text-sm text-text-secondary">
           <ClipboardPaste className="h-4 w-4 flex-shrink-0" />
           <span>
             Paste CSV data anywhere on this area, or add rows manually below.
@@ -381,25 +381,25 @@ export const BulkDataGrid = ({
       )}
 
       {/* Grid */}
-      <div className="overflow-x-auto rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f]">
+      <div className="overflow-x-auto rounded-lg border border-border-default">
         <table className="w-full">
           <thead>
-            <tr className="bg-[#f8f9fc] dark:bg-[#1a1d28]">
-              <th className="w-10 px-3 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8] text-center">
+            <tr className="bg-surface-page">
+              <th className="w-10 px-3 py-2.5 text-xs font-semibold uppercase tracking-wider text-text-secondary text-center">
                 #
               </th>
               {columns.map((col) => (
                 <th
                   key={col.key}
-                  className="px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]"
+                  className="px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-text-secondary"
                 >
                   {col.label}
                   {col.required && (
-                    <span className="text-red-500 ml-0.5">*</span>
+                    <span className="text-error-text ml-0.5">*</span>
                   )}
                 </th>
               ))}
-              <th className="w-10 px-3 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8] text-center">
+              <th className="w-10 px-3 py-2.5 text-xs font-semibold uppercase tracking-wider text-text-secondary text-center">
                 Status
               </th>
               <th className="w-10 px-2 py-2.5" />
@@ -411,15 +411,15 @@ export const BulkDataGrid = ({
               return (
                 <tr
                   key={row.id}
-                  className={`border-t border-[#e2e6f0] dark:border-[#2a2e3f] transition-colors ${
+                  className={`border-t border-border-default transition-colors ${
                     row.status === 'success'
-                      ? 'bg-emerald-50/50 dark:bg-emerald-900/10'
+                      ? 'bg-success-bg/50'
                       : row.status === 'error'
-                        ? 'bg-red-50/50 dark:bg-red-900/10'
-                        : 'hover:bg-[#f8f9fc] dark:hover:bg-[#1a1d28]'
+                        ? 'bg-error-bg/50'
+                        : 'hover:bg-surface-page'
                   }`}
                 >
-                  <td className="px-3 py-1.5 text-center text-xs font-mono text-[#9ca0b8] dark:text-[#5c6180]">
+                  <td className="px-3 py-1.5 text-center text-xs font-mono text-text-muted">
                     {rowIndex + 1}
                   </td>
                   {columns.map((col) => {
@@ -446,11 +446,11 @@ export const BulkDataGrid = ({
                               ${isDisabled ? 'opacity-60 cursor-not-allowed' : ''}
                               ${
                                 invalid
-                                  ? 'border-red-300 dark:border-red-700 bg-red-50/50 dark:bg-red-900/10'
-                                  : 'border-transparent hover:border-[#c9cfd9] dark:hover:border-[#3a3f54] focus:border-[#5c7cfa] dark:focus:border-[#5c7cfa]'
+                                  ? 'border-error-border bg-error-bg/50'
+                                  : 'border-transparent hover:border-border-strong focus:border-primary-500'
                               }
-                              bg-transparent text-[#1a1d2e] dark:text-[#eef0f6]
-                              focus:outline-none focus:ring-1 focus:ring-[#5c7cfa]/30`}
+                              bg-transparent text-text-primary 
+                              focus:outline-none focus:ring-1 focus:ring-primary-500/30`}
                           >
                             {col.options.map((opt) => (
                               <option key={opt.value} value={opt.value}>
@@ -481,11 +481,11 @@ export const BulkDataGrid = ({
                               ${isDisabled ? 'opacity-60 cursor-not-allowed' : ''}
                               ${
                                 invalid
-                                  ? 'border-red-300 dark:border-red-700 bg-red-50/50 dark:bg-red-900/10'
-                                  : 'border-transparent hover:border-[#c9cfd9] dark:hover:border-[#3a3f54] focus:border-[#5c7cfa] dark:focus:border-[#5c7cfa]'
+                                  ? 'border-error-border bg-error-bg/50'
+                                  : 'border-transparent hover:border-border-strong focus:border-primary-500'
                               }
-                              bg-transparent text-[#1a1d2e] dark:text-[#eef0f6]
-                              focus:outline-none focus:ring-1 focus:ring-[#5c7cfa]/30`}
+                              bg-transparent text-text-primary 
+                              focus:outline-none focus:ring-1 focus:ring-primary-500/30`}
                           />
                         )}
                       </td>
@@ -493,14 +493,14 @@ export const BulkDataGrid = ({
                   })}
                   <td className="px-3 py-1.5 text-center">
                     {row.status === 'submitting' && (
-                      <Loader2 className="h-4 w-4 animate-spin text-[#5c7cfa] mx-auto" />
+                      <Loader2 className="h-4 w-4 animate-spin text-primary-500 mx-auto" />
                     )}
                     {row.status === 'success' && (
-                      <CheckCircle className="h-4 w-4 text-emerald-500 mx-auto" />
+                      <CheckCircle className="h-4 w-4 text-success-text mx-auto" />
                     )}
                     {row.status === 'error' && (
                       <span title={row.error}>
-                        <XCircle className="h-4 w-4 text-red-500 mx-auto cursor-help" />
+                        <XCircle className="h-4 w-4 text-error-text mx-auto cursor-help" />
                       </span>
                     )}
                   </td>
@@ -511,7 +511,7 @@ export const BulkDataGrid = ({
                       disabled={
                         disabled || isSubmitting || row.status === 'submitting'
                       }
-                      className="p-1 text-[#9ca0b8] dark:text-[#5c6180] hover:text-red-500 dark:hover:text-red-400 transition-colors disabled:opacity-30"
+                      className="p-1 text-text-muted hover:text-error-text transition-colors disabled:opacity-30"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
@@ -530,7 +530,7 @@ export const BulkDataGrid = ({
             type="button"
             onClick={addRow}
             disabled={disabled || isSubmitting}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-[#5c7cfa] hover:bg-[#5c7cfa]/10 rounded transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-primary-500 hover:bg-primary-500/10 rounded transition-colors disabled:opacity-50"
           >
             <Plus className="h-3.5 w-3.5" />
             Add row
@@ -540,7 +540,7 @@ export const BulkDataGrid = ({
               type="button"
               onClick={clearAll}
               disabled={disabled || isSubmitting}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-text-secondary hover:bg-surface-inset rounded transition-colors disabled:opacity-50"
             >
               Clear all
             </button>
@@ -549,24 +549,20 @@ export const BulkDataGrid = ({
 
         <div className="flex items-center gap-4">
           {/* Stats */}
-          <div className="flex items-center gap-3 text-xs text-[#6b7194] dark:text-[#8b90a8]">
+          <div className="flex items-center gap-3 text-xs text-text-secondary">
             <span>{nonEmptyRows.length} rows</span>
-            <span className="text-[#c9cfd9] dark:text-[#3a3f54]">|</span>
+            <span className="text-text-disabled">|</span>
             <span>{validRows.length} valid</span>
             {successCount > 0 && (
               <>
-                <span className="text-[#c9cfd9] dark:text-[#3a3f54]">|</span>
-                <span className="text-emerald-600 dark:text-emerald-400">
-                  {successCount} saved
-                </span>
+                <span className="text-text-disabled">|</span>
+                <span className="text-success-text">{successCount} saved</span>
               </>
             )}
             {errorCount > 0 && (
               <>
-                <span className="text-[#c9cfd9] dark:text-[#3a3f54]">|</span>
-                <span className="text-red-600 dark:text-red-400">
-                  {errorCount} failed
-                </span>
+                <span className="text-text-disabled">|</span>
+                <span className="text-error-text">{errorCount} failed</span>
               </>
             )}
           </div>
@@ -576,7 +572,7 @@ export const BulkDataGrid = ({
             type="button"
             onClick={handleSubmit}
             disabled={disabled || isSubmitting || submittableCount === 0}
-            className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-[#5c7cfa] rounded-md hover:bg-[#4c6ef5] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-primary-500 rounded-md hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isSubmitting ? (
               <>

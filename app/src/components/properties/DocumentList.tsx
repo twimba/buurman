@@ -17,7 +17,7 @@ import {
 import { LoadingSpinner } from '../LoadingSpinner';
 import { ErrorMessage } from '../ErrorMessage';
 import { DocumentPreviewModal } from '../documents/DocumentPreviewModal';
-import { ConfirmDialog } from '../ui/ConfirmDialog';
+import { ConfirmDialog } from '@buurman/ui';
 import { EditMetadataModal } from '../ui/EditMetadataModal';
 import { useDocumentSelection } from '@/hooks/useDocumentSelection';
 import { useBulkDownload, useUpdateDocument } from '@/hooks/useDocumentHooks';
@@ -49,9 +49,11 @@ const formatFileSize = (bytes: number): string => {
 
 const getFileIcon = (mimeType: string) => {
   if (mimeType.startsWith('image/')) {
-    return <ImageIcon className="h-8 w-8 text-[#5c7cfa] dark:text-[#91a7ff]" />;
+    return (
+      <ImageIcon className="h-8 w-8 text-primary-500 dark:text-primary-300" />
+    );
   }
-  return <FileText className="h-8 w-8 text-[#6b7194] dark:text-[#8b90a8]" />;
+  return <FileText className="h-8 w-8 text-text-secondary " />;
 };
 
 export const DocumentList = ({
@@ -195,11 +197,9 @@ export const DocumentList = ({
     <div className="space-y-4">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-          Documents
-        </h3>
+        <h3 className="text-lg font-semibold text-text-primary">Documents</h3>
         {!readOnly && (
-          <label className="cursor-pointer bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors flex items-center gap-2">
+          <label className="cursor-pointer bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2">
             <Upload className="h-4 w-4" />
             Upload Document
             <input
@@ -216,20 +216,18 @@ export const DocumentList = ({
 
       {/* Document Table */}
       {documents.length === 0 ? (
-        <div className="text-center py-12 bg-[#f8f9fc] dark:bg-[#1a1d28] rounded-lg">
-          <FileText className="h-12 w-12 text-[#9ca0b8] dark:text-[#5c6180] mx-auto mb-3" />
-          <p className="text-[#6b7194] dark:text-[#8b90a8]">
-            No documents uploaded yet
-          </p>
+        <div className="text-center py-12 bg-surface-page rounded-lg">
+          <FileText className="h-12 w-12 text-text-muted mx-auto mb-3" />
+          <p className="text-text-secondary">No documents uploaded yet</p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-sm overflow-hidden">
+        <div className="bg-surface-card rounded-lg shadow-sm overflow-hidden">
           {/* Selection bar */}
-          <div className="px-6 py-3 border-b border-[#edf0f7] dark:border-[#2a2e3f] flex items-center justify-between">
+          <div className="px-6 py-3 border-b border-border-default flex items-center justify-between">
             <div className="flex items-center gap-2">
               <button
                 onClick={handleSelectAll}
-                className="text-[#6b7194] dark:text-[#8b90a8] hover:text-[#3d4463] dark:hover:text-[#c4c8db]"
+                className="text-text-secondary hover:text-text-secondary"
               >
                 {selectedDocuments.size === documents.length &&
                 documents.length > 0 ? (
@@ -238,7 +236,7 @@ export const DocumentList = ({
                   <Square className="h-5 w-5" />
                 )}
               </button>
-              <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+              <span className="text-sm text-text-secondary">
                 {hasSelection
                   ? `${selectedDocuments.size} of ${documents.length} selected`
                   : `${documents.length} document${documents.length !== 1 ? 's' : ''}`}
@@ -251,7 +249,7 @@ export const DocumentList = ({
                 <button
                   onClick={handleBulkDownload}
                   disabled={bulkDownloadMutation.isPending}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] bg-white dark:bg-[#1e2130] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#2a2e3f] transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset transition-colors disabled:opacity-50"
                 >
                   {bulkDownloadMutation.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -265,7 +263,7 @@ export const DocumentList = ({
                 {!readOnly && (
                   <button
                     onClick={handleBulkDelete}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-red-600 bg-white dark:bg-[#1e2130] border border-red-200 dark:border-red-900/30 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-error-text bg-surface-card border border-error-border rounded-md hover:bg-error-bg transition-colors"
                   >
                     <Trash2 className="h-4 w-4" />
                     Delete
@@ -275,32 +273,32 @@ export const DocumentList = ({
             )}
           </div>
 
-          <table className="min-w-full divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
-            <thead className="bg-[#f8f9fc] dark:bg-[#0c0d14]">
+          <table className="min-w-full divide-y divide-border-default">
+            <thead className="bg-surface-page">
               <tr>
                 <th className="w-12 px-6 py-3" />
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                   Document
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                   Size
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                   Uploaded
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                <th className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-[#14161f] divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
+            <tbody className="bg-surface-card divide-y divide-border-default">
               {documents.map((doc) => {
                 const isSelected = selectedDocuments.has(doc.identifier);
                 return (
                   <tr
                     key={doc.identifier}
-                    className={`hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] cursor-pointer ${
-                      isSelected ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+                    className={`hover:bg-surface-inset cursor-pointer ${
+                      isSelected ? 'bg-info-bg' : ''
                     }`}
                     onClick={() => setPreviewIndex(documents.indexOf(doc))}
                   >
@@ -312,10 +310,10 @@ export const DocumentList = ({
                         onClick={(e) =>
                           handleSelectDocument(doc.identifier, e.shiftKey)
                         }
-                        className="text-[#6b7194] dark:text-[#8b90a8] hover:text-[#3d4463] dark:hover:text-[#c4c8db]"
+                        className="text-text-secondary hover:text-text-secondary"
                       >
                         {isSelected ? (
-                          <div className="w-5 h-5 rounded bg-blue-500 flex items-center justify-center">
+                          <div className="w-5 h-5 rounded bg-primary-500 flex items-center justify-center">
                             <Check
                               className="h-3.5 w-3.5 text-white"
                               strokeWidth={3}
@@ -330,27 +328,27 @@ export const DocumentList = ({
                       <div className="flex items-center gap-3">
                         {getFileIcon(doc.mimeType)}
                         <div>
-                          <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                          <div className="text-sm font-medium text-text-primary">
                             {doc.title ?? doc.fileName}
                           </div>
                           {doc.title && doc.title !== doc.fileName ? (
-                            <div className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                            <div className="text-xs text-text-secondary">
                               {doc.fileName}
                             </div>
                           ) : null}
                           {doc.notes ? (
                             <RichTextDisplay
                               html={doc.notes}
-                              className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1"
+                              className="text-xs text-text-secondary mt-1"
                             />
                           ) : null}
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
                       {formatFileSize(doc.fileSize)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
                       {formatDate(doc.uploadedAt)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -362,7 +360,7 @@ export const DocumentList = ({
                           onClick={() =>
                             setPreviewIndex(documents.indexOf(doc))
                           }
-                          className="p-1.5 text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded-md transition-colors"
+                          className="p-1.5 text-text-secondary hover:bg-surface-inset rounded-md transition-colors"
                           title="Preview"
                         >
                           <Eye className="h-4 w-4" />
@@ -370,7 +368,7 @@ export const DocumentList = ({
                         {!readOnly && (
                           <button
                             onClick={() => setEditingDocument(doc)}
-                            className="p-1.5 text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded-md transition-colors"
+                            className="p-1.5 text-text-secondary hover:bg-surface-inset rounded-md transition-colors"
                             title="Edit title & notes"
                           >
                             <Pencil className="h-4 w-4" />
@@ -378,7 +376,7 @@ export const DocumentList = ({
                         )}
                         <button
                           onClick={() => handleDownload(doc.identifier)}
-                          className="p-1.5 text-[#5c7cfa] hover:bg-blue-50 dark:hover:bg-[#1e2130] rounded-md transition-colors"
+                          className="p-1.5 text-primary-500 hover:bg-primary-50 rounded-md transition-colors"
                           title="Download"
                         >
                           <Download className="h-4 w-4" />
@@ -387,7 +385,7 @@ export const DocumentList = ({
                           <button
                             onClick={() => handleDeleteSingle(doc.identifier)}
                             disabled={isDeleting}
-                            className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-md transition-colors disabled:opacity-50"
+                            className="p-1.5 text-error-text hover:bg-error-bg rounded-md transition-colors disabled:opacity-50"
                             title="Delete"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -479,21 +477,21 @@ export const DocumentList = ({
           className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           onKeyDown={handleCmdEnterUpload}
         >
-          <div className="bg-white dark:bg-[#14161f] rounded-lg p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-surface-card rounded-lg p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-2">
-                <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                <h3 className="text-lg font-semibold text-text-primary">
                   Upload {selectedFiles.length === 1 ? 'Document' : 'Documents'}
                 </h3>
                 {selectedFiles.length > 1 && (
-                  <span className="px-2 py-0.5 text-xs font-medium bg-[#5c7cfa]/10 text-[#5c7cfa] rounded-full">
+                  <span className="px-2 py-0.5 text-xs font-medium bg-primary-500/10 text-primary-500 rounded-full">
                     {selectedFiles.length} files
                   </span>
                 )}
               </div>
               <button
                 onClick={handleCancelUpload}
-                className="p-2 hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded transition-colors"
+                className="p-2 hover:bg-surface-inset rounded transition-colors"
                 disabled={!!uploadProgress}
               >
                 <X className="h-5 w-5" />
@@ -505,23 +503,23 @@ export const DocumentList = ({
                 {selectedFiles.map((file, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between px-3 py-2 bg-[#f8f9fc] dark:bg-[#1a1d28] rounded-lg"
+                    className="flex items-center justify-between px-3 py-2 bg-surface-page rounded-lg"
                   >
                     <div className="flex items-center gap-2 min-w-0">
-                      <FileText className="h-4 w-4 text-[#6b7194] dark:text-[#8b90a8] shrink-0" />
-                      <span className="text-sm text-[#1a1d2e] dark:text-[#eef0f6] truncate">
+                      <FileText className="h-4 w-4 text-text-secondary shrink-0" />
+                      <span className="text-sm text-text-primary truncate">
                         {file.name}
                       </span>
-                      <span className="text-xs text-[#6b7194] dark:text-[#8b90a8] shrink-0">
+                      <span className="text-xs text-text-secondary shrink-0">
                         {formatFileSize(file.size)}
                       </span>
                     </div>
                     {!uploadProgress && (
                       <button
                         onClick={() => handleRemoveFile(index)}
-                        className="p-1 hover:bg-[#edf0f7] dark:hover:bg-[#2a2e3f] rounded transition-colors shrink-0"
+                        className="p-1 hover:bg-neutral-50 rounded transition-colors shrink-0"
                       >
-                        <X className="h-3.5 w-3.5 text-[#6b7194] dark:text-[#8b90a8]" />
+                        <X className="h-3.5 w-3.5 text-text-secondary " />
                       </button>
                     )}
                   </div>
@@ -531,21 +529,21 @@ export const DocumentList = ({
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                <label className="block text-sm font-medium text-text-secondary mb-1">
                   Title (optional)
                 </label>
                 <input
                   type="text"
                   value={uploadTitle}
                   onChange={(e) => setUploadTitle(e.target.value)}
-                  className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] dark:bg-[#1e2130] dark:text-[#eef0f6] rounded px-3 py-2"
+                  className="w-full border border-border-strong rounded px-3 py-2"
                   placeholder="e.g., Floor Plan"
                   disabled={!!uploadProgress}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                <label className="block text-sm font-medium text-text-secondary mb-1">
                   Notes (optional)
                 </label>
                 <RichTextEditor
@@ -561,14 +559,14 @@ export const DocumentList = ({
             <div className="flex gap-2 justify-end mt-6">
               <button
                 onClick={handleCancelUpload}
-                className="border border-[#c9cfd9] dark:border-[#3a3f54] dark:text-[#c4c8db] px-4 py-2 rounded hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                className="border border-border-strong px-4 py-2 rounded hover:bg-surface-inset transition-colors"
                 disabled={!!uploadProgress}
               >
                 Cancel
               </button>
               <button
                 onClick={handleUpload}
-                className="relative overflow-hidden bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="relative overflow-hidden bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors disabled:opacity-50 flex items-center gap-2"
                 disabled={!!uploadProgress || selectedFiles.length === 0}
                 aria-busy={!!uploadProgress}
               >
@@ -582,7 +580,7 @@ export const DocumentList = ({
                       aria-valuenow={uploadProgress.current}
                       aria-valuemin={0}
                       aria-valuemax={uploadProgress.total}
-                      className="absolute bottom-0 left-0 h-0.5 bg-white/30 transition-all duration-300"
+                      className="absolute bottom-0 left-0 h-0.5 bg-surface-card/30 transition-all duration-300"
                       style={{
                         width: `${(uploadProgress.current / uploadProgress.total) * 100}%`,
                       }}

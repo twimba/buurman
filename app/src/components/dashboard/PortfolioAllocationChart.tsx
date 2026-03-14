@@ -3,22 +3,22 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import type { AllocationData, AllocationSlice } from '@/types/portfolio';
 
 const CATEGORY_COLORS: Record<string, string> = {
-  RESIDENTIAL: '#3B82F6',
-  COMMERCIAL: '#8B5CF6',
-  INDUSTRIAL: '#F59E0B',
-  AGRICULTURAL: '#10B981',
+  RESIDENTIAL: '#0284c7',
+  COMMERCIAL: '#7c3aed',
+  INDUSTRIAL: '#f59e0b',
+  AGRICULTURAL: '#059669',
   MIXED_USE: '#EC4899',
 };
 
 const FALLBACK_COLORS = [
-  '#3B82F6',
-  '#8B5CF6',
-  '#F59E0B',
-  '#10B981',
+  '#0284c7',
+  '#7c3aed',
+  '#f59e0b',
+  '#059669',
   '#EC4899',
   '#06B6D4',
   '#F97316',
-  '#6366F1',
+  '#0284c7',
   '#14B8A6',
   '#84CC16',
 ];
@@ -57,7 +57,7 @@ export const PortfolioAllocationChart = ({
 
   if (slices.length === 0) {
     return (
-      <div className="flex items-center justify-center h-80 text-[#6b7194] dark:text-[#8b90a8] text-sm">
+      <div className="flex items-center justify-center h-80 text-text-secondary text-sm">
         No allocation data available
       </div>
     );
@@ -70,8 +70,8 @@ export const PortfolioAllocationChart = ({
           onClick={() => setView('category')}
           className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
             view === 'category'
-              ? 'bg-[#5c7cfa] text-white'
-              : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#e8ecf4] dark:hover:bg-[#3a3f54]'
+              ? 'bg-primary-500 text-white'
+              : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
           }`}
         >
           By Category
@@ -80,8 +80,8 @@ export const PortfolioAllocationChart = ({
           onClick={() => setView('country')}
           className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
             view === 'country'
-              ? 'bg-[#5c7cfa] text-white'
-              : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#e8ecf4] dark:hover:bg-[#3a3f54]'
+              ? 'bg-primary-500 text-white'
+              : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
           }`}
         >
           By Country
@@ -125,10 +125,8 @@ export const PortfolioAllocationChart = ({
                   backgroundColor: getColor(slice.label, idx, isCategory),
                 }}
               />
-              <span className="text-[#1a1d2e] dark:text-[#eef0f6] truncate">
-                {slice.label}
-              </span>
-              <span className="ml-auto text-[#6b7194] dark:text-[#8b90a8] tabular-nums">
+              <span className="text-text-primary truncate">{slice.label}</span>
+              <span className="ml-auto text-text-secondary tabular-nums">
                 {slice.percentage.toFixed(1)}%
               </span>
             </div>

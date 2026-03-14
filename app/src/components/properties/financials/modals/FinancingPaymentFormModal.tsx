@@ -114,9 +114,8 @@ export const FinancingPaymentFormModal = ({
   };
 
   const inputClass =
-    'w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md px-3 py-2 bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]';
-  const labelClass =
-    'block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1';
+    'w-full border border-border-strong rounded-md px-3 py-2 bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500';
+  const labelClass = 'block text-sm font-medium text-text-secondary mb-1';
 
   return (
     <div
@@ -127,14 +126,14 @@ export const FinancingPaymentFormModal = ({
         }
       }}
     >
-      <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-xl dark:shadow-black/20 max-w-lg w-full mx-4 max-h-[90vh] flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b border-[#c9cfd9] dark:border-[#3a3f54] flex-shrink-0">
-          <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+      <div className="bg-surface-card rounded-lg shadow-xl dark:shadow-black/20 max-w-lg w-full mx-4 max-h-[90vh] flex flex-col">
+        <div className="flex items-center justify-between p-4 border-b border-border-strong flex-shrink-0">
+          <h2 className="text-lg font-semibold text-text-primary">
             {existing ? 'Edit Payment' : 'Record Payment'}
           </h2>
           <button
             onClick={onClose}
-            className="text-[#8a8fa8] hover:text-[#3d4463] dark:hover:text-[#eef0f6]"
+            className="text-text-muted hover:text-text-secondary"
           >
             <X className="w-5 h-5" />
           </button>
@@ -233,11 +232,11 @@ export const FinancingPaymentFormModal = ({
               id="deductFromBalance"
               checked={formData.deductFromBalance ?? false}
               onChange={(e) => update('deductFromBalance', e.target.checked)}
-              className="h-4 w-4 rounded border-[#c9cfd9] dark:border-[#3a3f54] text-[#5c7cfa] focus:ring-[#5c7cfa]"
+              className="h-4 w-4 rounded border-border-strong text-primary-500 focus:ring-primary-500"
             />
             <label
               htmlFor="deductFromBalance"
-              className="text-sm text-[#3d4463] dark:text-[#c4c8db]"
+              className="text-sm text-text-secondary"
             >
               Deduct principal from financing balance
             </label>
@@ -274,11 +273,11 @@ export const FinancingPaymentFormModal = ({
           )}
         </form>
 
-        <div className="flex justify-end gap-3 p-4 border-t border-[#c9cfd9] dark:border-[#3a3f54] flex-shrink-0">
+        <div className="flex justify-end gap-3 p-4 border-t border-border-strong flex-shrink-0">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+            className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset"
           >
             Cancel
           </button>
@@ -286,7 +285,7 @@ export const FinancingPaymentFormModal = ({
             type="submit"
             onClick={handleSubmit}
             disabled={isLoading}
-            className="bg-[#5c7cfa] text-white px-4 py-2 text-sm font-medium rounded-md hover:bg-[#4c6ef5] disabled:opacity-50"
+            className="bg-primary-500 text-white px-4 py-2 text-sm font-medium rounded-md hover:bg-primary-600 disabled:opacity-50"
           >
             {isLoading
               ? 'Saving...'

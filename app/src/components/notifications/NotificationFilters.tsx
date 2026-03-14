@@ -33,12 +33,12 @@ export const NotificationFilters = ({
   onFilterChange,
 }: NotificationFiltersProps) => {
   const selectClass =
-    'border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg px-3 py-2 bg-white dark:bg-[#14161f] text-sm text-[#1a1d2e] dark:text-[#eef0f6] focus:outline-none focus:ring-2 focus:ring-[#5c7cfa]/30';
+    'border border-border-strong rounded-lg px-3 py-2 bg-surface-card text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500/30';
 
   return (
     <div className="flex flex-wrap items-center gap-3">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9ca0b8] dark:text-[#5c6180]" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted " />
         <input
           type="text"
           placeholder="Search by email..."
@@ -49,7 +49,7 @@ export const NotificationFilters = ({
               recipientEmail: e.target.value || undefined,
             })
           }
-          className="pl-9 pr-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-lg bg-white dark:bg-[#14161f] text-sm text-[#1a1d2e] dark:text-[#eef0f6] placeholder-[#9ca0b8] dark:placeholder-[#5c6180] focus:outline-none focus:ring-2 focus:ring-[#5c7cfa]/30 w-56"
+          className="pl-9 pr-3 py-2 border border-border-strong rounded-lg bg-surface-card text-sm text-text-primary placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30 w-56"
         />
       </div>
 

@@ -74,15 +74,15 @@ export const AcquisitionFormModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-xl dark:shadow-black/20 max-w-lg w-full mx-4">
-        <div className="flex items-center justify-between p-4 border-b border-[#c9cfd9] dark:border-[#3a3f54]">
-          <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+      <div className="bg-surface-card rounded-lg shadow-xl dark:shadow-black/20 max-w-lg w-full mx-4">
+        <div className="flex items-center justify-between p-4 border-b border-border-strong">
+          <h2 className="text-lg font-semibold text-text-primary">
             {existing ? 'Edit Acquisition' : 'Add Acquisition'}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="text-[#6b7194] hover:text-[#3d4463] dark:text-[#8b90a8] dark:hover:text-[#c4c8db]"
+            className="text-text-secondary hover:text-text-secondary"
           >
             <X className="h-5 w-5" />
           </button>
@@ -94,7 +94,7 @@ export const AcquisitionFormModal = ({
           className="p-4 space-y-4 max-h-[70vh] overflow-y-auto"
         >
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Acquisition Type
             </label>
             <select
@@ -105,7 +105,7 @@ export const AcquisitionFormModal = ({
                   acquisitionType: e.target.value as AcquisitionType,
                 })
               }
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md px-3 py-2 bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+              className="w-full border border-border-strong rounded-md px-3 py-2 bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
             >
               {Object.values(AcquisitionType).map((type) => (
                 <option key={type} value={type}>
@@ -116,7 +116,7 @@ export const AcquisitionFormModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Acquisition Date
             </label>
             <input
@@ -128,12 +128,12 @@ export const AcquisitionFormModal = ({
                   acquisitionDate: e.target.value || undefined,
                 })
               }
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md px-3 py-2 bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+              className="w-full border border-border-strong rounded-md px-3 py-2 bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Purchase Price
             </label>
             <MoneyInput
@@ -144,7 +144,7 @@ export const AcquisitionFormModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Closing Costs
             </label>
             <MoneyInput
@@ -155,7 +155,7 @@ export const AcquisitionFormModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Renovation Costs
             </label>
             <MoneyInput
@@ -166,7 +166,7 @@ export const AcquisitionFormModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Land Value
             </label>
             <MoneyInput
@@ -177,7 +177,7 @@ export const AcquisitionFormModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Depreciation Method
             </label>
             <select
@@ -188,7 +188,7 @@ export const AcquisitionFormModal = ({
                   depreciationMethod: e.target.value as DepreciationMethod,
                 })
               }
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md px-3 py-2 bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+              className="w-full border border-border-strong rounded-md px-3 py-2 bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
             >
               {Object.values(DepreciationMethod).map((method) => (
                 <option key={method} value={method}>
@@ -199,7 +199,7 @@ export const AcquisitionFormModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Depreciation Years
             </label>
             <div className="relative">
@@ -215,16 +215,16 @@ export const AcquisitionFormModal = ({
                       : undefined,
                   })
                 }
-                className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md px-3 py-2 pr-14 bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+                className="w-full border border-border-strong rounded-md px-3 py-2 pr-14 bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#6b7194] dark:text-[#8b90a8]">
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-text-secondary">
                 years
               </span>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Notes
             </label>
             <RichTextEditor
@@ -237,11 +237,11 @@ export const AcquisitionFormModal = ({
           </div>
         </form>
 
-        <div className="flex justify-end gap-3 p-4 border-t border-[#c9cfd9] dark:border-[#3a3f54]">
+        <div className="flex justify-end gap-3 p-4 border-t border-border-strong">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+            className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset"
           >
             Cancel
           </button>
@@ -249,7 +249,7 @@ export const AcquisitionFormModal = ({
             type="submit"
             form="acquisition-form"
             disabled={mutation.isPending}
-            className="bg-[#5c7cfa] text-white px-4 py-2 text-sm font-medium rounded-md hover:bg-[#4c6ef5] disabled:opacity-50"
+            className="bg-primary-500 text-white px-4 py-2 text-sm font-medium rounded-md hover:bg-primary-600 disabled:opacity-50"
           >
             {mutation.isPending ? 'Saving...' : 'Save'}
           </button>

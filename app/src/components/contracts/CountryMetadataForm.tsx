@@ -25,16 +25,16 @@ export default function CountryMetadataForm({
   if (isLoading) {
     return (
       <div className="animate-pulse space-y-3">
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
-        <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded" />
-        <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded" />
+        <div className="h-4 bg-surface-inset rounded w-1/3" />
+        <div className="h-10 bg-surface-inset rounded" />
+        <div className="h-10 bg-surface-inset rounded" />
       </div>
     );
   }
 
   if (!schema || schema.fields.length === 0) {
     return (
-      <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+      <p className="text-sm text-text-secondary italic">
         No country-specific fields available for {countryCode}.
       </p>
     );
@@ -68,7 +68,7 @@ export default function CountryMetadataForm({
         }
         return (
           <div key={group.key}>
-            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+            <h4 className="text-sm font-medium text-text-primary mb-3">
               {group.label}
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -110,9 +110,7 @@ function HelpText({ text }: { text?: string }) {
   if (!text) {
     return null;
   }
-  return (
-    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{text}</p>
-  );
+  return <p className="text-sm text-text-secondary mt-1">{text}</p>;
 }
 
 function FieldLabel({
@@ -125,14 +123,10 @@ function FieldLabel({
   required?: boolean;
 }) {
   return (
-    <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">
+    <label className="block text-sm text-text-secondary mb-1">
       {label}
-      {required && <span className="text-red-500 ml-0.5">*</span>}
-      {unit && (
-        <span className="ml-1 text-xs text-gray-400 dark:text-gray-500">
-          ({unit})
-        </span>
-      )}
+      {required && <span className="text-error-text ml-0.5">*</span>}
+      {unit && <span className="ml-1 text-xs text-text-muted">({unit})</span>}
     </label>
   );
 }
@@ -174,7 +168,7 @@ function MetadataField({
   disabled,
 }: MetadataFieldProps) {
   const inputClasses =
-    'block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed';
+    'block w-full rounded-md border border-border-strong bg-surface-card px-3 py-2 text-sm text-text-primary placeholder-text-muted focus:border-primary-500 focus:ring-1 focus:ring-primary-500 disabled:bg-surface-inset disabled:cursor-not-allowed';
 
   switch (field.type) {
     case 'MONEY': {
@@ -214,8 +208,8 @@ function MetadataField({
                 className="sr-only peer"
                 aria-label={field.label}
               />
-              <div className="w-9 h-5 bg-gray-200 dark:bg-gray-700 peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600 peer-disabled:opacity-50" />
-              <span className="ml-3 text-sm text-gray-700 dark:text-gray-300">
+              <div className="w-9 h-5 bg-surface-inset peer-focus:ring-2 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-card after:border-border-default after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-500 peer-disabled:opacity-50" />
+              <span className="ml-3 text-sm text-text-primary">
                 {field.label}
               </span>
             </label>

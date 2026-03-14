@@ -115,61 +115,57 @@ export const TenantForm = ({
     >
       {/* Personal Information */}
       <div>
-        <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+        <h3 className="text-lg font-semibold text-text-primary mb-4">
           Personal Information
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
-              First Name <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-text-secondary mb-1">
+              First Name <span className="text-error-text">*</span>
             </label>
             <input
               type="text"
               value={formData.firstName}
               onChange={(e) => handleChange('firstName', e.target.value)}
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
+              className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary"
               placeholder="John"
             />
             {errors.firstName && (
-              <p className="text-red-600 dark:text-red-400 text-sm mt-1">
-                {errors.firstName}
-              </p>
+              <p className="text-error-text text-sm mt-1">{errors.firstName}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Last Name
             </label>
             <input
               type="text"
               value={formData.lastName ?? ''}
               onChange={(e) => handleChange('lastName', e.target.value)}
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
+              className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary"
               placeholder="Doe"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Email
             </label>
             <input
               type="email"
               value={formData.email}
               onChange={(e) => handleChange('email', e.target.value)}
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
+              className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary"
               placeholder="john@example.com"
             />
             {errors.email && (
-              <p className="text-red-600 dark:text-red-400 text-sm mt-1">
-                {errors.email}
-              </p>
+              <p className="text-error-text text-sm mt-1">{errors.email}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Phone
             </label>
             <PhoneInput
@@ -180,27 +176,27 @@ export const TenantForm = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Tax Number
             </label>
             <input
               type="text"
               value={formData.taxNumber ?? ''}
               onChange={(e) => handleChange('taxNumber', e.target.value)}
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
+              className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary"
               placeholder="123456789"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+            <label className="block text-sm font-medium text-text-secondary mb-1">
               Government ID Number
             </label>
             <input
               type="text"
               value={formData.idNumber ?? ''}
               onChange={(e) => handleChange('idNumber', e.target.value)}
-              className="w-full border border-[#c9cfd9] dark:border-[#3a3f54] rounded px-3 py-2 focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa] bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
+              className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary"
               placeholder="AB123456"
             />
           </div>
@@ -209,7 +205,7 @@ export const TenantForm = ({
 
       {/* Additional Information */}
       <div>
-        <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+        <h3 className="text-lg font-semibold text-text-primary mb-4">
           Additional Information
         </h3>
         <div>
@@ -223,11 +219,11 @@ export const TenantForm = ({
       </div>
 
       {/* Actions */}
-      <div className="flex gap-2 justify-end mt-6 pt-6 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
+      <div className="flex gap-2 justify-end mt-6 pt-6 border-t border-border-default">
         <button
           type="button"
           onClick={() => navigate('/tenants')}
-          className="border border-[#c9cfd9] dark:border-[#3a3f54] px-4 py-2 rounded hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors flex items-center gap-2 text-[#3d4463] dark:text-[#c4c8db]"
+          className="border border-border-strong px-4 py-2 rounded hover:bg-surface-inset transition-colors flex items-center gap-2 text-text-secondary"
           disabled={isLoading}
         >
           <X className="h-4 w-4" />
@@ -235,7 +231,7 @@ export const TenantForm = ({
         </button>
         <button
           type="submit"
-          className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors disabled:opacity-50 flex items-center gap-2"
+          className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors disabled:opacity-50 flex items-center gap-2"
           disabled={isLoading}
         >
           <Save className="h-4 w-4" />

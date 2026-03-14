@@ -57,7 +57,7 @@ export const PortfolioOccupancyChart = ({
 
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-80 text-[#6b7194] dark:text-[#8b90a8] text-sm">
+      <div className="flex items-center justify-center h-80 text-text-secondary text-sm">
         No occupancy data available
       </div>
     );
@@ -72,8 +72,8 @@ export const PortfolioOccupancyChart = ({
             <stop offset="95%" stopColor="#06B6D4" stopOpacity={0} />
           </linearGradient>
           <linearGradient id="portfolioSelfGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3} />
-            <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
+            <stop offset="5%" stopColor="#0284c7" stopOpacity={0.3} />
+            <stop offset="95%" stopColor="#0284c7" stopOpacity={0} />
           </linearGradient>
         </defs>
         <CartesianGrid
@@ -125,7 +125,7 @@ export const PortfolioOccupancyChart = ({
           type="monotone"
           dataKey="selfOccupancyPercent"
           stackId="occ"
-          stroke="#3B82F6"
+          stroke="#0284c7"
           fill="url(#portfolioSelfGrad)"
           strokeWidth={2}
         />

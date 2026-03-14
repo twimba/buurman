@@ -27,17 +27,15 @@ export const SettingsPage = () => {
           <div className="mb-6">
             <div className="flex items-center gap-3 mb-1">
               <SettingsIcon className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-              <h1 className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
-                Settings
-              </h1>
+              <h1 className="text-3xl font-bold text-text-primary">Settings</h1>
             </div>
-            <p className="text-[#6b7194] dark:text-[#8b90a8] ml-11">
+            <p className="text-text-secondary ml-11">
               Manage your personal profile and preferences
             </p>
           </div>
 
           {/* Tabs */}
-          <div className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+          <div className="border-b border-border-default">
             <nav className="-mb-px flex space-x-1 overflow-x-auto">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
@@ -50,8 +48,8 @@ export const SettingsPage = () => {
                       group inline-flex items-center gap-2 py-4 px-3 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
                       ${
                         isActive
-                          ? 'border-[#5c7cfa] text-primary-500 dark:text-primary-300 dark:border-blue-400'
-                          : 'border-transparent text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:hover:text-[#c4c8db] hover:border-[#c9cfd9] dark:hover:border-[#3a3f54]'
+                          ? 'border-primary-500 text-primary-500'
+                          : 'border-transparent text-text-secondary hover:text-text-primary hover:border-border-strong'
                       }
                     `}
                   >
@@ -59,7 +57,7 @@ export const SettingsPage = () => {
                       className={`h-5 w-5 ${
                         isActive
                           ? 'text-primary-500 dark:text-primary-300'
-                          : 'text-[#9ca0b8] dark:text-[#5c6180] group-hover:text-[#6b7194] dark:group-hover:text-[#c4c8db]'
+                          : 'text-text-muted group-hover:text-text-secondary'
                       }`}
                     />
                     {tab.label}

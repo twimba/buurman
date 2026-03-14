@@ -93,39 +93,39 @@ export const DashboardPage = () => {
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Total Properties */}
-        <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-[#edf0f7] dark:border-[#2a2e3f] hover:border-blue-200">
+        <div className="bg-surface-card rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-border-default hover:border-info-border">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-[#6b7194] dark:text-[#8b90a8]">
+            <h3 className="text-sm font-medium text-text-secondary">
               Total Properties
             </h3>
-            <div className="p-2 bg-primary-100 dark:bg-primary-500/10 rounded-lg">
-              <Home className="h-5 w-5 text-primary-500 dark:text-primary-300" />
+            <div className="p-2 bg-primary-100 rounded-lg">
+              <Home className="h-5 w-5 text-primary-500" />
             </div>
           </div>
-          <div className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+          <div className="text-3xl font-bold text-text-primary">
             {stats?.totalProperties ?? 0}
           </div>
-          <div className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-2">
+          <div className="text-sm text-text-secondary mt-2">
             Active properties in portfolio
           </div>
         </div>
 
         {/* Occupied Units */}
-        <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-[#edf0f7] dark:border-[#2a2e3f] hover:border-green-200">
+        <div className="bg-surface-card rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-border-default hover:border-success-border">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-[#6b7194] dark:text-[#8b90a8]">
+            <h3 className="text-sm font-medium text-text-secondary">
               Occupied
             </h3>
-            <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-              <Users className="h-5 w-5 text-green-600 dark:text-green-400" />
+            <div className="p-2 bg-success-bg rounded-lg">
+              <Users className="h-5 w-5 text-success-text" />
             </div>
           </div>
-          <div className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+          <div className="text-3xl font-bold text-text-primary">
             {stats?.occupiedUnits ?? 0}
           </div>
-          <div className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-2">
+          <div className="text-sm text-text-secondary mt-2">
             {stats?.selfOccupiedUnits
-              ? `${stats.selfOccupiedUnits} self-occupied, `
+              ? `${stats.selfOccupiedUnits} self-occupied,`
               : ''}
             {stats?.vacantUnits ?? 0} vacant, {stats?.maintenanceUnits ?? 0} in
             maintenance
@@ -133,34 +133,34 @@ export const DashboardPage = () => {
         </div>
 
         {/* Occupancy Rate */}
-        <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-[#edf0f7] dark:border-[#2a2e3f] hover:border-purple-200">
+        <div className="bg-surface-card rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-border-default hover:border-primary-200">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-[#6b7194] dark:text-[#8b90a8]">
+            <h3 className="text-sm font-medium text-text-secondary">
               <MetricHint label="Occupancy Rate" />
             </h3>
-            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-              <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+            <div className="p-2 bg-primary-50 rounded-lg">
+              <TrendingUp className="h-5 w-5 text-primary-700" />
             </div>
           </div>
-          <div className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+          <div className="text-3xl font-bold text-text-primary">
             {stats?.occupancyRate?.toFixed(1) ?? 0}%
           </div>
-          <div className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-2">
+          <div className="text-sm text-text-secondary mt-2">
             Current occupancy level
           </div>
         </div>
 
         {/* Monthly Income */}
-        <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-[#edf0f7] dark:border-[#2a2e3f] hover:border-emerald-200">
+        <div className="bg-surface-card rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-border-default hover:border-success-border">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-[#6b7194] dark:text-[#8b90a8]">
+            <h3 className="text-sm font-medium text-text-secondary">
               Monthly Income
             </h3>
-            <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
-              <DollarSign className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+            <div className="p-2 bg-success-bg rounded-lg">
+              <DollarSign className="h-5 w-5 text-success-text" />
             </div>
           </div>
-          <div className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+          <div className="text-3xl font-bold text-text-primary">
             {stats?.monthlyIncome?.currency
               ? new Intl.NumberFormat('nl-NL', {
                   style: 'currency',
@@ -173,7 +173,7 @@ export const DashboardPage = () => {
                   maximumFractionDigits: 0,
                 })}
           </div>
-          <div className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-2">
+          <div className="text-sm text-text-secondary mt-2">
             Expected monthly revenue
           </div>
         </div>
@@ -183,21 +183,21 @@ export const DashboardPage = () => {
       {stats && stats.totalProperties > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Status Cards */}
-          <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#c4c8db] mb-4">
+          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+            <h2 className="text-xl font-semibold text-text-primary mb-4">
               Property Status Breakdown
             </h2>
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-4 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-200 dark:border-green-800">
+              <div className="flex items-center justify-between p-4 bg-success-bg rounded-lg border border-success-border">
                 <div>
-                  <div className="text-sm font-medium text-green-900 dark:text-green-100">
+                  <div className="text-sm font-medium text-success-text">
                     Occupied
                   </div>
-                  <div className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">
+                  <div className="text-2xl font-bold text-success-text mt-1">
                     {stats.occupiedUnits}
                   </div>
                 </div>
-                <div className="text-sm text-green-700 dark:text-green-300">
+                <div className="text-sm text-success-text">
                   {(
                     (stats.occupiedUnits / stats.totalProperties) *
                     100
@@ -206,16 +206,16 @@ export const DashboardPage = () => {
                 </div>
               </div>
               {stats.selfOccupiedUnits > 0 && (
-                <div className="flex items-center justify-between p-4 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg border border-indigo-200 dark:border-indigo-800">
+                <div className="flex items-center justify-between p-4 bg-info-bg rounded-lg border border-info-border">
                   <div>
-                    <div className="text-sm font-medium text-indigo-900 dark:text-indigo-100">
+                    <div className="text-sm font-medium text-info-text">
                       Self-Occupied
                     </div>
-                    <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">
+                    <div className="text-2xl font-bold text-info-text mt-1">
                       {stats.selfOccupiedUnits}
                     </div>
                   </div>
-                  <div className="text-sm text-indigo-700 dark:text-indigo-300">
+                  <div className="text-sm text-info-text">
                     {(
                       (stats.selfOccupiedUnits / stats.totalProperties) *
                       100
@@ -224,32 +224,32 @@ export const DashboardPage = () => {
                   </div>
                 </div>
               )}
-              <div className="flex items-center justify-between p-4 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg border border-yellow-200 dark:border-yellow-800">
+              <div className="flex items-center justify-between p-4 bg-warning-bg rounded-lg border border-warning-border">
                 <div>
-                  <div className="text-sm font-medium text-yellow-900 dark:text-yellow-100">
+                  <div className="text-sm font-medium text-warning-text">
                     Vacant
                   </div>
-                  <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400 mt-1">
+                  <div className="text-2xl font-bold text-warning-text mt-1">
                     {stats.vacantUnits}
                   </div>
                 </div>
-                <div className="text-sm text-yellow-700 dark:text-yellow-300">
+                <div className="text-sm text-warning-text">
                   {((stats.vacantUnits / stats.totalProperties) * 100).toFixed(
                     0
                   )}
                   %
                 </div>
               </div>
-              <div className="flex items-center justify-between p-4 bg-orange-50 dark:bg-orange-900/30 rounded-lg border border-orange-200 dark:border-orange-800">
+              <div className="flex items-center justify-between p-4 bg-warning-bg rounded-lg border border-warning-border">
                 <div>
-                  <div className="text-sm font-medium text-orange-900 dark:text-orange-100">
+                  <div className="text-sm font-medium text-warning-text">
                     Maintenance
                   </div>
-                  <div className="text-2xl font-bold text-orange-600 dark:text-orange-400 mt-1">
+                  <div className="text-2xl font-bold text-warning-text mt-1">
                     {stats.maintenanceUnits}
                   </div>
                 </div>
-                <div className="text-sm text-orange-700 dark:text-orange-300">
+                <div className="text-sm text-warning-text">
                   {(
                     (stats.maintenanceUnits / stats.totalProperties) *
                     100
@@ -257,16 +257,16 @@ export const DashboardPage = () => {
                   %
                 </div>
               </div>
-              <div className="flex items-center justify-between p-4 bg-[#f8f9fc] dark:bg-[#0c0d14] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f]">
+              <div className="flex items-center justify-between p-4 bg-surface-page rounded-lg border border-border-default">
                 <div>
-                  <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                  <div className="text-sm font-medium text-text-primary">
                     Unavailable
                   </div>
-                  <div className="text-2xl font-bold text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                  <div className="text-2xl font-bold text-text-secondary mt-1">
                     {stats.unavailableUnits}
                   </div>
                 </div>
-                <div className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
+                <div className="text-sm text-text-secondary">
                   {(
                     (stats.unavailableUnits / stats.totalProperties) *
                     100
@@ -278,8 +278,8 @@ export const DashboardPage = () => {
           </div>
 
           {/* Status Chart */}
-          <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#c4c8db] mb-4">
+          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+            <h2 className="text-xl font-semibold text-text-primary mb-4">
               Distribution Overview
             </h2>
             <PropertyStatusChart
@@ -294,14 +294,14 @@ export const DashboardPage = () => {
       )}
 
       {/* Unpaid Payments */}
-      <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-6">
+      <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#c4c8db]">
+            <h2 className="text-xl font-semibold text-text-primary">
               Unpaid Payments
             </h2>
             {unpaidPayments.length > 0 && (
-              <span className="px-2.5 py-0.5 rounded-full text-sm font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300">
+              <span className="px-2.5 py-0.5 rounded-full text-sm font-medium bg-warning-bg text-warning-text">
                 {unpaidPayments.length}
               </span>
             )}
@@ -309,10 +309,8 @@ export const DashboardPage = () => {
           <div className="flex items-center gap-4">
             {unpaidPayments.length > 0 && (
               <div className="text-right">
-                <div className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                  Total pending
-                </div>
-                <div className="text-lg font-bold text-amber-600">
+                <div className="text-sm text-text-secondary">Total pending</div>
+                <div className="text-lg font-bold text-warning-text">
                   {pendingCurrency}
                   {totalPending.toLocaleString(undefined, {
                     minimumFractionDigits: 2,
@@ -323,7 +321,7 @@ export const DashboardPage = () => {
             )}
             <button
               onClick={() => navigate('/payments')}
-              className="text-sm text-[#5c7cfa] hover:text-[#4263eb] font-medium flex items-center gap-1"
+              className="text-sm text-primary-500 hover:text-primary-600 font-medium flex items-center gap-1"
             >
               View all
               <ArrowRight className="h-4 w-4" />
@@ -336,7 +334,7 @@ export const DashboardPage = () => {
             <LoadingSpinner />
           </div>
         ) : unpaidPayments.length > 0 ? (
-          <div className="divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
+          <div className="divide-y divide-border-default">
             {unpaidPayments.slice(0, 10).map((payment) => {
               const isOverdue = payment.status === 'OVERDUE';
               return (
@@ -346,12 +344,12 @@ export const DashboardPage = () => {
                 >
                   <div className="flex items-center gap-3 min-w-0 flex-1">
                     <div
-                      className={`flex-shrink-0 p-2 rounded-lg ${isOverdue ? 'bg-red-100 dark:bg-red-900/30' : 'bg-amber-100 dark:bg-amber-900/30'}`}
+                      className={`flex-shrink-0 p-2 rounded-lg ${isOverdue ? 'bg-error-bg' : 'bg-warning-bg'}`}
                     >
                       {isOverdue ? (
-                        <AlertTriangle className="h-4 w-4 text-red-600" />
+                        <AlertTriangle className="h-4 w-4 text-error-text" />
                       ) : (
-                        <Clock className="h-4 w-4 text-amber-600" />
+                        <Clock className="h-4 w-4 text-warning-text" />
                       )}
                     </div>
                     <div className="min-w-0 flex-1">
@@ -360,21 +358,21 @@ export const DashboardPage = () => {
                           onClick={() =>
                             navigate(`/payments/${payment.identifier}`)
                           }
-                          className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6] hover:text-[#5c7cfa] truncate"
+                          className="text-sm font-medium text-text-primary hover:text-primary-500 truncate"
                         >
                           {payment.property?.street || 'Payment'} &mdash;{' '}
                           {payment.tenant?.firstName} {payment.tenant?.lastName}
                         </button>
                         <span
-                          className={`flex-shrink-0 px-2 py-0.5 rounded text-xs font-medium ${isOverdue ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300' : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'}`}
+                          className={`flex-shrink-0 px-2 py-0.5 rounded text-xs font-medium ${isOverdue ? 'bg-error-bg text-error-text' : 'bg-warning-bg text-warning-text'}`}
                         >
                           {payment.status}
                         </span>
                       </div>
-                      <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-0.5">
+                      <p className="text-xs text-text-secondary mt-0.5">
                         Due {formatDate(payment.dueDate)}
                         {isOverdue && (
-                          <span className="text-red-500 ml-1">
+                          <span className="text-error-text ml-1">
                             (
                             {formatDistanceToNow(new Date(payment.dueDate), {
                               addSuffix: false,
@@ -386,7 +384,7 @@ export const DashboardPage = () => {
                     </div>
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0">
-                    <span className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <span className="text-sm font-semibold text-text-primary">
                       {payment.currency}
                       {payment.amount.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
@@ -397,7 +395,7 @@ export const DashboardPage = () => {
                       <button
                         onClick={() => handleMarkPaid(payment.identifier)}
                         disabled={markingPaidId === payment.identifier}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900/30 border border-green-200 dark:border-green-800 transition-colors disabled:opacity-50"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg bg-success-bg text-success-text hover:bg-success-bg/80 border border-success-border transition-colors disabled:opacity-50"
                       >
                         <CheckCircle className="h-3.5 w-3.5" />
                         {markingPaidId === payment.identifier
@@ -413,7 +411,7 @@ export const DashboardPage = () => {
               <div className="pt-3 text-center">
                 <button
                   onClick={() => navigate('/payments')}
-                  className="text-sm text-[#5c7cfa] hover:text-[#4263eb] font-medium"
+                  className="text-sm text-primary-500 hover:text-primary-600 font-medium"
                 >
                   +{unpaidPayments.length - 10} more unpaid payments
                 </button>
@@ -422,24 +420,22 @@ export const DashboardPage = () => {
           </div>
         ) : (
           <div className="text-center py-8">
-            <CheckCircle className="h-10 w-10 text-green-400 mx-auto mb-2" />
-            <p className="text-[#6b7194] dark:text-[#8b90a8]">
-              All payments are up to date
-            </p>
+            <CheckCircle className="h-10 w-10 text-success-text mx-auto mb-2" />
+            <p className="text-text-secondary">All payments are up to date</p>
           </div>
         )}
       </div>
 
       {/* Recent Activities */}
-      <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-6">
+      <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#c4c8db]">
+          <h2 className="text-xl font-semibold text-text-primary">
             Recent Activities
           </h2>
           {activities && activities.length > 0 && (
             <button
               onClick={() => navigate('/admin/activity-log')}
-              className="text-sm text-[#5c7cfa] hover:text-[#4263eb] font-medium flex items-center gap-1"
+              className="text-sm text-primary-500 hover:text-primary-600 font-medium flex items-center gap-1"
             >
               View all
               <ArrowRight className="h-4 w-4" />
@@ -456,17 +452,17 @@ export const DashboardPage = () => {
             {activities.map((activity) => (
               <div
                 key={`${activity.entityType}-${activity.entityIdentifier}-${activity.timestamp}`}
-                className="flex items-start gap-4 p-4 hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded-lg transition-colors"
+                className="flex items-start gap-4 p-4 hover:bg-surface-inset rounded-lg transition-colors"
               >
                 <div
                   className={`
                     flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center
                     ${
                       activity.action === 'CREATE'
-                        ? 'bg-green-100 dark:bg-green-900/30'
+                        ? 'bg-success-bg'
                         : activity.action === 'UPDATE'
-                          ? 'bg-blue-100 dark:bg-blue-900/30'
-                          : 'bg-red-100 dark:bg-red-900/30'
+                          ? 'bg-info-bg'
+                          : 'bg-error-bg'
                     }
                   `}
                 >
@@ -475,10 +471,10 @@ export const DashboardPage = () => {
                       text-xs font-semibold
                       ${
                         activity.action === 'CREATE'
-                          ? 'text-green-700'
+                          ? 'text-success-text'
                           : activity.action === 'UPDATE'
-                            ? 'text-blue-700'
-                            : 'text-red-700'
+                            ? 'text-info-text'
+                            : 'text-error-text'
                       }
                     `}
                   >
@@ -486,10 +482,10 @@ export const DashboardPage = () => {
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                  <p className="text-sm text-text-primary">
                     {activity.description}
                   </p>
-                  <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                  <p className="text-xs text-text-secondary mt-1">
                     {formatRelative(activity.timestamp)}
                   </p>
                 </div>
@@ -498,10 +494,8 @@ export const DashboardPage = () => {
           </div>
         ) : (
           <div className="text-center py-8">
-            <p className="text-[#6b7194] dark:text-[#8b90a8]">
-              No recent activities
-            </p>
-            <p className="text-sm text-[#9ca0b8] dark:text-[#5c6180] mt-1">
+            <p className="text-text-secondary">No recent activities</p>
+            <p className="text-sm text-text-muted mt-1">
               Activities will appear here as you use the system
             </p>
           </div>

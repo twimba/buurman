@@ -24,9 +24,8 @@ import {
   useUpdateDocument,
 } from '@/hooks/useDocumentHooks';
 import { usePagination } from '@/hooks/usePagination';
-import { Pagination } from '@/components/ui/Pagination';
+import { Pagination, ConfirmDialog, RefreshButton } from '@buurman/ui';
 import { DocumentPreviewModal } from '@/components/documents/DocumentPreviewModal';
-import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EditMetadataModal } from '@/components/ui/EditMetadataModal';
 import { DocumentResponse } from '@/types/property';
 import { useFormatDate } from '@/hooks/useFormatDate';
@@ -34,7 +33,6 @@ import { useDocumentSelection } from '@/hooks/useDocumentSelection';
 import { useTeam } from '@/context/TeamContext';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { RichTextDisplay } from '@/components/ui/RichTextDisplay';
-import { RefreshButton } from '@/components/ui/RefreshButton';
 
 export const DocumentsPage = () => {
   const navigate = useNavigate();
@@ -113,9 +111,9 @@ export const DocumentsPage = () => {
 
   const getFileIcon = (mimeType: string) => {
     if (mimeType.startsWith('image/')) {
-      return <ImageIcon className="h-8 w-8 text-blue-500" />;
+      return <ImageIcon className="h-8 w-8 text-info-text" />;
     }
-    return <FileText className="h-8 w-8 text-[#6b7194] dark:text-[#8b90a8]" />;
+    return <FileText className="h-8 w-8 text-text-secondary " />;
   };
 
   const formatFileSize = (bytes: number): string => {
@@ -147,11 +145,11 @@ export const DocumentsPage = () => {
         <div>
           <div className="flex items-center gap-3 mb-1">
             <Folder className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-            <h1 className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+            <h1 className="text-3xl font-bold text-text-primary">
               Document Library
             </h1>
           </div>
-          <p className="text-[#6b7194] dark:text-[#8b90a8] ml-11">
+          <p className="text-text-secondary ml-11">
             Search and manage all your documents in one place
           </p>
         </div>
@@ -159,11 +157,11 @@ export const DocumentsPage = () => {
       </div>
 
       {/* Search and Filter Bar */}
-      <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-sm p-4 mb-6">
+      <div className="bg-surface-card rounded-lg shadow-sm p-4 mb-6">
         <div className="flex flex-col md:flex-row gap-4">
           {/* Search */}
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-muted " />
             <input
               type="text"
               placeholder="Search documents by title, filename, or notes..."
@@ -172,20 +170,20 @@ export const DocumentsPage = () => {
                 setSearchTerm(e.target.value);
                 resetPage();
               }}
-              className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6]"
+              className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
             />
           </div>
 
           {/* Entity Type Filter */}
           <div className="w-full md:w-48 relative">
-            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-muted " />
             <select
               value={entityTypeFilter}
               onChange={(e) => {
                 setEntityTypeFilter(e.target.value);
                 resetPage();
               }}
-              className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6]"
+              className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
             >
               <option value="">All Types</option>
               <option value="PROPERTY">Properties</option>
@@ -204,21 +202,19 @@ export const DocumentsPage = () => {
           <LoadingSpinner />
         </div>
       ) : !documents || documents.length === 0 ? (
-        <div className="text-center py-12 bg-white dark:bg-[#14161f] rounded-lg shadow-sm">
-          <FileText className="h-12 w-12 text-[#9ca0b8] dark:text-[#5c6180] mx-auto mb-4" />
-          <p className="text-[#6b7194] dark:text-[#8b90a8]">
-            No documents found
-          </p>
+        <div className="text-center py-12 bg-surface-card rounded-lg shadow-sm">
+          <FileText className="h-12 w-12 text-text-muted mx-auto mb-4" />
+          <p className="text-text-secondary">No documents found</p>
         </div>
       ) : (
         <>
-          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-sm overflow-hidden mb-4">
+          <div className="bg-surface-card rounded-lg shadow-sm overflow-hidden mb-4">
             {/* Selection bar */}
-            <div className="px-6 py-3 border-b border-[#edf0f7] dark:border-[#2a2e3f] flex items-center justify-between">
+            <div className="px-6 py-3 border-b border-border-default flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleSelectAll}
-                  className="text-[#6b7194] dark:text-[#8b90a8] hover:text-[#3d4463] dark:hover:text-[#c4c8db]"
+                  className="text-text-secondary hover:text-text-secondary"
                 >
                   {selectedDocuments.size === documents.length &&
                   documents.length > 0 ? (
@@ -227,7 +223,7 @@ export const DocumentsPage = () => {
                     <Square className="h-5 w-5" />
                   )}
                 </button>
-                <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                <span className="text-sm text-text-secondary">
                   {hasSelection
                     ? `${selectedDocuments.size} of ${documentsData?.totalElements ?? documents.length} selected`
                     : `${documentsData?.totalElements ?? documents.length} document${(documentsData?.totalElements ?? documents.length) !== 1 ? 's' : ''}`}
@@ -240,7 +236,7 @@ export const DocumentsPage = () => {
                   <button
                     onClick={handleBulkDownload}
                     disabled={bulkDownloadMutation.isPending}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] bg-white dark:bg-[#1e2130] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#2a2e3f] transition-colors disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset transition-colors disabled:opacity-50"
                   >
                     {bulkDownloadMutation.isPending ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -254,7 +250,7 @@ export const DocumentsPage = () => {
                   {canEditData && (
                     <button
                       onClick={handleBulkDelete}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-red-600 bg-white dark:bg-[#1e2130] border border-red-200 dark:border-red-900/30 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-error-text bg-surface-card border border-error-border rounded-md hover:bg-error-bg transition-colors"
                     >
                       <Trash2 className="h-4 w-4" />
                       Delete
@@ -264,12 +260,12 @@ export const DocumentsPage = () => {
               )}
             </div>
 
-            <table className="min-w-full divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
-              <thead className="bg-[#f8f9fc] dark:bg-[#0c0d14]">
+            <table className="min-w-full divide-y divide-border-default">
+              <thead className="bg-surface-page">
                 <tr>
                   <th className="w-12 px-6 py-3" />
                   <th
-                    className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                    className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                     onClick={() => handleSortChange('title')}
                   >
                     <div className="flex items-center gap-1">
@@ -278,7 +274,7 @@ export const DocumentsPage = () => {
                     </div>
                   </th>
                   <th
-                    className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                    className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                     onClick={() => handleSortChange('entityType')}
                   >
                     <div className="flex items-center gap-1">
@@ -287,7 +283,7 @@ export const DocumentsPage = () => {
                     </div>
                   </th>
                   <th
-                    className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                    className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                     onClick={() => handleSortChange('fileSize')}
                   >
                     <div className="flex items-center gap-1">
@@ -296,7 +292,7 @@ export const DocumentsPage = () => {
                     </div>
                   </th>
                   <th
-                    className="px-6 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                    className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                     onClick={() => handleSortChange('uploadedAt')}
                   >
                     <div className="flex items-center gap-1">
@@ -304,19 +300,19 @@ export const DocumentsPage = () => {
                       {getSortIcon('uploadedAt')}
                     </div>
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white dark:bg-[#14161f] divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
+              <tbody className="bg-surface-card divide-y divide-border-default">
                 {documents.map((doc) => {
                   const isSelected = selectedDocuments.has(doc.identifier);
                   return (
                     <tr
                       key={doc.identifier}
-                      className={`hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] cursor-pointer ${
-                        isSelected ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+                      className={`hover:bg-surface-inset cursor-pointer ${
+                        isSelected ? 'bg-info-bg' : ''
                       }`}
                       onClick={() => setPreviewIndex(documents.indexOf(doc))}
                     >
@@ -328,10 +324,10 @@ export const DocumentsPage = () => {
                           onClick={(e) =>
                             handleSelectDocument(doc.identifier, e.shiftKey)
                           }
-                          className="text-[#6b7194] dark:text-[#8b90a8] hover:text-[#3d4463] dark:hover:text-[#c4c8db]"
+                          className="text-text-secondary hover:text-text-secondary"
                         >
                           {isSelected ? (
-                            <div className="w-5 h-5 rounded bg-blue-500 flex items-center justify-center">
+                            <div className="w-5 h-5 rounded bg-primary-500 flex items-center justify-center">
                               <Check
                                 className="h-3.5 w-3.5 text-white"
                                 strokeWidth={3}
@@ -346,18 +342,18 @@ export const DocumentsPage = () => {
                         <div className="flex items-center gap-3">
                           {getFileIcon(doc.mimeType)}
                           <div>
-                            <div className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                            <div className="text-sm font-medium text-text-primary">
                               {doc.title ?? doc.fileName}
                             </div>
                             {doc.title && doc.title !== doc.fileName ? (
-                              <div className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                              <div className="text-xs text-text-secondary">
                                 {doc.fileName}
                               </div>
                             ) : null}
                             {doc.notes ? (
                               <RichTextDisplay
                                 html={doc.notes}
-                                className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1"
+                                className="text-xs text-text-secondary mt-1"
                               />
                             ) : null}
                           </div>
@@ -384,15 +380,15 @@ export const DocumentsPage = () => {
                               navigate(entityPath);
                             }
                           }}
-                          className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-[#f1f3f9] dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#c4c8db] hover:bg-blue-100 hover:text-blue-800 transition-colors"
+                          className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-surface-inset text-text-primary hover:bg-info-bg hover:text-info-text transition-colors"
                         >
                           {doc.entityType}
                         </button>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
                         {formatFileSize(doc.fileSize)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
                         {formatDate(doc.uploadedAt)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -404,7 +400,7 @@ export const DocumentsPage = () => {
                             onClick={() =>
                               setPreviewIndex(documents.indexOf(doc))
                             }
-                            className="p-1.5 text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded-md transition-colors"
+                            className="p-1.5 text-text-secondary hover:bg-surface-inset rounded-md transition-colors"
                             title="Preview"
                           >
                             <Eye className="h-4 w-4" />
@@ -412,7 +408,7 @@ export const DocumentsPage = () => {
                           {canEditData && (
                             <button
                               onClick={() => setEditingDocument(doc)}
-                              className="p-1.5 text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded-md transition-colors"
+                              className="p-1.5 text-text-secondary hover:bg-surface-inset rounded-md transition-colors"
                               title="Edit title & notes"
                             >
                               <Pencil className="h-4 w-4" />
@@ -422,7 +418,7 @@ export const DocumentsPage = () => {
                             href={doc.downloadUrl ?? undefined}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="p-1.5 text-[#5c7cfa] hover:bg-blue-50 dark:hover:bg-[#1e2130] rounded-md transition-colors"
+                            className="p-1.5 text-primary-500 hover:bg-info-bg rounded-md transition-colors"
                             title="Download"
                           >
                             <Download className="h-4 w-4" />
@@ -430,7 +426,7 @@ export const DocumentsPage = () => {
                           {canEditData && (
                             <button
                               onClick={() => handleDelete(doc.identifier)}
-                              className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-md transition-colors"
+                              className="p-1.5 text-error-text hover:bg-error-bg rounded-md transition-colors"
                               title="Delete"
                             >
                               <Trash2 className="h-4 w-4" />

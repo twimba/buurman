@@ -35,11 +35,12 @@ export const ExportDropdown = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const showDropdown = isEnabled(FeatureFlags.EXCEL_EXPORT) && options.length > 1;
+  const showDropdown =
+    isEnabled(FeatureFlags.EXCEL_EXPORT) && options.length > 1;
 
   if (size === 'sm') {
     const smButtonClass =
-      'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-[#e2e6f0] dark:border-[#2a2e3f] text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f5f7fa] dark:hover:bg-[#1e2130] transition-colors disabled:opacity-50';
+      'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-border-default text-text-secondary hover:bg-surface-inset transition-colors disabled:opacity-50';
 
     if (!showDropdown) {
       const firstOption = options[0];
@@ -67,7 +68,7 @@ export const ExportDropdown = ({
           <ChevronDown className="h-3 w-3" />
         </button>
         {open && (
-          <div className="absolute right-0 mt-1 w-32 bg-white dark:bg-[#14161f] border border-[#e2e6f0] dark:border-[#2a2e3f] rounded-md shadow-lg z-10">
+          <div className="absolute right-0 mt-1 w-32 bg-surface-card border border-border-default rounded-md shadow-lg z-10">
             {options.map((option) => (
               <button
                 key={option.label}
@@ -75,7 +76,7 @@ export const ExportDropdown = ({
                   setOpen(false);
                   option.onExport();
                 }}
-                className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f5f7fa] dark:hover:bg-[#1e2130] transition-colors"
+                className="flex w-full items-center gap-2 px-3 py-2 text-xs text-text-secondary hover:bg-surface-inset transition-colors"
               >
                 <Download className="h-3.5 w-3.5" />
                 {option.label}
@@ -89,7 +90,7 @@ export const ExportDropdown = ({
 
   // md size
   const mdButtonClass =
-    'flex items-center gap-2 px-4 py-2 bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] text-[#3d4463] dark:text-[#c4c8db] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors';
+    'flex items-center gap-2 px-4 py-2 bg-surface-card border border-border-strong text-text-secondary rounded-md hover:bg-surface-inset transition-colors';
 
   if (!showDropdown) {
     const firstOption = options[0];
@@ -117,7 +118,7 @@ export const ExportDropdown = ({
         <ChevronDown className="h-3.5 w-3.5" />
       </button>
       {open && (
-        <div className="absolute right-0 mt-1 w-36 bg-white dark:bg-[#14161f] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md shadow-lg z-10">
+        <div className="absolute right-0 mt-1 w-36 bg-surface-card border border-border-strong rounded-md shadow-lg z-10">
           {options.map((option) => (
             <button
               key={option.label}
@@ -125,7 +126,7 @@ export const ExportDropdown = ({
                 setOpen(false);
                 option.onExport();
               }}
-              className="flex w-full items-center gap-2 px-4 py-2 text-sm text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+              className="flex w-full items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-surface-inset transition-colors"
             >
               <Download className="h-3.5 w-3.5" />
               {option.label}

@@ -42,7 +42,7 @@ export const MeasurementInput = ({
         }
         disabled={disabled}
         placeholder={placeholder}
-        className="flex-1 min-w-0 px-3 py-2 border rounded-l-md border-[#c9cfd9] dark:border-[#3a3f54] bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] focus:outline-none focus:ring-1 focus:ring-[#5c7cfa] focus:border-[#5c7cfa]"
+        className="flex-1 min-w-0 px-3 py-2 border rounded-l-md border-border-strong bg-surface-card text-text-primary focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
       />
       {unitOptions.length > 1 ? (
         <div className="relative">
@@ -50,7 +50,7 @@ export const MeasurementInput = ({
             value={unit}
             onChange={(e) => onUnitChange(e.target.value)}
             disabled={disabled}
-            className="appearance-none inline-flex items-center gap-1 px-3 pr-7 h-full rounded-r-md border border-l-0 border-[#c9cfd9] dark:border-[#3a3f54] bg-[#f5f6fa] dark:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8] text-sm hover:bg-[#eef0f6] dark:hover:bg-[#262a3a] cursor-pointer transition-colors focus:outline-none focus:ring-1 focus:ring-[#5c7cfa]"
+            className="appearance-none inline-flex items-center gap-1 px-3 pr-7 h-full rounded-r-md border border-l-0 border-border-strong bg-surface-inset text-text-secondary text-sm hover:bg-neutral-100 dark:hover:bg-surface-raised cursor-pointer transition-colors focus:outline-none focus:ring-1 focus:ring-primary-500"
           >
             {unitOptions.map((o) => (
               <option key={o.value} value={o.value}>
@@ -58,10 +58,10 @@ export const MeasurementInput = ({
               </option>
             ))}
           </select>
-          <ChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-[#6b7194] dark:text-[#8b90a8]" />
+          <ChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-text-secondary " />
         </div>
       ) : (
-        <span className="inline-flex items-center px-3 h-full rounded-r-md border border-l-0 border-[#c9cfd9] dark:border-[#3a3f54] bg-[#f5f6fa] dark:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8] text-sm">
+        <span className="inline-flex items-center px-3 h-full rounded-r-md border border-l-0 border-border-strong bg-surface-inset text-text-secondary text-sm">
           {currentLabel}
         </span>
       )}

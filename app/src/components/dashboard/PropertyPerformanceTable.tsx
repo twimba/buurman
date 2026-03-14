@@ -92,7 +92,7 @@ export const PropertyPerformanceTable = ({
 
   if (data.length === 0) {
     return (
-      <div className="text-center py-8 text-[#6b7194] dark:text-[#8b90a8] text-sm">
+      <div className="text-center py-8 text-text-secondary text-sm">
         No property performance data available
       </div>
     );
@@ -102,11 +102,11 @@ export const PropertyPerformanceTable = ({
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+          <tr className="border-b border-border-default">
             {columns.map((col) => (
               <th
                 key={col.key}
-                className={`py-3 px-3 font-medium text-[#6b7194] dark:text-[#8b90a8] cursor-pointer select-none hover:text-[#1a1d2e] dark:hover:text-[#eef0f6] transition-colors ${
+                className={`py-3 px-3 font-medium text-text-secondary cursor-pointer select-none hover:text-text-primary transition-colors ${
                   col.align === 'right' ? 'text-right' : 'text-left'
                 }`}
                 onClick={() => handleSort(col.key)}
@@ -130,48 +130,44 @@ export const PropertyPerformanceTable = ({
             return (
               <tr
                 key={row.identifier}
-                className={`border-b border-[#edf0f7] dark:border-[#1e2130] hover:bg-[#f8f9fc] dark:hover:bg-[#1e2130] transition-colors ${
+                className={`border-b border-border-default hover:bg-surface-page transition-colors ${
                   isNegative
-                    ? 'border-l-2 border-l-red-400 bg-red-50/50 dark:bg-red-900/10'
+                    ? 'border-l-2 border-l-error-border bg-error-bg/50'
                     : ''
                 }`}
               >
                 <td className="py-3 px-3">
                   <button
                     onClick={() => navigate(`/properties/${row.identifier}`)}
-                    className="text-[#5c7cfa] hover:text-[#4263eb] font-medium text-left"
+                    className="text-primary-500 hover:text-primary-600 font-medium text-left"
                   >
                     {row.address}
                   </button>
                   {row.currencyMismatch && (
-                    <AlertTriangle className="inline-block h-3.5 w-3.5 text-yellow-500 ml-1" />
+                    <AlertTriangle className="inline-block h-3.5 w-3.5 text-warning-text ml-1" />
                   )}
                 </td>
-                <td className="py-3 px-3 text-[#1a1d2e] dark:text-[#eef0f6]">
-                  {row.category}
-                </td>
+                <td className="py-3 px-3 text-text-primary">{row.category}</td>
                 <td
                   className={`py-3 px-3 text-right tabular-nums font-medium ${
-                    isNegative
-                      ? 'text-red-600 dark:text-red-400'
-                      : 'text-[#1a1d2e] dark:text-[#eef0f6]'
+                    isNegative ? 'text-error-text' : 'text-text-primary'
                   }`}
                 >
                   {formatMoney(row.monthlyCashFlow, row.currency ?? currency)}
                 </td>
-                <td className="py-3 px-3 text-right tabular-nums text-[#1a1d2e] dark:text-[#eef0f6]">
+                <td className="py-3 px-3 text-right tabular-nums text-text-primary">
                   {formatMoney(row.annualNoi, row.currency ?? currency)}
                 </td>
-                <td className="py-3 px-3 text-right tabular-nums text-[#1a1d2e] dark:text-[#eef0f6]">
+                <td className="py-3 px-3 text-right tabular-nums text-text-primary">
                   {formatPercent(row.capRate)}
                 </td>
-                <td className="py-3 px-3 text-right tabular-nums text-[#1a1d2e] dark:text-[#eef0f6]">
+                <td className="py-3 px-3 text-right tabular-nums text-text-primary">
                   {formatPercent(row.cashOnCash)}
                 </td>
-                <td className="py-3 px-3 text-right tabular-nums text-[#1a1d2e] dark:text-[#eef0f6]">
+                <td className="py-3 px-3 text-right tabular-nums text-text-primary">
                   {formatPercent(row.occupancyRate)}
                 </td>
-                <td className="py-3 px-3 text-right tabular-nums text-[#1a1d2e] dark:text-[#eef0f6]">
+                <td className="py-3 px-3 text-right tabular-nums text-text-primary">
                   {row.completenessPercent}%
                 </td>
               </tr>

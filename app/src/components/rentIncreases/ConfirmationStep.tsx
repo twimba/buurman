@@ -64,27 +64,27 @@ export const ConfirmationStep = ({
   return (
     <div className="space-y-6">
       {/* Summary */}
-      <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-6">
+      <div className="bg-surface-card rounded-lg border border-border-default p-6">
         <div className="flex items-center gap-3 mb-4">
           {summary.totalFailed === 0 ? (
-            <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
+            <CheckCircle className="h-8 w-8 text-success-text" />
           ) : (
-            <XCircle className="h-8 w-8 text-amber-600 dark:text-amber-400" />
+            <XCircle className="h-8 w-8 text-warning-text" />
           )}
           <div>
-            <h3 className="text-xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+            <h3 className="text-xl font-bold text-text-primary">
               {summary.totalFailed === 0
                 ? 'All rent adjustments applied successfully'
                 : `${successCount} of ${results.length} adjustments applied`}
             </h3>
             {summary.totalFailed > 0 && (
-              <p className="text-sm text-amber-600 dark:text-amber-400">
+              <p className="text-sm text-warning-text">
                 {summary.totalFailed}{' '}
                 {summary.totalFailed === 1 ? 'increase' : 'increases'} failed
               </p>
             )}
             {summary.totalPaymentsGenerated > 0 && (
-              <p className="text-sm text-blue-600 dark:text-blue-400">
+              <p className="text-sm text-info-text">
                 {summary.totalPaymentsGenerated} adjustment{' '}
                 {summary.totalPaymentsGenerated === 1 ? 'payment' : 'payments'}{' '}
                 created for retroactive changes
@@ -98,38 +98,32 @@ export const ConfirmationStep = ({
           {Object.entries(totalsByCurrency).map(([currency, totals]) => (
             <div
               key={currency}
-              className="p-4 rounded-lg bg-[#f8f9fc] dark:bg-[#1a1c28]"
+              className="p-4 rounded-lg bg-surface-page dark:bg-surface-card"
             >
-              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-2">
+              <p className="text-sm text-text-secondary mb-2">
                 {currency} ({totals.count}{' '}
                 {totals.count === 1 ? 'contract' : 'contracts'})
               </p>
               <div className="space-y-1">
                 <div className="flex justify-between">
-                  <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
-                    Previous
-                  </span>
-                  <span className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                  <span className="text-sm text-text-secondary">Previous</span>
+                  <span className="font-medium text-text-primary">
                     {formatMoney(totals.previousTotal, currency)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
-                    New
-                  </span>
-                  <span className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                  <span className="text-sm text-text-secondary">New</span>
+                  <span className="font-semibold text-text-primary">
                     {formatMoney(totals.newTotal, currency)}
                   </span>
                 </div>
-                <div className="flex justify-between border-t border-[#e2e6f0] dark:border-[#2a2e3f] pt-1">
-                  <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
-                    Increase
-                  </span>
+                <div className="flex justify-between border-t border-border-default pt-1">
+                  <span className="text-sm text-text-secondary">Increase</span>
                   <span
                     className={`font-semibold ${
                       totals.newTotal >= totals.previousTotal
-                        ? 'text-emerald-600 dark:text-emerald-400'
-                        : 'text-red-500 dark:text-red-400'
+                        ? 'text-success-text'
+                        : 'text-error-text'
                     }`}
                   >
                     {totals.newTotal >= totals.previousTotal ? '+' : ''}
@@ -146,27 +140,27 @@ export const ConfirmationStep = ({
       </div>
 
       {/* Results Table */}
-      <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden">
+      <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-                <th className="text-left px-4 py-3 font-semibold text-[#3d4463] dark:text-[#c4c8db]">
+              <tr className="border-b border-border-default">
+                <th className="text-left px-4 py-3 font-semibold text-text-secondary">
                   Status
                 </th>
-                <th className="text-left px-4 py-3 font-semibold text-[#3d4463] dark:text-[#c4c8db]">
+                <th className="text-left px-4 py-3 font-semibold text-text-secondary">
                   Property
                 </th>
-                <th className="text-right px-4 py-3 font-semibold text-[#3d4463] dark:text-[#c4c8db]">
+                <th className="text-right px-4 py-3 font-semibold text-text-secondary">
                   Previous
                 </th>
-                <th className="text-right px-4 py-3 font-semibold text-[#3d4463] dark:text-[#c4c8db]">
+                <th className="text-right px-4 py-3 font-semibold text-text-secondary">
                   New
                 </th>
-                <th className="text-right px-4 py-3 font-semibold text-[#3d4463] dark:text-[#c4c8db]">
+                <th className="text-right px-4 py-3 font-semibold text-text-secondary">
                   Increase
                 </th>
-                <th className="text-left px-4 py-3 font-semibold text-[#3d4463] dark:text-[#c4c8db]">
+                <th className="text-left px-4 py-3 font-semibold text-text-secondary">
                   Effective Date
                 </th>
               </tr>
@@ -185,46 +179,46 @@ export const ConfirmationStep = ({
                 return (
                   <tr
                     key={result.contractIdentifier}
-                    className={`border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0 ${
-                      !result.success ? 'bg-red-50/50 dark:bg-red-900/10' : ''
+                    className={`border-b border-border-default last:border-b-0 ${
+                      !result.success ? 'bg-error-bg/50' : ''
                     }`}
                   >
                     <td className="px-4 py-3">
                       {result.success ? (
-                        <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+                        <CheckCircle className="h-4 w-4 text-success-text" />
                       ) : (
                         <div className="flex items-center gap-1">
-                          <XCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
+                          <XCircle className="h-4 w-4 text-error-text" />
                           {result.error && (
-                            <span className="text-xs text-red-600 dark:text-red-400">
+                            <span className="text-xs text-error-text">
                               {result.error}
                             </span>
                           )}
                         </div>
                       )}
                     </td>
-                    <td className="px-4 py-3 font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <td className="px-4 py-3 font-medium text-text-primary">
                       {result.propertyName}
                     </td>
-                    <td className="px-4 py-3 text-right text-[#3d4463] dark:text-[#c4c8db]">
+                    <td className="px-4 py-3 text-right text-text-secondary">
                       {formatMoney(result.previousRentAmount, currency)}
                     </td>
-                    <td className="px-4 py-3 text-right font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <td className="px-4 py-3 text-right font-semibold text-text-primary">
                       {formatMoney(result.newRentAmount, currency)}
                     </td>
                     <td
                       className={`px-4 py-3 text-right font-medium ${
                         pct > 0
-                          ? 'text-emerald-600 dark:text-emerald-400'
+                          ? 'text-success-text'
                           : pct < 0
-                            ? 'text-red-500 dark:text-red-400'
-                            : 'text-[#6b7194] dark:text-[#8b90a8]'
+                            ? 'text-error-text'
+                            : 'text-text-secondary'
                       }`}
                     >
                       {pct > 0 ? '+' : ''}
                       {pct.toFixed(1)}%
                     </td>
-                    <td className="px-4 py-3 text-[#3d4463] dark:text-[#c4c8db]">
+                    <td className="px-4 py-3 text-text-secondary">
                       {result.effectiveDate}
                     </td>
                   </tr>
@@ -241,7 +235,7 @@ export const ConfirmationStep = ({
           {summary.totalFailed > 0 && onBack && (
             <button
               onClick={onBack}
-              className="px-6 py-2 rounded border border-[#e2e6f0] dark:border-[#2a2e3f] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+              className="px-6 py-2 rounded border border-border-default text-text-secondary hover:bg-surface-inset transition-colors"
             >
               Back to Adjust
             </button>
@@ -250,13 +244,13 @@ export const ConfirmationStep = ({
         <div className="flex gap-3">
           <button
             onClick={() => navigate('/rent-regulations')}
-            className="px-6 py-2 rounded border border-[#e2e6f0] dark:border-[#2a2e3f] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+            className="px-6 py-2 rounded border border-border-default text-text-secondary hover:bg-surface-inset transition-colors"
           >
             View Regulations
           </button>
           <button
             onClick={() => navigate('/contracts')}
-            className="bg-[#5c7cfa] text-white px-6 py-2 rounded hover:bg-[#4c6ef5] transition-colors"
+            className="bg-primary-500 text-white px-6 py-2 rounded hover:bg-primary-600 transition-colors"
           >
             View Contracts
           </button>

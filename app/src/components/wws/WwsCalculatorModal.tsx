@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Button } from '@/components/ui';
+import { Button } from '@buurman/ui';
 import {
   X,
   Calculator,
@@ -57,32 +57,31 @@ const CLASSIFICATION_STYLES: Record<
   { bg: string; text: string; label: string; border: string }
 > = {
   REGULATED: {
-    bg: 'bg-green-50 dark:bg-green-900/20',
-    text: 'text-green-800 dark:text-green-300',
-    border: 'border-green-200 dark:border-green-800/40',
+    bg: 'bg-success-bg',
+    text: 'text-success-text',
+    border: 'border-success-border',
     label: 'Regulated (Gereguleerd)',
   },
   MID_SEGMENT: {
-    bg: 'bg-amber-50 dark:bg-amber-900/20',
-    text: 'text-amber-800 dark:text-amber-300',
-    border: 'border-amber-200 dark:border-amber-800/40',
+    bg: 'bg-warning-bg',
+    text: 'text-warning-text',
+    border: 'border-warning-border',
     label: 'Mid-Segment (Middenhuur)',
   },
   FREE_SECTOR: {
-    bg: 'bg-red-50 dark:bg-red-900/20',
-    text: 'text-red-800 dark:text-red-300',
-    border: 'border-red-200 dark:border-red-800/40',
+    bg: 'bg-error-bg',
+    text: 'text-error-text',
+    border: 'border-error-border',
     label: 'Free Sector (Vrije sector)',
   },
 };
 
 const inputClass =
-  'w-full px-3 py-2 rounded-lg border border-[#c9cfd9] dark:border-[#3a3f54] bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] focus:outline-none focus:ring-2 focus:ring-[#5c7cfa] text-sm';
+  'w-full px-3 py-2 rounded-lg border border-border-strong bg-surface-card text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm';
 
-const labelClass =
-  'block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1';
+const labelClass = 'block text-sm font-medium text-text-secondary mb-1';
 
-const hintClass = 'text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1';
+const hintClass = 'text-xs text-text-secondary mt-1';
 
 interface FormState {
   systemVersion: string;
@@ -127,9 +126,9 @@ const SectionHeader = ({
   icon: React.ComponentType<{ className?: string }>;
   title: string;
 }) => (
-  <div className="flex items-center gap-2 pb-2 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-    <Icon className="h-4 w-4 text-[#5c7cfa]" />
-    <h4 className="text-xs font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide">
+  <div className="flex items-center gap-2 pb-2 border-b border-border-default">
+    <Icon className="h-4 w-4 text-primary-500" />
+    <h4 className="text-xs font-semibold text-text-secondary uppercase tracking-wide">
       {title}
     </h4>
   </div>
@@ -280,19 +279,19 @@ const WwsCalculatorModalInner = ({
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-[#14161f] rounded-xl max-w-2xl w-full mx-4 max-h-[90vh] flex flex-col">
+      <div className="bg-surface-card rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e2e6f0] dark:border-[#2a2e3f] shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border-default shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[#5c7cfa]/10 flex items-center justify-center">
-              <Calculator className="h-4 w-4 text-[#5c7cfa]" />
+            <div className="w-8 h-8 rounded-lg bg-primary-500/10 flex items-center justify-center">
+              <Calculator className="h-4 w-4 text-primary-500" />
             </div>
             <div>
-              <h3 className="text-base font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+              <h3 className="text-base font-semibold text-text-primary">
                 WWS Points Calculator
               </h3>
               {preFill?.propertyAddress && (
-                <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                <p className="text-xs text-text-secondary">
                   {preFill.propertyAddress}
                 </p>
               )}
@@ -302,7 +301,7 @@ const WwsCalculatorModalInner = ({
             <select
               value={form.systemVersion}
               onChange={(e) => updateField('systemVersion', e.target.value)}
-              className="text-xs px-2 py-1 rounded border border-[#c9cfd9] dark:border-[#3a3f54] bg-white dark:bg-[#1e2130] text-[#6b7194] dark:text-[#8b90a8] focus:outline-none"
+              className="text-xs px-2 py-1 rounded border border-border-strong bg-surface-card text-text-secondary focus:outline-none"
             >
               <option value="2026">v2026</option>
               <option value="2025">v2025</option>
@@ -311,7 +310,7 @@ const WwsCalculatorModalInner = ({
             </select>
             <button
               onClick={onClose}
-              className="text-[#6b7194] hover:text-[#1a1d2e] dark:hover:text-[#eef0f6] transition-colors"
+              className="text-text-secondary hover:text-text-primary transition-colors"
             >
               <X className="h-5 w-5" />
             </button>
@@ -324,16 +323,16 @@ const WwsCalculatorModalInner = ({
           {step === 'input' && (
             <div className="space-y-6">
               {preFillLoading || latestLoading ? (
-                <div className="flex items-center justify-center gap-2 py-16 text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                  <div className="h-4 w-4 border-2 border-[#5c7cfa] border-t-transparent rounded-full animate-spin" />
+                <div className="flex items-center justify-center gap-2 py-16 text-sm text-text-secondary">
+                  <div className="h-4 w-4 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
                   Loading property data...
                 </div>
               ) : (
                 <>
                   {preFill && (
-                    <div className="flex items-start gap-2 bg-[#5c7cfa]/5 dark:bg-[#5c7cfa]/10 rounded-lg px-3 py-2.5">
-                      <Info className="h-4 w-4 text-[#5c7cfa] mt-0.5 shrink-0" />
-                      <p className="text-xs text-[#5c7cfa]">
+                    <div className="flex items-start gap-2 bg-primary-500/5 dark:bg-primary-500/10 rounded-lg px-3 py-2.5">
+                      <Info className="h-4 w-4 text-primary-500 mt-0.5 shrink-0" />
+                      <p className="text-xs text-primary-500">
                         Fields marked with a dot have been pre-filled from
                         property data. You can adjust them before calculating.
                       </p>
@@ -348,7 +347,7 @@ const WwsCalculatorModalInner = ({
                         <label className={labelClass}>
                           Surface area (m{'\u00B2'})
                           {preFill?.surfaceAreaSqm != null && (
-                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#5c7cfa] ml-1.5 align-middle" />
+                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary-500 ml-1.5 align-middle" />
                           )}
                         </label>
                         <input
@@ -368,7 +367,7 @@ const WwsCalculatorModalInner = ({
                         <label className={labelClass}>
                           Rooms
                           {preFill?.numberOfRooms != null && (
-                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#5c7cfa] ml-1.5 align-middle" />
+                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary-500 ml-1.5 align-middle" />
                           )}
                         </label>
                         <input
@@ -387,7 +386,7 @@ const WwsCalculatorModalInner = ({
                         <label className={labelClass}>
                           Heated rooms
                           {preFill?.numberOfHeatedRooms != null && (
-                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#5c7cfa] ml-1.5 align-middle" />
+                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary-500 ml-1.5 align-middle" />
                           )}
                         </label>
                         <input
@@ -412,7 +411,7 @@ const WwsCalculatorModalInner = ({
                       <label className={labelClass}>
                         Energy label
                         {preFill?.energyLabel && (
-                          <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#5c7cfa] ml-1.5 align-middle" />
+                          <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary-500 ml-1.5 align-middle" />
                         )}
                       </label>
                       <select
@@ -475,7 +474,7 @@ const WwsCalculatorModalInner = ({
                       <div>
                         <label className={labelClass}>WOZ value</label>
                         <div className="relative">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-text-secondary">
                             EUR
                           </span>
                           <input
@@ -517,7 +516,7 @@ const WwsCalculatorModalInner = ({
                         Renovation investment
                       </label>
                       <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-text-secondary">
                           EUR
                         </span>
                         <input
@@ -546,7 +545,7 @@ const WwsCalculatorModalInner = ({
                         <label className={labelClass}>
                           Outdoor space (m{'\u00B2'})
                           {preFill?.outdoorSpaceSqm != null && (
-                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#5c7cfa] ml-1.5 align-middle" />
+                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary-500 ml-1.5 align-middle" />
                           )}
                         </label>
                         <input
@@ -565,7 +564,7 @@ const WwsCalculatorModalInner = ({
                         <label className={labelClass}>
                           Parking type
                           {preFill?.parkingType && (
-                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#5c7cfa] ml-1.5 align-middle" />
+                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary-500 ml-1.5 align-middle" />
                           )}
                         </label>
                         <select
@@ -586,7 +585,7 @@ const WwsCalculatorModalInner = ({
                         <label className={labelClass}>
                           Parking spaces
                           {preFill?.parkingSpaces != null && (
-                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#5c7cfa] ml-1.5 align-middle" />
+                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary-500 ml-1.5 align-middle" />
                           )}
                         </label>
                         <input
@@ -612,7 +611,7 @@ const WwsCalculatorModalInner = ({
                         <label className={labelClass}>
                           Accessibility features
                           {preFill?.accessibilityFeatures != null && (
-                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#5c7cfa] ml-1.5 align-middle" />
+                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary-500 ml-1.5 align-middle" />
                           )}
                         </label>
                         <input
@@ -661,20 +660,20 @@ const WwsCalculatorModalInner = ({
             <div className="space-y-5">
               {/* Summary card */}
               <div
-                className={`rounded-lg p-5 border ${classStyle ? `${classStyle.bg} ${classStyle.border}` : 'bg-[#f1f3f9] dark:bg-[#1e2130] border-[#e2e6f0] dark:border-[#2a2e3f]'}`}
+                className={`rounded-lg p-5 border ${classStyle ? `${classStyle.bg} ${classStyle.border}` : 'bg-surface-inset border-border-default '}`}
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <div className="text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wide">
+                    <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                       Total Points
                     </div>
-                    <div className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6] mt-0.5">
+                    <div className="text-3xl font-bold text-text-primary mt-0.5">
                       {result.totalPoints}
                     </div>
                     {result.maxRentIndication != null && (
-                      <div className="text-sm text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                      <div className="text-sm text-text-secondary mt-1">
                         Max rent{' '}
-                        <span className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                        <span className="font-semibold text-text-primary">
                           EUR {result.maxRentIndication.toFixed(2)}
                         </span>
                         /month
@@ -689,7 +688,7 @@ const WwsCalculatorModalInner = ({
                     </span>
                   )}
                 </div>
-                <div className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-3">
+                <div className="text-xs text-text-secondary mt-3">
                   WWS v{result.systemVersion} &middot;{' '}
                   {new Date(result.calculationDate).toLocaleDateString()}
                 </div>
@@ -697,7 +696,7 @@ const WwsCalculatorModalInner = ({
 
               {/* Breakdown */}
               <div>
-                <h4 className="text-xs font-semibold text-[#3d4463] dark:text-[#c4c8db] uppercase tracking-wide mb-3">
+                <h4 className="text-xs font-semibold text-text-secondary uppercase tracking-wide mb-3">
                   Points Breakdown
                 </h4>
                 <div className="space-y-1.5">
@@ -707,20 +706,20 @@ const WwsCalculatorModalInner = ({
                     .map((cat) => (
                       <div
                         key={cat.key}
-                        className="group bg-white dark:bg-[#0c0d14] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] px-4 py-2.5"
+                        className="group bg-surface-card rounded-lg border border-border-default px-4 py-2.5"
                       >
                         <div className="flex items-center justify-between">
                           <div className="min-w-0 flex-1">
                             <div className="flex items-baseline gap-2">
-                              <span className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                              <span className="text-sm font-medium text-text-primary">
                                 {cat.name}
                               </span>
-                              <span className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                              <span className="text-xs text-text-secondary">
                                 {cat.nameNl}
                               </span>
                             </div>
                             {cat.explanation && (
-                              <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-0.5">
+                              <p className="text-xs text-text-secondary mt-0.5">
                                 {cat.explanation}
                               </p>
                             )}
@@ -728,10 +727,10 @@ const WwsCalculatorModalInner = ({
                           <div
                             className={`ml-4 text-sm font-bold tabular-nums shrink-0 ${
                               cat.points > 0
-                                ? 'text-[#5c7cfa]'
+                                ? 'text-primary-500'
                                 : cat.points < 0
-                                  ? 'text-red-500 dark:text-red-400'
-                                  : 'text-[#6b7194] dark:text-[#8b90a8]'
+                                  ? 'text-error-text'
+                                  : 'text-text-secondary'
                             }`}
                           >
                             {cat.points > 0 ? '+' : ''}
@@ -740,12 +739,12 @@ const WwsCalculatorModalInner = ({
                         </div>
                         {/* Proportional bar */}
                         {cat.points !== 0 && (
-                          <div className="mt-2 h-1 rounded-full bg-[#f1f3f9] dark:bg-[#1e2130] overflow-hidden">
+                          <div className="mt-2 h-1 rounded-full bg-surface-inset overflow-hidden">
                             <div
                               className={`h-full rounded-full transition-all ${
                                 cat.points > 0
-                                  ? 'bg-[#5c7cfa]/40'
-                                  : 'bg-red-400/40'
+                                  ? 'bg-primary-500/40'
+                                  : 'bg-error-text/40'
                               }`}
                               style={{
                                 width: `${(Math.abs(cat.points) / maxPoints) * 100}%`,
@@ -760,9 +759,9 @@ const WwsCalculatorModalInner = ({
 
               {/* Saved confirmation */}
               {saved && (
-                <div className="flex items-center gap-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/40 rounded-lg px-3 py-2.5">
-                  <Check className="h-4 w-4 text-green-600 dark:text-green-400 shrink-0" />
-                  <p className="text-sm text-green-800 dark:text-green-300">
+                <div className="flex items-center gap-2 bg-success-bg border border-success-border rounded-lg px-3 py-2.5">
+                  <Check className="h-4 w-4 text-success-text shrink-0" />
+                  <p className="text-sm text-success-text">
                     Calculation saved to property record.
                   </p>
                 </div>
@@ -772,7 +771,7 @@ const WwsCalculatorModalInner = ({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f] shrink-0">
+        <div className="px-6 py-4 border-t border-border-default shrink-0">
           {step === 'input' && (
             <div className="flex justify-end">
               <Button

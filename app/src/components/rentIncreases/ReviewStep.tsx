@@ -79,46 +79,40 @@ export const ReviewStep = ({
   return (
     <div className="space-y-6">
       {/* Portfolio Totals */}
-      <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-6">
-        <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+      <div className="bg-surface-card rounded-lg border border-border-default p-6">
+        <h3 className="text-lg font-semibold text-text-primary mb-4">
           Portfolio Totals for {year}
         </h3>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Object.entries(totalsByCurrency).map(([currency, totals]) => (
             <div
               key={currency}
-              className="p-4 rounded-lg bg-[#f8f9fc] dark:bg-[#1a1c28]"
+              className="p-4 rounded-lg bg-surface-page dark:bg-surface-card"
             >
-              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-2">
+              <p className="text-sm text-text-secondary mb-2">
                 {currency} ({totals.count}{' '}
                 {totals.count === 1 ? 'contract' : 'contracts'})
               </p>
               <div className="space-y-1">
                 <div className="flex justify-between">
-                  <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
-                    Previous
-                  </span>
-                  <span className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                  <span className="text-sm text-text-secondary">Previous</span>
+                  <span className="font-medium text-text-primary">
                     {formatMoney(totals.previousTotal, currency)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
-                    New
-                  </span>
-                  <span className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                  <span className="text-sm text-text-secondary">New</span>
+                  <span className="font-semibold text-text-primary">
                     {formatMoney(totals.newTotal, currency)}
                   </span>
                 </div>
-                <div className="flex justify-between border-t border-[#e2e6f0] dark:border-[#2a2e3f] pt-1">
-                  <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
-                    Increase
-                  </span>
+                <div className="flex justify-between border-t border-border-default pt-1">
+                  <span className="text-sm text-text-secondary">Increase</span>
                   <span
                     className={`font-semibold ${
                       totals.newTotal >= totals.previousTotal
-                        ? 'text-emerald-600 dark:text-emerald-400'
-                        : 'text-red-500 dark:text-red-400'
+                        ? 'text-success-text'
+                        : 'text-error-text'
                     }`}
                   >
                     {totals.newTotal >= totals.previousTotal ? '+' : ''}
@@ -135,29 +129,29 @@ export const ReviewStep = ({
       </div>
 
       {/* Changed Contracts */}
-      <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden">
-        <div className="px-4 py-3 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-          <h3 className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+      <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
+        <div className="px-4 py-3 border-b border-border-default">
+          <h3 className="font-semibold text-text-primary">
             Contracts to Update ({changedIncreases.length})
           </h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-                <th className="text-left px-4 py-3 font-semibold text-[#3d4463] dark:text-[#c4c8db]">
+              <tr className="border-b border-border-default">
+                <th className="text-left px-4 py-3 font-semibold text-text-secondary">
                   Property
                 </th>
-                <th className="text-right px-4 py-3 font-semibold text-[#3d4463] dark:text-[#c4c8db]">
+                <th className="text-right px-4 py-3 font-semibold text-text-secondary">
                   Current Rent
                 </th>
-                <th className="text-right px-4 py-3 font-semibold text-[#3d4463] dark:text-[#c4c8db]">
+                <th className="text-right px-4 py-3 font-semibold text-text-secondary">
                   Increase
                 </th>
-                <th className="text-right px-4 py-3 font-semibold text-[#3d4463] dark:text-[#c4c8db]">
+                <th className="text-right px-4 py-3 font-semibold text-text-secondary">
                   New Rent
                 </th>
-                <th className="text-left px-4 py-3 font-semibold text-[#3d4463] dark:text-[#c4c8db]">
+                <th className="text-left px-4 py-3 font-semibold text-text-secondary">
                   Effective Date
                 </th>
               </tr>
@@ -173,17 +167,17 @@ export const ReviewStep = ({
                 return (
                   <tr
                     key={inc.contractIdentifier}
-                    className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0"
+                    className="border-b border-border-default last:border-b-0"
                   >
                     <td className="px-4 py-3">
-                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <p className="font-medium text-text-primary">
                         {contract.propertyName}
                       </p>
-                      <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                      <p className="text-xs text-text-secondary">
                         {contract.propertyAddress}
                       </p>
                     </td>
-                    <td className="px-4 py-3 text-right text-[#3d4463] dark:text-[#c4c8db]">
+                    <td className="px-4 py-3 text-right text-text-secondary">
                       {formatMoney(
                         contract.currentRentAmount,
                         contract.currency
@@ -192,19 +186,19 @@ export const ReviewStep = ({
                     <td
                       className={`px-4 py-3 text-right font-medium ${
                         inc.increasePercentage > 0
-                          ? 'text-emerald-600 dark:text-emerald-400'
+                          ? 'text-success-text'
                           : inc.increasePercentage < 0
-                            ? 'text-red-500 dark:text-red-400'
-                            : 'text-[#6b7194] dark:text-[#8b90a8]'
+                            ? 'text-error-text'
+                            : 'text-text-secondary'
                       }`}
                     >
                       {inc.increasePercentage > 0 ? '+' : ''}
                       {inc.increasePercentage.toFixed(1)}%
                     </td>
-                    <td className="px-4 py-3 text-right font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <td className="px-4 py-3 text-right font-semibold text-text-primary">
                       {formatMoney(inc.newRentAmount, contract.currency)}
                     </td>
-                    <td className="px-4 py-3 text-[#3d4463] dark:text-[#c4c8db]">
+                    <td className="px-4 py-3 text-text-secondary">
                       {inc.effectiveDate}
                     </td>
                   </tr>
@@ -217,25 +211,25 @@ export const ReviewStep = ({
 
       {/* Unchanged Contracts */}
       {unchangedContracts.length > 0 && (
-        <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4">
-          <h3 className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-3">
+        <div className="bg-surface-card rounded-lg border border-border-default p-4">
+          <h3 className="font-semibold text-text-primary mb-3">
             Unchanged Contracts ({unchangedContracts.length})
           </h3>
           <div className="space-y-2">
             {unchangedContracts.map((contract) => (
               <div
                 key={contract.contractIdentifier}
-                className="flex justify-between items-center py-2 px-3 rounded bg-[#f8f9fc] dark:bg-[#1a1c28]"
+                className="flex justify-between items-center py-2 px-3 rounded bg-surface-page dark:bg-surface-card"
               >
                 <div>
-                  <p className="text-sm font-medium text-[#3d4463] dark:text-[#c4c8db]">
+                  <p className="text-sm font-medium text-text-secondary">
                     {contract.propertyName}
                   </p>
-                  <p className="text-xs text-[#9ca0b8] dark:text-[#5c6180]">
+                  <p className="text-xs text-text-muted">
                     {contract.propertyAddress}
                   </p>
                 </div>
-                <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                <span className="text-sm text-text-secondary">
                   {formatMoney(contract.currentRentAmount, contract.currency)}
                 </span>
               </div>
@@ -248,14 +242,14 @@ export const ReviewStep = ({
       <div className="flex justify-between">
         <button
           onClick={onBack}
-          className="px-6 py-2 rounded border border-[#e2e6f0] dark:border-[#2a2e3f] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+          className="px-6 py-2 rounded border border-border-default text-text-secondary hover:bg-surface-inset transition-colors"
         >
           Back
         </button>
         <button
           onClick={onApply}
           disabled={isApplying || changedIncreases.length === 0}
-          className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-success-text text-white px-6 py-2 rounded hover:opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isApplying
             ? 'Applying...'

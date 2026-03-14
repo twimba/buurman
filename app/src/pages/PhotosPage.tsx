@@ -7,15 +7,13 @@ import {
   useUpdatePhoto,
 } from '@/hooks/usePhotoHooks';
 import { usePagination } from '@/hooks/usePagination';
-import { Pagination } from '@/components/ui/Pagination';
+import { Pagination, ConfirmDialog, RefreshButton } from '@buurman/ui';
 import { DocumentPreviewModal } from '@/components/documents/DocumentPreviewModal';
 import { EditMetadataModal } from '@/components/ui/EditMetadataModal';
 import { PhotoResponse } from '@/types/property';
 import { PhotoGrid } from '@/components/photos/PhotoGrid';
-import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { usePhotoSelection } from '@/hooks/usePhotoSelection';
 import { useTeam } from '@/context/TeamContext';
-import { RefreshButton } from '@/components/ui/RefreshButton';
 
 export const PhotosPage = () => {
   const { canEditData } = useTeam();
@@ -82,11 +80,11 @@ export const PhotosPage = () => {
         <div>
           <div className="flex items-center gap-3 mb-1">
             <ImageIcon className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-            <h1 className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+            <h1 className="text-3xl font-bold text-text-primary">
               Photo Library
             </h1>
           </div>
-          <p className="text-[#6b7194] dark:text-[#8b90a8] ml-11">
+          <p className="text-text-secondary ml-11">
             Browse and manage all your photos in one place
           </p>
         </div>
@@ -94,10 +92,10 @@ export const PhotosPage = () => {
       </div>
 
       {/* Search and Filter Bar */}
-      <div className="bg-white dark:bg-[#14161f] rounded-lg shadow-sm p-4 mb-6">
+      <div className="bg-surface-card rounded-lg shadow-sm p-4 mb-6">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-muted " />
             <input
               type="text"
               placeholder="Search photos by title, filename, or notes..."
@@ -106,19 +104,19 @@ export const PhotosPage = () => {
                 setSearchTerm(e.target.value);
                 resetPage();
               }}
-              className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
+              className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
             />
           </div>
 
           <div className="w-full md:w-48 relative">
-            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-muted " />
             <select
               value={entityTypeFilter}
               onChange={(e) => {
                 setEntityTypeFilter(e.target.value);
                 resetPage();
               }}
-              className="w-full pl-10 pr-4 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
+              className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
             >
               <option value="">All Types</option>
               <option value="PROPERTY">Properties</option>
@@ -132,7 +130,7 @@ export const PhotosPage = () => {
       </div>
 
       {/* Photo Grid */}
-      <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm p-6">
+      <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
         <PhotoGrid
           photos={photos}
           isLoading={isLoading}

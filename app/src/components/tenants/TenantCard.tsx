@@ -5,14 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import { Avatar } from '@/components/common/Avatar';
 
 const ROLE_COLORS: Record<ContractPartyRole, string> = {
-  [ContractPartyRole.PRIMARY_TENANT]:
-    'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
-  [ContractPartyRole.GUARANTOR]:
-    'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
-  [ContractPartyRole.COSIGNER]:
-    'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300',
-  [ContractPartyRole.EXTRA_TENANT]:
-    'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300',
+  [ContractPartyRole.PRIMARY_TENANT]: 'bg-info-bg text-info-text',
+  [ContractPartyRole.GUARANTOR]: 'bg-warning-bg text-warning-text',
+  [ContractPartyRole.COSIGNER]: 'bg-info-bg text-info-text',
+  [ContractPartyRole.EXTRA_TENANT]: 'bg-success-bg text-success-text',
 };
 
 interface TenantCardProps {
@@ -24,7 +20,7 @@ export const TenantCard = ({ tenant }: TenantCardProps) => {
 
   return (
     <div
-      className="bg-white dark:bg-[#14161f] rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer p-6"
+      className="bg-surface-card rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer p-6"
       onClick={() => navigate(`/tenants/${tenant.identifier}`)}
     >
       {/* Tenant Name with Avatar */}
@@ -36,23 +32,21 @@ export const TenantCard = ({ tenant }: TenantCardProps) => {
           size="md"
         />
         <div>
-          <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+          <h3 className="text-lg font-semibold text-text-primary">
             {tenant.firstName} {tenant.lastName}
           </h3>
-          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-            #{tenant.identifier}
-          </p>
+          <p className="text-sm text-text-secondary">#{tenant.identifier}</p>
         </div>
       </div>
 
       {/* Contact Info */}
       <div className="space-y-2 mb-4">
-        <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8]">
+        <div className="flex items-center gap-2 text-text-secondary">
           <Mail className="h-4 w-4" />
           <span className="text-sm">{tenant.email}</span>
         </div>
         {tenant.phone && (
-          <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8]">
+          <div className="flex items-center gap-2 text-text-secondary">
             <Phone className="h-4 w-4" />
             <span className="text-sm">{tenant.phone}</span>
           </div>
@@ -65,7 +59,7 @@ export const TenantCard = ({ tenant }: TenantCardProps) => {
           tenant.activeProperties.map((assignment) => (
             <div
               key={assignment.property.identifier}
-              className="flex items-center gap-2 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-2 rounded"
+              className="flex items-center gap-2 bg-success-bg text-success-text px-3 py-2 rounded"
             >
               <Home className="h-4 w-4 flex-shrink-0" />
               <span className="text-sm font-medium truncate">
@@ -73,7 +67,7 @@ export const TenantCard = ({ tenant }: TenantCardProps) => {
               </span>
               {assignment.role && (
                 <span
-                  className={`ml-auto flex-shrink-0 text-xs font-medium px-2 py-0.5 rounded-full ${ROLE_COLORS[assignment.role as ContractPartyRole] ?? 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300'}`}
+                  className={`ml-auto flex-shrink-0 text-xs font-medium px-2 py-0.5 rounded-full ${ROLE_COLORS[assignment.role as ContractPartyRole] ?? 'bg-surface-inset text-text-secondary'}`}
                 >
                   {PARTY_ROLE_LABELS[assignment.role as ContractPartyRole] ??
                     assignment.role}
@@ -82,7 +76,7 @@ export const TenantCard = ({ tenant }: TenantCardProps) => {
             </div>
           ))
         ) : (
-          <div className="flex items-center gap-2 text-[#6b7194] dark:text-[#8b90a8] px-3 py-2">
+          <div className="flex items-center gap-2 text-text-secondary px-3 py-2">
             <Home className="h-4 w-4" />
             <span className="text-sm">No property assigned</span>
           </div>

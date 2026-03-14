@@ -124,13 +124,13 @@ final class BookletHelper {
   static void appendRunningFooter(StringBuilder html, String date) {
     html.append("<div class='running-footer'>");
     html.append("<table style='width:100%;border-collapse:collapse;'><tr>");
-    html.append("<td style='text-align:left;font-size:9px;color:#a0aec0;width:33%;'>")
+    html.append("<td style='text-align:left;font-size:9px;color:#a8a29e;width:33%;'>")
         .append(date)
         .append("</td>");
     html.append(
-        "<td style='text-align:center;font-size:9px;color:#a0aec0;width:34%;'>Confidential &mdash;"
+        "<td style='text-align:center;font-size:9px;color:#a8a29e;width:34%;'>Confidential &mdash;"
             + " Buurman Property Management</td>");
-    html.append("<td style='text-align:right;font-size:9px;color:#a0aec0;width:33%;'></td>");
+    html.append("<td style='text-align:right;font-size:9px;color:#a8a29e;width:33%;'></td>");
     html.append("</tr></table></div>");
   }
 
@@ -203,7 +203,7 @@ final class BookletHelper {
 
   /**
    * Returns an inline SVG icon for the given property type name. The SVG is 16×16, uses the
-   * booklet's brand blue (#2b6cb0) for stroke, and is safe to embed directly in cover-cell HTML.
+   * booklet's brand blue (#0284c7) for stroke, and is safe to embed directly in cover-cell HTML.
    */
   static String propertyTypeIconHtml(@Nullable String typeName) {
     if (typeName == null) {
@@ -344,7 +344,7 @@ final class BookletHelper {
     }
     return "<span style='display:inline-block;vertical-align:middle;margin-right:6px;'>"
         + "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' "
-        + "stroke='#2b6cb0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' "
+        + "stroke='#0284c7' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' "
         + "width='16' height='16' style='vertical-align:middle;'>"
         + paths
         + "</svg></span>";

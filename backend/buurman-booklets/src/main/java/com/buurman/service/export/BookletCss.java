@@ -25,51 +25,51 @@ final class BookletCss {
     @page { margin: 40px 50px 70px 50px; \
     @bottom-center { content: element(running-footer); } \
     @bottom-right { content: 'Page ' counter(page) ' of ' counter(pages); font-size: 9px; \
-    color: #a0aec0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; } }
+    color: #a8a29e; font-family: 'Satoshi', 'Helvetica Neue', Helvetica, Arial, sans-serif; } }
     @page:first { margin: 0; @bottom-center { content: none; } @bottom-right { content: none; } }
     .running-footer { position: running(running-footer); width: 100%; border-top: 1px solid \
-    #e2e8f0; padding-top: 8px; font-size: 9px; color: #a0aec0; }
-    body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0; \
-    color: #1a202c; font-size: 13px; line-height: 1.5; }
+    #e7e5e4; padding-top: 8px; font-size: 9px; color: #a8a29e; }
+    body { font-family: 'Satoshi', 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0; \
+    color: #292524; font-size: 13px; line-height: 1.5; }
 
     .cover { page-break-after: always; padding: 0; height: 100vh; display: flex; \
     flex-direction: column; justify-content: center; align-items: center; }
     .cover-header { text-align: center; margin-bottom: 40px; }
-    .cover-title { font-size: 44px; font-weight: 700; color: #1a365d; letter-spacing: 3px; \
+    .cover-title { font-size: 44px; font-weight: 700; color: #0c4a6e; letter-spacing: 3px; \
     margin-bottom: 12px; }
-    .cover-subtitle { font-size: 16px; color: #718096; letter-spacing: 2px; margin-bottom: 6px; }
-    .cover-date { font-size: 12px; color: #a0aec0; }
+    .cover-subtitle { font-size: 16px; color: #78716c; letter-spacing: 2px; margin-bottom: 6px; }
+    .cover-date { font-size: 12px; color: #a8a29e; }
     .cover-summary { width: 80%; max-width: 520px; border-collapse: collapse; margin-top: 20px; }
     .cover-summary td { padding: 14px 20px; }
     .cs-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; \
-    color: #718096; font-weight: 600; margin-bottom: 4px; }
-    .cs-value { font-size: 15px; color: #1a202c; font-weight: 500; }
+    color: #78716c; font-weight: 600; margin-bottom: 4px; }
+    .cs-value { font-size: 15px; color: #292524; font-weight: 500; }
     .cover-footer { position: absolute; bottom: 40px; text-align: center; font-size: 10px; \
-    color: #a0aec0; width: 100%; }
+    color: #a8a29e; width: 100%; }
 
     .status-badge { display: inline-block; padding: 8px 28px; border-radius: 20px; \
     font-size: 14px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
 
     .page { page-break-before: always; }
-    .page-header { border-bottom: 2px solid #1a365d; padding-bottom: 10px; margin-bottom: 30px; \
-    font-size: 20px; font-weight: 700; color: #1a365d; }
+    .page-header { border-bottom: 2px solid #0c4a6e; padding-bottom: 10px; margin-bottom: 30px; \
+    font-size: 20px; font-weight: 700; color: #0c4a6e; }
 
-    .section-title { font-size: 16px; font-weight: 700; color: #1a365d; margin: 28px 0 14px 0; \
-    padding-left: 12px; border-left: 4px solid #2b6cb0; }
+    .section-title { font-size: 16px; font-weight: 700; color: #0c4a6e; margin: 28px 0 14px 0; \
+    padding-left: 12px; border-left: 4px solid #0284c7; }
 
     .detail-grid { width: 100%; border-collapse: collapse; }
     .detail-grid td { padding: 10px 16px; vertical-align: top; width: 50%; }
     .fg-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; \
-    color: #718096; font-weight: 600; margin-bottom: 3px; }
-    .fg-value { font-size: 14px; color: #1a202c; }
+    color: #78716c; font-weight: 600; margin-bottom: 3px; }
+    .fg-value { font-size: 14px; color: #292524; }
 
-    .text-block { background-color: #f7fafc; border: 1px solid #e2e8f0; border-radius: 6px; \
-    padding: 16px; font-size: 13px; color: #2d3748; line-height: 1.6; margin-top: 8px; }
+    .text-block { background-color: #fafaf9; border: 1px solid #e7e5e4; border-radius: 6px; \
+    padding: 16px; font-size: 13px; color: #44403c; line-height: 1.6; margin-top: 8px; }
     .text-block p { margin: 0 0 8px 0; }
     .text-block ul, .text-block ol { margin: 4px 0; padding-left: 24px; }
     .text-block li { margin-bottom: 4px; }
     .text-block strong, .text-block b { font-weight: 600; }
-    .text-block h1, .text-block h2, .text-block h3, .text-block h4 { color: #1a365d; \
+    .text-block h1, .text-block h2, .text-block h3, .text-block h4 { color: #0c4a6e; \
     margin: 12px 0 6px 0; }
     """;
   }
@@ -79,7 +79,7 @@ final class BookletCss {
   static String propertyStatusBadges() {
     return """
     .status-vacant { background-color: #f0fdf4; color: #166534; border: 2px solid #bbf7d0; }
-    .status-occupied { background-color: #eff6ff; color: #1e40af; border: 2px solid #bfdbfe; }
+    .status-occupied { background-color: #eff6ff; color: #0c4a6e; border: 2px solid #bfdbfe; }
     .status-maintenance { background-color: #fefce8; color: #854d0e; border: 2px solid #fef08a; }
     .status-unavailable { background-color: #f9fafb; color: #374151; border: 2px solid #e5e7eb; }
     """;
@@ -101,12 +101,12 @@ final class BookletCss {
   static String paymentTable() {
     return """
     .payment-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    .payment-table thead th { background-color: #edf2f7; padding: 10px 12px; text-align: left; \
-    font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #4a5568; \
-    font-weight: 700; border-bottom: 2px solid #cbd5e0; }
-    .payment-table tbody td { padding: 9px 12px; border-bottom: 1px solid #e2e8f0; \
+    .payment-table thead th { background-color: #f5f5f4; padding: 10px 12px; text-align: left; \
+    font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #57534e; \
+    font-weight: 700; border-bottom: 2px solid #d6d3d1; }
+    .payment-table tbody td { padding: 9px 12px; border-bottom: 1px solid #e7e5e4; \
     font-size: 13px; }
-    .payment-table tbody tr:nth-child(even) { background-color: #f7fafc; }
+    .payment-table tbody tr:nth-child(even) { background-color: #fafaf9; }
     """;
   }
 
@@ -118,7 +118,7 @@ final class BookletCss {
     .pay-pending { background-color: #fefce8; color: #854d0e; }
     .pay-partially_paid { background-color: #fefce8; color: #854d0e; }
     .pay-overdue { background-color: #fef2f2; color: #991b1b; }
-    .pay-cancelled { background-color: #f9fafb; color: #6b7280; }
+    .pay-cancelled { background-color: #f9fafb; color: #78716c; }
     """;
   }
 
@@ -136,41 +136,41 @@ final class BookletCss {
 
   static String checkItems() {
     return """
-    .check-item { padding: 6px 0; font-size: 13px; color: #2d3748; }
-    .check-icon { color: #38a169; font-weight: bold; margin-right: 8px; }
+    .check-item { padding: 6px 0; font-size: 13px; color: #44403c; }
+    .check-icon { color: #16a34a; font-weight: bold; margin-right: 8px; }
     """;
   }
 
   static String partyCards() {
     return """
-    .party-card { background-color: #fff; border: 1px solid #e2e8f0; border-left: 3px solid; \
+    .party-card { background-color: #fff; border: 1px solid #e7e5e4; border-left: 3px solid; \
     border-radius: 6px; padding: 20px 24px; margin-bottom: 14px; }
     .party-role { display: inline-block; font-size: 10px; font-weight: 600; \
     letter-spacing: 0.8px; text-transform: uppercase; padding: 2px 10px; border-radius: 3px; \
     margin-bottom: 6px; }
-    .party-name { font-size: 20px; font-weight: 700; color: #1a202c; margin-bottom: 12px; \
-    padding-bottom: 10px; border-bottom: 1px solid #edf2f7; }
+    .party-name { font-size: 20px; font-weight: 700; color: #292524; margin-bottom: 12px; \
+    padding-bottom: 10px; border-bottom: 1px solid #f5f5f4; }
     .party-details { border-collapse: collapse; width: 100%; }
     .pd-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; \
-    color: #a0aec0; font-weight: 600; padding: 4px 8px 4px 0; width: 90px; vertical-align: top; }
-    .pd-value { font-size: 13px; color: #2d3748; padding: 4px 20px 4px 0; vertical-align: top; }
+    color: #a8a29e; font-weight: 600; padding: 4px 8px 4px 0; width: 90px; vertical-align: top; }
+    .pd-value { font-size: 13px; color: #44403c; padding: 4px 20px 4px 0; vertical-align: top; }
     """;
   }
 
   static String paymentInstructionCards() {
     return """
-    .pi-card { background-color: #f7fafc; border: 1px solid #e2e8f0; border-left: 3px solid \
-    #2b6cb0; border-radius: 6px; padding: 20px 24px; margin-bottom: 20px; }
-    .pi-header { margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #edf2f7; }
-    .pi-name { font-size: 17px; font-weight: 700; color: #1a202c; margin-right: 12px; }
+    .pi-card { background-color: #fafaf9; border: 1px solid #e7e5e4; border-left: 3px solid \
+    #0284c7; border-radius: 6px; padding: 20px 24px; margin-bottom: 20px; }
+    .pi-header { margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #f5f5f4; }
+    .pi-name { font-size: 17px; font-weight: 700; color: #292524; margin-right: 12px; }
     .pi-method { display: inline-block; font-size: 10px; font-weight: 600; \
     letter-spacing: 0.8px; text-transform: uppercase; padding: 2px 10px; border-radius: 3px; \
-    color: #2b6cb0; background-color: #eff6ff; vertical-align: middle; }
+    color: #0284c7; background-color: #f0f9ff; vertical-align: middle; }
     .pi-current { display: inline-block; font-size: 10px; font-weight: 600; \
     letter-spacing: 0.8px; text-transform: uppercase; padding: 2px 10px; border-radius: 3px; \
     color: #166534; background-color: #f0fdf4; vertical-align: middle; margin-left: 8px; }
-    .pi-period { font-size: 12px; color: #718096; margin-bottom: 12px; }
-    .pi-details { margin-top: 10px; padding-top: 8px; border-top: 1px solid #edf2f7; }
+    .pi-period { font-size: 12px; color: #78716c; margin-bottom: 12px; }
+    .pi-details { margin-top: 10px; padding-top: 8px; border-top: 1px solid #f5f5f4; }
     """;
   }
 }

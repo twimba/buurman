@@ -20,7 +20,7 @@ import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 import { PaymentForm } from '@/components/payments/PaymentForm';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import { DocumentList } from '@/components/properties/DocumentList';
-import { Button, PageHeader } from '@/components/ui';
+import { Button, PageHeader } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import {
   Edit,
@@ -152,29 +152,29 @@ const ReceivalsTable = ({
   );
 
   const inputClass =
-    'px-2 py-1 text-sm border border-[#c9cfd9] dark:border-[#3a3f54] rounded bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6] focus:ring-1 focus:ring-blue-500';
+    'px-2 py-1 text-sm border border-border-strong rounded bg-surface-card text-text-primary focus:ring-1 focus:ring-blue-500';
 
   return (
     <div>
       {/* Search */}
       <div className="mb-4 relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#9ca0b8] dark:text-[#5c6180]" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-text-muted " />
         <input
           type="text"
           placeholder="Search by amount, date, or notes..."
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full pl-9 pr-4 py-2 text-sm border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-[#1e2130] text-[#1a1d2e] dark:text-[#eef0f6]"
+          className="w-full pl-9 pr-4 py-2 text-sm border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
         />
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f]">
-        <table className="min-w-full divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
-          <thead className="bg-[#f8f9fc] dark:bg-[#0c0d14]">
+      <div className="overflow-hidden rounded-lg border border-border-default">
+        <table className="min-w-full divide-y divide-border-default">
+          <thead className="bg-surface-page">
             <tr>
               <th
-                className="px-4 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                 onClick={() => onSort('date')}
               >
                 <div className="flex items-center gap-1">
@@ -183,7 +183,7 @@ const ReceivalsTable = ({
                 </div>
               </th>
               <th
-                className="px-4 py-3 text-right text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                 onClick={() => onSort('amount')}
               >
                 <div className="flex items-center justify-end gap-1">
@@ -191,23 +191,20 @@ const ReceivalsTable = ({
                   <ArrowUpDown className="h-3 w-3" />
                 </div>
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider">
+              <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                 Notes
               </th>
               {canEdit && (
-                <th className="px-4 py-3 text-right text-xs font-medium text-[#6b7194] dark:text-[#8b90a8] uppercase tracking-wider w-24">
+                <th className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider w-24">
                   Actions
                 </th>
               )}
             </tr>
           </thead>
-          <tbody className="bg-white dark:bg-[#14161f] divide-y divide-[#edf0f7] dark:divide-[#2a2e3f]">
+          <tbody className="bg-surface-card divide-y divide-border-default">
             {paginated.map((receival) =>
               editingId === receival.identifier ? (
-                <tr
-                  key={receival.identifier}
-                  className="bg-blue-50/50 dark:bg-blue-900/10"
-                >
+                <tr key={receival.identifier} className="bg-info-bg">
                   <td className="px-4 py-2">
                     <input
                       type="date"
@@ -235,14 +232,14 @@ const ReceivalsTable = ({
                     <div className="flex justify-end gap-1 mt-2">
                       <button
                         onClick={saveEdit}
-                        className="p-1.5 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-[#1e2130] rounded transition-colors"
+                        className="p-1.5 text-success-text hover:bg-success-bg rounded transition-colors"
                         title="Save"
                       >
                         <Check className="h-4 w-4" />
                       </button>
                       <button
                         onClick={cancelEdit}
-                        className="p-1.5 text-[#6b7194] dark:text-[#8b90a8] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] rounded transition-colors"
+                        className="p-1.5 text-text-secondary hover:bg-surface-inset rounded transition-colors"
                         title="Cancel"
                       >
                         <X className="h-4 w-4" />
@@ -253,15 +250,15 @@ const ReceivalsTable = ({
               ) : (
                 <tr
                   key={receival.identifier}
-                  className="hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]"
+                  className="hover:bg-surface-inset"
                 >
-                  <td className="px-4 py-3 whitespace-nowrap text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-text-primary">
                     {formatDate(receival.receivalDate)}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm font-semibold text-right text-green-600 dark:text-green-400">
+                  <td className="px-4 py-3 whitespace-nowrap text-sm font-semibold text-right text-success-text">
                     {symbol} {receival.amount.toFixed(2)}
                   </td>
-                  <td className="px-4 py-3 text-sm text-[#6b7194] dark:text-[#8b90a8] max-w-xs">
+                  <td className="px-4 py-3 text-sm text-text-secondary max-w-xs">
                     {receival.notes ? (
                       <RichTextDisplay
                         content={receival.notes}
@@ -276,14 +273,14 @@ const ReceivalsTable = ({
                       <div className="flex justify-end gap-1">
                         <button
                           onClick={() => startEdit(receival)}
-                          className="p-1.5 text-[#5c7cfa] hover:bg-blue-50 dark:hover:bg-[#1e2130] rounded transition-colors"
+                          className="p-1.5 text-primary-500 hover:bg-info-bg rounded transition-colors"
                           title="Edit receival"
                         >
                           <Pencil className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => onDelete(receival.identifier)}
-                          className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-[#1e2130] rounded transition-colors"
+                          className="p-1.5 text-error-text hover:bg-error-bg rounded transition-colors"
                           title="Delete receival"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -301,7 +298,7 @@ const ReceivalsTable = ({
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-4 text-sm">
-          <span className="text-[#6b7194] dark:text-[#8b90a8]">
+          <span className="text-text-secondary">
             Showing {(currentPage - 1) * pageSize + 1} to{' '}
             {Math.min(currentPage * pageSize, filtered.length)} of{' '}
             {filtered.length}
@@ -310,7 +307,7 @@ const ReceivalsTable = ({
             <button
               onClick={() => onPageChange(currentPage - 1)}
               disabled={currentPage === 1}
-              className="px-3 py-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 text-[#3d4463] dark:text-[#c4c8db]"
+              className="px-3 py-1 border border-border-strong rounded hover:bg-surface-inset disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 text-text-secondary"
             >
               <ChevronLeft className="h-4 w-4" />
               Previous
@@ -318,7 +315,7 @@ const ReceivalsTable = ({
             <button
               onClick={() => onPageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="px-3 py-1 border border-[#c9cfd9] dark:border-[#3a3f54] rounded hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 text-[#3d4463] dark:text-[#c4c8db]"
+              className="px-3 py-1 border border-border-strong rounded hover:bg-surface-inset disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 text-text-secondary"
             >
               Next
               <ChevronRight className="h-4 w-4" />
@@ -535,14 +532,14 @@ export const PaymentDetailPage = () => {
         />
 
         {/* Tabs */}
-        <div className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] mb-6">
+        <div className="border-b border-border-default mb-6">
           <div className="flex gap-6">
             <button
               onClick={() => setActiveTab('details')}
               className={`pb-3 px-1 font-medium transition-colors ${
                 activeTab === 'details'
-                  ? 'border-b-2 border-[#5c7cfa] text-blue-600'
-                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:hover:text-[#c4c8db]'
+                  ? 'border-b-2 border-primary-500 text-primary-500'
+                  : 'text-text-secondary hover:text-text-primary'
               }`}
             >
               Details
@@ -551,8 +548,8 @@ export const PaymentDetailPage = () => {
               onClick={() => setActiveTab('receivals')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'receivals'
-                  ? 'border-b-2 border-[#5c7cfa] text-blue-600'
-                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:hover:text-[#c4c8db]'
+                  ? 'border-b-2 border-primary-500 text-primary-500'
+                  : 'text-text-secondary hover:text-text-primary'
               }`}
             >
               <ArrowDownCircle className="h-4 w-4" />
@@ -563,8 +560,8 @@ export const PaymentDetailPage = () => {
               onClick={() => setActiveTab('documents')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'documents'
-                  ? 'border-b-2 border-[#5c7cfa] text-blue-600'
-                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:hover:text-[#c4c8db]'
+                  ? 'border-b-2 border-primary-500 text-primary-500'
+                  : 'text-text-secondary hover:text-text-primary'
               }`}
             >
               <FileText className="h-4 w-4" />
@@ -574,8 +571,8 @@ export const PaymentDetailPage = () => {
               onClick={() => setActiveTab('history')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'history'
-                  ? 'border-b-2 border-[#5c7cfa] text-blue-600'
-                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#1a1d2e] dark:hover:text-[#c4c8db]'
+                  ? 'border-b-2 border-primary-500 text-primary-500'
+                  : 'text-text-secondary hover:text-text-primary'
               }`}
             >
               <History className="h-4 w-4" />
@@ -587,8 +584,8 @@ export const PaymentDetailPage = () => {
         {/* Content */}
         {activeTab === 'details' &&
           (isEditing ? (
-            <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+              <h2 className="text-lg font-semibold text-text-primary mb-4">
                 Edit Payment
               </h2>
               <PaymentForm
@@ -602,18 +599,16 @@ export const PaymentDetailPage = () => {
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Payment Details */}
-              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-                <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+                <h2 className="text-lg font-semibold text-text-primary mb-4">
                   Payment Details
                 </h2>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <DollarSign className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+                    <DollarSign className="h-5 w-5 text-text-muted " />
                     <div>
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                        Amount
-                      </p>
-                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6] text-lg">
+                      <p className="text-sm text-text-secondary">Amount</p>
+                      <p className="font-medium text-text-primary text-lg">
                         {symbol} {payment.amount.toFixed(2)}
                       </p>
                     </div>
@@ -623,27 +618,25 @@ export const PaymentDetailPage = () => {
                   {payment.receivedAmount > 0 && (
                     <>
                       <div className="flex items-center gap-3">
-                        <ArrowDownCircle className="h-5 w-5 text-green-500" />
+                        <ArrowDownCircle className="h-5 w-5 text-success-text" />
                         <div>
-                          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                          <p className="text-sm text-text-secondary">
                             Received
                           </p>
-                          <p className="font-medium text-green-600 dark:text-green-400 text-lg">
+                          <p className="font-medium text-success-text text-lg">
                             {symbol} {payment.receivedAmount.toFixed(2)}
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <DollarSign className="h-5 w-5 text-amber-500" />
+                        <DollarSign className="h-5 w-5 text-warning-text" />
                         <div>
-                          <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                            Balance
-                          </p>
+                          <p className="text-sm text-text-secondary">Balance</p>
                           <p
                             className={`font-medium text-lg ${
                               payment.balance <= 0
-                                ? 'text-green-600 dark:text-green-400'
-                                : 'text-amber-600 dark:text-amber-400'
+                                ? 'text-success-text'
+                                : 'text-warning-text'
                             }`}
                           >
                             {symbol} {payment.balance.toFixed(2)}
@@ -654,24 +647,22 @@ export const PaymentDetailPage = () => {
                   )}
 
                   <div className="flex items-center gap-3">
-                    <Calendar className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180]" />
+                    <Calendar className="h-5 w-5 text-text-muted " />
                     <div>
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                        Due Date
-                      </p>
-                      <p className="font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <p className="text-sm text-text-secondary">Due Date</p>
+                      <p className="font-medium text-text-primary">
                         {formatDate(payment.dueDate)}
                       </p>
                     </div>
                   </div>
                   {payment.paymentDate && (
                     <div className="flex items-center gap-3">
-                      <CheckCircle className="h-5 w-5 text-green-600" />
+                      <CheckCircle className="h-5 w-5 text-success-text" />
                       <div>
-                        <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                        <p className="text-sm text-text-secondary">
                           Payment Date
                         </p>
-                        <p className="font-medium text-green-700 dark:text-green-300">
+                        <p className="font-medium text-success-text">
                           {formatDate(payment.paymentDate)}
                         </p>
                       </div>
@@ -681,17 +672,15 @@ export const PaymentDetailPage = () => {
               </div>
 
               {/* Contract & Parties */}
-              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-                <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+                <h2 className="text-lg font-semibold text-text-primary mb-4">
                   Related Information
                 </h2>
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
-                    <FileText className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180] mt-1" />
+                    <FileText className="h-5 w-5 text-text-muted mt-1" />
                     <div className="flex-1">
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                        Contract
-                      </p>
+                      <p className="text-sm text-text-secondary">Contract</p>
                       <button
                         onClick={() =>
                           navigate(`/contracts/${payment.contract.identifier}`)
@@ -703,11 +692,9 @@ export const PaymentDetailPage = () => {
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <Home className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180] mt-1" />
+                    <Home className="h-5 w-5 text-text-muted mt-1" />
                     <div className="flex-1">
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                        Property
-                      </p>
+                      <p className="text-sm text-text-secondary">Property</p>
                       <button
                         onClick={() =>
                           navigate(`/properties/${payment.property.identifier}`)
@@ -719,11 +706,9 @@ export const PaymentDetailPage = () => {
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <User className="h-5 w-5 text-[#9ca0b8] dark:text-[#5c6180] mt-1" />
+                    <User className="h-5 w-5 text-text-muted mt-1" />
                     <div className="flex-1">
-                      <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                        Tenant
-                      </p>
+                      <p className="text-sm text-text-secondary">Tenant</p>
                       <button
                         onClick={() =>
                           navigate(`/tenants/${payment.tenant.identifier}`)
@@ -739,8 +724,8 @@ export const PaymentDetailPage = () => {
 
               {/* Notes */}
               {payment.notes && (
-                <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6 lg:col-span-2">
-                  <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+                <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 lg:col-span-2">
+                  <h2 className="text-lg font-semibold text-text-primary mb-4">
                     Notes
                   </h2>
                   <RichTextDisplay content={payment.notes} />
@@ -748,36 +733,32 @@ export const PaymentDetailPage = () => {
               )}
 
               {/* Metadata */}
-              <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6 lg:col-span-2">
+              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 lg:col-span-2">
                 <button
                   onClick={() => setIsMetadataExpanded(!isMetadataExpanded)}
                   className="w-full flex items-center justify-between text-left group"
                 >
-                  <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                  <h2 className="text-lg font-semibold text-text-primary">
                     Metadata
                   </h2>
                   {isMetadataExpanded ? (
-                    <ChevronUp className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8] group-hover:text-[#3d4463] dark:group-hover:text-[#c4c8db]" />
+                    <ChevronUp className="h-5 w-5 text-text-secondary group-hover:text-text-secondary " />
                   ) : (
-                    <ChevronDown className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8] group-hover:text-[#3d4463] dark:group-hover:text-[#c4c8db]" />
+                    <ChevronDown className="h-5 w-5 text-text-secondary group-hover:text-text-secondary " />
                   )}
                 </button>
                 {isMetadataExpanded && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-4">
                     <div>
-                      <span className="text-[#6b7194] dark:text-[#8b90a8]">
-                        Created:
-                      </span>{' '}
-                      <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <span className="text-text-secondary">Created:</span>{' '}
+                      <span className="text-text-primary">
                         {formatDate(payment.createdAt)} at{' '}
                         {new Date(payment.createdAt).toLocaleTimeString()}
                       </span>
                     </div>
                     <div>
-                      <span className="text-[#6b7194] dark:text-[#8b90a8]">
-                        Last Updated:
-                      </span>{' '}
-                      <span className="text-[#1a1d2e] dark:text-[#eef0f6]">
+                      <span className="text-text-secondary">Last Updated:</span>{' '}
+                      <span className="text-text-primary">
                         {formatDate(payment.updatedAt)} at{' '}
                         {new Date(payment.updatedAt).toLocaleTimeString()}
                       </span>
@@ -790,9 +771,9 @@ export const PaymentDetailPage = () => {
 
         {/* Receivals Tab */}
         {activeTab === 'receivals' && (
-          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+              <h2 className="text-xl font-semibold text-text-primary">
                 Receivals ({payment.receivals?.length ?? 0})
               </h2>
               {canRegisterReceival && (
@@ -809,32 +790,26 @@ export const PaymentDetailPage = () => {
             </div>
 
             {/* Balance summary */}
-            <div className="grid grid-cols-3 gap-4 mb-6 p-4 bg-[#f8f9fc] dark:bg-[#0c0d14] rounded-lg">
+            <div className="grid grid-cols-3 gap-4 mb-6 p-4 bg-surface-page rounded-lg">
               <div>
-                <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
-                  Total Amount
-                </p>
-                <p className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+                <p className="text-xs text-text-secondary">Total Amount</p>
+                <p className="text-lg font-semibold text-text-primary">
                   {symbol} {payment.amount.toFixed(2)}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
-                  Received
-                </p>
-                <p className="text-lg font-semibold text-green-600 dark:text-green-400">
+                <p className="text-xs text-text-secondary">Received</p>
+                <p className="text-lg font-semibold text-success-text">
                   {symbol} {payment.receivedAmount.toFixed(2)}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
-                  Balance
-                </p>
+                <p className="text-xs text-text-secondary">Balance</p>
                 <p
                   className={`text-lg font-semibold ${
                     payment.balance <= 0
-                      ? 'text-green-600 dark:text-green-400'
-                      : 'text-amber-600 dark:text-amber-400'
+                      ? 'text-success-text'
+                      : 'text-warning-text'
                   }`}
                 >
                   {symbol} {payment.balance.toFixed(2)}
@@ -876,8 +851,8 @@ export const PaymentDetailPage = () => {
               />
             ) : (
               <div className="text-center py-8">
-                <ArrowDownCircle className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] mx-auto mb-3" />
-                <p className="text-[#6b7194] dark:text-[#8b90a8]">
+                <ArrowDownCircle className="h-12 w-12 text-text-disabled mx-auto mb-3" />
+                <p className="text-text-secondary">
                   No receivals registered yet
                 </p>
               </div>
@@ -903,8 +878,8 @@ export const PaymentDetailPage = () => {
         )}
 
         {activeTab === 'history' && (
-          <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+            <h2 className="text-xl font-semibold text-text-primary mb-4">
               Payment History
             </h2>
             {auditLoading ? (
@@ -926,12 +901,12 @@ export const PaymentDetailPage = () => {
                   return (
                     <div
                       key={activityKey}
-                      className="border border-[#e2e6f0] rounded-lg overflow-hidden"
+                      className="border border-border-default rounded-lg overflow-hidden"
                     >
                       <div
                         className={`flex items-start gap-4 p-4 transition-colors ${
                           hasChanges
-                            ? 'cursor-pointer hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130]'
+                            ? 'cursor-pointer hover:bg-surface-inset'
                             : ''
                         }`}
                         onClick={() =>
@@ -950,35 +925,35 @@ export const PaymentDetailPage = () => {
                         <div
                           className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
                             activity.action === 'CREATE'
-                              ? 'bg-green-100 dark:bg-green-900/30'
+                              ? 'bg-success-bg'
                               : activity.action === 'UPDATE'
-                                ? 'bg-blue-100 dark:bg-blue-900/30'
-                                : 'bg-red-100 dark:bg-red-900/30'
+                                ? 'bg-info-bg'
+                                : 'bg-error-bg'
                           }`}
                         >
                           <span
                             className={`text-xs font-semibold ${
                               activity.action === 'CREATE'
-                                ? 'text-green-700'
+                                ? 'text-success-text'
                                 : activity.action === 'UPDATE'
-                                  ? 'text-blue-700'
-                                  : 'text-red-700'
+                                  ? 'text-info-text'
+                                  : 'text-error-text'
                             }`}
                           >
                             {activity.action.charAt(0)}
                           </span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                          <p className="text-sm font-medium text-text-primary">
                             {activity.description}
                           </p>
-                          <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+                          <p className="text-xs text-text-secondary mt-1">
                             {formatDistanceToNow(new Date(activity.timestamp), {
                               addSuffix: true,
                             })}
                           </p>
                           {hasChanges && (
-                            <p className="text-xs text-[#5c7cfa] mt-1">
+                            <p className="text-xs text-primary-500 mt-1">
                               {isExpanded
                                 ? 'Click to hide changes'
                                 : 'Click to view changes'}
@@ -988,8 +963,8 @@ export const PaymentDetailPage = () => {
                       </div>
 
                       {isExpanded && hasChanges && (
-                        <div className="bg-[#f8f9fc] dark:bg-[#0c0d14] px-4 py-3 border-t border-[#e2e6f0] dark:border-[#2a2e3f]">
-                          <h4 className="text-xs font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-2 uppercase">
+                        <div className="bg-surface-page px-4 py-3 border-t border-border-default">
+                          <h4 className="text-xs font-semibold text-text-secondary mb-2 uppercase">
                             Changed Fields
                           </h4>
                           <div className="space-y-2">
@@ -1126,7 +1101,7 @@ export const PaymentDetailPage = () => {
                                               ].includes(k)
                                           )
                                           .map(([k, val]) => `${k}: ${val}`)
-                                          .join(', ')}
+                                          .join(',')}
                                       </span>
                                     );
                                   }
@@ -1152,9 +1127,9 @@ export const PaymentDetailPage = () => {
                                 return (
                                   <div
                                     key={field}
-                                    className="bg-white dark:bg-[#14161f] dark:text-[#eef0f6] rounded p-2 text-xs"
+                                    className="bg-surface-card rounded p-2 text-xs"
                                   >
-                                    <div className="font-semibold text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                                    <div className="font-semibold text-text-secondary mb-1">
                                       {field
                                         .replace(/([A-Z])/g, ' $1')
                                         .replace(/^./, (str) =>
@@ -1164,22 +1139,22 @@ export const PaymentDetailPage = () => {
                                     </div>
                                     <div className="grid grid-cols-2 gap-2">
                                       <div>
-                                        <span className="text-[#6b7194] dark:text-[#8b90a8]">
+                                        <span className="text-text-secondary">
                                           Old:{' '}
                                         </span>
                                         {renderVal(
                                           oldVal,
-                                          'text-red-600',
+                                          'text-error-text',
                                           'line-through'
                                         )}
                                       </div>
                                       <div>
-                                        <span className="text-[#6b7194] dark:text-[#8b90a8]">
+                                        <span className="text-text-secondary">
                                           New:{' '}
                                         </span>
                                         {renderVal(
                                           newVal,
-                                          'text-green-600',
+                                          'text-success-text',
                                           'font-medium'
                                         )}
                                       </div>
@@ -1197,11 +1172,9 @@ export const PaymentDetailPage = () => {
               </div>
             ) : (
               <div className="text-center py-8">
-                <History className="h-12 w-12 text-[#c9cfd9] dark:text-[#3a3f54] mx-auto mb-3" />
-                <p className="text-[#6b7194] dark:text-[#8b90a8]">
-                  No history available
-                </p>
-                <p className="text-sm text-[#9ca0b8] dark:text-[#5c6180] mt-1">
+                <History className="h-12 w-12 text-text-disabled mx-auto mb-3" />
+                <p className="text-text-secondary">No history available</p>
+                <p className="text-sm text-text-muted mt-1">
                   Changes to this payment will appear here
                 </p>
               </div>
@@ -1213,11 +1186,11 @@ export const PaymentDetailPage = () => {
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-xl max-w-md w-full mx-4 p-6">
-            <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+          <div className="bg-surface-card rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+            <h2 className="text-lg font-semibold text-text-primary mb-4">
               Delete Payment
             </h2>
-            <p className="text-[#3d4463] dark:text-[#c4c8db] mb-6">
+            <p className="text-text-secondary mb-6">
               Are you sure you want to delete this payment? This action cannot
               be undone.
             </p>
@@ -1251,12 +1224,12 @@ export const PaymentDetailPage = () => {
             }
           }}
         >
-          <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-xl max-w-md w-full mx-4 p-6">
-            <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+          <div className="bg-surface-card rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+            <h2 className="text-lg font-semibold text-text-primary mb-4">
               Mark Payment as Paid
             </h2>
             {payment.balance > 0 && (
-              <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-4">
+              <p className="text-sm text-text-secondary mb-4">
                 This will register a receival for the remaining balance of{' '}
                 <span className="font-semibold">
                   {symbol} {payment.balance.toFixed(2)}
@@ -1266,18 +1239,18 @@ export const PaymentDetailPage = () => {
             )}
             <div className="space-y-4 mb-6">
               <div>
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
-                  Payment Date <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-text-secondary mb-2">
+                  Payment Date <span className="text-error-text">*</span>
                 </label>
                 <input
                   type="date"
                   value={paymentDate}
                   onChange={(e) => setPaymentDate(e.target.value)}
-                  className="w-full px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] dark:bg-[#1e2130] dark:text-[#eef0f6] rounded-md"
+                  className="w-full px-3 py-2 border border-border-strong rounded-md"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
+                <label className="block text-sm font-medium text-text-secondary mb-2">
                   Notes (Optional)
                 </label>
                 <RichTextEditor
@@ -1319,20 +1292,20 @@ export const PaymentDetailPage = () => {
             }
           }}
         >
-          <div className="bg-white dark:bg-[#14161f] rounded-xl shadow-xl max-w-md w-full mx-4 p-6">
-            <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+          <div className="bg-surface-card rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+            <h2 className="text-lg font-semibold text-text-primary mb-4">
               Register Receival
             </h2>
-            <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-4">
+            <p className="text-sm text-text-secondary mb-4">
               Remaining balance:{' '}
-              <span className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+              <span className="font-semibold text-text-primary">
                 {symbol} {payment.balance.toFixed(2)}
               </span>
             </p>
             <div className="space-y-4 mb-6">
               <div>
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
-                  Amount <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-text-secondary mb-2">
+                  Amount <span className="text-error-text">*</span>
                 </label>
                 <MoneyInput
                   value={
@@ -1347,18 +1320,18 @@ export const PaymentDetailPage = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
-                  Receival Date <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-text-secondary mb-2">
+                  Receival Date <span className="text-error-text">*</span>
                 </label>
                 <input
                   type="date"
                   value={receivalDate}
                   onChange={(e) => setReceivalDate(e.target.value)}
-                  className="w-full px-3 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] dark:bg-[#1e2130] dark:text-[#eef0f6] rounded-md"
+                  className="w-full px-3 py-2 border border-border-strong rounded-md"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
+                <label className="block text-sm font-medium text-text-secondary mb-2">
                   Notes (Optional)
                 </label>
                 <RichTextEditor

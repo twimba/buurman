@@ -76,19 +76,19 @@ export const CreateBuurmyModal = ({ onClose }: CreateBuurmyModalProps) => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="create-buurmy-title"
-          className="relative bg-white dark:bg-[#14161f] rounded-lg shadow-xl dark:shadow-black/20 w-full max-w-lg"
+          className="relative bg-surface-card rounded-lg shadow-xl w-full max-w-lg"
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-border-default">
             <h2
               id="create-buurmy-title"
-              className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]"
+              className="text-lg font-semibold text-text-primary"
             >
               Create Buurmy
             </h2>
             <button
               onClick={onClose}
-              className="p-1 text-[#9ca0b8] dark:text-[#5c6180] hover:text-[#3d4463] dark:hover:text-[#c4c8db] rounded transition-colors"
+              className="p-1 text-text-muted hover:text-text-secondary rounded transition-colors"
             >
               <X className="h-5 w-5" />
             </button>
@@ -99,8 +99,8 @@ export const CreateBuurmyModal = ({ onClose }: CreateBuurmyModalProps) => {
             <div className="px-6 py-4 space-y-4">
               {/* Error */}
               {createBuurmy.isError && (
-                <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-                  <p className="text-sm text-red-600 dark:text-red-400">
+                <div className="p-3 rounded-lg bg-error-bg border border-error-border">
+                  <p className="text-sm text-error-text">
                     {getErrorMessage(createBuurmy.error)}
                   </p>
                 </div>
@@ -158,14 +158,14 @@ export const CreateBuurmyModal = ({ onClose }: CreateBuurmyModalProps) => {
                     }
                     className="sr-only peer"
                   />
-                  <div className="w-9 h-5 bg-[#c9cfd9] dark:bg-[#3a3f54] rounded-full peer-checked:bg-[#5c7cfa] transition-colors" />
-                  <div className="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow peer-checked:translate-x-4 transition-transform" />
+                  <div className="w-9 h-5 bg-neutral-200 rounded-full peer-checked:bg-primary-500 transition-colors" />
+                  <div className="absolute top-0.5 left-0.5 w-4 h-4 bg-surface-card rounded-full shadow peer-checked:translate-x-4 transition-transform" />
                 </div>
                 <div>
-                  <span className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                  <span className="text-sm font-medium text-text-primary">
                     Temporary password
                   </span>
-                  <p className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
+                  <p className="text-xs text-text-secondary">
                     User must change password on first login
                   </p>
                 </div>
@@ -173,19 +173,19 @@ export const CreateBuurmyModal = ({ onClose }: CreateBuurmyModalProps) => {
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-4 border-t border-[#e2e6f0] dark:border-[#2a2e3f] flex justify-end gap-3">
+            <div className="px-6 py-4 border-t border-border-default flex justify-end gap-3">
               <button
                 type="button"
                 onClick={onClose}
                 disabled={createBuurmy.isPending}
-                className="px-4 py-2 text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] bg-white dark:bg-[#1e2130] border border-[#c9cfd9] dark:border-[#3a3f54] rounded-md hover:bg-[#f1f3f9] dark:hover:bg-[#2a2e3f] transition-colors disabled:opacity-50"
+                className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={!isValid || createBuurmy.isPending}
-                className="px-4 py-2 text-sm font-medium text-white bg-[#5c7cfa] hover:bg-[#4c6ef5] rounded-md transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="px-4 py-2 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-md transition-colors disabled:opacity-50 flex items-center gap-2"
               >
                 {createBuurmy.isPending && (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -229,9 +229,9 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
   ) {
     return (
       <div>
-        <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1.5">
+        <label className="block text-sm font-medium text-text-secondary mb-1.5">
           {label}
-          {required && <span className="text-red-500 ml-0.5">*</span>}
+          {required && <span className="text-error-text ml-0.5">*</span>}
         </label>
         <input
           ref={ref}
@@ -241,13 +241,9 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
           required={required}
           minLength={minLength}
           placeholder={placeholder}
-          className="w-full px-3 py-2 text-sm rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#1a1d28] text-[#1a1d2e] dark:text-[#eef0f6] placeholder-[#9ca0b8] focus:outline-none focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa]/20 transition-colors"
+          className="w-full px-3 py-2 text-sm rounded-md border border-border-default bg-surface-card text-text-primary placeholder-text-muted focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors"
         />
-        {hint && (
-          <p className="mt-1 text-xs text-[#9ca0b8] dark:text-[#5c6180]">
-            {hint}
-          </p>
-        )}
+        {hint && <p className="mt-1 text-xs text-text-muted">{hint}</p>}
       </div>
     );
   },

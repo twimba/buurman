@@ -13,8 +13,7 @@ import { ErrorMessage } from '@/components/ErrorMessage';
 import { Plus, Home, Filter, Search, X } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
-import { Pagination } from '@/components/ui/Pagination';
-import { RefreshButton } from '@/components/ui/RefreshButton';
+import { Pagination, RefreshButton } from '@buurman/ui';
 
 const categoryFilters: {
   value: PropertyCategory | undefined;
@@ -110,11 +109,11 @@ export const PropertyListPage = () => {
           <div>
             <div className="flex items-center gap-3 mb-1">
               <Home className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-              <h1 className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+              <h1 className="text-3xl font-bold text-text-primary">
                 Properties
               </h1>
             </div>
-            <p className="text-[#6b7194] dark:text-[#8b90a8] ml-11">
+            <p className="text-text-secondary ml-11">
               Manage your rental properties and units
             </p>
           </div>
@@ -126,7 +125,7 @@ export const PropertyListPage = () => {
             <button
               onClick={() => navigate('/properties/new')}
               disabled={!canEditData}
-              className="bg-[#5c7cfa] text-white px-4 py-2 rounded hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5c7cfa]"
+              className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
             >
               <Plus className="h-5 w-5" />
               Add Property
@@ -135,23 +134,21 @@ export const PropertyListPage = () => {
         </div>
 
         {/* Filter Bar */}
-        <div className="mb-6 bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] p-4 space-y-4">
+        <div className="mb-6 bg-surface-card rounded-lg border border-border-default p-4 space-y-4">
           <div className="flex items-center gap-2">
-            <Filter className="h-5 w-5 text-[#6b7194] dark:text-[#8b90a8]" />
-            <h2 className="font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-              Filters
-            </h2>
+            <Filter className="h-5 w-5 text-text-secondary " />
+            <h2 className="font-semibold text-text-primary">Filters</h2>
           </div>
 
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9ca0b8]" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
               placeholder="Search by address, city, postal code, or type..."
-              className="w-full pl-10 pr-10 py-2 border border-[#c9cfd9] dark:border-[#3a3f54] rounded focus:border-[#5c7cfa] focus:ring-1 focus:ring-[#5c7cfa]"
+              className="w-full pl-10 pr-10 py-2 border border-border-strong rounded focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
             />
             {searchQuery && (
               <button
@@ -160,7 +157,7 @@ export const PropertyListPage = () => {
                   setDebouncedQuery('');
                   resetPage();
                 }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9ca0b8] hover:text-[#3d4463]"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-secondary"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -170,7 +167,7 @@ export const PropertyListPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Category Filter */}
             <div>
-              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
+              <label className="block text-sm font-medium text-text-secondary mb-2">
                 Category
               </label>
               <div className="flex gap-2 flex-wrap">
@@ -183,8 +180,8 @@ export const PropertyListPage = () => {
                     }}
                     className={`px-4 py-2 rounded transition-colors text-sm ${
                       categoryFilter === filter.value
-                        ? 'bg-[#5c7cfa] text-white'
-                        : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#e8ecf4] dark:hover:bg-[#3a3f54]'
+                        ? 'bg-primary-500 text-white'
+                        : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
                     }`}
                   >
                     {filter.label}
@@ -195,7 +192,7 @@ export const PropertyListPage = () => {
 
             {/* Status Filter */}
             <div>
-              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
+              <label className="block text-sm font-medium text-text-secondary mb-2">
                 Status
               </label>
               <div className="flex gap-2 flex-wrap">
@@ -208,8 +205,8 @@ export const PropertyListPage = () => {
                     }}
                     className={`px-4 py-2 rounded transition-colors text-sm ${
                       statusFilter === filter.value
-                        ? 'bg-[#5c7cfa] text-white'
-                        : 'bg-[#f1f3f9] dark:bg-[#1e2130] text-[#3d4463] dark:text-[#c4c8db] hover:bg-[#e8ecf4] dark:hover:bg-[#3a3f54]'
+                        ? 'bg-primary-500 text-white'
+                        : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
                     }`}
                   >
                     {filter.label}
@@ -221,7 +218,7 @@ export const PropertyListPage = () => {
         </div>
 
         {/* Property Count */}
-        <p className="text-sm text-[#6b7194] dark:text-[#8b90a8] mb-4">
+        <p className="text-sm text-text-secondary mb-4">
           {propertiesData?.totalElements ?? 0}{' '}
           {propertiesData?.totalElements === 1 ? 'property' : 'properties'}
         </p>
@@ -249,12 +246,12 @@ export const PropertyListPage = () => {
           </>
         ) : (
           /* Empty State */
-          <div className="flex flex-col items-center justify-center py-16 bg-white dark:bg-[#14161f] rounded-lg">
-            <Home className="h-16 w-16 text-[#c9cfd9] dark:text-[#3a3f54] mb-4" />
-            <h3 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6] mb-2">
+          <div className="flex flex-col items-center justify-center py-16 bg-surface-card rounded-lg">
+            <Home className="h-16 w-16 text-text-disabled mb-4" />
+            <h3 className="text-lg font-semibold text-text-primary mb-2">
               No properties found
             </h3>
-            <p className="text-[#6b7194] dark:text-[#8b90a8] mb-6">
+            <p className="text-text-secondary mb-6">
               {searchQuery || statusFilter || categoryFilter
                 ? 'Try adjusting your filters or search terms'
                 : 'Get started by adding your first property'}
@@ -263,7 +260,7 @@ export const PropertyListPage = () => {
               <button
                 onClick={() => navigate('/properties/new')}
                 disabled={!canEditData}
-                className="bg-[#5c7cfa] text-white px-6 py-2 rounded hover:bg-[#4c6ef5] transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5c7cfa]"
+                className="bg-primary-500 text-white px-6 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
               >
                 <Plus className="h-5 w-5" />
                 Add Property

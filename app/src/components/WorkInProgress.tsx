@@ -15,7 +15,7 @@ export const WorkInProgress = ({
         {/* Icon */}
         <div className="mb-8 flex justify-center">
           <div className="relative">
-            <div className="absolute inset-0 bg-blue-100 dark:bg-blue-900 rounded-full blur-2xl opacity-50 animate-pulse" />
+            <div className="absolute inset-0 bg-primary-100 rounded-full blur-2xl opacity-50 animate-pulse" />
             <Construction
               className="h-32 w-32 text-primary-500 dark:text-primary-300 relative"
               strokeWidth={1.5}
@@ -24,32 +24,30 @@ export const WorkInProgress = ({
         </div>
 
         {/* Title */}
-        <h1 className="text-3xl font-bold text-[#1a1d2e] dark:text-[#eef0f6] mb-4">
+        <h1 className="text-3xl font-bold text-text-primary mb-4">
           {pageName ? `${pageName} Coming Soon` : 'Coming Soon'}
         </h1>
 
         {/* Message */}
-        <p className="text-lg text-[#6b7194] dark:text-[#8b90a8] mb-2">
-          {message}
-        </p>
+        <p className="text-lg text-text-secondary mb-2">{message}</p>
 
         {/* Subtext */}
-        <p className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+        <p className="text-sm text-text-secondary">
           We&apos;re working hard to bring you this feature. Stay tuned!
         </p>
 
         {/* Decorative dots */}
         <div className="mt-8 flex justify-center gap-2">
           <div
-            className="h-2 w-2 rounded-full bg-[#5c7cfa] dark:bg-blue-400 animate-bounce"
+            className="h-2 w-2 rounded-full bg-primary-500 animate-bounce"
             style={{ animationDelay: '0ms' }}
           />
           <div
-            className="h-2 w-2 rounded-full bg-[#5c7cfa] dark:bg-blue-400 animate-bounce"
+            className="h-2 w-2 rounded-full bg-primary-500 animate-bounce"
             style={{ animationDelay: '150ms' }}
           />
           <div
-            className="h-2 w-2 rounded-full bg-[#5c7cfa] dark:bg-blue-400 animate-bounce"
+            className="h-2 w-2 rounded-full bg-primary-500 animate-bounce"
             style={{ animationDelay: '300ms' }}
           />
         </div>

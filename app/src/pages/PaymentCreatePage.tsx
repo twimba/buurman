@@ -150,22 +150,22 @@ export const PaymentCreatePage = () => {
   const showWarning = isPrefillInvalid && !dismissedWarning;
 
   return (
-    <div className="min-h-screen bg-[#f8f9fc] dark:bg-[#0c0d14]">
+    <div className="min-h-screen bg-surface-page">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
           <button
             onClick={() => navigate(-1)}
-            className="p-2 hover:bg-[#e8ecf4] dark:bg-[#1e2130] rounded transition-colors"
+            className="p-2 hover:bg-neutral-100 rounded transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div className="flex-1">
-            <h1 className="text-2xl font-bold text-[#1a1d2e] dark:text-[#eef0f6]">
+            <h1 className="text-2xl font-bold text-text-primary">
               {registerMode ? 'Register Payment' : 'Schedule Payment'}
             </h1>
             {addedCount > 0 && (
-              <p className="flex items-center gap-1.5 text-sm text-emerald-600 dark:text-emerald-400 mt-1">
+              <p className="flex items-center gap-1.5 text-sm text-success-text mt-1">
                 <CheckCircle className="h-3.5 w-3.5" />
                 {addedCount} payment{addedCount !== 1 ? 's' : ''}{' '}
                 {registerMode ? 'registered' : 'scheduled'} this session
@@ -175,7 +175,7 @@ export const PaymentCreatePage = () => {
         </div>
 
         {/* Mode toggle */}
-        <div className="flex gap-1 mb-4 p-1 bg-[#e8ecf4] dark:bg-[#1e2130] rounded-lg w-fit">
+        <div className="flex gap-1 mb-4 p-1 bg-neutral-100 rounded-lg w-fit">
           {(['single', 'bulk'] as Mode[]).map((m) => (
             <button
               key={m}
@@ -183,8 +183,8 @@ export const PaymentCreatePage = () => {
               onClick={() => setMode(m)}
               className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${
                 mode === m
-                  ? 'bg-white dark:bg-[#14161f] text-[#1a1d2e] dark:text-[#eef0f6] shadow-sm'
-                  : 'text-[#6b7194] dark:text-[#8b90a8] hover:text-[#3d4463] dark:hover:text-[#c4c8db]'
+                  ? 'bg-surface-card text-text-primary shadow-sm'
+                  : 'text-text-secondary hover:text-text-secondary'
               }`}
             >
               {m === 'single' ? 'Single' : 'Bulk'}
@@ -193,9 +193,9 @@ export const PaymentCreatePage = () => {
         </div>
 
         {/* Form */}
-        <div className="bg-white dark:bg-[#14161f] rounded-lg shadow p-6">
+        <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
           {showWarning && (
-            <div className="mb-4 flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded text-sm text-amber-700 dark:text-amber-300">
+            <div className="mb-4 flex items-start gap-2 p-3 bg-warning-bg border border-warning-border rounded text-sm text-warning-text">
               <AlertTriangle className="h-4 w-4 flex-shrink-0 mt-0.5" />
               <span>
                 The linked contract is not active. Please select an active
@@ -205,8 +205,8 @@ export const PaymentCreatePage = () => {
           )}
 
           <div className="mb-6">
-            <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
-              Contract <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-text-secondary mb-2">
+              Contract <span className="text-error-text">*</span>
             </label>
             <ContractSelector
               value={effectiveContractId}
@@ -217,7 +217,7 @@ export const PaymentCreatePage = () => {
               disabled={createPaymentMutation.isPending || bulkSubmitting}
             />
             {!effectiveContractId && !showWarning && (
-              <p className="mt-1 text-sm text-[#6b7194] dark:text-[#8b90a8]">
+              <p className="mt-1 text-sm text-text-secondary">
                 Please select a contract first
               </p>
             )}
@@ -253,8 +253,8 @@ export const PaymentCreatePage = () => {
             <>
               {/* Currency selector for bulk */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-2">
-                  Currency <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-text-secondary mb-2">
+                  Currency <span className="text-error-text">*</span>
                 </label>
                 <CurrencySelector
                   value={bulkCurrency || defaultCurrency || ''}

@@ -40,15 +40,15 @@ const countryCodeToFlag = (code: string): string =>
 const TAB_CLASS = (active: boolean) =>
   `px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
     active
-      ? "border-[#5c7cfa] text-[#4263eb] dark:text-[#91a7ff]"
-      : "border-transparent text-[#6b7194] dark:text-[#8b90a8] hover:text-[#3d4463] dark:hover:text-[#c4c8db] hover:border-[#e2e6f0] dark:hover:border-[#2a2e3f]"
+      ? "border-primary-500 text-primary-600"
+      : "border-transparent text-text-secondary hover:text-text-secondary hover:border-border-default"
   }`;
 
 const INPUT_CLASS =
-  "w-full px-3 py-2 text-sm rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] bg-white dark:bg-[#0c0d14] text-[#1a1d2e] dark:text-[#eef0f6] focus:outline-none focus:border-[#5c7cfa] focus:ring-2 focus:ring-[#5c7cfa]/20 transition-colors";
+  "w-full px-3 py-2 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors";
 
 const TH_CLASS =
-  "text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6b7194] dark:text-[#8b90a8]";
+  "text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary";
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -78,10 +78,10 @@ export const RentRegulationCountryDetailPage = () => {
   if (!country) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-600 dark:text-red-400">Country not found.</p>
+        <p className="text-error-text">Country not found.</p>
         <button
           onClick={() => navigate("/rent-regulations")}
-          className="mt-4 text-sm text-[#5c7cfa] hover:underline"
+          className="mt-4 text-sm text-primary-500 hover:underline"
         >
           Back to rent regulations
         </button>
@@ -137,7 +137,7 @@ export const RentRegulationCountryDetailPage = () => {
       />
 
       {/* Tabs */}
-      <div className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] mb-6">
+      <div className="border-b border-border-default mb-6">
         <nav className="flex gap-0">
           <button
             className={TAB_CLASS(activeTab === "overview")}
@@ -228,9 +228,9 @@ function OverviewTab({
 
   return (
     <div className="space-y-6">
-      <div className="bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] p-5">
+      <div className="bg-surface-card rounded-lg border border-border-default p-5">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+          <h3 className="text-sm font-semibold text-text-primary">
             Country Details
           </h3>
           {!isEditing && (
@@ -248,7 +248,7 @@ function OverviewTab({
         {isEditing ? (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+              <label className="block text-sm font-medium text-text-secondary mb-1">
                 Country Name
               </label>
               <input
@@ -260,18 +260,18 @@ function OverviewTab({
               />
             </div>
             <div>
-              <label className="flex items-center gap-2 text-sm text-[#3d4463] dark:text-[#c4c8db] cursor-pointer">
+              <label className="flex items-center gap-2 text-sm text-text-secondary cursor-pointer">
                 <input
                   type="checkbox"
                   checked={editRegional}
                   onChange={(e) => setEditRegional(e.target.checked)}
-                  className="rounded border-[#cdd3e6] text-[#5c7cfa] focus:ring-[#5c7cfa]/20"
+                  className="rounded border-border-default text-primary-500 focus:ring-primary-500/20"
                 />
                 Has regional regulations
               </label>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+              <label className="block text-sm font-medium text-text-secondary mb-1">
                 Summary
               </label>
               <RichTextEditor
@@ -320,11 +320,11 @@ function OverviewTab({
               label="Status"
               value={
                 country.stale ? (
-                  <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-amber-50 text-amber-700 ring-1 ring-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:ring-amber-700">
+                  <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-warning-bg text-warning-text ring-1 ring-warning-border">
                     May be outdated
                   </span>
                 ) : (
-                  <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-700">
+                  <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-success-bg text-success-text ring-1 ring-success-border">
                     Verified
                   </span>
                 )
@@ -332,12 +332,10 @@ function OverviewTab({
             />
             {country.summary && (
               <div className="pt-2">
-                <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mb-1">
-                  Summary
-                </p>
+                <p className="text-xs text-text-secondary mb-1">Summary</p>
                 <RichTextDisplay
                   content={country.summary}
-                  className="text-sm text-[#3d4463] dark:text-[#c4c8db]"
+                  className="text-sm text-text-secondary"
                 />
               </div>
             )}
@@ -356,13 +354,9 @@ function DetailRow({
   value: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between py-1.5 border-b border-[#f1f3f9] dark:border-[#1e2130] last:border-b-0">
-      <span className="text-xs text-[#6b7194] dark:text-[#8b90a8]">
-        {label}
-      </span>
-      <span className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
-        {value}
-      </span>
+    <div className="flex items-center justify-between py-1.5 border-b border-border-subtle last:border-b-0">
+      <span className="text-xs text-text-secondary">{label}</span>
+      <span className="text-sm font-medium text-text-primary">{value}</span>
     </div>
   );
 }
@@ -453,9 +447,7 @@ function RegionsTab({ countryCode }: { countryCode: string }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-          Regions
-        </h3>
+        <h3 className="text-sm font-semibold text-text-primary">Regions</h3>
         <Button
           variant="secondary"
           size="sm"
@@ -466,10 +458,10 @@ function RegionsTab({ countryCode }: { countryCode: string }) {
         </Button>
       </div>
 
-      <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] overflow-hidden">
+      <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+            <tr className="border-b border-border-default">
               <th className={TH_CLASS}>Code</th>
               <th className={TH_CLASS}>Name</th>
               <th className={TH_CLASS}>Summary</th>
@@ -481,7 +473,7 @@ function RegionsTab({ countryCode }: { countryCode: string }) {
               <tr>
                 <td
                   colSpan={4}
-                  className="px-4 py-12 text-center text-sm text-[#9ca0b8] dark:text-[#5c6180]"
+                  className="px-4 py-12 text-center text-sm text-text-muted"
                 >
                   No regions yet.
                 </td>
@@ -490,15 +482,15 @@ function RegionsTab({ countryCode }: { countryCode: string }) {
               (regions ?? []).map((region) => (
                 <tr
                   key={region.identifier}
-                  className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0"
+                  className="border-b border-border-default last:border-b-0"
                 >
                   <td className="px-4 py-3">
-                    <span className="text-sm font-mono text-[#3d4463] dark:text-[#c4c8db]">
+                    <span className="text-sm font-mono text-text-secondary">
                       {region.regionCode}
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="text-sm font-medium text-[#1a1d2e] dark:text-[#eef0f6]">
+                    <span className="text-sm font-medium text-text-primary">
                       {region.regionName}
                     </span>
                   </td>
@@ -506,26 +498,24 @@ function RegionsTab({ countryCode }: { countryCode: string }) {
                     {region.summary ? (
                       <RichTextDisplay
                         content={region.summary}
-                        className="text-sm text-[#6b7194] dark:text-[#8b90a8] max-w-xs [&>*]:truncate"
+                        className="text-sm text-text-secondary max-w-xs [&>*]:truncate"
                       />
                     ) : (
-                      <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
-                        --
-                      </span>
+                      <span className="text-sm text-text-secondary">--</span>
                     )}
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-1">
                       <button
                         onClick={() => openEdit(region)}
-                        className="p-1.5 rounded-md text-[#6b7194] dark:text-[#8b90a8] hover:text-[#4263eb] dark:hover:text-[#91a7ff] hover:bg-[#5c7cfa]/10 transition-colors"
+                        className="p-1.5 rounded-md text-text-secondary hover:text-primary-600 hover:bg-primary-500/10 transition-colors"
                         title="Edit"
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => setDeleteTarget(region)}
-                        className="p-1.5 rounded-md text-[#6b7194] dark:text-[#8b90a8] hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                        className="p-1.5 rounded-md text-text-secondary hover:text-error-text hover:bg-error-bg transition-colors"
                         title="Delete"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -543,21 +533,21 @@ function RegionsTab({ countryCode }: { countryCode: string }) {
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="fixed inset-0 bg-black/40" onClick={closeForm} />
-          <div className="relative bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-              <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+          <div className="relative bg-surface-card rounded-lg border border-border-default shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border-default">
+              <h2 className="text-lg font-semibold text-text-primary">
                 {editingRegion ? "Edit Region" : "Add Region"}
               </h2>
               <button
                 onClick={closeForm}
-                className="p-1 rounded-md text-[#6b7194] hover:text-[#1a1d2e] dark:hover:text-[#eef0f6] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                className="p-1 rounded-md text-text-secondary hover:text-text-primary hover:bg-surface-inset transition-colors"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                <label className="block text-sm font-medium text-text-secondary mb-1">
                   Region Code
                 </label>
                 <input
@@ -575,7 +565,7 @@ function RegionsTab({ countryCode }: { countryCode: string }) {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                <label className="block text-sm font-medium text-text-secondary mb-1">
                   Region Name
                 </label>
                 <input
@@ -588,9 +578,9 @@ function RegionsTab({ countryCode }: { countryCode: string }) {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                <label className="block text-sm font-medium text-text-secondary mb-1">
                   Summary
-                  <span className="text-[#9ca0b8] font-normal ml-1">
+                  <span className="text-text-muted font-normal ml-1">
                     (optional)
                   </span>
                 </label>
@@ -847,9 +837,7 @@ function RulesTab({ countryCode }: { countryCode: string }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
-          Rules
-        </h3>
+        <h3 className="text-sm font-semibold text-text-primary">Rules</h3>
         <div className="flex gap-2">
           <Button
             variant="secondary"
@@ -872,12 +860,12 @@ function RulesTab({ countryCode }: { countryCode: string }) {
 
       {/* Bulk Entry Mode */}
       {bulkMode && (
-        <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] mb-6">
-          <div className="p-4 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-            <h4 className="text-sm font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+        <div className="bg-surface-card rounded-lg border border-border-default mb-6">
+          <div className="p-4 border-b border-border-default">
+            <h4 className="text-sm font-semibold text-text-primary">
               Bulk Rule Entry
             </h4>
-            <p className="text-xs text-[#6b7194] dark:text-[#8b90a8] mt-1">
+            <p className="text-xs text-text-secondary mt-1">
               Fill in the rows for the years you want to add. Empty rows will be
               skipped.
             </p>
@@ -885,7 +873,7 @@ function RulesTab({ countryCode }: { countryCode: string }) {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+                <tr className="border-b border-border-default">
                   <th className={TH_CLASS}>Year</th>
                   <th className={TH_CLASS}>Max Increase %</th>
                   <th className={TH_CLASS}>Type</th>
@@ -898,16 +886,16 @@ function RulesTab({ countryCode }: { countryCode: string }) {
                 {bulkRows.map((row, idx) => (
                   <tr
                     key={row.year}
-                    className={`border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0 ${
-                      row.year === CURRENT_YEAR ? "bg-[#5c7cfa]/5" : ""
+                    className={`border-b border-border-default last:border-b-0 ${
+                      row.year === CURRENT_YEAR ? "bg-primary-500/5" : ""
                     }`}
                   >
                     <td className="px-4 py-2">
                       <span
                         className={`text-sm font-medium ${
                           row.year === CURRENT_YEAR
-                            ? "text-[#4263eb] dark:text-[#91a7ff]"
-                            : "text-[#1a1d2e] dark:text-[#eef0f6]"
+                            ? "text-primary-600"
+                            : "text-text-primary"
                         }`}
                       >
                         {row.year}
@@ -982,7 +970,7 @@ function RulesTab({ countryCode }: { countryCode: string }) {
               </tbody>
             </table>
           </div>
-          <div className="px-4 py-3 border-t border-[#e2e6f0] dark:border-[#2a2e3f] flex justify-end gap-2">
+          <div className="px-4 py-3 border-t border-border-default flex justify-end gap-2">
             <Button
               variant="ghost"
               size="sm"
@@ -1004,7 +992,7 @@ function RulesTab({ countryCode }: { countryCode: string }) {
 
       {/* Rules grouped by year */}
       {groupedRules.length === 0 ? (
-        <div className="bg-white dark:bg-[#14161f] rounded-lg border border-[#e2e6f0] dark:border-[#2a2e3f] px-4 py-12 text-center text-sm text-[#9ca0b8] dark:text-[#5c6180]">
+        <div className="bg-surface-card rounded-lg border border-border-default px-4 py-12 text-center text-sm text-text-muted">
           No rules yet.
         </div>
       ) : (
@@ -1012,29 +1000,29 @@ function RulesTab({ countryCode }: { countryCode: string }) {
           {groupedRules.map(([year, yearRules]) => (
             <div
               key={year}
-              className={`bg-white dark:bg-[#14161f] rounded-lg border overflow-hidden ${
+              className={`bg-surface-card rounded-lg border overflow-hidden ${
                 year === CURRENT_YEAR
-                  ? "border-[#5c7cfa]/40 dark:border-[#5c7cfa]/30"
-                  : "border-[#e2e6f0] dark:border-[#2a2e3f]"
+                  ? "border-primary-500/40"
+                  : "border-border-default"
               }`}
             >
               <div
                 className={`px-4 py-2.5 border-b ${
                   year === CURRENT_YEAR
-                    ? "bg-[#5c7cfa]/5 border-[#5c7cfa]/20"
-                    : "bg-[#f8f9fc] dark:bg-[#0c0d14] border-[#e2e6f0] dark:border-[#2a2e3f]"
+                    ? "bg-primary-500/5 border-primary-500/20"
+                    : "bg-surface-page border-border-default"
                 }`}
               >
                 <span
                   className={`text-sm font-semibold ${
                     year === CURRENT_YEAR
-                      ? "text-[#4263eb] dark:text-[#91a7ff]"
-                      : "text-[#1a1d2e] dark:text-[#eef0f6]"
+                      ? "text-primary-600"
+                      : "text-text-primary"
                   }`}
                 >
                   {year}
                   {year === CURRENT_YEAR && (
-                    <span className="ml-2 text-xs font-normal text-[#6b7194] dark:text-[#8b90a8]">
+                    <span className="ml-2 text-xs font-normal text-text-secondary">
                       (current year)
                     </span>
                   )}
@@ -1042,7 +1030,7 @@ function RulesTab({ countryCode }: { countryCode: string }) {
               </div>
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
+                  <tr className="border-b border-border-default">
                     <th className={TH_CLASS}>Category</th>
                     <th className={TH_CLASS}>Max Increase</th>
                     <th className={TH_CLASS}>Type</th>
@@ -1055,32 +1043,32 @@ function RulesTab({ countryCode }: { countryCode: string }) {
                   {yearRules.map((rule) => (
                     <tr
                       key={rule.identifier}
-                      className="border-b border-[#e2e6f0] dark:border-[#2a2e3f] last:border-b-0"
+                      className="border-b border-border-default last:border-b-0"
                     >
                       <td className="px-4 py-3">
-                        <span className="text-sm text-[#1a1d2e] dark:text-[#eef0f6]">
+                        <span className="text-sm text-text-primary">
                           {formatLabel(rule.propertyCategory)}
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-sm text-[#3d4463] dark:text-[#c4c8db]">
+                        <span className="text-sm text-text-secondary">
                           {rule.maxIncreasePercentage != null
                             ? `${rule.maxIncreasePercentage}%`
                             : "--"}
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                        <span className="text-sm text-text-secondary">
                           {formatLabel(rule.maxIncreaseType)}
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                        <span className="text-sm text-text-secondary">
                           {formatLabel(rule.frequency)}
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-sm text-[#6b7194] dark:text-[#8b90a8]">
+                        <span className="text-sm text-text-secondary">
                           {rule.effectiveDate ?? "--"}
                         </span>
                       </td>
@@ -1088,14 +1076,14 @@ function RulesTab({ countryCode }: { countryCode: string }) {
                         <div className="flex items-center justify-end gap-1">
                           <button
                             onClick={() => openEdit(rule)}
-                            className="p-1.5 rounded-md text-[#6b7194] dark:text-[#8b90a8] hover:text-[#4263eb] dark:hover:text-[#91a7ff] hover:bg-[#5c7cfa]/10 transition-colors"
+                            className="p-1.5 rounded-md text-text-secondary hover:text-primary-600 hover:bg-primary-500/10 transition-colors"
                             title="Edit"
                           >
                             <Pencil className="h-4 w-4" />
                           </button>
                           <button
                             onClick={() => setDeleteTarget(rule)}
-                            className="p-1.5 rounded-md text-[#6b7194] dark:text-[#8b90a8] hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                            className="p-1.5 rounded-md text-text-secondary hover:text-error-text hover:bg-error-bg transition-colors"
                             title="Delete"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -1115,14 +1103,14 @@ function RulesTab({ countryCode }: { countryCode: string }) {
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="fixed inset-0 bg-black/40" onClick={closeForm} />
-          <div className="relative bg-white dark:bg-[#14161f] rounded-xl border border-[#e2e6f0] dark:border-[#2a2e3f] shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#e2e6f0] dark:border-[#2a2e3f]">
-              <h2 className="text-lg font-semibold text-[#1a1d2e] dark:text-[#eef0f6]">
+          <div className="relative bg-surface-card rounded-lg border border-border-default shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border-default">
+              <h2 className="text-lg font-semibold text-text-primary">
                 {editingRule ? "Edit Rule" : "Add Rule"}
               </h2>
               <button
                 onClick={closeForm}
-                className="p-1 rounded-md text-[#6b7194] hover:text-[#1a1d2e] dark:hover:text-[#eef0f6] hover:bg-[#f1f3f9] dark:hover:bg-[#1e2130] transition-colors"
+                className="p-1 rounded-md text-text-secondary hover:text-text-primary hover:bg-surface-inset transition-colors"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -1130,7 +1118,7 @@ function RulesTab({ countryCode }: { countryCode: string }) {
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
                     Year
                   </label>
                   <input
@@ -1146,7 +1134,7 @@ function RulesTab({ countryCode }: { countryCode: string }) {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
                     Property Category
                   </label>
                   <select
@@ -1169,9 +1157,9 @@ function RulesTab({ countryCode }: { countryCode: string }) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
                     Max Increase %
-                    <span className="text-[#9ca0b8] font-normal ml-1">
+                    <span className="text-text-muted font-normal ml-1">
                       (optional)
                     </span>
                   </label>
@@ -1190,7 +1178,7 @@ function RulesTab({ countryCode }: { countryCode: string }) {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
                     Max Increase Type
                   </label>
                   <select
@@ -1214,9 +1202,9 @@ function RulesTab({ countryCode }: { countryCode: string }) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
                     Index Name
-                    <span className="text-[#9ca0b8] font-normal ml-1">
+                    <span className="text-text-muted font-normal ml-1">
                       (optional)
                     </span>
                   </label>
@@ -1231,9 +1219,9 @@ function RulesTab({ countryCode }: { countryCode: string }) {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
                     Index Value
-                    <span className="text-[#9ca0b8] font-normal ml-1">
+                    <span className="text-text-muted font-normal ml-1">
                       (optional)
                     </span>
                   </label>
@@ -1251,9 +1239,9 @@ function RulesTab({ countryCode }: { countryCode: string }) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
                     Sector
-                    <span className="text-[#9ca0b8] font-normal ml-1">
+                    <span className="text-text-muted font-normal ml-1">
                       (optional)
                     </span>
                   </label>
@@ -1267,7 +1255,7 @@ function RulesTab({ countryCode }: { countryCode: string }) {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
                     Frequency
                   </label>
                   <select
@@ -1288,9 +1276,9 @@ function RulesTab({ countryCode }: { countryCode: string }) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
                     Effective Date
-                    <span className="text-[#9ca0b8] font-normal ml-1">
+                    <span className="text-text-muted font-normal ml-1">
                       (optional)
                     </span>
                   </label>
@@ -1307,9 +1295,9 @@ function RulesTab({ countryCode }: { countryCode: string }) {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                  <label className="block text-sm font-medium text-text-secondary mb-1">
                     Notice Period (days)
-                    <span className="text-[#9ca0b8] font-normal ml-1">
+                    <span className="text-text-muted font-normal ml-1">
                       (optional)
                     </span>
                   </label>
@@ -1329,9 +1317,9 @@ function RulesTab({ countryCode }: { countryCode: string }) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                <label className="block text-sm font-medium text-text-secondary mb-1">
                   Source URL
-                  <span className="text-[#9ca0b8] font-normal ml-1">
+                  <span className="text-text-muted font-normal ml-1">
                     (optional)
                   </span>
                 </label>
@@ -1347,9 +1335,9 @@ function RulesTab({ countryCode }: { countryCode: string }) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                <label className="block text-sm font-medium text-text-secondary mb-1">
                   Additional Conditions
-                  <span className="text-[#9ca0b8] font-normal ml-1">
+                  <span className="text-text-muted font-normal ml-1">
                     (optional)
                   </span>
                 </label>
@@ -1366,9 +1354,9 @@ function RulesTab({ countryCode }: { countryCode: string }) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#3d4463] dark:text-[#c4c8db] mb-1">
+                <label className="block text-sm font-medium text-text-secondary mb-1">
                   Notes
-                  <span className="text-[#9ca0b8] font-normal ml-1">
+                  <span className="text-text-muted font-normal ml-1">
                     (optional)
                   </span>
                 </label>
@@ -1419,7 +1407,7 @@ function RulesTab({ countryCode }: { countryCode: string }) {
 
 function formatLabel(value: string): string {
   return value
-    .replace(/_/g, " ")
+    .replace(/_/g, "")
     .toLowerCase()
     .replace(/^\w/, (c) => c.toUpperCase());
 }
