@@ -20,6 +20,26 @@ http:
       service: backend-local
       priority: 20
 
+    posthog-ingest-app-local:
+      rule: "Host(`app.local.buurman.io`) && PathPrefix(`/ingest`)"
+      entryPoints:
+        - websecure
+      tls: {}
+      middlewares:
+        - posthog-strip-prefix
+      service: posthog-cloud
+      priority: 30
+
+    posthog-ingest-backoffice-local:
+      rule: "Host(`backoffice.local.buurman.io`) && PathPrefix(`/ingest`)"
+      entryPoints:
+        - websecure
+      tls: {}
+      middlewares:
+        - posthog-strip-prefix
+      service: posthog-cloud
+      priority: 30
+
     app-local:
       rule: "Host(`app.local.buurman.io`)"
       entryPoints:
@@ -36,6 +56,12 @@ http:
       service: backoffice-local
       priority: 10
 
+  middlewares:
+    posthog-strip-prefix:
+      stripPrefix:
+        prefixes:
+          - "/ingest"
+
   services:
     backend-local:
       loadBalancer:
@@ -51,3 +77,9 @@ http:
       loadBalancer:
         servers:
           - url: "http://host.docker.internal:5174"
+
+    posthog-cloud:
+      loadBalancer:
+        passHostHeader: false
+        servers:
+          - url: "https://eu.i.posthog.com"
