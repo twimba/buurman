@@ -98,7 +98,6 @@ posthog:
   personal-api-key: ${POSTHOG_PERSONAL_API_KEY:}
   project-id: ${POSTHOG_PROJECT_ID:}
   poll-interval-seconds: ${POSTHOG_POLL_INTERVAL_SECONDS:30}
-  send-feature-flag-events: false
 
 # Application Configuration
 app:

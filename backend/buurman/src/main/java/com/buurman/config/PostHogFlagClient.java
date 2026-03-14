@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PostHogFlagClient {
 
   private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(5);
+  private static final int MAX_CACHE_SIZE = 10_000;
 
   private final String host;
   private final String projectApiKey;
@@ -60,6 +61,7 @@ public class PostHogFlagClient {
 
     try {
       Map<String, FlagResult> flags = callDecide(distinctId, personProperties, groups);
+      evictIfNeeded();
       cache.put(distinctId, new CachedDecision(flags, Instant.now().plus(cacheTtl)));
       return flags;
     } catch (Exception e) {
@@ -96,6 +98,20 @@ public class PostHogFlagClient {
   /** Clears the evaluation cache (called after admin mutations change flag state). */
   public void clearCache() {
     cache.clear();
+  }
+
+  private void evictIfNeeded() {
+    if (cache.size() <= MAX_CACHE_SIZE) {
+      return;
+    }
+    // Remove expired entries first
+    Instant now = Instant.now();
+    cache.entrySet().removeIf(e -> now.isAfter(e.getValue().expiresAt()));
+    // If still over limit, clear everything (rare edge case)
+    if (cache.size() > MAX_CACHE_SIZE) {
+      log.info("PostHog flag cache exceeded {} entries, clearing", MAX_CACHE_SIZE);
+      cache.clear();
+    }
   }
 
   private Map<String, FlagResult> callDecide(

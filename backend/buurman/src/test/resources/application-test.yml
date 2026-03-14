@@ -91,7 +91,6 @@ posthog:
   project-api-key: ""
   personal-api-key: ""
   poll-interval-seconds: 60
-  send-feature-flag-events: false
 
 buurman:
   demo:

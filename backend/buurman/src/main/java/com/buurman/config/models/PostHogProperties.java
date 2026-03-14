@@ -10,8 +10,7 @@ public record PostHogProperties(
     String projectApiKey,
     Optional<String> personalApiKey,
     Optional<Long> projectId,
-    int pollIntervalSeconds,
-    boolean sendFeatureFlagEvents) {
+    int pollIntervalSeconds) {
 
   public PostHogProperties {
     personalApiKey = Optional.ofNullable(personalApiKey).flatMap(o -> o);
