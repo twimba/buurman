@@ -341,6 +341,7 @@ services:
       SPRING_PROFILES_ACTIVE: docker
     ports:
       - "8081:8081"
+      - "8082:8082"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     labels:
