@@ -376,8 +376,9 @@ services:
   app:
     build:
       context: .
-      dockerfile: frontend/app/Dockerfile
+      dockerfile: frontend/Dockerfile
       args:
+        TARGET_APP: app
         VITE_KEYCLOAK_URL: ${VITE_KEYCLOAK_URL:-https://keycloak.local.buurman.io}
         VITE_KEYCLOAK_REALM: ${VITE_KEYCLOAK_REALM:-buurman}
         VITE_KEYCLOAK_CLIENT_ID: ${VITE_KEYCLOAK_CLIENT_ID:-buurman-web}
@@ -408,8 +409,9 @@ services:
   backoffice:
     build:
       context: .
-      dockerfile: frontend/backoffice/Dockerfile
+      dockerfile: frontend/Dockerfile
       args:
+        TARGET_APP: backoffice
         VITE_BACKOFFICE_KEYCLOAK_URL: ${VITE_BACKOFFICE_KEYCLOAK_URL:-https://keycloak.local.buurman.io}
         VITE_BACKOFFICE_KEYCLOAK_REALM: ${VITE_BACKOFFICE_KEYCLOAK_REALM:-buurman-backoffice}
         VITE_BACKOFFICE_KEYCLOAK_CLIENT_ID: ${VITE_BACKOFFICE_KEYCLOAK_CLIENT_ID:-buurman-backoffice-web}
