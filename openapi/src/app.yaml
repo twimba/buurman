@@ -102,6 +102,12 @@ tags:
     description: Rent regulation data by country and region
   - name: Rent Increases
     description: Annual rent increase preview and application
+  - name: Impersonation
+    description: Impersonation session management for support staff
+  - name: Data Takeout
+    description: Data export and takeout management
+  - name: Broadcasts
+    description: Broadcast messages for users
 paths:
   /users/preferences/notifications:
     $ref: 'paths/users.yaml#/users-preferences-notifications'
@@ -487,6 +493,22 @@ paths:
     $ref: 'paths/rent-increases.yaml#/preview'
   /rent-increases/apply:
     $ref: 'paths/rent-increases.yaml#/apply'
+  /broadcasts:
+    $ref: 'paths/broadcasts.yaml#/collection'
+  /broadcasts/public:
+    $ref: 'paths/broadcasts.yaml#/public'
+  /broadcasts/{identifier}/dismiss:
+    $ref: 'paths/broadcasts.yaml#/dismiss'
+  /takeouts:
+    $ref: 'paths/takeouts.yaml#/collection'
+  /takeouts/{identifier}:
+    $ref: 'paths/takeouts.yaml#/item'
+  /auth/impersonate/exchange:
+    $ref: 'paths/impersonation.yaml#/exchange'
+  /auth/impersonate/session:
+    $ref: 'paths/impersonation.yaml#/session'
+  /auth/impersonate/end:
+    $ref: 'paths/impersonation.yaml#/end'
 components:
   schemas:
     AmenityIdentifier:
@@ -7515,6 +7537,159 @@ components:
         - totalPaymentsCancelled
         - totalPaymentsGenerated
         - totalFailed
+    BroadcastMessageIdentifier:
+      type: string
+      description: Broadcast message identifier
+    BroadcastMessageResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+        severity:
+          type: string
+        startAt:
+          type: string
+          format: date-time
+        endAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - title
+        - body
+        - severity
+        - startAt
+    DataTakeoutIdentifier:
+      type: string
+      description: Data takeout identifier
+    TakeoutResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        status:
+          type: string
+        progress:
+          type: integer
+          format: int32
+        fileSize:
+          type: integer
+          format: int64
+        createdAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        downloadUrl:
+          type: string
+      required:
+        - identifier
+        - status
+        - progress
+        - createdAt
+    PageResponseTakeoutResponse:
+      type: object
+      description: Paginated response wrapper with content and pagination metadata
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/TakeoutResponse'
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    ExchangeTokenRequest:
+      type: object
+      properties:
+        sessionToken:
+          type: string
+          format: uuid
+      required:
+        - sessionToken
+    ImpersonationExchangeResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        sessionIdentifier:
+          type: string
+        adminEmail:
+          type: string
+        adminName:
+          type: string
+        mode:
+          type: string
+        expiresIn:
+          type: integer
+          format: int64
+        targetUserEmail:
+          type: string
+        targetTeamIdentifier:
+          type: string
+        reason:
+          type: string
+      required:
+        - token
+        - sessionIdentifier
+        - adminEmail
+        - adminName
+        - mode
+        - expiresIn
+        - targetUserEmail
+        - targetTeamIdentifier
+        - reason
+    ImpersonationSessionInfo:
+      type: object
+      properties:
+        sessionIdentifier:
+          type: string
+        adminEmail:
+          type: string
+        adminName:
+          type: string
+        mode:
+          type: string
+        remainingSeconds:
+          type: integer
+          format: int64
+        targetUserEmail:
+          type: string
+        reason:
+          type: string
+      required:
+        - sessionIdentifier
+        - adminEmail
+        - adminName
+        - mode
+        - remainingSeconds
+        - targetUserEmail
+        - reason
   securitySchemes:
     bearer-jwt:
       type: http

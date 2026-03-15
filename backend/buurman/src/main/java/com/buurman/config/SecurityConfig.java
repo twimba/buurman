@@ -7,6 +7,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -16,6 +17,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
@@ -25,6 +29,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.buurman.config.models.AppProperties;
 import com.buurman.domain.TeamRole;
 import com.buurman.security.EmailVerificationFilter;
+import com.buurman.security.ImpersonationJwtFilter;
 import com.buurman.security.JwtAuthenticationConverter;
 import com.buurman.security.MdcFilter;
 import com.buurman.security.RateLimitFilter;
@@ -38,19 +43,28 @@ public class SecurityConfig {
   private final MdcFilter mdcFilter;
   private final EmailVerificationFilter emailVerificationFilter;
   private final RateLimitFilter rateLimitFilter;
+  private final ImpersonationJwtFilter impersonationJwtFilter;
   private final AppProperties appProperties;
+  private final String jwkSetUri;
+  private final String issuerUri;
 
   public SecurityConfig(
       JwtAuthenticationConverter jwtAuthenticationConverter,
       MdcFilter mdcFilter,
       EmailVerificationFilter emailVerificationFilter,
       RateLimitFilter rateLimitFilter,
-      AppProperties appProperties) {
+      ImpersonationJwtFilter impersonationJwtFilter,
+      AppProperties appProperties,
+      @Value("${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}") String jwkSetUri,
+      @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri:}") String issuerUri) {
     this.jwtAuthenticationConverter = jwtAuthenticationConverter;
     this.mdcFilter = mdcFilter;
     this.emailVerificationFilter = emailVerificationFilter;
     this.rateLimitFilter = rateLimitFilter;
+    this.impersonationJwtFilter = impersonationJwtFilter;
     this.appProperties = appProperties;
+    this.jwkSetUri = jwkSetUri;
+    this.issuerUri = issuerUri;
   }
 
   @Bean
@@ -91,16 +105,32 @@ public class SecurityConfig {
                     .permitAll()
                     .requestMatchers(GET, "/broadcasts/public")
                     .permitAll()
+                    .requestMatchers(POST, "/auth/impersonate/exchange")
+                    .permitAll()
                     // All other endpoints require authentication
                     .anyRequest()
                     .authenticated())
         .oauth2ResourceServer(
-            oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)))
+            oauth2 ->
+                oauth2.jwt(
+                    jwt ->
+                        jwt.decoder(appJwtDecoder())
+                            .jwtAuthenticationConverter(jwtAuthenticationConverter)))
+        .addFilterBefore(impersonationJwtFilter, BearerTokenAuthenticationFilter.class)
         .addFilterAfter(mdcFilter, BearerTokenAuthenticationFilter.class)
         .addFilterAfter(emailVerificationFilter, MdcFilter.class)
-        .addFilterBefore(rateLimitFilter, BearerTokenAuthenticationFilter.class);
+        .addFilterBefore(rateLimitFilter, ImpersonationJwtFilter.class);
 
     return http.build();
+  }
+
+  @Bean
+  public JwtDecoder appJwtDecoder() {
+    NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
+    if (!issuerUri.isBlank()) {
+      decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(issuerUri));
+    }
+    return decoder;
   }
 
   @Bean

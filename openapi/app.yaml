@@ -102,6 +102,12 @@ tags:
     description: Rent regulation data by country and region
   - name: Rent Increases
     description: Annual rent increase preview and application
+  - name: Impersonation
+    description: Impersonation session management for support staff
+  - name: Data Takeout
+    description: Data export and takeout management
+  - name: Broadcasts
+    description: Broadcast messages for users
 paths:
   /users/preferences/notifications:
     get:
@@ -16153,6 +16159,289 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
+  /broadcasts:
+    get:
+      tags:
+        - Broadcasts
+      summary: Get active broadcasts
+      description: Get all active broadcast messages for the current user
+      operationId: getActiveBroadcasts
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BroadcastMessageResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /broadcasts/public:
+    get:
+      tags:
+        - Broadcasts
+      summary: Get public broadcasts
+      description: Get public broadcast messages for a given context (login, register)
+      operationId: getPublicBroadcasts
+      security: []
+      parameters:
+        - name: context
+          in: query
+          description: Display context (e.g. login, register)
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BroadcastMessageResponse'
+  /broadcasts/{identifier}/dismiss:
+    post:
+      tags:
+        - Broadcasts
+      summary: Dismiss broadcast
+      description: Dismiss a broadcast message for the current user
+      operationId: dismissBroadcast
+      parameters:
+        - name: identifier
+          in: path
+          description: Broadcast message identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/BroadcastMessageIdentifier'
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /takeouts:
+    post:
+      tags:
+        - Data Takeout
+      summary: Request data takeout
+      description: Request a new data export/takeout for the current team
+      operationId: requestTakeout
+      responses:
+        "202":
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TakeoutResponse'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+    get:
+      tags:
+        - Data Takeout
+      summary: List takeouts
+      description: Get paginated list of data takeouts for the current team
+      operationId: listTakeouts
+      parameters:
+        - name: page
+          in: query
+          description: Page number (zero-based)
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: size
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 25
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageResponseTakeoutResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /takeouts/{identifier}:
+    get:
+      tags:
+        - Data Takeout
+      summary: Get takeout
+      description: Get details of a specific data takeout
+      operationId: getTakeout
+      parameters:
+        - name: identifier
+          in: path
+          description: Data takeout identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/DataTakeoutIdentifier'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TakeoutResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+    delete:
+      tags:
+        - Data Takeout
+      summary: Delete takeout
+      description: Delete a data takeout
+      operationId: deleteTakeout
+      parameters:
+        - name: identifier
+          in: path
+          description: Data takeout identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/DataTakeoutIdentifier'
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /auth/impersonate/exchange:
+    post:
+      tags:
+        - Impersonation
+      summary: Exchange impersonation token
+      description: Exchange a session token for an impersonation JWT
+      operationId: exchangeImpersonationToken
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExchangeTokenRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImpersonationExchangeResponse'
+        "400":
+          description: Bad request - invalid or expired token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+  /auth/impersonate/session:
+    get:
+      tags:
+        - Impersonation
+      summary: Get impersonation session info
+      description: Get information about the current impersonation session
+      operationId: getImpersonationSessionInfo
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImpersonationSessionInfo'
+        "403":
+          description: Forbidden - no active impersonation session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /auth/impersonate/end:
+    post:
+      tags:
+        - Impersonation
+      summary: End impersonation session
+      description: End the current impersonation session
+      operationId: endImpersonationSession
+      responses:
+        "204":
+          description: No Content
+        "403":
+          description: Forbidden - no active impersonation session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
 components:
   schemas:
     AmenityIdentifier:
@@ -23181,6 +23470,159 @@ components:
         - totalPaymentsCancelled
         - totalPaymentsGenerated
         - totalFailed
+    BroadcastMessageIdentifier:
+      type: string
+      description: Broadcast message identifier
+    BroadcastMessageResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+        severity:
+          type: string
+        startAt:
+          type: string
+          format: date-time
+        endAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - title
+        - body
+        - severity
+        - startAt
+    DataTakeoutIdentifier:
+      type: string
+      description: Data takeout identifier
+    TakeoutResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        status:
+          type: string
+        progress:
+          type: integer
+          format: int32
+        fileSize:
+          type: integer
+          format: int64
+        createdAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        downloadUrl:
+          type: string
+      required:
+        - identifier
+        - status
+        - progress
+        - createdAt
+    PageResponseTakeoutResponse:
+      type: object
+      description: Paginated response wrapper with content and pagination metadata
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/TakeoutResponse'
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    ExchangeTokenRequest:
+      type: object
+      properties:
+        sessionToken:
+          type: string
+          format: uuid
+      required:
+        - sessionToken
+    ImpersonationExchangeResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        sessionIdentifier:
+          type: string
+        adminEmail:
+          type: string
+        adminName:
+          type: string
+        mode:
+          type: string
+        expiresIn:
+          type: integer
+          format: int64
+        targetUserEmail:
+          type: string
+        targetTeamIdentifier:
+          type: string
+        reason:
+          type: string
+      required:
+        - token
+        - sessionIdentifier
+        - adminEmail
+        - adminName
+        - mode
+        - expiresIn
+        - targetUserEmail
+        - targetTeamIdentifier
+        - reason
+    ImpersonationSessionInfo:
+      type: object
+      properties:
+        sessionIdentifier:
+          type: string
+        adminEmail:
+          type: string
+        adminName:
+          type: string
+        mode:
+          type: string
+        remainingSeconds:
+          type: integer
+          format: int64
+        targetUserEmail:
+          type: string
+        reason:
+          type: string
+      required:
+        - sessionIdentifier
+        - adminEmail
+        - adminName
+        - mode
+        - remainingSeconds
+        - targetUserEmail
+        - reason
   securitySchemes:
     bearer-jwt:
       type: http

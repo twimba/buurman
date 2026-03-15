@@ -1,0 +1,75 @@
+exchange:
+  post:
+    tags:
+      - Impersonation
+    summary: Exchange impersonation token
+    description: Exchange a session token for an impersonation JWT
+    operationId: exchangeImpersonationToken
+    security: []
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExchangeTokenRequest'
+      required: true
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImpersonationExchangeResponse'
+      "400":
+        description: Bad request - invalid or expired token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Session not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+
+session:
+  get:
+    tags:
+      - Impersonation
+    summary: Get impersonation session info
+    description: Get information about the current impersonation session
+    operationId: getImpersonationSessionInfo
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImpersonationSessionInfo'
+      "403":
+        description: Forbidden - no active impersonation session
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+end:
+  post:
+    tags:
+      - Impersonation
+    summary: End impersonation session
+    description: End the current impersonation session
+    operationId: endImpersonationSession
+    responses:
+      "204":
+        description: No Content
+      "403":
+        description: Forbidden - no active impersonation session
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []

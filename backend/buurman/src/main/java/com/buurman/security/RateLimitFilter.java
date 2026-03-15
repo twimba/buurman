@@ -35,7 +35,8 @@ public class RateLimitFilter extends OncePerRequestFilter {
       Map.of(
           "POST:/registration-invitations/validate", "registration-validation",
           "GET:/auth/verify-email-token", "email-token-verification",
-          "POST:/auth/verify-email", "email-code-verification");
+          "POST:/auth/verify-email", "email-code-verification",
+          "POST:/auth/impersonate/exchange", "impersonation-exchange");
 
   private final ProxyManager<String> proxyManager;
   private final RateLimitConfigService rateLimitConfigService;

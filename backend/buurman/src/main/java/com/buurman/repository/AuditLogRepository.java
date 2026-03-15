@@ -49,18 +49,53 @@ public class AuditLogRepository {
       @Nullable JSONB newValues,
       UUID userId,
       LocalDateTime timestamp) {
-    dsl.insertInto(AUDIT_LOG)
-        .set(AUDIT_LOG.ID, id)
-        .set(AUDIT_LOG.TEAM_ID, teamId)
-        .set(AUDIT_LOG.ENTITY_TYPE, entityType)
-        .set(AUDIT_LOG.ENTITY_ID, entityId)
-        .set(AUDIT_LOG.ACTION, action)
-        .set(AUDIT_LOG.CHANGED_FIELDS, changedFields)
-        .set(AUDIT_LOG.OLD_VALUES, oldValues)
-        .set(AUDIT_LOG.NEW_VALUES, newValues)
-        .set(AUDIT_LOG.USER_ID, userId)
-        .set(AUDIT_LOG.TIMESTAMP, timestamp)
-        .execute();
+    insertAuditLog(
+        id,
+        teamId,
+        entityType,
+        entityId,
+        action,
+        changedFields,
+        oldValues,
+        newValues,
+        userId,
+        timestamp,
+        null,
+        null);
+  }
+
+  public void insertAuditLog(
+      UUID id,
+      UUID teamId,
+      String entityType,
+      UUID entityId,
+      String action,
+      @Nullable JSONB changedFields,
+      @Nullable JSONB oldValues,
+      @Nullable JSONB newValues,
+      UUID userId,
+      LocalDateTime timestamp,
+      @Nullable String impersonatedBy,
+      @Nullable UUID impersonationSessionId) {
+    var insert =
+        dsl.insertInto(AUDIT_LOG)
+            .set(AUDIT_LOG.ID, id)
+            .set(AUDIT_LOG.TEAM_ID, teamId)
+            .set(AUDIT_LOG.ENTITY_TYPE, entityType)
+            .set(AUDIT_LOG.ENTITY_ID, entityId)
+            .set(AUDIT_LOG.ACTION, action)
+            .set(AUDIT_LOG.CHANGED_FIELDS, changedFields)
+            .set(AUDIT_LOG.OLD_VALUES, oldValues)
+            .set(AUDIT_LOG.NEW_VALUES, newValues)
+            .set(AUDIT_LOG.USER_ID, userId)
+            .set(AUDIT_LOG.TIMESTAMP, timestamp);
+    if (impersonatedBy != null) {
+      insert = insert.set(AUDIT_LOG.IMPERSONATED_BY, impersonatedBy);
+    }
+    if (impersonationSessionId != null) {
+      insert = insert.set(AUDIT_LOG.IMPERSONATION_SESSION_ID, impersonationSessionId);
+    }
+    insert.execute();
   }
 
   public List<AuditLogEntry> findByTeamIdAndEntityTypeAndEntityId(

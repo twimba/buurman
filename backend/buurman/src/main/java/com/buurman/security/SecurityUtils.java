@@ -33,4 +33,20 @@ public final class SecurityUtils {
     }
     return principal;
   }
+
+  /** Returns true if the current principal is an impersonation session. */
+  public static boolean isImpersonating() {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    return auth != null && auth.getPrincipal() instanceof ImpersonationPrincipal;
+  }
+
+  /** Returns the {@link ImpersonationPrincipal} if the current session is impersonated, or null. */
+  public static @org.jspecify.annotations.Nullable ImpersonationPrincipal
+      getImpersonationPrincipal() {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    if (auth != null && auth.getPrincipal() instanceof ImpersonationPrincipal principal) {
+      return principal;
+    }
+    return null;
+  }
 }

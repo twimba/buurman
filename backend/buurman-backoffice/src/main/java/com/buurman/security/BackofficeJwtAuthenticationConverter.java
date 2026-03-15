@@ -1,5 +1,6 @@
 package com.buurman.security;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -30,7 +31,11 @@ public class BackofficeJwtAuthenticationConverter
             .findFirst()
             .orElse(null);
 
-    BackofficePrincipal principal = new BackofficePrincipal(keycloakId, email, name, role);
+    Instant authTime =
+        jwt.getClaim("auth_time") != null ? Instant.ofEpochSecond(jwt.getClaim("auth_time")) : null;
+
+    BackofficePrincipal principal =
+        new BackofficePrincipal(keycloakId, email, name, role, authTime);
     return new BackofficeAuthentication(principal, authorities);
   }
 

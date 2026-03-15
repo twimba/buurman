@@ -36,6 +36,10 @@ tags:
     description: Feature flag management
   - name: Backoffice - Rent Regulations
     description: Rent regulation reference data management
+  - name: Backoffice - Impersonation
+    description: User impersonation session management
+  - name: Backoffice - Broadcasts
+    description: Broadcast message management
 paths:
   /backoffice/teams/{identifier}:
     get:
@@ -4468,8 +4472,462 @@ paths:
                 $ref: "#/components/schemas/ProblemDetail"
       security:
         - bearer-jwt: []
+  /backoffice/broadcasts:
+    get:
+      tags:
+        - Backoffice - Broadcasts
+      summary: List all broadcast messages
+      description: Get all broadcast messages
+      operationId: listBroadcastMessages
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BackofficeBroadcastMessageResponse"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    post:
+      tags:
+        - Backoffice - Broadcasts
+      summary: Create broadcast message
+      description: Create a new broadcast message
+      operationId: createBroadcastMessage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBroadcastMessageRequest"
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BackofficeBroadcastMessageResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/broadcasts/{identifier}:
+    put:
+      tags:
+        - Backoffice - Broadcasts
+      summary: Update broadcast message
+      description: Update an existing broadcast message
+      operationId: updateBroadcastMessage
+      parameters:
+        - name: identifier
+          in: path
+          description: Broadcast message identifier
+          required: true
+          schema:
+            $ref: "#/components/schemas/BroadcastMessageIdentifier"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBroadcastMessageRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BackofficeBroadcastMessageResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    delete:
+      tags:
+        - Backoffice - Broadcasts
+      summary: Delete broadcast message
+      description: Delete a broadcast message
+      operationId: deleteBroadcastMessage
+      parameters:
+        - name: identifier
+          in: path
+          description: Broadcast message identifier
+          required: true
+          schema:
+            $ref: "#/components/schemas/BroadcastMessageIdentifier"
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/impersonation:
+    post:
+      tags:
+        - Backoffice - Impersonation
+      summary: Create impersonation session
+      description: Create a new impersonation session for a target user in a specific team
+      operationId: createImpersonationSession
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateImpersonationRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateImpersonationResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions or re-authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - active session already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/impersonation/sessions:
+    get:
+      tags:
+        - Backoffice - Impersonation
+      summary: List impersonation sessions
+      description: Get paginated list of all impersonation sessions
+      operationId: listImpersonationSessions
+      parameters:
+        - name: page
+          in: query
+          description: Page number (zero-based)
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+          example: 0
+        - name: size
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 25
+          example: 25
+        - name: sort
+          in: query
+          description: Sort field name
+          required: false
+          schema:
+            type: string
+          example: createdAt
+        - name: direction
+          in: query
+          description: Sort direction
+          required: false
+          schema:
+            type: string
+            default: DESC
+            description: Sort order direction for paginated queries
+            enum:
+              - ASC
+              - DESC
+          example: DESC
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageResponseImpersonationSessionResponse"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/impersonation/sessions/{identifier}:
+    get:
+      tags:
+        - Backoffice - Impersonation
+      summary: Get impersonation session
+      description: Get detailed information about a specific impersonation session
+      operationId: getImpersonationSession
+      parameters:
+        - name: identifier
+          in: path
+          description: Impersonation session identifier
+          required: true
+          schema:
+            $ref: "#/components/schemas/ImpersonationSessionIdentifier"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImpersonationSessionResponse"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    delete:
+      tags:
+        - Backoffice - Impersonation
+      summary: Terminate impersonation session
+      description: Terminate an active impersonation session
+      operationId: terminateImpersonationSession
+      parameters:
+        - name: identifier
+          in: path
+          description: Impersonation session identifier
+          required: true
+          schema:
+            $ref: "#/components/schemas/ImpersonationSessionIdentifier"
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/impersonation/sessions/{identifier}/rejoin:
+    post:
+      tags:
+        - Backoffice - Impersonation
+      summary: Rejoin impersonation session
+      description: Rejoin an existing active impersonation session. Generates a new session token and redirect URL.
+      operationId: rejoinImpersonationSession
+      parameters:
+        - name: identifier
+          in: path
+          description: Impersonation session identifier
+          required: true
+          schema:
+            $ref: "#/components/schemas/ImpersonationSessionIdentifier"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateImpersonationResponse"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - not the same admin or re-authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - session expired or ended
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
 components:
   schemas:
+    BroadcastMessageIdentifier:
+      type: string
+      description: Broadcast message identifier
+    ImpersonationSessionIdentifier:
+      type: string
+      description: Impersonation session identifier
     NotificationIdentifier:
       type: string
       description: Notification identifier
@@ -6005,6 +6463,257 @@ components:
         - teamIdentifier
         - teamName
         - requestedAt
+    BackofficeBroadcastMessageResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+        severity:
+          type: string
+        scope:
+          type: string
+        startAt:
+          type: string
+          format: date-time
+        endAt:
+          type: string
+          format: date-time
+        showOnLogin:
+          type: boolean
+        showOnRegister:
+          type: boolean
+        showInApp:
+          type: boolean
+        targetTeamIdentifiers:
+          type: array
+          items:
+            type: string
+        targetUserIdentifiers:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - title
+        - body
+        - severity
+        - scope
+        - startAt
+        - showOnLogin
+        - showOnRegister
+        - showInApp
+        - targetTeamIdentifiers
+        - targetUserIdentifiers
+        - createdAt
+        - updatedAt
+    CreateBroadcastMessageRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        body:
+          type: string
+          minLength: 1
+        severity:
+          type: string
+          minLength: 1
+        scope:
+          type: string
+          minLength: 1
+        startAt:
+          type: string
+          format: date-time
+        endAt:
+          type: string
+          format: date-time
+        showOnLogin:
+          type: boolean
+        showOnRegister:
+          type: boolean
+        showInApp:
+          type: boolean
+        targetTeamIdentifiers:
+          type: array
+          items:
+            type: string
+        targetUserIdentifiers:
+          type: array
+          items:
+            type: string
+      required:
+        - title
+        - body
+        - severity
+        - scope
+        - startAt
+    UpdateBroadcastMessageRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        body:
+          type: string
+          minLength: 1
+        severity:
+          type: string
+          minLength: 1
+        scope:
+          type: string
+          minLength: 1
+        startAt:
+          type: string
+          format: date-time
+        endAt:
+          type: string
+          format: date-time
+        showOnLogin:
+          type: boolean
+        showOnRegister:
+          type: boolean
+        showInApp:
+          type: boolean
+        targetTeamIdentifiers:
+          type: array
+          items:
+            type: string
+        targetUserIdentifiers:
+          type: array
+          items:
+            type: string
+      required:
+        - title
+        - body
+        - severity
+        - scope
+        - startAt
+    CreateImpersonationRequest:
+      type: object
+      properties:
+        userIdentifier:
+          $ref: "#/components/schemas/UserIdentifier"
+        teamIdentifier:
+          $ref: "#/components/schemas/TeamIdentifier"
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        mode:
+          type: string
+          enum:
+            - FULL
+            - READ_ONLY
+        timeout:
+          type: string
+          description: ISO 8601 duration, e.g. PT30M
+      required:
+        - userIdentifier
+        - teamIdentifier
+        - reason
+    CreateImpersonationResponse:
+      type: object
+      properties:
+        sessionIdentifier:
+          type: string
+        redirectUrl:
+          type: string
+      required:
+        - sessionIdentifier
+        - redirectUrl
+    ImpersonationSessionResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        adminEmail:
+          type: string
+        adminName:
+          type: string
+        targetUserIdentifier:
+          type: string
+        targetUserEmail:
+          type: string
+        targetTeamIdentifier:
+          type: string
+        mode:
+          type: string
+        reason:
+          type: string
+        status:
+          type: string
+          enum:
+            - PENDING
+            - ACTIVE
+            - ENDED
+            - EXPIRED
+        createdAt:
+          type: string
+          format: date-time
+        activatedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        endedAt:
+          type: string
+          format: date-time
+        endReason:
+          type: string
+      required:
+        - identifier
+        - adminEmail
+        - adminName
+        - targetUserIdentifier
+        - targetUserEmail
+        - targetTeamIdentifier
+        - mode
+        - reason
+        - status
+        - createdAt
+        - expiresAt
+    PageResponseImpersonationSessionResponse:
+      type: object
+      description: Paginated response wrapper with content and pagination metadata
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/ImpersonationSessionResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
   securitySchemes:
     bearer-jwt:
       type: http

@@ -111,6 +111,9 @@
                                 <schemaMapping>RentRegulationCountryIdentifier=com.buurman.domain.identifier.RentRegulationCountryIdentifier</schemaMapping>
                                 <schemaMapping>RentRegulationRegionIdentifier=com.buurman.domain.identifier.RentRegulationRegionIdentifier</schemaMapping>
                                 <schemaMapping>RentRegulationRuleIdentifier=com.buurman.domain.identifier.RentRegulationRuleIdentifier</schemaMapping>
+                                <schemaMapping>BroadcastMessageIdentifier=com.buurman.domain.identifier.BroadcastMessageIdentifier</schemaMapping>
+                                <schemaMapping>ImpersonationSessionIdentifier=com.buurman.domain.identifier.ImpersonationSessionIdentifier</schemaMapping>
+                                <schemaMapping>PageResponseImpersonationSessionResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                             </schemaMappings>
                             <importMappings>
                                 <importMapping>Instant=java.time.Instant</importMapping>
@@ -157,6 +160,12 @@
                                 <importMapping>BulkCreateRentRegulationRulesRequest=com.buurman.dto.request.BulkCreateRentRegulationRulesRequest</importMapping>
                                 <importMapping>MaxIncreaseType=com.buurman.domain.MaxIncreaseType</importMapping>
                                 <importMapping>RentFrequency=com.buurman.domain.RentFrequency</importMapping>
+                                <importMapping>BackofficeBroadcastMessageResponse=com.buurman.dto.response.backoffice.BackofficeBroadcastMessageResponse</importMapping>
+                                <importMapping>CreateBroadcastMessageRequest=com.buurman.dto.request.backoffice.CreateBroadcastMessageRequest</importMapping>
+                                <importMapping>UpdateBroadcastMessageRequest=com.buurman.dto.request.backoffice.UpdateBroadcastMessageRequest</importMapping>
+                                <importMapping>CreateImpersonationRequest=com.buurman.dto.request.CreateImpersonationRequest</importMapping>
+                                <importMapping>CreateImpersonationResponse=com.buurman.dto.response.CreateImpersonationResponse</importMapping>
+                                <importMapping>ImpersonationSessionResponse=com.buurman.dto.response.ImpersonationSessionResponse</importMapping>
                             </importMappings>
                         </configuration>
                     </execution>
