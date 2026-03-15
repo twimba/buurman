@@ -194,10 +194,7 @@ public class AuditLogRepository {
                   .or(lower(EXPENSES.DESCRIPTION).like(searchPattern)));
     }
 
-    return query
-        .orderBy(AUDIT_LOG.TIMESTAMP.desc())
-        .fetch()
-        .map(this::mapToAuditLogEntry);
+    return query.orderBy(AUDIT_LOG.TIMESTAMP.desc()).fetch().map(this::mapToAuditLogEntry);
   }
 
   public PaginatedResult<AuditLogEntry> findAllByTeamIdPaginated(

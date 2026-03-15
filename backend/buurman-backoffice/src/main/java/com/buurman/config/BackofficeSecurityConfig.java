@@ -55,8 +55,6 @@ public class BackofficeSecurityConfig {
             auth ->
                 auth.requestMatchers(HttpMethod.OPTIONS, "/backoffice/**")
                     .permitAll()
-                    .requestMatchers("/backoffice/api-docs/**", "/backoffice/swagger-ui/**")
-                    .permitAll()
                     .anyRequest()
                     .hasRole("BACKOFFICE_ADMIN"))
         .oauth2ResourceServer(

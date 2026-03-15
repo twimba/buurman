@@ -188,6 +188,11 @@ const AdminBillingPage = lazy(() =>
     default: m.AdminBillingPage,
   }))
 );
+const AdminApiDocsPage = lazy(() =>
+  import('./pages/admin/AdminApiDocsPage').then((m) => ({
+    default: m.AdminApiDocsPage,
+  }))
+);
 
 function App() {
   return (
@@ -575,6 +580,23 @@ function App() {
                             <ProtectedRoute>
                               <Layout>
                                 <AuditLogPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/admin/api-docs"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <FeatureGate
+                                  flag={FeatureFlags.SWAGGER}
+                                  fallback={
+                                    <Navigate to="/dashboard" replace />
+                                  }
+                                >
+                                  <AdminApiDocsPage />
+                                </FeatureGate>
                               </Layout>
                             </ProtectedRoute>
                           }

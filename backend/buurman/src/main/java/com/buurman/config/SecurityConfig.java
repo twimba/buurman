@@ -87,7 +87,7 @@ public class SecurityConfig {
                     // Public endpoints
                     .requestMatchers("/health", "/info", "/reference/**")
                     .permitAll()
-                    .requestMatchers("/api-docs/**", "/swagger-ui/**")
+                    .requestMatchers("/swagger-ui/**", "/api-docs/**")
                     .permitAll()
                     .requestMatchers(POST, "/auth/register")
                     .permitAll()

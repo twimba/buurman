@@ -9,6 +9,7 @@ export const FeatureFlags = {
   EMAIL_NOTIFICATIONS: 'email_notifications',
   BLOCK_EMAIL_NOTIFICATIONS: 'block_email_notifications',
   BLOCK_SMS_NOTIFICATIONS: 'block_sms_notifications',
+  SWAGGER: 'swagger',
 } as const;
 
 export type FeatureFlagKey = (typeof FeatureFlags)[keyof typeof FeatureFlags];

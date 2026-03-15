@@ -216,6 +216,7 @@ management:
 # Server Configuration
 server:
   port: 8081
+  forward-headers-strategy: framework
 
 # SpringDoc OpenAPI Configuration
 springdoc:
@@ -235,6 +236,4 @@ springdoc:
   group-configs:
     - group: app
       paths-to-exclude: /backoffice/**
-    - group: backoffice
-      paths-to-match: /backoffice/**
   

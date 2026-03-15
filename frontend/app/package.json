@@ -39,7 +39,8 @@
     "react-dom": "19.2.4",
     "react-is": "19.2.4",
     "react-router-dom": "7.13.1",
-    "recharts": "3.8.0"
+    "recharts": "3.8.0",
+    "swagger-ui-react": "^5.32.0"
   },
   "devDependencies": {
     "@eslint/compat": "2.0.3",
@@ -48,6 +49,7 @@
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@types/react-is": "19.2.0",
+    "@types/swagger-ui-react": "^5",
     "@vitejs/plugin-react": "6.0.1",
     "eslint": "10.0.3",
     "eslint-plugin-react": "7.37.5",

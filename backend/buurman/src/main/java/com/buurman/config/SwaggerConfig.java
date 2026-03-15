@@ -1,8 +1,12 @@
 package com.buurman.config;
 
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 
+import com.buurman.security.SwaggerAccessFilter;
+import com.buurman.service.FeatureFlagService;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
 import io.swagger.v3.core.util.Json;
@@ -23,6 +27,16 @@ public class SwaggerConfig {
     Jdk8Module jdk8Module = new Jdk8Module();
     Json.mapper().registerModule(jdk8Module);
     Json31.mapper().registerModule(jdk8Module);
+  }
+
+  @Bean
+  public FilterRegistrationBean<SwaggerAccessFilter> swaggerAccessFilter(
+      FeatureFlagService featureFlagService) {
+    FilterRegistrationBean<SwaggerAccessFilter> registration = new FilterRegistrationBean<>();
+    registration.setFilter(new SwaggerAccessFilter(featureFlagService));
+    registration.addUrlPatterns("/api-docs/*", "/swagger-ui/*");
+    registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
+    return registration;
   }
 
   @Bean

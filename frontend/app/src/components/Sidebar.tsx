@@ -24,6 +24,7 @@ import {
   ChevronsRight,
   Scale,
   TrendingUp,
+  FileCode,
 } from 'lucide-react';
 import { useState } from 'react';
 import { SidebarTooltip } from '@buurman/ui';
@@ -91,6 +92,12 @@ const administrationNavigation = [
   { name: 'Data Export', href: '/admin/data-export', icon: Download },
   { name: 'Subscription & Billing', href: '/admin/billing', icon: Receipt },
   { name: 'Activity Log', href: '/admin/activity-log', icon: ClipboardList },
+  {
+    name: 'API Documentation',
+    href: '/admin/api-docs',
+    icon: FileCode,
+    featureFlag: FeatureFlags.SWAGGER,
+  },
 ];
 
 const navLinkClass = (isActive: boolean, collapsed: boolean) => `
@@ -282,26 +289,31 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
                 {/* Admin Items */}
                 {(isAdminOpen || collapsed) && (
                   <ul className="space-y-1">
-                    {administrationNavigation.map((item) => (
-                      <li key={item.name}>
-                        <SidebarTooltip label={item.name} show={collapsed}>
-                          <NavLink
-                            to={item.href}
-                            className={({ isActive }) =>
-                              navLinkClass(isActive, collapsed)
-                            }
-                            onClick={() => setMobileOpen(false)}
-                          >
-                            <item.icon className="h-5 w-5 flex-shrink-0" />
-                            <span
-                              className={`truncate ${collapsed ? 'lg:hidden' : ''}`}
+                    {administrationNavigation
+                      .filter(
+                        (item) =>
+                          !item.featureFlag || isEnabled(item.featureFlag)
+                      )
+                      .map((item) => (
+                        <li key={item.name}>
+                          <SidebarTooltip label={item.name} show={collapsed}>
+                            <NavLink
+                              to={item.href}
+                              className={({ isActive }) =>
+                                navLinkClass(isActive, collapsed)
+                              }
+                              onClick={() => setMobileOpen(false)}
                             >
-                              {item.name}
-                            </span>
-                          </NavLink>
-                        </SidebarTooltip>
-                      </li>
-                    ))}
+                              <item.icon className="h-5 w-5 flex-shrink-0" />
+                              <span
+                                className={`truncate ${collapsed ? 'lg:hidden' : ''}`}
+                              >
+                                {item.name}
+                              </span>
+                            </NavLink>
+                          </SidebarTooltip>
+                        </li>
+                      ))}
                   </ul>
                 )}
               </div>
