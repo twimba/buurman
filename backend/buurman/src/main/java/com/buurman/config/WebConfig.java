@@ -4,16 +4,28 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import com.buurman.security.ImpersonationRestrictionInterceptor;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
   // CORS is configured in SecurityConfig to avoid duplicate/conflicting configuration
 
   private final SidConverterFactory sidConverterFactory;
+  private final ImpersonationRestrictionInterceptor impersonationRestrictionInterceptor;
 
-  public WebConfig(SidConverterFactory sidConverterFactory) {
+  public WebConfig(
+      SidConverterFactory sidConverterFactory,
+      ImpersonationRestrictionInterceptor impersonationRestrictionInterceptor) {
     this.sidConverterFactory = sidConverterFactory;
+    this.impersonationRestrictionInterceptor = impersonationRestrictionInterceptor;
+  }
+
+  @Override
+  public void addInterceptors(InterceptorRegistry registry) {
+    registry.addInterceptor(impersonationRestrictionInterceptor).addPathPatterns("/api/**");
   }
 
   @Override

@@ -16,6 +16,8 @@
 # =============================================================================
 
 spring:
+  main:
+    lazy-initialization: true
   datasource:
     url: jdbc:postgresql://postgresql.local.buurman.io:5432/buurman
 

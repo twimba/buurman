@@ -4,7 +4,6 @@ import java.time.Clock;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
 
@@ -12,9 +11,7 @@ import org.springframework.context.annotation.Bean;
 @ConfigurationPropertiesScan
 public class BuurmanApplication {
   public static void main(String[] args) {
-    SpringApplication app = new SpringApplication(BuurmanApplication.class);
-    app.setApplicationStartup(new BufferingApplicationStartup(4096));
-    app.run(args);
+    SpringApplication.run(BuurmanApplication.class, args);
   }
 
   @Bean
