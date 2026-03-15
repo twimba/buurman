@@ -29,7 +29,13 @@ export const useCreateImpersonation = () => {
 
 export const useRejoinImpersonation = () => {
   return useMutation({
-    mutationFn: (identifier: string) => rejoinImpersonationSession(identifier),
+    mutationFn: ({
+      identifier,
+      password,
+    }: {
+      identifier: string;
+      password: string;
+    }) => rejoinImpersonationSession(identifier, { password }),
   });
 };
 

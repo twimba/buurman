@@ -6,11 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "impersonation")
 public record ImpersonationProperties(
-    String jwtSecret,
-    Duration maxTimeout,
-    Duration defaultTimeout,
-    Duration reauthWindow,
-    String appBaseUrl) {
+    String jwtSecret, Duration maxTimeout, Duration defaultTimeout, String appBaseUrl) {
 
   public ImpersonationProperties {
     if (jwtSecret == null || jwtSecret.length() < 32) {
@@ -22,9 +18,6 @@ public record ImpersonationProperties(
     }
     if (defaultTimeout == null || defaultTimeout.isZero() || defaultTimeout.isNegative()) {
       defaultTimeout = Duration.ofMinutes(15);
-    }
-    if (reauthWindow == null || reauthWindow.isZero() || reauthWindow.isNegative()) {
-      reauthWindow = Duration.ofMinutes(2);
     }
   }
 

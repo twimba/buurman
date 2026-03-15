@@ -1,6 +1,7 @@
 package com.buurman.controller;
 
-import org.springframework.http.MediaType;
+import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
+
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buurman.domain.identifier.ContractIdentifier;
@@ -26,7 +27,7 @@ public class BookletController implements BookletsApi {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     httpServletResponse.setHeader(
         "Content-Disposition", "attachment; filename=property-booklet.pdf");
-    httpServletResponse.setContentType(MediaType.APPLICATION_PDF_VALUE);
+    httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
     return exportService.generatePropertyBrochurePDF(propertyIdentifier, principal.requireTeamId());
   }
 
@@ -34,7 +35,7 @@ public class BookletController implements BookletsApi {
   public byte[] exportTenantBooklet(TenantIdentifier tenantIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     httpServletResponse.setHeader("Content-Disposition", "attachment; filename=tenant-booklet.pdf");
-    httpServletResponse.setContentType(MediaType.APPLICATION_PDF_VALUE);
+    httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
     return exportService.generateTenantReportPDF(tenantIdentifier, principal.requireTeamId());
   }
 
@@ -43,7 +44,7 @@ public class BookletController implements BookletsApi {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     httpServletResponse.setHeader(
         "Content-Disposition", "attachment; filename=contract-booklet.pdf");
-    httpServletResponse.setContentType(MediaType.APPLICATION_PDF_VALUE);
+    httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
     return exportService.generateContractReportPDF(contractIdentifier, principal.requireTeamId());
   }
 }

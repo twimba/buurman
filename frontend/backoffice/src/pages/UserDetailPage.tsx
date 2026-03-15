@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { formatDateTime } from "../utils/dateFormatting";
 import {
   Mail,
@@ -11,7 +11,6 @@ import {
   Users,
   Calendar,
   Eye,
-  AlertTriangle,
   Pencil,
 } from "lucide-react";
 import { PageHeader, Button, ConfirmDialog, ModalWrapper } from "@buurman/ui";
@@ -25,38 +24,12 @@ import {
   useCreateImpersonation,
   useUserTeams,
 } from "../hooks/useImpersonation";
-import { useAuth } from "../contexts/AuthContext";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { UserFeatureFlags } from "../components/UserFeatureFlags";
 import { RichTextEditor } from "../components/RichTextEditor";
+import { PasswordConfirmationDialog } from "../components/PasswordConfirmationDialog";
 import { trackEvent } from "../utils/analytics";
 import { AnalyticsEvent } from "../constants/analyticsEvents";
-
-const IMPERSONATE_STORAGE_KEY = "buurman-impersonate-pending";
-const REAUTH_MAX_AGE_SECONDS = 120; // 2 minutes
-
-/** Read and consume pending re-auth form data from sessionStorage (if returning from Keycloak). */
-const consumePendingReauthData = (): ImpersonateFormData | null => {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get("action") !== "impersonate") {
-    return null;
-  }
-  const stored = sessionStorage.getItem(IMPERSONATE_STORAGE_KEY);
-  if (!stored) {
-    return null;
-  }
-  sessionStorage.removeItem(IMPERSONATE_STORAGE_KEY);
-  try {
-    const parsed = JSON.parse(stored) as ImpersonateFormData;
-    return {
-      teamIdentifier: parsed.teamIdentifier,
-      reason: parsed.reason,
-      durationMinutes: parsed.durationMinutes,
-    };
-  } catch {
-    return null;
-  }
-};
 
 const DURATION_PRESETS = [
   { label: "15 min", value: 15 },
@@ -88,8 +61,6 @@ const toIsoDuration = (minutes: number): string => {
 export const UserDetailPage = () => {
   const { identifier = "" } = useParams<{ identifier: string }>();
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const { keycloak } = useAuth();
   const { data: user, isLoading, error } = useUser(identifier);
   const disableUser = useDisableUser();
   const enableUser = useEnableUser();
@@ -99,20 +70,14 @@ export const UserDetailPage = () => {
 
   const [showDisableDialog, setShowDisableDialog] = useState(false);
   const [showResetDialog, setShowResetDialog] = useState(false);
-  const [pendingReauth] = useState(consumePendingReauthData);
-  const [showImpersonateDialog, setShowImpersonateDialog] = useState(
-    () => pendingReauth !== null,
-  );
-  const [impersonateForm, setImpersonateForm] = useState<ImpersonateFormData>(
-    () => pendingReauth ?? defaultFormData,
-  );
-  const [reauthError, setReauthError] = useState<string | null>(null);
+  const [showImpersonateDialog, setShowImpersonateDialog] = useState(false);
+  const [impersonateForm, setImpersonateForm] =
+    useState<ImpersonateFormData>(defaultFormData);
   const [pendingMode, setPendingMode] = useState<"READ_ONLY" | "FULL" | null>(
     null,
   );
-  const [justReauthenticated, setJustReauthenticated] = useState(
-    () => pendingReauth !== null,
-  );
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
 
   const userIdentifier = user?.identifier;
   useEffect(() => {
@@ -125,61 +90,22 @@ export const UserDetailPage = () => {
     const preselectedTeam =
       userTeams?.length === 1 ? userTeams[0].teamIdentifier : "";
     setImpersonateForm({ ...defaultFormData, teamIdentifier: preselectedTeam });
-    setReauthError(null);
     setPendingMode(null);
     createImpersonation.reset();
     setShowImpersonateDialog(true);
   }, [userTeams, createImpersonation]);
 
-  // Clean up ?action=impersonate from URL after re-auth redirect
-  useEffect(() => {
-    if (searchParams.get("action") === "impersonate") {
-      setSearchParams((prev) => {
-        const next = new URLSearchParams(prev);
-        next.delete("action");
-        return next;
-      });
-    }
-  }, [searchParams, setSearchParams]);
+  const handleImpersonate = useCallback((mode: "READ_ONLY" | "FULL") => {
+    setPendingMode(mode);
+    setPasswordError(null);
+    setShowPasswordDialog(true);
+  }, []);
 
-  const isAuthRecent = useCallback((): boolean => {
-    // auth_time is an OIDC claim in the ID token, not the access token
-    const authTime =
-      keycloak.idTokenParsed?.auth_time ?? keycloak.tokenParsed?.auth_time;
-    if (!authTime) {
-      return false;
-    }
-    const authAge = Math.floor(Date.now() / 1000) - authTime;
-    return authAge < REAUTH_MAX_AGE_SECONDS;
-  }, [keycloak]);
-
-  const handleImpersonate = useCallback(
-    (mode: "READ_ONLY" | "FULL") => {
-      setReauthError(null);
-      setPendingMode(mode);
-
-      // Skip client-side re-auth check if we just returned from Keycloak re-auth.
-      // The backend still validates auth_time independently.
-      if (!justReauthenticated && !isAuthRecent()) {
-        // Store form data and trigger re-authentication
-        sessionStorage.setItem(
-          IMPERSONATE_STORAGE_KEY,
-          JSON.stringify({
-            ...impersonateForm,
-            userIdentifier: identifier,
-            mode,
-          }),
-        );
-
-        keycloak.login({
-          prompt: "login",
-          redirectUri: `${window.location.origin}/users/${identifier}?action=impersonate`,
-        });
+  const handlePasswordConfirm = useCallback(
+    (password: string) => {
+      if (!pendingMode) {
         return;
       }
-
-      // Auth is recent (or we just re-authenticated), proceed.
-      setJustReauthenticated(false);
 
       // Pre-open window synchronously (user gesture) to avoid popup blockers.
       const newWindow = window.open("about:blank", "_blank");
@@ -189,11 +115,13 @@ export const UserDetailPage = () => {
           userIdentifier: identifier,
           teamIdentifier: impersonateForm.teamIdentifier,
           reason: impersonateForm.reason,
-          mode,
+          password,
+          mode: pendingMode,
           timeout: toIsoDuration(impersonateForm.durationMinutes),
         },
         {
           onSuccess: (data) => {
+            setShowPasswordDialog(false);
             setShowImpersonateDialog(false);
             if (newWindow && !newWindow.closed) {
               newWindow.location.href = data.redirectUrl;
@@ -205,15 +133,15 @@ export const UserDetailPage = () => {
             newWindow?.close();
             const axiosError = err as { response?: { status?: number } };
             if (axiosError.response?.status === 403) {
-              setReauthError(
-                "Your session is too old. Please re-authenticate to proceed.",
-              );
+              setPasswordError("Invalid password. Please try again.");
+            } else {
+              setPasswordError("Failed to create impersonation session.");
             }
           },
         },
       );
     },
-    [justReauthenticated, isAuthRecent, impersonateForm, identifier, keycloak, createImpersonation],
+    [pendingMode, impersonateForm, identifier, createImpersonation],
   );
 
   if (isLoading) {
@@ -424,9 +352,6 @@ export const UserDetailPage = () => {
               leftIcon={<Eye />}
               onClick={() => handleImpersonate("READ_ONLY")}
               disabled={!isFormValid || createImpersonation.isPending}
-              isLoading={
-                createImpersonation.isPending && pendingMode === "READ_ONLY"
-              }
             >
               Start in Read Mode
             </Button>
@@ -435,9 +360,6 @@ export const UserDetailPage = () => {
               leftIcon={<Pencil />}
               onClick={() => handleImpersonate("FULL")}
               disabled={!isFormValid || createImpersonation.isPending}
-              isLoading={
-                createImpersonation.isPending && pendingMode === "FULL"
-              }
             >
               Start in Full Access
             </Button>
@@ -445,15 +367,6 @@ export const UserDetailPage = () => {
         }
       >
         <div className="space-y-4">
-          {/* Re-auth warning */}
-          <div className="flex items-start gap-2.5 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2.5 text-sm text-amber-800">
-            <AlertTriangle className="h-4 w-4 flex-shrink-0 mt-0.5" />
-            <span>
-              You will be asked to re-authenticate for security before the
-              session is created.
-            </span>
-          </div>
-
           {/* Team selector */}
           <div>
             <label className="block text-sm font-medium text-text-primary mb-1">
@@ -538,19 +451,22 @@ export const UserDetailPage = () => {
               Maximum is 1 hour.
             </p>
           </div>
-
-          {/* Errors */}
-          {reauthError && (
-            <p className="text-sm text-error-text">{reauthError}</p>
-          )}
-          {createImpersonation.isError && !reauthError && (
-            <p className="text-sm text-error-text">
-              {(createImpersonation.error as Error)?.message ??
-                "Failed to create impersonation session"}
-            </p>
-          )}
         </div>
       </ModalWrapper>
+
+      {/* Password confirmation for impersonation */}
+      <PasswordConfirmationDialog
+        open={showPasswordDialog}
+        onClose={() => {
+          setShowPasswordDialog(false);
+          setPasswordError(null);
+        }}
+        onConfirm={handlePasswordConfirm}
+        isLoading={createImpersonation.isPending}
+        error={passwordError}
+        title="Confirm your identity"
+        subtitle="Enter your password to start the impersonation session."
+      />
     </div>
   );
 };

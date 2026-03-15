@@ -164,6 +164,7 @@
                                 <importMapping>CreateBroadcastMessageRequest=com.buurman.dto.request.backoffice.CreateBroadcastMessageRequest</importMapping>
                                 <importMapping>UpdateBroadcastMessageRequest=com.buurman.dto.request.backoffice.UpdateBroadcastMessageRequest</importMapping>
                                 <importMapping>CreateImpersonationRequest=com.buurman.dto.request.CreateImpersonationRequest</importMapping>
+                                <importMapping>RejoinImpersonationRequest=com.buurman.dto.request.RejoinImpersonationRequest</importMapping>
                                 <importMapping>CreateImpersonationResponse=com.buurman.dto.response.CreateImpersonationResponse</importMapping>
                                 <importMapping>ImpersonationSessionResponse=com.buurman.dto.response.ImpersonationSessionResponse</importMapping>
                             </importMappings>

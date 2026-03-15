@@ -256,8 +256,7 @@ export function RegistrationInvitationsPage() {
             <div>
               {rlConfig.updatedAt && (
                 <p className="text-xs text-text-muted">
-                  Last updated{" "}
-                  {formatDateTime(rlConfig.updatedAt)}
+                  Last updated {formatDateTime(rlConfig.updatedAt)}
                   {rlConfig.updatedBy ? ` by ${rlConfig.updatedBy}` : ""}
                 </p>
               )}
@@ -369,9 +368,7 @@ export function RegistrationInvitationsPage() {
                       {formatUsage(inv)}
                     </td>
                     <td className="px-4 py-3 text-sm text-text-secondary">
-                      {inv.expiresAt
-                        ? formatDateTime(inv.expiresAt)
-                        : "Never"}
+                      {inv.expiresAt ? formatDateTime(inv.expiresAt) : "Never"}
                     </td>
                     <td className="px-4 py-3 text-sm text-text-secondary">
                       {inv.createdBy}

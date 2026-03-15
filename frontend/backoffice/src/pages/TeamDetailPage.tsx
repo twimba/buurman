@@ -345,9 +345,7 @@ export const TeamDetailPage = () => {
                     <RoleBadge role={member.role} />
                   </td>
                   <td className="px-5 py-3 text-text-secondary">
-                    {member.joinedAt
-                      ? formatDate(member.joinedAt)
-                      : "—"}
+                    {member.joinedAt ? formatDate(member.joinedAt) : "—"}
                   </td>
                   <td className="px-5 py-3">
                     {member.disabled ? (

@@ -1,6 +1,10 @@
 package com.buurman.service.export;
 
 import static com.buurman.domain.Payment.PaymentStatus.PAID;
+import static com.buurman.domain.Property.PropertyCategory.AGRICULTURAL;
+import static com.buurman.domain.Property.PropertyCategory.COMMERCIAL;
+import static com.buurman.domain.Property.PropertyCategory.INDUSTRIAL;
+import static com.buurman.domain.Property.PropertyCategory.RESIDENTIAL;
 import static com.buurman.service.export.BookletHelper.appendCheckItem;
 import static com.buurman.service.export.BookletHelper.appendCoverCell;
 import static com.buurman.service.export.BookletHelper.appendCoverEnd;
@@ -246,13 +250,13 @@ public class PropertyBookletExporter {
         agriculturalDetails,
         area);
 
-    if (category != PropertyCategory.AGRICULTURAL) {
+    if (category != AGRICULTURAL) {
       appendBuildingSpecsPage(html, property);
     }
 
     appendFeaturesPage(html, propertyAmenities, amenityMap, outdoorAreas);
 
-    if (category != PropertyCategory.AGRICULTURAL) {
+    if (category != AGRICULTURAL) {
       appendSafetyPage(html, property, category);
     }
 
@@ -290,13 +294,13 @@ public class PropertyBookletExporter {
 
     html.append("<table class='cover-summary'>");
 
-    if (category == PropertyCategory.COMMERCIAL && commercialDetails != null) {
+    if (category == COMMERCIAL && commercialDetails != null) {
       appendCoverSummaryCommercial(html, property, commercialDetails, location);
-    } else if (category == PropertyCategory.INDUSTRIAL && industrialDetails != null) {
+    } else if (category == INDUSTRIAL && industrialDetails != null) {
       appendCoverSummaryIndustrial(html, property, industrialDetails, location, area);
-    } else if (category == PropertyCategory.AGRICULTURAL && agriculturalDetails != null) {
+    } else if (category == AGRICULTURAL && agriculturalDetails != null) {
       appendCoverSummaryAgricultural(html, property, agriculturalDetails, location);
-    } else if (category == PropertyCategory.RESIDENTIAL && residentialDetails != null) {
+    } else if (category == RESIDENTIAL && residentialDetails != null) {
       appendCoverSummaryResidential(html, property, residentialDetails, location, area);
     } else {
       // MIXED_USE or fallback (no detail record)
@@ -484,13 +488,13 @@ public class PropertyBookletExporter {
 
     appendConstructionSection(html, property);
 
-    if (category == PropertyCategory.RESIDENTIAL && residentialDetails != null) {
+    if (category == RESIDENTIAL && residentialDetails != null) {
       appendResidentialDetailsSection(html, residentialDetails);
-    } else if (category == PropertyCategory.COMMERCIAL && commercialDetails != null) {
+    } else if (category == COMMERCIAL && commercialDetails != null) {
       appendCommercialDetailsSection(html, commercialDetails);
-    } else if (category == PropertyCategory.INDUSTRIAL && industrialDetails != null) {
+    } else if (category == INDUSTRIAL && industrialDetails != null) {
       appendIndustrialDetailsSection(html, industrialDetails);
-    } else if (category == PropertyCategory.AGRICULTURAL && agriculturalDetails != null) {
+    } else if (category == AGRICULTURAL && agriculturalDetails != null) {
       appendAgriculturalDetailsSection(html, agriculturalDetails);
     }
 
@@ -992,7 +996,7 @@ public class PropertyBookletExporter {
             || isTrue(property.getHasSecureEntry().orElse(null))
             || property.getSafetyNotes().filter(s -> !s.isBlank()).isPresent();
 
-    boolean skipAccessibility = category == PropertyCategory.INDUSTRIAL;
+    boolean skipAccessibility = category == INDUSTRIAL;
     boolean hasAccessibilityData =
         !skipAccessibility
             && (isTrue(property.getIsWheelchairAccessible().orElse(null))

@@ -1,8 +1,5 @@
-import { Fragment, useState, useMemo } from "react";
-import {
-  formatDateTime,
-  formatDateTimeFull,
-} from "../utils/dateFormatting";
+import { Fragment, useState, useMemo, useCallback } from "react";
+import { formatDateTime, formatDateTimeFull } from "../utils/dateFormatting";
 import { ChevronDown, ChevronRight, Clock, ExternalLink } from "lucide-react";
 import {
   PageHeader,
@@ -21,6 +18,7 @@ import {
 import type { ImpersonationSessionResponseStatus } from "../generated/models";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { RichTextDisplay } from "../components/RichTextDisplay";
+import { PasswordConfirmationDialog } from "../components/PasswordConfirmationDialog";
 
 const statusBadgeColor: Record<
   ImpersonationSessionResponseStatus,
@@ -126,9 +124,7 @@ const SessionDetailPanel = ({
     },
     {
       label: "Ended",
-      value: session.endedAt
-        ? formatDateTimeFull(session.endedAt)
-        : "-",
+      value: session.endedAt ? formatDateTimeFull(session.endedAt) : "-",
     },
     { label: "End Reason", value: session.endReason ?? "-" },
   ];
@@ -173,6 +169,50 @@ export const ImpersonationSessionsPage = () => {
   >({});
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
   const [page, setPage] = useState(0);
+  const [rejoinTarget, setRejoinTarget] = useState<string | null>(null);
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+
+  const handleRejoinClick = useCallback((sessionIdentifier: string) => {
+    setRejoinTarget(sessionIdentifier);
+    setPasswordError(null);
+    setShowPasswordDialog(true);
+  }, []);
+
+  const handlePasswordConfirm = useCallback(
+    (password: string) => {
+      if (!rejoinTarget) {
+        return;
+      }
+
+      const newWindow = window.open("about:blank", "_blank");
+
+      rejoinMutation.mutate(
+        { identifier: rejoinTarget, password },
+        {
+          onSuccess: (data) => {
+            setShowPasswordDialog(false);
+            setRejoinTarget(null);
+            if (newWindow && !newWindow.closed) {
+              newWindow.location.href = data.redirectUrl;
+            } else {
+              window.open(data.redirectUrl, "_blank");
+            }
+          },
+          onError: (err) => {
+            newWindow?.close();
+            const axiosError = err as { response?: { status?: number } };
+            if (axiosError.response?.status === 403) {
+              setPasswordError("Invalid password. Please try again.");
+            } else {
+              setPasswordError("Failed to rejoin impersonation session.");
+            }
+          },
+        },
+      );
+    },
+    [rejoinTarget, rejoinMutation],
+  );
 
   const statusFilter = filterValues.status;
 
@@ -321,26 +361,10 @@ export const ImpersonationSessionsPage = () => {
                             variant="secondary"
                             size="sm"
                             leftIcon={<ExternalLink />}
-                            onClick={() => {
-                              const newWindow = window.open(
-                                "about:blank",
-                                "_blank",
-                              );
-                              rejoinMutation.mutate(session.identifier, {
-                                onSuccess: (data) => {
-                                  if (newWindow && !newWindow.closed) {
-                                    newWindow.location.href = data.redirectUrl;
-                                  } else {
-                                    window.open(data.redirectUrl, "_blank");
-                                  }
-                                },
-                                onError: () => {
-                                  newWindow?.close();
-                                },
-                              });
-                            }}
+                            onClick={() =>
+                              handleRejoinClick(session.identifier)
+                            }
                             disabled={rejoinMutation.isPending}
-                            isLoading={rejoinMutation.isPending}
                           >
                             Rejoin
                           </Button>
@@ -399,6 +423,21 @@ export const ImpersonationSessionsPage = () => {
           />
         </div>
       )}
+
+      {/* Password confirmation for rejoin */}
+      <PasswordConfirmationDialog
+        open={showPasswordDialog}
+        onClose={() => {
+          setShowPasswordDialog(false);
+          setRejoinTarget(null);
+          setPasswordError(null);
+        }}
+        onConfirm={handlePasswordConfirm}
+        isLoading={rejoinMutation.isPending}
+        error={passwordError}
+        title="Confirm your identity"
+        subtitle="Enter your password to rejoin the impersonation session."
+      />
     </div>
   );
 };

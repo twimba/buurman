@@ -1,6 +1,42 @@
 package com.buurman.service;
 
 import static com.buurman.domain.NotificationType.PROPERTY_CREATED;
+import static com.buurman.domain.Property.PropertyCategory.AGRICULTURAL;
+import static com.buurman.domain.Property.PropertyCategory.COMMERCIAL;
+import static com.buurman.domain.Property.PropertyCategory.INDUSTRIAL;
+import static com.buurman.domain.Property.PropertyCategory.RESIDENTIAL;
+import static com.buurman.domain.Property.PropertyType.APARTMENT;
+import static com.buurman.domain.Property.PropertyType.AUTO_DEALERSHIP;
+import static com.buurman.domain.Property.PropertyType.BAR;
+import static com.buurman.domain.Property.PropertyType.BED_AND_BREAKFAST;
+import static com.buurman.domain.Property.PropertyType.CAFE;
+import static com.buurman.domain.Property.PropertyType.COLD_STORAGE;
+import static com.buurman.domain.Property.PropertyType.DATA_CENTER;
+import static com.buurman.domain.Property.PropertyType.FACTORY;
+import static com.buurman.domain.Property.PropertyType.FARMLAND;
+import static com.buurman.domain.Property.PropertyType.GARAGE;
+import static com.buurman.domain.Property.PropertyType.GREENHOUSE;
+import static com.buurman.domain.Property.PropertyType.HOTEL;
+import static com.buurman.domain.Property.PropertyType.HOUSE;
+import static com.buurman.domain.Property.PropertyType.MOTEL;
+import static com.buurman.domain.Property.PropertyType.OFFICE;
+import static com.buurman.domain.Property.PropertyType.ORCHARD;
+import static com.buurman.domain.Property.PropertyType.OTHER_AGRICULTURAL;
+import static com.buurman.domain.Property.PropertyType.OTHER_COMMERCIAL;
+import static com.buurman.domain.Property.PropertyType.OTHER_INDUSTRIAL;
+import static com.buurman.domain.Property.PropertyType.OTHER_RESIDENTIAL;
+import static com.buurman.domain.Property.PropertyType.RANCH;
+import static com.buurman.domain.Property.PropertyType.RESTAURANT;
+import static com.buurman.domain.Property.PropertyType.RETAIL;
+import static com.buurman.domain.Property.PropertyType.ROOM;
+import static com.buurman.domain.Property.PropertyType.SHOWROOM;
+import static com.buurman.domain.Property.PropertyType.SNACKBAR;
+import static com.buurman.domain.Property.PropertyType.STUDIO;
+import static com.buurman.domain.Property.PropertyType.TOWNHOUSE;
+import static com.buurman.domain.Property.PropertyType.VILLA;
+import static com.buurman.domain.Property.PropertyType.VINEYARD;
+import static com.buurman.domain.Property.PropertyType.WAREHOUSE;
+import static com.buurman.domain.Property.PropertyType.WORKSHOP;
 import static com.buurman.util.SidGenerator.newPropertyId;
 
 import java.net.URL;
@@ -93,49 +129,27 @@ public class PropertyService {
   static {
     VALID_TYPES_BY_CATEGORY = new EnumMap<>(PropertyCategory.class);
     VALID_TYPES_BY_CATEGORY.put(
-        PropertyCategory.RESIDENTIAL,
-        Set.of(
-            PropertyType.APARTMENT,
-            PropertyType.HOUSE,
-            PropertyType.STUDIO,
-            PropertyType.ROOM,
-            PropertyType.VILLA,
-            PropertyType.TOWNHOUSE,
-            PropertyType.OTHER_RESIDENTIAL));
+        RESIDENTIAL, Set.of(APARTMENT, HOUSE, STUDIO, ROOM, VILLA, TOWNHOUSE, OTHER_RESIDENTIAL));
     VALID_TYPES_BY_CATEGORY.put(
-        PropertyCategory.COMMERCIAL,
+        COMMERCIAL,
         Set.of(
-            PropertyType.OFFICE,
-            PropertyType.RETAIL,
-            PropertyType.RESTAURANT,
-            PropertyType.HOTEL,
-            PropertyType.SHOWROOM,
-            PropertyType.AUTO_DEALERSHIP,
-            PropertyType.SNACKBAR,
-            PropertyType.CAFE,
-            PropertyType.MOTEL,
-            PropertyType.BAR,
-            PropertyType.BED_AND_BREAKFAST,
-            PropertyType.OTHER_COMMERCIAL));
+            OFFICE,
+            RETAIL,
+            RESTAURANT,
+            HOTEL,
+            SHOWROOM,
+            AUTO_DEALERSHIP,
+            SNACKBAR,
+            CAFE,
+            MOTEL,
+            BAR,
+            BED_AND_BREAKFAST,
+            OTHER_COMMERCIAL));
     VALID_TYPES_BY_CATEGORY.put(
-        PropertyCategory.INDUSTRIAL,
-        Set.of(
-            PropertyType.WAREHOUSE,
-            PropertyType.WORKSHOP,
-            PropertyType.FACTORY,
-            PropertyType.DATA_CENTER,
-            PropertyType.COLD_STORAGE,
-            PropertyType.GARAGE,
-            PropertyType.OTHER_INDUSTRIAL));
+        INDUSTRIAL,
+        Set.of(WAREHOUSE, WORKSHOP, FACTORY, DATA_CENTER, COLD_STORAGE, GARAGE, OTHER_INDUSTRIAL));
     VALID_TYPES_BY_CATEGORY.put(
-        PropertyCategory.AGRICULTURAL,
-        Set.of(
-            PropertyType.FARMLAND,
-            PropertyType.RANCH,
-            PropertyType.GREENHOUSE,
-            PropertyType.ORCHARD,
-            PropertyType.VINEYARD,
-            PropertyType.OTHER_AGRICULTURAL));
+        AGRICULTURAL, Set.of(FARMLAND, RANCH, GREENHOUSE, ORCHARD, VINEYARD, OTHER_AGRICULTURAL));
     VALID_TYPES_BY_CATEGORY.put(PropertyCategory.MIXED_USE, Set.of(PropertyType.MIXED_USE));
   }
 

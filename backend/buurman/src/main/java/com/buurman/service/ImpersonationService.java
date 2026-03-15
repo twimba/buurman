@@ -1,28 +1,36 @@
 package com.buurman.service;
 
+import static com.buurman.domain.ImpersonationEndReason.ADMIN_TERMINATED;
+import static com.buurman.domain.ImpersonationMode.FULL;
+import static com.buurman.domain.ImpersonationStatus.ACTIVE;
+import static com.buurman.domain.ImpersonationStatus.PENDING;
+import static java.time.ZoneOffset.UTC;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
+
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.config.ImpersonationProperties;
+import com.buurman.config.models.KeycloakProperties;
 import com.buurman.domain.ImpersonationEndReason;
 import com.buurman.domain.ImpersonationMode;
 import com.buurman.domain.ImpersonationSession;
-import com.buurman.domain.ImpersonationStatus;
 import com.buurman.domain.Sid;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamMember;
@@ -48,28 +56,45 @@ import com.buurman.util.PaginationHelper.PaginatedResult;
 import com.buurman.util.SidGenerator;
 
 import io.jsonwebtoken.Jwts;
-import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 public class ImpersonationService {
 
   private static final Logger log = LoggerFactory.getLogger(ImpersonationService.class);
   private static final String IMPERSONATION_ISSUER = "buurman-impersonation";
+  private static final String BACKOFFICE_CLIENT_ID = "buurman-backoffice-web";
 
   private final ImpersonationSessionRepository sessionRepository;
   private final UserRepository userRepository;
   private final TeamRepository teamRepository;
   private final TeamMemberRepository teamMemberRepository;
   private final ImpersonationProperties properties;
+  private final KeycloakProperties keycloakProperties;
   private final Clock clock;
+
+  public ImpersonationService(
+      ImpersonationSessionRepository sessionRepository,
+      UserRepository userRepository,
+      TeamRepository teamRepository,
+      TeamMemberRepository teamMemberRepository,
+      ImpersonationProperties properties,
+      KeycloakProperties keycloakProperties,
+      Clock clock) {
+    this.sessionRepository = sessionRepository;
+    this.userRepository = userRepository;
+    this.teamRepository = teamRepository;
+    this.teamMemberRepository = teamMemberRepository;
+    this.properties = properties;
+    this.keycloakProperties = keycloakProperties;
+    this.clock = clock;
+  }
 
   @Transactional
   public CreateImpersonationResponse createSession(
       CreateImpersonationRequest request, BackofficePrincipal admin, String ipAddress) {
 
-    // Validate re-authentication
-    validateReauth(admin);
+    // Validate admin password via Keycloak
+    validatePassword(admin, request.password());
 
     // Resolve target user
     User targetUser = userRepository.getByIdentifierUnscoped(request.userIdentifier());
@@ -102,7 +127,7 @@ public class ImpersonationService {
             });
 
     // Determine mode and timeout
-    ImpersonationMode mode = request.mode().orElse(ImpersonationMode.FULL);
+    ImpersonationMode mode = request.mode().orElse(FULL);
     Duration timeout =
         request
             .timeout()
@@ -123,7 +148,7 @@ public class ImpersonationService {
             .sessionToken(UUID.randomUUID())
             .mode(mode)
             .reason(request.reason())
-            .status(ImpersonationStatus.PENDING)
+            .status(PENDING)
             .ipAddress(Optional.of(ipAddress))
             .createdAt(now)
             .expiresAt(now.plus(timeout))
@@ -167,9 +192,8 @@ public class ImpersonationService {
             .orElseThrow(() -> new BadRequestException("User is no longer a member of the team"));
 
     // Activate session if PENDING, or just invalidate token if already ACTIVE
-    if (session.getStatus() == ImpersonationStatus.PENDING) {
-      int updated =
-          sessionRepository.activate(session.getId(), LocalDateTime.ofInstant(now, ZoneOffset.UTC));
+    if (session.getStatus() == PENDING) {
+      int updated = sessionRepository.activate(session.getId(), LocalDateTime.ofInstant(now, UTC));
       if (updated == 0) {
         throw new BadRequestException("Session token has already been used");
       }
@@ -202,7 +226,10 @@ public class ImpersonationService {
 
   @Transactional
   public CreateImpersonationResponse rejoinSession(
-      Sid sessionIdentifier, BackofficePrincipal admin) {
+      Sid sessionIdentifier, BackofficePrincipal admin, String password) {
+
+    // Validate admin password via Keycloak
+    validatePassword(admin, password);
 
     ImpersonationSession session =
         sessionRepository
@@ -216,8 +243,7 @@ public class ImpersonationService {
     }
 
     // Check session status is PENDING or ACTIVE
-    if (session.getStatus() != ImpersonationStatus.PENDING
-        && session.getStatus() != ImpersonationStatus.ACTIVE) {
+    if (session.getStatus() != PENDING && session.getStatus() != ACTIVE) {
       throw new BadRequestException(
           "Session is no longer active (status: " + session.getStatus() + ")");
     }
@@ -255,7 +281,7 @@ public class ImpersonationService {
 
   @Transactional
   public void terminateSession(Sid sessionIdentifier) {
-    endSession(sessionIdentifier, ImpersonationEndReason.ADMIN_TERMINATED);
+    endSession(sessionIdentifier, ADMIN_TERMINATED);
   }
 
   public ImpersonationSessionInfo getSessionInfo(Sid sessionIdentifier) {
@@ -264,7 +290,7 @@ public class ImpersonationService {
             .findByIdentifier(sessionIdentifier)
             .orElseThrow(() -> new NotFoundException("Impersonation session not found"));
 
-    if (session.getStatus() != ImpersonationStatus.ACTIVE) {
+    if (session.getStatus() != ACTIVE) {
       throw new BadRequestException("Session is not active");
     }
 
@@ -290,14 +316,12 @@ public class ImpersonationService {
     List<UUID> targetUserIds =
         result.items().stream().map(ImpersonationSession::getTargetUserId).distinct().toList();
     Map<UUID, User> userMap =
-        userRepository.findByIds(targetUserIds).stream()
-            .collect(Collectors.toMap(User::getId, Function.identity()));
+        userRepository.findByIds(targetUserIds).stream().collect(toMap(User::getId, identity()));
 
     List<UUID> targetTeamIds =
         result.items().stream().map(ImpersonationSession::getTargetTeamId).distinct().toList();
     Map<UUID, Team> teamMap =
-        teamRepository.findByIds(targetTeamIds).stream()
-            .collect(Collectors.toMap(Team::getId, Function.identity()));
+        teamRepository.findByIds(targetTeamIds).stream().collect(toMap(Team::getId, identity()));
 
     List<ImpersonationSessionResponse> responses =
         result.items().stream().map(session -> toResponse(session, userMap, teamMap)).toList();
@@ -317,31 +341,31 @@ public class ImpersonationService {
             .findByIdentifier(sessionIdentifier)
             .orElseThrow(() -> new NotFoundException("Impersonation session not found"));
 
-    User targetUser = userRepository.findById(session.getTargetUserId()).orElse(null);
     Map<UUID, User> userMap =
-        targetUser != null ? Map.of(targetUser.getId(), targetUser) : Map.of();
-    Team targetTeam = teamRepository.findById(session.getTargetTeamId()).orElse(null);
+        userRepository
+            .findById(session.getTargetUserId())
+            .map(u -> Map.of(u.getId(), u))
+            .orElseGet(Map::of);
     Map<UUID, Team> teamMap =
-        targetTeam != null ? Map.of(targetTeam.getId(), targetTeam) : Map.of();
+        teamRepository
+            .findById(session.getTargetTeamId())
+            .map(t -> Map.of(t.getId(), t))
+            .orElseGet(Map::of);
     return toResponse(session, userMap, teamMap);
   }
 
   private ImpersonationSessionResponse toResponse(
       ImpersonationSession session, Map<UUID, User> userMap, Map<UUID, Team> teamMap) {
-    User targetUser = userMap.get(session.getTargetUserId());
-    Team targetTeam = teamMap.get(session.getTargetTeamId());
+    Optional<User> targetUser = Optional.ofNullable(userMap.get(session.getTargetUserId()));
+    Optional<Team> targetTeam = Optional.ofNullable(teamMap.get(session.getTargetTeamId()));
 
     return new ImpersonationSessionResponse(
         session.getIdentifier().orElseThrow(),
         session.getAdminEmail(),
         session.getAdminName(),
-        targetUser != null
-            ? targetUser.getIdentifier().orElse(Sid.of("unknown"))
-            : Sid.of("unknown"),
-        targetUser != null ? targetUser.getEmail() : "unknown",
-        targetTeam != null
-            ? targetTeam.getIdentifier().orElse(Sid.of("unknown"))
-            : Sid.of("unknown"),
+        targetUser.flatMap(User::getIdentifier).orElse(Sid.of("unknown")),
+        targetUser.map(User::getEmail).orElse("unknown"),
+        targetTeam.flatMap(Team::getIdentifier).orElse(Sid.of("unknown")),
         session.getMode().name(),
         session.getReason(),
         session.getStatus().name(),
@@ -352,25 +376,28 @@ public class ImpersonationService {
         session.getEndReason().map(Enum::name));
   }
 
-  private void validateReauth(BackofficePrincipal admin) {
-    Instant authTime =
+  private void validatePassword(BackofficePrincipal admin, String password) {
+    String email =
         admin
-            .getAuthTime()
+            .getEmail()
             .orElseThrow(
                 () ->
                     new ReauthenticationRequiredException(
-                        "Re-authentication required to impersonate users"));
+                        "Admin email not available for password validation"));
 
-    Instant now = clock.instant();
-    Duration sinceAuth = Duration.between(authTime, now);
-
-    if (sinceAuth.compareTo(properties.reauthWindow()) > 0) {
-      throw new ReauthenticationRequiredException(
-          "Re-authentication required. Last authentication was "
-              + sinceAuth.toSeconds()
-              + " seconds ago (max: "
-              + properties.reauthWindow().toSeconds()
-              + "s)");
+    try (Keycloak kc =
+        KeycloakBuilder.builder()
+            .serverUrl(keycloakProperties.admin().serverUrl())
+            .realm(keycloakProperties.backofficeRealm())
+            .clientId(BACKOFFICE_CLIENT_ID)
+            .username(email)
+            .password(password)
+            .resteasyClient(ResteasyClientBuilder.newBuilder().build())
+            .build()) {
+      kc.tokenManager().getAccessToken();
+    } catch (Exception e) {
+      log.warn("Password validation failed for admin={}: {}", email, e.getMessage(), e);
+      throw new ReauthenticationRequiredException("Invalid password");
     }
   }
 

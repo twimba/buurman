@@ -419,8 +419,7 @@ export const SmsPolicyPage = () => {
           <div>
             {data?.updatedAt && (
               <p className="text-xs text-text-muted">
-                Last updated{" "}
-                {formatDateTime(data.updatedAt)}
+                Last updated {formatDateTime(data.updatedAt)}
                 {data.updatedBy ? ` by ${data.updatedBy}` : ""}
               </p>
             )}

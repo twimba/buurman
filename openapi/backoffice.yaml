@@ -4881,6 +4881,12 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/ImpersonationSessionIdentifier"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RejoinImpersonationRequest"
+        required: true
       responses:
         "200":
           description: OK
@@ -4928,6 +4934,15 @@ components:
     ImpersonationSessionIdentifier:
       type: string
       description: Impersonation session identifier
+    RejoinImpersonationRequest:
+      type: object
+      properties:
+        password:
+          type: string
+          format: password
+          description: Admin password for step-up authentication
+      required:
+        - password
     NotificationIdentifier:
       type: string
       description: Notification identifier
@@ -6619,10 +6634,15 @@ components:
         timeout:
           type: string
           description: ISO 8601 duration, e.g. PT30M
+        password:
+          type: string
+          format: password
+          description: Admin password for step-up authentication
       required:
         - userIdentifier
         - teamIdentifier
         - reason
+        - password
     CreateImpersonationResponse:
       type: object
       properties:

@@ -172,7 +172,6 @@ impersonation:
   jwt-secret: ${IMPERSONATION_JWT_SECRET:change-me-in-production-use-at-least-32-chars}
   max-timeout: 60m
   default-timeout: 15m
-  reauth-window: 120s
   app-base-url: ${APP_PUBLIC_URL:https://app.local.buurman.io}
 
 # Actuator Configuration

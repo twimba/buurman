@@ -335,8 +335,7 @@ export const NotificationDetailPage = () => {
                     {notif.openCount === 1 ? "Open" : "Opens"}
                     {notif.firstOpenedAt && (
                       <span className="ml-1">
-                        &middot; First:{" "}
-                        {formatDateTime(notif.firstOpenedAt)}
+                        &middot; First: {formatDateTime(notif.firstOpenedAt)}
                       </span>
                     )}
                   </p>
@@ -355,8 +354,7 @@ export const NotificationDetailPage = () => {
                       {notif.clickCount === 1 ? "Click" : "Clicks"}
                       {notif.firstClickedAt && (
                         <span className="ml-1">
-                          &middot; First:{" "}
-                          {formatDateTime(notif.firstClickedAt)}
+                          &middot; First: {formatDateTime(notif.firstClickedAt)}
                         </span>
                       )}
                     </p>

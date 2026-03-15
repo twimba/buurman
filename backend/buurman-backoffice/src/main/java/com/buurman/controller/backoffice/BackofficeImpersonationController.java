@@ -8,6 +8,7 @@ import com.buurman.domain.SortDirection;
 import com.buurman.domain.identifier.ImpersonationSessionIdentifier;
 import com.buurman.dto.request.CreateImpersonationRequest;
 import com.buurman.dto.request.PageRequest;
+import com.buurman.dto.request.RejoinImpersonationRequest;
 import com.buurman.dto.response.CreateImpersonationResponse;
 import com.buurman.dto.response.ImpersonationSessionResponse;
 import com.buurman.dto.response.PageResponse;
@@ -52,8 +53,9 @@ public class BackofficeImpersonationController implements BackofficeImpersonatio
 
   @Override
   public CreateImpersonationResponse rejoinImpersonationSession(
-      ImpersonationSessionIdentifier identifier) {
-    return impersonationService.rejoinSession(identifier, SecurityUtils.getBackofficePrincipal());
+      ImpersonationSessionIdentifier identifier, RejoinImpersonationRequest request) {
+    return impersonationService.rejoinSession(
+        identifier, SecurityUtils.getBackofficePrincipal(), request.password());
   }
 
   @Override
