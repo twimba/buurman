@@ -256,10 +256,11 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./frontend/app/Dockerfile
+          file: ./frontend/Dockerfile
           push: true
           platforms: linux/arm64
           build-args: |
+            TARGET_APP=app
             GIT_COMMIT=${{ github.sha }}
             GIT_COMMIT_SHORT=${{ steps.version.outputs.sha }}
             GIT_BRANCH=${{ github.ref_name }}
@@ -325,10 +326,11 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./frontend/backoffice/Dockerfile
+          file: ./frontend/Dockerfile
           push: true
           platforms: linux/arm64
           build-args: |
+            TARGET_APP=backoffice
             GIT_COMMIT=${{ github.sha }}
             GIT_COMMIT_SHORT=${{ steps.version.outputs.sha }}
             GIT_BRANCH=${{ github.ref_name }}
