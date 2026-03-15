@@ -10,7 +10,7 @@ import {
   Clock,
   AlertTriangle,
 } from "lucide-react";
-import { format } from "date-fns";
+import { formatDateTime } from "../utils/dateFormatting";
 import { Pagination, ConfirmDialog, RefreshButton } from "@buurman/ui";
 import { SortableHeader } from "../components/SortableHeader";
 import {
@@ -462,7 +462,7 @@ export const NotificationsPage = () => {
                     </td>
                     <td className="px-4 py-3">
                       <span className="text-sm text-text-secondary whitespace-nowrap">
-                        {format(new Date(notif.createdAt), "dd MMM yyyy HH:mm")}
+                        {formatDateTime(notif.createdAt)}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">

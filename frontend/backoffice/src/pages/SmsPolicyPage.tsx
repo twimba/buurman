@@ -8,7 +8,7 @@ import {
   useUpdatePhonePolicy,
 } from "../hooks/useSettings";
 import { LoadingSpinner } from "../components/LoadingSpinner";
-import { format } from "date-fns";
+import { formatDateTime } from "../utils/dateFormatting";
 import type { CountryGroupResponse } from "../api/settings";
 
 const TYPE_LABELS: Record<string, string> = {
@@ -420,7 +420,7 @@ export const SmsPolicyPage = () => {
             {data?.updatedAt && (
               <p className="text-xs text-text-muted">
                 Last updated{" "}
-                {format(new Date(data.updatedAt), "dd MMM yyyy HH:mm")}
+                {formatDateTime(data.updatedAt)}
                 {data.updatedBy ? ` by ${data.updatedBy}` : ""}
               </p>
             )}

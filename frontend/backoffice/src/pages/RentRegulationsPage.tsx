@@ -14,7 +14,8 @@ import {
 } from "lucide-react";
 import { RefreshButton, Button, ConfirmDialog } from "@buurman/ui";
 import { RichTextEditor } from "../components/RichTextEditor";
-import { format, formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
+import { formatDate, formatDateTime } from "../utils/dateFormatting";
 import {
   useRentRegulationCountries,
   useCreateCountry,
@@ -400,7 +401,7 @@ function CountryRow({
       <td className="px-4 py-3">
         <span className="text-sm text-text-secondary">
           {country.lastReviewedAt
-            ? format(new Date(country.lastReviewedAt), "dd MMM yyyy")
+            ? formatDate(country.lastReviewedAt)
             : "Never"}
         </span>
       </td>
@@ -564,7 +565,7 @@ function RequestCard({
           <div className="flex items-center gap-4 mt-1">
             <span className="flex items-center gap-1 text-xs text-text-muted">
               <Clock className="h-3 w-3" />
-              First: {format(new Date(request.firstRequestedAt), "dd MMM yyyy")}
+              First: {formatDate(request.firstRequestedAt)}
             </span>
             <span className="flex items-center gap-1 text-xs text-text-muted">
               <Clock className="h-3 w-3" />
@@ -627,10 +628,7 @@ function RequestCard({
                       )}
                     </div>
                     <span className="text-xs text-text-muted whitespace-nowrap">
-                      {format(
-                        new Date(requester.requestedAt),
-                        "dd MMM yyyy HH:mm",
-                      )}
+                      {formatDateTime(requester.requestedAt)}
                     </span>
                   </div>
                 ))}

@@ -11,7 +11,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { RefreshButton, ConfirmDialog } from "@buurman/ui";
-import { format } from "date-fns";
+import { formatDateTime } from "../utils/dateFormatting";
 import { useState } from "react";
 import {
   useRegistrationInvitation,
@@ -143,7 +143,7 @@ export function RegistrationInvitationDetailPage() {
           </div>
           <div className="text-sm font-medium text-text-primary">
             {invitation.expiresAt
-              ? format(new Date(invitation.expiresAt), "MMM d, yyyy HH:mm")
+              ? formatDateTime(invitation.expiresAt)
               : "Never"}
           </div>
         </div>
@@ -162,7 +162,7 @@ export function RegistrationInvitationDetailPage() {
             Created At
           </div>
           <div className="text-sm font-medium text-text-primary">
-            {format(new Date(invitation.createdAt), "MMM d, yyyy HH:mm")}
+            {formatDateTime(invitation.createdAt)}
           </div>
         </div>
       </div>
@@ -172,7 +172,7 @@ export function RegistrationInvitationDetailPage() {
         <div className="rounded-lg border border-error-border bg-error-bg p-4">
           <div className="text-sm text-error-text">
             <strong>Revoked</strong> by {invitation.revokedBy} on{" "}
-            {format(new Date(invitation.revokedAt), "MMM d, yyyy HH:mm")}
+            {formatDateTime(invitation.revokedAt)}
           </div>
         </div>
       )}
@@ -263,7 +263,7 @@ export function RegistrationInvitationDetailPage() {
                     {usage.userEmail}
                   </td>
                   <td className="px-4 py-3 text-sm text-text-secondary">
-                    {format(new Date(usage.usedAt), "MMM d, yyyy HH:mm")}
+                    {formatDateTime(usage.usedAt)}
                   </td>
                 </tr>
               ))}

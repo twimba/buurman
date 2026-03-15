@@ -108,7 +108,7 @@ public class ImpersonationJwtFilter extends OncePerRequestFilter {
       String teamIdentifier = claims.get("team_identifier", String.class);
       String roleStr = claims.get("role", String.class);
       TeamRole role = roleStr != null ? TeamRole.valueOf(roleStr) : null;
-      boolean isOwner = Boolean.TRUE.equals(claims.get("is_owner", Boolean.class));
+      boolean isOwner = claims.get("is_owner", Boolean.class);
       String sessionId = claims.get("impersonation_session_id", String.class);
       String sessionUuidStr = claims.get("session_uuid", String.class);
       UUID sessionUuid = sessionUuidStr != null ? UUID.fromString(sessionUuidStr) : new UUID(0, 0);

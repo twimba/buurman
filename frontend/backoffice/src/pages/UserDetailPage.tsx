@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { format } from "date-fns";
+import { formatDateTime } from "../utils/dateFormatting";
 import {
   Mail,
   User,
@@ -293,12 +293,12 @@ export const UserDetailPage = () => {
     },
     {
       label: "Created",
-      value: format(new Date(user.createdAt), "dd MMM yyyy HH:mm"),
+      value: formatDateTime(user.createdAt),
       icon: Calendar,
     },
     {
       label: "Updated",
-      value: format(new Date(user.updatedAt), "dd MMM yyyy HH:mm"),
+      value: formatDateTime(user.updatedAt),
       icon: Calendar,
     },
   ];

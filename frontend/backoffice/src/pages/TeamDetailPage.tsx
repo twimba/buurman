@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { format } from "date-fns";
+import { formatDate, formatDateTime } from "../utils/dateFormatting";
 import {
   Users,
   Calendar,
@@ -194,15 +194,15 @@ export const TeamDetailPage = () => {
         <IdentityCard
           icon={Calendar}
           label="Created"
-          value={format(new Date(team.createdAt), "dd MMM yyyy")}
-          subtitle={format(new Date(team.createdAt), "HH:mm")}
+          value={formatDate(team.createdAt)}
+          subtitle={formatDateTime(team.createdAt)}
           color="emerald"
         />
         <IdentityCard
           icon={Clock}
           label="Last Updated"
-          value={format(new Date(team.updatedAt), "dd MMM yyyy")}
-          subtitle={format(new Date(team.updatedAt), "HH:mm")}
+          value={formatDate(team.updatedAt)}
+          subtitle={formatDateTime(team.updatedAt)}
           color="purple"
         />
       </div>
@@ -346,7 +346,7 @@ export const TeamDetailPage = () => {
                   </td>
                   <td className="px-5 py-3 text-text-secondary">
                     {member.joinedAt
-                      ? format(new Date(member.joinedAt), "dd MMM yyyy")
+                      ? formatDate(member.joinedAt)
                       : "—"}
                   </td>
                   <td className="px-5 py-3">

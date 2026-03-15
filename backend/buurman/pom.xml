@@ -235,7 +235,7 @@
             <!--
                 OpenAPI Code Generation (API-first)
                 Generates Spring controller interfaces from OpenAPI specs.
-                Controllers implement these interfaces; DTOs are hand-written
+                Controllers implement these interfaces; DTOs are handwritten
                 and mapped via importMappings/schemaMappings.
             -->
             <plugin>

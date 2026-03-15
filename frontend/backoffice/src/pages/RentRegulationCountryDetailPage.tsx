@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Pencil, Trash2, Plus, X, CheckCircle, Layers } from "lucide-react";
 import { PageHeader, Button, ConfirmDialog, RefreshButton } from "@buurman/ui";
-import { format } from "date-fns";
+import { formatDateTime } from "../utils/dateFormatting";
 import { RichTextEditor } from "../components/RichTextEditor";
 import { RichTextDisplay } from "../components/RichTextDisplay";
 import {
@@ -309,10 +309,7 @@ function OverviewTab({
               label="Last Reviewed"
               value={
                 country.lastReviewedAt
-                  ? format(
-                      new Date(country.lastReviewedAt),
-                      "dd MMM yyyy HH:mm",
-                    )
+                  ? formatDateTime(country.lastReviewedAt)
                   : "Never"
               }
             />

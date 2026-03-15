@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Search, Eye, UserX, UserCheck } from "lucide-react";
 import { RefreshButton } from "@buurman/ui";
 import { SortableHeader } from "../components/SortableHeader";
-import { format } from "date-fns";
+import { formatDate } from "../utils/dateFormatting";
 import { Pagination, ConfirmDialog } from "@buurman/ui";
 import { useUsers, useDisableUser, useEnableUser } from "../hooks/useUsers";
 import { usePagination } from "../hooks/usePagination";
@@ -217,7 +217,7 @@ export const UsersPage = () => {
                     </td>
                     <td className="px-4 py-3">
                       <span className="text-sm text-text-secondary">
-                        {format(new Date(user.createdAt), "dd MMM yyyy")}
+                        {formatDate(user.createdAt)}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">

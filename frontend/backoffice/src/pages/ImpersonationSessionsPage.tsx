@@ -1,5 +1,8 @@
 import { Fragment, useState, useMemo } from "react";
-import { format } from "date-fns";
+import {
+  formatDateTime,
+  formatDateTimeFull,
+} from "../utils/dateFormatting";
 import { ChevronDown, ChevronRight, Clock, ExternalLink } from "lucide-react";
 import {
   PageHeader,
@@ -109,22 +112,22 @@ const SessionDetailPanel = ({
     { label: "Target Team ID", value: session.targetTeamIdentifier },
     {
       label: "Created",
-      value: format(new Date(session.createdAt), "dd MMM yyyy HH:mm:ss"),
+      value: formatDateTimeFull(session.createdAt),
     },
     {
       label: "Activated",
       value: session.activatedAt
-        ? format(new Date(session.activatedAt), "dd MMM yyyy HH:mm:ss")
+        ? formatDateTimeFull(session.activatedAt)
         : "-",
     },
     {
       label: "Expires",
-      value: format(new Date(session.expiresAt), "dd MMM yyyy HH:mm:ss"),
+      value: formatDateTimeFull(session.expiresAt),
     },
     {
       label: "Ended",
       value: session.endedAt
-        ? format(new Date(session.endedAt), "dd MMM yyyy HH:mm:ss")
+        ? formatDateTimeFull(session.endedAt)
         : "-",
     },
     { label: "End Reason", value: session.endReason ?? "-" },
@@ -304,10 +307,7 @@ export const ImpersonationSessionsPage = () => {
                     <td className="px-4 py-3 text-sm text-text-secondary whitespace-nowrap">
                       <div className="flex items-center gap-1.5">
                         <Clock className="h-3.5 w-3.5 text-text-muted" />
-                        {format(
-                          new Date(session.createdAt),
-                          "dd MMM yyyy HH:mm",
-                        )}
+                        {formatDateTime(session.createdAt)}
                       </div>
                     </td>
                     <td
