@@ -30,6 +30,7 @@ export interface RecentActivity {
   changedFields?: Record<string, unknown>;
   oldValues?: Record<string, unknown>;
   newValues?: Record<string, unknown>;
+  impersonatedBy?: string;
 }
 
 export const getDashboardStats = async (): Promise<DashboardStats> => {

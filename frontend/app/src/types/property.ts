@@ -248,6 +248,7 @@ export interface AuditLogEntry {
   changedFields?: Record<string, unknown>;
   oldValues?: Record<string, unknown>;
   newValues?: Record<string, unknown>;
+  impersonatedBy?: string;
 }
 
 // --- Request interfaces (manual — generated adds to all optional fields) ---

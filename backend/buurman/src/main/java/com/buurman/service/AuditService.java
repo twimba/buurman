@@ -218,8 +218,10 @@ public class AuditService {
     Map<String, Object> oldValues = parseJsonField(record.oldValuesJson().orElse(null));
     Map<String, Object> newValues = parseJsonField(record.newValuesJson().orElse(null));
 
-    // Build description based on action and changed fields
-    String description = buildActivityDescription(action, entityType, userName, changedFields);
+    // Build description: show admin name when impersonating
+    String displayName =
+        record.impersonatedBy().map(admin -> admin + " (as " + userName + ")").orElse(userName);
+    String description = buildActivityDescription(action, entityType, displayName, changedFields);
 
     // Resolve entity identifier from entity UUID
     UUID entityId = record.entityId();
@@ -238,7 +240,8 @@ public class AuditService {
         Optional.of(description),
         changedFields,
         oldValues,
-        newValues);
+        newValues,
+        record.impersonatedBy());
   }
 
   @SuppressWarnings("unchecked")

@@ -15,4 +15,5 @@ public record AuditLogEntry(
     Optional<String> oldValuesJson,
     Optional<String> newValuesJson,
     Optional<String> firstName,
-    Optional<String> lastName) {}
+    Optional<String> lastName,
+    Optional<String> impersonatedBy) {}

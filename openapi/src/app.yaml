@@ -5724,6 +5724,9 @@ components:
         newValues:
           type: object
           additionalProperties: {}
+        impersonatedBy:
+          type: string
+          description: Email of the admin who performed this action via impersonation
       required:
         - action
         - changedFields
