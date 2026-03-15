@@ -321,13 +321,24 @@ export const ImpersonationSessionsPage = () => {
                             variant="secondary"
                             size="sm"
                             leftIcon={<ExternalLink />}
-                            onClick={() =>
+                            onClick={() => {
+                              const newWindow = window.open(
+                                "about:blank",
+                                "_blank",
+                              );
                               rejoinMutation.mutate(session.identifier, {
                                 onSuccess: (data) => {
-                                  window.open(data.redirectUrl, "_blank");
+                                  if (newWindow && !newWindow.closed) {
+                                    newWindow.location.href = data.redirectUrl;
+                                  } else {
+                                    window.open(data.redirectUrl, "_blank");
+                                  }
                                 },
-                              })
-                            }
+                                onError: () => {
+                                  newWindow?.close();
+                                },
+                              });
+                            }}
                             disabled={rejoinMutation.isPending}
                             isLoading={rejoinMutation.isPending}
                           >

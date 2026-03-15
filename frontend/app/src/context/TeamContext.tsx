@@ -7,6 +7,7 @@ import {
   UserTeamResponse,
 } from '../api/users';
 import { useAuth } from '../contexts/AuthContext';
+import { useImpersonation } from './ImpersonationContext';
 import { trackEvent } from '../utils/analytics';
 import { AnalyticsEvent } from '../constants/analyticsEvents';
 
@@ -48,6 +49,7 @@ const mapApiTeamToTeam = (apiTeam: UserTeamResponse): Team => ({
 export const TeamProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
   const { isAuthenticated } = useAuth();
+  const { active: isImpersonating } = useImpersonation();
 
   const {
     data: teamsData,
@@ -57,7 +59,7 @@ export const TeamProvider = ({ children }: { children: ReactNode }) => {
     queryKey: ['user-teams'],
     queryFn: getUserTeams,
     staleTime: 30 * 1000, // 30 seconds
-    enabled: isAuthenticated, // Only fetch when authenticated
+    enabled: isAuthenticated || isImpersonating,
   });
 
   const teams: Team[] = teamsData?.map(mapApiTeamToTeam) ?? [];

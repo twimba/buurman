@@ -171,7 +171,10 @@ export const UserDetailPage = () => {
         return;
       }
 
-      // Auth is recent, proceed directly
+      // Auth is recent, proceed directly.
+      // Pre-open window synchronously (user gesture) to avoid popup blockers.
+      const newWindow = window.open("about:blank", "_blank");
+
       createImpersonation.mutate(
         {
           userIdentifier: identifier,
@@ -183,9 +186,14 @@ export const UserDetailPage = () => {
         {
           onSuccess: (data) => {
             setShowImpersonateDialog(false);
-            window.open(data.redirectUrl, "_blank");
+            if (newWindow && !newWindow.closed) {
+              newWindow.location.href = data.redirectUrl;
+            } else {
+              window.open(data.redirectUrl, "_blank");
+            }
           },
           onError: (err) => {
+            newWindow?.close();
             const axiosError = err as { response?: { status?: number } };
             if (axiosError.response?.status === 403) {
               setReauthError(

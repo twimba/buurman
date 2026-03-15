@@ -195,9 +195,9 @@ function App() {
       <EnvironmentBanner />
       <BrowserRouter>
         <AuthProvider>
-          <TeamProvider>
-            <AnalyticsInitializer />
-            <ImpersonationProvider>
+          <ImpersonationProvider>
+            <TeamProvider>
+              <AnalyticsInitializer />
               <FeatureFlagProvider>
                 <ThemeProvider>
                   <ToastProvider>
@@ -603,8 +603,8 @@ function App() {
                   </ToastProvider>
                 </ThemeProvider>
               </FeatureFlagProvider>
-            </ImpersonationProvider>
-          </TeamProvider>
+            </TeamProvider>
+          </ImpersonationProvider>
         </AuthProvider>
       </BrowserRouter>
     </ErrorBoundary>
