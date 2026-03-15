@@ -16,6 +16,8 @@ import { GetContractsParams } from '../api/contracts';
 import type { PageParams } from '@/types/common';
 import { useToast } from '../context/ToastContext';
 import { getErrorMessage } from '../utils/errorMessages';
+import { trackEvent } from '../utils/analytics';
+import { AnalyticsEvent } from '../constants/analyticsEvents';
 
 export const useContracts = (params?: GetContractsParams & PageParams) => {
   return useQuery({
@@ -56,6 +58,7 @@ export const useCreateContract = () => {
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       showToast('Contract created successfully', 'success');
+      trackEvent(AnalyticsEvent.CONTRACT_CREATED);
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -140,6 +143,7 @@ export const useChangeContractStatus = (id: string) => {
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       queryClient.invalidateQueries({ queryKey: ['paymentsByContract', id] });
       queryClient.invalidateQueries({ queryKey: ['payments'] });
+      trackEvent(AnalyticsEvent.CONTRACT_STATUS_CHANGED);
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -290,6 +294,9 @@ export const useGenerateContractPayments = (contractId: string) => {
         result.markedAsPaid && result.markedAsPaid > 0
           ? ' and marked as paid'
           : '';
+      trackEvent(AnalyticsEvent.PAYMENTS_GENERATED, {
+        count: result.generated,
+      });
       if (result.generated === result.requested) {
         showToast(
           `Scheduled ${result.generated} payment(s)${paidSuffix} successfully`,

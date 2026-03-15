@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { featureFlagsApi } from "../api/featureFlags";
 import type { UpdateFlagRequest } from "../api/featureFlags";
+import { trackEvent } from "../utils/analytics";
+import { AnalyticsEvent } from "../constants/analyticsEvents";
 
 export const useAdminStatus = () => {
   return useQuery({
@@ -38,6 +40,7 @@ export const useUpdateGlobalFlag = () => {
     }) => featureFlagsApi.updateGlobalFlag(flagName, data).then((r) => r.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["feature-flags"] });
+      trackEvent(AnalyticsEvent.BO_FEATURE_FLAG_UPDATED);
     },
   });
 };

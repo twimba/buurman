@@ -15,6 +15,8 @@ import {
 import type { PageParams } from '@/types/common';
 import { useToast } from '../context/ToastContext';
 import { getErrorMessage } from '../utils/errorMessages';
+import { trackEvent } from '../utils/analytics';
+import { AnalyticsEvent } from '../constants/analyticsEvents';
 
 export const useTenants = (params?: { search?: string } & PageParams) => {
   return useQuery({
@@ -42,6 +44,7 @@ export const useCreateTenant = () => {
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       showToast('Tenant created successfully', 'success');
+      trackEvent(AnalyticsEvent.TENANT_CREATED);
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -79,6 +82,7 @@ export const useDeleteTenant = () => {
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       showToast('Tenant deleted successfully', 'success');
+      trackEvent(AnalyticsEvent.TENANT_DELETED);
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');

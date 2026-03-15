@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import {
@@ -20,6 +20,8 @@ import {
 } from "../hooks/useUsers";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { UserFeatureFlags } from "../components/UserFeatureFlags";
+import { trackEvent } from "../utils/analytics";
+import { AnalyticsEvent } from "../constants/analyticsEvents";
 
 export const UserDetailPage = () => {
   const { identifier = "" } = useParams<{ identifier: string }>();
@@ -31,6 +33,13 @@ export const UserDetailPage = () => {
 
   const [showDisableDialog, setShowDisableDialog] = useState(false);
   const [showResetDialog, setShowResetDialog] = useState(false);
+
+  const userIdentifier = user?.identifier;
+  useEffect(() => {
+    if (userIdentifier) {
+      trackEvent(AnalyticsEvent.BO_USER_VIEWED);
+    }
+  }, [userIdentifier]);
 
   if (isLoading) {
     return <LoadingSpinner message="Loading user..." />;
@@ -52,8 +61,14 @@ export const UserDetailPage = () => {
 
   const handleToggleDisable = () => {
     const mutation = user.disabled ? enableUser : disableUser;
+    const event = user.disabled
+      ? AnalyticsEvent.BO_USER_ENABLED
+      : AnalyticsEvent.BO_USER_DISABLED;
     mutation.mutate(identifier, {
-      onSuccess: () => setShowDisableDialog(false),
+      onSuccess: () => {
+        trackEvent(event);
+        setShowDisableDialog(false);
+      },
     });
   };
 

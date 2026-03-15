@@ -17,6 +17,8 @@ import {
 import type { PageParams } from '@/types/common';
 import { useToast } from '../context/ToastContext';
 import { getErrorMessage } from '../utils/errorMessages';
+import { trackEvent } from '../utils/analytics';
+import { AnalyticsEvent } from '../constants/analyticsEvents';
 
 export const usePayments = (params?: GetPaymentsParams & PageParams) => {
   return useQuery({
@@ -74,6 +76,7 @@ export const useCreatePayment = () => {
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
       queryClient.invalidateQueries({ queryKey: ['income-trend'] });
+      trackEvent(AnalyticsEvent.PAYMENT_CREATED);
       const verb = newPayment.status === 'PAID' ? 'registered' : 'scheduled';
       showToast(`Payment ${verb} successfully`, 'success');
     },
@@ -153,6 +156,7 @@ export const useMarkPaymentAsPaid = () => {
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
       queryClient.invalidateQueries({ queryKey: ['income-trend'] });
       showToast('Payment marked as paid successfully', 'success');
+      trackEvent(AnalyticsEvent.PAYMENT_MARKED_PAID);
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -174,6 +178,9 @@ export const useBulkGeneratePayments = () => {
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       queryClient.invalidateQueries({ queryKey: ['financial-overview'] });
       queryClient.invalidateQueries({ queryKey: ['income-trend'] });
+      trackEvent(AnalyticsEvent.PAYMENTS_GENERATED, {
+        count: generatedPayments.length,
+      });
       showToast(
         `Generated ${generatedPayments.length} payment(s) successfully`,
         'success'

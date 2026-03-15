@@ -2,6 +2,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as teamsApi from '../api/teams';
 import { useToast } from '../context/ToastContext';
 import { getErrorMessage } from '../utils/errorMessages';
+import { trackEvent } from '../utils/analytics';
+import { AnalyticsEvent } from '../constants/analyticsEvents';
 
 export const useCurrentTeam = () => {
   return useQuery({
@@ -37,6 +39,7 @@ export const useCreateInvitation = (teamId: string) => {
       queryClient.invalidateQueries({
         queryKey: ['teamPendingInvitations', teamId],
       });
+      trackEvent(AnalyticsEvent.TEAM_MEMBER_INVITED);
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');

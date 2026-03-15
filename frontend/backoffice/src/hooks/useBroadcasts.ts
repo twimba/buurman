@@ -4,6 +4,8 @@ import type {
   CreateBroadcastMessageRequest,
   UpdateBroadcastMessageRequest,
 } from "../types";
+import { trackEvent } from "../utils/analytics";
+import { AnalyticsEvent } from "../constants/analyticsEvents";
 
 export const useBroadcasts = () => {
   return useQuery({
@@ -19,6 +21,7 @@ export const useCreateBroadcast = () => {
       broadcastsApi.create(data).then((res) => res.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["broadcasts"] });
+      trackEvent(AnalyticsEvent.BO_BROADCAST_CREATED);
     },
   });
 };

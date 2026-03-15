@@ -5,6 +5,7 @@ import { TeamProvider } from './context/TeamContext';
 import { ToastProvider } from './context/ToastContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { FeatureFlagProvider } from './context/FeatureFlagContext';
+import { AnalyticsInitializer } from './components/AnalyticsInitializer';
 import { FeatureGate } from './components/FeatureGate';
 import { FeatureFlags } from './constants/featureFlags';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -188,6 +189,7 @@ function App() {
       <BrowserRouter>
         <AuthProvider>
           <TeamProvider>
+            <AnalyticsInitializer />
             <FeatureFlagProvider>
               <ThemeProvider>
                 <ToastProvider>

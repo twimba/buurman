@@ -28,6 +28,9 @@ export default defineConfig({
           if (id.includes('node_modules/@tanstack/react-query/') || id.includes('node_modules/axios/')) {
             return 'vendor-query';
           }
+          if (id.includes('node_modules/posthog-js/')) {
+            return 'vendor-analytics';
+          }
           if (id.includes('node_modules/date-fns/') || id.includes('node_modules/keycloak-js/') || id.includes('node_modules/cronstrue/')) {
             return 'vendor-utils';
           }
