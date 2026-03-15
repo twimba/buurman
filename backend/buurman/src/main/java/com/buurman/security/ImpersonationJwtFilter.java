@@ -5,6 +5,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -31,6 +32,7 @@ import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
@@ -146,11 +148,38 @@ public class ImpersonationJwtFilter extends OncePerRequestFilter {
           new UsernamePasswordAuthenticationToken(principal, null, authorities);
       SecurityContextHolder.getContext().setAuthentication(authentication);
 
-      filterChain.doFilter(request, response);
+      // Strip the Authorization header so BearerTokenAuthenticationFilter
+      // does not attempt to re-validate this HMAC-signed JWT with Keycloak's RSA keys.
+      filterChain.doFilter(stripAuthorizationHeader(request), response);
     } catch (Exception e) {
       log.error("Failed to build ImpersonationPrincipal from JWT claims", e);
       sendError(response, 401, "Invalid impersonation token");
     }
+  }
+
+  /**
+   * Wraps the request to hide the Authorization header, preventing downstream filters from
+   * re-processing the impersonation JWT.
+   */
+  private HttpServletRequest stripAuthorizationHeader(HttpServletRequest request) {
+    return new HttpServletRequestWrapper(request) {
+      @Override
+      @SuppressWarnings("NullAway") // getHeader returns null by contract for missing headers
+      public @org.jspecify.annotations.Nullable String getHeader(String name) {
+        if ("Authorization".equalsIgnoreCase(name)) {
+          return null;
+        }
+        return super.getHeader(name);
+      }
+
+      @Override
+      public Enumeration<String> getHeaders(String name) {
+        if ("Authorization".equalsIgnoreCase(name)) {
+          return Collections.enumeration(Collections.emptyList());
+        }
+        return super.getHeaders(name);
+      }
+    };
   }
 
   private boolean isSessionActive(UUID sessionUuid) {

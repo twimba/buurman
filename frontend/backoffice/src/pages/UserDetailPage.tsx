@@ -110,6 +110,9 @@ export const UserDetailPage = () => {
   const [pendingMode, setPendingMode] = useState<"READ_ONLY" | "FULL" | null>(
     null,
   );
+  const [justReauthenticated, setJustReauthenticated] = useState(
+    () => pendingReauth !== null,
+  );
 
   const userIdentifier = user?.identifier;
   useEffect(() => {
@@ -140,11 +143,13 @@ export const UserDetailPage = () => {
   }, [searchParams, setSearchParams]);
 
   const isAuthRecent = useCallback((): boolean => {
-    const tokenParsed = keycloak.tokenParsed;
-    if (!tokenParsed?.auth_time) {
+    // auth_time is an OIDC claim in the ID token, not the access token
+    const authTime =
+      keycloak.idTokenParsed?.auth_time ?? keycloak.tokenParsed?.auth_time;
+    if (!authTime) {
       return false;
     }
-    const authAge = Math.floor(Date.now() / 1000) - tokenParsed.auth_time;
+    const authAge = Math.floor(Date.now() / 1000) - authTime;
     return authAge < REAUTH_MAX_AGE_SECONDS;
   }, [keycloak]);
 
@@ -153,7 +158,9 @@ export const UserDetailPage = () => {
       setReauthError(null);
       setPendingMode(mode);
 
-      if (!isAuthRecent()) {
+      // Skip client-side re-auth check if we just returned from Keycloak re-auth.
+      // The backend still validates auth_time independently.
+      if (!justReauthenticated && !isAuthRecent()) {
         // Store form data and trigger re-authentication
         sessionStorage.setItem(
           IMPERSONATE_STORAGE_KEY,
@@ -171,7 +178,9 @@ export const UserDetailPage = () => {
         return;
       }
 
-      // Auth is recent, proceed directly.
+      // Auth is recent (or we just re-authenticated), proceed.
+      setJustReauthenticated(false);
+
       // Pre-open window synchronously (user gesture) to avoid popup blockers.
       const newWindow = window.open("about:blank", "_blank");
 
@@ -204,7 +213,7 @@ export const UserDetailPage = () => {
         },
       );
     },
-    [isAuthRecent, impersonateForm, identifier, keycloak, createImpersonation],
+    [justReauthenticated, isAuthRecent, impersonateForm, identifier, keycloak, createImpersonation],
   );
 
   if (isLoading) {
