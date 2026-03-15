@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Lock } from 'lucide-react';
 import { useImpersonation } from '../context/ImpersonationContext';
 import { endImpersonationSession } from '../generated/api/impersonation/impersonation';
@@ -18,9 +19,18 @@ export function ImpersonationBanner() {
     remainingSeconds,
     endImpersonation,
   } = useImpersonation();
+  const [ended, setEnded] = useState(false);
 
-  if (!active) {
+  if (!active && !ended) {
     return null;
+  }
+
+  if (ended) {
+    return (
+      <div className="fixed top-0 left-0 right-0 z-[9999] bg-emerald-500 text-white px-4 py-3 text-center text-sm font-medium shadow-md">
+        Impersonation session ended. You can close this tab.
+      </div>
+    );
   }
 
   const displayName = adminName || adminEmail;
@@ -29,10 +39,11 @@ export function ImpersonationBanner() {
   const handleEnd = async () => {
     try {
       await endImpersonationSession();
-    } catch {
-      // Session may already be ended on server
+    } catch (err) {
+      console.error('Failed to end impersonation session on server:', err);
     }
     endImpersonation();
+    setEnded(true);
   };
 
   return (
