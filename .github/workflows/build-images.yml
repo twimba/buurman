@@ -371,10 +371,12 @@ jobs:
           curl -sSf -X POST "$DOKPLOY_API/application.update" \
             -H "x-api-key: ${{ secrets.DOKPLOY_TOKEN }}" \
             -H "Content-Type: application/json" \
+            -H "User-Agent: Buurman-CI/1.0" \
             -d "{\"applicationId\":\"$APP_ID\",\"dockerImage\":\"$IMAGE\"}" --max-time 10
           curl -sSf -X POST "$DOKPLOY_API/application.deploy" \
             -H "x-api-key: ${{ secrets.DOKPLOY_TOKEN }}" \
             -H "Content-Type: application/json" \
+            -H "User-Agent: Buurman-CI/1.0" \
             -d "{\"applicationId\":\"$APP_ID\"}" --max-time 10
           echo "Deployed backend → $IMAGE"
 
@@ -387,10 +389,12 @@ jobs:
           curl -sSf -X POST "$DOKPLOY_API/application.update" \
             -H "x-api-key: ${{ secrets.DOKPLOY_TOKEN }}" \
             -H "Content-Type: application/json" \
+            -H "User-Agent: Buurman-CI/1.0" \
             -d "{\"applicationId\":\"$APP_ID\",\"dockerImage\":\"$IMAGE\"}" --max-time 10
           curl -sSf -X POST "$DOKPLOY_API/application.deploy" \
             -H "x-api-key: ${{ secrets.DOKPLOY_TOKEN }}" \
             -H "Content-Type: application/json" \
+            -H "User-Agent: Buurman-CI/1.0" \
             -d "{\"applicationId\":\"$APP_ID\"}" --max-time 10
           echo "Deployed app → $IMAGE"
 
@@ -403,10 +407,12 @@ jobs:
           curl -sSf -X POST "$DOKPLOY_API/application.update" \
             -H "x-api-key: ${{ secrets.DOKPLOY_TOKEN }}" \
             -H "Content-Type: application/json" \
+            -H "User-Agent: Buurman-CI/1.0" \
             -d "{\"applicationId\":\"$APP_ID\",\"dockerImage\":\"$IMAGE\"}" --max-time 10
           curl -sSf -X POST "$DOKPLOY_API/application.deploy" \
             -H "x-api-key: ${{ secrets.DOKPLOY_TOKEN }}" \
             -H "Content-Type: application/json" \
+            -H "User-Agent: Buurman-CI/1.0" \
             -d "{\"applicationId\":\"$APP_ID\"}" --max-time 10
           echo "Deployed backoffice → $IMAGE"
 
