@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { TeamProvider } from './context/TeamContext';
+import { ImpersonationProvider } from './context/ImpersonationContext';
 import { ToastProvider } from './context/ToastContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { FeatureFlagProvider } from './context/FeatureFlagContext';
@@ -13,6 +14,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import { Layout } from './components/Layout';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { EnvironmentBanner } from './components/common/EnvironmentBanner';
+import { ImpersonationBanner } from './components/ImpersonationBanner';
 
 // Auth pages (small, keep near-instant)
 const LoginPage = lazy(() => import('./pages/LoginPage'));
@@ -144,6 +146,11 @@ const RentIncreaseWizardPage = lazy(() =>
     default: m.RentIncreaseWizardPage,
   }))
 );
+const ImpersonatePage = lazy(() =>
+  import('./pages/ImpersonatePage').then((m) => ({
+    default: m.ImpersonatePage,
+  }))
+);
 
 // Admin pages
 const AdminTeamMembersPage = lazy(() =>
@@ -188,401 +195,416 @@ function App() {
       <EnvironmentBanner />
       <BrowserRouter>
         <AuthProvider>
-          <TeamProvider>
-            <AnalyticsInitializer />
-            <FeatureFlagProvider>
-              <ThemeProvider>
-                <ToastProvider>
-                  <Suspense fallback={<LoadingSpinner />}>
-                    <Routes>
-                      <Route path="/login" element={<LoginPage />} />
-                      <Route path="/register" element={<RegisterPage />} />
-                      <Route
-                        path="/invitation/:token"
-                        element={<InvitationPage />}
-                      />
-                      <Route
-                        path="/verify-email"
-                        element={
-                          <ProtectedRoute requireVerification={false}>
-                            <VerifyEmailPage />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/dashboard"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <DashboardPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/properties"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <PropertyListPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/properties/new"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <PropertyCreatePage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/properties/:id"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <PropertyDetailPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/properties/:id/edit"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <PropertyEditPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/tenants"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <TenantListPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/tenants/new"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <TenantCreatePage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/tenants/:id"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <TenantDetailPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/tenants/:id/edit"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <TenantEditPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/contracts"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <ContractsPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/contracts/new"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <ContractCreatePage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/contracts/:id"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <ContractDetailPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/contracts/:id/edit"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <ContractEditPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/rent-regulations"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <RentRegulationsPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/rent-increases/apply"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <RentIncreaseWizardPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/payments/new"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <PaymentCreatePage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/payments/:id"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <PaymentDetailPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/payments"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <PaymentsPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/expenses/new"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <ExpenseCreatePage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/expenses/:id"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <ExpenseDetailPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/expenses"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <ExpensesPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/documents"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <DocumentsPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/photos"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <PhotosPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/reports"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <FeatureGate
-                                flag={FeatureFlags.REPORTS}
-                                fallback={<Navigate to="/dashboard" replace />}
-                              >
-                                <FinancialReportsPage />
-                              </FeatureGate>
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/reports/transactions"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <FeatureGate
-                                flag={FeatureFlags.REPORTS}
-                                fallback={<Navigate to="/dashboard" replace />}
-                              >
-                                <TransactionHistoryPage />
-                              </FeatureGate>
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      {/* Personal Settings */}
-                      <Route
-                        path="/settings"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <SettingsPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
+          <ImpersonationProvider>
+            <TeamProvider>
+              <AnalyticsInitializer />
+              <FeatureFlagProvider>
+                <ThemeProvider>
+                  <ToastProvider>
+                    <ImpersonationBanner />
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <Routes>
+                        <Route path="/login" element={<LoginPage />} />
+                        <Route path="/register" element={<RegisterPage />} />
+                        <Route
+                          path="/impersonate"
+                          element={<ImpersonatePage />}
+                        />
+                        <Route
+                          path="/invitation/:token"
+                          element={<InvitationPage />}
+                        />
+                        <Route
+                          path="/verify-email"
+                          element={
+                            <ProtectedRoute requireVerification={false}>
+                              <VerifyEmailPage />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/dashboard"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <DashboardPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/properties"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <PropertyListPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/properties/new"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <PropertyCreatePage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/properties/:id"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <PropertyDetailPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/properties/:id/edit"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <PropertyEditPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/tenants"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <TenantListPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/tenants/new"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <TenantCreatePage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/tenants/:id"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <TenantDetailPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/tenants/:id/edit"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <TenantEditPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/contracts"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <ContractsPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/contracts/new"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <ContractCreatePage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/contracts/:id"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <ContractDetailPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/contracts/:id/edit"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <ContractEditPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/rent-regulations"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <RentRegulationsPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/rent-increases/apply"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <RentIncreaseWizardPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/payments/new"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <PaymentCreatePage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/payments/:id"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <PaymentDetailPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/payments"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <PaymentsPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/expenses/new"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <ExpenseCreatePage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/expenses/:id"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <ExpenseDetailPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/expenses"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <ExpensesPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/documents"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <DocumentsPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/photos"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <PhotosPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/reports"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <FeatureGate
+                                  flag={FeatureFlags.REPORTS}
+                                  fallback={
+                                    <Navigate to="/dashboard" replace />
+                                  }
+                                >
+                                  <FinancialReportsPage />
+                                </FeatureGate>
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/reports/transactions"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <FeatureGate
+                                  flag={FeatureFlags.REPORTS}
+                                  fallback={
+                                    <Navigate to="/dashboard" replace />
+                                  }
+                                >
+                                  <TransactionHistoryPage />
+                                </FeatureGate>
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        {/* Personal Settings */}
+                        <Route
+                          path="/settings"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <SettingsPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
 
-                      {/* Administration Pages (Admin Only) */}
-                      <Route
-                        path="/admin/team-members"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <AdminTeamMembersPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/admin/preferences"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <AdminPreferencesPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/payment-instructions"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <AdminPaymentInstructionsPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/admin/calendar-feeds"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <AdminCalendarFeedsPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/admin/data-export"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <AdminDataExportPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/admin/notifications"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <AdminNotificationsPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/admin/billing"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <AdminBillingPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/admin/activity-log"
-                        element={
-                          <ProtectedRoute>
-                            <Layout>
-                              <AuditLogPage />
-                            </Layout>
-                          </ProtectedRoute>
-                        }
-                      />
+                        {/* Administration Pages (Admin Only) */}
+                        <Route
+                          path="/admin/team-members"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <AdminTeamMembersPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/admin/preferences"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <AdminPreferencesPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/payment-instructions"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <AdminPaymentInstructionsPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/admin/calendar-feeds"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <AdminCalendarFeedsPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/admin/data-export"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <AdminDataExportPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/admin/notifications"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <AdminNotificationsPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/admin/billing"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <AdminBillingPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/admin/activity-log"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <AuditLogPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
 
-                      {/* Backwards-compat redirects */}
-                      <Route
-                        path="/team-settings"
-                        element={<Navigate to="/admin/team-members" replace />}
-                      />
-                      <Route
-                        path="/audit-log"
-                        element={<Navigate to="/admin/activity-log" replace />}
-                      />
+                        {/* Backwards-compat redirects */}
+                        <Route
+                          path="/team-settings"
+                          element={
+                            <Navigate to="/admin/team-members" replace />
+                          }
+                        />
+                        <Route
+                          path="/audit-log"
+                          element={
+                            <Navigate to="/admin/activity-log" replace />
+                          }
+                        />
 
-                      <Route
-                        path="/"
-                        element={<Navigate to="/dashboard" replace />}
-                      />
-                    </Routes>
-                  </Suspense>
-                </ToastProvider>
-              </ThemeProvider>
-            </FeatureFlagProvider>
-          </TeamProvider>
+                        <Route
+                          path="/"
+                          element={<Navigate to="/dashboard" replace />}
+                        />
+                      </Routes>
+                    </Suspense>
+                  </ToastProvider>
+                </ThemeProvider>
+              </FeatureFlagProvider>
+            </TeamProvider>
+          </ImpersonationProvider>
         </AuthProvider>
       </BrowserRouter>
     </ErrorBoundary>

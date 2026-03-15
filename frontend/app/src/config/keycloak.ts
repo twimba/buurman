@@ -36,7 +36,7 @@ export const keycloakInitOptions = {
 
 // Check if we should auto-check SSO (only on protected routes, not on public pages)
 export const shouldCheckSso = () => {
-  const publicPaths = ['/login', '/register', '/invitation'];
+  const publicPaths = ['/login', '/register', '/invitation', '/impersonate'];
   return !publicPaths.some((path) => window.location.pathname.startsWith(path));
 };
 

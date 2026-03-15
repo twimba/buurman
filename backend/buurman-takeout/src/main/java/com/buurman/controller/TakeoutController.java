@@ -1,19 +1,14 @@
 package com.buurman.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import java.util.Optional;
+
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buurman.domain.identifier.DataTakeoutIdentifier;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.TakeoutResponse;
+import com.buurman.generated.api.DataTakeoutApi;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.TakeoutService;
@@ -21,37 +16,34 @@ import com.buurman.service.TakeoutService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/takeouts")
 @RequiredArgsConstructor
-public class TakeoutController {
+public class TakeoutController implements DataTakeoutApi {
 
   private final TakeoutService takeoutService;
 
-  @PostMapping
-  @ResponseStatus(HttpStatus.ACCEPTED)
+  @Override
   public TakeoutResponse requestTakeout() {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return takeoutService.requestTakeout(
         principal.requireTeamId(), principal.requireTeamIdentifier(), principal.getUserId());
   }
 
-  @GetMapping
-  public PageResponse<TakeoutResponse> listTakeouts(
-      @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
+  @Override
+  public PageResponse listTakeouts(Optional<Integer> page, Optional<Integer> size) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return takeoutService.listTakeouts(
-        principal.requireTeamId(), PageRequest.of(page, size, null, (String) null));
+        principal.requireTeamId(),
+        PageRequest.of(page.orElse(null), size.orElse(null), null, (String) null));
   }
 
-  @GetMapping("/{identifier}")
-  public TakeoutResponse getTakeout(@PathVariable DataTakeoutIdentifier identifier) {
+  @Override
+  public TakeoutResponse getTakeout(DataTakeoutIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return takeoutService.getTakeout(identifier, principal.requireTeamId());
   }
 
-  @DeleteMapping("/{identifier}")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteTakeout(@PathVariable DataTakeoutIdentifier identifier) {
+  @Override
+  public void deleteTakeout(DataTakeoutIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     takeoutService.deleteTakeout(identifier, principal.requireTeamId());
   }

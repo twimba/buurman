@@ -43,6 +43,7 @@ import {
   Search,
   ChevronLeft,
   ChevronRight,
+  Eye,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useFormatDate } from '@/hooks/useFormatDate';
@@ -947,11 +948,22 @@ export const PaymentDetailPage = () => {
                           <p className="text-sm font-medium text-text-primary">
                             {activity.description}
                           </p>
-                          <p className="text-xs text-text-secondary mt-1">
-                            {formatDistanceToNow(new Date(activity.timestamp), {
-                              addSuffix: true,
-                            })}
-                          </p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <p className="text-xs text-text-secondary">
+                              {formatDistanceToNow(
+                                new Date(activity.timestamp),
+                                {
+                                  addSuffix: true,
+                                }
+                              )}
+                            </p>
+                            {activity.impersonatedBy && (
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-warning-bg text-warning-text">
+                                <Eye className="h-3 w-3" />
+                                Impersonated
+                              </span>
+                            )}
+                          </div>
                           {hasChanges && (
                             <p className="text-xs text-primary-500 mt-1">
                               {isExpanded

@@ -13,7 +13,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { RefreshButton, Pagination, ConfirmDialog } from "@buurman/ui";
-import { format } from "date-fns";
+import { formatDateTime } from "../utils/dateFormatting";
 import {
   useRegistrationInvitations,
   useRevokeRegistrationInvitation,
@@ -256,8 +256,7 @@ export function RegistrationInvitationsPage() {
             <div>
               {rlConfig.updatedAt && (
                 <p className="text-xs text-text-muted">
-                  Last updated{" "}
-                  {format(new Date(rlConfig.updatedAt), "dd MMM yyyy HH:mm")}
+                  Last updated {formatDateTime(rlConfig.updatedAt)}
                   {rlConfig.updatedBy ? ` by ${rlConfig.updatedBy}` : ""}
                 </p>
               )}
@@ -369,15 +368,13 @@ export function RegistrationInvitationsPage() {
                       {formatUsage(inv)}
                     </td>
                     <td className="px-4 py-3 text-sm text-text-secondary">
-                      {inv.expiresAt
-                        ? format(new Date(inv.expiresAt), "MMM d, yyyy HH:mm")
-                        : "Never"}
+                      {inv.expiresAt ? formatDateTime(inv.expiresAt) : "Never"}
                     </td>
                     <td className="px-4 py-3 text-sm text-text-secondary">
                       {inv.createdBy}
                     </td>
                     <td className="px-4 py-3 text-sm text-text-secondary">
-                      {format(new Date(inv.createdAt), "MMM d, yyyy HH:mm")}
+                      {formatDateTime(inv.createdAt)}
                     </td>
                     <td className="px-4 py-3 text-right">
                       <button

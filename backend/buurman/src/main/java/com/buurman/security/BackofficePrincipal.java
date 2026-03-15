@@ -3,8 +3,6 @@ package com.buurman.security;
 import java.security.Principal;
 import java.util.Optional;
 
-import org.jspecify.annotations.Nullable;
-
 import lombok.Getter;
 
 public class BackofficePrincipal implements Principal {
@@ -14,11 +12,11 @@ public class BackofficePrincipal implements Principal {
   @Getter private final Optional<String> role;
 
   public BackofficePrincipal(
-      String keycloakId, @Nullable String email, @Nullable String name, @Nullable String role) {
+      String keycloakId, Optional<String> email, Optional<String> name, Optional<String> role) {
     this.keycloakId = keycloakId;
-    this.email = Optional.ofNullable(email);
-    this.name = Optional.ofNullable(name);
-    this.role = Optional.ofNullable(role);
+    this.email = email;
+    this.name = name;
+    this.role = role;
   }
 
   @Override

@@ -14,7 +14,7 @@ import {
   X,
   AlertCircle,
 } from "lucide-react";
-import { format } from "date-fns";
+import { formatDateTimeFull } from "../utils/dateFormatting";
 import cronstrue from "cronstrue";
 import { Pagination, ConfirmDialog, RefreshButton } from "@buurman/ui";
 import { SortableHeader } from "../components/SortableHeader";
@@ -137,7 +137,7 @@ const formatFireTime = (iso?: string): string => {
     return "-";
   }
   try {
-    return format(new Date(iso), "dd MMM yyyy HH:mm:ss");
+    return formatDateTimeFull(iso);
   } catch {
     return iso;
   }
@@ -776,10 +776,7 @@ export const SchedulerPage = () => {
                         </td>
                         <td className="px-4 py-3">
                           <span className="text-sm text-text-secondary whitespace-nowrap">
-                            {format(
-                              new Date(exec.startedAt),
-                              "dd MMM yyyy HH:mm:ss",
-                            )}
+                            {formatDateTimeFull(exec.startedAt)}
                           </span>
                         </td>
                         <td className="px-4 py-3">

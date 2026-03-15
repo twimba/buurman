@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Eye, Trash2 } from "lucide-react";
 import { RefreshButton } from "@buurman/ui";
-import { format } from "date-fns";
+import { formatDate } from "../utils/dateFormatting";
 import { Pagination, ConfirmDialog } from "@buurman/ui";
 import { useTeams, useDeleteTeam } from "../hooks/useTeams";
 import { LoadingSpinner } from "../components/LoadingSpinner";
@@ -148,7 +148,7 @@ export const TeamsPage = () => {
                     </td>
                     <td className="px-4 py-3">
                       <span className="text-sm text-text-secondary">
-                        {format(new Date(team.createdAt), "dd MMM yyyy")}
+                        {formatDate(team.createdAt)}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">

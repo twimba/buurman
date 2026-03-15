@@ -128,7 +128,7 @@ public class FlagsmithAdminService {
         body.put("feature_state_value", value);
       }
     }
-    // PATCH returns a sparse response, so re-fetch the full state afterwards
+    // PATCH returns a sparse response, so re-fetch the full state afterward
     patch(
         "/environments/"
             + environmentClientKey.orElseThrow(

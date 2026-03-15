@@ -14,6 +14,7 @@ import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.ExpenseIdentifier;
 import com.buurman.domain.identifier.FinancingPaymentIdentifier;
 import com.buurman.domain.identifier.GeneratedReportIdentifier;
+import com.buurman.domain.identifier.ImpersonationSessionIdentifier;
 import com.buurman.domain.identifier.NotificationIdentifier;
 import com.buurman.domain.identifier.OccupancyPeriodIdentifier;
 import com.buurman.domain.identifier.PaymentIdentifier;
@@ -200,5 +201,9 @@ public class SidGenerator {
 
   public static CountryRequestIdentifier newCountryRequestId() {
     return CountryRequestIdentifier.of(generateRaw(EntityPrefix.CRQ));
+  }
+
+  public static ImpersonationSessionIdentifier newImpersonationSessionId() {
+    return ImpersonationSessionIdentifier.of(generateRaw(EntityPrefix.IMS));
   }
 }

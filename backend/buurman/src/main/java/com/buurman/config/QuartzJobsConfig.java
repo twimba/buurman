@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.buurman.job.DatabaseMetricsRefreshJob;
 import com.buurman.job.ExecutionHistoryCleanupJob;
+import com.buurman.job.ImpersonationSessionCleanupJob;
 import com.buurman.job.PaymentGenerationJob;
 import com.buurman.job.RateLimitCleanupJob;
 import com.buurman.job.ThumbnailBackfillJob;
@@ -136,6 +137,26 @@ public class QuartzJobsConfig {
         .forJob(executionHistoryCleanupJobDetail)
         .withIdentity("executionHistoryCleanupTrigger", "system")
         .withSchedule(CronScheduleBuilder.cronSchedule("0 0 2 * * ?"))
+        .build();
+  }
+
+  // ── Impersonation Session Cleanup ───────────────────────────────────────
+
+  @Bean
+  public JobDetail impersonationSessionCleanupJobDetail() {
+    return JobBuilder.newJob(ImpersonationSessionCleanupJob.class)
+        .withIdentity("impersonationSessionCleanupJob", "system")
+        .storeDurably()
+        .build();
+  }
+
+  @Bean
+  public Trigger impersonationSessionCleanupTrigger(
+      JobDetail impersonationSessionCleanupJobDetail) {
+    return TriggerBuilder.newTrigger()
+        .forJob(impersonationSessionCleanupJobDetail)
+        .withIdentity("impersonationSessionCleanupTrigger", "system")
+        .withSchedule(CronScheduleBuilder.cronSchedule("0 */5 * * * ?"))
         .build();
   }
 }

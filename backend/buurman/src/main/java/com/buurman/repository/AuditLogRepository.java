@@ -49,18 +49,53 @@ public class AuditLogRepository {
       @Nullable JSONB newValues,
       UUID userId,
       LocalDateTime timestamp) {
-    dsl.insertInto(AUDIT_LOG)
-        .set(AUDIT_LOG.ID, id)
-        .set(AUDIT_LOG.TEAM_ID, teamId)
-        .set(AUDIT_LOG.ENTITY_TYPE, entityType)
-        .set(AUDIT_LOG.ENTITY_ID, entityId)
-        .set(AUDIT_LOG.ACTION, action)
-        .set(AUDIT_LOG.CHANGED_FIELDS, changedFields)
-        .set(AUDIT_LOG.OLD_VALUES, oldValues)
-        .set(AUDIT_LOG.NEW_VALUES, newValues)
-        .set(AUDIT_LOG.USER_ID, userId)
-        .set(AUDIT_LOG.TIMESTAMP, timestamp)
-        .execute();
+    insertAuditLog(
+        id,
+        teamId,
+        entityType,
+        entityId,
+        action,
+        changedFields,
+        oldValues,
+        newValues,
+        userId,
+        timestamp,
+        null,
+        null);
+  }
+
+  public void insertAuditLog(
+      UUID id,
+      UUID teamId,
+      String entityType,
+      UUID entityId,
+      String action,
+      @Nullable JSONB changedFields,
+      @Nullable JSONB oldValues,
+      @Nullable JSONB newValues,
+      UUID userId,
+      LocalDateTime timestamp,
+      @Nullable String impersonatedBy,
+      @Nullable UUID impersonationSessionId) {
+    var insert =
+        dsl.insertInto(AUDIT_LOG)
+            .set(AUDIT_LOG.ID, id)
+            .set(AUDIT_LOG.TEAM_ID, teamId)
+            .set(AUDIT_LOG.ENTITY_TYPE, entityType)
+            .set(AUDIT_LOG.ENTITY_ID, entityId)
+            .set(AUDIT_LOG.ACTION, action)
+            .set(AUDIT_LOG.CHANGED_FIELDS, changedFields)
+            .set(AUDIT_LOG.OLD_VALUES, oldValues)
+            .set(AUDIT_LOG.NEW_VALUES, newValues)
+            .set(AUDIT_LOG.USER_ID, userId)
+            .set(AUDIT_LOG.TIMESTAMP, timestamp);
+    if (impersonatedBy != null) {
+      insert = insert.set(AUDIT_LOG.IMPERSONATED_BY, impersonatedBy);
+    }
+    if (impersonationSessionId != null) {
+      insert = insert.set(AUDIT_LOG.IMPERSONATION_SESSION_ID, impersonationSessionId);
+    }
+    insert.execute();
   }
 
   public List<AuditLogEntry> findByTeamIdAndEntityTypeAndEntityId(
@@ -75,7 +110,8 @@ public class AuditLogRepository {
             AUDIT_LOG.OLD_VALUES,
             AUDIT_LOG.NEW_VALUES,
             USERS.FIRST_NAME,
-            USERS.LAST_NAME)
+            USERS.LAST_NAME,
+            AUDIT_LOG.IMPERSONATED_BY)
         .from(AUDIT_LOG)
         .leftJoin(USERS)
         .on(AUDIT_LOG.USER_ID.eq(USERS.ID))
@@ -87,19 +123,7 @@ public class AuditLogRepository {
                 .and(AUDIT_LOG.ENTITY_ID.eq(entityId)))
         .orderBy(AUDIT_LOG.TIMESTAMP.desc())
         .fetch()
-        .map(
-            r ->
-                new AuditLogEntry(
-                    r.get(AUDIT_LOG.ID),
-                    r.get(AUDIT_LOG.ENTITY_TYPE),
-                    r.get(AUDIT_LOG.ENTITY_ID),
-                    r.get(AUDIT_LOG.ACTION),
-                    r.get(AUDIT_LOG.TIMESTAMP),
-                    Optional.ofNullable(r.get(AUDIT_LOG.CHANGED_FIELDS)).map(JSONB::data),
-                    Optional.ofNullable(r.get(AUDIT_LOG.OLD_VALUES)).map(JSONB::data),
-                    Optional.ofNullable(r.get(AUDIT_LOG.NEW_VALUES)).map(JSONB::data),
-                    Optional.ofNullable(r.get(USERS.FIRST_NAME)),
-                    Optional.ofNullable(r.get(USERS.LAST_NAME))));
+        .map(this::mapToAuditLogEntry);
   }
 
   public List<AuditLogEntry> findAllByTeamId(
@@ -115,7 +139,8 @@ public class AuditLogRepository {
                 AUDIT_LOG.OLD_VALUES,
                 AUDIT_LOG.NEW_VALUES,
                 USERS.FIRST_NAME,
-                USERS.LAST_NAME)
+                USERS.LAST_NAME,
+                AUDIT_LOG.IMPERSONATED_BY)
             .from(AUDIT_LOG)
             .leftJoin(USERS)
             .on(AUDIT_LOG.USER_ID.eq(USERS.ID))
@@ -172,19 +197,7 @@ public class AuditLogRepository {
     return query
         .orderBy(AUDIT_LOG.TIMESTAMP.desc())
         .fetch()
-        .map(
-            r ->
-                new AuditLogEntry(
-                    r.get(AUDIT_LOG.ID),
-                    r.get(AUDIT_LOG.ENTITY_TYPE),
-                    r.get(AUDIT_LOG.ENTITY_ID),
-                    r.get(AUDIT_LOG.ACTION),
-                    r.get(AUDIT_LOG.TIMESTAMP),
-                    Optional.ofNullable(r.get(AUDIT_LOG.CHANGED_FIELDS)).map(JSONB::data),
-                    Optional.ofNullable(r.get(AUDIT_LOG.OLD_VALUES)).map(JSONB::data),
-                    Optional.ofNullable(r.get(AUDIT_LOG.NEW_VALUES)).map(JSONB::data),
-                    Optional.ofNullable(r.get(USERS.FIRST_NAME)),
-                    Optional.ofNullable(r.get(USERS.LAST_NAME))));
+        .map(this::mapToAuditLogEntry);
   }
 
   public PaginatedResult<AuditLogEntry> findAllByTeamIdPaginated(
@@ -271,7 +284,8 @@ public class AuditLogRepository {
                 AUDIT_LOG.OLD_VALUES,
                 AUDIT_LOG.NEW_VALUES,
                 USERS.FIRST_NAME,
-                USERS.LAST_NAME)
+                USERS.LAST_NAME,
+                AUDIT_LOG.IMPERSONATED_BY)
             .from(AUDIT_LOG)
             .leftJoin(USERS)
             .on(AUDIT_LOG.USER_ID.eq(USERS.ID))
@@ -290,19 +304,7 @@ public class AuditLogRepository {
             .limit(pageRequest.size())
             .offset(pageRequest.offset())
             .fetch()
-            .map(
-                r ->
-                    new AuditLogEntry(
-                        r.get(AUDIT_LOG.ID),
-                        r.get(AUDIT_LOG.ENTITY_TYPE),
-                        r.get(AUDIT_LOG.ENTITY_ID),
-                        r.get(AUDIT_LOG.ACTION),
-                        r.get(AUDIT_LOG.TIMESTAMP),
-                        Optional.ofNullable(r.get(AUDIT_LOG.CHANGED_FIELDS)).map(JSONB::data),
-                        Optional.ofNullable(r.get(AUDIT_LOG.OLD_VALUES)).map(JSONB::data),
-                        Optional.ofNullable(r.get(AUDIT_LOG.NEW_VALUES)).map(JSONB::data),
-                        Optional.ofNullable(r.get(USERS.FIRST_NAME)),
-                        Optional.ofNullable(r.get(USERS.LAST_NAME))));
+            .map(this::mapToAuditLogEntry);
 
     return new PaginatedResult<>(items, totalElements);
   }
@@ -315,7 +317,8 @@ public class AuditLogRepository {
             AUDIT_LOG.ACTION,
             AUDIT_LOG.TIMESTAMP,
             USERS.FIRST_NAME,
-            USERS.LAST_NAME)
+            USERS.LAST_NAME,
+            AUDIT_LOG.IMPERSONATED_BY)
         .from(AUDIT_LOG)
         .leftJoin(USERS)
         .on(AUDIT_LOG.USER_ID.eq(USERS.ID))
@@ -335,7 +338,23 @@ public class AuditLogRepository {
                     Optional.empty(),
                     Optional.empty(),
                     Optional.ofNullable(r.get(USERS.FIRST_NAME)),
-                    Optional.ofNullable(r.get(USERS.LAST_NAME))));
+                    Optional.ofNullable(r.get(USERS.LAST_NAME)),
+                    Optional.ofNullable(r.get(AUDIT_LOG.IMPERSONATED_BY))));
+  }
+
+  private AuditLogEntry mapToAuditLogEntry(org.jooq.Record r) {
+    return new AuditLogEntry(
+        r.get(AUDIT_LOG.ID),
+        r.get(AUDIT_LOG.ENTITY_TYPE),
+        r.get(AUDIT_LOG.ENTITY_ID),
+        r.get(AUDIT_LOG.ACTION),
+        r.get(AUDIT_LOG.TIMESTAMP),
+        Optional.ofNullable(r.get(AUDIT_LOG.CHANGED_FIELDS)).map(JSONB::data),
+        Optional.ofNullable(r.get(AUDIT_LOG.OLD_VALUES)).map(JSONB::data),
+        Optional.ofNullable(r.get(AUDIT_LOG.NEW_VALUES)).map(JSONB::data),
+        Optional.ofNullable(r.get(USERS.FIRST_NAME)),
+        Optional.ofNullable(r.get(USERS.LAST_NAME)),
+        Optional.ofNullable(r.get(AUDIT_LOG.IMPERSONATED_BY)));
   }
 
   public Optional<Sid> findEntityIdentifier(String entityType, UUID entityId, UUID teamId) {

@@ -16,7 +16,8 @@ public record RecentActivityResponse(
     Optional<String> description,
     Map<String, Object> changedFields,
     Map<String, Object> oldValues,
-    Map<String, Object> newValues) {
+    Map<String, Object> newValues,
+    Optional<String> impersonatedBy) {
   public RecentActivityResponse(
       String entityType,
       Sid entityIdentifier,
@@ -35,6 +36,7 @@ public record RecentActivityResponse(
         Optional.of(description),
         Map.of(),
         Map.of(),
-        Map.of());
+        Map.of(),
+        Optional.empty());
   }
 }

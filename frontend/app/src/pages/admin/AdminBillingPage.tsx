@@ -4,6 +4,7 @@ import { Receipt } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { SubscriptionSection } from '@/components/settings/SubscriptionSection';
 import { PaymentHistorySection } from '@/components/settings/PaymentHistorySection';
+import { ImpersonationGuard } from '@/components/ImpersonationGuard';
 
 export const AdminBillingPage = () => {
   const { canEditTeamSettings, isLoading } = useTeam();
@@ -33,10 +34,20 @@ export const AdminBillingPage = () => {
             Manage your subscription plan and view billing history
           </p>
         </div>
-        <div className="space-y-8">
-          <SubscriptionSection />
-          <PaymentHistorySection />
-        </div>
+        <ImpersonationGuard
+          blockAlways
+          fallback={
+            <div className="text-center py-12 text-text-secondary">
+              Billing operations are not available during an impersonation
+              session.
+            </div>
+          }
+        >
+          <div className="space-y-8">
+            <SubscriptionSection />
+            <PaymentHistorySection />
+          </div>
+        </ImpersonationGuard>
       </div>
     </div>
   );

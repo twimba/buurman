@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { format } from "date-fns";
+import { formatDateTime } from "../utils/dateFormatting";
 import {
   Mail,
   Phone,
@@ -250,14 +250,14 @@ export const NotificationDetailPage = () => {
           <div>
             <dt className="text-text-secondary">Created</dt>
             <dd className="font-medium text-text-primary mt-0.5">
-              {format(new Date(notif.createdAt), "dd MMM yyyy HH:mm")}
+              {formatDateTime(notif.createdAt)}
             </dd>
           </div>
           {notif.statusUpdatedAt && (
             <div>
               <dt className="text-text-secondary">Status Updated</dt>
               <dd className="font-medium text-text-primary mt-0.5">
-                {format(new Date(notif.statusUpdatedAt), "dd MMM yyyy HH:mm")}
+                {formatDateTime(notif.statusUpdatedAt)}
               </dd>
             </div>
           )}
@@ -335,11 +335,7 @@ export const NotificationDetailPage = () => {
                     {notif.openCount === 1 ? "Open" : "Opens"}
                     {notif.firstOpenedAt && (
                       <span className="ml-1">
-                        &middot; First:{" "}
-                        {format(
-                          new Date(notif.firstOpenedAt),
-                          "dd MMM yyyy HH:mm",
-                        )}
+                        &middot; First: {formatDateTime(notif.firstOpenedAt)}
                       </span>
                     )}
                   </p>
@@ -358,11 +354,7 @@ export const NotificationDetailPage = () => {
                       {notif.clickCount === 1 ? "Click" : "Clicks"}
                       {notif.firstClickedAt && (
                         <span className="ml-1">
-                          &middot; First:{" "}
-                          {format(
-                            new Date(notif.firstClickedAt),
-                            "dd MMM yyyy HH:mm",
-                          )}
+                          &middot; First: {formatDateTime(notif.firstClickedAt)}
                         </span>
                       )}
                     </p>

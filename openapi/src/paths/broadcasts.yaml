@@ -1,0 +1,81 @@
+collection:
+  get:
+    tags:
+      - Broadcasts
+    summary: Get active broadcasts
+    description: Get all active broadcast messages for the current user
+    operationId: getActiveBroadcasts
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/BroadcastMessageResponse'
+      "401":
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+public:
+  get:
+    tags:
+      - Broadcasts
+    summary: Get public broadcasts
+    description: Get public broadcast messages for a given context (login, register)
+    operationId: getPublicBroadcasts
+    security: []
+    parameters:
+      - name: context
+        in: query
+        description: Display context (e.g. login, register)
+        required: true
+        schema:
+          type: string
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/BroadcastMessageResponse'
+
+dismiss:
+  post:
+    tags:
+      - Broadcasts
+    summary: Dismiss broadcast
+    description: Dismiss a broadcast message for the current user
+    operationId: dismissBroadcast
+    parameters:
+      - name: identifier
+        in: path
+        description: Broadcast message identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/BroadcastMessageIdentifier'
+    responses:
+      "204":
+        description: No Content
+      "401":
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []

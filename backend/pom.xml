@@ -47,7 +47,7 @@
         <nullaway.version>0.13.1</nullaway.version>
         <jspecify.version>1.0.0</jspecify.version>
         <bucket4j.version>8.17.0</bucket4j.version>
-        <swagger-annotations.version>2.2.30</swagger-annotations.version>
+        <swagger-annotations.version>2.2.43</swagger-annotations.version>
         <poi.version>5.5.1</poi.version>
     </properties>
 
@@ -288,6 +288,25 @@
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi-ooxml</artifactId>
                 <version>${poi.version}</version>
+            </dependency>
+
+            <!-- JWT (JJWT) -->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>0.12.6</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>0.12.6</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>0.12.6</version>
+                <scope>runtime</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

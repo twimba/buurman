@@ -3,6 +3,7 @@ import { useCreateContract } from '@/hooks/useContractHooks';
 import { ContractForm } from '@/components/contracts/ContractForm';
 import { CreateContractRequest } from '@/types/contract';
 import { ArrowLeft } from 'lucide-react';
+import { ImpersonationGuard } from '@/components/ImpersonationGuard';
 
 export const ContractCreatePage = () => {
   const navigate = useNavigate();
@@ -34,12 +35,21 @@ export const ContractCreatePage = () => {
 
         {/* Form */}
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-          <ContractForm
-            onSubmit={handleSubmit}
-            isLoading={createContractMutation.isPending}
-            prefilledPropertyId={prefilledPropertyId}
-            prefilledTenantId={prefilledTenantId}
-          />
+          <ImpersonationGuard
+            blockInReadOnly
+            fallback={
+              <div className="text-center py-8 text-text-secondary">
+                Creating contracts is not available in read-only mode.
+              </div>
+            }
+          >
+            <ContractForm
+              onSubmit={handleSubmit}
+              isLoading={createContractMutation.isPending}
+              prefilledPropertyId={prefilledPropertyId}
+              prefilledTenantId={prefilledTenantId}
+            />
+          </ImpersonationGuard>
         </div>
       </div>
     </div>

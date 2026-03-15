@@ -80,6 +80,11 @@ const RentRegulationCountryDetailPage = lazy(() =>
     default: m.RentRegulationCountryDetailPage,
   })),
 );
+const ImpersonationSessionsPage = lazy(() =>
+  import("./pages/ImpersonationSessionsPage").then((m) => ({
+    default: m.ImpersonationSessionsPage,
+  })),
+);
 
 function App() {
   return (
@@ -131,6 +136,10 @@ function App() {
                     element={<RentRegulationCountryDetailPage />}
                   />
                   <Route path="/feature-flags" element={<FeatureFlagsPage />} />
+                  <Route
+                    path="/impersonation"
+                    element={<ImpersonationSessionsPage />}
+                  />
                   <Route path="/scheduler" element={<SchedulerPage />} />
                   <Route path="/loggers" element={<LoggersPage />} />
                   <Route path="/system" element={<SystemInfoPage />} />

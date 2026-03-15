@@ -1,38 +1,49 @@
 FROM --platform=$BUILDPLATFORM node:25.8.1-alpine3.22 AS build
-WORKDIR /monorepo/frontend
 
+# TARGET_APP: "app" or "backoffice"
+ARG TARGET_APP
 ARG GIT_COMMIT=""
 ARG GIT_COMMIT_SHORT=""
 ARG GIT_BRANCH=""
 
+WORKDIR /monorepo/frontend
+
 RUN npm install -g --force corepack && corepack enable
 
-# Copy workspace files
+# Copy ALL workspace package.json files so Yarn resolves the full dependency
+# graph identically to local installs (prevents duplicate transitive deps).
 COPY frontend/package.json frontend/.yarnrc.yml ./
 COPY frontend/packages/ui/package.json packages/ui/
 COPY frontend/app/package.json app/
+COPY frontend/backoffice/package.json backoffice/
 
-RUN yarn config set nodeLinker node-modules && yarn install
+RUN yarn install
 
+# Copy shared UI library + build scripts
 COPY frontend/packages/ui/ packages/ui/
 COPY frontend/scripts/ scripts/
-COPY frontend/app/ app/
+
+# Copy target app source + OpenAPI spec for code generation
+COPY frontend/${TARGET_APP}/ ${TARGET_APP}/
 COPY frontend/orval.config.ts ./
 COPY openapi/ /monorepo/openapi/
 
-# Generate TypeScript API clients from OpenAPI specs, then build
-WORKDIR /monorepo/frontend
-RUN npx orval --project app
-WORKDIR /monorepo/frontend/app
-RUN rm -rf dist
+# Generate TypeScript API clients from OpenAPI spec, then build
+RUN npx orval --project ${TARGET_APP}
+
+WORKDIR /monorepo/frontend/${TARGET_APP}
 RUN GIT_COMMIT="$GIT_COMMIT" GIT_COMMIT_SHORT="$GIT_COMMIT_SHORT" GIT_BRANCH="$GIT_BRANCH" yarn build
 
+# --- Production image ---
 FROM nginx:1.29.6-alpine
+
+ARG TARGET_APP
+
 WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
-COPY --from=build /monorepo/frontend/app/dist .
-COPY frontend/app/nginx.conf /etc/nginx/conf.d/default.conf
-COPY frontend/app/docker-entrypoint.sh /docker-entrypoint.sh
+COPY --from=build /monorepo/frontend/${TARGET_APP}/dist .
+COPY frontend/${TARGET_APP}/nginx.conf /etc/nginx/conf.d/default.conf
+COPY frontend/${TARGET_APP}/docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
 EXPOSE 80

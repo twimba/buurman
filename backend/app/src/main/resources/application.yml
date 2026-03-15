@@ -2,6 +2,10 @@ spring:
   application:
     name: buurman-backend
 
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration
+
   profiles:
     default: local
 
@@ -96,7 +100,7 @@ flagsmith:
   project-name: Buurman
   environment-name: Local
   enable-analytics: true
-  environment-refresh-interval-seconds: 60
+  environment-refresh-interval-seconds: 300
 
 # Application Configuration
 app:
@@ -162,6 +166,13 @@ scheduling:
     metrics-push-cron: "0 */15 * * * ?"
   thumbnail-backfill:
     cron: "0 */5 * * * ?"
+
+# Impersonation Configuration
+impersonation:
+  jwt-secret: ${IMPERSONATION_JWT_SECRET:change-me-in-production-use-at-least-32-chars}
+  max-timeout: 60m
+  default-timeout: 15m
+  app-base-url: ${APP_PUBLIC_URL:https://app.local.buurman.io}
 
 # Actuator Configuration
 management:

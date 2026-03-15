@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -18,17 +19,16 @@ public class BackofficeJwtAuthenticationConverter
   @Override
   public AbstractAuthenticationToken convert(Jwt jwt) {
     String keycloakId = jwt.getSubject();
-    String email = jwt.getClaimAsString("email");
-    String name = jwt.getClaimAsString("name");
+    Optional<String> email = Optional.ofNullable(jwt.getClaimAsString("email"));
+    Optional<String> name = Optional.ofNullable(jwt.getClaimAsString("name"));
 
     List<SimpleGrantedAuthority> authorities = extractRealmRoles(jwt);
 
-    String role =
+    Optional<String> role =
         authorities.stream()
             .map(a -> a.getAuthority().replace("ROLE_", ""))
             .filter(r -> r.equals("BACKOFFICE_ADMIN"))
-            .findFirst()
-            .orElse(null);
+            .findFirst();
 
     BackofficePrincipal principal = new BackofficePrincipal(keycloakId, email, name, role);
     return new BackofficeAuthentication(principal, authorities);

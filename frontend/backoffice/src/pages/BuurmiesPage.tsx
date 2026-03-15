@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { RefreshButton, Pagination, ConfirmDialog, Button } from "@buurman/ui";
 import { useAuth } from "../contexts/AuthContext";
-import { format } from "date-fns";
+import { formatDate, formatDateTime } from "../utils/dateFormatting";
 import {
   useBuurmies,
   useDisableBuurmy,
@@ -463,16 +463,12 @@ const BuurmyRow = ({
       </td>
       <td className="px-4 py-3">
         <span className="text-sm text-text-secondary">
-          {buurmy.createdAt
-            ? format(new Date(buurmy.createdAt), "dd MMM yyyy")
-            : "-"}
+          {buurmy.createdAt ? formatDate(buurmy.createdAt) : "-"}
         </span>
       </td>
       <td className="px-4 py-3">
         <span className="text-sm text-text-secondary">
-          {buurmy.lastLogin
-            ? format(new Date(buurmy.lastLogin), "dd MMM yyyy HH:mm")
-            : "Never"}
+          {buurmy.lastLogin ? formatDateTime(buurmy.lastLogin) : "Never"}
         </span>
       </td>
       <td className="px-4 py-3">

@@ -52,6 +52,25 @@ public class GlobalExceptionHandler {
     return problem;
   }
 
+  @ExceptionHandler(ImpersonationRestrictionException.class)
+  public ProblemDetail handleImpersonationRestriction(
+      ImpersonationRestrictionException ex, HttpServletRequest request) {
+    ProblemDetail problem = forStatusAndDetail(FORBIDDEN, ex.getMessage());
+    problem.setTitle("Impersonation Restriction");
+    problem.setInstance(URI.create(request.getRequestURI()));
+    return problem;
+  }
+
+  @ExceptionHandler(ReauthenticationRequiredException.class)
+  public ProblemDetail handleReauthRequired(
+      ReauthenticationRequiredException ex, HttpServletRequest request) {
+    ProblemDetail problem = forStatusAndDetail(FORBIDDEN, ex.getMessage());
+    problem.setTitle("Re-authentication Required");
+    problem.setProperty("error", "REAUTH_REQUIRED");
+    problem.setInstance(URI.create(request.getRequestURI()));
+    return problem;
+  }
+
   @ExceptionHandler(BusinessRuleException.class)
   public ProblemDetail handleBusinessRule(BusinessRuleException ex, HttpServletRequest request) {
     ProblemDetail problem = forStatusAndDetail(CONFLICT, ex.getMessage());

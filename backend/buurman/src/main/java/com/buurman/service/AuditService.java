@@ -26,6 +26,8 @@ import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.repository.AuditLogRepository;
+import com.buurman.security.ImpersonationPrincipal;
+import com.buurman.security.SecurityUtils;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,6 +48,7 @@ public class AuditService {
   public void logCreate(UUID teamId, String entityType, UUID entityId, UUID userId, Object entity) {
     try {
       Map<String, Object> newValues = objectToMap(entity);
+      ImpersonationPrincipal imp = SecurityUtils.getImpersonationPrincipal();
 
       auditLogRepository.insertAuditLog(
           UUID.randomUUID(),
@@ -57,7 +60,9 @@ public class AuditService {
           null,
           JSONB.valueOf(objectMapper.writeValueAsString(newValues)),
           userId,
-          LocalDateTime.now(clock));
+          LocalDateTime.now(clock),
+          imp != null ? imp.getImpersonatedByEmail() : null,
+          imp != null ? resolveSessionUuid(imp) : null);
 
       metricsService.incrementCounter(
           "audit.log.total", "entity_type", entityType, "action", "CREATE");
@@ -78,6 +83,7 @@ public class AuditService {
     try {
       Map<String, Object> oldValues = objectToMap(oldEntity);
       Map<String, Object> newValues = objectToMap(newEntity);
+      ImpersonationPrincipal imp = SecurityUtils.getImpersonationPrincipal();
 
       auditLogRepository.insertAuditLog(
           UUID.randomUUID(),
@@ -89,7 +95,9 @@ public class AuditService {
           JSONB.valueOf(objectMapper.writeValueAsString(oldValues)),
           JSONB.valueOf(objectMapper.writeValueAsString(newValues)),
           userId,
-          LocalDateTime.now(clock));
+          LocalDateTime.now(clock),
+          imp != null ? imp.getImpersonatedByEmail() : null,
+          imp != null ? resolveSessionUuid(imp) : null);
 
       metricsService.incrementCounter(
           "audit.log.total", "entity_type", entityType, "action", "UPDATE");
@@ -102,6 +110,7 @@ public class AuditService {
   public void logDelete(UUID teamId, String entityType, UUID entityId, UUID userId, Object entity) {
     try {
       Map<String, Object> oldValues = objectToMap(entity);
+      ImpersonationPrincipal imp = SecurityUtils.getImpersonationPrincipal();
 
       auditLogRepository.insertAuditLog(
           UUID.randomUUID(),
@@ -113,7 +122,9 @@ public class AuditService {
           JSONB.valueOf(objectMapper.writeValueAsString(oldValues)),
           null,
           userId,
-          LocalDateTime.now(clock));
+          LocalDateTime.now(clock),
+          imp != null ? imp.getImpersonatedByEmail() : null,
+          imp != null ? resolveSessionUuid(imp) : null);
 
       metricsService.incrementCounter(
           "audit.log.total", "entity_type", entityType, "action", "DELETE");
@@ -121,6 +132,10 @@ public class AuditService {
     } catch (JsonProcessingException e) {
       log.error("Failed to serialize entity for audit log", e);
     }
+  }
+
+  private static @Nullable UUID resolveSessionUuid(ImpersonationPrincipal imp) {
+    return imp.getImpersonationSessionUuid();
   }
 
   @SuppressWarnings("unchecked")
@@ -203,8 +218,10 @@ public class AuditService {
     Map<String, Object> oldValues = parseJsonField(record.oldValuesJson().orElse(null));
     Map<String, Object> newValues = parseJsonField(record.newValuesJson().orElse(null));
 
-    // Build description based on action and changed fields
-    String description = buildActivityDescription(action, entityType, userName, changedFields);
+    // Build description: show admin name when impersonating
+    String displayName =
+        record.impersonatedBy().map(admin -> admin + " (as " + userName + ")").orElse(userName);
+    String description = buildActivityDescription(action, entityType, displayName, changedFields);
 
     // Resolve entity identifier from entity UUID
     UUID entityId = record.entityId();
@@ -223,7 +240,8 @@ public class AuditService {
         Optional.of(description),
         changedFields,
         oldValues,
-        newValues);
+        newValues,
+        record.impersonatedBy());
   }
 
   @SuppressWarnings("unchecked")

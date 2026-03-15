@@ -1,0 +1,132 @@
+collection:
+  post:
+    tags:
+      - Data Takeout
+    summary: Request data takeout
+    description: Request a new data export/takeout for the current team
+    operationId: requestTakeout
+    responses:
+      "202":
+        description: Accepted
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TakeoutResponse'
+      "400":
+        description: Bad request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+  get:
+    tags:
+      - Data Takeout
+    summary: List takeouts
+    description: Get paginated list of data takeouts for the current team
+    operationId: listTakeouts
+    parameters:
+      - name: page
+        in: query
+        description: Page number (zero-based)
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: size
+        in: query
+        description: Page size
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 25
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageResponseTakeoutResponse'
+      "401":
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+item:
+  get:
+    tags:
+      - Data Takeout
+    summary: Get takeout
+    description: Get details of a specific data takeout
+    operationId: getTakeout
+    parameters:
+      - name: identifier
+        in: path
+        description: Data takeout identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DataTakeoutIdentifier'
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TakeoutResponse'
+      "401":
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+  delete:
+    tags:
+      - Data Takeout
+    summary: Delete takeout
+    description: Delete a data takeout
+    operationId: deleteTakeout
+    parameters:
+      - name: identifier
+        in: path
+        description: Data takeout identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/DataTakeoutIdentifier'
+    responses:
+      "204":
+        description: No Content
+      "401":
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
