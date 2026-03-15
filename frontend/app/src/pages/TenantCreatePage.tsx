@@ -3,6 +3,7 @@ import { useCreateTenant } from '@/hooks/useTenantHooks';
 import { TenantForm } from '@/components/tenants/TenantForm';
 import { CreateTenantRequest } from '@/types/tenant';
 import { ArrowLeft } from 'lucide-react';
+import { ImpersonationGuard } from '@/components/ImpersonationGuard';
 
 export const TenantCreatePage = () => {
   const navigate = useNavigate();
@@ -30,10 +31,19 @@ export const TenantCreatePage = () => {
 
         {/* Form */}
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-          <TenantForm
-            onSubmit={handleSubmit}
-            isLoading={createTenantMutation.isPending}
-          />
+          <ImpersonationGuard
+            blockInReadOnly
+            fallback={
+              <div className="text-center py-8 text-text-secondary">
+                Creating tenants is not available in read-only mode.
+              </div>
+            }
+          >
+            <TenantForm
+              onSubmit={handleSubmit}
+              isLoading={createTenantMutation.isPending}
+            />
+          </ImpersonationGuard>
         </div>
       </div>
     </div>

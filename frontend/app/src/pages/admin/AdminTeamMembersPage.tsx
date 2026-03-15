@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Users } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { TeamSettingsSection } from '@/components/settings/TeamSettingsSection';
+import { ImpersonationGuard } from '@/components/ImpersonationGuard';
 
 export const AdminTeamMembersPage = () => {
   const { canEditTeamSettings, isLoading } = useTeam();
@@ -32,7 +33,17 @@ export const AdminTeamMembersPage = () => {
             Manage team members, roles, and invitations
           </p>
         </div>
-        <TeamSettingsSection />
+        <ImpersonationGuard
+          blockAlways
+          fallback={
+            <div className="text-center py-12 text-text-secondary">
+              Team membership changes are not available during an impersonation
+              session.
+            </div>
+          }
+        >
+          <TeamSettingsSection />
+        </ImpersonationGuard>
       </div>
     </div>
   );

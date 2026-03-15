@@ -3,6 +3,7 @@ import { useTabState } from '@/hooks/useTabState';
 import { UserProfileSection } from '@/components/settings/UserProfileSection';
 import { UserPreferencesSection } from '@/components/settings/UserPreferencesSection';
 import { MyTeamsSection } from '@/components/settings/MyTeamsSection';
+import { ImpersonationGuard } from '@/components/ImpersonationGuard';
 
 type SettingsTab = 'profile' | 'preferences' | 'teams';
 
@@ -70,9 +71,18 @@ export const SettingsPage = () => {
 
         {/* Content Area */}
         <div className="pb-12">
-          {activeTab === 'profile' && <UserProfileSection />}
-          {activeTab === 'preferences' && <UserPreferencesSection />}
-          {activeTab === 'teams' && <MyTeamsSection />}
+          <ImpersonationGuard
+            blockAlways
+            fallback={
+              <div className="text-center py-12 text-text-secondary">
+                Settings cannot be modified during an impersonation session.
+              </div>
+            }
+          >
+            {activeTab === 'profile' && <UserProfileSection />}
+            {activeTab === 'preferences' && <UserPreferencesSection />}
+            {activeTab === 'teams' && <MyTeamsSection />}
+          </ImpersonationGuard>
         </div>
       </div>
     </div>

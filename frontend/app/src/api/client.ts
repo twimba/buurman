@@ -11,10 +11,30 @@ const client = axios.create({
   },
 });
 
-// Request interceptor: Attach JWT token
+const IMPERSONATION_STORAGE_KEY = 'buurman-impersonation';
+
+function getImpersonationToken(): string | null {
+  try {
+    const stored = sessionStorage.getItem(IMPERSONATION_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (parsed.active && parsed.token && parsed.expiresAt > Date.now()) {
+        return parsed.token;
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return null;
+}
+
+// Request interceptor: Prefer impersonation JWT, fall back to Keycloak token
 client.interceptors.request.use(
   (config) => {
-    if (keycloak.authenticated && keycloak.token) {
+    const impersonationToken = getImpersonationToken();
+    if (impersonationToken) {
+      config.headers.Authorization = `Bearer ${impersonationToken}`;
+    } else if (keycloak.authenticated && keycloak.token) {
       config.headers.Authorization = `Bearer ${keycloak.token}`;
     }
     return config;

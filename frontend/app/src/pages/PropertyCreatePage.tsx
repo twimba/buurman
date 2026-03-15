@@ -3,6 +3,7 @@ import { useCreateProperty } from '@/hooks/usePropertyHooks';
 import { PropertyForm } from '@/components/properties/PropertyForm';
 import { CreatePropertyRequest } from '@/types/property';
 import { ArrowLeft } from 'lucide-react';
+import { ImpersonationGuard } from '@/components/ImpersonationGuard';
 
 export const PropertyCreatePage = () => {
   const navigate = useNavigate();
@@ -30,10 +31,19 @@ export const PropertyCreatePage = () => {
 
         {/* Form */}
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-          <PropertyForm
-            onSubmit={handleSubmit}
-            isLoading={createPropertyMutation.isPending}
-          />
+          <ImpersonationGuard
+            blockInReadOnly
+            fallback={
+              <div className="text-center py-8 text-text-secondary">
+                Creating properties is not available in read-only mode.
+              </div>
+            }
+          >
+            <PropertyForm
+              onSubmit={handleSubmit}
+              isLoading={createPropertyMutation.isPending}
+            />
+          </ImpersonationGuard>
         </div>
       </div>
     </div>

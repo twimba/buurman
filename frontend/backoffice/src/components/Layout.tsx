@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   Users,
   UserCog,
+  UserCheck,
   Smile,
   Bell,
   MessageSquare,
@@ -55,6 +56,7 @@ const navigation = [
   { name: "Invitations", href: "/registration-invitations", icon: Ticket },
   { name: "Rent Regulations", href: "/rent-regulations", icon: BookOpen },
   { name: "Feature Flags", href: "/feature-flags", icon: Flag },
+  { name: "Impersonation", href: "/impersonation", icon: UserCheck },
 ];
 
 const adminNavigation = [
