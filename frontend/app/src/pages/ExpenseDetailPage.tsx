@@ -13,6 +13,7 @@ import {
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
+import { formatAuditValue } from '@/utils/formatAuditValue';
 import { ExpenseCategoryBadge } from '@/components/expenses/ExpenseCategoryBadge';
 import { ExpenseForm } from '@/components/expenses/ExpenseForm';
 import { DocumentList } from '@/components/properties/DocumentList';
@@ -471,8 +472,8 @@ export const ExpenseDetailPage = () => {
                                         />
                                       ) : (
                                         <span className="text-error-text line-through">
-                                          {String(
-                                            activity.oldValues?.[field] ?? 'N/A'
+                                          {formatAuditValue(
+                                            activity.oldValues?.[field]
                                           )}
                                         </span>
                                       )}
@@ -492,8 +493,8 @@ export const ExpenseDetailPage = () => {
                                         />
                                       ) : (
                                         <span className="text-success-text font-medium">
-                                          {String(
-                                            activity.newValues?.[field] ?? 'N/A'
+                                          {formatAuditValue(
+                                            activity.newValues?.[field]
                                           )}
                                         </span>
                                       )}

@@ -20,6 +20,7 @@ import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
+import { formatAuditValue } from '@/utils/formatAuditValue';
 import { trackEvent } from '@/utils/analytics';
 import { AnalyticsEvent } from '@/constants/analyticsEvents';
 import { DocumentList } from '@/components/properties/DocumentList';
@@ -1116,9 +1117,8 @@ export const TenantDetailPage = () => {
                                           />
                                         ) : (
                                           <span className="text-error-text line-through">
-                                            {String(
-                                              activity.oldValues?.[field] ??
-                                                'N/A'
+                                            {formatAuditValue(
+                                              activity.oldValues?.[field]
                                             )}
                                           </span>
                                         )}
@@ -1138,9 +1138,8 @@ export const TenantDetailPage = () => {
                                           />
                                         ) : (
                                           <span className="text-success-text font-medium">
-                                            {String(
-                                              activity.newValues?.[field] ??
-                                                'N/A'
+                                            {formatAuditValue(
+                                              activity.newValues?.[field]
                                             )}
                                           </span>
                                         )}

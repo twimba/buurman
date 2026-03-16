@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
+import { formatAuditValue } from '@/utils/formatAuditValue';
 import { useNavigate } from 'react-router-dom';
 import { useAllAuditLogs } from '@/hooks/useDashboard';
 import { usePagination } from '@/hooks/usePagination';
@@ -429,7 +430,7 @@ export const AuditLogPage = () => {
                                           File Name
                                         </div>
                                         <div className="text-text-primary">
-                                          {String(value)}
+                                          {formatAuditValue(value)}
                                         </div>
                                       </div>
                                     );
@@ -463,7 +464,7 @@ export const AuditLogPage = () => {
                                                   className="text-xs [&_p]:m-0"
                                                 />
                                               ) : (
-                                                String(oldValue)
+                                                formatAuditValue(oldValue)
                                               )
                                             ) : (
                                               '\u2014'
@@ -486,7 +487,7 @@ export const AuditLogPage = () => {
                                                   className="text-xs [&_p]:m-0"
                                                 />
                                               ) : (
-                                                String(newValue)
+                                                formatAuditValue(newValue)
                                               )
                                             ) : (
                                               '\u2014'

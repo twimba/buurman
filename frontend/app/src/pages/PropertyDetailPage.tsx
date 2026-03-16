@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
+import { formatAuditValue } from '@/utils/formatAuditValue';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTabState } from '@/hooks/useTabState';
 import {
@@ -461,19 +462,6 @@ export const PropertyDetailPage = () => {
       .replace(/([A-Z])/g, ' $1')
       .replace(/^./, (str) => str.toUpperCase())
       .trim();
-  };
-
-  const formatFieldValue = (value: unknown): string => {
-    if (value == null) {
-      return 'N/A';
-    }
-    if (typeof value === 'boolean') {
-      return value ? 'Yes' : 'No';
-    }
-    if (typeof value === 'object') {
-      return JSON.stringify(value);
-    }
-    return String(value);
   };
 
   const formatEnumValue = (value: string | null): string => {
@@ -2492,7 +2480,7 @@ export const PropertyDetailPage = () => {
                                           />
                                         ) : (
                                           <span className="text-error-text line-through">
-                                            {formatFieldValue(
+                                            {formatAuditValue(
                                               activity.oldValues?.[field]
                                             )}
                                           </span>
@@ -2513,7 +2501,7 @@ export const PropertyDetailPage = () => {
                                           />
                                         ) : (
                                           <span className="text-success-text font-medium">
-                                            {formatFieldValue(
+                                            {formatAuditValue(
                                               activity.newValues?.[field]
                                             )}
                                           </span>

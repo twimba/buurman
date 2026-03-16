@@ -24,6 +24,7 @@ import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
+import { formatAuditValue } from '@/utils/formatAuditValue';
 import { DocumentList } from '@/components/properties/DocumentList';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
 import { ChangeContractStatusModal } from '@/components/contracts/ChangeContractStatusModal';
@@ -1185,9 +1186,8 @@ export const ContractDetailPage = () => {
                                           />
                                         ) : (
                                           <span className="text-error-text line-through">
-                                            {String(
-                                              activity.oldValues?.[field] ??
-                                                'N/A'
+                                            {formatAuditValue(
+                                              activity.oldValues?.[field]
                                             )}
                                           </span>
                                         )}
@@ -1207,9 +1207,8 @@ export const ContractDetailPage = () => {
                                           />
                                         ) : (
                                           <span className="text-success-text font-medium">
-                                            {String(
-                                              activity.newValues?.[field] ??
-                                                'N/A'
+                                            {formatAuditValue(
+                                              activity.newValues?.[field]
                                             )}
                                           </span>
                                         )}
