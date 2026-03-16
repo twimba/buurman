@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.buurman.job.AutoExtensionJob;
 import com.buurman.job.DatabaseMetricsRefreshJob;
 import com.buurman.job.ExecutionHistoryCleanupJob;
 import com.buurman.job.ImpersonationSessionCleanupJob;
@@ -137,6 +138,27 @@ public class QuartzJobsConfig {
         .forJob(executionHistoryCleanupJobDetail)
         .withIdentity("executionHistoryCleanupTrigger", "system")
         .withSchedule(CronScheduleBuilder.cronSchedule("0 0 2 * * ?"))
+        .build();
+  }
+
+  // ── Auto Extension (Contract Renewals) ─────────────────────────────────
+
+  @Bean
+  public JobDetail autoExtensionJobDetail() {
+    return JobBuilder.newJob(AutoExtensionJob.class)
+        .withIdentity("autoExtensionJob", "scheduling")
+        .storeDurably()
+        .build();
+  }
+
+  @Bean
+  public Trigger autoExtensionTrigger(
+      JobDetail autoExtensionJobDetail,
+      @Value("${scheduling.auto-extension.cron:0 0 2 * * ?}") String cron) {
+    return TriggerBuilder.newTrigger()
+        .forJob(autoExtensionJobDetail)
+        .withIdentity("autoExtensionTrigger", "scheduling")
+        .withSchedule(CronScheduleBuilder.cronSchedule(cron))
         .build();
   }
 

@@ -158,6 +158,13 @@ public class TeamRepository {
                             () -> new IllegalStateException("Failed to map team record"))));
   }
 
+  public List<UUID> findAllActiveTeamIds() {
+    return dsl.select(TEAMS.ID)
+        .from(TEAMS)
+        .where(TEAMS.DELETED_AT.isNull())
+        .fetch(TEAMS.ID);
+  }
+
   public long countAll() {
     Long result =
         dsl.selectCount().from(TEAMS).where(TEAMS.DELETED_AT.isNull()).fetchOne(0, Long.class);

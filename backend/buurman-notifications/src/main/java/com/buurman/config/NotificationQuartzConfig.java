@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import com.buurman.job.ContractExpiryCheckJob;
 import com.buurman.job.NotificationOutboxJob;
 import com.buurman.job.PaymentReminderCheckJob;
+import com.buurman.job.RenewalReminderJob;
 
 @Configuration
 public class NotificationQuartzConfig {
@@ -54,6 +55,27 @@ public class NotificationQuartzConfig {
     return TriggerBuilder.newTrigger()
         .forJob(contractExpiryCheckJobDetail)
         .withIdentity("contractExpiryCheckTrigger", "scheduling")
+        .withSchedule(CronScheduleBuilder.cronSchedule(cron))
+        .build();
+  }
+
+  // ── Renewal Reminder Check ─────────────────────────────────────────────
+
+  @Bean
+  public JobDetail renewalReminderJobDetail() {
+    return JobBuilder.newJob(RenewalReminderJob.class)
+        .withIdentity("renewalReminderJob", "scheduling")
+        .storeDurably()
+        .build();
+  }
+
+  @Bean
+  public Trigger renewalReminderTrigger(
+      JobDetail renewalReminderJobDetail,
+      @Value("${scheduling.notification-reminders.renewal-reminder-cron:0 0 8 * * ?}") String cron) {
+    return TriggerBuilder.newTrigger()
+        .forJob(renewalReminderJobDetail)
+        .withIdentity("renewalReminderTrigger", "scheduling")
         .withSchedule(CronScheduleBuilder.cronSchedule(cron))
         .build();
   }
