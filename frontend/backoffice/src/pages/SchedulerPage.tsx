@@ -286,7 +286,8 @@ export const SchedulerPage = () => {
     (name) =>
       name !== "notificationOutboxJob" &&
       name !== "databaseMetricsRefreshJob" &&
-      name !== "thumbnailBackfillJob",
+      name !== "thumbnailBackfillJob" &&
+      name !== "impersonationSessionCleanupJob",
   );
 
   // Use default selection until user interacts
