@@ -38,15 +38,6 @@ export const getDashboardStats = async (): Promise<DashboardStats> => {
   return response.data;
 };
 
-export const getRecentActivities = async (
-  limit = 10
-): Promise<RecentActivity[]> => {
-  const response = await client.get('/dashboard/recent-activities', {
-    params: { limit },
-  });
-  return response.data;
-};
-
 import { PageResponse, PageParams } from '@/types/common';
 
 export interface AuditLogFilters {

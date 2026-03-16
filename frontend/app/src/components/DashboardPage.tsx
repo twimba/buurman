@@ -1,11 +1,10 @@
 import { useMemo, useState } from 'react';
-import { useDashboardStats, useRecentActivities } from '@/hooks/useDashboard';
+import { useDashboardStats } from '@/hooks/useDashboard';
 import { usePayments, useMarkPaymentAsPaid } from '@/hooks/usePaymentHooks';
 import { useTeam } from '@/context/TeamContext';
 import { LoadingSpinner } from './LoadingSpinner';
 import { MetricHint } from '@/components/common/MetricHint';
 import { ErrorMessage } from './ErrorMessage';
-import { PropertyStatusChart } from './PropertyStatusChart';
 import { PendingInvitationsPanel } from './dashboard/PendingInvitationsPanel';
 import { PortfolioDashboard } from './dashboard/PortfolioDashboard';
 import {
@@ -24,15 +23,13 @@ import { useFormatDate } from '@/hooks/useFormatDate';
 
 export const DashboardPage = () => {
   const navigate = useNavigate();
-  const { formatDate, formatRelative } = useFormatDate();
+  const { formatDate } = useFormatDate();
   const { canEditData } = useTeam();
   const {
     data: stats,
     isLoading: statsLoading,
     error: statsError,
   } = useDashboardStats();
-  const { data: activities, isLoading: activitiesLoading } =
-    useRecentActivities(10);
   const { data: allPaymentsData, isLoading: paymentsLoading } = usePayments();
   const allPayments = allPaymentsData?.content;
   const markPaidMutation = useMarkPaymentAsPaid();
@@ -179,119 +176,58 @@ export const DashboardPage = () => {
         </div>
       </div>
 
-      {/* Property Status Distribution */}
-      {stats && stats.totalProperties > 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Status Cards */}
+      {/* Property Status Breakdown */}
+      {stats && stats.totalProperties > 0 && (() => {
+        const statuses = [
+          { label: 'Occupied', count: stats.occupiedUnits, color: 'bg-success', dotColor: 'bg-success', textColor: 'text-success-text' },
+          ...(stats.selfOccupiedUnits > 0
+            ? [{ label: 'Self-Occupied', count: stats.selfOccupiedUnits, color: 'bg-info', dotColor: 'bg-info', textColor: 'text-info-text' }]
+            : []),
+          { label: 'Vacant', count: stats.vacantUnits, color: 'bg-warning', dotColor: 'bg-warning', textColor: 'text-warning-text' },
+          { label: 'Maintenance', count: stats.maintenanceUnits, color: 'bg-amber-500', dotColor: 'bg-amber-500', textColor: 'text-text-secondary' },
+          { label: 'Unavailable', count: stats.unavailableUnits, color: 'bg-neutral-300', dotColor: 'bg-neutral-400', textColor: 'text-text-muted' },
+        ];
+
+        return (
           <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-            <h2 className="text-xl font-semibold text-text-primary mb-4">
-              Property Status Breakdown
+            <h2 className="text-base font-semibold text-text-primary mb-5">
+              Property Status
             </h2>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-4 bg-success-bg rounded-lg border border-success-border">
-                <div>
-                  <div className="text-sm font-medium text-success-text">
-                    Occupied
-                  </div>
-                  <div className="text-2xl font-bold text-success-text mt-1">
-                    {stats.occupiedUnits}
-                  </div>
-                </div>
-                <div className="text-sm text-success-text">
-                  {(
-                    (stats.occupiedUnits / stats.totalProperties) *
-                    100
-                  ).toFixed(0)}
-                  %
-                </div>
-              </div>
-              {stats.selfOccupiedUnits > 0 && (
-                <div className="flex items-center justify-between p-4 bg-info-bg rounded-lg border border-info-border">
-                  <div>
-                    <div className="text-sm font-medium text-info-text">
-                      Self-Occupied
-                    </div>
-                    <div className="text-2xl font-bold text-info-text mt-1">
-                      {stats.selfOccupiedUnits}
-                    </div>
-                  </div>
-                  <div className="text-sm text-info-text">
-                    {(
-                      (stats.selfOccupiedUnits / stats.totalProperties) *
-                      100
-                    ).toFixed(0)}
-                    %
-                  </div>
-                </div>
+
+            {/* Stacked horizontal bar */}
+            <div className="flex h-3 rounded-full overflow-hidden mb-6">
+              {statuses.map((s) =>
+                s.count > 0 ? (
+                  <div
+                    key={s.label}
+                    className={`${s.color} first:rounded-l-full last:rounded-r-full`}
+                    style={{ width: `${(s.count / stats.totalProperties) * 100}%` }}
+                  />
+                ) : null
               )}
-              <div className="flex items-center justify-between p-4 bg-warning-bg rounded-lg border border-warning-border">
-                <div>
-                  <div className="text-sm font-medium text-warning-text">
-                    Vacant
+            </div>
+
+            {/* Legend rows */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+              {statuses.map((s) => {
+                const pct = ((s.count / stats.totalProperties) * 100).toFixed(0);
+                return (
+                  <div key={s.label} className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <span className={`h-2.5 w-2.5 rounded-full ${s.dotColor} shrink-0`} />
+                      <span className="text-xs font-medium text-text-secondary">{s.label}</span>
+                    </div>
+                    <div className="pl-[18px]">
+                      <span className="text-lg font-bold text-text-primary tabular-nums">{s.count}</span>
+                      <span className="text-xs text-text-muted ml-1.5">{pct}%</span>
+                    </div>
                   </div>
-                  <div className="text-2xl font-bold text-warning-text mt-1">
-                    {stats.vacantUnits}
-                  </div>
-                </div>
-                <div className="text-sm text-warning-text">
-                  {((stats.vacantUnits / stats.totalProperties) * 100).toFixed(
-                    0
-                  )}
-                  %
-                </div>
-              </div>
-              <div className="flex items-center justify-between p-4 bg-warning-bg rounded-lg border border-warning-border">
-                <div>
-                  <div className="text-sm font-medium text-warning-text">
-                    Maintenance
-                  </div>
-                  <div className="text-2xl font-bold text-warning-text mt-1">
-                    {stats.maintenanceUnits}
-                  </div>
-                </div>
-                <div className="text-sm text-warning-text">
-                  {(
-                    (stats.maintenanceUnits / stats.totalProperties) *
-                    100
-                  ).toFixed(0)}
-                  %
-                </div>
-              </div>
-              <div className="flex items-center justify-between p-4 bg-surface-page rounded-lg border border-border-default">
-                <div>
-                  <div className="text-sm font-medium text-text-primary">
-                    Unavailable
-                  </div>
-                  <div className="text-2xl font-bold text-text-secondary mt-1">
-                    {stats.unavailableUnits}
-                  </div>
-                </div>
-                <div className="text-sm text-text-secondary">
-                  {(
-                    (stats.unavailableUnits / stats.totalProperties) *
-                    100
-                  ).toFixed(0)}
-                  %
-                </div>
-              </div>
+                );
+              })}
             </div>
           </div>
-
-          {/* Status Chart */}
-          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-            <h2 className="text-xl font-semibold text-text-primary mb-4">
-              Distribution Overview
-            </h2>
-            <PropertyStatusChart
-              occupied={stats.occupiedUnits}
-              selfOccupied={stats.selfOccupiedUnits}
-              vacant={stats.vacantUnits}
-              maintenance={stats.maintenanceUnits}
-              unavailable={stats.unavailableUnits}
-            />
-          </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Unpaid Payments */}
       <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
@@ -426,81 +362,6 @@ export const DashboardPage = () => {
         )}
       </div>
 
-      {/* Recent Activities */}
-      <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-text-primary">
-            Recent Activities
-          </h2>
-          {activities && activities.length > 0 && (
-            <button
-              onClick={() => navigate('/admin/activity-log')}
-              className="text-sm text-primary-500 hover:text-primary-600 font-medium flex items-center gap-1"
-            >
-              View all
-              <ArrowRight className="h-4 w-4" />
-            </button>
-          )}
-        </div>
-
-        {activitiesLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <LoadingSpinner />
-          </div>
-        ) : activities && activities.length > 0 ? (
-          <div className="space-y-4">
-            {activities.map((activity) => (
-              <div
-                key={`${activity.entityType}-${activity.entityIdentifier}-${activity.timestamp}`}
-                className="flex items-start gap-4 p-4 hover:bg-surface-inset rounded-lg transition-colors"
-              >
-                <div
-                  className={`
-                    flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center
-                    ${
-                      activity.action === 'CREATE'
-                        ? 'bg-success-bg'
-                        : activity.action === 'UPDATE'
-                          ? 'bg-info-bg'
-                          : 'bg-error-bg'
-                    }
-                  `}
-                >
-                  <span
-                    className={`
-                      text-xs font-semibold
-                      ${
-                        activity.action === 'CREATE'
-                          ? 'text-success-text'
-                          : activity.action === 'UPDATE'
-                            ? 'text-info-text'
-                            : 'text-error-text'
-                      }
-                    `}
-                  >
-                    {activity.action.charAt(0)}
-                  </span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-text-primary">
-                    {activity.description}
-                  </p>
-                  <p className="text-xs text-text-secondary mt-1">
-                    {formatRelative(activity.timestamp)}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-8">
-            <p className="text-text-secondary">No recent activities</p>
-            <p className="text-sm text-text-muted mt-1">
-              Activities will appear here as you use the system
-            </p>
-          </div>
-        )}
-      </div>
     </div>
   );
 };
