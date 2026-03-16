@@ -42,6 +42,17 @@ public class Contract {
     PENDING_SIGNATURE
   }
 
+  public enum RenewalMode {
+    NONE,
+    AUTOMATIC,
+    MANUAL
+  }
+
+  public enum LandlordType {
+    NATURAL_PERSON,
+    LEGAL_ENTITY
+  }
+
   private UUID id;
   @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private UUID teamId;
@@ -64,6 +75,16 @@ public class Contract {
   @Builder.Default private Optional<String> notes = Optional.empty();
   @Builder.Default private Optional<String> countryCode = Optional.empty();
   @Builder.Default private Optional<ContractCountryMetadata> countryMetadata = Optional.empty();
+  @Builder.Default private RenewalMode renewalMode = RenewalMode.NONE;
+  @Builder.Default private Optional<Integer> renewalTermMonths = Optional.empty();
+  @Builder.Default private Optional<Integer> maxRenewals = Optional.empty();
+  @Builder.Default private Integer landlordNoticeDays = 30;
+  @Builder.Default private Integer tenantNoticeDays = 30;
+  @Builder.Default private Boolean requiresTenantConfirmation = false;
+  @Builder.Default private ContractExtension.RentAdjustmentType rentAdjustmentType = ContractExtension.RentAdjustmentType.NONE;
+  @Builder.Default private Optional<BigDecimal> rentAdjustmentValue = Optional.empty();
+  @Builder.Default private Optional<LandlordType> landlordType = Optional.empty();
+  @Builder.Default private Optional<String> regionCode = Optional.empty();
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;

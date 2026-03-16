@@ -76,6 +76,8 @@ tags:
     description: Provider status callbacks
   - name: Contracts
     description: Rental agreement management
+  - name: Contract Extensions
+    description: Contract extension lifecycle management
   - name: Dashboard
     description: Dashboard statistics and recent activities
   - name: Registration
@@ -98,6 +100,8 @@ tags:
     description: Team onboarding wizard
   - name: Currency
     description: Currency and country-currency mappings
+  - name: Jurisdiction Defaults
+    description: Country-specific renewal default values
   - name: Rent Regulations
     description: Rent regulation data by country and region
   - name: Rent Increases
@@ -285,6 +289,20 @@ paths:
     $ref: 'paths/contracts.yaml#/rent-periods'
   /contracts/{contractIdentifier}/payment-instructions:
     $ref: 'paths/contracts.yaml#/payment-instructions'
+  /contracts/{id}/extensions:
+    $ref: 'paths/contract-extensions.yaml#/extensions'
+  /contracts/{id}/extensions/{extId}:
+    $ref: 'paths/contract-extensions.yaml#/extensions-item'
+  /contracts/{id}/extensions/{extId}/activate:
+    $ref: 'paths/contract-extensions.yaml#/extensions-activate'
+  /contracts/{id}/extensions/{extId}/confirm:
+    $ref: 'paths/contract-extensions.yaml#/extensions-confirm'
+  /contracts/{id}/extensions/{extId}/decline:
+    $ref: 'paths/contract-extensions.yaml#/extensions-decline'
+  /contracts/{id}/extensions/{extId}/addendum:
+    $ref: 'paths/contract-extensions.yaml#/extensions-addendum'
+  /contracts/{id}/extensions/{extId}/rent-increase-letter:
+    $ref: 'paths/contract-extensions.yaml#/extensions-rent-increase-letter'
   /calendar/feeds:
     $ref: 'paths/calendar-feeds.yaml#/feeds'
   /calendar/feeds/{identifier}/rotate:
@@ -427,6 +445,8 @@ paths:
     $ref: 'paths/dashboard.yaml#/dashboard-stats'
   /dashboard/recent-activities:
     $ref: 'paths/dashboard.yaml#/dashboard-recent-activities'
+  /dashboard/upcoming-renewals:
+    $ref: 'paths/dashboard.yaml#/dashboard-upcoming-renewals'
   /contracts/{identifier}/audit-log:
     $ref: 'paths/contracts.yaml#/audit-log'
   /contracts/{contractIdentifier}/payment-instructions/current:
@@ -443,6 +463,8 @@ paths:
     $ref: 'paths/documents.yaml#/booklets-property-item'
   /booklets/contract/{contractIdentifier}:
     $ref: 'paths/documents.yaml#/booklets-contract-item'
+  /jurisdiction-defaults:
+    $ref: 'paths/jurisdiction-defaults.yaml#/jurisdiction-defaults'
   /audit-logs:
     $ref: 'paths/audit-logs.yaml#/collection'
   /amenities:
@@ -3035,6 +3057,30 @@ components:
           type: string
         notes:
           type: string
+        renewalMode:
+          $ref: '#/components/schemas/RenewalMode'
+        renewalTermMonths:
+          type: integer
+          minimum: 1
+        maxRenewals:
+          type: integer
+          minimum: 1
+        landlordNoticeDays:
+          type: integer
+          minimum: 0
+        tenantNoticeDays:
+          type: integer
+          minimum: 0
+        requiresTenantConfirmation:
+          type: boolean
+        rentAdjustmentType:
+          $ref: '#/components/schemas/RentAdjustmentType'
+        rentAdjustmentValue:
+          type: number
+        landlordType:
+          $ref: '#/components/schemas/LandlordType'
+        regionCode:
+          type: string
         countryMetadata:
           type: object
           additionalProperties: {}
@@ -3410,6 +3456,33 @@ components:
             - $ref: "#/components/schemas/UsContractMetadata"
             - $ref: "#/components/schemas/UyContractMetadata"
             - $ref: "#/components/schemas/XkContractMetadata"
+        renewalMode:
+          $ref: '#/components/schemas/RenewalMode'
+        renewalTermMonths:
+          type: integer
+        maxRenewals:
+          type: integer
+        landlordNoticeDays:
+          type: integer
+        tenantNoticeDays:
+          type: integer
+        requiresTenantConfirmation:
+          type: boolean
+        rentAdjustmentType:
+          $ref: '#/components/schemas/RentAdjustmentType'
+        rentAdjustmentValue:
+          type: number
+        landlordType:
+          $ref: '#/components/schemas/LandlordType'
+        regionCode:
+          type: string
+        effectiveEndDate:
+          type: string
+          format: date
+        extensionCount:
+          type: integer
+        extensionsRemaining:
+          type: integer
         createdAt:
           type: string
           format: date-time
@@ -3420,14 +3493,20 @@ components:
         - autoRenewal
         - contractType
         - createdAt
+        - extensionCount
         - identifier
+        - landlordNoticeDays
         - parties
         - paymentFrequency
+        - renewalMode
         - renewalNoticeDays
+        - rentAdjustmentType
         - rentAmount
         - rentAmountCurrency
+        - requiresTenantConfirmation
         - startDate
         - status
+        - tenantNoticeDays
         - terminationNoticeDays
     CyContractMetadata:
       allOf:
@@ -5373,6 +5452,30 @@ components:
         termsAndConditions:
           type: string
         notes:
+          type: string
+        renewalMode:
+          $ref: '#/components/schemas/RenewalMode'
+        renewalTermMonths:
+          type: integer
+          minimum: 1
+        maxRenewals:
+          type: integer
+          minimum: 1
+        landlordNoticeDays:
+          type: integer
+          minimum: 0
+        tenantNoticeDays:
+          type: integer
+          minimum: 0
+        requiresTenantConfirmation:
+          type: boolean
+        rentAdjustmentType:
+          $ref: '#/components/schemas/RentAdjustmentType'
+        rentAdjustmentValue:
+          type: number
+        landlordType:
+          $ref: '#/components/schemas/LandlordType'
+        regionCode:
           type: string
         countryMetadata:
           type: object
@@ -7693,6 +7796,176 @@ components:
         - remainingSeconds
         - targetUserEmail
         - reason
+    RenewalMode:
+      type: string
+      enum:
+        - NONE
+        - AUTOMATIC
+        - MANUAL
+    RentAdjustmentType:
+      type: string
+      enum:
+        - NONE
+        - FIXED_PERCENTAGE
+        - FIXED_AMOUNT
+        - MANUAL
+    ExtensionStatus:
+      type: string
+      enum:
+        - DRAFT
+        - ACTIVE
+        - SUPERSEDED
+        - CANCELLED
+        - DECLINED
+    LandlordType:
+      type: string
+      enum:
+        - NATURAL_PERSON
+        - LEGAL_ENTITY
+    TriggerType:
+      type: string
+      enum:
+        - MANUAL
+        - AUTO
+    CreateContractExtensionRequest:
+      type: object
+      properties:
+        newEndDate:
+          type: string
+          format: date
+        newRentAmount:
+          type: number
+        rentAdjustmentType:
+          $ref: '#/components/schemas/RentAdjustmentType'
+        rentAdjustmentValue:
+          type: number
+        notes:
+          type: string
+    DeclineContractExtensionRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+    ContractExtensionResponse:
+      type: object
+      required:
+        - identifier
+        - contractIdentifier
+        - extensionNumber
+        - previousEndDate
+        - previousRentAmount
+        - previousRentCurrency
+        - newRentAmount
+        - newRentCurrency
+        - rentAdjustmentType
+        - status
+        - triggerType
+        - createdAt
+      properties:
+        identifier:
+          type: string
+        contractIdentifier:
+          type: string
+        extensionNumber:
+          type: integer
+        previousEndDate:
+          type: string
+          format: date
+        newEndDate:
+          type: string
+          format: date
+        previousRentAmount:
+          type: number
+        previousRentCurrency:
+          type: string
+        newRentAmount:
+          type: number
+        newRentCurrency:
+          type: string
+        rentAdjustmentType:
+          $ref: '#/components/schemas/RentAdjustmentType'
+        rentAdjustmentValue:
+          type: number
+        status:
+          $ref: '#/components/schemas/ExtensionStatus'
+        triggerType:
+          $ref: '#/components/schemas/TriggerType'
+        notes:
+          type: string
+        declinedReason:
+          type: string
+        activatedAt:
+          type: string
+          format: date-time
+        confirmedAt:
+          type: string
+          format: date-time
+        supersededAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+    PageResponseContractExtensionResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContractExtensionResponse'
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+    UpcomingRenewalResponse:
+      type: object
+      required:
+        - contractIdentifier
+        - effectiveEndDate
+        - renewalMode
+        - currentRentAmount
+        - currency
+        - daysUntilExpiry
+      properties:
+        contractIdentifier:
+          type: string
+        propertyName:
+          type: string
+        tenantName:
+          type: string
+        effectiveEndDate:
+          type: string
+          format: date
+        renewalMode:
+          $ref: '#/components/schemas/RenewalMode'
+        renewalTermMonths:
+          type: integer
+        currentRentAmount:
+          type: number
+        currency:
+          type: string
+        daysUntilExpiry:
+          type: integer
+    JurisdictionDefaultResponse:
+      type: object
+      required:
+        - countryCode
+        - defaults
+        - disclaimer
+      properties:
+        countryCode:
+          type: string
+        defaults:
+          type: object
+          additionalProperties:
+            type: string
+        disclaimer:
+          type: string
   securitySchemes:
     bearer-jwt:
       type: http

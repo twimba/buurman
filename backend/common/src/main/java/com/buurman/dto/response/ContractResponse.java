@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.buurman.domain.Contract;
+import com.buurman.domain.ContractExtension;
 import com.buurman.domain.Sid;
 import com.buurman.domain.metadata.ContractCountryMetadata;
 
@@ -36,5 +37,21 @@ public record ContractResponse(
     Optional<String> notes,
     Optional<String> countryCode,
     Optional<ContractCountryMetadata> countryMetadata,
+    // Renewal configuration
+    Contract.RenewalMode renewalMode,
+    Optional<Integer> renewalTermMonths,
+    Optional<Integer> maxRenewals,
+    Integer landlordNoticeDays,
+    Integer tenantNoticeDays,
+    Boolean requiresTenantConfirmation,
+    ContractExtension.RentAdjustmentType rentAdjustmentType,
+    Optional<BigDecimal> rentAdjustmentValue,
+    Optional<Contract.LandlordType> landlordType,
+    Optional<String> regionCode,
+    // Effective end date (computed from extensions)
+    Optional<LocalDate> effectiveEndDate,
+    // Extension statistics
+    int extensionCount,
+    Optional<Integer> extensionsRemaining,
     Instant createdAt,
     Optional<Instant> updatedAt) {}
