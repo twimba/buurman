@@ -12,6 +12,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -309,14 +310,42 @@ public class ImpersonationService {
         session.getReason());
   }
 
-  public PageResponse<ImpersonationSessionResponse> listSessions(PageRequest pageRequest) {
-    PaginatedResult<ImpersonationSession> result = sessionRepository.findAllPaginated(pageRequest);
+  public PageResponse<ImpersonationSessionResponse> listSessions(
+      PageRequest pageRequest,
+      @org.jspecify.annotations.Nullable String adminEmail,
+      @org.jspecify.annotations.Nullable String targetUserEmail,
+      @org.jspecify.annotations.Nullable String teamIdentifier,
+      @org.jspecify.annotations.Nullable String status,
+      @org.jspecify.annotations.Nullable String mode) {
+
+    UUID targetTeamId = null;
+    if (teamIdentifier != null && !teamIdentifier.isBlank()) {
+      Optional<Team> team = teamRepository.findByIdentifierForBackoffice(Sid.of(teamIdentifier));
+      if (team.isEmpty()) {
+        return PageResponse.of(List.of(), pageRequest.page(), pageRequest.size(), 0);
+      }
+      targetTeamId = team.get().getId();
+    }
+
+    Collection<UUID> targetUserIds = null;
+    if (targetUserEmail != null && !targetUserEmail.isBlank()) {
+      List<UUID> userIds = userRepository.findIdsByEmailPattern(targetUserEmail);
+      if (userIds.isEmpty()) {
+        return PageResponse.of(List.of(), pageRequest.page(), pageRequest.size(), 0);
+      }
+      targetUserIds = userIds;
+    }
+
+    PaginatedResult<ImpersonationSession> result =
+        sessionRepository.findAllPaginated(
+            pageRequest, adminEmail, targetUserIds, targetTeamId, status, mode);
 
     // Batch-load all target users and teams to avoid N+1
-    List<UUID> targetUserIds =
+    List<UUID> allTargetUserIds =
         result.items().stream().map(ImpersonationSession::getTargetUserId).distinct().toList();
     Map<UUID, User> userMap =
-        userRepository.findByIds(targetUserIds).stream().collect(toMap(User::getId, identity()));
+        userRepository.findByIds(allTargetUserIds).stream()
+            .collect(toMap(User::getId, identity()));
 
     List<UUID> targetTeamIds =
         result.items().stream().map(ImpersonationSession::getTargetTeamId).distinct().toList();

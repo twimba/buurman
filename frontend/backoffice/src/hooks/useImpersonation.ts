@@ -2,16 +2,22 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { CreateImpersonationRequest } from "../generated/models";
 import {
   createImpersonationSession,
-  listImpersonationSessions,
   rejoinImpersonationSession,
   terminateImpersonationSession,
 } from "../generated/api/backoffice-impersonation/backoffice-impersonation";
 import { getUserFlags } from "../generated/api/backoffice-feature-flags/backoffice-feature-flags";
+import {
+  impersonationApi,
+  type ListImpersonationSessionsParams,
+} from "../api/impersonation";
 
-export const useImpersonationSessions = () => {
+export const useImpersonationSessions = (
+  params?: ListImpersonationSessionsParams,
+) => {
   return useQuery({
-    queryKey: ["impersonation-sessions"],
-    queryFn: () => listImpersonationSessions().then((res) => res.content ?? []),
+    queryKey: ["impersonation-sessions", params],
+    queryFn: () =>
+      impersonationApi.listSessions(params).then((res) => res.data),
   });
 };
 

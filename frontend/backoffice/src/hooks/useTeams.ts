@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
 import { teamsApi } from "../api/teams";
+import type { AsyncSelectOption } from "../components/AsyncSelect";
 
 interface ListTeamsParams {
   page?: number;
@@ -51,4 +53,15 @@ export const useDeleteTeam = () => {
       queryClient.invalidateQueries({ queryKey: ["teams"] });
     },
   });
+};
+
+export const useTeamSearch = () => {
+  return useCallback(async (query: string): Promise<AsyncSelectOption[]> => {
+    const res = await teamsApi.list({ search: query, size: 20 });
+    return res.data.content.map((team) => ({
+      value: team.identifier,
+      label: team.teamName,
+      sublabel: team.identifier,
+    }));
+  }, []);
 };

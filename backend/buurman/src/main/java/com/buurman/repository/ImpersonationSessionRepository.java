@@ -4,6 +4,7 @@ import static com.buurman.jooq.generated.Tables.IMPERSONATION_SESSIONS;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -13,6 +14,7 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.impl.DSL;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.ImpersonationEndReason;
@@ -137,14 +139,39 @@ public class ImpersonationSessionRepository {
         .execute();
   }
 
-  public PaginatedResult<ImpersonationSession> findAllPaginated(PageRequest pageRequest) {
+  public PaginatedResult<ImpersonationSession> findAllPaginated(
+      PageRequest pageRequest,
+      @Nullable String adminEmail,
+      @Nullable Collection<UUID> targetUserIds,
+      @Nullable UUID targetTeamId,
+      @Nullable String status,
+      @Nullable String mode) {
     Condition condition = DSL.trueCondition();
+    if (adminEmail != null && !adminEmail.isBlank()) {
+      condition =
+          condition.and(
+              IMPERSONATION_SESSIONS.ADMIN_EMAIL.likeIgnoreCase("%" + adminEmail + "%"));
+    }
+    if (targetUserIds != null && !targetUserIds.isEmpty()) {
+      condition = condition.and(IMPERSONATION_SESSIONS.TARGET_USER_ID.in(targetUserIds));
+    }
+    if (targetTeamId != null) {
+      condition = condition.and(IMPERSONATION_SESSIONS.TARGET_TEAM_ID.eq(targetTeamId));
+    }
+    if (status != null && !status.isBlank()) {
+      condition = condition.and(IMPERSONATION_SESSIONS.STATUS.eq(status));
+    }
+    if (mode != null && !mode.isBlank()) {
+      condition = condition.and(IMPERSONATION_SESSIONS.MODE.eq(mode));
+    }
     Map<String, Field<?>> sortableFields =
         Map.of(
             "createdAt", IMPERSONATION_SESSIONS.CREATED_AT,
             "status", IMPERSONATION_SESSIONS.STATUS,
             "adminEmail", IMPERSONATION_SESSIONS.ADMIN_EMAIL,
-            "expiresAt", IMPERSONATION_SESSIONS.EXPIRES_AT);
+            "expiresAt", IMPERSONATION_SESSIONS.EXPIRES_AT,
+            "mode", IMPERSONATION_SESSIONS.MODE,
+            "activatedAt", IMPERSONATION_SESSIONS.ACTIVATED_AT);
     return PaginationHelper.paginate(
         dsl,
         IMPERSONATION_SESSIONS,

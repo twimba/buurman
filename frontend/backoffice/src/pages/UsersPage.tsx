@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Search, Eye, UserX, UserCheck } from "lucide-react";
 import { RefreshButton } from "@buurman/ui";
 import { SortableHeader } from "../components/SortableHeader";
@@ -8,6 +8,11 @@ import { Pagination, ConfirmDialog } from "@buurman/ui";
 import { useUsers, useDisableUser, useEnableUser } from "../hooks/useUsers";
 import { usePagination } from "../hooks/usePagination";
 import { LoadingSpinner } from "../components/LoadingSpinner";
+import {
+  AsyncSelect,
+  type AsyncSelectOption,
+} from "../components/AsyncSelect";
+import { useTeamSearch } from "../hooks/useTeams";
 
 export const UsersPage = () => {
   const navigate = useNavigate();
@@ -20,12 +25,41 @@ export const UsersPage = () => {
     handleSizeChange,
     handleSortChange,
   } = usePagination({ defaultSort: "createdAt" });
+  const [searchParams, setSearchParams] = useSearchParams();
+  const teamSearch = useTeamSearch();
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
+  const [selectedTeams, setSelectedTeams] = useState<AsyncSelectOption[]>(
+    () => {
+      const teamParam = searchParams.get("team") ?? "";
+      if (!teamParam) {
+        return [];
+      }
+      return teamParam
+        .split(",")
+        .filter(Boolean)
+        .map((id) => ({ value: id, label: id }));
+    },
+  );
   const [actionTarget, setActionTarget] = useState<{
     identifier: string;
     action: "disable" | "enable";
   } | null>(null);
+
+  const handleTeamFilterChange = (options: AsyncSelectOption[]) => {
+    setSelectedTeams(options);
+    const newParams = new URLSearchParams(searchParams);
+    if (options.length > 0) {
+      newParams.set("team", options.map((o) => o.value).join(","));
+    } else {
+      newParams.delete("team");
+    }
+    setSearchParams(newParams, { replace: true });
+    handlePageChange(0);
+  };
+
+  const teamFilterValue =
+    selectedTeams.map((t) => t.value).join(",") || undefined;
 
   const { data, isLoading, isFetching, error, refetch } = useUsers({
     page,
@@ -33,6 +67,7 @@ export const UsersPage = () => {
     search: search || undefined,
     sort,
     direction,
+    team: teamFilterValue,
   });
   const disableUser = useDisableUser();
   const enableUser = useEnableUser();
@@ -101,6 +136,20 @@ export const UsersPage = () => {
           />
         </div>
       </form>
+
+      {/* Team Filter */}
+      <div className="mb-4">
+        <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-1.5">
+          Filter by Team
+        </label>
+        <AsyncSelect
+          selected={selectedTeams}
+          onSelect={handleTeamFilterChange}
+          search={teamSearch}
+          placeholder="Search teams..."
+          className="max-w-md"
+        />
+      </div>
 
       {/* Table */}
       <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">

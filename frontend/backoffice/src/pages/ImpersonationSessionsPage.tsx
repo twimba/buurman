@@ -1,49 +1,40 @@
-import { Fragment, useState, useMemo, useCallback } from "react";
+import { Fragment, useState, useCallback } from "react";
 import { formatDateTime, formatDateTimeFull } from "../utils/dateFormatting";
 import { ChevronDown, ChevronRight, Clock, ExternalLink } from "lucide-react";
 import {
   PageHeader,
   Button,
   StatusBadge,
-  FilterBar,
   Pagination,
   RefreshButton,
 } from "@buurman/ui";
-import type { BadgeColorVariant, FilterDef } from "@buurman/ui";
+import type { BadgeColorVariant } from "@buurman/ui";
 import {
   useImpersonationSessions,
   useRejoinImpersonation,
   useTerminateImpersonation,
 } from "../hooks/useImpersonation";
-import type { ImpersonationSessionResponseStatus } from "../generated/models";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { RichTextDisplay } from "../components/RichTextDisplay";
 import { PasswordConfirmationDialog } from "../components/PasswordConfirmationDialog";
+import { SortableHeader } from "../components/SortableHeader";
+import { usePagination } from "../hooks/usePagination";
+import {
+  AsyncSelect,
+  type AsyncSelectOption,
+} from "../components/AsyncSelect";
+import { useTeamSearch } from "../hooks/useTeams";
+import { useUserSearch } from "../hooks/useUsers";
 
-const statusBadgeColor: Record<
-  ImpersonationSessionResponseStatus,
-  BadgeColorVariant
-> = {
+const statusBadgeColor: Record<string, BadgeColorVariant> = {
   PENDING: "yellow",
   ACTIVE: "green",
   ENDED: "gray",
   EXPIRED: "red",
 };
 
-const PAGE_SIZE = 25;
-
-const STATUS_FILTER: FilterDef = {
-  type: "toggle",
-  key: "status",
-  label: "Status",
-  options: [
-    { value: undefined, label: "All" },
-    { value: "ACTIVE", label: "Active" },
-    { value: "PENDING", label: "Pending" },
-    { value: "ENDED", label: "Ended" },
-    { value: "EXPIRED", label: "Expired" },
-  ],
-};
+const selectClass =
+  "px-3 py-2 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors";
 
 const ExpandableReason = ({ html }: { html: string }) => {
   const [expanded, setExpanded] = useState(false);
@@ -157,21 +148,54 @@ const SessionDetailPanel = ({
 
 export const ImpersonationSessionsPage = () => {
   const {
-    data: sessions,
-    isLoading,
-    isFetching,
-    refetch,
-  } = useImpersonationSessions();
-  const terminateMutation = useTerminateImpersonation();
-  const rejoinMutation = useRejoinImpersonation();
-  const [filterValues, setFilterValues] = useState<
-    Record<string, string | undefined>
-  >({});
+    page,
+    size,
+    sort,
+    direction,
+    handlePageChange,
+    handleSizeChange,
+    handleSortChange,
+  } = usePagination({ defaultSort: "createdAt" });
+
+  const teamSearch = useTeamSearch();
+  const userSearch = useUserSearch();
+
+  const [selectedAdmin, setSelectedAdmin] = useState<AsyncSelectOption[]>([]);
+  const [selectedTeam, setSelectedTeam] = useState<AsyncSelectOption[]>([]);
+  const [selectedTargetUser, setSelectedTargetUser] = useState<
+    AsyncSelectOption[]
+  >([]);
+  const [statusFilter, setStatusFilter] = useState("");
+  const [modeFilter, setModeFilter] = useState("");
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
-  const [page, setPage] = useState(0);
   const [rejoinTarget, setRejoinTarget] = useState<string | null>(null);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [passwordError, setPasswordError] = useState<string | null>(null);
+
+  const {
+    data,
+    isLoading,
+    isFetching,
+    refetch,
+  } = useImpersonationSessions({
+    page,
+    size,
+    sort,
+    direction,
+    adminEmail:
+      selectedAdmin.length > 0 ? selectedAdmin[0].label : undefined,
+    teamIdentifier:
+      selectedTeam.length > 0 ? selectedTeam[0].value : undefined,
+    targetUserEmail:
+      selectedTargetUser.length > 0
+        ? selectedTargetUser[0].label
+        : undefined,
+    status: statusFilter || undefined,
+    mode: modeFilter || undefined,
+  });
+
+  const terminateMutation = useTerminateImpersonation();
+  const rejoinMutation = useRejoinImpersonation();
 
   const handleRejoinClick = useCallback((sessionIdentifier: string) => {
     setRejoinTarget(sessionIdentifier);
@@ -214,34 +238,11 @@ export const ImpersonationSessionsPage = () => {
     [rejoinTarget, rejoinMutation],
   );
 
-  const statusFilter = filterValues.status;
-
-  const filteredSessions = useMemo(() => {
-    if (!sessions) {
-      return [];
-    }
-    if (!statusFilter) {
-      return sessions;
-    }
-    return sessions.filter((s) => s.status === statusFilter);
-  }, [sessions, statusFilter]);
-
-  const totalElements = filteredSessions.length;
-  const totalPages = Math.max(1, Math.ceil(totalElements / PAGE_SIZE));
-  const pagedSessions = filteredSessions.slice(
-    page * PAGE_SIZE,
-    (page + 1) * PAGE_SIZE,
-  );
-
-  // Reset page when filter changes
-  const handleFilterChange = (values: Record<string, string | undefined>) => {
-    setFilterValues(values);
-    setPage(0);
-  };
-
   if (isLoading) {
     return <LoadingSpinner message="Loading sessions..." />;
   }
+
+  const sessions = data?.content ?? [];
 
   return (
     <div>
@@ -255,16 +256,88 @@ export const ImpersonationSessionsPage = () => {
       />
 
       {/* Filters */}
-      <div className="mb-4">
-        <FilterBar
-          filters={[STATUS_FILTER]}
-          values={filterValues}
-          onChange={handleFilterChange}
-          onReset={() => {
-            setFilterValues({});
-            setPage(0);
-          }}
-        />
+      <div className="mb-4 flex flex-wrap gap-3 items-end">
+        <div>
+          <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-1">
+            Admin
+          </label>
+          <AsyncSelect
+            selected={selectedAdmin}
+            onSelect={(options) => {
+              setSelectedAdmin(options);
+              handlePageChange(0);
+            }}
+            search={userSearch}
+            placeholder="Search admin..."
+            className="w-56"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-1">
+            Team
+          </label>
+          <AsyncSelect
+            selected={selectedTeam}
+            onSelect={(options) => {
+              setSelectedTeam(options);
+              handlePageChange(0);
+            }}
+            search={teamSearch}
+            placeholder="Search team..."
+            className="w-56"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-1">
+            Target User
+          </label>
+          <AsyncSelect
+            selected={selectedTargetUser}
+            onSelect={(options) => {
+              setSelectedTargetUser(options);
+              handlePageChange(0);
+            }}
+            search={userSearch}
+            placeholder="Search user..."
+            className="w-56"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-1">
+            Status
+          </label>
+          <select
+            value={statusFilter}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+              handlePageChange(0);
+            }}
+            className={selectClass}
+          >
+            <option value="">All</option>
+            <option value="PENDING">Pending</option>
+            <option value="ACTIVE">Active</option>
+            <option value="ENDED">Ended</option>
+            <option value="EXPIRED">Expired</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-1">
+            Mode
+          </label>
+          <select
+            value={modeFilter}
+            onChange={(e) => {
+              setModeFilter(e.target.value);
+              handlePageChange(0);
+            }}
+            className={selectClass}
+          >
+            <option value="">All</option>
+            <option value="FULL">Full</option>
+            <option value="READ_ONLY">Read Only</option>
+          </select>
+        </div>
       </div>
 
       <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
@@ -272,31 +345,47 @@ export const ImpersonationSessionsPage = () => {
           <thead className="bg-surface-secondary">
             <tr>
               <th className="w-8 px-2 py-3" />
-              <th className="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
-                Admin
-              </th>
+              <SortableHeader
+                field="adminEmail"
+                label="Admin"
+                sort={sort}
+                direction={direction}
+                onSortChange={handleSortChange}
+              />
               <th className="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
                 Target User
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
-                Mode
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
-                Status
-              </th>
+              <SortableHeader
+                field="mode"
+                label="Mode"
+                sort={sort}
+                direction={direction}
+                onSortChange={handleSortChange}
+              />
+              <SortableHeader
+                field="status"
+                label="Status"
+                sort={sort}
+                direction={direction}
+                onSortChange={handleSortChange}
+              />
               <th className="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
                 Reason
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
-                Created
-              </th>
+              <SortableHeader
+                field="createdAt"
+                label="Created"
+                sort={sort}
+                direction={direction}
+                onSortChange={handleSortChange}
+              />
               <th className="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border-default">
-            {pagedSessions.map((session) => {
+            {sessions.map((session) => {
               const isExpanded = expandedRow === session.identifier;
               return (
                 <Fragment key={session.identifier}>
@@ -329,11 +418,7 @@ export const ImpersonationSessionsPage = () => {
                     <td className="px-4 py-3 text-sm">
                       <StatusBadge
                         label={session.status}
-                        color={
-                          statusBadgeColor[
-                            session.status as ImpersonationSessionResponseStatus
-                          ] ?? "gray"
-                        }
+                        color={statusBadgeColor[session.status] ?? "gray"}
                         size="xs"
                         dot
                       />
@@ -392,15 +477,13 @@ export const ImpersonationSessionsPage = () => {
                 </Fragment>
               );
             })}
-            {pagedSessions.length === 0 && (
+            {sessions.length === 0 && (
               <tr>
                 <td
                   colSpan={8}
                   className="px-4 py-8 text-center text-sm text-text-muted"
                 >
-                  {statusFilter
-                    ? `No ${statusFilter.toLowerCase()} impersonation sessions found.`
-                    : "No impersonation sessions found."}
+                  No impersonation sessions found.
                 </td>
               </tr>
             )}
@@ -409,17 +492,15 @@ export const ImpersonationSessionsPage = () => {
       </div>
 
       {/* Pagination */}
-      {totalElements > PAGE_SIZE && (
+      {data && data.totalElements > 0 && (
         <div className="mt-4">
           <Pagination
-            page={page}
-            totalPages={totalPages}
-            totalElements={totalElements}
-            size={PAGE_SIZE}
-            onPageChange={setPage}
-            onSizeChange={() => {
-              /* fixed page size */
-            }}
+            page={data.page}
+            totalPages={data.totalPages}
+            totalElements={data.totalElements}
+            size={data.size}
+            onPageChange={handlePageChange}
+            onSizeChange={handleSizeChange}
           />
         </div>
       )}

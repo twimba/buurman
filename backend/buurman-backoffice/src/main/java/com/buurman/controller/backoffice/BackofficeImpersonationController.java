@@ -36,13 +36,23 @@ public class BackofficeImpersonationController implements BackofficeImpersonatio
 
   @Override
   public PageResponse listImpersonationSessions(
+      Optional<String> adminEmail,
+      Optional<String> targetUserEmail,
+      Optional<String> teamIdentifier,
+      Optional<String> status,
+      Optional<String> mode,
       Optional<Integer> page,
       Optional<Integer> size,
       Optional<String> sort,
       Optional<String> direction) {
     SortDirection sortDirection = direction.map(SortDirection::valueOf).orElse(SortDirection.DESC);
     return impersonationService.listSessions(
-        PageRequest.of(page.orElse(null), size.orElse(null), sort.orElse(null), sortDirection));
+        PageRequest.of(page.orElse(null), size.orElse(null), sort.orElse(null), sortDirection),
+        adminEmail.orElse(null),
+        targetUserEmail.orElse(null),
+        teamIdentifier.orElse(null),
+        status.orElse(null),
+        mode.orElse(null));
   }
 
   @Override

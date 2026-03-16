@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Search,
   Eye,
@@ -20,6 +20,11 @@ import {
 } from "../hooks/useNotifications";
 import { usePagination } from "../hooks/usePagination";
 import { LoadingSpinner } from "../components/LoadingSpinner";
+import {
+  AsyncSelect,
+  type AsyncSelectOption,
+} from "../components/AsyncSelect";
+import { useTeamSearch } from "../hooks/useTeams";
 
 const NOTIFICATION_TYPES = [
   "WELCOME",
@@ -136,10 +141,17 @@ export const NotificationsPage = () => {
   const [typeFilter, setTypeFilter] = useState("");
   const [channelFilter, setChannelFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [searchParams] = useSearchParams();
+  const teamSearch = useTeamSearch();
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
-  const [teamIdentifier, setTeamIdentifier] = useState("");
-  const [teamInput, setTeamInput] = useState("");
+  const [selectedTeam, setSelectedTeam] = useState<AsyncSelectOption[]>(() => {
+    const initialTeamId = searchParams.get("teamIdentifier");
+    if (!initialTeamId) {
+      return [];
+    }
+    return [{ value: initialTeamId, label: initialTeamId }];
+  });
   const [resendTarget, setResendTarget] = useState<string | null>(null);
 
   const { data, isLoading, isFetching, error, refetch } = useNotifications({
@@ -151,7 +163,7 @@ export const NotificationsPage = () => {
     status: statusFilter || undefined,
     dateFrom: dateFrom || undefined,
     dateTo: dateTo || undefined,
-    teamIdentifier: teamIdentifier || undefined,
+    teamIdentifier: selectedTeam.length > 0 ? selectedTeam[0].value : undefined,
     sort,
     direction,
   });
@@ -161,7 +173,6 @@ export const NotificationsPage = () => {
   const handleRecipientSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setRecipientEmail(recipientInput);
-    setTeamIdentifier(teamInput);
     handlePageChange(0);
   };
 
@@ -269,7 +280,7 @@ export const NotificationsPage = () => {
 
       {/* Filters */}
       <form onSubmit={handleRecipientSearch} className="mb-4">
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
             <input
@@ -345,12 +356,15 @@ export const NotificationsPage = () => {
             placeholder="To"
             className={inputClass}
           />
-          <input
-            type="text"
-            placeholder="Team identifier..."
-            value={teamInput}
-            onChange={(e) => setTeamInput(e.target.value)}
-            className={`${inputClass} w-44`}
+          <AsyncSelect
+            selected={selectedTeam}
+            onSelect={(options) => {
+              setSelectedTeam(options);
+              handlePageChange(0);
+            }}
+            search={teamSearch}
+            placeholder="Search teams..."
+            className="w-64"
           />
           <button
             type="submit"

@@ -192,7 +192,8 @@ public class UserRepository {
         .execute();
   }
 
-  public PaginatedResult<User> findAllPaginated(PageRequest pageRequest, @Nullable String search) {
+  public PaginatedResult<User> findAllPaginated(
+      PageRequest pageRequest, @Nullable String search, @Nullable Collection<UUID> filterUserIds) {
     Condition condition = USERS.DELETED_AT.isNull();
     if (search != null && !search.isBlank()) {
       String pattern = "%" + search + "%";
@@ -204,6 +205,9 @@ public class UserRepository {
                   .or(USERS.FIRST_NAME.likeIgnoreCase(pattern))
                   .or(USERS.LAST_NAME.likeIgnoreCase(pattern))
                   .or(USERS.IDENTIFIER.likeIgnoreCase(pattern)));
+    }
+    if (filterUserIds != null && !filterUserIds.isEmpty()) {
+      condition = condition.and(USERS.ID.in(filterUserIds));
     }
 
     Map<String, Field<?>> sortableFields =
@@ -228,6 +232,14 @@ public class UserRepository {
   public User getByIdentifierUnscoped(Sid identifier) {
     return findByIdentifierUnscoped(identifier)
         .orElseThrow(() -> new NotFoundException("User not found"));
+  }
+
+  public List<UUID> findIdsByEmailPattern(String emailPattern) {
+    String pattern = "%" + emailPattern + "%";
+    return dsl.select(USERS.ID)
+        .from(USERS)
+        .where(USERS.EMAIL.likeIgnoreCase(pattern).and(USERS.DELETED_AT.isNull()))
+        .fetch(USERS.ID);
   }
 
   public void updateDisabledAt(UUID userId, @Nullable LocalDateTime disabledAt) {

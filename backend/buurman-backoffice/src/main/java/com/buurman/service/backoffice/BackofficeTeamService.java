@@ -74,6 +74,7 @@ public class BackofficeTeamService {
                 m -> {
                   User u = usersById.get(m.getUserId());
                   return new MemberInfo(
+                      Optional.ofNullable(u).flatMap(User::getIdentifier),
                       Optional.ofNullable(u).map(User::getEmail),
                       Optional.ofNullable(u).map(User::getFirstName),
                       Optional.ofNullable(u).map(User::getLastName),

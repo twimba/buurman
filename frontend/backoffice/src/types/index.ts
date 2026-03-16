@@ -20,6 +20,7 @@ export interface BackofficeTeamDetail {
 }
 
 export interface TeamMemberInfo {
+  userIdentifier?: string;
   email?: string;
   firstName?: string;
   lastName?: string;
@@ -27,6 +28,19 @@ export interface TeamMemberInfo {
   isOwner: boolean;
   joinedAt?: string;
   disabled: boolean;
+}
+
+export interface UserTeamMembership {
+  teamIdentifier: string;
+  teamName: string;
+  role: string;
+  isOwner: boolean;
+  demo: boolean;
+  joinedAt: string;
+}
+
+export interface BackofficeUserDetail extends BackofficeUser {
+  teams: UserTeamMembership[];
 }
 
 export interface DataCounts {

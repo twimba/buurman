@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { formatDateTime } from "../utils/dateFormatting";
 import {
   Mail,
@@ -8,10 +8,10 @@ import {
   CheckCircle,
   XCircle,
   Shield,
-  Users,
   Calendar,
   Eye,
   Pencil,
+  Crown,
 } from "lucide-react";
 import { PageHeader, Button, ConfirmDialog, ModalWrapper } from "@buurman/ui";
 import {
@@ -215,11 +215,6 @@ export const UserDetailPage = () => {
       valueClass: user.disabled ? "text-error-text" : "text-success-text",
     },
     {
-      label: "Teams",
-      value: String(user.teamCount),
-      icon: Users,
-    },
-    {
       label: "Created",
       value: formatDateTime(user.createdAt),
       icon: Calendar,
@@ -293,6 +288,88 @@ export const UserDetailPage = () => {
           ))}
         </div>
       </div>
+
+      {/* Team Memberships */}
+      {user.teams && user.teams.length > 0 && (
+        <div className="mt-6">
+          <h2 className="text-sm font-semibold text-text-primary mb-3">
+            Team Memberships
+          </h2>
+          <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border-default">
+                    <th className="text-left px-5 py-3 text-xs font-medium uppercase tracking-wider text-text-muted">
+                      Team
+                    </th>
+                    <th className="text-left px-5 py-3 text-xs font-medium uppercase tracking-wider text-text-muted">
+                      Role
+                    </th>
+                    <th className="text-left px-5 py-3 text-xs font-medium uppercase tracking-wider text-text-muted">
+                      Owner
+                    </th>
+                    <th className="text-left px-5 py-3 text-xs font-medium uppercase tracking-wider text-text-muted">
+                      Demo
+                    </th>
+                    <th className="text-left px-5 py-3 text-xs font-medium uppercase tracking-wider text-text-muted">
+                      Joined
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {user.teams.map((tm) => (
+                    <tr
+                      key={tm.teamIdentifier}
+                      className="border-b border-border-default last:border-b-0 hover:bg-surface-page transition-colors"
+                    >
+                      <td className="px-5 py-3">
+                        <Link
+                          to={`/teams/${tm.teamIdentifier}`}
+                          className="text-primary-500 hover:underline font-medium"
+                        >
+                          {tm.teamName}
+                        </Link>
+                      </td>
+                      <td className="px-5 py-3">
+                        <span
+                          className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${
+                            tm.role === "TEAM_ADMIN"
+                              ? "bg-purple-100 text-purple-700"
+                              : tm.role === "TEAM_EDITOR"
+                                ? "bg-blue-100 text-blue-700"
+                                : "bg-slate-100 text-slate-600"
+                          }`}
+                        >
+                          {tm.role.replace("TEAM_", "")}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3">
+                        {tm.isOwner && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded">
+                            <Crown className="h-2.5 w-2.5" />
+                            Owner
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-5 py-3">
+                        {tm.demo && (
+                          <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-warning-bg text-warning-text ring-1 ring-warning-border">
+                            Demo
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-5 py-3 text-text-secondary">
+                        {formatDateTime(tm.joinedAt)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Feature Flags */}
       <div className="mt-6">

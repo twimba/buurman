@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
 import { usersApi } from "../api/users";
+import type { AsyncSelectOption } from "../components/AsyncSelect";
 
 interface ListUsersParams {
   page?: number;
@@ -7,6 +9,7 @@ interface ListUsersParams {
   search?: string;
   sort?: string;
   direction?: string;
+  team?: string;
 }
 
 export const useUsers = (params?: ListUsersParams) => {
@@ -50,4 +53,16 @@ export const useResetPassword = () => {
   return useMutation({
     mutationFn: (identifier: string) => usersApi.resetPassword(identifier),
   });
+};
+
+export const useUserSearch = () => {
+  return useCallback(async (query: string): Promise<AsyncSelectOption[]> => {
+    const res = await usersApi.list({ search: query, size: 20 });
+    return res.data.content.map((user) => ({
+      value: user.identifier,
+      label: user.email,
+      sublabel:
+        `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() || undefined,
+    }));
+  }, []);
 };

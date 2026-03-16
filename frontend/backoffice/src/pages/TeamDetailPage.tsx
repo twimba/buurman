@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { formatDate, formatDateTime } from "../utils/dateFormatting";
 import {
   Users,
@@ -15,6 +15,7 @@ import {
   Settings,
   Crown,
   Clock,
+  Mail,
 } from "lucide-react";
 import { PageHeader, Button, ConfirmDialog, RefreshButton } from "@buurman/ui";
 import { useTeam, useUpdateTeam, useDeleteTeam } from "../hooks/useTeams";
@@ -207,6 +208,24 @@ export const TeamDetailPage = () => {
         />
       </div>
 
+      {/* Quick Links */}
+      <div className="flex gap-3 mb-6">
+        <Link
+          to={`/users?team=${identifier}`}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-primary-500 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors"
+        >
+          <Users className="h-4 w-4" />
+          View users
+        </Link>
+        <Link
+          to={`/notifications?teamIdentifier=${identifier}`}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-primary-500 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors"
+        >
+          <Mail className="h-4 w-4" />
+          View notifications
+        </Link>
+      </div>
+
       {/* Data Volume */}
       <SectionTitle title="Data Overview" />
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
@@ -327,9 +346,18 @@ export const TeamDetailPage = () => {
                 >
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-text-primary">
-                        {member.firstName ?? ""} {member.lastName ?? ""}
-                      </span>
+                      {member.userIdentifier ? (
+                        <Link
+                          to={`/users/${member.userIdentifier}`}
+                          className="font-medium text-primary-500 hover:underline"
+                        >
+                          {member.firstName ?? ""} {member.lastName ?? ""}
+                        </Link>
+                      ) : (
+                        <span className="font-medium text-text-primary">
+                          {member.firstName ?? ""} {member.lastName ?? ""}
+                        </span>
+                      )}
                       {member.isOwner && (
                         <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded">
                           <Crown className="h-2.5 w-2.5" />

@@ -18,6 +18,7 @@ public record BackofficeTeamDetailResponse(
     FinancialSnapshot financialSnapshot,
     Optional<SettingsInfo> settings) {
   public record MemberInfo(
+      Optional<Sid> userIdentifier,
       Optional<String> email,
       Optional<String> firstName,
       Optional<String> lastName,

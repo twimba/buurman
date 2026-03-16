@@ -2319,6 +2319,12 @@ paths:
           required: false
           schema:
             type: string
+        - name: team
+          in: query
+          description: Comma-separated team identifiers to filter by
+          required: false
+          schema:
+            type: string
         - name: page
           in: query
           description: Page number (0-based)
@@ -2421,7 +2427,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BackofficeUserResponse"
+                $ref: "#/components/schemas/BackofficeUserDetailResponse"
         "400":
           description: Bad request - validation error or malformed input
           content:
@@ -4714,6 +4720,44 @@ paths:
       description: Get paginated list of all impersonation sessions
       operationId: listImpersonationSessions
       parameters:
+        - name: adminEmail
+          in: query
+          description: Filter by admin email (partial match)
+          required: false
+          schema:
+            type: string
+        - name: targetUserEmail
+          in: query
+          description: Filter by target user email (partial match)
+          required: false
+          schema:
+            type: string
+        - name: teamIdentifier
+          in: query
+          description: Filter by team identifier
+          required: false
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Filter by session status
+          required: false
+          schema:
+            type: string
+            enum:
+              - PENDING
+              - ACTIVE
+              - ENDED
+              - EXPIRED
+        - name: mode
+          in: query
+          description: Filter by impersonation mode
+          required: false
+          schema:
+            type: string
+            enum:
+              - FULL
+              - READ_ONLY
         - name: page
           in: query
           description: Page number (zero-based)
@@ -5415,6 +5459,74 @@ components:
         - identifier
         - online
         - teamCount
+    UserTeamMembership:
+      type: object
+      properties:
+        teamIdentifier:
+          type: string
+        teamName:
+          type: string
+        role:
+          type: string
+        isOwner:
+          type: boolean
+        demo:
+          type: boolean
+        joinedAt:
+          type: string
+          format: date-time
+      required:
+        - demo
+        - isOwner
+        - joinedAt
+        - role
+        - teamIdentifier
+        - teamName
+    BackofficeUserDetailResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        emailVerified:
+          type: boolean
+        disabled:
+          type: boolean
+        online:
+          type: boolean
+        teamCount:
+          type: integer
+          format: int64
+        demoTeamCount:
+          type: integer
+          format: int64
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        teams:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserTeamMembership"
+      required:
+        - createdAt
+        - demoTeamCount
+        - disabled
+        - email
+        - emailVerified
+        - identifier
+        - online
+        - teamCount
+        - teams
     PageResponseBackofficeUserResponse:
       type: object
       description: Paginated response wrapper with content and pagination metadata
@@ -5566,6 +5678,8 @@ components:
     MemberInfo:
       type: object
       properties:
+        userIdentifier:
+          type: string
         email:
           type: string
         firstName:

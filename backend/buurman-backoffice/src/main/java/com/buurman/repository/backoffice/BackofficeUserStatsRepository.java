@@ -4,11 +4,15 @@ import static com.buurman.jooq.generated.Tables.TEAMS;
 import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
 import static org.jooq.impl.DSL.count;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
+
+import com.buurman.domain.Sid;
 
 import lombok.RequiredArgsConstructor;
 
@@ -48,6 +52,21 @@ public class BackofficeUserStatsRepository {
             .where(TEAM_MEMBERS.USER_ID.eq(userId).and(TEAM_MEMBERS.DELETED_AT.isNull()))
             .fetchOne(0, Long.class);
     return result != null ? result : 0L;
+  }
+
+  public List<UUID> findUserIdsByTeamIdentifiers(Collection<Sid> teamIdentifiers) {
+    if (teamIdentifiers == null || teamIdentifiers.isEmpty()) {
+      return List.of();
+    }
+    return dsl.selectDistinct(TEAM_MEMBERS.USER_ID)
+        .from(TEAM_MEMBERS)
+        .join(TEAMS)
+        .on(TEAMS.ID.eq(TEAM_MEMBERS.TEAM_ID))
+        .where(
+            TEAMS.IDENTIFIER.in(teamIdentifiers)
+                .and(TEAM_MEMBERS.DELETED_AT.isNull())
+                .and(TEAMS.DELETED_AT.isNull()))
+        .fetch(TEAM_MEMBERS.USER_ID);
   }
 
   public long countDemoTeamsForUser(UUID userId) {

@@ -124,7 +124,9 @@
                                 <importMapping>BackofficeSystemInfoResponse=com.buurman.dto.response.backoffice.BackofficeSystemInfoResponse</importMapping>
                                 <importMapping>BackofficeTeamDetailResponse=com.buurman.dto.response.backoffice.BackofficeTeamDetailResponse</importMapping>
                                 <importMapping>BackofficeTeamResponse=com.buurman.dto.response.backoffice.BackofficeTeamResponse</importMapping>
+                                <importMapping>BackofficeUserDetailResponse=com.buurman.dto.response.backoffice.BackofficeUserDetailResponse</importMapping>
                                 <importMapping>BackofficeUserResponse=com.buurman.dto.response.backoffice.BackofficeUserResponse</importMapping>
+                                <importMapping>UserTeamMembership=com.buurman.dto.response.backoffice.UserTeamMembership</importMapping>
                                 <importMapping>BuurmyResponse=com.buurman.dto.response.backoffice.BuurmyResponse</importMapping>
                                 <importMapping>FeatureFlagUpdateResponse=com.buurman.dto.response.backoffice.FeatureFlagUpdateResponse</importMapping>
                                 <importMapping>JobExecutionHistoryResponse=com.buurman.dto.response.backoffice.JobExecutionHistoryResponse</importMapping>
