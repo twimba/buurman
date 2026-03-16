@@ -59,3 +59,24 @@ deploy-prod:
 	git fetch origin main
 	git tag -f prod origin/main
 	git push origin prod --force
+
+## Open iTerm2 tab with 3 panes: infrastructure (top), backend (middle), frontend (bottom)
+local:
+	colima start
+	@osascript \
+		-e 'tell application "iTerm2"' \
+		-e '  tell current window' \
+		-e '    set newTab to (create tab with default profile)' \
+		-e '    tell current session of newTab' \
+		-e '      write text "cd /Users/luis.santos/projects/buurman && make dev-fg"' \
+		-e '      set backendPane to (split horizontally with default profile)' \
+		-e '    end tell' \
+		-e '    tell backendPane' \
+		-e '      write text "cd /Users/luis.santos/projects/buurman/backend && sleep 10 && mvn -pl app -am spring-boot:run"' \
+		-e '      set frontendPane to (split horizontally with default profile)' \
+		-e '    end tell' \
+		-e '    tell frontendPane' \
+		-e '      write text "cd /Users/luis.santos/projects/buurman/frontend && yarn dev"' \
+		-e '    end tell' \
+		-e '  end tell' \
+		-e 'end tell'
