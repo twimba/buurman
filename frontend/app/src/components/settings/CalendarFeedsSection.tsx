@@ -9,12 +9,14 @@ import {
   Link,
   Home,
   User,
+  Eye,
   AlertTriangle,
   Loader2,
   ChevronDown,
   ChevronRight,
 } from 'lucide-react';
 import { Button } from '@buurman/ui';
+import { CalendarPreviewModal } from './CalendarPreviewModal';
 import {
   useCalendarFeeds,
   useCreateCalendarFeed,
@@ -37,6 +39,9 @@ export const CalendarFeedsSection = () => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [confirmRotateId, setConfirmRotateId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [previewFeed, setPreviewFeed] = useState<CalendarFeedResponse | null>(
+    null
+  );
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(
     new Set()
   );
@@ -191,6 +196,13 @@ export const CalendarFeedsSection = () => {
 
                     <div className="flex items-center gap-1 flex-shrink-0">
                       <button
+                        onClick={() => setPreviewFeed(feed)}
+                        className="p-2 rounded-lg hover:bg-surface-inset transition-colors"
+                        title="Preview calendar"
+                      >
+                        <Eye className="h-4 w-4 text-text-secondary" />
+                      </button>
+                      <button
                         onClick={() =>
                           handleCopy(feed.feedUrl, feed.identifier)
                         }
@@ -291,6 +303,16 @@ export const CalendarFeedsSection = () => {
             No calendar feeds yet. Create one to get started.
           </p>
         </div>
+      )}
+
+      {/* Preview modal */}
+      {previewFeed && (
+        <CalendarPreviewModal
+          open={!!previewFeed}
+          onClose={() => setPreviewFeed(null)}
+          feedUrl={previewFeed.feedUrl}
+          feedLabel={previewFeed.entityLabel || previewFeed.identifier}
+        />
       )}
     </div>
   );

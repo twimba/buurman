@@ -177,57 +177,103 @@ export const DashboardPage = () => {
       </div>
 
       {/* Property Status Breakdown */}
-      {stats && stats.totalProperties > 0 && (() => {
-        const statuses = [
-          { label: 'Occupied', count: stats.occupiedUnits, color: 'bg-success', dotColor: 'bg-success', textColor: 'text-success-text' },
-          ...(stats.selfOccupiedUnits > 0
-            ? [{ label: 'Self-Occupied', count: stats.selfOccupiedUnits, color: 'bg-info', dotColor: 'bg-info', textColor: 'text-info-text' }]
-            : []),
-          { label: 'Vacant', count: stats.vacantUnits, color: 'bg-warning', dotColor: 'bg-warning', textColor: 'text-warning-text' },
-          { label: 'Maintenance', count: stats.maintenanceUnits, color: 'bg-amber-500', dotColor: 'bg-amber-500', textColor: 'text-text-secondary' },
-          { label: 'Unavailable', count: stats.unavailableUnits, color: 'bg-neutral-300', dotColor: 'bg-neutral-400', textColor: 'text-text-muted' },
-        ];
+      {stats &&
+        stats.totalProperties > 0 &&
+        (() => {
+          const statuses = [
+            {
+              label: 'Occupied',
+              count: stats.occupiedUnits,
+              color: 'bg-success',
+              dotColor: 'bg-success',
+              textColor: 'text-success-text',
+            },
+            ...(stats.selfOccupiedUnits > 0
+              ? [
+                  {
+                    label: 'Self-Occupied',
+                    count: stats.selfOccupiedUnits,
+                    color: 'bg-info',
+                    dotColor: 'bg-info',
+                    textColor: 'text-info-text',
+                  },
+                ]
+              : []),
+            {
+              label: 'Vacant',
+              count: stats.vacantUnits,
+              color: 'bg-warning',
+              dotColor: 'bg-warning',
+              textColor: 'text-warning-text',
+            },
+            {
+              label: 'Maintenance',
+              count: stats.maintenanceUnits,
+              color: 'bg-amber-500',
+              dotColor: 'bg-amber-500',
+              textColor: 'text-text-secondary',
+            },
+            {
+              label: 'Unavailable',
+              count: stats.unavailableUnits,
+              color: 'bg-neutral-300',
+              dotColor: 'bg-neutral-400',
+              textColor: 'text-text-muted',
+            },
+          ];
 
-        return (
-          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-            <h2 className="text-base font-semibold text-text-primary mb-5">
-              Property Status
-            </h2>
+          return (
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+              <h2 className="text-base font-semibold text-text-primary mb-5">
+                Property Status
+              </h2>
 
-            {/* Stacked horizontal bar */}
-            <div className="flex h-3 rounded-full overflow-hidden mb-6">
-              {statuses.map((s) =>
-                s.count > 0 ? (
-                  <div
-                    key={s.label}
-                    className={`${s.color} first:rounded-l-full last:rounded-r-full`}
-                    style={{ width: `${(s.count / stats.totalProperties) * 100}%` }}
-                  />
-                ) : null
-              )}
-            </div>
+              {/* Stacked horizontal bar */}
+              <div className="flex h-3 rounded-full overflow-hidden mb-6">
+                {statuses.map((s) =>
+                  s.count > 0 ? (
+                    <div
+                      key={s.label}
+                      className={`${s.color} first:rounded-l-full last:rounded-r-full`}
+                      style={{
+                        width: `${(s.count / stats.totalProperties) * 100}%`,
+                      }}
+                    />
+                  ) : null
+                )}
+              </div>
 
-            {/* Legend rows */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-              {statuses.map((s) => {
-                const pct = ((s.count / stats.totalProperties) * 100).toFixed(0);
-                return (
-                  <div key={s.label} className="flex flex-col gap-1">
-                    <div className="flex items-center gap-2">
-                      <span className={`h-2.5 w-2.5 rounded-full ${s.dotColor} shrink-0`} />
-                      <span className="text-xs font-medium text-text-secondary">{s.label}</span>
+              {/* Legend rows */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                {statuses.map((s) => {
+                  const pct = ((s.count / stats.totalProperties) * 100).toFixed(
+                    0
+                  );
+                  return (
+                    <div key={s.label} className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`h-2.5 w-2.5 rounded-full ${s.dotColor} shrink-0`}
+                        />
+                        <span className="text-xs font-medium text-text-secondary">
+                          {s.label}
+                        </span>
+                      </div>
+                      <div className="pl-[18px]">
+                        <span className="text-lg font-bold text-text-primary tabular-nums">
+                          {s.count}
+                        </span>
+                        <span className="text-xs text-text-muted ml-1.5">
+                          {pct}%
+                        </span>
+                      </div>
                     </div>
-                    <div className="pl-[18px]">
-                      <span className="text-lg font-bold text-text-primary tabular-nums">{s.count}</span>
-                      <span className="text-xs text-text-muted ml-1.5">{pct}%</span>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        );
-      })()}
+          );
+        })()}
 
       {/* Unpaid Payments */}
       <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
@@ -361,7 +407,6 @@ export const DashboardPage = () => {
           </div>
         )}
       </div>
-
     </div>
   );
 };

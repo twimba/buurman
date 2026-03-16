@@ -63,7 +63,9 @@ public class BackofficeUserStatsRepository {
         .join(TEAMS)
         .on(TEAMS.ID.eq(TEAM_MEMBERS.TEAM_ID))
         .where(
-            TEAMS.IDENTIFIER.in(teamIdentifiers)
+            TEAMS
+                .IDENTIFIER
+                .in(teamIdentifiers)
                 .and(TEAM_MEMBERS.DELETED_AT.isNull())
                 .and(TEAMS.DELETED_AT.isNull()))
         .fetch(TEAM_MEMBERS.USER_ID);

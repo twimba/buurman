@@ -20,10 +20,7 @@ import {
 } from "../hooks/useNotifications";
 import { usePagination } from "../hooks/usePagination";
 import { LoadingSpinner } from "../components/LoadingSpinner";
-import {
-  AsyncSelect,
-  type AsyncSelectOption,
-} from "../components/AsyncSelect";
+import { AsyncSelect, type AsyncSelectOption } from "../components/AsyncSelect";
 import { useTeamSearch } from "../hooks/useTeams";
 
 const NOTIFICATION_TYPES = [

@@ -32,8 +32,7 @@ export interface ListImpersonationSessionsParams {
 
 export const impersonationApi = {
   listSessions: (params?: ListImpersonationSessionsParams) =>
-    client.get<PageResponse<ImpersonationSession>>(
-      "/impersonation/sessions",
-      { params },
-    ),
+    client.get<PageResponse<ImpersonationSession>>("/impersonation/sessions", {
+      params,
+    }),
 };

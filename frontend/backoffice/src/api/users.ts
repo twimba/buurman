@@ -1,5 +1,9 @@
 import client from "./client";
-import type { BackofficeUser, BackofficeUserDetail, PageResponse } from "../types";
+import type {
+  BackofficeUser,
+  BackofficeUserDetail,
+  PageResponse,
+} from "../types";
 
 interface ListUsersParams {
   page?: number;

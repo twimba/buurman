@@ -344,8 +344,7 @@ public class ImpersonationService {
     List<UUID> allTargetUserIds =
         result.items().stream().map(ImpersonationSession::getTargetUserId).distinct().toList();
     Map<UUID, User> userMap =
-        userRepository.findByIds(allTargetUserIds).stream()
-            .collect(toMap(User::getId, identity()));
+        userRepository.findByIds(allTargetUserIds).stream().collect(toMap(User::getId, identity()));
 
     List<UUID> targetTeamIds =
         result.items().stream().map(ImpersonationSession::getTargetTeamId).distinct().toList();

@@ -19,10 +19,7 @@ import { RichTextDisplay } from "../components/RichTextDisplay";
 import { PasswordConfirmationDialog } from "../components/PasswordConfirmationDialog";
 import { SortableHeader } from "../components/SortableHeader";
 import { usePagination } from "../hooks/usePagination";
-import {
-  AsyncSelect,
-  type AsyncSelectOption,
-} from "../components/AsyncSelect";
+import { AsyncSelect, type AsyncSelectOption } from "../components/AsyncSelect";
 import { useTeamSearch } from "../hooks/useTeams";
 import { useUserSearch } from "../hooks/useUsers";
 
@@ -172,24 +169,15 @@ export const ImpersonationSessionsPage = () => {
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [passwordError, setPasswordError] = useState<string | null>(null);
 
-  const {
-    data,
-    isLoading,
-    isFetching,
-    refetch,
-  } = useImpersonationSessions({
+  const { data, isLoading, isFetching, refetch } = useImpersonationSessions({
     page,
     size,
     sort,
     direction,
-    adminEmail:
-      selectedAdmin.length > 0 ? selectedAdmin[0].label : undefined,
-    teamIdentifier:
-      selectedTeam.length > 0 ? selectedTeam[0].value : undefined,
+    adminEmail: selectedAdmin.length > 0 ? selectedAdmin[0].label : undefined,
+    teamIdentifier: selectedTeam.length > 0 ? selectedTeam[0].value : undefined,
     targetUserEmail:
-      selectedTargetUser.length > 0
-        ? selectedTargetUser[0].label
-        : undefined,
+      selectedTargetUser.length > 0 ? selectedTargetUser[0].label : undefined,
     status: statusFilter || undefined,
     mode: modeFilter || undefined,
   });

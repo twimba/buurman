@@ -104,11 +104,7 @@ export const AsyncSelect = ({
       handleSelect(results[highlightIndex]);
     } else if (e.key === "Escape") {
       setIsOpen(false);
-    } else if (
-      e.key === "Backspace" &&
-      query === "" &&
-      selected.length > 0
-    ) {
+    } else if (e.key === "Backspace" && query === "" && selected.length > 0) {
       handleRemove(selected[selected.length - 1].value);
     }
   };

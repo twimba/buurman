@@ -149,8 +149,7 @@ public class ImpersonationSessionRepository {
     Condition condition = DSL.trueCondition();
     if (adminEmail != null && !adminEmail.isBlank()) {
       condition =
-          condition.and(
-              IMPERSONATION_SESSIONS.ADMIN_EMAIL.likeIgnoreCase("%" + adminEmail + "%"));
+          condition.and(IMPERSONATION_SESSIONS.ADMIN_EMAIL.likeIgnoreCase("%" + adminEmail + "%"));
     }
     if (targetUserIds != null && !targetUserIds.isEmpty()) {
       condition = condition.and(IMPERSONATION_SESSIONS.TARGET_USER_ID.in(targetUserIds));
