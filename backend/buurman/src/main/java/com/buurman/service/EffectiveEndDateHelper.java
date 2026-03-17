@@ -8,7 +8,6 @@ import java.util.Optional;
 
 import org.jooq.Field;
 import org.jooq.impl.DSL;
-import org.jooq.impl.SQLDataType;
 
 import com.buurman.domain.ContractExtension;
 
@@ -21,8 +20,7 @@ import com.buurman.domain.ContractExtension;
  */
 public final class EffectiveEndDateHelper {
 
-  private static final org.jooq.Table<?> CE =
-      DSL.table("contract_extensions");
+  private static final org.jooq.Table<?> CE = DSL.table("contract_extensions");
   private static final Field<java.util.UUID> CE_CONTRACT_ID =
       DSL.field("contract_extensions.contract_id", java.util.UUID.class);
   private static final Field<String> CE_STATUS =

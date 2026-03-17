@@ -90,11 +90,12 @@ public class ContractExtensionDemoDataGenerator {
 
           // Rent increase: 2-5%
           BigDecimal increasePercent =
-              BigDecimal.valueOf(2 + random.nextDouble() * 3)
-                  .setScale(4, RoundingMode.HALF_UP);
+              BigDecimal.valueOf(2 + random.nextDouble() * 3).setScale(4, RoundingMode.HALF_UP);
           BigDecimal newRentMajor =
               currentRentMajor
-                  .multiply(BigDecimal.ONE.add(increasePercent.divide(BigDecimal.valueOf(100), 6, RoundingMode.HALF_UP)))
+                  .multiply(
+                      BigDecimal.ONE.add(
+                          increasePercent.divide(BigDecimal.valueOf(100), 6, RoundingMode.HALF_UP)))
                   .setScale(2, RoundingMode.HALF_UP);
 
           // Convert to minor units (cents) for BIGINT storage
@@ -179,15 +180,15 @@ public class ContractExtensionDemoDataGenerator {
     return switch (status) {
       case "ACTIVE" ->
           String.format(
-              "Extension #%d — rent increased by %s%%", extensionNumber, increasePercent.setScale(2, RoundingMode.HALF_UP));
+              "Extension #%d — rent increased by %s%%",
+              extensionNumber, increasePercent.setScale(2, RoundingMode.HALF_UP));
       case "SUPERSEDED" ->
           String.format("Extension #%d — superseded by subsequent renewal", extensionNumber);
       case "DRAFT" ->
           String.format(
               "Extension #%d — pending approval, proposed %s%% increase",
               extensionNumber, increasePercent.setScale(2, RoundingMode.HALF_UP));
-      case "DECLINED" ->
-          String.format("Extension #%d — declined by tenant", extensionNumber);
+      case "DECLINED" -> String.format("Extension #%d — declined by tenant", extensionNumber);
       default -> String.format("Extension #%d", extensionNumber);
     };
   }

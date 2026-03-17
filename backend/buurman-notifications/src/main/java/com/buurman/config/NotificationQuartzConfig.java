@@ -72,7 +72,8 @@ public class NotificationQuartzConfig {
   @Bean
   public Trigger renewalReminderTrigger(
       JobDetail renewalReminderJobDetail,
-      @Value("${scheduling.notification-reminders.renewal-reminder-cron:0 0 8 * * ?}") String cron) {
+      @Value("${scheduling.notification-reminders.renewal-reminder-cron:0 0 8 * * ?}")
+          String cron) {
     return TriggerBuilder.newTrigger()
         .forJob(renewalReminderJobDetail)
         .withIdentity("renewalReminderTrigger", "scheduling")

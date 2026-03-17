@@ -159,10 +159,7 @@ public class TeamRepository {
   }
 
   public List<UUID> findAllActiveTeamIds() {
-    return dsl.select(TEAMS.ID)
-        .from(TEAMS)
-        .where(TEAMS.DELETED_AT.isNull())
-        .fetch(TEAMS.ID);
+    return dsl.select(TEAMS.ID).from(TEAMS).where(TEAMS.DELETED_AT.isNull()).fetch(TEAMS.ID);
   }
 
   public long countAll() {

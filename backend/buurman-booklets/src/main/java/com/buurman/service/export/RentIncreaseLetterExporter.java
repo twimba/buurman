@@ -54,8 +54,7 @@ public class RentIncreaseLetterExporter {
   public byte[] generate(ContractExtensionIdentifier extensionIdentifier, UUID teamId) {
     ContractExtension extension =
         extensionRepository.getByIdentifierAndTeamId(extensionIdentifier, teamId);
-    Contract contract =
-        contractRepository.getByIdAndTeamId(extension.getContractId(), teamId);
+    Contract contract = contractRepository.getByIdAndTeamId(extension.getContractId(), teamId);
     Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
 
     List<ContractParty> parties =
@@ -95,7 +94,14 @@ public class RentIncreaseLetterExporter {
     appendDocumentStart(html, css);
 
     appendLetterContent(
-        html, extension, contract, property, primaryTenant, tenantAddress, ccy, dateFmt,
+        html,
+        extension,
+        contract,
+        property,
+        primaryTenant,
+        tenantAddress,
+        ccy,
+        dateFmt,
         generatedDate);
 
     appendDocumentEnd(html);
@@ -132,15 +138,16 @@ public class RentIncreaseLetterExporter {
           html.append(escapeHtml(tenant.getFirstName()));
           tenant.getLastName().ifPresent(n -> html.append(" ").append(escapeHtml(n)));
           html.append("</div>");
-          tenantAddress.ifPresent(addr -> {
-            html.append("<div>").append(escapeHtml(addr.getStreet())).append("</div>");
-            html.append("<div>")
-                .append(escapeHtml(addr.getPostalCode()))
-                .append(" ")
-                .append(escapeHtml(addr.getCity()))
-                .append("</div>");
-            html.append("<div>").append(escapeHtml(addr.getCountryCode())).append("</div>");
-          });
+          tenantAddress.ifPresent(
+              addr -> {
+                html.append("<div>").append(escapeHtml(addr.getStreet())).append("</div>");
+                html.append("<div>")
+                    .append(escapeHtml(addr.getPostalCode()))
+                    .append(" ")
+                    .append(escapeHtml(addr.getCity()))
+                    .append("</div>");
+                html.append("<div>").append(escapeHtml(addr.getCountryCode())).append("</div>");
+              });
         },
         () -> html.append("<div class='addressee-name'>Tenant</div>"));
     html.append("</div>");
@@ -149,31 +156,37 @@ public class RentIncreaseLetterExporter {
     html.append("<div class='letter-subject'>Re: Notice of Rent Adjustment</div>");
 
     // Salutation
-    String salutation = primaryTenant
-        .map(t -> "Dear " + escapeHtml(t.getFirstName())
-            + t.getLastName().map(n -> " " + escapeHtml(n)).orElse(""))
-        .orElse("Dear Tenant");
+    String salutation =
+        primaryTenant
+            .map(
+                t ->
+                    "Dear "
+                        + escapeHtml(t.getFirstName())
+                        + t.getLastName().map(n -> " " + escapeHtml(n)).orElse(""))
+            .orElse("Dear Tenant");
     html.append("<div class='letter-body'>");
     html.append("<p>").append(salutation).append(",</p>");
 
     // Body paragraph 1 — notification
     String propertyAddress =
-        escapeHtml(property.getStreet()) + ", "
-            + escapeHtml(property.getPostalCode()) + " "
+        escapeHtml(property.getStreet())
+            + ", "
+            + escapeHtml(property.getPostalCode())
+            + " "
             + escapeHtml(property.getCity());
-    String oldRent =
-        CurrencyUtils.formatCurrency(extension.getPreviousRentAmount().value(), ccy);
-    String newRent =
-        CurrencyUtils.formatCurrency(extension.getNewRentAmount().value(), ccy);
-    String effectiveDate = extension.getNewEndDate()
-        .map(d -> formatDate(extension.getPreviousEndDate(), dateFmt))
-        .orElse(formatDate(extension.getPreviousEndDate(), dateFmt));
+    String oldRent = CurrencyUtils.formatCurrency(extension.getPreviousRentAmount().value(), ccy);
+    String newRent = CurrencyUtils.formatCurrency(extension.getNewRentAmount().value(), ccy);
+    String effectiveDate =
+        extension
+            .getNewEndDate()
+            .map(d -> formatDate(extension.getPreviousEndDate(), dateFmt))
+            .orElse(formatDate(extension.getPreviousEndDate(), dateFmt));
     // The effective date for rent change is the day after previous end date
     // (i.e., the start of the new extension period)
-    String rentEffectiveDate = formatDate(
-        extension.getPreviousEndDate().plusDays(1), dateFmt);
+    String rentEffectiveDate = formatDate(extension.getPreviousEndDate().plusDays(1), dateFmt);
 
-    html.append("<p>This letter is to inform you that the monthly rent for the property at <strong>")
+    html.append(
+            "<p>This letter is to inform you that the monthly rent for the property at <strong>")
         .append(propertyAddress)
         .append("</strong> will be adjusted from <strong>")
         .append(oldRent)
@@ -190,34 +203,50 @@ public class RentIncreaseLetterExporter {
     // Body paragraph 3 — contract extension details
     html.append("<p>This adjustment is part of contract extension #")
         .append(extension.getExtensionNumber());
-    extension.getNewEndDate().ifPresentOrElse(
-        endDate -> html.append(", extending your lease until <strong>")
-            .append(formatDate(endDate, dateFmt))
-            .append("</strong>."),
-        () -> html.append(", for an indefinite contract period."));
+    extension
+        .getNewEndDate()
+        .ifPresentOrElse(
+            endDate ->
+                html.append(", extending your lease until <strong>")
+                    .append(formatDate(endDate, dateFmt))
+                    .append("</strong>."),
+            () -> html.append(", for an indefinite contract period."));
     html.append("</p>");
 
     // Summary table
     html.append("<table class='summary-table'>");
     html.append("<tr><td class='st-label'>Contract Reference</td><td class='st-value'>")
-        .append(contract.getIdentifier().orElseThrow().value()).append("</td></tr>");
+        .append(contract.getIdentifier().orElseThrow().value())
+        .append("</td></tr>");
     html.append("<tr><td class='st-label'>Property</td><td class='st-value'>")
-        .append(propertyAddress).append("</td></tr>");
+        .append(propertyAddress)
+        .append("</td></tr>");
     html.append("<tr><td class='st-label'>Previous Rent</td><td class='st-value'>")
-        .append(oldRent).append("</td></tr>");
+        .append(oldRent)
+        .append("</td></tr>");
     html.append("<tr><td class='st-label'>New Rent</td><td class='st-value'><strong>")
-        .append(newRent).append("</strong></td></tr>");
+        .append(newRent)
+        .append("</strong></td></tr>");
     html.append("<tr><td class='st-label'>Adjustment Type</td><td class='st-value'>")
-        .append(formatEnumValue(extension.getRentAdjustmentType().name())).append("</td></tr>");
-    extension.getRentAdjustmentValue().ifPresent(v ->
-        html.append("<tr><td class='st-label'>Adjustment Value</td><td class='st-value'>")
-            .append(formatAdjustmentDisplay(v, extension.getRentAdjustmentType()))
-            .append("</td></tr>"));
+        .append(formatEnumValue(extension.getRentAdjustmentType().name()))
+        .append("</td></tr>");
+    extension
+        .getRentAdjustmentValue()
+        .ifPresent(
+            v ->
+                html.append("<tr><td class='st-label'>Adjustment Value</td><td class='st-value'>")
+                    .append(formatAdjustmentDisplay(v, extension.getRentAdjustmentType()))
+                    .append("</td></tr>"));
     html.append("<tr><td class='st-label'>Effective Date</td><td class='st-value'>")
-        .append(rentEffectiveDate).append("</td></tr>");
-    extension.getNewEndDate().ifPresent(d ->
-        html.append("<tr><td class='st-label'>New Lease End Date</td><td class='st-value'>")
-            .append(formatDate(d, dateFmt)).append("</td></tr>"));
+        .append(rentEffectiveDate)
+        .append("</td></tr>");
+    extension
+        .getNewEndDate()
+        .ifPresent(
+            d ->
+                html.append("<tr><td class='st-label'>New Lease End Date</td><td class='st-value'>")
+                    .append(formatDate(d, dateFmt))
+                    .append("</td></tr>"));
     html.append("</table>");
 
     // Closing
@@ -265,34 +294,41 @@ public class RentIncreaseLetterExporter {
     List<TenantAddress> addresses = tenantAddressRepository.findByTenantId(tenantId, teamId);
     // Prefer MAILING address, fall back to CURRENT
     return addresses.stream()
-        .filter(a -> a.getAddressType() == TenantAddress.AddressType.MAILING
-            && a.getStatus() == TenantAddress.AddressStatus.ACTIVE)
+        .filter(
+            a ->
+                a.getAddressType() == TenantAddress.AddressType.MAILING
+                    && a.getStatus() == TenantAddress.AddressStatus.ACTIVE)
         .findFirst()
-        .or(() -> addresses.stream()
-            .filter(a -> a.getAddressType() == TenantAddress.AddressType.CURRENT
-                && a.getStatus() == TenantAddress.AddressStatus.ACTIVE)
-            .findFirst());
+        .or(
+            () ->
+                addresses.stream()
+                    .filter(
+                        a ->
+                            a.getAddressType() == TenantAddress.AddressType.CURRENT
+                                && a.getStatus() == TenantAddress.AddressStatus.ACTIVE)
+                    .findFirst());
   }
 
   private String buildAdjustmentBasis(ContractExtension extension) {
     return switch (extension.getRentAdjustmentType()) {
       case FIXED_PERCENTAGE -> {
-        String pct = extension.getRentAdjustmentValue()
-            .map(v -> v.stripTrailingZeros().toPlainString() + "%")
-            .orElse("a percentage");
+        String pct =
+            extension
+                .getRentAdjustmentValue()
+                .map(v -> v.stripTrailingZeros().toPlainString() + "%")
+                .orElse("a percentage");
         yield "The adjustment is based on a fixed percentage increase of " + pct + ".";
       }
       case FIXED_AMOUNT -> {
-        String amt = extension.getRentAdjustmentValue()
-            .map(v -> CurrencyUtils.formatCurrency(
-                v, extension.getNewRentAmount().currency()))
-            .orElse("a fixed amount");
+        String amt =
+            extension
+                .getRentAdjustmentValue()
+                .map(v -> CurrencyUtils.formatCurrency(v, extension.getNewRentAmount().currency()))
+                .orElse("a fixed amount");
         yield "The adjustment is based on a fixed increase of " + amt + ".";
       }
-      case MANUAL ->
-          "The rent has been manually adjusted as part of the contract extension.";
-      case NONE ->
-          "No rent adjustment has been applied for this extension period.";
+      case MANUAL -> "The rent has been manually adjusted as part of the contract extension.";
+      case NONE -> "No rent adjustment has been applied for this extension period.";
     };
   }
 

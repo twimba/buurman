@@ -26,8 +26,7 @@ public class ContractExtensionRecordMapper {
     ext.setNewEndDate(Optional.ofNullable(record.getNewEndDate()));
     ext.setPreviousRentAmount(
         fromMinorUnits(record.getPreviousRentAmount(), record.getPreviousRentCurrency()));
-    ext.setNewRentAmount(
-        fromMinorUnits(record.getNewRentAmount(), record.getNewRentCurrency()));
+    ext.setNewRentAmount(fromMinorUnits(record.getNewRentAmount(), record.getNewRentCurrency()));
     ext.setRentAdjustmentType(
         ContractExtension.RentAdjustmentType.valueOf(record.getRentAdjustmentType()));
     ext.setRentAdjustmentValue(Optional.ofNullable(record.getRentAdjustmentValue()));
@@ -36,20 +35,16 @@ public class ContractExtensionRecordMapper {
     ext.setRentPeriodId(Optional.ofNullable(record.getRentPeriodId()));
     ext.setNotes(Optional.ofNullable(record.getNotes()));
     ext.setDeclinedReason(Optional.ofNullable(record.getDeclinedReason()));
-    ext.setActivatedAt(
-        Optional.ofNullable(record.getActivatedAt()).map(dt -> dt.toInstant(UTC)));
+    ext.setActivatedAt(Optional.ofNullable(record.getActivatedAt()).map(dt -> dt.toInstant(UTC)));
     ext.setActivatedBy(Optional.ofNullable(record.getActivatedBy()));
-    ext.setConfirmedAt(
-        Optional.ofNullable(record.getConfirmedAt()).map(dt -> dt.toInstant(UTC)));
+    ext.setConfirmedAt(Optional.ofNullable(record.getConfirmedAt()).map(dt -> dt.toInstant(UTC)));
     ext.setConfirmedBy(Optional.ofNullable(record.getConfirmedBy()));
-    ext.setSupersededAt(
-        Optional.ofNullable(record.getSupersededAt()).map(dt -> dt.toInstant(UTC)));
+    ext.setSupersededAt(Optional.ofNullable(record.getSupersededAt()).map(dt -> dt.toInstant(UTC)));
     ext.setCreatedAt(record.getCreatedAt().toInstant(UTC));
     ext.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));
     ext.setCreatedBy(record.getCreatedBy());
     ext.setUpdatedBy(record.getUpdatedBy());
-    ext.setDeletedAt(
-        Optional.ofNullable(record.getDeletedAt()).map(dt -> dt.toInstant(UTC)));
+    ext.setDeletedAt(Optional.ofNullable(record.getDeletedAt()).map(dt -> dt.toInstant(UTC)));
     return ext;
   }
 

@@ -967,9 +967,9 @@ public class ContractService {
         contract.getRentAdjustmentValue(),
         contract.getLandlordType(),
         contract.getRegionCode(),
-        Optional.empty(),  // effectiveEndDate — computed in Phase 5b
-        0,                 // extensionCount
-        Optional.empty(),  // extensionsRemaining
+        Optional.empty(), // effectiveEndDate — computed in Phase 5b
+        0, // extensionCount
+        Optional.empty(), // extensionsRemaining
         contract.getCreatedAt(),
         Optional.of(contract.getUpdatedAt()));
   }
@@ -1066,9 +1066,9 @@ public class ContractService {
                   contract.getRentAdjustmentValue(),
                   contract.getLandlordType(),
                   contract.getRegionCode(),
-                  Optional.empty(),  // effectiveEndDate — computed in Phase 5b
-                  0,                 // extensionCount
-                  Optional.empty(),  // extensionsRemaining
+                  Optional.empty(), // effectiveEndDate — computed in Phase 5b
+                  0, // extensionCount
+                  Optional.empty(), // extensionsRemaining
                   contract.getCreatedAt(),
                   Optional.of(contract.getUpdatedAt()));
             })

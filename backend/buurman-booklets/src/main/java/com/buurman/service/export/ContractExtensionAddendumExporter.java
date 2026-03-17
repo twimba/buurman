@@ -34,7 +34,6 @@ import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Property;
-import com.buurman.domain.Sid;
 import com.buurman.domain.Tenant;
 import com.buurman.domain.identifier.ContractExtensionIdentifier;
 import com.buurman.repository.ContractExtensionRepository;
@@ -61,8 +60,7 @@ public class ContractExtensionAddendumExporter {
   public byte[] generate(ContractExtensionIdentifier extensionIdentifier, UUID teamId) {
     ContractExtension extension =
         extensionRepository.getByIdentifierAndTeamId(extensionIdentifier, teamId);
-    Contract contract =
-        contractRepository.getByIdAndTeamId(extension.getContractId(), teamId);
+    Contract contract = contractRepository.getByIdAndTeamId(extension.getContractId(), teamId);
     Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
 
     List<ContractParty> parties =
@@ -94,10 +92,7 @@ public class ContractExtensionAddendumExporter {
     String primaryName = findPrimaryTenantName(parties, tenantMap);
     String tenantNames = buildTenantNamesList(parties, tenantMap);
 
-    String css =
-        BookletCss.base()
-            + BookletCss.contractStatusBadges()
-            + signatureBlockCss();
+    String css = BookletCss.base() + BookletCss.contractStatusBadges() + signatureBlockCss();
 
     StringBuilder html = new StringBuilder(4096);
     appendDocumentStart(html, css);
@@ -133,23 +128,18 @@ public class ContractExtensionAddendumExporter {
     html.append("<table class='cover-summary'>");
     html.append("<tr>");
     appendCoverCell(
-        html, "Property",
-        escapeHtml(property.getStreet()) + ", " + escapeHtml(property.getCity()));
+        html, "Property", escapeHtml(property.getStreet()) + ", " + escapeHtml(property.getCity()));
     appendCoverCell(html, "Primary Tenant", primaryName);
     html.append("</tr><tr>");
-    appendCoverCell(
-        html, "Contract",
-        escapeHtml(contract.getIdentifier().orElseThrow().value()));
-    appendCoverCell(
-        html, "Trigger",
-        formatEnumValue(extension.getTriggerType().name()));
+    appendCoverCell(html, "Contract", escapeHtml(contract.getIdentifier().orElseThrow().value()));
+    appendCoverCell(html, "Trigger", formatEnumValue(extension.getTriggerType().name()));
     html.append("</tr><tr>");
     appendCoverCell(
-        html, "Previous Rent",
+        html,
+        "Previous Rent",
         CurrencyUtils.formatCurrency(extension.getPreviousRentAmount().value(), ccy));
     appendCoverCell(
-        html, "New Rent",
-        CurrencyUtils.formatCurrency(extension.getNewRentAmount().value(), ccy));
+        html, "New Rent", CurrencyUtils.formatCurrency(extension.getNewRentAmount().value(), ccy));
     html.append("</tr>");
     html.append("</table>");
 
@@ -174,8 +164,12 @@ public class ContractExtensionAddendumExporter {
     html.append("<table class='detail-grid'>");
     html.append("<tr>");
     appendField(
-        html, "Property Address",
-        escapeHtml(property.getStreet()) + ", " + escapeHtml(property.getPostalCode()) + " "
+        html,
+        "Property Address",
+        escapeHtml(property.getStreet())
+            + ", "
+            + escapeHtml(property.getPostalCode())
+            + " "
             + escapeHtml(property.getCity()));
     appendField(html, "Tenant(s)", tenantNames);
     html.append("</tr>");
@@ -189,10 +183,12 @@ public class ContractExtensionAddendumExporter {
     appendField(html, "Start Date", formatDate(contract.getStartDate(), dateFmt));
     html.append("</tr><tr>");
     appendField(
-        html, "Original End Date",
+        html,
+        "Original End Date",
         contract.getEndDate().map(d -> formatDate(d, dateFmt)).orElse("Indefinite"));
     appendField(
-        html, "Contract Type",
+        html,
+        "Contract Type",
         formatEnumValue(
             contract.getContractType() != null ? contract.getContractType().name() : ""));
     html.append("</tr>");
@@ -207,43 +203,47 @@ public class ContractExtensionAddendumExporter {
     html.append("</tr><tr>");
     appendField(html, "Previous End Date", formatDate(extension.getPreviousEndDate(), dateFmt));
     appendField(
-        html, "New End Date",
+        html,
+        "New End Date",
         extension.getNewEndDate().map(d -> formatDate(d, dateFmt)).orElse("Indefinite"));
     html.append("</tr><tr>");
     appendField(
-        html, "Previous Rent",
+        html,
+        "Previous Rent",
         CurrencyUtils.formatCurrency(extension.getPreviousRentAmount().value(), ccy));
     appendField(
-        html, "New Rent",
-        CurrencyUtils.formatCurrency(extension.getNewRentAmount().value(), ccy));
+        html, "New Rent", CurrencyUtils.formatCurrency(extension.getNewRentAmount().value(), ccy));
     html.append("</tr><tr>");
     appendField(
-        html, "Rent Adjustment Type",
-        formatEnumValue(extension.getRentAdjustmentType().name()));
+        html, "Rent Adjustment Type", formatEnumValue(extension.getRentAdjustmentType().name()));
     appendField(
-        html, "Adjustment Value",
-        extension.getRentAdjustmentValue()
+        html,
+        "Adjustment Value",
+        extension
+            .getRentAdjustmentValue()
             .map(v -> formatAdjustmentValue(v, extension.getRentAdjustmentType()))
             .orElse("—"));
     html.append("</tr><tr>");
+    appendField(html, "Trigger Type", formatEnumValue(extension.getTriggerType().name()));
     appendField(
-        html, "Trigger Type",
-        formatEnumValue(extension.getTriggerType().name()));
-    appendField(
-        html, "Activated",
-        extension.getActivatedAt()
+        html,
+        "Activated",
+        extension
+            .getActivatedAt()
             .map(i -> formatDate(i.atZone(java.time.ZoneOffset.UTC).toLocalDate(), dateFmt))
             .orElse("—"));
     html.append("</tr>");
     html.append("</table>");
 
     // Notes
-    extension.getNotes()
+    extension
+        .getNotes()
         .filter(n -> !n.isBlank())
-        .ifPresent(notes -> {
-          appendSectionTitle(html, "Notes");
-          html.append("<div class='text-block'>").append(escapeHtml(notes)).append("</div>");
-        });
+        .ifPresent(
+            notes -> {
+              appendSectionTitle(html, "Notes");
+              html.append("<div class='text-block'>").append(escapeHtml(notes)).append("</div>");
+            });
 
     // Signature blocks
     appendSectionTitle(html, "Signatures");
@@ -270,26 +270,29 @@ public class ContractExtensionAddendumExporter {
 
   // ── Helpers ─────────────────────────────────────────────────────
 
-  private String findPrimaryTenantName(
-      List<ContractParty> parties, Map<UUID, Tenant> tenantMap) {
+  private String findPrimaryTenantName(List<ContractParty> parties, Map<UUID, Tenant> tenantMap) {
     return parties.stream()
         .filter(p -> p.getRole() == ContractPartyRole.PRIMARY_TENANT)
         .findFirst()
         .flatMap(p -> p.getTenantId().map(tenantMap::get))
-        .map(t -> escapeHtml(t.getFirstName())
-            + t.getLastName().map(n -> " " + escapeHtml(n)).orElse(""))
+        .map(
+            t ->
+                escapeHtml(t.getFirstName())
+                    + t.getLastName().map(n -> " " + escapeHtml(n)).orElse(""))
         .orElse("—");
   }
 
-  private String buildTenantNamesList(
-      List<ContractParty> parties, Map<UUID, Tenant> tenantMap) {
-    List<String> names = parties.stream()
-        .filter(p -> p.getTenantId().isPresent())
-        .map(p -> p.getTenantId().map(tenantMap::get))
-        .flatMap(Optional::stream)
-        .map(t -> escapeHtml(t.getFirstName())
-            + t.getLastName().map(n -> " " + escapeHtml(n)).orElse(""))
-        .toList();
+  private String buildTenantNamesList(List<ContractParty> parties, Map<UUID, Tenant> tenantMap) {
+    List<String> names =
+        parties.stream()
+            .filter(p -> p.getTenantId().isPresent())
+            .map(p -> p.getTenantId().map(tenantMap::get))
+            .flatMap(Optional::stream)
+            .map(
+                t ->
+                    escapeHtml(t.getFirstName())
+                        + t.getLastName().map(n -> " " + escapeHtml(n)).orElse(""))
+            .toList();
     if (names.isEmpty()) {
       return "—";
     }

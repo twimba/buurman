@@ -355,7 +355,8 @@ public class ContractRepository {
                               .and(CP_TEAM_ID.eq(teamId))
                               .and(CP_DELETED_AT.isNull()))));
     }
-    Field<LocalDate> effectiveEndDate = com.buurman.service.EffectiveEndDateHelper.effectiveEndDate();
+    Field<LocalDate> effectiveEndDate =
+        com.buurman.service.EffectiveEndDateHelper.effectiveEndDate();
     Map<String, Field<?>> sortableFields =
         Map.of(
             "createdAt", CONTRACTS.CREATED_AT,
@@ -412,7 +413,8 @@ public class ContractRepository {
   }
 
   public List<Contract> findExpiringContracts(UUID teamId, LocalDate beforeDate) {
-    Field<LocalDate> effectiveEndDate = com.buurman.service.EffectiveEndDateHelper.effectiveEndDate();
+    Field<LocalDate> effectiveEndDate =
+        com.buurman.service.EffectiveEndDateHelper.effectiveEndDate();
     return dsl
         .selectFrom(CONTRACTS)
         .where(

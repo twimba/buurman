@@ -81,7 +81,11 @@ public class Contract {
   @Builder.Default private Integer landlordNoticeDays = 30;
   @Builder.Default private Integer tenantNoticeDays = 30;
   @Builder.Default private Boolean requiresTenantConfirmation = false;
-  @Builder.Default private ContractExtension.RentAdjustmentType rentAdjustmentType = ContractExtension.RentAdjustmentType.NONE;
+
+  @Builder.Default
+  private ContractExtension.RentAdjustmentType rentAdjustmentType =
+      ContractExtension.RentAdjustmentType.NONE;
+
   @Builder.Default private Optional<BigDecimal> rentAdjustmentValue = Optional.empty();
   @Builder.Default private Optional<LandlordType> landlordType = Optional.empty();
   @Builder.Default private Optional<String> regionCode = Optional.empty();

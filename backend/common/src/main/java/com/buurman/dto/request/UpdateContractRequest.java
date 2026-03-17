@@ -38,8 +38,10 @@ public record UpdateContractRequest(
     Optional<Contract.RenewalMode> renewalMode,
     Optional<@Positive(message = "Renewal term must be positive") Integer> renewalTermMonths,
     Optional<@Positive(message = "Max renewals must be positive") Integer> maxRenewals,
-    Optional<@PositiveOrZero(message = "Landlord notice days must be non-negative") Integer> landlordNoticeDays,
-    Optional<@PositiveOrZero(message = "Tenant notice days must be non-negative") Integer> tenantNoticeDays,
+    Optional<@PositiveOrZero(message = "Landlord notice days must be non-negative") Integer>
+        landlordNoticeDays,
+    Optional<@PositiveOrZero(message = "Tenant notice days must be non-negative") Integer>
+        tenantNoticeDays,
     Optional<Boolean> requiresTenantConfirmation,
     Optional<ContractExtension.RentAdjustmentType> rentAdjustmentType,
     Optional<BigDecimal> rentAdjustmentValue,

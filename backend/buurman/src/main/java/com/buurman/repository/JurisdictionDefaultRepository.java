@@ -58,53 +58,71 @@ public class JurisdictionDefaultRepository {
       Optional<Boolean> furnished) {
     LocalDate today = LocalDate.now();
 
-    Condition baseCondition = COUNTRY_CODE.eq(countryCode)
-        .and(VALID_FROM.le(Date.valueOf(today)))
-        .and(VALID_UNTIL.isNull().or(VALID_UNTIL.gt(Date.valueOf(today))));
+    Condition baseCondition =
+        COUNTRY_CODE
+            .eq(countryCode)
+            .and(VALID_FROM.le(Date.valueOf(today)))
+            .and(VALID_UNTIL.isNull().or(VALID_UNTIL.gt(Date.valueOf(today))));
 
     // Start with least-specific and overlay more-specific
     Map<String, String> result = new LinkedHashMap<>();
 
     // Level 6: country only
-    overlayDefaults(result, baseCondition
-        .and(REGION_CODE.isNull())
-        .and(LANDLORD_TYPE.isNull())
-        .and(FURNISHED.isNull()));
+    overlayDefaults(
+        result,
+        baseCondition
+            .and(REGION_CODE.isNull())
+            .and(LANDLORD_TYPE.isNull())
+            .and(FURNISHED.isNull()));
 
     // Level 5: country + landlordType
-    landlordType.ifPresent(lt -> overlayDefaults(result, baseCondition
-        .and(REGION_CODE.isNull())
-        .and(LANDLORD_TYPE.eq(lt))
-        .and(FURNISHED.isNull())));
+    landlordType.ifPresent(
+        lt ->
+            overlayDefaults(
+                result,
+                baseCondition
+                    .and(REGION_CODE.isNull())
+                    .and(LANDLORD_TYPE.eq(lt))
+                    .and(FURNISHED.isNull())));
 
     // Level 4: country + landlordType + furnished
     if (landlordType.isPresent() && furnished.isPresent()) {
-      overlayDefaults(result, baseCondition
-          .and(REGION_CODE.isNull())
-          .and(LANDLORD_TYPE.eq(landlordType.get()))
-          .and(FURNISHED.eq(furnished.get())));
+      overlayDefaults(
+          result,
+          baseCondition
+              .and(REGION_CODE.isNull())
+              .and(LANDLORD_TYPE.eq(landlordType.get()))
+              .and(FURNISHED.eq(furnished.get())));
     }
 
     // Level 3: country + region
-    regionCode.ifPresent(rc -> overlayDefaults(result, baseCondition
-        .and(REGION_CODE.eq(rc))
-        .and(LANDLORD_TYPE.isNull())
-        .and(FURNISHED.isNull())));
+    regionCode.ifPresent(
+        rc ->
+            overlayDefaults(
+                result,
+                baseCondition
+                    .and(REGION_CODE.eq(rc))
+                    .and(LANDLORD_TYPE.isNull())
+                    .and(FURNISHED.isNull())));
 
     // Level 2: country + region + landlordType
     if (regionCode.isPresent() && landlordType.isPresent()) {
-      overlayDefaults(result, baseCondition
-          .and(REGION_CODE.eq(regionCode.get()))
-          .and(LANDLORD_TYPE.eq(landlordType.get()))
-          .and(FURNISHED.isNull()));
+      overlayDefaults(
+          result,
+          baseCondition
+              .and(REGION_CODE.eq(regionCode.get()))
+              .and(LANDLORD_TYPE.eq(landlordType.get()))
+              .and(FURNISHED.isNull()));
     }
 
     // Level 1: country + region + landlordType + furnished (most specific)
     if (regionCode.isPresent() && landlordType.isPresent() && furnished.isPresent()) {
-      overlayDefaults(result, baseCondition
-          .and(REGION_CODE.eq(regionCode.get()))
-          .and(LANDLORD_TYPE.eq(landlordType.get()))
-          .and(FURNISHED.eq(furnished.get())));
+      overlayDefaults(
+          result,
+          baseCondition
+              .and(REGION_CODE.eq(regionCode.get()))
+              .and(LANDLORD_TYPE.eq(landlordType.get()))
+              .and(FURNISHED.eq(furnished.get())));
     }
 
     return result;

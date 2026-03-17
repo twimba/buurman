@@ -188,8 +188,9 @@ public class DemoContractGenerator {
           tenantNoticeDays = 30;
           requiresTenantConfirmation = false;
           rentAdjType = "FIXED_PERCENTAGE";
-          rentAdjValue = BigDecimal.valueOf(2 + random.nextDouble() * 3)
-              .setScale(4, java.math.RoundingMode.HALF_UP);
+          rentAdjValue =
+              BigDecimal.valueOf(2 + random.nextDouble() * 3)
+                  .setScale(4, java.math.RoundingMode.HALF_UP);
         } else if (renewalBucket == 2) {
           // 20% MANUAL
           renewalMode = "MANUAL";
