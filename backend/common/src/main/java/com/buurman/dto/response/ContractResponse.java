@@ -28,8 +28,6 @@ public record ContractResponse(
     Optional<String> securityDepositCurrency,
     Contract.PaymentFrequency paymentFrequency,
     Optional<Integer> paymentDueDay,
-    Boolean autoRenewal,
-    Integer renewalNoticeDays,
     Integer terminationNoticeDays,
     Optional<BigDecimal> lateFeePercentage,
     Contract.ContractStatus status,

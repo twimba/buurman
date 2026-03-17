@@ -318,8 +318,6 @@ public class ContractService {
             .securityDeposit(contract.getSecurityDeposit())
             .paymentFrequency(contract.getPaymentFrequency())
             .paymentDueDay(contract.getPaymentDueDay())
-            .autoRenewal(contract.getAutoRenewal())
-            .renewalNoticeDays(contract.getRenewalNoticeDays())
             .terminationNoticeDays(contract.getTerminationNoticeDays())
             .lateFeePercentage(contract.getLateFeePercentage())
             .status(contract.getStatus())
@@ -454,13 +452,6 @@ public class ContractService {
     if (!oldContract.getPaymentDueDay().equals(updatedContract.getPaymentDueDay())) {
       changedFields.put("paymentDueDay", updatedContract.getPaymentDueDay().orElse(null));
     }
-    if (!java.util.Objects.equals(oldContract.getAutoRenewal(), updatedContract.getAutoRenewal())) {
-      changedFields.put("autoRenewal", updatedContract.getAutoRenewal());
-    }
-    if (!java.util.Objects.equals(
-        oldContract.getRenewalNoticeDays(), updatedContract.getRenewalNoticeDays())) {
-      changedFields.put("renewalNoticeDays", updatedContract.getRenewalNoticeDays());
-    }
     if (!java.util.Objects.equals(
         oldContract.getTerminationNoticeDays(), updatedContract.getTerminationNoticeDays())) {
       changedFields.put("terminationNoticeDays", updatedContract.getTerminationNoticeDays());
@@ -555,8 +546,6 @@ public class ContractService {
             .securityDeposit(contract.getSecurityDeposit())
             .paymentFrequency(contract.getPaymentFrequency())
             .paymentDueDay(contract.getPaymentDueDay())
-            .autoRenewal(contract.getAutoRenewal())
-            .renewalNoticeDays(contract.getRenewalNoticeDays())
             .terminationNoticeDays(contract.getTerminationNoticeDays())
             .lateFeePercentage(contract.getLateFeePercentage())
             .status(contract.getStatus())
@@ -683,8 +672,6 @@ public class ContractService {
             .securityDeposit(contract.getSecurityDeposit())
             .paymentFrequency(contract.getPaymentFrequency())
             .paymentDueDay(contract.getPaymentDueDay())
-            .autoRenewal(contract.getAutoRenewal())
-            .renewalNoticeDays(contract.getRenewalNoticeDays())
             .terminationNoticeDays(contract.getTerminationNoticeDays())
             .lateFeePercentage(contract.getLateFeePercentage())
             .status(contract.getStatus())
@@ -787,8 +774,6 @@ public class ContractService {
             .securityDeposit(sourceContract.getSecurityDeposit())
             .paymentFrequency(sourceContract.getPaymentFrequency())
             .paymentDueDay(sourceContract.getPaymentDueDay())
-            .autoRenewal(sourceContract.getAutoRenewal())
-            .renewalNoticeDays(sourceContract.getRenewalNoticeDays())
             .terminationNoticeDays(sourceContract.getTerminationNoticeDays())
             .lateFeePercentage(sourceContract.getLateFeePercentage())
             .status(DRAFT)
@@ -961,8 +946,6 @@ public class ContractService {
         contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::currency),
         contract.getPaymentFrequency(),
         contract.getPaymentDueDay(),
-        contract.getAutoRenewal(),
-        contract.getRenewalNoticeDays(),
         contract.getTerminationNoticeDays(),
         contract.getLateFeePercentage(),
         contract.getStatus(),
@@ -1084,8 +1067,6 @@ public class ContractService {
                   contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::currency),
                   contract.getPaymentFrequency(),
                   contract.getPaymentDueDay(),
-                  contract.getAutoRenewal(),
-                  contract.getRenewalNoticeDays(),
                   contract.getTerminationNoticeDays(),
                   contract.getLateFeePercentage(),
                   contract.getStatus(),

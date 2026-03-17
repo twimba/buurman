@@ -257,8 +257,6 @@ export const ContractForm = ({
       contract?.securityDepositCurrency || defaultCurrency,
     paymentFrequency: contract?.paymentFrequency ?? PaymentFrequency.MONTHLY,
     paymentDueDay: contract?.paymentDueDay ?? 1,
-    autoRenewal: contract?.autoRenewal ?? false,
-    renewalNoticeDays: contract?.renewalNoticeDays ?? 30,
     terminationNoticeDays: contract?.terminationNoticeDays ?? 30,
     lateFeePercentage: contract?.lateFeePercentage ?? undefined,
     termsAndConditions: contract?.termsAndConditions ?? '',
@@ -331,8 +329,6 @@ export const ContractForm = ({
           contract.securityDepositCurrency || defaultCurrency,
         paymentFrequency: contract.paymentFrequency,
         paymentDueDay: contract.paymentDueDay ?? 1,
-        autoRenewal: contract.autoRenewal,
-        renewalNoticeDays: contract.renewalNoticeDays ?? 30,
         terminationNoticeDays: contract.terminationNoticeDays ?? 30,
         lateFeePercentage: contract.lateFeePercentage ?? undefined,
         termsAndConditions: contract.termsAndConditions ?? '',
@@ -1030,43 +1026,6 @@ export const ContractForm = ({
           Renewal and Termination
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="autoRenewal"
-              checked={formData.autoRenewal}
-              onChange={(e) => handleChange('autoRenewal', e.target.checked)}
-              className="h-4 w-4 text-primary-500 focus:ring-primary-500 border-border-strong rounded"
-              disabled={isLoading}
-            />
-            <label
-              htmlFor="autoRenewal"
-              className="ml-2 block text-sm text-text-primary"
-            >
-              Auto-renewal
-            </label>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
-              Renewal Notice Days
-            </label>
-            <input
-              type="number"
-              min="0"
-              value={formData.renewalNoticeDays ?? ''}
-              onChange={(e) =>
-                handleChange(
-                  'renewalNoticeDays',
-                  e.target.value ? parseInt(e.target.value) : undefined
-                )
-              }
-              className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-              placeholder="30"
-              disabled={isLoading}
-            />
-          </div>
-
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
               Termination Notice Days

@@ -36,6 +36,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -45,6 +46,7 @@ import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Amenity;
 import com.buurman.domain.Contract;
+import com.buurman.domain.ContractExtension;
 import com.buurman.domain.Expense;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Photo;
@@ -63,6 +65,7 @@ import com.buurman.dto.response.PropertyDashboardResponse.CategorySlice;
 import com.buurman.dto.response.PropertyDashboardResponse.MonthlyDataPoint;
 import com.buurman.dto.response.PropertyDashboardResponse.SummaryMetrics;
 import com.buurman.repository.AmenityRepository;
+import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.ExpenseRepository;
 import com.buurman.repository.PaymentRepository;
@@ -75,6 +78,7 @@ import com.buurman.repository.PropertyOutdoorAreaRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.PropertyResidentialDetailsRepository;
 import com.buurman.service.ContractPartyService;
+import com.buurman.service.EffectiveEndDateHelper;
 import com.buurman.service.FeatureFlagService;
 import com.buurman.service.PropertyDashboardService;
 import com.buurman.service.S3StorageService;
@@ -93,6 +97,7 @@ public class PropertyBookletExporter {
   private final PropertyIndustrialDetailsRepository industrialDetailsRepository;
   private final PropertyAgriculturalDetailsRepository agriculturalDetailsRepository;
   private final ContractRepository contractRepository;
+  private final ContractExtensionRepository contractExtensionRepository;
   private final PaymentRepository paymentRepository;
   private final ExpenseRepository expenseRepository;
   private final PropertyAmenityRepository propertyAmenityRepository;
@@ -1170,6 +1175,12 @@ public class PropertyBookletExporter {
     Map<UUID, Tenant> primaryTenants =
         contractPartyService.getPrimaryTenantsForContracts(contractIds, teamId);
 
+    // Bulk-load extensions and group by contract ID
+    List<ContractExtension> allExtensions =
+        contractExtensionRepository.findByContractIdsAndTeamId(contractIds, teamId);
+    Map<UUID, List<ContractExtension>> extensionsByContract =
+        allExtensions.stream().collect(Collectors.groupingBy(ContractExtension::getContractId));
+
     appendPageStart(html, "Contracts");
     html.append("<p style='font-size:13px;color:#78716c;margin-bottom:12px;'>")
         .append(contracts.size())
@@ -1191,9 +1202,14 @@ public class PropertyBookletExporter {
       html.append("<tr>");
       html.append("<td>#").append(contract.getIdentifier().orElseThrow().value()).append("</td>");
       html.append("<td>").append(escapeHtml(tenantName)).append("</td>");
+      List<ContractExtension> extensions =
+          extensionsByContract.getOrDefault(contract.getId(), List.of());
+      Optional<LocalDate> effectiveEndDate =
+          EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), extensions);
+
       html.append("<td>").append(contract.getStartDate()).append("</td>");
       html.append("<td>")
-          .append(contract.getEndDate().map(Object::toString).orElse("Ongoing"))
+          .append(effectiveEndDate.map(Object::toString).orElse("Ongoing"))
           .append("</td>");
       html.append("<td>")
           .append(

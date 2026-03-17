@@ -41,6 +41,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Contract;
+import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.ContractPaymentInstruction;
@@ -51,6 +52,7 @@ import com.buurman.domain.PaymentReceival;
 import com.buurman.domain.Property;
 import com.buurman.domain.Tenant;
 import com.buurman.domain.identifier.ContractIdentifier;
+import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractPaymentInstructionRepository;
 import com.buurman.repository.ContractRentPeriodRepository;
 import com.buurman.repository.ContractRepository;
@@ -60,6 +62,7 @@ import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TenantRepository;
 import com.buurman.service.ContractPartyService;
+import com.buurman.service.EffectiveEndDateHelper;
 import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
@@ -76,6 +79,7 @@ public class ContractBookletExporter {
   private final ContractPaymentInstructionRepository contractPaymentInstructionRepository;
   private final PaymentInstructionRepository paymentInstructionRepository;
   private final ContractRentPeriodRepository rentPeriodRepository;
+  private final ContractExtensionRepository contractExtensionRepository;
   private final ContractPartyService contractPartyService;
   private final PdfRenderer pdfRenderer;
   private final Clock clock;
@@ -139,6 +143,12 @@ public class ContractBookletExporter {
                 .filter(pi -> piIds.contains(pi.getId()))
                 .collect(toMap(PaymentInstruction::getId, pi -> pi));
 
+    // Compute effective end date (latest active extension overrides contract end date)
+    List<ContractExtension> extensions =
+        contractExtensionRepository.findByContractIdAndTeamId(contract.getId(), teamId);
+    Optional<LocalDate> effectiveEndDate =
+        EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), extensions);
+
     String html =
         buildHtml(
             contract,
@@ -149,7 +159,8 @@ public class ContractBookletExporter {
             receivedByPayment,
             rentPeriods,
             allCpis,
-            piMap);
+            piMap,
+            effectiveEndDate);
     return pdfRenderer.renderHtml(html);
   }
 
@@ -164,7 +175,8 @@ public class ContractBookletExporter {
       Map<UUID, BigDecimal> receivedByPayment,
       List<ContractRentPeriod> rentPeriods,
       List<ContractPaymentInstruction> allCpis,
-      Map<UUID, PaymentInstruction> piMap) {
+      Map<UUID, PaymentInstruction> piMap,
+      Optional<LocalDate> effectiveEndDate) {
     DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH);
     String generatedDate = LocalDate.now(clock).format(dateFmt);
     String ccy = contract.getRentAmount().currency();
@@ -192,8 +204,10 @@ public class ContractBookletExporter {
     appendDocumentStart(html, css);
     appendRunningFooter(html, generatedDate);
 
-    appendCoverPage(html, contract, property, primaryName, ccy, dateFmt, generatedDate);
-    appendContractDetailsPage(html, contract, property, rentPeriods, dateFmt, ccy);
+    appendCoverPage(
+        html, contract, property, primaryName, ccy, dateFmt, generatedDate, effectiveEndDate);
+    appendContractDetailsPage(
+        html, contract, property, rentPeriods, dateFmt, ccy, effectiveEndDate);
     appendPartiesPage(html, parties, tenantMap);
     appendPaymentInstructionsPage(html, allCpis, piMap, dateFmt);
     appendPaymentOverviewPage(html, payments, receivedByPayment, agg, ccy, dateFmt);
@@ -211,7 +225,8 @@ public class ContractBookletExporter {
       String primaryName,
       String ccy,
       DateTimeFormatter dateFmt,
-      String generatedDate) {
+      String generatedDate,
+      Optional<LocalDate> effectiveEndDate) {
     appendCoverStart(
         html,
         "CONTRACT REPORT",
@@ -232,7 +247,7 @@ public class ContractBookletExporter {
     String period =
         formatDate(contract.getStartDate(), dateFmt)
             + " — "
-            + contract.getEndDate().map(d -> formatDate(d, dateFmt)).orElse("Indefinite");
+            + effectiveEndDate.map(d -> formatDate(d, dateFmt)).orElse("Indefinite");
     appendCoverCell(html, "Contract Period", period);
     html.append("</tr><tr>");
     appendCoverCell(
@@ -259,7 +274,8 @@ public class ContractBookletExporter {
       Property property,
       List<ContractRentPeriod> rentPeriods,
       DateTimeFormatter dateFmt,
-      String ccy) {
+      String ccy,
+      Optional<LocalDate> effectiveEndDate) {
     appendPageStart(html, "Contract Details");
 
     appendSectionTitle(html, "Contract Information");
@@ -281,10 +297,19 @@ public class ContractBookletExporter {
     html.append("</tr><tr>");
     appendField(html, "Start Date", formatDate(contract.getStartDate(), dateFmt));
     appendField(
-        html,
-        "End Date",
-        contract.getEndDate().map(d -> formatDate(d, dateFmt)).orElse("Indefinite"));
-    html.append("</tr><tr>");
+        html, "End Date", effectiveEndDate.map(d -> formatDate(d, dateFmt)).orElse("Indefinite"));
+    html.append("</tr>");
+    // Show original end date if it differs from the effective end date
+    if (!effectiveEndDate.equals(contract.getEndDate())) {
+      html.append("<tr>");
+      appendField(
+          html,
+          "Original End Date",
+          contract.getEndDate().map(d -> formatDate(d, dateFmt)).orElse("Indefinite"));
+      appendField(html, "", null);
+      html.append("</tr>");
+    }
+    html.append("<tr>");
     appendField(
         html, "Current Rent", CurrencyUtils.formatCurrency(contract.getRentAmount().value(), ccy));
     appendField(
@@ -314,12 +339,11 @@ public class ContractBookletExporter {
     html.append("</tr><tr>");
     appendField(
         html,
-        "Auto-Renewal",
-        contract.getAutoRenewal() != null && contract.getAutoRenewal() ? "Yes" : "No");
-    appendField(
-        html,
-        "Renewal Notice",
-        contract.getRenewalNoticeDays() != null ? contract.getRenewalNoticeDays() + " days" : "—");
+        "Renewal Mode",
+        contract.getRenewalMode() != null
+            ? formatEnumValue(contract.getRenewalMode().name())
+            : "None");
+    appendField(html, "Landlord Notice", contract.getLandlordNoticeDays() + " days");
     html.append("</tr><tr>");
     appendField(
         html,

@@ -29,24 +29,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Contract;
+import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
 import com.buurman.domain.Tenant;
 import com.buurman.domain.TenantAddress;
 import com.buurman.domain.identifier.TenantIdentifier;
+import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TenantAddressRepository;
 import com.buurman.repository.TenantRepository;
 import com.buurman.service.ContractPartyService;
+import com.buurman.service.EffectiveEndDateHelper;
 import com.buurman.util.CurrencyUtils;
 
 import lombok.RequiredArgsConstructor;
@@ -58,6 +63,7 @@ public class TenantBookletExporter {
   private final TenantRepository tenantRepository;
   private final TenantAddressRepository tenantAddressRepository;
   private final ContractRepository contractRepository;
+  private final ContractExtensionRepository contractExtensionRepository;
   private final PaymentRepository paymentRepository;
   private final PropertyRepository propertyRepository;
   private final ContractPartyService contractPartyService;
@@ -92,7 +98,22 @@ public class TenantBookletExporter {
           .ifPresent(p -> contractRoles.put(contract.getId(), p.getRole()));
     }
 
-    String html = buildHtml(tenant, addresses, contracts, allPayments, propertyMap, contractRoles);
+    // Bulk-load extensions and group by contract ID
+    List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
+    List<ContractExtension> allExtensions =
+        contractExtensionRepository.findByContractIdsAndTeamId(contractIds, teamId);
+    Map<UUID, List<ContractExtension>> extensionsByContract =
+        allExtensions.stream().collect(Collectors.groupingBy(ContractExtension::getContractId));
+
+    String html =
+        buildHtml(
+            tenant,
+            addresses,
+            contracts,
+            allPayments,
+            propertyMap,
+            contractRoles,
+            extensionsByContract);
     return pdfRenderer.renderHtml(html);
   }
 
@@ -104,7 +125,8 @@ public class TenantBookletExporter {
       List<Contract> contracts,
       List<Payment> allPayments,
       Map<UUID, Property> propertyMap,
-      Map<UUID, ContractPartyRole> contractRoles) {
+      Map<UUID, ContractPartyRole> contractRoles,
+      Map<UUID, List<ContractExtension>> extensionsByContract) {
     DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH);
     DateTimeFormatter shortFmt = DateTimeFormatter.ofPattern("MMM d, yyyy");
     String generatedDate = LocalDate.now(clock).format(dateFmt);
@@ -158,7 +180,8 @@ public class TenantBookletExporter {
         activeContracts,
         contracts.size());
     appendAddressesPage(html, addresses);
-    appendRentalHistoryPage(html, contracts, propertyMap, contractRoles, shortFmt);
+    appendRentalHistoryPage(
+        html, contracts, propertyMap, contractRoles, extensionsByContract, shortFmt);
     appendPaymentHistoryPage(html, allPayments, shortFmt);
 
     appendDocumentEnd(html);
@@ -333,6 +356,7 @@ public class TenantBookletExporter {
       List<Contract> contracts,
       Map<UUID, Property> propertyMap,
       Map<UUID, ContractPartyRole> contractRoles,
+      Map<UUID, List<ContractExtension>> extensionsByContract,
       DateTimeFormatter shortFmt) {
     if (contracts.isEmpty()) {
       return;
@@ -399,8 +423,12 @@ public class TenantBookletExporter {
           html,
           "Start Date",
           contract.getStartDate() != null ? contract.getStartDate().format(shortFmt) : "—");
+      List<ContractExtension> extensions =
+          extensionsByContract.getOrDefault(contract.getId(), List.of());
+      Optional<LocalDate> effectiveEndDate =
+          EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), extensions);
       appendField(
-          html, "End Date", contract.getEndDate().map(d -> d.format(shortFmt)).orElse("Ongoing"));
+          html, "End Date", effectiveEndDate.map(d -> d.format(shortFmt)).orElse("Ongoing"));
       html.append("</tr><tr>");
       appendField(
           html,

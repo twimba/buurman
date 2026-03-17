@@ -38,8 +38,6 @@ public record CreateContractRequest(
     Optional<String> securityDepositCurrency,
     @NotNull(message = "Payment frequency is required") Contract.PaymentFrequency paymentFrequency,
     Optional<Integer> paymentDueDay,
-    Optional<Boolean> autoRenewal,
-    Optional<Integer> renewalNoticeDays,
     Optional<Integer> terminationNoticeDays,
     Optional<Contract.RenewalMode> renewalMode,
     Optional<@Positive(message = "Renewal term must be positive") Integer> renewalTermMonths,

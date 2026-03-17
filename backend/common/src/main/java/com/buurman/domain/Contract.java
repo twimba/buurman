@@ -66,8 +66,6 @@ public class Contract {
   @Builder.Default private Optional<MoneyAmount> securityDeposit = Optional.empty();
   private PaymentFrequency paymentFrequency;
   @Builder.Default private Optional<Integer> paymentDueDay = Optional.empty();
-  @Builder.Default private Boolean autoRenewal = false;
-  @Builder.Default private Integer renewalNoticeDays = 30;
   @Builder.Default private Integer terminationNoticeDays = 30;
   @Builder.Default private Optional<BigDecimal> lateFeePercentage = Optional.empty();
   private ContractStatus status;

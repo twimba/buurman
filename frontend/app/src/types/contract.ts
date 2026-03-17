@@ -74,8 +74,6 @@ export interface ContractResponse {
   securityDepositCurrency?: string;
   paymentFrequency: ContractResponsePaymentFrequency;
   paymentDueDay?: number;
-  autoRenewal: boolean;
-  renewalNoticeDays?: number;
   terminationNoticeDays?: number;
   lateFeePercentage?: number;
   status: ContractResponseStatus;
@@ -125,8 +123,6 @@ export interface CreateContractRequest {
   securityDepositCurrency?: string;
   paymentFrequency: ContractResponsePaymentFrequency;
   paymentDueDay?: number;
-  autoRenewal?: boolean;
-  renewalNoticeDays?: number;
   terminationNoticeDays?: number;
   lateFeePercentage?: number;
   termsAndConditions?: string;
@@ -148,8 +144,6 @@ export interface UpdateContractRequest {
   securityDepositCurrency?: string;
   paymentFrequency: ContractResponsePaymentFrequency;
   paymentDueDay?: number;
-  autoRenewal?: boolean;
-  renewalNoticeDays?: number;
   terminationNoticeDays?: number;
   lateFeePercentage?: number;
   termsAndConditions?: string;

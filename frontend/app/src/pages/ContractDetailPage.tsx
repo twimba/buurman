@@ -643,15 +643,11 @@ export const ContractDetailPage = () => {
                 <div>
                   <p className="text-sm text-text-secondary">Renewal Mode</p>
                   <p className="font-medium text-text-primary">
-                    {contract.renewalMode
-                      ? contract.renewalMode === 'AUTOMATIC'
-                        ? 'Automatic'
-                        : contract.renewalMode === 'MANUAL'
-                          ? 'Manual'
-                          : 'None'
-                      : contract.autoRenewal
-                        ? 'Auto-renewal'
-                        : 'No renewal'}
+                    {contract.renewalMode === 'AUTOMATIC'
+                      ? 'Automatic'
+                      : contract.renewalMode === 'MANUAL'
+                        ? 'Manual'
+                        : 'None'}
                   </p>
                 </div>
                 {contract.renewalTermMonths && (
@@ -676,13 +672,13 @@ export const ContractDetailPage = () => {
                     </p>
                   </div>
                 )}
-                {(contract.landlordNoticeDays || contract.renewalNoticeDays) && (
+                {contract.landlordNoticeDays != null && (
                   <div>
                     <p className="text-sm text-text-secondary">
-                      Renewal Notice
+                      Landlord Notice
                     </p>
                     <p className="font-medium text-text-primary">
-                      {contract.landlordNoticeDays ?? contract.renewalNoticeDays} days
+                      {contract.landlordNoticeDays} days
                     </p>
                   </div>
                 )}

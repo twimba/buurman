@@ -19650,11 +19650,6 @@ components:
         paymentDueDay:
           type: integer
           format: int32
-        autoRenewal:
-          type: boolean
-        renewalNoticeDays:
-          type: integer
-          format: int32
         terminationNoticeDays:
           type: integer
           format: int32
@@ -19991,11 +19986,6 @@ components:
         paymentDueDay:
           type: integer
           format: int32
-        autoRenewal:
-          type: boolean
-        renewalNoticeDays:
-          type: integer
-          format: int32
         terminationNoticeDays:
           type: integer
           format: int32
@@ -20098,7 +20088,6 @@ components:
           type: string
           format: date-time
       required:
-        - autoRenewal
         - contractType
         - createdAt
         - extensionCount
@@ -20107,7 +20096,6 @@ components:
         - parties
         - paymentFrequency
         - renewalMode
-        - renewalNoticeDays
         - rentAdjustmentType
         - rentAmount
         - rentAmountCurrency
@@ -22044,11 +22032,6 @@ components:
             - QUARTERLY
             - ANNUALLY
         paymentDueDay:
-          type: integer
-          format: int32
-        autoRenewal:
-          type: boolean
-        renewalNoticeDays:
           type: integer
           format: int32
         terminationNoticeDays:
