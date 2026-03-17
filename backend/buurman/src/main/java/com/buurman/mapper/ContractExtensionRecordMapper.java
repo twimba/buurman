@@ -2,12 +2,14 @@ package com.buurman.mapper;
 
 import static java.time.ZoneOffset.UTC;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.ContractExtension;
 import com.buurman.jooq.generated.tables.records.ContractExtensionsRecord;
+import com.buurman.util.CurrencyUtils;
 import com.buurman.util.MoneyAmount;
 
 @Component
@@ -23,9 +25,9 @@ public class ContractExtensionRecordMapper {
     ext.setPreviousEndDate(record.getPreviousEndDate());
     ext.setNewEndDate(Optional.ofNullable(record.getNewEndDate()));
     ext.setPreviousRentAmount(
-        MoneyAmount.ofMinorUnits(record.getPreviousRentAmount(), record.getPreviousRentCurrency()));
+        fromMinorUnits(record.getPreviousRentAmount(), record.getPreviousRentCurrency()));
     ext.setNewRentAmount(
-        MoneyAmount.ofMinorUnits(record.getNewRentAmount(), record.getNewRentCurrency()));
+        fromMinorUnits(record.getNewRentAmount(), record.getNewRentCurrency()));
     ext.setRentAdjustmentType(
         ContractExtension.RentAdjustmentType.valueOf(record.getRentAdjustmentType()));
     ext.setRentAdjustmentValue(Optional.ofNullable(record.getRentAdjustmentValue()));
@@ -49,5 +51,11 @@ public class ContractExtensionRecordMapper {
     ext.setDeletedAt(
         Optional.ofNullable(record.getDeletedAt()).map(dt -> dt.toInstant(UTC)));
     return ext;
+  }
+
+  private static MoneyAmount fromMinorUnits(Long minorUnits, String currency) {
+    int digits = CurrencyUtils.getFractionalDigits(currency);
+    BigDecimal majorUnits = BigDecimal.valueOf(minorUnits, digits);
+    return MoneyAmount.of(majorUnits, currency);
   }
 }

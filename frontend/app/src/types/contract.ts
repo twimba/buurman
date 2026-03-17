@@ -1,5 +1,10 @@
 import { PropertySummary } from './property';
 import { TenantSummary, CreateTenantRequest } from './tenant';
+import type {
+  RenewalMode,
+  RentAdjustmentType,
+  LandlordType,
+} from './contractExtension';
 
 // Enums — re-exported from generated
 export {
@@ -78,6 +83,19 @@ export interface ContractResponse {
   notes?: string;
   countryCode?: string;
   countryMetadata?: Record<string, unknown>;
+  effectiveEndDate?: string;
+  renewalMode?: RenewalMode;
+  renewalTermMonths?: number;
+  maxRenewals?: number;
+  landlordNoticeDays?: number;
+  tenantNoticeDays?: number;
+  requiresTenantConfirmation?: boolean;
+  rentAdjustmentType?: RentAdjustmentType;
+  rentAdjustmentValue?: number;
+  landlordType?: LandlordType;
+  regionCode?: string;
+  extensionCount?: number;
+  extensionsRemaining?: number;
   createdAt: string;
   updatedAt: string;
 }

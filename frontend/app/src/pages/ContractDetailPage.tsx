@@ -30,6 +30,7 @@ import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge'
 import { ChangeContractStatusModal } from '@/components/contracts/ChangeContractStatusModal';
 import GeneratePaymentsModal from '@/components/contracts/GeneratePaymentsModal';
 import { RentTimeline } from '@/components/contracts/RentTimeline';
+import { ExtensionTimeline } from '@/components/contracts/ExtensionTimeline';
 import { Button, PageHeader } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import { trackEvent } from '@/utils/analytics';
@@ -53,6 +54,7 @@ import {
   Plus,
   Download,
   Eye,
+  Repeat,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useFormatDate } from '@/hooks/useFormatDate';
@@ -76,6 +78,7 @@ export const ContractDetailPage = () => {
   const [activeTab, setActiveTab] = useTabState('overview', [
     'overview',
     'payments',
+    'extensions',
     'documents',
     'history',
   ] as const);
@@ -419,6 +422,18 @@ export const ContractDetailPage = () => {
               Payments {payments.length > 0 && `(${payments.length})`}
             </button>
             <button
+              onClick={() => setActiveTab('extensions')}
+              className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
+                activeTab === 'extensions'
+                  ? 'border-b-2 border-primary-500 text-primary-500'
+                  : 'text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              <Repeat className="h-4 w-4" />
+              Extensions
+              {contract.extensionCount != null && contract.extensionCount > 0 && ` (${contract.extensionCount})`}
+            </button>
+            <button
               onClick={() => setActiveTab('documents')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'documents'
@@ -520,14 +535,26 @@ export const ContractDetailPage = () => {
                     </p>
                   </div>
                 </div>
-                {contract.endDate && (
+                {(contract.endDate || contract.effectiveEndDate) && (
                   <div className="flex items-center gap-3">
                     <Calendar className="h-5 w-5 text-text-muted " />
                     <div>
-                      <p className="text-sm text-text-secondary">End Date</p>
-                      <p className="font-medium text-text-primary">
-                        {formatDate(contract.endDate)}
+                      <p className="text-sm text-text-secondary">
+                        End Date
+                        {contract.extensionCount != null && contract.extensionCount > 0 && (
+                          <span className="ml-1.5 px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-info-bg text-info-text">
+                            Extended ({contract.extensionCount}x)
+                          </span>
+                        )}
                       </p>
+                      <p className="font-medium text-text-primary">
+                        {formatDate(contract.effectiveEndDate ?? contract.endDate!)}
+                      </p>
+                      {contract.effectiveEndDate && contract.endDate && contract.effectiveEndDate !== contract.endDate && (
+                        <p className="text-xs text-text-muted line-through">
+                          Original: {formatDate(contract.endDate)}
+                        </p>
+                      )}
                     </div>
                   </div>
                 )}
@@ -614,18 +641,48 @@ export const ContractDetailPage = () => {
               </h2>
               <div className="space-y-3">
                 <div>
-                  <p className="text-sm text-text-secondary">Auto-renewal</p>
+                  <p className="text-sm text-text-secondary">Renewal Mode</p>
                   <p className="font-medium text-text-primary">
-                    {contract.autoRenewal ? 'Yes' : 'No'}
+                    {contract.renewalMode
+                      ? contract.renewalMode === 'AUTOMATIC'
+                        ? 'Automatic'
+                        : contract.renewalMode === 'MANUAL'
+                          ? 'Manual'
+                          : 'None'
+                      : contract.autoRenewal
+                        ? 'Auto-renewal'
+                        : 'No renewal'}
                   </p>
                 </div>
-                {contract.renewalNoticeDays && (
+                {contract.renewalTermMonths && (
+                  <div>
+                    <p className="text-sm text-text-secondary">
+                      Renewal Term
+                    </p>
+                    <p className="font-medium text-text-primary">
+                      {contract.renewalTermMonths} months
+                    </p>
+                  </div>
+                )}
+                {contract.extensionsRemaining != null && (
+                  <div>
+                    <p className="text-sm text-text-secondary">
+                      Extensions Remaining
+                    </p>
+                    <p className="font-medium text-text-primary">
+                      {contract.maxRenewals
+                        ? `${contract.extensionsRemaining} of ${contract.maxRenewals}`
+                        : 'Unlimited'}
+                    </p>
+                  </div>
+                )}
+                {(contract.landlordNoticeDays || contract.renewalNoticeDays) && (
                   <div>
                     <p className="text-sm text-text-secondary">
                       Renewal Notice
                     </p>
                     <p className="font-medium text-text-primary">
-                      {contract.renewalNoticeDays} days
+                      {contract.landlordNoticeDays ?? contract.renewalNoticeDays} days
                     </p>
                   </div>
                 )}
@@ -979,6 +1036,21 @@ export const ContractDetailPage = () => {
                 )}
               </>
             )}
+          </div>
+        )}
+
+        {activeTab === 'extensions' && (
+          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+            <ExtensionTimeline
+              contractIdentifier={id}
+              contractStatus={contract.status}
+              currency={contract.rentAmountCurrency}
+              currentRentAmount={contract.rentAmount}
+              currentEndDate={contract.effectiveEndDate ?? contract.endDate}
+              renewalTermMonths={contract.renewalTermMonths}
+              rentAdjustmentType={contract.rentAdjustmentType}
+              rentAdjustmentValue={contract.rentAdjustmentValue}
+            />
           </div>
         )}
 

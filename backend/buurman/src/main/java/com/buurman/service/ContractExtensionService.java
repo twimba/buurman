@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -120,8 +121,8 @@ public class ContractExtensionService {
     // Determine rent adjustment
     RentAdjustmentType adjType = request.rentAdjustmentType()
         .orElse(contract.getRentAdjustmentType());
-    BigDecimal adjValue = request.rentAdjustmentValue()
-        .orElse(contract.getRentAdjustmentValue().orElse(null));
+    Optional<BigDecimal> adjValue = request.rentAdjustmentValue()
+        .or(contract::getRentAdjustmentValue);
 
     MoneyAmount newRent;
     if (request.newRentAmount().isPresent()) {
@@ -129,7 +130,7 @@ public class ContractExtensionService {
       newRent = MoneyAmount.of(request.newRentAmount().get(), previousRent.currency());
       adjType = RentAdjustmentType.MANUAL;
     } else {
-      newRent = computeNewRent(previousRent, adjType, adjValue);
+      newRent = computeNewRent(previousRent, adjType, adjValue.orElse(null));
     }
 
     // Compute new end date
@@ -158,7 +159,7 @@ public class ContractExtensionService {
         .previousRentAmount(previousRent)
         .newRentAmount(newRent)
         .rentAdjustmentType(adjType)
-        .rentAdjustmentValue(Optional.ofNullable(adjValue))
+        .rentAdjustmentValue(adjValue)
         .status(DRAFT)
         .triggerType(ContractExtension.TriggerType.MANUAL)
         .notes(request.notes())
@@ -187,8 +188,7 @@ public class ContractExtensionService {
     List<ContractExtensionResponse> content =
         result.items().stream().map(e -> toResponse(e, contractSid)).toList();
 
-    return new PageResponse<>(
-        content, result.page(), result.size(), result.totalElements(), result.totalPages());
+    return PageResponse.of(content, pageRequest.page(), pageRequest.size(), result.totalElements());
   }
 
   @Transactional(readOnly = true)
@@ -277,7 +277,8 @@ public class ContractExtensionService {
     extension.setUpdatedBy(userId);
     extension = extensionRepository.save(extension);
 
-    auditService.logUpdate(teamId, "CONTRACT_EXTENSION", extension.getId(), userId, null, extension);
+    auditService.logUpdate(teamId, "CONTRACT_EXTENSION", extension.getId(), userId, null, extension,
+        Map.of("status", DECLINED.name()));
 
     return toResponse(extension, contract.getIdentifier().orElseThrow());
   }
@@ -525,7 +526,8 @@ public class ContractExtensionService {
     // Send notification
     sendExtensionActivatedNotification(contract, extension, teamId);
 
-    auditService.logUpdate(teamId, "CONTRACT_EXTENSION", extension.getId(), activatedBy, null, extension);
+    auditService.logUpdate(teamId, "CONTRACT_EXTENSION", extension.getId(), activatedBy, null, extension,
+        Map.of("status", ACTIVE.name()));
 
     return toResponse(extension, contract.getIdentifier().orElseThrow());
   }
@@ -564,7 +566,7 @@ public class ContractExtensionService {
   }
 
   private MoneyAmount computeNewRent(
-      MoneyAmount previousRent, RentAdjustmentType type, BigDecimal value) {
+      MoneyAmount previousRent, RentAdjustmentType type, @Nullable BigDecimal value) {
     return switch (type) {
       case NONE -> previousRent;
       case FIXED_AMOUNT -> {
@@ -634,10 +636,10 @@ public class ContractExtensionService {
     try {
       Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
       Map<String, Object> vars = buildNotificationVars(contract, extension, property);
-      notificationService.sendNotification(SendNotificationRequest.builder()
+      notificationService.sendToTeam(SendNotificationRequest.builder()
           .teamId(teamId)
-          .type(CONTRACT_EXTENDED)
-          .contractId(contract.getId())
+          .notificationType(CONTRACT_EXTENDED)
+          .templateName("contract-extended")
           .templateVariables(vars)
           .createdBy(SYSTEM_USER_ID)
           .build());
@@ -652,10 +654,10 @@ public class ContractExtensionService {
     try {
       Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
       Map<String, Object> vars = buildNotificationVars(contract, extension, property);
-      notificationService.sendNotification(SendNotificationRequest.builder()
+      notificationService.sendToTeam(SendNotificationRequest.builder()
           .teamId(teamId)
-          .type(CONTRACT_EXTENSION_PENDING)
-          .contractId(contract.getId())
+          .notificationType(CONTRACT_EXTENSION_PENDING)
+          .templateName("contract-extension-pending")
           .templateVariables(vars)
           .createdBy(SYSTEM_USER_ID)
           .build());
@@ -672,16 +674,16 @@ public class ContractExtensionService {
       long daysRemaining = java.time.temporal.ChronoUnit.DAYS.between(
           LocalDate.now(clock), effectiveEndDate);
       Map<String, Object> vars = new HashMap<>();
-      vars.put("propertyName", property.getName().orElse("Unknown Property"));
+      vars.put("propertyName", property.getStreet() + ", " + property.getCity());
       vars.put("endDate", effectiveEndDate.toString());
       vars.put("daysRemaining", daysRemaining);
       vars.put("renewalMode", contract.getRenewalMode().name());
       vars.put("renewalTermMonths", contract.getRenewalTermMonths().orElse(12));
 
-      notificationService.sendNotification(SendNotificationRequest.builder()
+      notificationService.sendToTeam(SendNotificationRequest.builder()
           .teamId(teamId)
-          .type(CONTRACT_RENEWAL_REMINDER)
-          .contractId(contract.getId())
+          .notificationType(CONTRACT_RENEWAL_REMINDER)
+          .templateName("contract-renewal-reminder")
           .templateVariables(vars)
           .createdBy(SYSTEM_USER_ID)
           .build());
@@ -694,13 +696,13 @@ public class ContractExtensionService {
     try {
       Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
       Map<String, Object> vars = new HashMap<>();
-      vars.put("propertyName", property.getName().orElse("Unknown Property"));
+      vars.put("propertyName", property.getStreet() + ", " + property.getCity());
       vars.put("contractIdentifier", contract.getIdentifier().map(Sid::value).orElse(""));
 
-      notificationService.sendNotification(SendNotificationRequest.builder()
+      notificationService.sendToTeam(SendNotificationRequest.builder()
           .teamId(teamId)
-          .type(CONTRACT_ROLLED_OVER_TO_INDEFINITE)
-          .contractId(contract.getId())
+          .notificationType(CONTRACT_ROLLED_OVER_TO_INDEFINITE)
+          .templateName("contract-rolled-over")
           .templateVariables(vars)
           .createdBy(SYSTEM_USER_ID)
           .build());
@@ -712,7 +714,7 @@ public class ContractExtensionService {
   private Map<String, Object> buildNotificationVars(
       Contract contract, ContractExtension extension, Property property) {
     Map<String, Object> vars = new HashMap<>();
-    vars.put("propertyName", property.getName().orElse("Unknown Property"));
+    vars.put("propertyName", property.getStreet() + ", " + property.getCity());
     vars.put("extensionNumber", extension.getExtensionNumber());
     vars.put("previousEndDate", extension.getPreviousEndDate().toString());
     vars.put("newEndDate", extension.getNewEndDate().map(LocalDate::toString).orElse("Indefinite"));

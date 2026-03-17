@@ -40,7 +40,7 @@ public class ContractExtensionController {
       @RequestParam(required = false) String sort,
       @RequestParam(required = false) String direction) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    PageRequest pageRequest = new PageRequest(page, size, sort, direction);
+    PageRequest pageRequest = PageRequest.of(page, size, sort, direction);
     return extensionService.listExtensions(contractId, pageRequest, principal);
   }
 

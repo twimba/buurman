@@ -170,6 +170,45 @@ public class DemoContractGenerator {
           contractType = "INDEFINITE";
         }
 
+        // Renewal mode: ~40% AUTOMATIC, ~20% MANUAL, ~40% NONE
+        String renewalMode;
+        int renewalTermMonths = 12;
+        Integer maxRenewals = null;
+        int landlordNoticeDays;
+        int tenantNoticeDays;
+        boolean requiresTenantConfirmation;
+        String rentAdjType;
+        BigDecimal rentAdjValue;
+
+        int renewalBucket = i % 5;
+        if (renewalBucket < 2) {
+          // 40% AUTOMATIC
+          renewalMode = "AUTOMATIC";
+          landlordNoticeDays = 90;
+          tenantNoticeDays = 30;
+          requiresTenantConfirmation = false;
+          rentAdjType = "FIXED_PERCENTAGE";
+          rentAdjValue = BigDecimal.valueOf(2 + random.nextDouble() * 3)
+              .setScale(4, java.math.RoundingMode.HALF_UP);
+        } else if (renewalBucket == 2) {
+          // 20% MANUAL
+          renewalMode = "MANUAL";
+          landlordNoticeDays = 90;
+          tenantNoticeDays = 30;
+          requiresTenantConfirmation = true;
+          maxRenewals = random.nextInt(2, 6);
+          rentAdjType = "MANUAL";
+          rentAdjValue = null;
+        } else {
+          // 40% NONE
+          renewalMode = "NONE";
+          landlordNoticeDays = 30;
+          tenantNoticeDays = 30;
+          requiresTenantConfirmation = false;
+          rentAdjType = "NONE";
+          rentAdjValue = null;
+        }
+
         BigDecimal rentAmount = rentAmountForCategory(propertyCategory);
         BigDecimal deposit = rentAmount.multiply(depositMultiplierForCategory(propertyCategory));
         String paymentFrequency = paymentFrequencyForCategory(propertyCategory);
@@ -205,6 +244,14 @@ public class DemoContractGenerator {
             .set(CONTRACTS.PAYMENT_DUE_DAY, 1)
             .set(CONTRACTS.AUTO_RENEWAL, "INDEFINITE".equals(contractType))
             .set(CONTRACTS.RENEWAL_NOTICE_DAYS, 30)
+            .set(field("renewal_mode", String.class), renewalMode)
+            .set(field("renewal_term_months", Integer.class), renewalTermMonths)
+            .set(field("max_renewals", Integer.class), maxRenewals)
+            .set(field("landlord_notice_days", Integer.class), landlordNoticeDays)
+            .set(field("tenant_notice_days", Integer.class), tenantNoticeDays)
+            .set(field("requires_tenant_confirmation", Boolean.class), requiresTenantConfirmation)
+            .set(field("rent_adjustment_type", String.class), rentAdjType)
+            .set(field("rent_adjustment_value", BigDecimal.class), rentAdjValue)
             .set(CONTRACTS.TERMINATION_NOTICE_DAYS, terminationNoticeDays)
             .set(CONTRACTS.LATE_FEE_PERCENTAGE, BigDecimal.valueOf(2))
             .set(CONTRACTS.STATUS, status)
@@ -309,6 +356,11 @@ public class DemoContractGenerator {
             .set(CONTRACTS.PAYMENT_DUE_DAY, 1)
             .set(CONTRACTS.AUTO_RENEWAL, false)
             .set(CONTRACTS.RENEWAL_NOTICE_DAYS, 30)
+            .set(field("renewal_mode", String.class), "NONE")
+            .set(field("landlord_notice_days", Integer.class), 30)
+            .set(field("tenant_notice_days", Integer.class), 30)
+            .set(field("requires_tenant_confirmation", Boolean.class), false)
+            .set(field("rent_adjustment_type", String.class), "NONE")
             .set(
                 CONTRACTS.TERMINATION_NOTICE_DAYS, terminationNoticeForCategory(historicalCategory))
             .set(CONTRACTS.LATE_FEE_PERCENTAGE, BigDecimal.valueOf(2))

@@ -6,7 +6,6 @@ import static org.jooq.impl.DSL.table;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -14,11 +13,8 @@ import java.util.UUID;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
-import org.jooq.Record;
 import org.jooq.Table;
 import org.springframework.stereotype.Repository;
-
-import com.buurman.domain.JurisdictionDefault;
 
 import lombok.RequiredArgsConstructor;
 
@@ -115,13 +111,10 @@ public class JurisdictionDefaultRepository {
   }
 
   private void overlayDefaults(Map<String, String> result, Condition condition) {
-    List<Record> records = dsl.select(FIELD_NAME, VALUE)
+    dsl.select(FIELD_NAME, VALUE)
         .from(JD)
         .where(condition)
-        .fetch();
-
-    for (Record record : records) {
-      result.put(record.get(FIELD_NAME), record.get(VALUE));
-    }
+        .fetch()
+        .forEach(record -> result.put(record.get(FIELD_NAME), record.get(VALUE)));
   }
 }

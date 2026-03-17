@@ -300,34 +300,45 @@ public class ContractService {
 
     // Store old values for audit
     Contract oldContract =
-        new Contract(
-            contract.getId(),
-            contract.getIdentifier(),
-            contract.getTeamId(),
-            contract.getPropertyId(),
-            contract.getContractType(),
-            contract.getStartDate(),
-            contract.getEndDate(),
-            contract.getSignedDate(),
-            contract.getRentAmount(),
-            contract.getDepositAmount(),
-            contract.getSecurityDeposit(),
-            contract.getPaymentFrequency(),
-            contract.getPaymentDueDay(),
-            contract.getAutoRenewal(),
-            contract.getRenewalNoticeDays(),
-            contract.getTerminationNoticeDays(),
-            contract.getLateFeePercentage(),
-            contract.getStatus(),
-            contract.getTermsAndConditions(),
-            contract.getNotes(),
-            contract.getCountryCode(),
-            contract.getCountryMetadata(),
-            contract.getCreatedAt(),
-            contract.getUpdatedAt(),
-            contract.getCreatedBy(),
-            contract.getUpdatedBy(),
-            contract.getDeletedAt());
+        Contract.builder()
+            .id(contract.getId())
+            .identifier(contract.getIdentifier())
+            .teamId(contract.getTeamId())
+            .propertyId(contract.getPropertyId())
+            .contractType(contract.getContractType())
+            .startDate(contract.getStartDate())
+            .endDate(contract.getEndDate())
+            .signedDate(contract.getSignedDate())
+            .rentAmount(contract.getRentAmount())
+            .depositAmount(contract.getDepositAmount())
+            .securityDeposit(contract.getSecurityDeposit())
+            .paymentFrequency(contract.getPaymentFrequency())
+            .paymentDueDay(contract.getPaymentDueDay())
+            .autoRenewal(contract.getAutoRenewal())
+            .renewalNoticeDays(contract.getRenewalNoticeDays())
+            .terminationNoticeDays(contract.getTerminationNoticeDays())
+            .lateFeePercentage(contract.getLateFeePercentage())
+            .status(contract.getStatus())
+            .termsAndConditions(contract.getTermsAndConditions())
+            .notes(contract.getNotes())
+            .countryCode(contract.getCountryCode())
+            .countryMetadata(contract.getCountryMetadata())
+            .renewalMode(contract.getRenewalMode())
+            .renewalTermMonths(contract.getRenewalTermMonths())
+            .maxRenewals(contract.getMaxRenewals())
+            .landlordNoticeDays(contract.getLandlordNoticeDays())
+            .tenantNoticeDays(contract.getTenantNoticeDays())
+            .requiresTenantConfirmation(contract.getRequiresTenantConfirmation())
+            .rentAdjustmentType(contract.getRentAdjustmentType())
+            .rentAdjustmentValue(contract.getRentAdjustmentValue())
+            .landlordType(contract.getLandlordType())
+            .regionCode(contract.getRegionCode())
+            .createdAt(contract.getCreatedAt())
+            .updatedAt(contract.getUpdatedAt())
+            .createdBy(contract.getCreatedBy())
+            .updatedBy(contract.getUpdatedBy())
+            .deletedAt(contract.getDeletedAt())
+            .build();
 
     // Update fields
     contractMapper.updateEntity(contract, request);
@@ -526,34 +537,45 @@ public class ContractService {
 
     // Store old values for audit
     Contract oldContract =
-        new Contract(
-            contract.getId(),
-            contract.getIdentifier(),
-            contract.getTeamId(),
-            contract.getPropertyId(),
-            contract.getContractType(),
-            contract.getStartDate(),
-            contract.getEndDate(),
-            contract.getSignedDate(),
-            contract.getRentAmount(),
-            contract.getDepositAmount(),
-            contract.getSecurityDeposit(),
-            contract.getPaymentFrequency(),
-            contract.getPaymentDueDay(),
-            contract.getAutoRenewal(),
-            contract.getRenewalNoticeDays(),
-            contract.getTerminationNoticeDays(),
-            contract.getLateFeePercentage(),
-            contract.getStatus(),
-            contract.getTermsAndConditions(),
-            contract.getNotes(),
-            contract.getCountryCode(),
-            contract.getCountryMetadata(),
-            contract.getCreatedAt(),
-            contract.getUpdatedAt(),
-            contract.getCreatedBy(),
-            contract.getUpdatedBy(),
-            contract.getDeletedAt());
+        Contract.builder()
+            .id(contract.getId())
+            .identifier(contract.getIdentifier())
+            .teamId(contract.getTeamId())
+            .propertyId(contract.getPropertyId())
+            .contractType(contract.getContractType())
+            .startDate(contract.getStartDate())
+            .endDate(contract.getEndDate())
+            .signedDate(contract.getSignedDate())
+            .rentAmount(contract.getRentAmount())
+            .depositAmount(contract.getDepositAmount())
+            .securityDeposit(contract.getSecurityDeposit())
+            .paymentFrequency(contract.getPaymentFrequency())
+            .paymentDueDay(contract.getPaymentDueDay())
+            .autoRenewal(contract.getAutoRenewal())
+            .renewalNoticeDays(contract.getRenewalNoticeDays())
+            .terminationNoticeDays(contract.getTerminationNoticeDays())
+            .lateFeePercentage(contract.getLateFeePercentage())
+            .status(contract.getStatus())
+            .termsAndConditions(contract.getTermsAndConditions())
+            .notes(contract.getNotes())
+            .countryCode(contract.getCountryCode())
+            .countryMetadata(contract.getCountryMetadata())
+            .renewalMode(contract.getRenewalMode())
+            .renewalTermMonths(contract.getRenewalTermMonths())
+            .maxRenewals(contract.getMaxRenewals())
+            .landlordNoticeDays(contract.getLandlordNoticeDays())
+            .tenantNoticeDays(contract.getTenantNoticeDays())
+            .requiresTenantConfirmation(contract.getRequiresTenantConfirmation())
+            .rentAdjustmentType(contract.getRentAdjustmentType())
+            .rentAdjustmentValue(contract.getRentAdjustmentValue())
+            .landlordType(contract.getLandlordType())
+            .regionCode(contract.getRegionCode())
+            .createdAt(contract.getCreatedAt())
+            .updatedAt(contract.getUpdatedAt())
+            .createdBy(contract.getCreatedBy())
+            .updatedBy(contract.getUpdatedBy())
+            .deletedAt(contract.getDeletedAt())
+            .build();
 
     contract.setStatus(newStatus);
     contract.setUpdatedBy(principal.getUserId());
@@ -643,34 +665,45 @@ public class ContractService {
 
     // Store old values for audit
     Contract oldContract =
-        new Contract(
-            contract.getId(),
-            contract.getIdentifier(),
-            contract.getTeamId(),
-            contract.getPropertyId(),
-            contract.getContractType(),
-            contract.getStartDate(),
-            contract.getEndDate(),
-            contract.getSignedDate(),
-            contract.getRentAmount(),
-            contract.getDepositAmount(),
-            contract.getSecurityDeposit(),
-            contract.getPaymentFrequency(),
-            contract.getPaymentDueDay(),
-            contract.getAutoRenewal(),
-            contract.getRenewalNoticeDays(),
-            contract.getTerminationNoticeDays(),
-            contract.getLateFeePercentage(),
-            contract.getStatus(),
-            contract.getTermsAndConditions(),
-            contract.getNotes(),
-            contract.getCountryCode(),
-            contract.getCountryMetadata(),
-            contract.getCreatedAt(),
-            contract.getUpdatedAt(),
-            contract.getCreatedBy(),
-            contract.getUpdatedBy(),
-            contract.getDeletedAt());
+        Contract.builder()
+            .id(contract.getId())
+            .identifier(contract.getIdentifier())
+            .teamId(contract.getTeamId())
+            .propertyId(contract.getPropertyId())
+            .contractType(contract.getContractType())
+            .startDate(contract.getStartDate())
+            .endDate(contract.getEndDate())
+            .signedDate(contract.getSignedDate())
+            .rentAmount(contract.getRentAmount())
+            .depositAmount(contract.getDepositAmount())
+            .securityDeposit(contract.getSecurityDeposit())
+            .paymentFrequency(contract.getPaymentFrequency())
+            .paymentDueDay(contract.getPaymentDueDay())
+            .autoRenewal(contract.getAutoRenewal())
+            .renewalNoticeDays(contract.getRenewalNoticeDays())
+            .terminationNoticeDays(contract.getTerminationNoticeDays())
+            .lateFeePercentage(contract.getLateFeePercentage())
+            .status(contract.getStatus())
+            .termsAndConditions(contract.getTermsAndConditions())
+            .notes(contract.getNotes())
+            .countryCode(contract.getCountryCode())
+            .countryMetadata(contract.getCountryMetadata())
+            .renewalMode(contract.getRenewalMode())
+            .renewalTermMonths(contract.getRenewalTermMonths())
+            .maxRenewals(contract.getMaxRenewals())
+            .landlordNoticeDays(contract.getLandlordNoticeDays())
+            .tenantNoticeDays(contract.getTenantNoticeDays())
+            .requiresTenantConfirmation(contract.getRequiresTenantConfirmation())
+            .rentAdjustmentType(contract.getRentAdjustmentType())
+            .rentAdjustmentValue(contract.getRentAdjustmentValue())
+            .landlordType(contract.getLandlordType())
+            .regionCode(contract.getRegionCode())
+            .createdAt(contract.getCreatedAt())
+            .updatedAt(contract.getUpdatedAt())
+            .createdBy(contract.getCreatedBy())
+            .updatedBy(contract.getUpdatedBy())
+            .deletedAt(contract.getDeletedAt())
+            .build();
 
     contract.setStatus(DRAFT);
     contract.setUpdatedBy(principal.getUserId());
@@ -924,6 +957,19 @@ public class ContractService {
         contract.getNotes(),
         contract.getCountryCode(),
         contract.getCountryMetadata(),
+        contract.getRenewalMode(),
+        contract.getRenewalTermMonths(),
+        contract.getMaxRenewals(),
+        contract.getLandlordNoticeDays(),
+        contract.getTenantNoticeDays(),
+        contract.getRequiresTenantConfirmation(),
+        contract.getRentAdjustmentType(),
+        contract.getRentAdjustmentValue(),
+        contract.getLandlordType(),
+        contract.getRegionCode(),
+        Optional.empty(),  // effectiveEndDate — computed in Phase 5b
+        0,                 // extensionCount
+        Optional.empty(),  // extensionsRemaining
         contract.getCreatedAt(),
         Optional.of(contract.getUpdatedAt()));
   }
@@ -1010,6 +1056,19 @@ public class ContractService {
                   contract.getNotes(),
                   contract.getCountryCode(),
                   contract.getCountryMetadata(),
+                  contract.getRenewalMode(),
+                  contract.getRenewalTermMonths(),
+                  contract.getMaxRenewals(),
+                  contract.getLandlordNoticeDays(),
+                  contract.getTenantNoticeDays(),
+                  contract.getRequiresTenantConfirmation(),
+                  contract.getRentAdjustmentType(),
+                  contract.getRentAdjustmentValue(),
+                  contract.getLandlordType(),
+                  contract.getRegionCode(),
+                  Optional.empty(),  // effectiveEndDate — computed in Phase 5b
+                  0,                 // extensionCount
+                  Optional.empty(),  // extensionsRemaining
                   contract.getCreatedAt(),
                   Optional.of(contract.getUpdatedAt()));
             })

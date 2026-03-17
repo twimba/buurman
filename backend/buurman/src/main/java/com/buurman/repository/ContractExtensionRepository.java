@@ -4,7 +4,6 @@ import static com.buurman.jooq.generated.Tables.CONTRACT_EXTENSIONS;
 import static java.time.ZoneOffset.UTC;
 
 import java.time.Clock;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -141,7 +140,7 @@ public class ContractExtensionRepository {
         CONTRACT_EXTENSIONS,
         condition,
         sortableFields,
-        CONTRACT_EXTENSIONS.EXTENSION_NUMBER.desc(),
+        CONTRACT_EXTENSIONS.EXTENSION_NUMBER,
         pageRequest,
         mapper::toDomain);
   }
@@ -175,13 +174,12 @@ public class ContractExtensionRepository {
   }
 
   public int countActiveAndSuperseded(UUID contractId, UUID teamId) {
-    return dsl.selectCount()
-        .from(CONTRACT_EXTENSIONS)
-        .where(CONTRACT_EXTENSIONS.CONTRACT_ID.eq(contractId)
+    return dsl.fetchCount(
+        CONTRACT_EXTENSIONS,
+        CONTRACT_EXTENSIONS.CONTRACT_ID.eq(contractId)
             .and(CONTRACT_EXTENSIONS.TEAM_ID.eq(teamId))
             .and(CONTRACT_EXTENSIONS.STATUS.in("ACTIVE", "SUPERSEDED"))
-            .and(CONTRACT_EXTENSIONS.DELETED_AT.isNull()))
-        .fetchOne(0, int.class);
+            .and(CONTRACT_EXTENSIONS.DELETED_AT.isNull()));
   }
 
   public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {
