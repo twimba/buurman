@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
 import com.buurman.domain.Contract;
+import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Document;
@@ -60,6 +61,7 @@ import com.buurman.exception.BadRequestException;
 import com.buurman.mapper.ContractMapper;
 import com.buurman.mapper.PropertyMapper;
 import com.buurman.mapper.TenantMapper;
+import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PropertyRepository;
@@ -78,6 +80,8 @@ import lombok.extern.slf4j.Slf4j;
 public class ContractService {
 
   private final ContractRepository contractRepository;
+  private final ContractExtensionRepository extensionRepository;
+  private final ContractExtensionService contractExtensionService;
   private final PropertyRepository propertyRepository;
   private final TenantRepository tenantRepository;
   private final DocumentRepository documentRepository;
@@ -931,6 +935,15 @@ public class ContractService {
 
     PropertySummary propertySummary = propertyMapper.toSummary(property);
 
+    // Compute effective end date and extension statistics
+    List<ContractExtension> extensions =
+        contractExtensionService.getExtensionsForContract(contract.getId(), teamId);
+    Optional<LocalDate> effectiveEndDate =
+        EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), extensions);
+    int extensionCount = contractExtensionService.getExtensionCount(contract.getId(), teamId);
+    Optional<Integer> extensionsRemaining =
+        contract.getMaxRenewals().map(max -> max - extensionCount);
+
     return new ContractResponse(
         contract.getIdentifier().orElseThrow(),
         Optional.of(propertySummary),
@@ -967,9 +980,9 @@ public class ContractService {
         contract.getRentAdjustmentValue(),
         contract.getLandlordType(),
         contract.getRegionCode(),
-        Optional.empty(), // effectiveEndDate — computed in Phase 5b
-        0, // extensionCount
-        Optional.empty(), // extensionsRemaining
+        effectiveEndDate,
+        extensionCount,
+        extensionsRemaining,
         contract.getCreatedAt(),
         Optional.of(contract.getUpdatedAt()));
   }
@@ -1002,6 +1015,12 @@ public class ContractService {
         tenantRepository.findByIdsAndTeamId(allTenantIds, teamId).stream()
             .collect(Collectors.toMap(Tenant::getId, t -> t));
 
+    // Batch load extensions for all contracts
+    List<ContractExtension> allExtensions =
+        extensionRepository.findByContractIdsAndTeamId(contractIds, teamId);
+    Map<UUID, List<ContractExtension>> extensionsByContract =
+        allExtensions.stream().collect(Collectors.groupingBy(ContractExtension::getContractId));
+
     return contracts.stream()
         .map(
             contract -> {
@@ -1029,6 +1048,24 @@ public class ContractService {
                       .map(ContractPartyResponse::tenant)
                       .flatMap(Optional::stream)
                       .findFirst();
+
+              // Compute effective end date and extension statistics
+              List<ContractExtension> extensions =
+                  extensionsByContract.getOrDefault(contract.getId(), List.of());
+              Optional<LocalDate> effectiveEndDate =
+                  EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), extensions);
+              int extensionCount =
+                  (int)
+                      extensions.stream()
+                          .filter(
+                              e ->
+                                  e.getStatus() == ContractExtension.ExtensionStatus.ACTIVE
+                                      || e.getStatus()
+                                          == ContractExtension.ExtensionStatus.SUPERSEDED)
+                          .filter(e -> e.getDeletedAt().isEmpty())
+                          .count();
+              Optional<Integer> extensionsRemaining =
+                  contract.getMaxRenewals().map(max -> max - extensionCount);
 
               return new ContractResponse(
                   contract.getIdentifier().orElseThrow(),
@@ -1066,9 +1103,9 @@ public class ContractService {
                   contract.getRentAdjustmentValue(),
                   contract.getLandlordType(),
                   contract.getRegionCode(),
-                  Optional.empty(), // effectiveEndDate — computed in Phase 5b
-                  0, // extensionCount
-                  Optional.empty(), // extensionsRemaining
+                  effectiveEndDate,
+                  extensionCount,
+                  extensionsRemaining,
                   contract.getCreatedAt(),
                   Optional.of(contract.getUpdatedAt()));
             })

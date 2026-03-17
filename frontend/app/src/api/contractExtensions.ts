@@ -84,7 +84,7 @@ export const cancelExtension = async (
 export const getUpcomingRenewals = async (): Promise<
   UpcomingRenewalResponse[]
 > => {
-  const response = await client.get('/contracts/upcoming-renewals');
+  const response = await client.get('/dashboard/upcoming-renewals');
   return response.data;
 };
 
@@ -95,9 +95,9 @@ export const getJurisdictionDefaults = async (
   furnished?: boolean
 ): Promise<JurisdictionDefaultResponse> => {
   const response = await client.get(
-    `/contracts/extensions/jurisdiction-defaults/${countryCode}`,
+    `/jurisdiction-defaults`,
     {
-      params: { regionCode, landlordType, furnished },
+      params: { countryCode, regionCode, landlordType, furnished },
     }
   );
   return response.data;

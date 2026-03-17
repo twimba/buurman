@@ -26,8 +26,8 @@ import java.util.UUID;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
@@ -70,6 +70,7 @@ public class ContractExtensionService {
   private final TeamRepository teamRepository;
   private final NotificationService notificationService;
   private final AuditService auditService;
+  private final TransactionTemplate transactionTemplate;
   private final Clock clock;
 
   // ── CRUD Operations ──────────────────────────────────────────────────
@@ -349,7 +350,6 @@ public class ContractExtensionService {
         teamIds.size());
   }
 
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
   int processAutoExtensionsForTeam(UUID teamId) {
     LocalDate today = LocalDate.now(clock);
     List<Contract> candidates = findAutoExtensionCandidates(teamId, today);
@@ -357,7 +357,8 @@ public class ContractExtensionService {
 
     for (Contract contract : candidates) {
       try {
-        processAutoExtensionForContract(contract, teamId, today);
+        transactionTemplate.executeWithoutResult(
+            status -> processAutoExtensionForContract(contract, teamId, today));
         created++;
       } catch (Exception e) {
         log.error(
@@ -422,9 +423,7 @@ public class ContractExtensionService {
         isRollover
             ? previousRent
             : computeNewRent(
-                previousRent,
-                contract.getRentAdjustmentType(),
-                contract.getRentAdjustmentValue());
+                previousRent, contract.getRentAdjustmentType(), contract.getRentAdjustmentValue());
 
     Optional<LocalDate> newEndDate;
     if (isRollover) {
@@ -495,7 +494,6 @@ public class ContractExtensionService {
     log.info("Renewal reminders completed. Sent {} reminders", totalSent);
   }
 
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
   int processRenewalRemindersForTeam(UUID teamId) {
     LocalDate today = LocalDate.now(clock);
     int sent = 0;
@@ -518,7 +516,8 @@ public class ContractExtensionService {
 
       LocalDate noticeDate = effectiveEnd.get().minusDays(contract.getLandlordNoticeDays());
       if (today.equals(noticeDate)) {
-        sendRenewalReminderNotification(contract, effectiveEnd.get(), teamId);
+        transactionTemplate.executeWithoutResult(
+            status -> sendRenewalReminderNotification(contract, effectiveEnd.get(), teamId));
         sent++;
       }
     }
@@ -556,6 +555,20 @@ public class ContractExtensionService {
     extension.setActivatedAt(Optional.of(now));
     extension.setActivatedBy(Optional.of(activatedBy));
     extension.setUpdatedBy(activatedBy);
+
+    // BR-27: Close previous rent period's effective_to
+    LocalDate previousEndDate = extension.getPreviousEndDate();
+    List<ContractRentPeriod> existingPeriods =
+        rentPeriodRepository.findByContractIdAndTeamId(contract.getId(), teamId);
+    existingPeriods.stream()
+        .filter(p -> p.getDeletedAt().isEmpty())
+        .max(java.util.Comparator.comparing(ContractRentPeriod::getEffectiveFrom))
+        .ifPresent(
+            prev -> {
+              prev.setEffectiveTo(Optional.of(previousEndDate));
+              prev.setUpdatedBy(activatedBy);
+              rentPeriodRepository.save(prev);
+            });
 
     // BR-23: Create DRAFT rent period
     UUID rentPeriodId = createDraftRentPeriod(extension, contract, teamId, activatedBy);
@@ -627,8 +640,7 @@ public class ContractExtensionService {
         BigDecimal v =
             value.orElseThrow(
                 () ->
-                    new BadRequestException(
-                        "Rent adjustment value required for FIXED_PERCENTAGE"));
+                    new BadRequestException("Rent adjustment value required for FIXED_PERCENTAGE"));
         BigDecimal multiplier =
             BigDecimal.ONE.add(v.divide(BigDecimal.valueOf(100), 6, RoundingMode.HALF_UP));
         BigDecimal newAmount =

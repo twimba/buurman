@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
@@ -20,12 +21,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.config.models.AppProperties;
 import com.buurman.domain.Contract;
+import com.buurman.domain.ContractExtension;
 import com.buurman.domain.NotificationUrgency;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamMember;
 import com.buurman.domain.TeamRole;
 import com.buurman.domain.User;
+import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
@@ -45,6 +48,7 @@ import lombok.extern.slf4j.Slf4j;
 public class NotificationSchedulerService {
 
   private final ContractRepository contractRepository;
+  private final ContractExtensionRepository contractExtensionRepository;
   private final PaymentRepository paymentRepository;
   private final PropertyRepository propertyRepository;
   private final TeamRepository teamRepository;
@@ -72,10 +76,21 @@ public class NotificationSchedulerService {
                 contractRepository.findExpiringContracts(team.getId(), thirtyDaysFromNow);
 
             for (Contract contract : expiringContracts) {
-              if (contract.getEndDate().isEmpty()) {
+              // Skip contracts with automatic renewal — they auto-extend
+              if (contract.getRenewalMode() == Contract.RenewalMode.AUTOMATIC) {
                 continue;
               }
-              LocalDate endDate = contract.getEndDate().get();
+
+              List<ContractExtension> extensions =
+                  contractExtensionRepository.findByContractIdAndTeamId(
+                      contract.getId(), team.getId());
+              Optional<LocalDate> effectiveEndDate =
+                  EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), extensions);
+
+              if (effectiveEndDate.isEmpty()) {
+                continue;
+              }
+              LocalDate endDate = effectiveEndDate.get();
               int daysUntilExpiry = (int) DAYS.between(LocalDate.now(clock), endDate);
 
               if (daysUntilExpiry != 30

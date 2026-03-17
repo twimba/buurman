@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.buurman.config.models.AppProperties;
 import com.buurman.domain.CalendarFeed;
 import com.buurman.domain.Contract;
+import com.buurman.domain.ContractExtension;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
 import com.buurman.domain.Sid;
@@ -32,6 +33,7 @@ import com.buurman.domain.identifier.CalendarFeedIdentifier;
 import com.buurman.dto.request.CreateCalendarFeedRequest;
 import com.buurman.dto.response.CalendarFeedResponse;
 import com.buurman.repository.CalendarFeedRepository;
+import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
@@ -47,6 +49,7 @@ public class CalendarFeedService {
   private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
 
   private final CalendarFeedRepository calendarFeedRepository;
+  private final ContractExtensionRepository contractExtensionRepository;
   private final PaymentRepository paymentRepository;
   private final ContractRepository contractRepository;
   private final PropertyRepository propertyRepository;
@@ -255,6 +258,15 @@ public class CalendarFeedService {
     appendFolded(sb, "X-WR-CALNAME:" + calName);
     sb.append("X-WR-TIMEZONE:UTC\r\n");
 
+    // Batch-load extensions for effective end date computation
+    Set<UUID> milestoneContractIds =
+        milestoneContracts.stream().map(Contract::getId).collect(toSet());
+    List<ContractExtension> allMilestoneExtensions =
+        contractExtensionRepository.findByContractIdsAndTeamId(milestoneContractIds, teamId);
+    Map<UUID, List<ContractExtension>> extensionsByContract =
+        allMilestoneExtensions.stream()
+            .collect(java.util.stream.Collectors.groupingBy(ContractExtension::getContractId));
+
     // Emit contract milestone events (start, end, signed dates)
     for (Contract contract : milestoneContracts) {
       Property property = propertyMap.get(contract.getPropertyId());
@@ -275,12 +287,16 @@ public class CalendarFeedService {
       sb.append("TRANSP:TRANSPARENT\r\n");
       sb.append("END:VEVENT\r\n");
 
-      if (contract.getEndDate().isPresent()) {
+      List<ContractExtension> exts = extensionsByContract.getOrDefault(contract.getId(), List.of());
+      Optional<java.time.LocalDate> effectiveEndDate =
+          EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), exts);
+
+      if (effectiveEndDate.isPresent()) {
         sb.append("BEGIN:VEVENT\r\n");
         appendFolded(
             sb, "UID:contract-end-" + contract.getIdentifier().orElseThrow() + "@buurman.app");
         sb.append("DTSTART;VALUE=DATE:")
-            .append(contract.getEndDate().get().format(DATE_FORMAT))
+            .append(effectiveEndDate.get().format(DATE_FORMAT))
             .append("\r\n");
         appendFolded(sb, "SUMMARY:" + escapeText("Contract End - " + propertyLabel));
         appendFolded(

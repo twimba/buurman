@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Contract;
+import com.buurman.domain.ContractExtension;
 import com.buurman.domain.Property;
 import com.buurman.domain.PropertyAcquisition;
 import com.buurman.domain.PropertyFinancing;
@@ -34,6 +35,7 @@ import com.buurman.dto.response.PropertyTimelineResponse;
 import com.buurman.dto.response.PropertyTimelineResponse.TimelineEntry;
 import com.buurman.dto.response.PropertyTimelineResponse.TimelineEntryType;
 import com.buurman.exception.BusinessRuleException;
+import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyAcquisitionRepository;
 import com.buurman.repository.PropertyFinancingRepository;
@@ -52,6 +54,7 @@ public class OccupancyPeriodService {
   private final PropertyOccupancyPeriodRepository repository;
   private final PropertyRepository propertyRepository;
   private final ContractRepository contractRepository;
+  private final ContractExtensionRepository contractExtensionRepository;
   private final PropertyAcquisitionRepository acquisitionRepository;
   private final PropertyFinancingRepository financingRepository;
   private final Clock clock;
@@ -248,6 +251,14 @@ public class OccupancyPeriodService {
     List<PropertyFinancing> financings =
         financingRepository.findByPropertyIdAndTeamId(property.getId(), teamId);
 
+    // Batch-load extensions for effective end date computation
+    List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
+    List<ContractExtension> allExtensions =
+        contractExtensionRepository.findByContractIdsAndTeamId(contractIds, teamId);
+    java.util.Map<UUID, List<ContractExtension>> extensionsByContract =
+        allExtensions.stream()
+            .collect(java.util.stream.Collectors.groupingBy(ContractExtension::getContractId));
+
     List<TimelineEntry> entries = new ArrayList<>();
 
     // Add occupancy periods
@@ -267,12 +278,15 @@ public class OccupancyPeriodService {
       if (c.getStartDate() == null) {
         continue;
       }
+      List<ContractExtension> exts = extensionsByContract.getOrDefault(c.getId(), List.of());
+      Optional<LocalDate> effectiveEndDate =
+          EffectiveEndDateHelper.computeEffectiveEndDate(c.getEndDate(), exts);
       entries.add(
           new TimelineEntry(
               TimelineEntryType.CONTRACT,
               c.getIdentifier().orElseThrow(),
               c.getStartDate(),
-              c.getEndDate(),
+              effectiveEndDate,
               Optional.of(c.getStatus().name()),
               Optional.of(c.getContractType().name())));
     }
@@ -307,6 +321,15 @@ public class OccupancyPeriodService {
       LocalDate endDate,
       @Nullable UUID excludeId) {
     List<Contract> contracts = contractRepository.findByPropertyId(propertyId, teamId);
+
+    // Batch-load extensions for effective end date computation
+    List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
+    List<ContractExtension> allExtensions =
+        contractExtensionRepository.findByContractIdsAndTeamId(contractIds, teamId);
+    java.util.Map<UUID, List<ContractExtension>> extensionsByContract =
+        allExtensions.stream()
+            .collect(java.util.stream.Collectors.groupingBy(ContractExtension::getContractId));
+
     for (Contract c : contracts) {
       if (c.getStartDate() == null) {
         continue;
@@ -315,10 +338,13 @@ public class OccupancyPeriodService {
           || c.getStatus() == Contract.ContractStatus.PENDING_SIGNATURE) {
         continue;
       }
-      LocalDate contractEnd = c.getEndDate().orElse(LocalDate.of(9999, 12, 31));
+      List<ContractExtension> exts = extensionsByContract.getOrDefault(c.getId(), List.of());
+      Optional<LocalDate> effectiveEndDate =
+          EffectiveEndDateHelper.computeEffectiveEndDate(c.getEndDate(), exts);
+      LocalDate contractEnd = effectiveEndDate.orElse(LocalDate.of(9999, 12, 31));
       boolean overlaps = !startDate.isAfter(contractEnd) && !endDate.isBefore(c.getStartDate());
       if (overlaps) {
-        String endStr = c.getEndDate().map(LocalDate::toString).orElse("ongoing");
+        String endStr = effectiveEndDate.map(LocalDate::toString).orElse("ongoing");
         throw new BusinessRuleException(
             "Cannot create self-occupancy period: overlaps with contract "
                 + c.getIdentifier().orElseThrow()

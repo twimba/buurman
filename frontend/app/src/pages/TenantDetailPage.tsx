@@ -846,8 +846,8 @@ export const TenantDetailPage = () => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm text-text-primary">
-                                {contract.endDate
-                                  ? formatDate(contract.endDate)
+                                {(contract.effectiveEndDate || contract.endDate)
+                                  ? formatDate(contract.effectiveEndDate || contract.endDate!)
                                   : '-'}
                               </div>
                             </td>

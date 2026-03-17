@@ -4,6 +4,7 @@ import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
 import java.sql.Date;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class JurisdictionDefaultRepository {
 
   private final DSLContext dsl;
+  private final Clock clock;
 
   private static final Table<?> JD = table("jurisdiction_defaults");
   private static final Field<UUID> ID = field("id", UUID.class);
@@ -56,7 +58,7 @@ public class JurisdictionDefaultRepository {
       Optional<String> regionCode,
       Optional<String> landlordType,
       Optional<Boolean> furnished) {
-    LocalDate today = LocalDate.now();
+    LocalDate today = LocalDate.now(clock);
 
     Condition baseCondition =
         COUNTRY_CODE

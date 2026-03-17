@@ -142,6 +142,23 @@ public class ContractExtensionRepository {
         .orElseThrow(() -> new NotFoundException("Contract extension not found"));
   }
 
+  public List<ContractExtension> findByContractIdsAndTeamId(
+      java.util.Collection<UUID> contractIds, UUID teamId) {
+    if (contractIds == null || contractIds.isEmpty()) {
+      return List.of();
+    }
+    return dsl.selectFrom(CONTRACT_EXTENSIONS)
+        .where(
+            CONTRACT_EXTENSIONS
+                .CONTRACT_ID
+                .in(contractIds)
+                .and(CONTRACT_EXTENSIONS.TEAM_ID.eq(teamId))
+                .and(CONTRACT_EXTENSIONS.DELETED_AT.isNull()))
+        .orderBy(CONTRACT_EXTENSIONS.EXTENSION_NUMBER.desc())
+        .fetch()
+        .map(mapper::toDomain);
+  }
+
   public List<ContractExtension> findByContractIdAndTeamId(UUID contractId, UUID teamId) {
     return dsl.selectFrom(CONTRACT_EXTENSIONS)
         .where(

@@ -35,6 +35,7 @@ public class DashboardController implements DashboardApi {
 
   @Override
   public List<UpcomingRenewalResponse> getUpcomingRenewals() {
-    return List.of();
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return dashboardService.getUpcomingRenewals(principal.requireTeamId());
   }
 }

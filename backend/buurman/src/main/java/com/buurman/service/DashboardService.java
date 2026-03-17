@@ -13,21 +13,36 @@ import static java.math.RoundingMode.HALF_UP;
 import static java.time.ZoneOffset.UTC;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.buurman.domain.Contract;
+import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractIncomeEntry;
+import com.buurman.domain.ContractParty;
+import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Property;
 import com.buurman.domain.Sid;
+import com.buurman.domain.Tenant;
 import com.buurman.dto.response.DashboardStatsResponse;
 import com.buurman.dto.response.RecentActivityResponse;
+import com.buurman.generated.model.RenewalMode;
+import com.buurman.generated.model.UpcomingRenewalResponse;
 import com.buurman.repository.AuditLogRepository;
+import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyRepository;
+import com.buurman.repository.TenantRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,7 +53,11 @@ public class DashboardService {
   private final AuditLogRepository auditLogRepository;
   private final PropertyRepository propertyRepository;
   private final ContractRepository contractRepository;
+  private final ContractExtensionRepository extensionRepository;
+  private final TenantRepository tenantRepository;
+  private final ContractPartyService contractPartyService;
   private final TeamService teamService;
+  private final Clock clock;
 
   public DashboardStatsResponse getDashboardStats(UUID teamId) {
     List<Property> allProperties = propertyRepository.findAllByTeamId(teamId);
@@ -139,6 +158,121 @@ public class DashboardService {
         };
 
     return String.format("%s %s %s", userName, actionText, entityName);
+  }
+
+  public List<UpcomingRenewalResponse> getUpcomingRenewals(UUID teamId) {
+    LocalDate today = LocalDate.now(clock);
+    LocalDate horizon = today.plusDays(90);
+
+    // Find ACTIVE, FIXED_TERM contracts with renewal_mode != NONE
+    List<Contract> contracts =
+        contractRepository.findActiveByTeamId(teamId).stream()
+            .filter(c -> c.getRenewalMode() != Contract.RenewalMode.NONE)
+            .filter(c -> c.getContractType() == Contract.ContractType.FIXED_TERM)
+            .toList();
+
+    if (contracts.isEmpty()) {
+      return List.of();
+    }
+
+    // Batch load extensions
+    List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
+    List<ContractExtension> allExtensions =
+        extensionRepository.findByContractIdsAndTeamId(contractIds, teamId);
+    Map<UUID, List<ContractExtension>> extensionsByContract =
+        allExtensions.stream().collect(Collectors.groupingBy(ContractExtension::getContractId));
+
+    // Batch load properties
+    List<UUID> propertyIds = contracts.stream().map(Contract::getPropertyId).distinct().toList();
+    Map<UUID, Property> propertyMap =
+        propertyRepository.findByIdsAndTeamId(propertyIds, teamId).stream()
+            .collect(Collectors.toMap(Property::getId, p -> p));
+
+    // Batch load parties for primary tenant lookup
+    Map<UUID, List<ContractParty>> partiesByContract =
+        contractPartyService.getPartiesForContracts(contractIds, teamId);
+
+    // Batch load tenants for all parties
+    List<UUID> allTenantIds =
+        partiesByContract.values().stream()
+            .flatMap(List::stream)
+            .flatMap(p -> p.getTenantId().stream())
+            .distinct()
+            .toList();
+    Map<UUID, Tenant> tenantMap =
+        tenantRepository.findByIdsAndTeamId(allTenantIds, teamId).stream()
+            .collect(Collectors.toMap(Tenant::getId, t -> t));
+
+    return contracts.stream()
+        .map(
+            contract -> {
+              List<ContractExtension> extensions =
+                  extensionsByContract.getOrDefault(contract.getId(), List.of());
+
+              // Compute effective end date
+              Optional<LocalDate> effectiveEnd =
+                  EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), extensions);
+              if (effectiveEnd.isEmpty()) {
+                return Optional.<UpcomingRenewalResponse>empty();
+              }
+
+              LocalDate endDate = effectiveEnd.get();
+
+              // Filter: within 90 days
+              if (endDate.isAfter(horizon) || endDate.isBefore(today)) {
+                return Optional.<UpcomingRenewalResponse>empty();
+              }
+
+              // Filter out contracts that already have a DRAFT or ACTIVE extension
+              boolean hasPendingExtension =
+                  extensions.stream()
+                      .anyMatch(
+                          e ->
+                              (e.getStatus() == ContractExtension.ExtensionStatus.DRAFT
+                                      || e.getStatus() == ContractExtension.ExtensionStatus.ACTIVE)
+                                  && e.getDeletedAt().isEmpty());
+              if (hasPendingExtension) {
+                return Optional.<UpcomingRenewalResponse>empty();
+              }
+
+              Property property = propertyMap.get(contract.getPropertyId());
+              String propertyName =
+                  property != null ? property.getStreet() + ", " + property.getCity() : null;
+
+              // Find primary tenant name
+              List<ContractParty> parties =
+                  partiesByContract.getOrDefault(contract.getId(), List.of());
+              String tenantName =
+                  parties.stream()
+                      .filter(p -> p.getRole() == ContractPartyRole.PRIMARY_TENANT)
+                      .findFirst()
+                      .flatMap(ContractParty::getTenantId)
+                      .map(tenantMap::get)
+                      .map(t -> t.getFirstName() + t.getLastName().map(ln -> " " + ln).orElse(""))
+                      .orElse(null);
+
+              int daysUntilExpiry = (int) ChronoUnit.DAYS.between(today, endDate);
+
+              RenewalMode mode = RenewalMode.fromValue(contract.getRenewalMode().name());
+
+              UpcomingRenewalResponse response =
+                  new UpcomingRenewalResponse(
+                      contract.getIdentifier().orElseThrow().value(),
+                      endDate,
+                      mode,
+                      contract.getRentAmount().value(),
+                      contract.getRentAmount().currency(),
+                      daysUntilExpiry);
+              response.setPropertyName(propertyName);
+              response.setTenantName(tenantName);
+              response.setRenewalTermMonths(contract.getRenewalTermMonths().orElse(null));
+
+              return Optional.of(response);
+            })
+        .flatMap(Optional::stream)
+        .sorted(Comparator.comparing(UpcomingRenewalResponse::getEffectiveEndDate))
+        .limit(10)
+        .toList();
   }
 
   private DashboardStatsResponse.MonthlyIncome calculateMonthlyIncome(UUID teamId) {

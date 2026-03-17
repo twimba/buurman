@@ -51,6 +51,9 @@ public interface ContractMapper {
   @Mapping(target = "parties", ignore = true)
   @Mapping(target = "primaryTenant", ignore = true)
   @Mapping(target = "countryMetadata", ignore = true)
+  @Mapping(target = "effectiveEndDate", ignore = true)
+  @Mapping(target = "extensionCount", ignore = true)
+  @Mapping(target = "extensionsRemaining", ignore = true)
   @Mapping(target = "rentAmount", expression = "java(contract.getRentAmount().value())")
   @Mapping(target = "rentAmountCurrency", expression = "java(contract.getRentAmount().currency())")
   @Mapping(
