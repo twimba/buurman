@@ -35,13 +35,23 @@ public final class EffectiveEndDateHelper {
   private EffectiveEndDateHelper() {}
 
   /**
-   * JOOQ field expression that computes the effective end date for use in SQL queries. Returns
-   * COALESCE(latest ACTIVE extension's new_end_date, contracts.end_date).
+   * JOOQ field expression that computes the effective end date for use in SQL queries. Uses CASE
+   * WHEN EXISTS to properly handle rollover-to-indefinite (new_end_date = NULL means indefinite).
+   *
+   * <p>When an ACTIVE extension exists with NULL new_end_date, returns NULL (indefinite). When an
+   * ACTIVE extension exists with a date, returns that date. Otherwise falls back to
+   * contracts.end_date.
    *
    * <p>Usage: {@code select(EffectiveEndDateHelper.effectiveEndDate()).from(CONTRACTS)}
    */
   public static Field<LocalDate> effectiveEndDate() {
-    return DSL.coalesce(
+    return DSL.when(
+            DSL.exists(
+                DSL.selectOne()
+                    .from(CE)
+                    .where(CE_CONTRACT_ID.eq(CONTRACTS.ID))
+                    .and(CE_STATUS.eq("ACTIVE"))
+                    .and(CE_DELETED_AT.isNull())),
             DSL.field(
                 DSL.select(CE_NEW_END_DATE)
                     .from(CE)
@@ -49,8 +59,8 @@ public final class EffectiveEndDateHelper {
                     .and(CE_STATUS.eq("ACTIVE"))
                     .and(CE_DELETED_AT.isNull())
                     .orderBy(CE_EXTENSION_NUMBER.desc())
-                    .limit(1)),
-            CONTRACTS.END_DATE)
+                    .limit(1)))
+        .otherwise(CONTRACTS.END_DATE)
         .as("effective_end_date");
   }
 

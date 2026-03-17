@@ -75,11 +75,10 @@ export const declineExtension = async (
 export const cancelExtension = async (
   contractId: string,
   extensionId: string
-): Promise<ContractExtensionResponse> => {
-  const response = await client.post(
-    `/contracts/${contractId}/extensions/${extensionId}/cancel`
+): Promise<void> => {
+  await client.delete(
+    `/contracts/${contractId}/extensions/${extensionId}`
   );
-  return response.data;
 };
 
 export const getUpcomingRenewals = async (): Promise<

@@ -23,9 +23,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.jspecify.annotations.Nullable;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Contract;
@@ -101,6 +102,13 @@ public class ContractExtensionService {
               throw new BusinessRuleException("Contract already has a pending draft extension");
             });
 
+    extensionRepository
+        .findActiveByContractId(contract.getId(), teamId)
+        .ifPresent(
+            existing -> {
+              throw new BusinessRuleException("Contract already has an active extension");
+            });
+
     // BR-14: Max renewals check
     if (contract.getMaxRenewals().isPresent()) {
       int used = extensionRepository.countActiveAndSuperseded(contract.getId(), teamId);
@@ -131,7 +139,7 @@ public class ContractExtensionService {
       newRent = MoneyAmount.of(request.newRentAmount().get(), previousRent.currency());
       adjType = RentAdjustmentType.MANUAL;
     } else {
-      newRent = computeNewRent(previousRent, adjType, adjValue.orElse(null));
+      newRent = computeNewRent(previousRent, adjType, adjValue);
     }
 
     // Compute new end date
@@ -153,7 +161,7 @@ public class ContractExtensionService {
       newEndDate = previousEndDate.plusMonths(termMonths);
     }
 
-    int extensionNumber = extensionRepository.getNextExtensionNumber(contract.getId());
+    int extensionNumber = extensionRepository.getNextExtensionNumber(contract.getId(), teamId);
 
     ContractExtension extension =
         ContractExtension.builder()
@@ -174,7 +182,11 @@ public class ContractExtensionService {
             .updatedBy(userId)
             .build();
 
-    extension = extensionRepository.save(extension);
+    try {
+      extension = extensionRepository.save(extension);
+    } catch (DataIntegrityViolationException e) {
+      throw new BusinessRuleException("Contract already has a pending or active extension");
+    }
 
     auditService.logCreate(teamId, "CONTRACT_EXTENSION", extension.getId(), userId, extension);
 
@@ -311,13 +323,12 @@ public class ContractExtensionService {
     validateExtensionBelongsToContract(extension, contract);
     validateStatus(extension, DRAFT, "cancel");
 
-    extensionRepository.softDeleteByIdAndTeamId(extension.getId(), teamId);
+    extensionRepository.softDeleteByIdAndTeamId(extension.getId(), teamId, userId);
     auditService.logDelete(teamId, "CONTRACT_EXTENSION", extension.getId(), userId, extension);
   }
 
   // ── Auto-Extension Job ───────────────────────────────────────────────
 
-  @Transactional
   public void processAutoExtensions() {
     log.info("Starting auto-extension processing");
 
@@ -338,7 +349,8 @@ public class ContractExtensionService {
         teamIds.size());
   }
 
-  private int processAutoExtensionsForTeam(UUID teamId) {
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  int processAutoExtensionsForTeam(UUID teamId) {
     LocalDate today = LocalDate.now(clock);
     List<Contract> candidates = findAutoExtensionCandidates(teamId, today);
     int created = 0;
@@ -412,7 +424,7 @@ public class ContractExtensionService {
             : computeNewRent(
                 previousRent,
                 contract.getRentAdjustmentType(),
-                contract.getRentAdjustmentValue().orElse(null));
+                contract.getRentAdjustmentValue());
 
     Optional<LocalDate> newEndDate;
     if (isRollover) {
@@ -423,7 +435,7 @@ public class ContractExtensionService {
       newEndDate = Optional.of(previousEndDate.plusMonths(termMonths));
     }
 
-    int extensionNumber = extensionRepository.getNextExtensionNumber(contract.getId());
+    int extensionNumber = extensionRepository.getNextExtensionNumber(contract.getId(), teamId);
 
     ContractExtension extension =
         ContractExtension.builder()
@@ -466,7 +478,6 @@ public class ContractExtensionService {
 
   // ── Renewal Reminder Job ─────────────────────────────────────────────
 
-  @Transactional
   public void processRenewalReminders() {
     log.info("Starting renewal reminder processing");
 
@@ -484,7 +495,8 @@ public class ContractExtensionService {
     log.info("Renewal reminders completed. Sent {} reminders", totalSent);
   }
 
-  private int processRenewalRemindersForTeam(UUID teamId) {
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  int processRenewalRemindersForTeam(UUID teamId) {
     LocalDate today = LocalDate.now(clock);
     int sent = 0;
 
@@ -601,22 +613,24 @@ public class ContractExtensionService {
   }
 
   private MoneyAmount computeNewRent(
-      MoneyAmount previousRent, RentAdjustmentType type, @Nullable BigDecimal value) {
+      MoneyAmount previousRent, RentAdjustmentType type, Optional<BigDecimal> value) {
     return switch (type) {
       case NONE -> previousRent;
       case FIXED_AMOUNT -> {
-        if (value == null) {
-          throw new BadRequestException("Rent adjustment value required for FIXED_AMOUNT");
-        }
-        BigDecimal newAmount = previousRent.value().add(value);
+        BigDecimal v =
+            value.orElseThrow(
+                () -> new BadRequestException("Rent adjustment value required for FIXED_AMOUNT"));
+        BigDecimal newAmount = previousRent.value().add(v);
         yield MoneyAmount.of(newAmount, previousRent.currency());
       }
       case FIXED_PERCENTAGE -> {
-        if (value == null) {
-          throw new BadRequestException("Rent adjustment value required for FIXED_PERCENTAGE");
-        }
+        BigDecimal v =
+            value.orElseThrow(
+                () ->
+                    new BadRequestException(
+                        "Rent adjustment value required for FIXED_PERCENTAGE"));
         BigDecimal multiplier =
-            BigDecimal.ONE.add(value.divide(BigDecimal.valueOf(100), 6, RoundingMode.HALF_UP));
+            BigDecimal.ONE.add(v.divide(BigDecimal.valueOf(100), 6, RoundingMode.HALF_UP));
         BigDecimal newAmount =
             previousRent.value().multiply(multiplier).setScale(2, RoundingMode.HALF_UP);
         yield MoneyAmount.of(newAmount, previousRent.currency());
@@ -716,6 +730,11 @@ public class ContractExtensionService {
       vars.put("daysRemaining", daysRemaining);
       vars.put("renewalMode", contract.getRenewalMode().name());
       vars.put("renewalTermMonths", contract.getRenewalTermMonths().orElse(12));
+      vars.put("tenantName", "");
+      vars.put(
+          "contractUrl",
+          "https://app.local.buurman.io/contracts/"
+              + contract.getIdentifier().map(Sid::value).orElse(""));
 
       notificationService.sendToTeam(
           SendNotificationRequest.builder()

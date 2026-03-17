@@ -206,11 +206,15 @@ public class ContractExtensionRepository {
         .map(mapper::toDomain);
   }
 
-  public int getNextExtensionNumber(UUID contractId) {
+  public int getNextExtensionNumber(UUID contractId, UUID teamId) {
     Integer max =
         dsl.select(DSL.max(CONTRACT_EXTENSIONS.EXTENSION_NUMBER))
             .from(CONTRACT_EXTENSIONS)
-            .where(CONTRACT_EXTENSIONS.CONTRACT_ID.eq(contractId))
+            .where(
+                CONTRACT_EXTENSIONS
+                    .CONTRACT_ID
+                    .eq(contractId)
+                    .and(CONTRACT_EXTENSIONS.TEAM_ID.eq(teamId)))
             .fetchOne(DSL.max(CONTRACT_EXTENSIONS.EXTENSION_NUMBER));
     return (max == null) ? 1 : max + 1;
   }
@@ -226,10 +230,12 @@ public class ContractExtensionRepository {
             .and(CONTRACT_EXTENSIONS.DELETED_AT.isNull()));
   }
 
-  public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {
+  public void softDeleteByIdAndTeamId(UUID id, UUID teamId, UUID userId) {
     LocalDateTime now = LocalDateTime.now(clock);
     dsl.update(CONTRACT_EXTENSIONS)
         .set(CONTRACT_EXTENSIONS.DELETED_AT, now)
+        .set(CONTRACT_EXTENSIONS.UPDATED_AT, now)
+        .set(CONTRACT_EXTENSIONS.UPDATED_BY, userId)
         .set(CONTRACT_EXTENSIONS.STATUS, "CANCELLED")
         .where(CONTRACT_EXTENSIONS.ID.eq(id).and(CONTRACT_EXTENSIONS.TEAM_ID.eq(teamId)))
         .execute();

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   Plus,
   Check,
+  CheckCircle,
   XCircle,
   Ban,
   TrendingUp,
@@ -18,6 +19,7 @@ import {
   useContractExtensions,
   useCreateExtension,
   useActivateExtension,
+  useConfirmExtension,
   useDeclineExtension,
   useCancelExtension,
 } from '@/hooks/useContractExtensionHooks';
@@ -60,6 +62,7 @@ export const ExtensionTimeline = ({
     useContractExtensions(contractIdentifier);
   const createExtension = useCreateExtension(contractIdentifier);
   const activateExtension = useActivateExtension(contractIdentifier);
+  const confirmExtension = useConfirmExtension(contractIdentifier);
   const declineExtension = useDeclineExtension(contractIdentifier);
   const cancelExtension = useCancelExtension(contractIdentifier);
 
@@ -74,6 +77,10 @@ export const ExtensionTimeline = ({
 
   const handleActivate = (extensionId: string) => {
     activateExtension.mutate(extensionId);
+  };
+
+  const handleConfirm = (extensionId: string) => {
+    confirmExtension.mutate(extensionId);
   };
 
   const handleDecline = () => {
@@ -144,9 +151,11 @@ export const ExtensionTimeline = ({
               formatDate={formatDate}
               canEdit={canEditData}
               onActivate={() => handleActivate(ext.identifier)}
+              onConfirm={() => handleConfirm(ext.identifier)}
               onDecline={() => setDeclineTarget(ext.identifier)}
               onCancel={() => setCancelTarget(ext.identifier)}
               isActivating={activateExtension.isPending}
+              isConfirming={confirmExtension.isPending}
             />
           ))}
         </div>
@@ -241,18 +250,22 @@ function ExtensionCard({
   formatDate,
   canEdit,
   onActivate,
+  onConfirm,
   onDecline,
   onCancel,
   isActivating,
+  isConfirming,
 }: {
   extension: ContractExtensionResponse;
   currency: string;
   formatDate: (date: string) => string;
   canEdit: boolean;
   onActivate: () => void;
+  onConfirm: () => void;
   onDecline: () => void;
   onCancel: () => void;
   isActivating: boolean;
+  isConfirming: boolean;
 }) {
   const rentChange =
     extension.previousRentAmount > 0
@@ -342,6 +355,17 @@ function ExtensionCard({
               <Check className="h-3.5 w-3.5" />
               Activate
             </button>
+            {!extension.confirmedAt && (
+              <button
+                onClick={onConfirm}
+                disabled={isConfirming}
+                className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-indigo-700 bg-indigo-50 rounded-md hover:opacity-80 transition-colors disabled:opacity-50 dark:text-indigo-300 dark:bg-indigo-500/10"
+                title="Confirm this extension"
+              >
+                <CheckCircle className="h-3.5 w-3.5" />
+                Confirm
+              </button>
+            )}
             <button
               onClick={onDecline}
               className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-warning-text bg-warning-bg rounded-md hover:opacity-80 transition-colors"
