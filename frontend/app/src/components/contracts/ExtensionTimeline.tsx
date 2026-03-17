@@ -24,7 +24,6 @@ import {
 import type {
   ContractExtensionResponse,
   RentAdjustmentType,
-  ExtensionStatus,
 } from '@/types/contractExtension';
 import type { ContractResponseStatus } from '@/generated/models';
 import { ConfirmDialog } from '@buurman/ui';
