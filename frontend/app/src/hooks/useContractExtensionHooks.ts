@@ -189,6 +189,6 @@ export const useJurisdictionDefaults = (
         furnished
       ),
     enabled: !!countryCode,
-    staleTime: Infinity,
+    staleTime: 1000 * 60 * 60,
   });
 };

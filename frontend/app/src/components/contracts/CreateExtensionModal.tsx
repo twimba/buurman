@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { X, TrendingUp, TrendingDown } from 'lucide-react';
+import { addMonths, format } from 'date-fns';
 import { MoneyInput } from '@/components/common/MoneyInput';
 import type {
   RentAdjustmentType,
@@ -22,9 +23,9 @@ function computeNewEndDate(
   currentEndDate: string,
   termMonths: number
 ): string {
-  const date = new Date(currentEndDate);
-  date.setMonth(date.getMonth() + termMonths);
-  return date.toISOString().split('T')[0];
+  // date-fns addMonths handles month overflow correctly
+  // (e.g., Jan 31 + 1 month = Feb 28, not Mar 3)
+  return format(addMonths(new Date(currentEndDate), termMonths), 'yyyy-MM-dd');
 }
 
 function computeAdjustedRent(
@@ -32,7 +33,7 @@ function computeAdjustedRent(
   adjustmentType: RentAdjustmentType,
   adjustmentValue?: number
 ): number | undefined {
-  if (!adjustmentValue) {
+  if (adjustmentValue === undefined || adjustmentValue === null) {
     return undefined;
   }
   switch (adjustmentType) {

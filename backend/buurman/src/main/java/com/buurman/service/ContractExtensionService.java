@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -324,7 +325,7 @@ public class ContractExtensionService {
     validateExtensionBelongsToContract(extension, contract);
     validateStatus(extension, DRAFT, "cancel");
 
-    extensionRepository.softDeleteByIdAndTeamId(extension.getId(), teamId, userId);
+    extensionRepository.cancelByIdAndTeamId(extension.getId(), teamId, userId);
     auditService.logDelete(teamId, "CONTRACT_EXTENSION", extension.getId(), userId, extension);
   }
 
@@ -373,16 +374,29 @@ public class ContractExtensionService {
   }
 
   private List<Contract> findAutoExtensionCandidates(UUID teamId, LocalDate today) {
-    // Find ACTIVE contracts with renewal_mode=AUTOMATIC where:
-    // - effective_end_date is within notice window
-    // - no existing DRAFT/ACTIVE extension
-    return contractRepository.findActiveByTeamId(teamId).stream()
-        .filter(c -> c.getRenewalMode() == Contract.RenewalMode.AUTOMATIC)
-        .filter(c -> c.getContractType() == Contract.ContractType.FIXED_TERM)
+    // 1. Load all ACTIVE + AUTOMATIC + FIXED_TERM contracts in-memory
+    List<Contract> filtered =
+        contractRepository.findActiveByTeamId(teamId).stream()
+            .filter(c -> c.getRenewalMode() == Contract.RenewalMode.AUTOMATIC)
+            .filter(c -> c.getContractType() == Contract.ContractType.FIXED_TERM)
+            .toList();
+
+    if (filtered.isEmpty()) {
+      return List.of();
+    }
+
+    // 2. Batch-load ALL extensions for those contracts (2 queries total instead of N)
+    List<UUID> contractIds = filtered.stream().map(Contract::getId).toList();
+    Map<UUID, List<ContractExtension>> extensionsByContract =
+        extensionRepository.findByContractIdsAndTeamId(contractIds, teamId).stream()
+            .collect(Collectors.groupingBy(ContractExtension::getContractId));
+
+    // 3. Filter in-memory using the grouped map
+    return filtered.stream()
         .filter(
             c -> {
               List<ContractExtension> extensions =
-                  extensionRepository.findByContractIdAndTeamId(c.getId(), teamId);
+                  extensionsByContract.getOrDefault(c.getId(), List.of());
               Optional<LocalDate> effectiveEnd =
                   EffectiveEndDateHelper.computeEffectiveEndDate(c.getEndDate(), extensions);
               if (effectiveEnd.isEmpty()) {
@@ -395,8 +409,10 @@ public class ContractExtensionService {
         .filter(
             c -> {
               // BR-34: Idempotent — no existing DRAFT or ACTIVE extension
-              return extensionRepository.findDraftByContractId(c.getId(), teamId).isEmpty()
-                  && extensionRepository.findActiveByContractId(c.getId(), teamId).isEmpty();
+              List<ContractExtension> extensions =
+                  extensionsByContract.getOrDefault(c.getId(), List.of());
+              return extensions.stream().noneMatch(e -> e.getStatus() == DRAFT)
+                  && extensions.stream().noneMatch(e -> e.getStatus() == ACTIVE);
             })
         .toList();
   }
@@ -515,7 +531,7 @@ public class ContractExtensionService {
       }
 
       LocalDate noticeDate = effectiveEnd.get().minusDays(contract.getLandlordNoticeDays());
-      if (today.equals(noticeDate)) {
+      if (!today.isBefore(noticeDate) && !today.isAfter(noticeDate.plusDays(7))) {
         transactionTemplate.executeWithoutResult(
             status -> sendRenewalReminderNotification(contract, effectiveEnd.get(), teamId));
         sent++;

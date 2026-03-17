@@ -147,7 +147,6 @@ export const ExtensionTimeline = ({
             <ExtensionCard
               key={ext.identifier}
               extension={ext}
-              currency={currency}
               formatDate={formatDate}
               canEdit={canEditData}
               onActivate={() => handleActivate(ext.identifier)}
@@ -246,7 +245,6 @@ export const ExtensionTimeline = ({
 
 function ExtensionCard({
   extension,
-  currency,
   formatDate,
   canEdit,
   onActivate,
@@ -257,7 +255,6 @@ function ExtensionCard({
   isConfirming,
 }: {
   extension: ContractExtensionResponse;
-  currency: string;
   formatDate: (date: string) => string;
   canEdit: boolean;
   onActivate: () => void;
@@ -313,10 +310,10 @@ function ExtensionCard({
           {/* Rent change */}
           <div className="flex items-center gap-2 text-sm">
             <span className="text-text-secondary">
-              {currency} {extension.previousRentAmount.toFixed(2)}
+              {extension.previousRentCurrency} {extension.previousRentAmount.toFixed(2)}
             </span>
             <span className="text-text-primary font-medium">
-              &rarr; {currency} {extension.newRentAmount.toFixed(2)}
+              &rarr; {extension.newRentCurrency} {extension.newRentAmount.toFixed(2)}
             </span>
             {rentChange !== 0 && <RentChangeBadge change={rentChange} />}
           </div>

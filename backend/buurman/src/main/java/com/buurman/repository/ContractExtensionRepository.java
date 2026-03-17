@@ -247,13 +247,12 @@ public class ContractExtensionRepository {
             .and(CONTRACT_EXTENSIONS.DELETED_AT.isNull()));
   }
 
-  public void softDeleteByIdAndTeamId(UUID id, UUID teamId, UUID userId) {
+  public void cancelByIdAndTeamId(UUID id, UUID teamId, UUID userId) {
     LocalDateTime now = LocalDateTime.now(clock);
     dsl.update(CONTRACT_EXTENSIONS)
-        .set(CONTRACT_EXTENSIONS.DELETED_AT, now)
+        .set(CONTRACT_EXTENSIONS.STATUS, "CANCELLED")
         .set(CONTRACT_EXTENSIONS.UPDATED_AT, now)
         .set(CONTRACT_EXTENSIONS.UPDATED_BY, userId)
-        .set(CONTRACT_EXTENSIONS.STATUS, "CANCELLED")
         .where(CONTRACT_EXTENSIONS.ID.eq(id).and(CONTRACT_EXTENSIONS.TEAM_ID.eq(teamId)))
         .execute();
   }
