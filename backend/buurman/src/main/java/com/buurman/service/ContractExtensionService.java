@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.buurman.config.models.AppProperties;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractExtension.RentAdjustmentType;
@@ -72,6 +73,7 @@ public class ContractExtensionService {
   private final NotificationService notificationService;
   private final AuditService auditService;
   private final TransactionTemplate transactionTemplate;
+  private final AppProperties appProperties;
   private final Clock clock;
 
   // ── CRUD Operations ──────────────────────────────────────────────────
@@ -353,13 +355,55 @@ public class ContractExtensionService {
 
   int processAutoExtensionsForTeam(UUID teamId) {
     LocalDate today = LocalDate.now(clock);
-    List<Contract> candidates = findAutoExtensionCandidates(teamId, today);
+
+    // Batch-load all extensions for candidates (done outside transaction — read-only data for
+    // computation)
+    List<Contract> allFiltered =
+        contractRepository.findActiveByTeamId(teamId).stream()
+            .filter(c -> c.getRenewalMode() == Contract.RenewalMode.AUTOMATIC)
+            .filter(c -> c.getContractType() == Contract.ContractType.FIXED_TERM)
+            .toList();
+
+    if (allFiltered.isEmpty()) {
+      return 0;
+    }
+
+    List<UUID> contractIds = allFiltered.stream().map(Contract::getId).toList();
+    Map<UUID, List<ContractExtension>> extensionsByContract =
+        extensionRepository.findByContractIdsAndTeamId(contractIds, teamId).stream()
+            .collect(Collectors.groupingBy(ContractExtension::getContractId));
+
+    List<Contract> candidates =
+        allFiltered.stream()
+            .filter(
+                c -> {
+                  List<ContractExtension> extensions =
+                      extensionsByContract.getOrDefault(c.getId(), List.of());
+                  Optional<LocalDate> effectiveEnd =
+                      EffectiveEndDateHelper.computeEffectiveEndDate(c.getEndDate(), extensions);
+                  if (effectiveEnd.isEmpty()) {
+                    return false;
+                  }
+                  LocalDate noticeDate = effectiveEnd.get().minusDays(c.getLandlordNoticeDays());
+                  return !today.isBefore(noticeDate);
+                })
+            .filter(
+                c -> {
+                  List<ContractExtension> extensions =
+                      extensionsByContract.getOrDefault(c.getId(), List.of());
+                  return extensions.stream().noneMatch(e -> e.getStatus() == DRAFT)
+                      && extensions.stream().noneMatch(e -> e.getStatus() == ACTIVE);
+                })
+            .toList();
+
     int created = 0;
 
     for (Contract contract : candidates) {
       try {
+        List<ContractExtension> extensions =
+            extensionsByContract.getOrDefault(contract.getId(), List.of());
         transactionTemplate.executeWithoutResult(
-            status -> processAutoExtensionForContract(contract, teamId, today));
+            status -> processAutoExtensionForContract(contract, extensions, teamId, today));
         created++;
       } catch (Exception e) {
         log.error(
@@ -373,53 +417,8 @@ public class ContractExtensionService {
     return created;
   }
 
-  private List<Contract> findAutoExtensionCandidates(UUID teamId, LocalDate today) {
-    // 1. Load all ACTIVE + AUTOMATIC + FIXED_TERM contracts in-memory
-    List<Contract> filtered =
-        contractRepository.findActiveByTeamId(teamId).stream()
-            .filter(c -> c.getRenewalMode() == Contract.RenewalMode.AUTOMATIC)
-            .filter(c -> c.getContractType() == Contract.ContractType.FIXED_TERM)
-            .toList();
-
-    if (filtered.isEmpty()) {
-      return List.of();
-    }
-
-    // 2. Batch-load ALL extensions for those contracts (2 queries total instead of N)
-    List<UUID> contractIds = filtered.stream().map(Contract::getId).toList();
-    Map<UUID, List<ContractExtension>> extensionsByContract =
-        extensionRepository.findByContractIdsAndTeamId(contractIds, teamId).stream()
-            .collect(Collectors.groupingBy(ContractExtension::getContractId));
-
-    // 3. Filter in-memory using the grouped map
-    return filtered.stream()
-        .filter(
-            c -> {
-              List<ContractExtension> extensions =
-                  extensionsByContract.getOrDefault(c.getId(), List.of());
-              Optional<LocalDate> effectiveEnd =
-                  EffectiveEndDateHelper.computeEffectiveEndDate(c.getEndDate(), extensions);
-              if (effectiveEnd.isEmpty()) {
-                return false;
-              }
-              // Check notice window
-              LocalDate noticeDate = effectiveEnd.get().minusDays(c.getLandlordNoticeDays());
-              return !today.isBefore(noticeDate);
-            })
-        .filter(
-            c -> {
-              // BR-34: Idempotent — no existing DRAFT or ACTIVE extension
-              List<ContractExtension> extensions =
-                  extensionsByContract.getOrDefault(c.getId(), List.of());
-              return extensions.stream().noneMatch(e -> e.getStatus() == DRAFT)
-                  && extensions.stream().noneMatch(e -> e.getStatus() == ACTIVE);
-            })
-        .toList();
-  }
-
-  private void processAutoExtensionForContract(Contract contract, UUID teamId, LocalDate today) {
-    List<ContractExtension> existingExtensions =
-        extensionRepository.findByContractIdAndTeamId(contract.getId(), teamId);
+  private void processAutoExtensionForContract(
+      Contract contract, List<ContractExtension> existingExtensions, UUID teamId, LocalDate today) {
     Optional<LocalDate> effectiveEndDate =
         EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), existingExtensions);
     LocalDate previousEndDate = effectiveEndDate.orElseThrow();
@@ -520,9 +519,27 @@ public class ContractExtensionService {
             .filter(c -> c.getContractType() == Contract.ContractType.FIXED_TERM)
             .toList();
 
+    if (contracts.isEmpty()) {
+      return 0;
+    }
+
+    // Batch-load all extensions for filtered contracts (eliminates N+1)
+    List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
+    Map<UUID, List<ContractExtension>> extensionsByContract =
+        extensionRepository.findByContractIdsAndTeamId(contractIds, teamId).stream()
+            .collect(Collectors.groupingBy(ContractExtension::getContractId));
+
     for (Contract contract : contracts) {
       List<ContractExtension> extensions =
-          extensionRepository.findByContractIdAndTeamId(contract.getId(), teamId);
+          extensionsByContract.getOrDefault(contract.getId(), List.of());
+
+      // Skip if an extension already exists (notification already sent when created)
+      boolean hasRecentExtension =
+          extensions.stream().anyMatch(e -> e.getStatus() == DRAFT || e.getStatus() == ACTIVE);
+      if (hasRecentExtension) {
+        continue;
+      }
+
       Optional<LocalDate> effectiveEnd =
           EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), extensions);
 
@@ -761,7 +778,8 @@ public class ContractExtensionService {
       vars.put("tenantName", "");
       vars.put(
           "contractUrl",
-          "https://app.local.buurman.io/contracts/"
+          appProperties.email().baseUrl()
+              + "/contracts/"
               + contract.getIdentifier().map(Sid::value).orElse(""));
 
       notificationService.sendToTeam(

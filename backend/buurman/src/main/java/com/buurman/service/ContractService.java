@@ -576,6 +576,17 @@ public class ContractService {
 
     Contract updatedContract = contractRepository.save(contract);
 
+    // E-06: Auto-cancel pending extensions when contract is terminated/expired
+    if (newStatus == TERMINATED || newStatus == EXPIRED) {
+      extensionRepository
+          .findDraftByContractId(contract.getId(), teamId)
+          .ifPresent(
+              draft -> {
+                extensionRepository.cancelByIdAndTeamId(
+                    draft.getId(), teamId, principal.getUserId());
+              });
+    }
+
     metricsService.incrementCounter(
         "contract.status.changed.total",
         "from_status",

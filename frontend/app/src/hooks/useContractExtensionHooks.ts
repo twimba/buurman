@@ -167,6 +167,13 @@ export const useUpcomingRenewals = () => {
   });
 };
 
+export const usePendingExtensions = () => {
+  return useQuery({
+    queryKey: ['pendingExtensions'],
+    queryFn: () => extensionsApi.getPendingExtensions(),
+  });
+};
+
 export const useJurisdictionDefaults = (
   countryCode: string | undefined,
   regionCode?: string,

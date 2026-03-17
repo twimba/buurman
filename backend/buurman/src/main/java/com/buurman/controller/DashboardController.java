@@ -3,8 +3,10 @@ package com.buurman.controller;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.dto.response.ContractExtensionResponse;
 import com.buurman.dto.response.DashboardStatsResponse;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.generated.api.DashboardApi;
@@ -37,5 +39,11 @@ public class DashboardController implements DashboardApi {
   public List<UpcomingRenewalResponse> getUpcomingRenewals() {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return dashboardService.getUpcomingRenewals(principal.requireTeamId());
+  }
+
+  @GetMapping("/dashboard/pending-extensions")
+  public List<ContractExtensionResponse> getPendingExtensions() {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return dashboardService.getPendingExtensions(principal.requireTeamId());
   }
 }

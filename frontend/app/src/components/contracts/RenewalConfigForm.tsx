@@ -136,6 +136,18 @@ export const RenewalConfigForm = ({
             </div>
           )}
 
+          {/* Jurisdiction-specific info banners */}
+          {countryCode === 'ES' && !landlordType && (
+            <div className="rounded-md bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
+              Spain requires specifying landlord type (Natural Person or Legal Entity) to determine the mandatory rental period (5 vs 7 years).
+            </div>
+          )}
+          {countryCode === 'BE' && !regionCode && (
+            <div className="rounded-md bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
+              Belgium has different rules per region. Please select a region (Brussels, Flanders, or Wallonia) for accurate defaults.
+            </div>
+          )}
+
           {/* Renewal Mode */}
           <div>
             <label

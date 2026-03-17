@@ -489,11 +489,15 @@ Pre-fills from contract config. User can override. Summary line shows delta.
 
 ## 10. Database Migration
 
-**Version**: `V034__contract_extensions.sql`
+**Two-migration approach**: V034 adds new tables/columns and migrates data (keeping old columns for safety), V035 drops the deprecated columns.
+
+### V034: `V034__contract_extensions.sql`
 
 ```sql
 -- V034__contract_extensions.sql
 -- Contract Renewals & Extensions (BUUR-78)
+-- NOTE: Old columns (auto_renewal, renewal_notice_days) are kept for now.
+-- They are dropped in V035 after verifying the data migration.
 
 -- =====================================================================
 -- 1. New renewal config columns on contracts
@@ -511,34 +515,7 @@ ALTER TABLE contracts
     ADD COLUMN landlord_type VARCHAR(20),
     ADD COLUMN region_code VARCHAR(10);
 
-ALTER TABLE contracts
-    ADD CONSTRAINT chk_contracts_renewal_mode
-        CHECK (renewal_mode IN ('NONE', 'AUTOMATIC', 'MANUAL')),
-    ADD CONSTRAINT chk_contracts_renewal_term_positive
-        CHECK (renewal_term_months IS NULL OR renewal_term_months > 0),
-    ADD CONSTRAINT chk_contracts_max_renewals_positive
-        CHECK (max_renewals IS NULL OR max_renewals > 0),
-    ADD CONSTRAINT chk_contracts_landlord_notice_non_negative
-        CHECK (landlord_notice_days >= 0),
-    ADD CONSTRAINT chk_contracts_tenant_notice_non_negative
-        CHECK (tenant_notice_days >= 0),
-    ADD CONSTRAINT chk_contracts_rent_adj_type
-        CHECK (rent_adjustment_type IN ('NONE', 'FIXED_PERCENTAGE', 'FIXED_AMOUNT', 'MANUAL')),
-    ADD CONSTRAINT chk_contracts_rent_adj_value_required
-        CHECK (
-            (rent_adjustment_type IN ('NONE', 'MANUAL') AND rent_adjustment_value IS NULL)
-            OR (rent_adjustment_type NOT IN ('NONE', 'MANUAL') AND rent_adjustment_value IS NOT NULL)
-        ),
-    ADD CONSTRAINT chk_contracts_rent_adj_percentage_range
-        CHECK (rent_adjustment_type != 'FIXED_PERCENTAGE'
-            OR (rent_adjustment_value >= -100 AND rent_adjustment_value <= 100)),
-    ADD CONSTRAINT chk_contracts_landlord_type
-        CHECK (landlord_type IS NULL OR landlord_type IN ('NATURAL_PERSON', 'LEGAL_ENTITY'));
-
-CREATE INDEX idx_contracts_landlord_type
-    ON contracts (team_id, landlord_type) WHERE deleted_at IS NULL AND landlord_type IS NOT NULL;
-CREATE INDEX idx_contracts_region_code
-    ON contracts (team_id, country_code, region_code) WHERE deleted_at IS NULL AND region_code IS NOT NULL;
+-- (constraints, indexes, data migration, extensions table, jurisdiction_defaults table follow)
 
 -- =====================================================================
 -- 2. Data migration: auto_renewal + renewal_notice_days → new columns
@@ -556,12 +533,7 @@ SET landlord_notice_days = COALESCE(renewal_notice_days, 30),
     tenant_notice_days = COALESCE(renewal_notice_days, 30)
 WHERE (auto_renewal = FALSE OR auto_renewal IS NULL) AND deleted_at IS NULL;
 
--- =====================================================================
--- 3. Drop deprecated columns (clean break)
--- =====================================================================
-
-ALTER TABLE contracts DROP COLUMN IF EXISTS auto_renewal;
-ALTER TABLE contracts DROP COLUMN IF EXISTS renewal_notice_days;
+-- Old columns (auto_renewal, renewal_notice_days) are NOT dropped here — see V035.
 
 -- =====================================================================
 -- 4. Contract extensions table
@@ -713,6 +685,16 @@ INSERT INTO jurisdiction_defaults (country_code, field_name, value, valid_from, 
     ('AT', 'landlord_notice_days', '90', '2020-01-01', 'MRG § 30'),
     ('AT', 'tenant_notice_days', '30', '2020-01-01', 'MRG § 30'),
     ('AT', 'renewal_term_months', '36', '2020-01-01', '3-year standard');
+```
+
+### V035: `V035__drop_deprecated_renewal_columns.sql`
+
+```sql
+-- V035__drop_deprecated_renewal_columns.sql
+-- Drop deprecated auto_renewal and renewal_notice_days columns (BUUR-78 cleanup)
+-- These have been replaced by renewal_mode + landlord_notice_days + tenant_notice_days in V034
+ALTER TABLE contracts DROP COLUMN IF EXISTS auto_renewal;
+ALTER TABLE contracts DROP COLUMN IF EXISTS renewal_notice_days;
 ```
 
 After migration: `cd backend && mvn generate-sources -pl jooq -am`

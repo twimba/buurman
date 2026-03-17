@@ -128,6 +128,16 @@ export interface CreateContractRequest {
   termsAndConditions?: string;
   notes?: string;
   countryMetadata?: Record<string, unknown>;
+  renewalMode?: RenewalMode;
+  renewalTermMonths?: number;
+  maxRenewals?: number;
+  landlordNoticeDays?: number;
+  tenantNoticeDays?: number;
+  requiresTenantConfirmation?: boolean;
+  rentAdjustmentType?: RentAdjustmentType;
+  rentAdjustmentValue?: number;
+  landlordType?: LandlordType;
+  regionCode?: string;
 }
 
 export interface UpdateContractRequest {
@@ -149,6 +159,16 @@ export interface UpdateContractRequest {
   termsAndConditions?: string;
   notes?: string;
   countryMetadata?: Record<string, unknown>;
+  renewalMode?: RenewalMode;
+  renewalTermMonths?: number;
+  maxRenewals?: number;
+  landlordNoticeDays?: number;
+  tenantNoticeDays?: number;
+  requiresTenantConfirmation?: boolean;
+  rentAdjustmentType?: RentAdjustmentType;
+  rentAdjustmentValue?: number;
+  landlordType?: LandlordType;
+  regionCode?: string;
 }
 
 export interface RentPeriodResponse {

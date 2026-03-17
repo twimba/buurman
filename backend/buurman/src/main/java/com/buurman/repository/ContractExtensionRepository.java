@@ -223,6 +223,19 @@ public class ContractExtensionRepository {
         .map(mapper::toDomain);
   }
 
+  public List<ContractExtension> findDraftsByTeamId(UUID teamId) {
+    return dsl.selectFrom(CONTRACT_EXTENSIONS)
+        .where(
+            CONTRACT_EXTENSIONS
+                .TEAM_ID
+                .eq(teamId)
+                .and(CONTRACT_EXTENSIONS.STATUS.eq("DRAFT"))
+                .and(CONTRACT_EXTENSIONS.DELETED_AT.isNull()))
+        .orderBy(CONTRACT_EXTENSIONS.CREATED_AT.desc())
+        .fetch()
+        .map(mapper::toDomain);
+  }
+
   public int getNextExtensionNumber(UUID contractId, UUID teamId) {
     Integer max =
         dsl.select(DSL.max(CONTRACT_EXTENSIONS.EXTENSION_NUMBER))
@@ -253,7 +266,12 @@ public class ContractExtensionRepository {
         .set(CONTRACT_EXTENSIONS.STATUS, "CANCELLED")
         .set(CONTRACT_EXTENSIONS.UPDATED_AT, now)
         .set(CONTRACT_EXTENSIONS.UPDATED_BY, userId)
-        .where(CONTRACT_EXTENSIONS.ID.eq(id).and(CONTRACT_EXTENSIONS.TEAM_ID.eq(teamId)))
+        .where(
+            CONTRACT_EXTENSIONS
+                .ID
+                .eq(id)
+                .and(CONTRACT_EXTENSIONS.TEAM_ID.eq(teamId))
+                .and(CONTRACT_EXTENSIONS.DELETED_AT.isNull()))
         .execute();
   }
 }

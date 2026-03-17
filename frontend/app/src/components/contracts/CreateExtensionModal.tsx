@@ -85,6 +85,7 @@ export const CreateExtensionModal = ({
     defaultAdjustmentValue !== undefined ? String(defaultAdjustmentValue) : ''
   );
   const [notes, setNotes] = useState('');
+  const [dateError, setDateError] = useState('');
 
   const parsedRent = useMemo(() => {
     const val = parseFloat(newRentAmount);
@@ -126,6 +127,13 @@ export const CreateExtensionModal = ({
   };
 
   const submitForm = () => {
+    // Validate new end date is after current end date
+    if (newEndDate && currentEndDate && newEndDate <= currentEndDate) {
+      setDateError('New end date must be after the current end date');
+      return;
+    }
+    setDateError('');
+
     const request: CreateContractExtensionRequest = {
       newEndDate: newEndDate || undefined,
       newRentAmount: parsedRent ?? undefined,
@@ -192,11 +200,18 @@ export const CreateExtensionModal = ({
                 id="newEndDate"
                 type="date"
                 value={newEndDate}
-                onChange={(e) => setNewEndDate(e.target.value)}
-                className="w-full px-3 py-2 border border-border-strong rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 bg-surface-card text-text-primary"
+                onChange={(e) => {
+                  setNewEndDate(e.target.value);
+                  setDateError('');
+                }}
+                min={currentEndDate}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 bg-surface-card text-text-primary ${dateError ? 'border-error-border' : 'border-border-strong'}`}
                 disabled={isLoading}
               />
-              {currentEndDate && (
+              {dateError && (
+                <p className="mt-1 text-xs text-error-text">{dateError}</p>
+              )}
+              {currentEndDate && !dateError && (
                 <p className="mt-1 text-xs text-text-muted">
                   Current end date: {currentEndDate}
                 </p>

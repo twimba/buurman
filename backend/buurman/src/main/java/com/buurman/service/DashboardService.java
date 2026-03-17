@@ -34,6 +34,7 @@ import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Property;
 import com.buurman.domain.Sid;
 import com.buurman.domain.Tenant;
+import com.buurman.dto.response.ContractExtensionResponse;
 import com.buurman.dto.response.DashboardStatsResponse;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.generated.model.RenewalMode;
@@ -308,5 +309,48 @@ public class DashboardService {
 
     return new DashboardStatsResponse.MonthlyIncome(
         primaryIncome.getValue().setScale(2, HALF_UP), primaryIncome.getKey());
+  }
+
+  public List<ContractExtensionResponse> getPendingExtensions(UUID teamId) {
+    List<ContractExtension> drafts = extensionRepository.findDraftsByTeamId(teamId);
+    if (drafts.isEmpty()) {
+      return List.of();
+    }
+
+    // Batch-load contracts for all draft extensions
+    List<UUID> contractIds =
+        drafts.stream().map(ContractExtension::getContractId).distinct().toList();
+    Map<UUID, Sid> contractIdentifierMap =
+        contractRepository.findByIdsAndTeamId(contractIds, teamId).stream()
+            .collect(Collectors.toMap(Contract::getId, c -> c.getIdentifier().orElseThrow()));
+
+    return drafts.stream()
+        .filter(ext -> contractIdentifierMap.containsKey(ext.getContractId()))
+        .map(
+            ext -> {
+              Sid contractSid =
+                  java.util.Objects.requireNonNull(contractIdentifierMap.get(ext.getContractId()));
+              return new ContractExtensionResponse(
+                  ext.getIdentifier().orElseThrow(),
+                  contractSid,
+                  ext.getExtensionNumber(),
+                  ext.getPreviousEndDate(),
+                  ext.getNewEndDate(),
+                  ext.getPreviousRentAmount().value(),
+                  ext.getPreviousRentAmount().currency(),
+                  ext.getNewRentAmount().value(),
+                  ext.getNewRentAmount().currency(),
+                  ext.getRentAdjustmentType(),
+                  ext.getRentAdjustmentValue(),
+                  ext.getStatus(),
+                  ext.getTriggerType(),
+                  ext.getNotes(),
+                  ext.getDeclinedReason(),
+                  ext.getActivatedAt(),
+                  ext.getConfirmedAt(),
+                  ext.getSupersededAt(),
+                  ext.getCreatedAt());
+            })
+        .toList();
   }
 }

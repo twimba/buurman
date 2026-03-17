@@ -1,11 +1,16 @@
 import { useMemo, useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useDashboardStats } from '@/hooks/useDashboard';
 import { usePayments, useMarkPaymentAsPaid } from '@/hooks/usePaymentHooks';
+import { usePendingExtensions } from '@/hooks/useContractExtensionHooks';
+import * as extensionsApi from '@/api/contractExtensions';
 import { useTeam } from '@/context/TeamContext';
+import { useToast } from '@/context/ToastContext';
 import { LoadingSpinner } from './LoadingSpinner';
 import { MetricHint } from '@/components/common/MetricHint';
 import { ErrorMessage } from './ErrorMessage';
 import { PendingInvitationsPanel } from './dashboard/PendingInvitationsPanel';
+import { PendingExtensionsPanel } from './dashboard/PendingExtensionsPanel';
 import { PortfolioDashboard } from './dashboard/PortfolioDashboard';
 import {
   Home,
@@ -23,8 +28,10 @@ import { useFormatDate } from '@/hooks/useFormatDate';
 
 export const DashboardPage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { formatDate } = useFormatDate();
   const { canEditData } = useTeam();
+  const { showToast } = useToast();
   const {
     data: stats,
     isLoading: statsLoading,
@@ -34,6 +41,52 @@ export const DashboardPage = () => {
   const allPayments = allPaymentsData?.content;
   const markPaidMutation = useMarkPaymentAsPaid();
   const [markingPaidId, setMarkingPaidId] = useState<string | null>(null);
+
+  const { data: pendingExtensions, isLoading: extensionsLoading } =
+    usePendingExtensions();
+
+  const invalidateExtensionQueries = () => {
+    queryClient.invalidateQueries({ queryKey: ['pendingExtensions'] });
+    queryClient.invalidateQueries({ queryKey: ['contractExtensions'] });
+    queryClient.invalidateQueries({ queryKey: ['contracts'] });
+    queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+    queryClient.invalidateQueries({ queryKey: ['upcomingRenewals'] });
+  };
+
+  const activateExtensionMutation = useMutation({
+    mutationFn: ({
+      contractId,
+      extensionId,
+    }: {
+      contractId: string;
+      extensionId: string;
+    }) => extensionsApi.activateExtension(contractId, extensionId),
+    onSuccess: () => {
+      invalidateExtensionQueries();
+      showToast('Extension activated successfully', 'success');
+    },
+    onError: () => {
+      showToast('Failed to activate extension', 'error');
+    },
+  });
+
+  const declineExtensionMutation = useMutation({
+    mutationFn: ({
+      contractId,
+      extensionId,
+    }: {
+      contractId: string;
+      extensionId: string;
+    }) =>
+      extensionsApi.declineExtension(contractId, extensionId, {}),
+    onSuccess: () => {
+      invalidateExtensionQueries();
+      showToast('Extension declined', 'success');
+    },
+    onError: () => {
+      showToast('Failed to decline extension', 'error');
+    },
+  });
 
   const unpaidPayments = useMemo(() => {
     if (!allPayments) {
@@ -83,6 +136,19 @@ export const DashboardPage = () => {
     <div className="space-y-8">
       {/* Pending Invitations */}
       <PendingInvitationsPanel />
+
+      {/* Pending Extensions */}
+      <PendingExtensionsPanel
+        extensions={pendingExtensions ?? []}
+        isLoading={extensionsLoading}
+        onActivate={(contractId, extensionId) =>
+          activateExtensionMutation.mutate({ contractId, extensionId })
+        }
+        onDecline={(contractId, extensionId) =>
+          declineExtensionMutation.mutate({ contractId, extensionId })
+        }
+        isActivating={activateExtensionMutation.isPending}
+      />
 
       {/* Portfolio Dashboard */}
       <PortfolioDashboard />

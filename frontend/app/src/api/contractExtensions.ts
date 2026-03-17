@@ -88,6 +88,13 @@ export const getUpcomingRenewals = async (): Promise<
   return response.data;
 };
 
+export const getPendingExtensions = async (): Promise<
+  ContractExtensionResponse[]
+> => {
+  const response = await client.get('/dashboard/pending-extensions');
+  return response.data;
+};
+
 export const getJurisdictionDefaults = async (
   countryCode: string,
   regionCode?: string,
