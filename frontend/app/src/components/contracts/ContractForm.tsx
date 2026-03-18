@@ -19,6 +19,7 @@ import { PhoneInput, validatePhoneE164 } from '@/components/common/PhoneInput';
 import CountryMetadataForm, {
   useCountryName,
 } from '@/components/contracts/CountryMetadataForm';
+import { RenewalConfigForm } from '@/components/contracts/RenewalConfigForm';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 import { useProperties } from '@/hooks/usePropertyHooks';
 import {
@@ -262,6 +263,16 @@ export const ContractForm = ({
     termsAndConditions: contract?.termsAndConditions ?? '',
     notes: contract?.notes ?? '',
     countryMetadata: contract?.countryMetadata ?? undefined,
+    renewalMode: contract?.renewalMode ?? 'NONE',
+    renewalTermMonths: contract?.renewalTermMonths ?? undefined,
+    maxRenewals: contract?.maxRenewals ?? undefined,
+    landlordNoticeDays: contract?.landlordNoticeDays ?? 30,
+    tenantNoticeDays: contract?.tenantNoticeDays ?? 30,
+    requiresTenantConfirmation: contract?.requiresTenantConfirmation ?? false,
+    rentAdjustmentType: contract?.rentAdjustmentType ?? 'NONE',
+    rentAdjustmentValue: contract?.rentAdjustmentValue ?? undefined,
+    landlordType: contract?.landlordType ?? undefined,
+    regionCode: contract?.regionCode ?? undefined,
   });
 
   const [contractIdentifier, setContractIdentifier] = useState(
@@ -485,7 +496,7 @@ export const ContractForm = ({
 
   const handleChange = (
     field: string,
-    value: string | number | boolean | undefined
+    value: unknown
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
@@ -1077,6 +1088,22 @@ export const ContractForm = ({
       </div>
 
       {/* Country-Specific Rental Details */}
+      {/* Renewal Configuration */}
+      <RenewalConfigForm
+        renewalMode={formData.renewalMode ?? 'NONE'}
+        renewalTermMonths={formData.renewalTermMonths}
+        maxRenewals={formData.maxRenewals}
+        landlordNoticeDays={formData.landlordNoticeDays}
+        tenantNoticeDays={formData.tenantNoticeDays}
+        requiresTenantConfirmation={formData.requiresTenantConfirmation}
+        rentAdjustmentType={formData.rentAdjustmentType ?? 'NONE'}
+        rentAdjustmentValue={formData.rentAdjustmentValue}
+        landlordType={formData.landlordType}
+        regionCode={formData.regionCode}
+        countryCode={propertyCountryCode}
+        onChange={handleChange}
+      />
+
       {propertyCountryCode ? (
         <div>
           <h3 className="text-lg font-semibold text-text-primary mb-2">
