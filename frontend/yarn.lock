@@ -3816,7 +3816,7 @@ __metadata:
     eslint: "npm:10.0.3"
     eslint-plugin-react: "npm:7.37.5"
     eslint-plugin-react-hooks: "npm:7.0.1"
-    ical.js: "npm:^1.4.0"
+    ical.js: "npm:^2.2.1"
     keycloak-js: "npm:26.2.3"
     libphonenumber-js: "npm:1.12.40"
     lucide-react: "npm:0.577.0"
@@ -5479,10 +5479,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ical.js@npm:^1.4.0":
-  version: 1.5.0
-  resolution: "ical.js@npm:1.5.0"
-  checksum: 10c0/ea7afafbc3cbfae1ef3474ccb098f529187f8dd1e2d6c110e094179a4cc7b4b96c8700efd3fa46306774739cc3a96ad599d59e3df387f51c1f4f17e264617340
+"ical.js@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "ical.js@npm:2.2.1"
+  checksum: 10c0/f08e896d613fe7dc737ca2cc5254b5413586c6f2d4c90568cdf077eff757051f8443d3b8705548e3dd7c3771e26aa3fdf7a2534b763242a9cf90a4150efefd85
   languageName: node
   linkType: hard
 
