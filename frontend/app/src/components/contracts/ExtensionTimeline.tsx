@@ -324,7 +324,7 @@ function ExtensionCard({
 
           {/* Notes */}
           {extension.notes && (
-            <p className="text-xs text-text-muted mt-2">{extension.notes}</p>
+            <div className="text-xs text-text-muted mt-2 prose prose-xs dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: extension.notes }} />
           )}
 
           {/* Declined reason */}

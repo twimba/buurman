@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { X, TrendingUp, TrendingDown } from 'lucide-react';
 import { addMonths, format } from 'date-fns';
 import { MoneyInput } from '@/components/common/MoneyInput';
+import { RichTextEditor } from '@/components/common/RichTextEditor';
 import type {
   RentAdjustmentType,
   CreateContractExtensionRequest,
@@ -327,19 +328,12 @@ export const CreateExtensionModal = ({
 
             {/* Notes */}
             <div>
-              <label
-                htmlFor="extensionNotes"
-                className="block text-sm font-medium text-text-secondary mb-1"
-              >
+              <label className="block text-sm font-medium text-text-secondary mb-1">
                 Notes (Optional)
               </label>
-              <textarea
-                id="extensionNotes"
+              <RichTextEditor
                 value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                rows={3}
-                className="w-full px-3 py-2 border border-border-strong rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 bg-surface-card text-text-primary resize-none"
-                disabled={isLoading}
+                onChange={setNotes}
                 placeholder="Additional notes about this extension..."
               />
             </div>
