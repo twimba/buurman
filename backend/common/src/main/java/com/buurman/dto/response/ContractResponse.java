@@ -51,5 +51,7 @@ public record ContractResponse(
     // Extension statistics
     int extensionCount,
     Optional<Integer> extensionsRemaining,
+    // Rent components breakdown
+    List<RentComponentResponse> rentComponents,
     Instant createdAt,
     Optional<Instant> updatedAt) {}

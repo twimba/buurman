@@ -77,8 +77,7 @@ export const DashboardPage = () => {
     }: {
       contractId: string;
       extensionId: string;
-    }) =>
-      extensionsApi.declineExtension(contractId, extensionId, {}),
+    }) => extensionsApi.declineExtension(contractId, extensionId, {}),
     onSuccess: () => {
       invalidateExtensionQueries();
       showToast('Extension declined', 'success');

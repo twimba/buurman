@@ -41,7 +41,8 @@ public enum EntityPrefix {
   RRL("RRL", "Rent Regulation Rules"),
   CRQ("CRQ", "Country Regulation Requests"),
   IMS("IMS", "Impersonation Sessions"),
-  CEX("CEX", "Contract Extensions");
+  CEX("CEX", "Contract Extensions"),
+  RCO("RCO", "Rent Components");
 
   private final String code;
   private final String entityName;

@@ -70,9 +70,7 @@ export const PendingExtensionsPanel = ({
             <div
               className="flex-1 min-w-0 cursor-pointer"
               onClick={() =>
-                navigate(
-                  `/contracts/${ext.contractIdentifier}?tab=extensions`
-                )
+                navigate(`/contracts/${ext.contractIdentifier}?tab=extensions`)
               }
             >
               <div className="flex items-center gap-2">

@@ -20,10 +20,7 @@ interface CreateExtensionModalProps {
   isLoading?: boolean;
 }
 
-function computeNewEndDate(
-  currentEndDate: string,
-  termMonths: number
-): string {
+function computeNewEndDate(currentEndDate: string, termMonths: number): string {
   // date-fns addMonths handles month overflow correctly
   // (e.g., Jan 31 + 1 month = Feb 28, not Mar 3)
   return format(addMonths(new Date(currentEndDate), termMonths), 'yyyy-MM-dd');
@@ -80,8 +77,9 @@ export const CreateExtensionModal = ({
   const [newRentAmount, setNewRentAmount] = useState<string>(
     defaultRent !== undefined ? String(defaultRent) : ''
   );
-  const [adjustmentType, setAdjustmentType] =
-    useState<RentAdjustmentType>(defaultAdjustmentType);
+  const [adjustmentType, setAdjustmentType] = useState<RentAdjustmentType>(
+    defaultAdjustmentType
+  );
   const [adjustmentValue, setAdjustmentValue] = useState<string>(
     defaultAdjustmentValue !== undefined ? String(defaultAdjustmentValue) : ''
   );
@@ -138,7 +136,8 @@ export const CreateExtensionModal = ({
     const request: CreateContractExtensionRequest = {
       newEndDate: newEndDate || undefined,
       newRentAmount: parsedRent ?? undefined,
-      rentAdjustmentType: adjustmentType !== 'NONE' ? adjustmentType : undefined,
+      rentAdjustmentType:
+        adjustmentType !== 'NONE' ? adjustmentType : undefined,
       rentAdjustmentValue: adjustmentValue
         ? parseFloat(adjustmentValue)
         : undefined,
@@ -241,11 +240,13 @@ export const CreateExtensionModal = ({
                 className="w-full px-3 py-2 border border-border-strong rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 bg-surface-card text-text-primary"
                 disabled={isLoading}
               >
-                {Object.entries(ADJUSTMENT_TYPE_LABELS).map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
+                {Object.entries(ADJUSTMENT_TYPE_LABELS).map(
+                  ([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  )
+                )}
               </select>
             </div>
 
@@ -258,7 +259,9 @@ export const CreateExtensionModal = ({
                   className="block text-sm font-medium text-text-secondary mb-1"
                 >
                   Adjustment Value
-                  {adjustmentType === 'FIXED_PERCENTAGE' ? ' (%)' : ` (${currency})`}
+                  {adjustmentType === 'FIXED_PERCENTAGE'
+                    ? ' (%)'
+                    : ` (${currency})`}
                 </label>
                 <input
                   id="adjustmentValue"
@@ -321,7 +324,8 @@ export const CreateExtensionModal = ({
               </div>
               {adjustmentType !== 'NONE' && adjustmentType !== 'MANUAL' && (
                 <p className="mt-1 text-xs text-text-muted">
-                  Computed from current rent with {adjustmentType.toLowerCase().replace('_', ' ')}
+                  Computed from current rent with{' '}
+                  {adjustmentType.toLowerCase().replace('_', ' ')}
                 </p>
               )}
             </div>

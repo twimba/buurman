@@ -69,7 +69,9 @@ export const ExtensionTimeline = ({
   const extensions = extensionsPage?.content ?? [];
   const canCreate = canEditData && contractStatus === 'ACTIVE';
 
-  const handleCreate = (request: Parameters<typeof createExtension.mutate>[0]) => {
+  const handleCreate = (
+    request: Parameters<typeof createExtension.mutate>[0]
+  ) => {
     createExtension.mutate(request, {
       onSuccess: () => setShowCreateModal(false),
     });
@@ -88,7 +90,10 @@ export const ExtensionTimeline = ({
       return;
     }
     declineExtension.mutate(
-      { extensionId: declineTarget, request: { reason: declineReason || undefined } },
+      {
+        extensionId: declineTarget,
+        request: { reason: declineReason || undefined },
+      },
       {
         onSuccess: () => {
           setDeclineTarget(null);
@@ -184,7 +189,18 @@ export const ExtensionTimeline = ({
                 Decline Extension
               </h3>
             </div>
-            <form onSubmit={(e) => { e.preventDefault(); handleDecline(); }} onKeyDown={(e) => { if (e.key === 'Escape') { setDeclineTarget(null); setDeclineReason(''); } }}>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleDecline();
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') {
+                  setDeclineTarget(null);
+                  setDeclineReason('');
+                }
+              }}
+            >
               <div className="p-4 space-y-3">
                 <p className="text-sm text-text-secondary">
                   Are you sure you want to decline this extension?
@@ -314,17 +330,22 @@ function ExtensionCard({
           {/* Rent change */}
           <div className="flex items-center gap-2 text-sm">
             <span className="text-text-secondary">
-              {extension.previousRentCurrency} {extension.previousRentAmount.toFixed(2)}
+              {extension.previousRentCurrency}{' '}
+              {extension.previousRentAmount.toFixed(2)}
             </span>
             <span className="text-text-primary font-medium">
-              &rarr; {extension.newRentCurrency} {extension.newRentAmount.toFixed(2)}
+              &rarr; {extension.newRentCurrency}{' '}
+              {extension.newRentAmount.toFixed(2)}
             </span>
             {rentChange !== 0 && <RentChangeBadge change={rentChange} />}
           </div>
 
           {/* Notes */}
           {extension.notes && (
-            <div className="text-xs text-text-muted mt-2 prose prose-xs dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: extension.notes }} />
+            <div
+              className="text-xs text-text-muted mt-2 prose prose-xs dark:prose-invert max-w-none"
+              dangerouslySetInnerHTML={{ __html: extension.notes }}
+            />
           )}
 
           {/* Declined reason */}

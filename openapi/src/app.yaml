@@ -3077,6 +3077,11 @@ components:
         countryMetadata:
           type: object
           additionalProperties: {}
+        rentComponents:
+          type: array
+          items:
+            $ref: '#/components/schemas/RentComponentRequest'
+          description: Optional rent breakdown into components
         endDateAfterStartDate:
           type: boolean
       required:
@@ -3475,6 +3480,12 @@ components:
         updatedAt:
           type: string
           format: date-time
+        rentComponents:
+          type: array
+          items:
+            $ref: '#/components/schemas/RentComponentResponse'
+          description: Rent breakdown into components (empty if not broken down)
+          default: []
       required:
         - contractType
         - createdAt
@@ -3487,6 +3498,7 @@ components:
         - rentAdjustmentType
         - rentAmount
         - rentAmountCurrency
+        - rentComponents
         - requiresTenantConfirmation
         - startDate
         - status
@@ -5459,6 +5471,11 @@ components:
           additionalProperties: {}
         endDateAfterStartDate:
           type: boolean
+        rentComponents:
+          type: array
+          items:
+            $ref: '#/components/schemas/RentComponentRequest'
+          description: Optional rent breakdown into components
         exactlyOnePrimaryTenant:
           type: boolean
       required:
@@ -7943,6 +7960,60 @@ components:
             type: string
         disclaimer:
           type: string
+    RentComponentType:
+      type: string
+      description: Type of rent component
+      enum:
+        - BASE_RENT
+        - UTILITIES_ADVANCE
+        - SERVICE_COSTS
+        - HOA_FEES
+        - FURNITURE_RENTAL
+        - PARKING
+        - STORAGE
+        - GARBAGE_COLLECTION
+        - OTHER
+    RentComponentRequest:
+      type: object
+      description: A rent component in the breakdown
+      properties:
+        componentType:
+          $ref: '#/components/schemas/RentComponentType'
+        amount:
+          type: number
+          minimum: 0.01
+          description: Component amount in major units
+        description:
+          type: string
+          description: Custom label (required for OTHER type)
+      required:
+        - componentType
+        - amount
+    RentComponentResponse:
+      type: object
+      description: A rent component in the breakdown
+      properties:
+        identifier:
+          type: string
+        componentType:
+          $ref: '#/components/schemas/RentComponentType'
+        componentTypeDisplayName:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        description:
+          type: string
+        sortOrder:
+          type: integer
+      required:
+        - identifier
+        - componentType
+        - componentTypeDisplayName
+        - amount
+        - currency
+        - sortOrder
   securitySchemes:
     bearer-jwt:
       type: http

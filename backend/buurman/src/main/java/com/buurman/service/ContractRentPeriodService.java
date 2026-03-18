@@ -339,9 +339,20 @@ public class ContractRentPeriodService {
     }
     List<ContractExtension> extensions =
         contractExtensionRepository.findByContractIdAndTeamId(contract.getId(), teamId);
-    Optional<LocalDate> effectiveEndDate =
-        EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), extensions);
-    if (effectiveEndDate.filter(effectiveFrom::isAfter).isPresent()) {
+    // Use the latest end date from any non-cancelled/non-declined extension (including DRAFT),
+    // falling back to the official effective end date. This allows rent adjustments to be
+    // scheduled within a pending extension period.
+    Optional<LocalDate> maxEndDate =
+        extensions.stream()
+            .filter(
+                e ->
+                    e.getStatus() != ContractExtension.ExtensionStatus.CANCELLED
+                        && e.getStatus() != ContractExtension.ExtensionStatus.DECLINED)
+            .filter(e -> e.getDeletedAt().isEmpty())
+            .flatMap(e -> e.getNewEndDate().stream())
+            .max(LocalDate::compareTo)
+            .or(() -> contract.getEndDate());
+    if (maxEndDate.filter(effectiveFrom::isAfter).isPresent()) {
       throw new BusinessRuleException("Effective date cannot be after the contract end date");
     }
   }

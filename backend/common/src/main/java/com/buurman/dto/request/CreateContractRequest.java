@@ -55,7 +55,8 @@ public record CreateContractRequest(
         lateFeePercentage,
     Optional<String> termsAndConditions,
     Optional<String> notes,
-    @Nullable Map<String, Object> countryMetadata) {
+    @Nullable Map<String, Object> countryMetadata,
+    Optional<List<@Valid RentComponentRequest>> rentComponents) {
 
   @AssertTrue(message = "End date must be after start date") public boolean isEndDateAfterStartDate() {
     return endDate.isEmpty() || !endDate.get().isBefore(startDate);

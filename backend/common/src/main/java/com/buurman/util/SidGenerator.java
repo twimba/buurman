@@ -31,6 +31,7 @@ import com.buurman.domain.identifier.PropertyOutdoorAreaIdentifier;
 import com.buurman.domain.identifier.PropertyTaxIdentifier;
 import com.buurman.domain.identifier.PropertyValuationIdentifier;
 import com.buurman.domain.identifier.RegistrationInvitationIdentifier;
+import com.buurman.domain.identifier.RentComponentIdentifier;
 import com.buurman.domain.identifier.RentRegulationCountryIdentifier;
 import com.buurman.domain.identifier.RentRegulationRegionIdentifier;
 import com.buurman.domain.identifier.RentRegulationRuleIdentifier;
@@ -210,5 +211,9 @@ public class SidGenerator {
 
   public static ContractExtensionIdentifier newContractExtensionId() {
     return ContractExtensionIdentifier.of(generateRaw(EntityPrefix.CEX));
+  }
+
+  public static RentComponentIdentifier newRentComponentId() {
+    return RentComponentIdentifier.of(generateRaw(EntityPrefix.RCO));
   }
 }

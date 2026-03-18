@@ -2,6 +2,7 @@ package com.buurman.dto.request;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -11,6 +12,7 @@ import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
 import com.buurman.domain.identifier.PropertyIdentifier;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -49,7 +51,8 @@ public record UpdateContractRequest(
         lateFeePercentage,
     Optional<String> termsAndConditions,
     Optional<String> notes,
-    @Nullable Map<String, Object> countryMetadata) {
+    @Nullable Map<String, Object> countryMetadata,
+    Optional<List<@Valid RentComponentRequest>> rentComponents) {
 
   // Bean Validation evaluates all constraints simultaneously, so @AssertTrue can run even when
   // @NotNull fails — null guards prevent NPE in that case.

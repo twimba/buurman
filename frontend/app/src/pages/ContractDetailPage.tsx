@@ -17,6 +17,7 @@ import {
   usePaymentsByContract,
   useDeletePayment,
 } from '@/hooks/usePaymentHooks';
+import { useContractExtensions } from '@/hooks/useContractExtensionHooks';
 import { ConfirmDialog } from '@buurman/ui';
 import { ContractPaymentInstructionSection } from '@/components/contracts/ContractPaymentInstructionSection';
 import { CalendarFeedResponseFeedType as CalendarFeedType } from '@/generated/models';
@@ -130,6 +131,15 @@ export const ContractDetailPage = () => {
     isLoading: paymentsLoading,
     error: paymentsError,
   } = usePaymentsByContract(id);
+
+  const { data: extensionsPage } = useContractExtensions(id);
+  const activeExtensions = useMemo(
+    () =>
+      (extensionsPage?.content ?? [])
+        .filter((e) => e.status === 'ACTIVE' || e.status === 'SUPERSEDED')
+        .sort((a, b) => a.extensionNumber - b.extensionNumber),
+    [extensionsPage]
+  );
 
   const deleteContractMutation = useDeleteContract();
   const uploadDocumentMutation = useUploadContractDocument(id);
@@ -431,7 +441,9 @@ export const ContractDetailPage = () => {
             >
               <Repeat className="h-4 w-4" />
               Extensions
-              {contract.extensionCount != null && contract.extensionCount > 0 && ` (${contract.extensionCount})`}
+              {contract.extensionCount != null &&
+                contract.extensionCount > 0 &&
+                ` (${contract.extensionCount})`}
             </button>
             <button
               onClick={() => setActiveTab('documents')}
@@ -527,7 +539,7 @@ export const ContractDetailPage = () => {
               </div>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <Calendar className="h-5 w-5 text-text-muted " />
+                  <Calendar className="h-5 w-5 text-text-muted" />
                   <div>
                     <p className="text-sm text-text-secondary">Start Date</p>
                     <p className="font-medium text-text-primary">
@@ -535,37 +547,102 @@ export const ContractDetailPage = () => {
                     </p>
                   </div>
                 </div>
-                {(contract.endDate || contract.effectiveEndDate) && (
-                  <div className="flex items-center gap-3">
-                    <Calendar className="h-5 w-5 text-text-muted " />
-                    <div>
-                      <p className="text-sm text-text-secondary">
-                        End Date
-                        {contract.extensionCount != null && contract.extensionCount > 0 && (
-                          <span className="ml-1.5 px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-info-bg text-info-text">
-                            Extended ({contract.extensionCount}x)
-                          </span>
-                        )}
-                      </p>
-                      <p className="font-medium text-text-primary">
-                        {formatDate(contract.effectiveEndDate ?? contract.endDate!)}
-                      </p>
-                      {contract.effectiveEndDate && contract.endDate && contract.effectiveEndDate !== contract.endDate && (
-                        <p className="text-xs text-text-muted line-through">
-                          Original: {formatDate(contract.endDate)}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                )}
                 {contract.signedDate && (
                   <div className="flex items-center gap-3">
-                    <Calendar className="h-5 w-5 text-text-muted " />
+                    <Calendar className="h-5 w-5 text-text-muted" />
                     <div>
                       <p className="text-sm text-text-secondary">Signed Date</p>
                       <p className="font-medium text-text-primary">
                         {formatDate(contract.signedDate)}
                       </p>
+                    </div>
+                  </div>
+                )}
+                {(contract.endDate || contract.effectiveEndDate) &&
+                  activeExtensions.length === 0 && (
+                    <div className="flex items-center gap-3">
+                      <Calendar className="h-5 w-5 text-text-muted" />
+                      <div>
+                        <p className="text-sm text-text-secondary">End Date</p>
+                        <p className="font-medium text-text-primary">
+                          {formatDate(
+                            contract.endDate ?? contract.effectiveEndDate!
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                {activeExtensions.length > 0 && contract.endDate && (
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <Calendar className="h-5 w-5 text-text-muted" />
+                      <p className="text-sm text-text-secondary">
+                        End Date
+                        <span className="ml-1.5 px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-info-bg text-info-text">
+                          Extended ({contract.extensionCount}x)
+                        </span>
+                      </p>
+                    </div>
+                    <div className="relative pl-4 ml-2.5">
+                      {/* Vertical rail */}
+                      <div className="absolute left-[5px] top-[6px] bottom-[6px] w-px bg-gradient-to-b from-border-strong via-info-text/30 to-info-text/60" />
+
+                      {/* Original end date node */}
+                      <div className="relative flex items-start gap-3 pb-4">
+                        <div className="absolute left-[-13px] top-[5px] w-[7px] h-[7px] rounded-full border-2 border-border-strong bg-surface-card z-10" />
+                        <div className="min-w-0">
+                          <p className="text-[11px] font-medium uppercase tracking-wider text-text-muted">
+                            Original
+                          </p>
+                          <p className="text-sm font-medium text-text-secondary line-through decoration-text-muted/40">
+                            {formatDate(contract.endDate)}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Extension nodes */}
+                      {activeExtensions.map((ext, index) => {
+                        const isLatest = index === activeExtensions.length - 1;
+                        return (
+                          <div
+                            key={ext.identifier}
+                            className={`relative flex items-start gap-3 ${isLatest ? '' : 'pb-4'}`}
+                          >
+                            {/* Node dot */}
+                            <div
+                              className={`absolute left-[-13px] z-10 ${
+                                isLatest
+                                  ? 'top-[3px] w-[11px] h-[11px] rounded-full bg-info-text shadow-[0_0_0_3px_var(--color-info-bg)]'
+                                  : 'top-[5px] w-[7px] h-[7px] rounded-full bg-info-text/60 border-2 border-info-bg'
+                              }`}
+                            />
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-[11px] font-medium uppercase tracking-wider text-text-muted">
+                                  Extension #{ext.extensionNumber}
+                                </span>
+                                {ext.triggerType === 'AUTO' && (
+                                  <span className="inline-flex items-center px-1 py-px text-[9px] font-semibold uppercase tracking-wider rounded bg-info-bg text-info-text">
+                                    Auto
+                                  </span>
+                                )}
+                              </div>
+                              <p
+                                className={`text-sm font-semibold ${isLatest ? 'text-text-primary' : 'text-text-secondary line-through decoration-text-muted/40'}`}
+                              >
+                                {ext.newEndDate
+                                  ? formatDate(ext.newEndDate)
+                                  : '—'}
+                              </p>
+                              {ext.activatedAt && (
+                                <p className="text-[10px] text-text-muted mt-0.5">
+                                  Activated {formatDate(ext.activatedAt)}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
@@ -585,6 +662,41 @@ export const ContractDetailPage = () => {
                   currentRentAmount={contract.rentAmount}
                   paymentFrequency={contract.paymentFrequency}
                 />
+                {contract.rentComponents &&
+                  contract.rentComponents.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-medium text-text-secondary mb-2">
+                        Rent Breakdown
+                      </h4>
+                      <div className="bg-surface-secondary rounded-lg p-3 space-y-2">
+                        {contract.rentComponents.map((comp) => (
+                          <div
+                            key={comp.identifier}
+                            className="flex justify-between items-center text-sm"
+                          >
+                            <span className="text-text-secondary">
+                              {comp.componentTypeDisplayName}
+                              {comp.description && (
+                                <span className="text-text-tertiary ml-1">
+                                  ({comp.description})
+                                </span>
+                              )}
+                            </span>
+                            <span className="font-medium text-text-primary">
+                              {comp.currency} {comp.amount.toFixed(2)}
+                            </span>
+                          </div>
+                        ))}
+                        <div className="flex justify-between items-center text-sm font-semibold pt-2 border-t border-border-default">
+                          <span>Total</span>
+                          <span>
+                            {contract.rentAmountCurrency}{' '}
+                            {contract.rentAmount.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 {contract.depositAmount && (
                   <div className="flex items-center gap-3">
                     <DollarSign className="h-5 w-5 text-text-muted " />
@@ -634,74 +746,153 @@ export const ContractDetailPage = () => {
               contractSignedDate={contract.signedDate}
             />
 
-            {/* Additional Terms */}
-            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-              <h2 className="text-lg font-semibold text-text-primary mb-4">
-                Additional Terms
-              </h2>
-              <div className="space-y-3">
-                <div>
-                  <p className="text-sm text-text-secondary">Renewal Mode</p>
-                  <p className="font-medium text-text-primary">
-                    {contract.renewalMode === 'AUTOMATIC'
-                      ? 'Automatic'
-                      : contract.renewalMode === 'MANUAL'
-                        ? 'Manual'
-                        : 'None'}
-                  </p>
+            {/* Renewal Configuration */}
+            {contract.renewalMode && contract.renewalMode !== 'NONE' && (
+              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <Repeat className="h-5 w-5 text-text-muted" />
+                  <h2 className="text-lg font-semibold text-text-primary">
+                    Renewal Configuration
+                  </h2>
                 </div>
-                {contract.renewalTermMonths && (
-                  <div>
-                    <p className="text-sm text-text-secondary">
-                      Renewal Term
-                    </p>
-                    <p className="font-medium text-text-primary">
-                      {contract.renewalTermMonths} months
-                    </p>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-text-secondary">Mode</p>
+                    <span
+                      className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full ${
+                        contract.renewalMode === 'AUTOMATIC'
+                          ? 'bg-success-bg text-success-text'
+                          : 'bg-info-bg text-info-text'
+                      }`}
+                    >
+                      {contract.renewalMode === 'AUTOMATIC'
+                        ? 'Automatic'
+                        : 'Manual'}
+                    </span>
                   </div>
-                )}
-                {contract.extensionsRemaining != null && (
-                  <div>
-                    <p className="text-sm text-text-secondary">
-                      Extensions Remaining
-                    </p>
-                    <p className="font-medium text-text-primary">
-                      {contract.maxRenewals
-                        ? `${contract.extensionsRemaining} of ${contract.maxRenewals}`
-                        : 'Unlimited'}
-                    </p>
-                  </div>
-                )}
-                {contract.landlordNoticeDays != null && (
-                  <div>
-                    <p className="text-sm text-text-secondary">
-                      Landlord Notice
-                    </p>
-                    <p className="font-medium text-text-primary">
-                      {contract.landlordNoticeDays} days
-                    </p>
-                  </div>
-                )}
-                {contract.terminationNoticeDays && (
-                  <div>
-                    <p className="text-sm text-text-secondary">
-                      Termination Notice
-                    </p>
-                    <p className="font-medium text-text-primary">
-                      {contract.terminationNoticeDays} days
-                    </p>
-                  </div>
-                )}
-                {contract.lateFeePercentage && (
-                  <div>
-                    <p className="text-sm text-text-secondary">Late Fee</p>
-                    <p className="font-medium text-text-primary">
-                      {contract.lateFeePercentage}%
-                    </p>
-                  </div>
-                )}
+                  {contract.renewalTermMonths != null && (
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm text-text-secondary">
+                        Renewal Term
+                      </p>
+                      <p className="text-sm font-medium text-text-primary">
+                        {contract.renewalTermMonths}{' '}
+                        {contract.renewalTermMonths === 1 ? 'month' : 'months'}
+                      </p>
+                    </div>
+                  )}
+                  {contract.maxRenewals != null && (
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm text-text-secondary">Extensions</p>
+                      <p className="text-sm font-medium text-text-primary">
+                        {contract.extensionsRemaining != null
+                          ? `${contract.extensionsRemaining} of ${contract.maxRenewals} remaining`
+                          : `${contract.maxRenewals} max`}
+                      </p>
+                    </div>
+                  )}
+                  {!contract.maxRenewals &&
+                    contract.extensionsRemaining == null && (
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm text-text-secondary">
+                          Extensions
+                        </p>
+                        <p className="text-sm font-medium text-text-primary">
+                          Unlimited
+                        </p>
+                      </div>
+                    )}
+                  {contract.rentAdjustmentType &&
+                    contract.rentAdjustmentType !== 'NONE' && (
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm text-text-secondary">
+                          Rent Adjustment
+                        </p>
+                        <p className="text-sm font-medium text-text-primary">
+                          {contract.rentAdjustmentType === 'FIXED_PERCENTAGE' &&
+                          contract.rentAdjustmentValue != null
+                            ? `+${contract.rentAdjustmentValue}%`
+                            : contract.rentAdjustmentType === 'FIXED_AMOUNT' &&
+                                contract.rentAdjustmentValue != null
+                              ? `+${contract.rentAmountCurrency} ${contract.rentAdjustmentValue.toFixed(2)}`
+                              : contract.rentAdjustmentType === 'MANUAL'
+                                ? 'Manual'
+                                : '—'}
+                        </p>
+                      </div>
+                    )}
+                  {(contract.landlordNoticeDays != null ||
+                    contract.tenantNoticeDays != null) && (
+                    <div className="pt-2 border-t border-border-default">
+                      <p className="text-[11px] font-medium uppercase tracking-wider text-text-muted mb-2">
+                        Notice Periods
+                      </p>
+                      <div className="space-y-2">
+                        {contract.landlordNoticeDays != null && (
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm text-text-secondary">
+                              Landlord
+                            </p>
+                            <p className="text-sm font-medium text-text-primary">
+                              {contract.landlordNoticeDays} days
+                            </p>
+                          </div>
+                        )}
+                        {contract.tenantNoticeDays != null && (
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm text-text-secondary">
+                              Tenant
+                            </p>
+                            <p className="text-sm font-medium text-text-primary">
+                              {contract.tenantNoticeDays} days
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {contract.requiresTenantConfirmation && (
+                    <div className="flex items-center justify-between pt-2 border-t border-border-default">
+                      <p className="text-sm text-text-secondary">
+                        Tenant Confirmation
+                      </p>
+                      <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-warning-bg text-warning-text">
+                        Required
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
+
+            {/* Additional Terms */}
+            {(contract.terminationNoticeDays || contract.lateFeePercentage) && (
+              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+                <h2 className="text-lg font-semibold text-text-primary mb-4">
+                  Additional Terms
+                </h2>
+                <div className="space-y-3">
+                  {contract.terminationNoticeDays && (
+                    <div>
+                      <p className="text-sm text-text-secondary">
+                        Termination Notice
+                      </p>
+                      <p className="font-medium text-text-primary">
+                        {contract.terminationNoticeDays} days
+                      </p>
+                    </div>
+                  )}
+                  {contract.lateFeePercentage && (
+                    <div>
+                      <p className="text-sm text-text-secondary">Late Fee</p>
+                      <p className="font-medium text-text-primary">
+                        {contract.lateFeePercentage}%
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Terms and Conditions */}
             {contract.termsAndConditions && (

@@ -12,11 +12,13 @@ import static com.buurman.domain.NotificationType.CONTRACT_STATUS_CHANGED;
 import static com.buurman.domain.Property.PropertyStatus.OCCUPIED;
 import static com.buurman.domain.Property.PropertyStatus.VACANT;
 import static com.buurman.util.SidGenerator.newContractId;
+import static com.buurman.util.SidGenerator.newRentComponentId;
 
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,8 +37,10 @@ import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
+import com.buurman.domain.ContractRentComponent;
 import com.buurman.domain.Document;
 import com.buurman.domain.Property;
+import com.buurman.domain.RentComponentType;
 import com.buurman.domain.Tenant;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
@@ -49,6 +53,7 @@ import com.buurman.dto.request.ChangeContractStatusRequest;
 import com.buurman.dto.request.CreateContractRequest;
 import com.buurman.dto.request.GeneratePaymentsRequest;
 import com.buurman.dto.request.PageRequest;
+import com.buurman.dto.request.RentComponentRequest;
 import com.buurman.dto.request.UpdateContractRequest;
 import com.buurman.dto.response.ContractPartyResponse;
 import com.buurman.dto.response.ContractResponse;
@@ -56,12 +61,15 @@ import com.buurman.dto.response.DocumentResponse;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.PropertySummary;
 import com.buurman.dto.response.RecentActivityResponse;
+import com.buurman.dto.response.RentComponentResponse;
 import com.buurman.dto.response.TenantSummary;
 import com.buurman.exception.BadRequestException;
 import com.buurman.mapper.ContractMapper;
+import com.buurman.mapper.ContractRentComponentMapper;
 import com.buurman.mapper.PropertyMapper;
 import com.buurman.mapper.TenantMapper;
 import com.buurman.repository.ContractExtensionRepository;
+import com.buurman.repository.ContractRentComponentRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PropertyRepository;
@@ -82,6 +90,8 @@ public class ContractService {
   private final ContractRepository contractRepository;
   private final ContractExtensionRepository extensionRepository;
   private final ContractExtensionService contractExtensionService;
+  private final ContractRentComponentRepository rentComponentRepository;
+  private final ContractRentComponentMapper rentComponentMapper;
   private final PropertyRepository propertyRepository;
   private final TenantRepository tenantRepository;
   private final DocumentRepository documentRepository;
@@ -172,6 +182,17 @@ public class ContractService {
         .getSecurityDeposit()
         .ifPresent(d -> currencyEnforcement.validateCurrency(d.currency(), teamId));
 
+    // Override rent amount if components provided
+    request
+        .rentComponents()
+        .filter(list -> !list.isEmpty())
+        .ifPresent(
+            components -> {
+              validateRentComponents(components);
+              contract.setRentAmount(
+                  computeRentFromComponents(components, contract.getRentAmount().currency()));
+            });
+
     Contract savedContract = contractRepository.save(contract);
 
     // Create parties
@@ -180,6 +201,12 @@ public class ContractService {
 
     // Create initial rent period
     contractRentPeriodService.createInitialRentPeriod(savedContract, principal);
+
+    // Save rent components
+    request
+        .rentComponents()
+        .filter(list -> !list.isEmpty())
+        .ifPresent(components -> saveRentComponents(savedContract, components, principal));
 
     metricsService.incrementCounter("contract.total");
     metricsService.recordHistogram(
@@ -390,6 +417,17 @@ public class ContractService {
         .getSecurityDeposit()
         .ifPresent(d -> currencyEnforcement.validateCurrency(d.currency(), teamId));
 
+    // Override rent amount if components provided
+    request
+        .rentComponents()
+        .filter(list -> !list.isEmpty())
+        .ifPresent(
+            components -> {
+              validateRentComponents(components);
+              contract.setRentAmount(
+                  computeRentFromComponents(components, contract.getRentAmount().currency()));
+            });
+
     Contract updatedContract = contractRepository.save(contract);
 
     // Update initial rent period if rent or start date changed on DRAFT
@@ -397,6 +435,19 @@ public class ContractService {
         || !oldContract.getStartDate().equals(updatedContract.getStartDate())) {
       contractRentPeriodService.updateInitialRentPeriod(updatedContract, principal);
     }
+
+    // Handle rent components
+    request
+        .rentComponents()
+        .ifPresent(
+            components -> {
+              if (components.isEmpty()) {
+                rentComponentRepository.softDeleteByContractIdAndTeamId(
+                    updatedContract.getId(), teamId);
+              } else {
+                saveRentComponents(updatedContract, components, principal);
+              }
+            });
 
     log.info("Contract updated: {} in team {}", identifier, teamId);
 
@@ -494,6 +545,7 @@ public class ContractService {
     }
 
     contractPartyService.softDeletePartiesForContract(contract.getId(), teamId);
+    rentComponentRepository.softDeleteByContractIdAndTeamId(contract.getId(), teamId);
     contractRepository.softDeleteByIdAndTeamId(contract.getId(), teamId);
     log.info("Contract soft deleted: {} in team {}", identifier, teamId);
 
@@ -940,6 +992,10 @@ public class ContractService {
     Optional<Integer> extensionsRemaining =
         contract.getMaxRenewals().map(max -> max - extensionCount);
 
+    List<RentComponentResponse> componentResponses =
+        rentComponentMapper.toResponses(
+            rentComponentRepository.findByContractIdAndTeamId(contract.getId(), teamId));
+
     return new ContractResponse(
         contract.getIdentifier().orElseThrow(),
         Optional.of(propertySummary),
@@ -977,6 +1033,7 @@ public class ContractService {
         effectiveEndDate,
         extensionCount,
         extensionsRemaining,
+        componentResponses,
         contract.getCreatedAt(),
         Optional.of(contract.getUpdatedAt()));
   }
@@ -1014,6 +1071,10 @@ public class ContractService {
         extensionRepository.findByContractIdsAndTeamId(contractIds, teamId);
     Map<UUID, List<ContractExtension>> extensionsByContract =
         allExtensions.stream().collect(Collectors.groupingBy(ContractExtension::getContractId));
+
+    // Batch load rent components
+    Map<UUID, List<ContractRentComponent>> componentsByContract =
+        rentComponentRepository.findByContractIdsAndTeamId(contractIds, teamId);
 
     return contracts.stream()
         .map(
@@ -1061,6 +1122,10 @@ public class ContractService {
               Optional<Integer> extensionsRemaining =
                   contract.getMaxRenewals().map(max -> max - extensionCount);
 
+              List<RentComponentResponse> componentResponses =
+                  rentComponentMapper.toResponses(
+                      componentsByContract.getOrDefault(contract.getId(), List.of()));
+
               return new ContractResponse(
                   contract.getIdentifier().orElseThrow(),
                   propertySummary,
@@ -1098,10 +1163,81 @@ public class ContractService {
                   effectiveEndDate,
                   extensionCount,
                   extensionsRemaining,
+                  componentResponses,
                   contract.getCreatedAt(),
                   Optional.of(contract.getUpdatedAt()));
             })
         .toList();
+  }
+
+  private void saveRentComponents(
+      Contract contract, List<RentComponentRequest> components, UserPrincipal principal) {
+    String currency = contract.getRentAmount().currency();
+    UUID teamId = contract.getTeamId();
+    UUID userId = principal.getUserId();
+
+    List<ContractRentComponent> domainComponents = new ArrayList<>();
+    for (int i = 0; i < components.size(); i++) {
+      RentComponentRequest req = components.get(i);
+      ContractRentComponent comp =
+          ContractRentComponent.builder()
+              .identifier(Optional.of(newRentComponentId()))
+              .teamId(teamId)
+              .contractId(contract.getId())
+              .componentType(req.componentType())
+              .amount(com.buurman.util.MoneyAmount.of(req.amount(), currency))
+              .description(req.description())
+              .sortOrder(i)
+              .createdAt(clock.instant())
+              .updatedAt(clock.instant())
+              .createdBy(userId)
+              .updatedBy(userId)
+              .build();
+      domainComponents.add(comp);
+    }
+
+    rentComponentRepository.replaceForContract(contract.getId(), teamId, domainComponents);
+  }
+
+  private void validateRentComponents(List<RentComponentRequest> components) {
+    boolean hasBaseRent =
+        components.stream().anyMatch(c -> c.componentType() == RentComponentType.BASE_RENT);
+    if (!hasBaseRent) {
+      throw new BadRequestException("Rent components must include BASE_RENT");
+    }
+
+    // Check for duplicate non-OTHER types
+    Map<RentComponentType, Long> typeCounts =
+        components.stream()
+            .filter(c -> c.componentType() != RentComponentType.OTHER)
+            .collect(
+                Collectors.groupingBy(RentComponentRequest::componentType, Collectors.counting()));
+
+    typeCounts.forEach(
+        (type, count) -> {
+          if (count > 1) {
+            throw new BadRequestException("Duplicate rent component type: " + type);
+          }
+        });
+
+    // Validate OTHER components have descriptions
+    components.stream()
+        .filter(c -> c.componentType() == RentComponentType.OTHER)
+        .forEach(
+            c -> {
+              if (c.description().isEmpty() || c.description().get().isBlank()) {
+                throw new BadRequestException("OTHER rent components must have a description");
+              }
+            });
+  }
+
+  private com.buurman.util.MoneyAmount computeRentFromComponents(
+      List<RentComponentRequest> components, String currency) {
+    BigDecimal total =
+        components.stream()
+            .map(RentComponentRequest::amount)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    return com.buurman.util.MoneyAmount.of(total, currency);
   }
 
   private void validateCurrencyRequired(@Nullable String currency, @Nullable BigDecimal amount) {
