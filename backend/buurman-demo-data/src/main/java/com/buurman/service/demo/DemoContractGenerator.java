@@ -64,9 +64,7 @@ public class DemoContractGenerator {
   private final Clock clock;
   private final Random random = new Random(42);
 
-  private static final String[] CONTRACT_TYPES = {
-    "FIXED_TERM", "INDEFINITE", "FURNISHED", "UNFURNISHED"
-  };
+  private static final String[] CONTRACT_TYPES = {"FIXED_TERM", "INDEFINITE"};
 
   public void generate(DemoDataContext ctx) {
     LocalDateTime now = LocalDateTime.now(clock);

@@ -23,9 +23,7 @@ public class Contract {
 
   public enum ContractType {
     FIXED_TERM,
-    INDEFINITE,
-    FURNISHED,
-    UNFURNISHED
+    INDEFINITE
   }
 
   public enum PaymentFrequency {

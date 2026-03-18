@@ -805,8 +805,6 @@ export const ContractForm = ({
             >
               <option value={ContractType.FIXED_TERM}>Fixed Term</option>
               <option value={ContractType.INDEFINITE}>Indefinite</option>
-              <option value={ContractType.FURNISHED}>Furnished</option>
-              <option value={ContractType.UNFURNISHED}>Unfurnished</option>
             </select>
           </div>
 

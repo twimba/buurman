@@ -19615,8 +19615,6 @@ components:
           enum:
             - FIXED_TERM
             - INDEFINITE
-            - FURNISHED
-            - UNFURNISHED
         startDate:
           type: string
           format: date
@@ -19953,8 +19951,6 @@ components:
           enum:
             - FIXED_TERM
             - INDEFINITE
-            - FURNISHED
-            - UNFURNISHED
         startDate:
           type: string
           format: date
@@ -21999,8 +21995,6 @@ components:
           enum:
             - FIXED_TERM
             - INDEFINITE
-            - FURNISHED
-            - UNFURNISHED
         startDate:
           type: string
           format: date
