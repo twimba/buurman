@@ -184,45 +184,49 @@ export const ExtensionTimeline = ({
                 Decline Extension
               </h3>
             </div>
-            <div className="p-4 space-y-3">
-              <p className="text-sm text-text-secondary">
-                Are you sure you want to decline this extension?
-              </p>
-              <div>
-                <label
-                  htmlFor="declineReason"
-                  className="block text-sm font-medium text-text-secondary mb-1"
-                >
-                  Reason (Optional)
-                </label>
-                <textarea
-                  id="declineReason"
-                  value={declineReason}
-                  onChange={(e) => setDeclineReason(e.target.value)}
-                  rows={2}
-                  className="w-full px-3 py-2 border border-border-strong rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 bg-surface-card text-text-primary resize-none"
-                  placeholder="Reason for declining..."
-                />
+            <form onSubmit={(e) => { e.preventDefault(); handleDecline(); }} onKeyDown={(e) => { if (e.key === 'Escape') { setDeclineTarget(null); setDeclineReason(''); } }}>
+              <div className="p-4 space-y-3">
+                <p className="text-sm text-text-secondary">
+                  Are you sure you want to decline this extension?
+                </p>
+                <div>
+                  <label
+                    htmlFor="declineReason"
+                    className="block text-sm font-medium text-text-secondary mb-1"
+                  >
+                    Reason (Optional)
+                  </label>
+                  <input
+                    id="declineReason"
+                    type="text"
+                    value={declineReason}
+                    onChange={(e) => setDeclineReason(e.target.value)}
+                    className="w-full px-3 py-2 border border-border-strong rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 bg-surface-card text-text-primary"
+                    placeholder="Reason for declining..."
+                    autoFocus
+                  />
+                </div>
               </div>
-            </div>
-            <div className="flex items-center justify-end gap-3 p-4 border-t border-border-default">
-              <button
-                onClick={() => {
-                  setDeclineTarget(null);
-                  setDeclineReason('');
-                }}
-                className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDecline}
-                className="px-4 py-2 text-sm font-medium text-white bg-error-bg-strong rounded-md hover:opacity-90 disabled:opacity-50"
-                disabled={declineExtension.isPending}
-              >
-                {declineExtension.isPending ? 'Declining...' : 'Decline'}
-              </button>
-            </div>
+              <div className="flex items-center justify-end gap-3 p-4 border-t border-border-default">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDeclineTarget(null);
+                    setDeclineReason('');
+                  }}
+                  className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-sm font-medium text-white bg-error-bg-strong rounded-md hover:opacity-90 disabled:opacity-50"
+                  disabled={declineExtension.isPending}
+                >
+                  {declineExtension.isPending ? 'Declining...' : 'Decline'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

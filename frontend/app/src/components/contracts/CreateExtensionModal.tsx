@@ -151,10 +151,13 @@ export const CreateExtensionModal = ({
     submitForm();
   };
 
-  const handleCmdEnter = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
       e.preventDefault();
       submitForm();
+    }
+    if (e.key === 'Escape') {
+      onClose();
     }
   };
 
@@ -176,7 +179,7 @@ export const CreateExtensionModal = ({
         </div>
 
         {/* Body */}
-        <form onSubmit={handleSubmit} onKeyDown={handleCmdEnter}>
+        <form onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
           <div className="p-4 space-y-4">
             {/* Current Rent */}
             <div>
