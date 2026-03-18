@@ -964,11 +964,9 @@ export const ContractForm = ({
             requiresTenantConfirmation={formData.requiresTenantConfirmation}
             rentAdjustmentType={formData.rentAdjustmentType ?? 'NONE'}
             rentAdjustmentValue={formData.rentAdjustmentValue}
-            landlordType={formData.landlordType}
-            regionCode={formData.regionCode}
             countryCode={propertyCountryCode}
+            regionCode={selectedProperty?.regionCode}
             onChange={handleChange}
-            defaultExpanded
           />
         </div>
       </div>
@@ -1050,10 +1048,10 @@ export const ContractForm = ({
         </div>
       </div>
 
-      {/* Renewal and Termination */}
+      {/* Termination */}
       <div>
         <h3 className="text-lg font-semibold text-text-primary mb-4">
-          Renewal and Termination
+          Termination
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>

@@ -1,10 +1,8 @@
-import { useState } from 'react';
-import { ChevronDown, ChevronUp, Download } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { useJurisdictionDefaults } from '@/hooks/useContractExtensionHooks';
 import type {
   RenewalMode,
   RentAdjustmentType,
-  LandlordType,
 } from '@/types/contractExtension';
 
 const RENEWAL_MODE_LABELS: Record<RenewalMode, string> = {
@@ -20,9 +18,10 @@ const ADJUSTMENT_TYPE_LABELS: Record<RentAdjustmentType, string> = {
   MANUAL: 'Manual',
 };
 
-const LANDLORD_TYPE_LABELS: Record<LandlordType, string> = {
-  NATURAL_PERSON: 'Natural person',
-  LEGAL_ENTITY: 'Legal entity',
+const RENEWAL_MODE_DESCRIPTIONS: Record<RenewalMode, string> = {
+  NONE: '',
+  AUTOMATIC: 'The contract will be automatically extended when the notice window passes. If tenant confirmation is required, the extension stays pending until confirmed.',
+  MANUAL: 'You will receive a reminder when the notice window approaches. Extensions must be created and activated manually.',
 };
 
 interface RenewalConfigFormProps {
@@ -34,12 +33,10 @@ interface RenewalConfigFormProps {
   requiresTenantConfirmation?: boolean;
   rentAdjustmentType: RentAdjustmentType;
   rentAdjustmentValue?: number;
-  landlordType?: LandlordType;
   regionCode?: string;
   countryCode?: string;
   onChange: (field: string, value: unknown) => void;
   disabled?: boolean;
-  defaultExpanded?: boolean;
 }
 
 export const RenewalConfigForm = ({
@@ -51,20 +48,17 @@ export const RenewalConfigForm = ({
   requiresTenantConfirmation,
   rentAdjustmentType,
   rentAdjustmentValue,
-  landlordType,
   regionCode,
   countryCode,
   onChange,
   disabled = false,
-  defaultExpanded = false,
 }: RenewalConfigFormProps) => {
-  const [isExpanded, setIsExpanded] = useState(defaultExpanded || renewalMode !== 'NONE');
 
   const { data: jurisdictionDefaults, isLoading: loadingDefaults } =
     useJurisdictionDefaults(
       countryCode,
       regionCode,
-      landlordType,
+      undefined, // landlordType — set in country-specific section
       undefined // furnished
     );
 
@@ -100,25 +94,11 @@ export const RenewalConfigForm = ({
 
   return (
     <div className="space-y-4">
-      {/* Collapsible Header */}
-      <button
-        type="button"
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between text-left group"
-      >
-        <h3 className="text-sm font-semibold text-text-primary">
-          Renewal Configuration
-        </h3>
-        {isExpanded ? (
-          <ChevronUp className="h-4 w-4 text-text-secondary group-hover:text-text-primary" />
-        ) : (
-          <ChevronDown className="h-4 w-4 text-text-secondary group-hover:text-text-primary" />
-        )}
-      </button>
+      <h4 className="text-base font-semibold text-text-primary">
+        Renewal Configuration
+      </h4>
 
-      {isExpanded && (
-        <div className="space-y-4">
-          {/* Load Defaults Button */}
+      {/* Load Defaults Button */}
           {countryCode && (
             <div className="flex items-center gap-2">
               <button
@@ -135,18 +115,6 @@ export const RenewalConfigForm = ({
                   {jurisdictionDefaults.disclaimer}
                 </p>
               )}
-            </div>
-          )}
-
-          {/* Jurisdiction-specific info banners */}
-          {countryCode === 'ES' && !landlordType && (
-            <div className="rounded-md bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
-              Spain requires specifying landlord type (Natural Person or Legal Entity) to determine the mandatory rental period (5 vs 7 years).
-            </div>
-          )}
-          {countryCode === 'BE' && !regionCode && (
-            <div className="rounded-md bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
-              Belgium has different rules per region. Please select a region (Brussels, Flanders, or Wallonia) for accurate defaults.
             </div>
           )}
 
@@ -171,6 +139,11 @@ export const RenewalConfigForm = ({
                 </option>
               ))}
             </select>
+            {RENEWAL_MODE_DESCRIPTIONS[renewalMode] && (
+              <p className="text-xs text-text-muted mt-1">
+                {RENEWAL_MODE_DESCRIPTIONS[renewalMode]}
+              </p>
+            )}
           </div>
 
           {isRenewalEnabled && (
@@ -373,58 +346,8 @@ export const RenewalConfigForm = ({
                 )}
               </div>
 
-              {/* Jurisdiction-specific fields */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="landlordType"
-                    className="block text-sm font-medium text-text-secondary mb-1"
-                  >
-                    Landlord Type
-                  </label>
-                  <select
-                    id="landlordType"
-                    value={landlordType ?? ''}
-                    onChange={(e) =>
-                      onChange('landlordType', e.target.value || undefined)
-                    }
-                    className="w-full px-3 py-2 border border-border-strong rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 bg-surface-card text-text-primary"
-                    disabled={disabled}
-                  >
-                    <option value="">Not specified</option>
-                    {Object.entries(LANDLORD_TYPE_LABELS).map(
-                      ([value, label]) => (
-                        <option key={value} value={value}>
-                          {label}
-                        </option>
-                      )
-                    )}
-                  </select>
-                </div>
-                <div>
-                  <label
-                    htmlFor="regionCode"
-                    className="block text-sm font-medium text-text-secondary mb-1"
-                  >
-                    Region Code
-                  </label>
-                  <input
-                    id="regionCode"
-                    type="text"
-                    value={regionCode ?? ''}
-                    onChange={(e) =>
-                      onChange('regionCode', e.target.value || undefined)
-                    }
-                    className="w-full px-3 py-2 border border-border-strong rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 bg-surface-card text-text-primary"
-                    disabled={disabled}
-                    placeholder="e.g. BRU, WAL, FLA"
-                  />
-                </div>
-              </div>
             </>
           )}
-        </div>
-      )}
     </div>
   );
 };
