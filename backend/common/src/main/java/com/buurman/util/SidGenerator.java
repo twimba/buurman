@@ -4,6 +4,7 @@ import com.buurman.domain.Sid;
 import com.buurman.domain.identifier.AmenityIdentifier;
 import com.buurman.domain.identifier.BroadcastMessageIdentifier;
 import com.buurman.domain.identifier.CalendarFeedIdentifier;
+import com.buurman.domain.identifier.ContractExtensionIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.ContractPartyIdentifier;
 import com.buurman.domain.identifier.ContractPaymentInstructionIdentifier;
@@ -30,6 +31,7 @@ import com.buurman.domain.identifier.PropertyOutdoorAreaIdentifier;
 import com.buurman.domain.identifier.PropertyTaxIdentifier;
 import com.buurman.domain.identifier.PropertyValuationIdentifier;
 import com.buurman.domain.identifier.RegistrationInvitationIdentifier;
+import com.buurman.domain.identifier.RentComponentIdentifier;
 import com.buurman.domain.identifier.RentRegulationCountryIdentifier;
 import com.buurman.domain.identifier.RentRegulationRegionIdentifier;
 import com.buurman.domain.identifier.RentRegulationRuleIdentifier;
@@ -205,5 +207,13 @@ public class SidGenerator {
 
   public static ImpersonationSessionIdentifier newImpersonationSessionId() {
     return ImpersonationSessionIdentifier.of(generateRaw(EntityPrefix.IMS));
+  }
+
+  public static ContractExtensionIdentifier newContractExtensionId() {
+    return ContractExtensionIdentifier.of(generateRaw(EntityPrefix.CEX));
+  }
+
+  public static RentComponentIdentifier newRentComponentId() {
+    return RentComponentIdentifier.of(generateRaw(EntityPrefix.RCO));
   }
 }

@@ -1,0 +1,574 @@
+extensions:
+  get:
+    tags:
+      - Contract Extensions
+    summary: List contract extensions
+    description: List all extensions for a contract with pagination
+    operationId: listContractExtensions
+    parameters:
+      - name: id
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: Page number (zero-based)
+        schema:
+          type: integer
+          default: 0
+      - name: size
+        in: query
+        description: Page size
+        schema:
+          type: integer
+          default: 20
+    responses:
+      "200":
+        description: Extensions list
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageResponseContractExtensionResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+  post:
+    tags:
+      - Contract Extensions
+    summary: Create a draft contract extension
+    description: Create a new extension in DRAFT status for a contract
+    operationId: createContractExtension
+    parameters:
+      - name: id
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateContractExtensionRequest'
+    responses:
+      "201":
+        description: Extension created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractExtensionResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+extensions-item:
+  get:
+    tags:
+      - Contract Extensions
+    summary: Get contract extension details
+    description: Get details of a specific contract extension
+    operationId: getContractExtension
+    parameters:
+      - name: id
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          type: string
+      - name: extId
+        in: path
+        description: Extension identifier
+        required: true
+        schema:
+          type: string
+    responses:
+      "200":
+        description: Extension detail
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractExtensionResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+  delete:
+    tags:
+      - Contract Extensions
+    summary: Cancel (soft delete) a draft extension
+    description: Cancel a draft extension, marking it as soft-deleted
+    operationId: cancelContractExtension
+    parameters:
+      - name: id
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          type: string
+      - name: extId
+        in: path
+        description: Extension identifier
+        required: true
+        schema:
+          type: string
+    responses:
+      "204":
+        description: Extension cancelled
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+extensions-activate:
+  post:
+    tags:
+      - Contract Extensions
+    summary: Activate a draft extension
+    description: Transition a draft extension to ACTIVE status
+    operationId: activateContractExtension
+    parameters:
+      - name: id
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          type: string
+      - name: extId
+        in: path
+        description: Extension identifier
+        required: true
+        schema:
+          type: string
+    responses:
+      "200":
+        description: Extension activated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractExtensionResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+extensions-confirm:
+  post:
+    tags:
+      - Contract Extensions
+    summary: Record tenant confirmation on extension
+    description: Record that the tenant has confirmed the extension
+    operationId: confirmContractExtension
+    parameters:
+      - name: id
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          type: string
+      - name: extId
+        in: path
+        description: Extension identifier
+        required: true
+        schema:
+          type: string
+    responses:
+      "200":
+        description: Extension confirmed
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractExtensionResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+extensions-decline:
+  post:
+    tags:
+      - Contract Extensions
+    summary: Decline a draft extension
+    description: Decline an extension with an optional reason
+    operationId: declineContractExtension
+    parameters:
+      - name: id
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          type: string
+      - name: extId
+        in: path
+        description: Extension identifier
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DeclineContractExtensionRequest'
+    responses:
+      "200":
+        description: Extension declined
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractExtensionResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "409":
+        description: Conflict - business rule violation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+extensions-addendum:
+  get:
+    tags:
+      - Contract Extensions
+    summary: Download extension addendum PDF
+    description: Download the addendum document for a contract extension as PDF
+    operationId: getExtensionAddendum
+    parameters:
+      - name: id
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          type: string
+      - name: extId
+        in: path
+        description: Extension identifier
+        required: true
+        schema:
+          type: string
+    responses:
+      "200":
+        description: PDF addendum
+        content:
+          application/pdf:
+            schema:
+              type: string
+              format: binary
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+extensions-rent-increase-letter:
+  get:
+    tags:
+      - Contract Extensions
+    summary: Download rent increase letter PDF
+    description: Download the rent increase notification letter as PDF
+    operationId: getRentIncreaseLetter
+    parameters:
+      - name: id
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          type: string
+      - name: extId
+        in: path
+        description: Extension identifier
+        required: true
+        schema:
+          type: string
+    responses:
+      "200":
+        description: Rent increase letter PDF
+        content:
+          application/pdf:
+            schema:
+              type: string
+              format: binary
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []

@@ -1,0 +1,71 @@
+jurisdiction-defaults:
+  get:
+    tags:
+      - Jurisdiction Defaults
+    summary: Look up jurisdiction defaults for renewal configuration
+    description: Get country and region-specific default values for contract renewal settings
+    operationId: getJurisdictionDefaults
+    parameters:
+      - name: countryCode
+        in: query
+        description: ISO country code (e.g., NL, DE, FR)
+        required: true
+        schema:
+          type: string
+      - name: regionCode
+        in: query
+        description: Regional subdivision code (e.g., BRU, VLG, WAL for Belgium)
+        schema:
+          type: string
+      - name: landlordType
+        in: query
+        description: Type of landlord entity
+        schema:
+          type: string
+          enum:
+            - NATURAL_PERSON
+            - LEGAL_ENTITY
+      - name: furnished
+        in: query
+        description: Whether the property is furnished
+        schema:
+          type: boolean
+    responses:
+      "200":
+        description: Jurisdiction defaults
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JurisdictionDefaultResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []

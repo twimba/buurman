@@ -22,7 +22,11 @@ public enum NotificationType {
   CONTRACT_RENT_ADJUSTED("Contract Rent Adjusted", true, true),
   PAYMENT_PAID("Payment Paid", true, true),
   PAYMENT_RECEIVAL("Payment Received", true, true),
-  EXPENSE_CREATED("Expense Created", true, true);
+  EXPENSE_CREATED("Expense Created", true, true),
+  CONTRACT_RENEWAL_REMINDER("Contract Renewal Reminder", true, true),
+  CONTRACT_EXTENDED("Contract Extended", true, true),
+  CONTRACT_EXTENSION_PENDING("Contract Extension Pending", true, true),
+  CONTRACT_ROLLED_OVER_TO_INDEFINITE("Contract Rolled Over to Indefinite", true, true);
 
   private final String displayName;
   private final boolean configurable;

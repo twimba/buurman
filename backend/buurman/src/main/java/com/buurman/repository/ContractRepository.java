@@ -221,8 +221,6 @@ public class ContractRepository {
               contract.getSecurityDeposit().map(MoneyAmount::currency).orElse(null))
           .set(CONTRACTS.PAYMENT_FREQUENCY, contract.getPaymentFrequency().name())
           .set(CONTRACTS.PAYMENT_DUE_DAY, contract.getPaymentDueDay().orElse(null))
-          .set(CONTRACTS.AUTO_RENEWAL, contract.getAutoRenewal())
-          .set(CONTRACTS.RENEWAL_NOTICE_DAYS, contract.getRenewalNoticeDays())
           .set(CONTRACTS.TERMINATION_NOTICE_DAYS, contract.getTerminationNoticeDays())
           .set(CONTRACTS.LATE_FEE_PERCENTAGE, contract.getLateFeePercentage().orElse(null))
           .set(CONTRACTS.STATUS, contract.getStatus().name())
@@ -235,6 +233,16 @@ public class ContractRepository {
                   .getCountryMetadata()
                   .map(m -> JSONB.jsonb(countryMetadataSerializer.serialize(m)))
                   .orElse(null))
+          .set(CONTRACTS.RENEWAL_MODE, contract.getRenewalMode().name())
+          .set(CONTRACTS.RENEWAL_TERM_MONTHS, contract.getRenewalTermMonths().orElse(null))
+          .set(CONTRACTS.MAX_RENEWALS, contract.getMaxRenewals().orElse(null))
+          .set(CONTRACTS.LANDLORD_NOTICE_DAYS, contract.getLandlordNoticeDays())
+          .set(CONTRACTS.TENANT_NOTICE_DAYS, contract.getTenantNoticeDays())
+          .set(CONTRACTS.REQUIRES_TENANT_CONFIRMATION, contract.getRequiresTenantConfirmation())
+          .set(CONTRACTS.RENT_ADJUSTMENT_TYPE, contract.getRentAdjustmentType().name())
+          .set(CONTRACTS.RENT_ADJUSTMENT_VALUE, contract.getRentAdjustmentValue().orElse(null))
+          .set(CONTRACTS.LANDLORD_TYPE, contract.getLandlordType().map(Enum::name).orElse(null))
+          .set(CONTRACTS.REGION_CODE, contract.getRegionCode().orElse(null))
           .set(CONTRACTS.CREATED_AT, now)
           .set(CONTRACTS.UPDATED_AT, now)
           .set(CONTRACTS.CREATED_BY, contract.getCreatedBy())
@@ -270,13 +278,21 @@ public class ContractRepository {
                   contract.getSecurityDeposit().map(MoneyAmount::currency).orElse(null))
               .set(CONTRACTS.PAYMENT_FREQUENCY, contract.getPaymentFrequency().name())
               .set(CONTRACTS.PAYMENT_DUE_DAY, contract.getPaymentDueDay().orElse(null))
-              .set(CONTRACTS.AUTO_RENEWAL, contract.getAutoRenewal())
-              .set(CONTRACTS.RENEWAL_NOTICE_DAYS, contract.getRenewalNoticeDays())
               .set(CONTRACTS.TERMINATION_NOTICE_DAYS, contract.getTerminationNoticeDays())
               .set(CONTRACTS.LATE_FEE_PERCENTAGE, contract.getLateFeePercentage().orElse(null))
               .set(CONTRACTS.STATUS, contract.getStatus().name())
               .set(CONTRACTS.TERMS_AND_CONDITIONS, contract.getTermsAndConditions().orElse(null))
-              .set(CONTRACTS.NOTES, contract.getNotes().orElse(null));
+              .set(CONTRACTS.NOTES, contract.getNotes().orElse(null))
+              .set(CONTRACTS.RENEWAL_MODE, contract.getRenewalMode().name())
+              .set(CONTRACTS.RENEWAL_TERM_MONTHS, contract.getRenewalTermMonths().orElse(null))
+              .set(CONTRACTS.MAX_RENEWALS, contract.getMaxRenewals().orElse(null))
+              .set(CONTRACTS.LANDLORD_NOTICE_DAYS, contract.getLandlordNoticeDays())
+              .set(CONTRACTS.TENANT_NOTICE_DAYS, contract.getTenantNoticeDays())
+              .set(CONTRACTS.REQUIRES_TENANT_CONFIRMATION, contract.getRequiresTenantConfirmation())
+              .set(CONTRACTS.RENT_ADJUSTMENT_TYPE, contract.getRentAdjustmentType().name())
+              .set(CONTRACTS.RENT_ADJUSTMENT_VALUE, contract.getRentAdjustmentValue().orElse(null))
+              .set(CONTRACTS.LANDLORD_TYPE, contract.getLandlordType().map(Enum::name).orElse(null))
+              .set(CONTRACTS.REGION_CODE, contract.getRegionCode().orElse(null));
 
       // Only update country_code and country_metadata while contract is DRAFT (locked after
       // activation)
@@ -335,11 +351,13 @@ public class ContractRepository {
                               .and(CP_TEAM_ID.eq(teamId))
                               .and(CP_DELETED_AT.isNull()))));
     }
+    Field<LocalDate> effectiveEndDate =
+        com.buurman.service.EffectiveEndDateHelper.effectiveEndDate();
     Map<String, Field<?>> sortableFields =
         Map.of(
             "createdAt", CONTRACTS.CREATED_AT,
             "startDate", CONTRACTS.START_DATE,
-            "endDate", CONTRACTS.END_DATE,
+            "endDate", effectiveEndDate,
             "rentAmount", CONTRACTS.RENT_AMOUNT,
             "status", CONTRACTS.STATUS);
     return PaginationHelper.paginate(
@@ -391,6 +409,8 @@ public class ContractRepository {
   }
 
   public List<Contract> findExpiringContracts(UUID teamId, LocalDate beforeDate) {
+    Field<LocalDate> effectiveEndDate =
+        com.buurman.service.EffectiveEndDateHelper.effectiveEndDate();
     return dsl
         .selectFrom(CONTRACTS)
         .where(
@@ -398,8 +418,8 @@ public class ContractRepository {
                 .TEAM_ID
                 .eq(teamId)
                 .and(CONTRACTS.STATUS.eq(ACTIVE.name()))
-                .and(CONTRACTS.END_DATE.isNotNull())
-                .and(CONTRACTS.END_DATE.le(beforeDate))
+                .and(effectiveEndDate.isNotNull())
+                .and(effectiveEndDate.le(beforeDate))
                 .and(CONTRACTS.DELETED_AT.isNull()))
         .fetch()
         .stream()

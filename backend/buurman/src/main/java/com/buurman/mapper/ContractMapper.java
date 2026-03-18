@@ -27,8 +27,6 @@ public interface ContractMapper {
   @Mapping(target = "deletedAt", ignore = true)
   @Mapping(target = "countryCode", ignore = true)
   @Mapping(target = "countryMetadata", ignore = true)
-  @Mapping(target = "autoRenewal", defaultExpression = "java(false)")
-  @Mapping(target = "renewalNoticeDays", defaultExpression = "java(30)")
   @Mapping(target = "terminationNoticeDays", defaultExpression = "java(30)")
   @Mapping(
       target = "rentAmount",
@@ -51,6 +49,10 @@ public interface ContractMapper {
   @Mapping(target = "parties", ignore = true)
   @Mapping(target = "primaryTenant", ignore = true)
   @Mapping(target = "countryMetadata", ignore = true)
+  @Mapping(target = "effectiveEndDate", ignore = true)
+  @Mapping(target = "extensionCount", ignore = true)
+  @Mapping(target = "extensionsRemaining", ignore = true)
+  @Mapping(target = "rentComponents", ignore = true)
   @Mapping(target = "rentAmount", expression = "java(contract.getRentAmount().value())")
   @Mapping(target = "rentAmountCurrency", expression = "java(contract.getRentAmount().currency())")
   @Mapping(

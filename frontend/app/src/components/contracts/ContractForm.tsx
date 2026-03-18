@@ -9,6 +9,8 @@ import {
   ContractPartyRequest,
   PaymentFrequency,
   PARTY_ROLE_LABELS,
+  RentComponentFormItem,
+  RentComponentType,
 } from '@/types/contract';
 import { CreateTenantRequest } from '@/types/tenant';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
@@ -19,6 +21,8 @@ import { PhoneInput, validatePhoneE164 } from '@/components/common/PhoneInput';
 import CountryMetadataForm, {
   useCountryName,
 } from '@/components/contracts/CountryMetadataForm';
+import { RenewalConfigForm } from '@/components/contracts/RenewalConfigForm';
+import { RentBreakdown } from '@/components/contracts/RentBreakdown';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 import { useProperties } from '@/hooks/usePropertyHooks';
 import {
@@ -240,6 +244,8 @@ export const ContractForm = ({
   const [formData, setFormData] = useState<
     Omit<CreateContractRequest, 'parties' | 'rentAmount'> & {
       rentAmount: number | '';
+      rentComponents: RentComponentFormItem[];
+      breakdownMode: boolean;
     }
   >({
     propertyIdentifier:
@@ -257,13 +263,28 @@ export const ContractForm = ({
       contract?.securityDepositCurrency || defaultCurrency,
     paymentFrequency: contract?.paymentFrequency ?? PaymentFrequency.MONTHLY,
     paymentDueDay: contract?.paymentDueDay ?? 1,
-    autoRenewal: contract?.autoRenewal ?? false,
-    renewalNoticeDays: contract?.renewalNoticeDays ?? 30,
     terminationNoticeDays: contract?.terminationNoticeDays ?? 30,
     lateFeePercentage: contract?.lateFeePercentage ?? undefined,
     termsAndConditions: contract?.termsAndConditions ?? '',
     notes: contract?.notes ?? '',
     countryMetadata: contract?.countryMetadata ?? undefined,
+    renewalMode: contract?.renewalMode ?? 'NONE',
+    renewalTermMonths: contract?.renewalTermMonths ?? undefined,
+    maxRenewals: contract?.maxRenewals ?? undefined,
+    landlordNoticeDays: contract?.landlordNoticeDays ?? 30,
+    tenantNoticeDays: contract?.tenantNoticeDays ?? 30,
+    requiresTenantConfirmation: contract?.requiresTenantConfirmation ?? false,
+    rentAdjustmentType: contract?.rentAdjustmentType ?? 'NONE',
+    rentAdjustmentValue: contract?.rentAdjustmentValue ?? undefined,
+    landlordType: contract?.landlordType ?? undefined,
+    regionCode: contract?.regionCode ?? undefined,
+    rentComponents:
+      contract?.rentComponents?.map((c) => ({
+        componentType: c.componentType,
+        amount: c.amount,
+        description: c.description,
+      })) ?? [],
+    breakdownMode: (contract?.rentComponents?.length ?? 0) > 0,
   });
 
   const [contractIdentifier, setContractIdentifier] = useState(
@@ -331,13 +352,18 @@ export const ContractForm = ({
           contract.securityDepositCurrency || defaultCurrency,
         paymentFrequency: contract.paymentFrequency,
         paymentDueDay: contract.paymentDueDay ?? 1,
-        autoRenewal: contract.autoRenewal,
-        renewalNoticeDays: contract.renewalNoticeDays ?? 30,
         terminationNoticeDays: contract.terminationNoticeDays ?? 30,
         lateFeePercentage: contract.lateFeePercentage ?? undefined,
         termsAndConditions: contract.termsAndConditions ?? '',
         notes: contract.notes ?? '',
         countryMetadata: contract.countryMetadata ?? undefined,
+        rentComponents:
+          contract.rentComponents?.map((c) => ({
+            componentType: c.componentType,
+            amount: c.amount as number | '',
+            description: c.description,
+          })) ?? [],
+        breakdownMode: (contract.rentComponents?.length ?? 0) > 0,
       });
     }
     /* eslint-enable react-hooks/set-state-in-effect */
@@ -365,15 +391,47 @@ export const ContractForm = ({
     if (!formData.startDate) {
       newErrors.startDate = 'Start date is required';
     }
-    if (!formData.rentAmount || formData.rentAmount <= 0) {
+    if (formData.breakdownMode) {
+      const hasBaseRent = formData.rentComponents.some(
+        (c) => c.componentType === RentComponentType.BASE_RENT
+      );
+      if (!hasBaseRent) {
+        newErrors.rentComponents = 'Base rent component is required';
+      }
+      const invalidAmounts = formData.rentComponents.some(
+        (c) => typeof c.amount !== 'number' || c.amount <= 0
+      );
+      if (invalidAmounts) {
+        newErrors.rentComponents =
+          'All component amounts must be greater than 0';
+      }
+      const missingOtherDesc = formData.rentComponents.some(
+        (c) =>
+          c.componentType === RentComponentType.OTHER &&
+          (!c.description || !c.description.trim())
+      );
+      if (missingOtherDesc) {
+        newErrors.rentComponents =
+          'Custom label is required for "Other" components';
+      }
+      // Validate total > 0
+      const total = formData.rentComponents.reduce(
+        (sum, c) => sum + (typeof c.amount === 'number' ? c.amount : 0),
+        0
+      );
+      if (total <= 0) {
+        newErrors.rentAmount = 'Rent amount must be greater than 0';
+      }
+    } else if (!formData.rentAmount || formData.rentAmount <= 0) {
       newErrors.rentAmount = 'Rent amount must be greater than 0';
     }
     if (
       formData.rentAmount &&
       formData.rentAmount > 0 &&
       !(formData.rentAmountCurrency || defaultCurrency || '').trim()
-    )
+    ) {
       newErrors.rentAmountCurrency = 'Rent currency is required';
+    }
     if (
       formData.depositAmount &&
       formData.depositAmount > 0 &&
@@ -459,11 +517,20 @@ export const ContractForm = ({
               ),
           ];
 
+      const rentComponents = formData.breakdownMode
+        ? formData.rentComponents.map((c) => ({
+            componentType: c.componentType,
+            amount: typeof c.amount === 'number' ? c.amount : 0,
+            description: c.description,
+          }))
+        : undefined;
+
       await onSubmit({
         ...formData,
         endDate: formData.endDate || null,
         signedDate: formData.signedDate || null,
         parties,
+        rentComponents,
       } as CreateContractRequest);
       if (contract) {
         navigate(`/contracts/${contract.identifier}`);
@@ -487,10 +554,7 @@ export const ContractForm = ({
     }
   };
 
-  const handleChange = (
-    field: string,
-    value: string | number | boolean | undefined
-  ) => {
+  const handleChange = (field: string, value: unknown) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors((prev) => {
@@ -798,8 +862,6 @@ export const ContractForm = ({
             >
               <option value={ContractType.FIXED_TERM}>Fixed Term</option>
               <option value={ContractType.INDEFINITE}>Indefinite</option>
-              <option value={ContractType.FURNISHED}>Furnished</option>
-              <option value={ContractType.UNFURNISHED}>Unfurnished</option>
             </select>
           </div>
 
@@ -889,23 +951,33 @@ export const ContractForm = ({
           Financial Terms
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
-              Rent Amount <span className="text-error-text">*</span>
-            </label>
-            <MoneyInput
-              value={formData.rentAmount || undefined}
-              onChange={(val) => handleChange('rentAmount', val ?? '')}
-              currency={formData.rentAmountCurrency || defaultCurrency || ''}
-              disabled={isLoading}
-              error={!!errors.rentAmount || !!errors.rentAmountCurrency}
-            />
-            {(errors.rentAmount || errors.rentAmountCurrency) && (
-              <p className="text-error-text text-sm mt-1">
-                {errors.rentAmount || errors.rentAmountCurrency}
-              </p>
-            )}
-          </div>
+          <RentBreakdown
+            value={formData.rentAmount || ''}
+            onValueChange={(val) => handleChange('rentAmount', val)}
+            components={formData.rentComponents}
+            onComponentsChange={(components) =>
+              setFormData((prev) => ({ ...prev, rentComponents: components }))
+            }
+            onTotalChange={(total) =>
+              setFormData((prev) => ({ ...prev, rentAmount: total }))
+            }
+            currency={formData.rentAmountCurrency || defaultCurrency || ''}
+            disabled={isLoading}
+            error={!!errors.rentAmount || !!errors.rentAmountCurrency}
+            breakdownMode={formData.breakdownMode}
+            onBreakdownModeChange={(mode) =>
+              setFormData((prev) => ({ ...prev, breakdownMode: mode }))
+            }
+          />
+          {(errors.rentAmount ||
+            errors.rentAmountCurrency ||
+            errors.rentComponents) && (
+            <p className="text-error-text text-sm mt-1 col-span-1 lg:col-span-2">
+              {errors.rentAmount ||
+                errors.rentAmountCurrency ||
+                errors.rentComponents}
+            </p>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
@@ -944,6 +1016,23 @@ export const ContractForm = ({
               </p>
             )}
           </div>
+        </div>
+
+        {/* Renewal Configuration (inside Financial Terms) */}
+        <div className="mt-6 pt-6 border-t border-border-default">
+          <RenewalConfigForm
+            renewalMode={formData.renewalMode ?? 'NONE'}
+            renewalTermMonths={formData.renewalTermMonths}
+            maxRenewals={formData.maxRenewals}
+            landlordNoticeDays={formData.landlordNoticeDays}
+            tenantNoticeDays={formData.tenantNoticeDays}
+            requiresTenantConfirmation={formData.requiresTenantConfirmation}
+            rentAdjustmentType={formData.rentAdjustmentType ?? 'NONE'}
+            rentAdjustmentValue={formData.rentAdjustmentValue}
+            countryCode={propertyCountryCode}
+            regionCode={selectedProperty?.regionCode}
+            onChange={handleChange}
+          />
         </div>
       </div>
 
@@ -1024,49 +1113,12 @@ export const ContractForm = ({
         </div>
       </div>
 
-      {/* Renewal and Termination */}
+      {/* Termination */}
       <div>
         <h3 className="text-lg font-semibold text-text-primary mb-4">
-          Renewal and Termination
+          Termination
         </h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="autoRenewal"
-              checked={formData.autoRenewal}
-              onChange={(e) => handleChange('autoRenewal', e.target.checked)}
-              className="h-4 w-4 text-primary-500 focus:ring-primary-500 border-border-strong rounded"
-              disabled={isLoading}
-            />
-            <label
-              htmlFor="autoRenewal"
-              className="ml-2 block text-sm text-text-primary"
-            >
-              Auto-renewal
-            </label>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
-              Renewal Notice Days
-            </label>
-            <input
-              type="number"
-              min="0"
-              value={formData.renewalNoticeDays ?? ''}
-              onChange={(e) =>
-                handleChange(
-                  'renewalNoticeDays',
-                  e.target.value ? parseInt(e.target.value) : undefined
-                )
-              }
-              className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-              placeholder="30"
-              disabled={isLoading}
-            />
-          </div>
-
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
               Termination Notice Days

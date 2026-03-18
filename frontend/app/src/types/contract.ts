@@ -1,5 +1,10 @@
 import { PropertySummary } from './property';
 import { TenantSummary, CreateTenantRequest } from './tenant';
+import type {
+  RenewalMode,
+  RentAdjustmentType,
+  LandlordType,
+} from './contractExtension';
 
 // Enums — re-exported from generated
 export {
@@ -26,12 +31,18 @@ export type { EnumValue } from '../generated/models';
 export type { ValidationSchema } from '../generated/models';
 export type { CountryMetadataSchemaResponse } from '../generated/models';
 
+export {
+  RentComponentType,
+  type RentComponentType as RentComponentTypeValue,
+} from '../generated/models';
+
 // Interfaces — kept manual (generated adds to optional fields)
 
 import type { ContractResponseContractType } from '../generated/models';
 import type { ContractResponsePaymentFrequency } from '../generated/models';
 import type { ContractResponseStatus } from '../generated/models';
 import { ContractPartyResponseRole } from '../generated/models';
+import { RentComponentType } from '../generated/models';
 
 export const PARTY_ROLE_LABELS: Record<ContractPartyResponseRole, string> = {
   [ContractPartyResponseRole.PRIMARY_TENANT]: 'Primary Tenant',
@@ -39,6 +50,34 @@ export const PARTY_ROLE_LABELS: Record<ContractPartyResponseRole, string> = {
   [ContractPartyResponseRole.COSIGNER]: 'Co-signer',
   [ContractPartyResponseRole.EXTRA_TENANT]: 'Additional Tenant',
 };
+
+export const RENT_COMPONENT_LABELS: Record<RentComponentType, string> = {
+  [RentComponentType.BASE_RENT]: 'Base Rent',
+  [RentComponentType.UTILITIES_ADVANCE]: 'Utilities Advance',
+  [RentComponentType.SERVICE_COSTS]: 'Service Costs',
+  [RentComponentType.HOA_FEES]: 'HOA / Condo Fees',
+  [RentComponentType.FURNITURE_RENTAL]: 'Furniture Rental',
+  [RentComponentType.PARKING]: 'Parking',
+  [RentComponentType.STORAGE]: 'Storage',
+  [RentComponentType.GARBAGE_COLLECTION]: 'Garbage Collection',
+  [RentComponentType.OTHER]: 'Other',
+};
+
+export interface RentComponentFormItem {
+  componentType: RentComponentType;
+  amount: number | '';
+  description?: string;
+}
+
+export interface RentComponentResponseItem {
+  identifier: string;
+  componentType: RentComponentType;
+  componentTypeDisplayName: string;
+  amount: number;
+  currency: string;
+  description?: string;
+  sortOrder: number;
+}
 
 export interface ContractPartyResponse {
   identifier: string;
@@ -69,8 +108,6 @@ export interface ContractResponse {
   securityDepositCurrency?: string;
   paymentFrequency: ContractResponsePaymentFrequency;
   paymentDueDay?: number;
-  autoRenewal: boolean;
-  renewalNoticeDays?: number;
   terminationNoticeDays?: number;
   lateFeePercentage?: number;
   status: ContractResponseStatus;
@@ -78,6 +115,20 @@ export interface ContractResponse {
   notes?: string;
   countryCode?: string;
   countryMetadata?: Record<string, unknown>;
+  effectiveEndDate?: string;
+  renewalMode?: RenewalMode;
+  renewalTermMonths?: number;
+  maxRenewals?: number;
+  landlordNoticeDays?: number;
+  tenantNoticeDays?: number;
+  requiresTenantConfirmation?: boolean;
+  rentAdjustmentType?: RentAdjustmentType;
+  rentAdjustmentValue?: number;
+  landlordType?: LandlordType;
+  regionCode?: string;
+  extensionCount?: number;
+  extensionsRemaining?: number;
+  rentComponents: RentComponentResponseItem[];
   createdAt: string;
   updatedAt: string;
 }
@@ -107,13 +158,22 @@ export interface CreateContractRequest {
   securityDepositCurrency?: string;
   paymentFrequency: ContractResponsePaymentFrequency;
   paymentDueDay?: number;
-  autoRenewal?: boolean;
-  renewalNoticeDays?: number;
   terminationNoticeDays?: number;
   lateFeePercentage?: number;
   termsAndConditions?: string;
   notes?: string;
   countryMetadata?: Record<string, unknown>;
+  renewalMode?: RenewalMode;
+  renewalTermMonths?: number;
+  maxRenewals?: number;
+  landlordNoticeDays?: number;
+  tenantNoticeDays?: number;
+  requiresTenantConfirmation?: boolean;
+  rentAdjustmentType?: RentAdjustmentType;
+  rentAdjustmentValue?: number;
+  landlordType?: LandlordType;
+  regionCode?: string;
+  rentComponents?: RentComponentFormItem[];
 }
 
 export interface UpdateContractRequest {
@@ -130,13 +190,22 @@ export interface UpdateContractRequest {
   securityDepositCurrency?: string;
   paymentFrequency: ContractResponsePaymentFrequency;
   paymentDueDay?: number;
-  autoRenewal?: boolean;
-  renewalNoticeDays?: number;
   terminationNoticeDays?: number;
   lateFeePercentage?: number;
   termsAndConditions?: string;
   notes?: string;
   countryMetadata?: Record<string, unknown>;
+  renewalMode?: RenewalMode;
+  renewalTermMonths?: number;
+  maxRenewals?: number;
+  landlordNoticeDays?: number;
+  tenantNoticeDays?: number;
+  requiresTenantConfirmation?: boolean;
+  rentAdjustmentType?: RentAdjustmentType;
+  rentAdjustmentValue?: number;
+  landlordType?: LandlordType;
+  regionCode?: string;
+  rentComponents?: RentComponentFormItem[];
 }
 
 export interface RentPeriodResponse {

@@ -4,6 +4,7 @@ import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.util.SidGenerator.newContractId;
 import static com.buurman.util.SidGenerator.newContractPartyId;
+import static com.buurman.util.SidGenerator.newRentComponentId;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
@@ -64,9 +65,7 @@ public class DemoContractGenerator {
   private final Clock clock;
   private final Random random = new Random(42);
 
-  private static final String[] CONTRACT_TYPES = {
-    "FIXED_TERM", "INDEFINITE", "FURNISHED", "UNFURNISHED"
-  };
+  private static final String[] CONTRACT_TYPES = {"FIXED_TERM", "INDEFINITE"};
 
   public void generate(DemoDataContext ctx) {
     LocalDateTime now = LocalDateTime.now(clock);
@@ -170,6 +169,46 @@ public class DemoContractGenerator {
           contractType = "INDEFINITE";
         }
 
+        // Renewal mode: ~40% AUTOMATIC, ~20% MANUAL, ~40% NONE
+        String renewalMode;
+        int renewalTermMonths = 12;
+        Integer maxRenewals = null;
+        int landlordNoticeDays;
+        int tenantNoticeDays;
+        boolean requiresTenantConfirmation;
+        String rentAdjType;
+        BigDecimal rentAdjValue;
+
+        int renewalBucket = i % 5;
+        if (renewalBucket < 2) {
+          // 40% AUTOMATIC
+          renewalMode = "AUTOMATIC";
+          landlordNoticeDays = 90;
+          tenantNoticeDays = 30;
+          requiresTenantConfirmation = false;
+          rentAdjType = "FIXED_PERCENTAGE";
+          rentAdjValue =
+              BigDecimal.valueOf(2 + random.nextDouble() * 3)
+                  .setScale(4, java.math.RoundingMode.HALF_UP);
+        } else if (renewalBucket == 2) {
+          // 20% MANUAL
+          renewalMode = "MANUAL";
+          landlordNoticeDays = 90;
+          tenantNoticeDays = 30;
+          requiresTenantConfirmation = true;
+          maxRenewals = random.nextInt(2, 6);
+          rentAdjType = "MANUAL";
+          rentAdjValue = null;
+        } else {
+          // 40% NONE
+          renewalMode = "NONE";
+          landlordNoticeDays = 30;
+          tenantNoticeDays = 30;
+          requiresTenantConfirmation = false;
+          rentAdjType = "NONE";
+          rentAdjValue = null;
+        }
+
         BigDecimal rentAmount = rentAmountForCategory(propertyCategory);
         BigDecimal deposit = rentAmount.multiply(depositMultiplierForCategory(propertyCategory));
         String paymentFrequency = paymentFrequencyForCategory(propertyCategory);
@@ -203,8 +242,14 @@ public class DemoContractGenerator {
             .set(CONTRACTS.SECURITY_DEPOSIT_CURRENCY, currency)
             .set(CONTRACTS.PAYMENT_FREQUENCY, paymentFrequency)
             .set(CONTRACTS.PAYMENT_DUE_DAY, 1)
-            .set(CONTRACTS.AUTO_RENEWAL, "INDEFINITE".equals(contractType))
-            .set(CONTRACTS.RENEWAL_NOTICE_DAYS, 30)
+            .set(field("renewal_mode", String.class), renewalMode)
+            .set(field("renewal_term_months", Integer.class), renewalTermMonths)
+            .set(field("max_renewals", Integer.class), maxRenewals)
+            .set(field("landlord_notice_days", Integer.class), landlordNoticeDays)
+            .set(field("tenant_notice_days", Integer.class), tenantNoticeDays)
+            .set(field("requires_tenant_confirmation", Boolean.class), requiresTenantConfirmation)
+            .set(field("rent_adjustment_type", String.class), rentAdjType)
+            .set(field("rent_adjustment_value", BigDecimal.class), rentAdjValue)
             .set(CONTRACTS.TERMINATION_NOTICE_DAYS, terminationNoticeDays)
             .set(CONTRACTS.LATE_FEE_PERCENTAGE, BigDecimal.valueOf(2))
             .set(CONTRACTS.STATUS, status)
@@ -234,6 +279,12 @@ public class DemoContractGenerator {
             .set(field("created_by", UUID.class), createdBy)
             .set(field("updated_by", UUID.class), createdBy)
             .execute();
+
+        // Insert rent components (~70% of contracts get a breakdown)
+        if (i % 3 != 2) {
+          insertRentComponents(
+              contractId, teamId, createdBy, rentAmount, currency, propertyCategory, now);
+        }
 
         contractIds.add(contractId);
         ctx.putIdentifier(contractId, contractIdentifier);
@@ -307,8 +358,11 @@ public class DemoContractGenerator {
             .set(CONTRACTS.SECURITY_DEPOSIT_CURRENCY, currency)
             .set(CONTRACTS.PAYMENT_FREQUENCY, paymentFrequencyForCategory(historicalCategory))
             .set(CONTRACTS.PAYMENT_DUE_DAY, 1)
-            .set(CONTRACTS.AUTO_RENEWAL, false)
-            .set(CONTRACTS.RENEWAL_NOTICE_DAYS, 30)
+            .set(field("renewal_mode", String.class), "NONE")
+            .set(field("landlord_notice_days", Integer.class), 30)
+            .set(field("tenant_notice_days", Integer.class), 30)
+            .set(field("requires_tenant_confirmation", Boolean.class), false)
+            .set(field("rent_adjustment_type", String.class), "NONE")
             .set(
                 CONTRACTS.TERMINATION_NOTICE_DAYS, terminationNoticeForCategory(historicalCategory))
             .set(CONTRACTS.LATE_FEE_PERCENTAGE, BigDecimal.valueOf(2))
@@ -388,6 +442,88 @@ public class DemoContractGenerator {
       case "AGRICULTURAL" -> random.nextInt(12, 60); // 1-5 years
       default -> random.nextInt(6, 24); // residential
     };
+  }
+
+  @SuppressWarnings("NullAway")
+  private void insertRentComponents(
+      UUID contractId,
+      UUID teamId,
+      @org.jspecify.annotations.Nullable UUID createdBy,
+      BigDecimal rentAmount,
+      String currency,
+      String propertyCategory,
+      LocalDateTime now) {
+    // BASE_RENT: ~70% of total
+    BigDecimal baseRent =
+        rentAmount.multiply(BigDecimal.valueOf(0.70)).setScale(2, java.math.RoundingMode.HALF_UP);
+    // UTILITIES_ADVANCE: ~15%
+    BigDecimal utilities =
+        rentAmount.multiply(BigDecimal.valueOf(0.15)).setScale(2, java.math.RoundingMode.HALF_UP);
+    // SERVICE_COSTS: remainder
+    BigDecimal serviceCosts = rentAmount.subtract(baseRent).subtract(utilities);
+
+    int sortOrder = 0;
+    insertComponent(
+        contractId, teamId, createdBy, "BASE_RENT", baseRent, currency, null, sortOrder++, now);
+    insertComponent(
+        contractId,
+        teamId,
+        createdBy,
+        "UTILITIES_ADVANCE",
+        utilities,
+        currency,
+        null,
+        sortOrder++,
+        now);
+    insertComponent(
+        contractId,
+        teamId,
+        createdBy,
+        "SERVICE_COSTS",
+        serviceCosts,
+        currency,
+        null,
+        sortOrder++,
+        now);
+
+    // Add PARKING for commercial/industrial (~10% chance for residential)
+    if ("COMMERCIAL".equals(propertyCategory)
+        || "INDUSTRIAL".equals(propertyCategory)
+        || random.nextInt(10) == 0) {
+      BigDecimal parking = BigDecimal.valueOf(random.nextInt(50, 200));
+      insertComponent(
+          contractId, teamId, createdBy, "PARKING", parking, currency, null, sortOrder++, now);
+    }
+  }
+
+  @SuppressWarnings("NullAway")
+  private void insertComponent(
+      UUID contractId,
+      UUID teamId,
+      UUID createdBy,
+      String componentType,
+      BigDecimal amountMajor,
+      String currency,
+      @org.jspecify.annotations.Nullable String description,
+      int sortOrder,
+      LocalDateTime now) {
+    int digits = com.buurman.util.CurrencyUtils.getFractionalDigits(currency);
+    long minorUnits = amountMajor.movePointRight(digits).longValueExact();
+    dsl.insertInto(table("contract_rent_components"))
+        .set(field("id", UUID.class), UUID.randomUUID())
+        .set(field("identifier", String.class), newRentComponentId().value())
+        .set(field("team_id", UUID.class), teamId)
+        .set(field("contract_id", UUID.class), contractId)
+        .set(field("component_type", String.class), componentType)
+        .set(field("amount", Long.class), minorUnits)
+        .set(field("currency", String.class), currency)
+        .set(field("description", String.class), description)
+        .set(field("sort_order", Integer.class), sortOrder)
+        .set(field("created_at", LocalDateTime.class), now)
+        .set(field("updated_at", LocalDateTime.class), now)
+        .set(field("created_by", UUID.class), createdBy)
+        .set(field("updated_by", UUID.class), createdBy)
+        .execute();
   }
 
   private int terminationNoticeForCategory(String category) {

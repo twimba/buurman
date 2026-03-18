@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.Contract.ContractStatus;
+import com.buurman.domain.ContractExtension;
 import com.buurman.domain.Expense;
 import com.buurman.domain.FinancingPayment;
 import com.buurman.domain.Payment;
@@ -44,6 +45,7 @@ import com.buurman.dto.response.PropertyDashboardResponse.MonthlyDataPoint;
 import com.buurman.dto.response.PropertyDashboardResponse.OccupancyChartData;
 import com.buurman.dto.response.PropertyDashboardResponse.OccupancyDataPoint;
 import com.buurman.dto.response.PropertyDashboardResponse.SummaryMetrics;
+import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.ExpenseRepository;
 import com.buurman.repository.FinancingPaymentRepository;
@@ -67,6 +69,7 @@ public class PropertyDashboardService {
   private final Clock clock;
   private final PropertyRepository propertyRepository;
   private final ContractRepository contractRepository;
+  private final ContractExtensionRepository contractExtensionRepository;
   private final PaymentRepository paymentRepository;
   private final ExpenseRepository expenseRepository;
   private final FinancingPaymentRepository financingPaymentRepository;
@@ -111,6 +114,9 @@ public class PropertyDashboardService {
     List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
     List<PropertyOccupancyPeriod> occupancyPeriods =
         occupancyPeriodRepository.findByPropertyIdAndTeamId(property.getId(), teamId);
+
+    // Batch-load extensions for effective end date computation
+    Map<UUID, Optional<LocalDate>> effectiveEndDates = buildEffectiveEndDateMap(contracts, teamId);
 
     String currency = financialData.purchasePriceCurrency().orElse(null);
     LocalDate now = LocalDate.now(clock);
@@ -166,7 +172,8 @@ public class PropertyDashboardService {
           unfilteredExpenses,
           unfilteredFinancingPayments,
           startDate,
-          now);
+          now,
+          effectiveEndDates);
     } else {
       startDate = now.minusMonths(months);
     }
@@ -204,7 +211,8 @@ public class PropertyDashboardService {
         allExpenses,
         allFinancingPayments,
         startDate,
-        now);
+        now,
+        effectiveEndDates);
   }
 
   private FinancialData loadFinancialData(UUID propertyId, UUID teamId) {
@@ -258,12 +266,14 @@ public class PropertyDashboardService {
       List<Expense> expenses,
       List<FinancingPayment> financingPayments,
       LocalDate startDate,
-      LocalDate now) {
+      LocalDate now,
+      Map<UUID, Optional<LocalDate>> effectiveEndDates) {
 
     int effectiveMonths = (int) MONTHS.between(YearMonth.from(startDate), YearMonth.from(now)) + 1;
 
     SummaryMetrics summary =
-        buildSummaryMetrics(financialData, contracts, payments, expenses, effectiveMonths);
+        buildSummaryMetrics(
+            financialData, contracts, payments, expenses, effectiveMonths, effectiveEndDates);
     CashFlowChartData cashFlow =
         buildCashFlowChart(
             payments, expenses, financingPayments, financialData, now, effectiveMonths);
@@ -271,10 +281,11 @@ public class PropertyDashboardService {
     ExpenseBreakdownChartData expenseBreakdown =
         buildExpenseBreakdown(expenses, financingPayments, financialData, now, effectiveMonths);
     OccupancyChartData occupancy =
-        buildOccupancyChart(contracts, occupancyPeriods, now, effectiveMonths);
+        buildOccupancyChart(contracts, occupancyPeriods, now, effectiveMonths, effectiveEndDates);
     DataCompleteness completeness =
         buildDataCompleteness(financialData, contracts, property.getId(), property.getTeamId());
-    FutureTrendData futureTrend = buildFutureTrend(financialData, contracts, now);
+    FutureTrendData futureTrend =
+        buildFutureTrend(financialData, contracts, now, effectiveEndDates);
 
     return new PropertyDashboardResponse(
         summary, cashFlow, equity, expenseBreakdown, occupancy, completeness, futureTrend);
@@ -285,7 +296,8 @@ public class PropertyDashboardService {
       List<Contract> contracts,
       List<Payment> payments,
       List<Expense> expenses,
-      int months) {
+      int months,
+      Map<UUID, Optional<LocalDate>> effectiveEndDates) {
 
     BigDecimal purchasePrice = fd.purchasePrice().orElse(null);
     BigDecimal marketValue = fd.marketValue().orElse(null);
@@ -385,7 +397,8 @@ public class PropertyDashboardService {
 
     // Occupancy Rate over the selected period
     BigDecimal occupancyRatePercent =
-        calculateOccupancyRate(contracts, LocalDate.now(clock), months).orElse(null);
+        calculateOccupancyRate(contracts, LocalDate.now(clock), months, effectiveEndDates)
+            .orElse(null);
 
     // Gross Rent Multiplier = market value / annual gross rent
     BigDecimal grossRentMultiplier = null;
@@ -548,7 +561,8 @@ public class PropertyDashboardService {
       List<Contract> contracts,
       List<PropertyOccupancyPeriod> occupancyPeriods,
       LocalDate now,
-      int months) {
+      int months,
+      Map<UUID, Optional<LocalDate>> effectiveEndDates) {
     // Include ACTIVE, EXPIRED, and TERMINATED — all represent periods of actual occupancy.
     // DRAFT and PENDING_SIGNATURE are excluded since the tenant hasn't moved in yet.
     List<Contract> occupiedContracts =
@@ -573,7 +587,11 @@ public class PropertyDashboardService {
           continue;
         }
         LocalDate cStart = c.getStartDate().isBefore(monthStart) ? monthStart : c.getStartDate();
-        LocalDate cEnd = c.getEndDate().filter(d -> !d.isAfter(monthEnd)).orElse(monthEnd);
+        LocalDate cEnd =
+            effectiveEndDates
+                .getOrDefault(c.getId(), c.getEndDate())
+                .filter(d -> !d.isAfter(monthEnd))
+                .orElse(monthEnd);
         if (!cStart.isAfter(cEnd)) {
           tenantDays += DAYS.between(cStart, cEnd) + 1;
         }
@@ -606,7 +624,10 @@ public class PropertyDashboardService {
   }
 
   private FutureTrendData buildFutureTrend(
-      FinancialData fd, List<Contract> contracts, LocalDate now) {
+      FinancialData fd,
+      List<Contract> contracts,
+      LocalDate now,
+      Map<UUID, Optional<LocalDate>> effectiveEndDates) {
     List<FutureMonthDataPoint> points = new ArrayList<>();
 
     Map<Integer, BigDecimal> operatingCosts = fd.operatingCostsByMonth();
@@ -622,11 +643,13 @@ public class PropertyDashboardService {
       BigDecimal expectedIncome =
           contracts.stream()
               .filter(
-                  c ->
-                      c.getStatus() == ContractStatus.ACTIVE
-                          && !c.getStartDate().isAfter(monthEnd)
-                          && (c.getEndDate().isEmpty()
-                              || !c.getEndDate().get().isBefore(monthStart)))
+                  c -> {
+                    Optional<LocalDate> effEnd =
+                        effectiveEndDates.getOrDefault(c.getId(), c.getEndDate());
+                    return c.getStatus() == ContractStatus.ACTIVE
+                        && !c.getStartDate().isAfter(monthEnd)
+                        && (effEnd.isEmpty() || !effEnd.get().isBefore(monthStart));
+                  })
               .map(c -> c.getRentAmount() != null ? c.getRentAmount().value() : ZERO)
               .reduce(ZERO, BigDecimal::add);
 
@@ -690,7 +713,10 @@ public class PropertyDashboardService {
   }
 
   private Optional<BigDecimal> calculateOccupancyRate(
-      List<Contract> contracts, LocalDate now, int months) {
+      List<Contract> contracts,
+      LocalDate now,
+      int months,
+      Map<UUID, Optional<LocalDate>> effectiveEndDates) {
     LocalDate start = now.minusMonths(months);
     long totalDays = DAYS.between(start, now);
     if (totalDays <= 0) {
@@ -709,7 +735,11 @@ public class PropertyDashboardService {
       }
 
       LocalDate cStart = c.getStartDate().isBefore(start) ? start : c.getStartDate();
-      LocalDate cEnd = c.getEndDate().filter(d -> !d.isAfter(now)).orElse(now);
+      LocalDate cEnd =
+          effectiveEndDates
+              .getOrDefault(c.getId(), c.getEndDate())
+              .filter(d -> !d.isAfter(now))
+              .orElse(now);
       if (!cStart.isAfter(cEnd)) {
         occupiedDays += DAYS.between(cStart, cEnd) + 1;
       }
@@ -740,5 +770,25 @@ public class PropertyDashboardService {
       return Optional.empty();
     }
     return Optional.of(to.subtract(from).multiply(ONE_HUNDRED).divide(from, SCALE, HALF_UP));
+  }
+
+  /**
+   * Batch-loads contract extensions and computes effective end dates for all given contracts.
+   * Returns a map of contract ID to effective end date (which may be empty for indefinite
+   * contracts).
+   */
+  private Map<UUID, Optional<LocalDate>> buildEffectiveEndDateMap(
+      List<Contract> contracts, UUID teamId) {
+    List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
+    List<ContractExtension> allExtensions =
+        contractExtensionRepository.findByContractIdsAndTeamId(contractIds, teamId);
+    Map<UUID, List<ContractExtension>> extensionsByContract =
+        allExtensions.stream().collect(Collectors.groupingBy(ContractExtension::getContractId));
+    Map<UUID, Optional<LocalDate>> result = new java.util.HashMap<>();
+    for (Contract c : contracts) {
+      List<ContractExtension> exts = extensionsByContract.getOrDefault(c.getId(), List.of());
+      result.put(c.getId(), EffectiveEndDateHelper.computeEffectiveEndDate(c.getEndDate(), exts));
+    }
+    return result;
   }
 }

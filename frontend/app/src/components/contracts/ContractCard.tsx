@@ -71,7 +71,9 @@ export const ContractCard = ({ contract }: ContractCardProps) => {
             <div className="min-w-0">
               <p className="text-xs text-text-secondary">End</p>
               <p className="text-sm font-medium text-text-primary">
-                {contract.endDate ? formatDate(contract.endDate) : 'Open-ended'}
+                {contract.effectiveEndDate || contract.endDate
+                  ? formatDate(contract.effectiveEndDate || contract.endDate!)
+                  : 'Open-ended'}
               </p>
             </div>
           </div>

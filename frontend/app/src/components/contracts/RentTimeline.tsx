@@ -65,7 +65,7 @@ export const RentTimeline = ({
   };
 
   const canAdjustRent = canEditData && contractStatus === ContractStatus.ACTIVE;
-  const hasHistory = periods.length > 1;
+  const hasHistory = periods.length >= 1;
 
   return (
     <>

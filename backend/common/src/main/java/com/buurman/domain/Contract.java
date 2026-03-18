@@ -23,9 +23,7 @@ public class Contract {
 
   public enum ContractType {
     FIXED_TERM,
-    INDEFINITE,
-    FURNISHED,
-    UNFURNISHED
+    INDEFINITE
   }
 
   public enum PaymentFrequency {
@@ -42,6 +40,17 @@ public class Contract {
     PENDING_SIGNATURE
   }
 
+  public enum RenewalMode {
+    NONE,
+    AUTOMATIC,
+    MANUAL
+  }
+
+  public enum LandlordType {
+    NATURAL_PERSON,
+    LEGAL_ENTITY
+  }
+
   private UUID id;
   @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private UUID teamId;
@@ -55,8 +64,6 @@ public class Contract {
   @Builder.Default private Optional<MoneyAmount> securityDeposit = Optional.empty();
   private PaymentFrequency paymentFrequency;
   @Builder.Default private Optional<Integer> paymentDueDay = Optional.empty();
-  @Builder.Default private Boolean autoRenewal = false;
-  @Builder.Default private Integer renewalNoticeDays = 30;
   @Builder.Default private Integer terminationNoticeDays = 30;
   @Builder.Default private Optional<BigDecimal> lateFeePercentage = Optional.empty();
   private ContractStatus status;
@@ -64,6 +71,20 @@ public class Contract {
   @Builder.Default private Optional<String> notes = Optional.empty();
   @Builder.Default private Optional<String> countryCode = Optional.empty();
   @Builder.Default private Optional<ContractCountryMetadata> countryMetadata = Optional.empty();
+  @Builder.Default private RenewalMode renewalMode = RenewalMode.NONE;
+  @Builder.Default private Optional<Integer> renewalTermMonths = Optional.empty();
+  @Builder.Default private Optional<Integer> maxRenewals = Optional.empty();
+  @Builder.Default private Integer landlordNoticeDays = 30;
+  @Builder.Default private Integer tenantNoticeDays = 30;
+  @Builder.Default private Boolean requiresTenantConfirmation = false;
+
+  @Builder.Default
+  private ContractExtension.RentAdjustmentType rentAdjustmentType =
+      ContractExtension.RentAdjustmentType.NONE;
+
+  @Builder.Default private Optional<BigDecimal> rentAdjustmentValue = Optional.empty();
+  @Builder.Default private Optional<LandlordType> landlordType = Optional.empty();
+  @Builder.Default private Optional<String> regionCode = Optional.empty();
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;

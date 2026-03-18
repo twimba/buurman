@@ -42,9 +42,6 @@ public class ContractRecordMapper {
         MoneyAmount.ofNullable(record.getSecurityDeposit(), record.getSecurityDepositCurrency()));
     contract.setPaymentFrequency(Contract.PaymentFrequency.valueOf(record.getPaymentFrequency()));
     contract.setPaymentDueDay(Optional.ofNullable(record.getPaymentDueDay()));
-    contract.setAutoRenewal(record.getAutoRenewal() != null ? record.getAutoRenewal() : false);
-    contract.setRenewalNoticeDays(
-        record.getRenewalNoticeDays() != null ? record.getRenewalNoticeDays() : 30);
     contract.setTerminationNoticeDays(
         record.getTerminationNoticeDays() != null ? record.getTerminationNoticeDays() : 30);
     contract.setLateFeePercentage(Optional.ofNullable(record.getLateFeePercentage()));
@@ -56,6 +53,21 @@ public class ContractRecordMapper {
     contract.setCreatedBy(record.getCreatedBy());
     contract.setUpdatedBy(record.getUpdatedBy());
     contract.setDeletedAt(Optional.ofNullable(record.getDeletedAt()).map(dt -> dt.toInstant(UTC)));
+
+    // Renewal configuration columns (added in V034)
+    contract.setRenewalMode(Contract.RenewalMode.valueOf(record.getRenewalMode()));
+    contract.setRenewalTermMonths(Optional.ofNullable(record.getRenewalTermMonths()));
+    contract.setMaxRenewals(Optional.ofNullable(record.getMaxRenewals()));
+    contract.setLandlordNoticeDays(record.getLandlordNoticeDays());
+    contract.setTenantNoticeDays(record.getTenantNoticeDays());
+    contract.setRequiresTenantConfirmation(record.getRequiresTenantConfirmation());
+    contract.setRentAdjustmentType(
+        com.buurman.domain.ContractExtension.RentAdjustmentType.valueOf(
+            record.getRentAdjustmentType()));
+    contract.setRentAdjustmentValue(Optional.ofNullable(record.getRentAdjustmentValue()));
+    contract.setLandlordType(
+        Optional.ofNullable(record.getLandlordType()).map(Contract.LandlordType::valueOf));
+    contract.setRegionCode(Optional.ofNullable(record.getRegionCode()));
 
     // country_code and country_metadata columns (added in V012)
     String countryCode = record.get(org.jooq.impl.DSL.field("country_code", String.class));

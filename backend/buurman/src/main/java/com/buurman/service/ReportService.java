@@ -10,6 +10,7 @@ import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.reducing;
 import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 import java.math.BigDecimal;
 import java.time.Clock;
@@ -30,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Contract;
+import com.buurman.domain.ContractExtension;
 import com.buurman.domain.Expense;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
@@ -43,6 +45,7 @@ import com.buurman.dto.response.PropertyComparisonResponse;
 import com.buurman.dto.response.PropertyFinancialSummary;
 import com.buurman.dto.response.TaxSummaryResponse;
 import com.buurman.mapper.PropertyMapper;
+import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.ExpenseRepository;
 import com.buurman.repository.PaymentRepository;
@@ -61,6 +64,7 @@ public class ReportService {
   private final ExpenseRepository expenseRepository;
   private final PropertyRepository propertyRepository;
   private final ContractRepository contractRepository;
+  private final ContractExtensionRepository contractExtensionRepository;
   private final PropertyMapper propertyMapper;
   private final TeamService teamService;
 
@@ -173,6 +177,10 @@ public class ReportService {
             .filter(c -> c.getPropertyId() != null)
             .collect(groupingBy(Contract::getPropertyId));
 
+    // Batch-load extensions for effective end date computation
+    Map<UUID, Optional<LocalDate>> effectiveEndDates =
+        buildEffectiveEndDateMap(contractsById.values(), teamId);
+
     List<PropertyFinancialSummary> incomeByPropertyList =
         allPropertyIds.stream()
             .flatMap(
@@ -189,7 +197,8 @@ public class ReportService {
                                   calculateOccupancyDays(
                                       contractsByProperty.getOrDefault(propId, List.of()),
                                       startDate,
-                                      endDate));
+                                      endDate,
+                                      effectiveEndDates));
                             })
                         .stream())
             .toList();
@@ -212,7 +221,8 @@ public class ReportService {
                                   calculateOccupancyDays(
                                       contractsByProperty.getOrDefault(propId, List.of()),
                                       startDate,
-                                      endDate));
+                                      endDate,
+                                      effectiveEndDates));
                             })
                         .stream())
             .toList();
@@ -473,6 +483,10 @@ public class ReportService {
             .filter(c -> c.getStatus() == ACTIVE)
             .toList();
 
+    // Batch-load extensions for effective end date computation
+    Map<UUID, Optional<LocalDate>> effectiveEndDates =
+        buildEffectiveEndDateMap(allActiveContracts, teamId);
+
     List<OccupancyTrendResponse.DataPoint> dataPoints = new ArrayList<>();
 
     for (int i = 0; i < months; i++) {
@@ -486,7 +500,10 @@ public class ReportService {
               .filter(
                   c -> {
                     LocalDate contractStart = c.getStartDate();
-                    LocalDate contractEnd = c.getEndDate().orElse(LocalDate.MAX);
+                    LocalDate contractEnd =
+                        effectiveEndDates
+                            .getOrDefault(c.getId(), c.getEndDate())
+                            .orElse(LocalDate.MAX);
                     return !contractStart.isAfter(monthEnd) && !contractEnd.isBefore(monthStart);
                   })
               .count();
@@ -516,6 +533,10 @@ public class ReportService {
             .filter(c -> c.getStatus() == ACTIVE)
             .toList();
 
+    // Batch-load extensions for effective end date computation
+    Map<UUID, Optional<LocalDate>> effectiveEndDates =
+        buildEffectiveEndDateMap(allActiveContracts, teamId);
+
     List<OccupancyTrendResponse.DataPoint> dataPoints = new ArrayList<>();
     YearMonth start = YearMonth.from(startDate.withDayOfMonth(1));
     YearMonth end = YearMonth.from(endDate);
@@ -529,7 +550,10 @@ public class ReportService {
               .filter(
                   c -> {
                     LocalDate contractStart = c.getStartDate();
-                    LocalDate contractEnd = c.getEndDate().orElse(LocalDate.MAX);
+                    LocalDate contractEnd =
+                        effectiveEndDates
+                            .getOrDefault(c.getId(), c.getEndDate())
+                            .orElse(LocalDate.MAX);
                     return !contractStart.isAfter(monthEnd) && !contractEnd.isBefore(monthStart);
                   })
               .count();
@@ -616,6 +640,10 @@ public class ReportService {
             .filter(c -> c.getPropertyId() != null)
             .collect(groupingBy(Contract::getPropertyId));
 
+    // Batch-load extensions for effective end date computation
+    Map<UUID, Optional<LocalDate>> effectiveEndDatesTax =
+        buildEffectiveEndDateMap(contractsById.values(), teamId);
+
     List<PropertyFinancialSummary> properties =
         allPropertyIds.stream()
             .flatMap(
@@ -634,7 +662,8 @@ public class ReportService {
                                   calculateOccupancyDays(
                                       contractsByProperty.getOrDefault(propId, List.of()),
                                       startDate,
-                                      endDate));
+                                      endDate,
+                                      effectiveEndDatesTax));
                             })
                         .stream())
             .toList();
@@ -667,6 +696,26 @@ public class ReportService {
   }
 
   // Helper methods
+
+  /**
+   * Batch-loads contract extensions and computes effective end dates for all given contracts.
+   * Returns a map of contract ID to effective end date (which may be empty for indefinite
+   * contracts).
+   */
+  private Map<UUID, Optional<LocalDate>> buildEffectiveEndDateMap(
+      java.util.Collection<Contract> contracts, UUID teamId) {
+    Set<UUID> contractIds = contracts.stream().map(Contract::getId).collect(toSet());
+    List<ContractExtension> allExtensions =
+        contractExtensionRepository.findByContractIdsAndTeamId(contractIds, teamId);
+    Map<UUID, List<ContractExtension>> extensionsByContract =
+        allExtensions.stream().collect(groupingBy(ContractExtension::getContractId));
+    Map<UUID, Optional<LocalDate>> result = new java.util.HashMap<>();
+    for (Contract c : contracts) {
+      List<ContractExtension> exts = extensionsByContract.getOrDefault(c.getId(), List.of());
+      result.put(c.getId(), EffectiveEndDateHelper.computeEffectiveEndDate(c.getEndDate(), exts));
+    }
+    return result;
+  }
 
   private Optional<UUID> getPropertyIdFromContract(
       UUID contractId, Map<UUID, Contract> contractsById) {
@@ -726,7 +775,10 @@ public class ReportService {
   }
 
   private int calculateOccupancyDays(
-      List<Contract> contracts, LocalDate startDate, LocalDate endDate) {
+      List<Contract> contracts,
+      LocalDate startDate,
+      LocalDate endDate,
+      Map<UUID, Optional<LocalDate>> effectiveEndDates) {
     long totalDays = 0;
     for (Contract contract : contracts) {
       if (contract.getStatus() != ACTIVE) {
@@ -734,7 +786,10 @@ public class ReportService {
       }
 
       LocalDate contractStart = contract.getStartDate();
-      LocalDate contractEnd = contract.getEndDate().orElse(LocalDate.MAX);
+      LocalDate contractEnd =
+          effectiveEndDates
+              .getOrDefault(contract.getId(), contract.getEndDate())
+              .orElse(LocalDate.MAX);
 
       // Calculate overlap
       LocalDate overlapStart = contractStart.isBefore(startDate) ? startDate : contractStart;

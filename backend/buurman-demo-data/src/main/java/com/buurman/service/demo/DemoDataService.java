@@ -70,6 +70,7 @@ public class DemoDataService {
   private final DemoPropertyGenerator propertyGenerator;
   private final DemoTenantGenerator tenantGenerator;
   private final DemoContractGenerator contractGenerator;
+  private final ContractExtensionDemoDataGenerator contractExtensionGenerator;
   private final DemoPaymentGenerator paymentGenerator;
   private final DemoExpenseGenerator expenseGenerator;
   private final DemoPaymentInstructionGenerator paymentInstructionGenerator;
@@ -150,6 +151,7 @@ public class DemoDataService {
     financingPaymentGenerator.generate(ctx);
     tenantGenerator.generate(ctx);
     contractGenerator.generate(ctx);
+    contractExtensionGenerator.generate(ctx);
     paymentInstructionGenerator.generate(ctx);
     paymentGenerator.generate(ctx);
     expenseGenerator.generate(ctx);
@@ -261,6 +263,13 @@ public class DemoDataService {
     // 8. Expenses (FK -> properties)
     deleted = dsl.deleteFrom(EXPENSES).where(EXPENSES.TEAM_ID.in(demoTeamIds)).execute();
     log.debug("Deleted {} expenses", deleted);
+
+    // 9a0. Contract extensions (FK -> contracts)
+    deleted =
+        dsl.deleteFrom(DSL.table("contract_extensions"))
+            .where(DSL.field("team_id", java.util.UUID.class).in(demoTeamIds))
+            .execute();
+    log.debug("Deleted {} contract extensions", deleted);
 
     // 9a. Contract rent periods (FK -> contracts)
     deleted =

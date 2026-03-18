@@ -12,11 +12,13 @@ import static com.buurman.domain.NotificationType.CONTRACT_STATUS_CHANGED;
 import static com.buurman.domain.Property.PropertyStatus.OCCUPIED;
 import static com.buurman.domain.Property.PropertyStatus.VACANT;
 import static com.buurman.util.SidGenerator.newContractId;
+import static com.buurman.util.SidGenerator.newRentComponentId;
 
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,10 +34,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
 import com.buurman.domain.Contract;
+import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
+import com.buurman.domain.ContractRentComponent;
 import com.buurman.domain.Document;
 import com.buurman.domain.Property;
+import com.buurman.domain.RentComponentType;
 import com.buurman.domain.Tenant;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
@@ -48,6 +53,7 @@ import com.buurman.dto.request.ChangeContractStatusRequest;
 import com.buurman.dto.request.CreateContractRequest;
 import com.buurman.dto.request.GeneratePaymentsRequest;
 import com.buurman.dto.request.PageRequest;
+import com.buurman.dto.request.RentComponentRequest;
 import com.buurman.dto.request.UpdateContractRequest;
 import com.buurman.dto.response.ContractPartyResponse;
 import com.buurman.dto.response.ContractResponse;
@@ -55,11 +61,15 @@ import com.buurman.dto.response.DocumentResponse;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.PropertySummary;
 import com.buurman.dto.response.RecentActivityResponse;
+import com.buurman.dto.response.RentComponentResponse;
 import com.buurman.dto.response.TenantSummary;
 import com.buurman.exception.BadRequestException;
 import com.buurman.mapper.ContractMapper;
+import com.buurman.mapper.ContractRentComponentMapper;
 import com.buurman.mapper.PropertyMapper;
 import com.buurman.mapper.TenantMapper;
+import com.buurman.repository.ContractExtensionRepository;
+import com.buurman.repository.ContractRentComponentRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PropertyRepository;
@@ -78,6 +88,10 @@ import lombok.extern.slf4j.Slf4j;
 public class ContractService {
 
   private final ContractRepository contractRepository;
+  private final ContractExtensionRepository extensionRepository;
+  private final ContractExtensionService contractExtensionService;
+  private final ContractRentComponentRepository rentComponentRepository;
+  private final ContractRentComponentMapper rentComponentMapper;
   private final PropertyRepository propertyRepository;
   private final TenantRepository tenantRepository;
   private final DocumentRepository documentRepository;
@@ -168,6 +182,17 @@ public class ContractService {
         .getSecurityDeposit()
         .ifPresent(d -> currencyEnforcement.validateCurrency(d.currency(), teamId));
 
+    // Override rent amount if components provided
+    request
+        .rentComponents()
+        .filter(list -> !list.isEmpty())
+        .ifPresent(
+            components -> {
+              validateRentComponents(components);
+              contract.setRentAmount(
+                  computeRentFromComponents(components, contract.getRentAmount().currency()));
+            });
+
     Contract savedContract = contractRepository.save(contract);
 
     // Create parties
@@ -176,6 +201,12 @@ public class ContractService {
 
     // Create initial rent period
     contractRentPeriodService.createInitialRentPeriod(savedContract, principal);
+
+    // Save rent components
+    request
+        .rentComponents()
+        .filter(list -> !list.isEmpty())
+        .ifPresent(components -> saveRentComponents(savedContract, components, principal));
 
     metricsService.incrementCounter("contract.total");
     metricsService.recordHistogram(
@@ -300,34 +331,43 @@ public class ContractService {
 
     // Store old values for audit
     Contract oldContract =
-        new Contract(
-            contract.getId(),
-            contract.getIdentifier(),
-            contract.getTeamId(),
-            contract.getPropertyId(),
-            contract.getContractType(),
-            contract.getStartDate(),
-            contract.getEndDate(),
-            contract.getSignedDate(),
-            contract.getRentAmount(),
-            contract.getDepositAmount(),
-            contract.getSecurityDeposit(),
-            contract.getPaymentFrequency(),
-            contract.getPaymentDueDay(),
-            contract.getAutoRenewal(),
-            contract.getRenewalNoticeDays(),
-            contract.getTerminationNoticeDays(),
-            contract.getLateFeePercentage(),
-            contract.getStatus(),
-            contract.getTermsAndConditions(),
-            contract.getNotes(),
-            contract.getCountryCode(),
-            contract.getCountryMetadata(),
-            contract.getCreatedAt(),
-            contract.getUpdatedAt(),
-            contract.getCreatedBy(),
-            contract.getUpdatedBy(),
-            contract.getDeletedAt());
+        Contract.builder()
+            .id(contract.getId())
+            .identifier(contract.getIdentifier())
+            .teamId(contract.getTeamId())
+            .propertyId(contract.getPropertyId())
+            .contractType(contract.getContractType())
+            .startDate(contract.getStartDate())
+            .endDate(contract.getEndDate())
+            .signedDate(contract.getSignedDate())
+            .rentAmount(contract.getRentAmount())
+            .depositAmount(contract.getDepositAmount())
+            .securityDeposit(contract.getSecurityDeposit())
+            .paymentFrequency(contract.getPaymentFrequency())
+            .paymentDueDay(contract.getPaymentDueDay())
+            .terminationNoticeDays(contract.getTerminationNoticeDays())
+            .lateFeePercentage(contract.getLateFeePercentage())
+            .status(contract.getStatus())
+            .termsAndConditions(contract.getTermsAndConditions())
+            .notes(contract.getNotes())
+            .countryCode(contract.getCountryCode())
+            .countryMetadata(contract.getCountryMetadata())
+            .renewalMode(contract.getRenewalMode())
+            .renewalTermMonths(contract.getRenewalTermMonths())
+            .maxRenewals(contract.getMaxRenewals())
+            .landlordNoticeDays(contract.getLandlordNoticeDays())
+            .tenantNoticeDays(contract.getTenantNoticeDays())
+            .requiresTenantConfirmation(contract.getRequiresTenantConfirmation())
+            .rentAdjustmentType(contract.getRentAdjustmentType())
+            .rentAdjustmentValue(contract.getRentAdjustmentValue())
+            .landlordType(contract.getLandlordType())
+            .regionCode(contract.getRegionCode())
+            .createdAt(contract.getCreatedAt())
+            .updatedAt(contract.getUpdatedAt())
+            .createdBy(contract.getCreatedBy())
+            .updatedBy(contract.getUpdatedBy())
+            .deletedAt(contract.getDeletedAt())
+            .build();
 
     // Update fields
     contractMapper.updateEntity(contract, request);
@@ -377,6 +417,17 @@ public class ContractService {
         .getSecurityDeposit()
         .ifPresent(d -> currencyEnforcement.validateCurrency(d.currency(), teamId));
 
+    // Override rent amount if components provided
+    request
+        .rentComponents()
+        .filter(list -> !list.isEmpty())
+        .ifPresent(
+            components -> {
+              validateRentComponents(components);
+              contract.setRentAmount(
+                  computeRentFromComponents(components, contract.getRentAmount().currency()));
+            });
+
     Contract updatedContract = contractRepository.save(contract);
 
     // Update initial rent period if rent or start date changed on DRAFT
@@ -384,6 +435,19 @@ public class ContractService {
         || !oldContract.getStartDate().equals(updatedContract.getStartDate())) {
       contractRentPeriodService.updateInitialRentPeriod(updatedContract, principal);
     }
+
+    // Handle rent components
+    request
+        .rentComponents()
+        .ifPresent(
+            components -> {
+              if (components.isEmpty()) {
+                rentComponentRepository.softDeleteByContractIdAndTeamId(
+                    updatedContract.getId(), teamId);
+              } else {
+                saveRentComponents(updatedContract, components, principal);
+              }
+            });
 
     log.info("Contract updated: {} in team {}", identifier, teamId);
 
@@ -439,13 +503,6 @@ public class ContractService {
     if (!oldContract.getPaymentDueDay().equals(updatedContract.getPaymentDueDay())) {
       changedFields.put("paymentDueDay", updatedContract.getPaymentDueDay().orElse(null));
     }
-    if (!java.util.Objects.equals(oldContract.getAutoRenewal(), updatedContract.getAutoRenewal())) {
-      changedFields.put("autoRenewal", updatedContract.getAutoRenewal());
-    }
-    if (!java.util.Objects.equals(
-        oldContract.getRenewalNoticeDays(), updatedContract.getRenewalNoticeDays())) {
-      changedFields.put("renewalNoticeDays", updatedContract.getRenewalNoticeDays());
-    }
     if (!java.util.Objects.equals(
         oldContract.getTerminationNoticeDays(), updatedContract.getTerminationNoticeDays())) {
       changedFields.put("terminationNoticeDays", updatedContract.getTerminationNoticeDays());
@@ -488,6 +545,7 @@ public class ContractService {
     }
 
     contractPartyService.softDeletePartiesForContract(contract.getId(), teamId);
+    rentComponentRepository.softDeleteByContractIdAndTeamId(contract.getId(), teamId);
     contractRepository.softDeleteByIdAndTeamId(contract.getId(), teamId);
     log.info("Contract soft deleted: {} in team {}", identifier, teamId);
 
@@ -526,40 +584,60 @@ public class ContractService {
 
     // Store old values for audit
     Contract oldContract =
-        new Contract(
-            contract.getId(),
-            contract.getIdentifier(),
-            contract.getTeamId(),
-            contract.getPropertyId(),
-            contract.getContractType(),
-            contract.getStartDate(),
-            contract.getEndDate(),
-            contract.getSignedDate(),
-            contract.getRentAmount(),
-            contract.getDepositAmount(),
-            contract.getSecurityDeposit(),
-            contract.getPaymentFrequency(),
-            contract.getPaymentDueDay(),
-            contract.getAutoRenewal(),
-            contract.getRenewalNoticeDays(),
-            contract.getTerminationNoticeDays(),
-            contract.getLateFeePercentage(),
-            contract.getStatus(),
-            contract.getTermsAndConditions(),
-            contract.getNotes(),
-            contract.getCountryCode(),
-            contract.getCountryMetadata(),
-            contract.getCreatedAt(),
-            contract.getUpdatedAt(),
-            contract.getCreatedBy(),
-            contract.getUpdatedBy(),
-            contract.getDeletedAt());
+        Contract.builder()
+            .id(contract.getId())
+            .identifier(contract.getIdentifier())
+            .teamId(contract.getTeamId())
+            .propertyId(contract.getPropertyId())
+            .contractType(contract.getContractType())
+            .startDate(contract.getStartDate())
+            .endDate(contract.getEndDate())
+            .signedDate(contract.getSignedDate())
+            .rentAmount(contract.getRentAmount())
+            .depositAmount(contract.getDepositAmount())
+            .securityDeposit(contract.getSecurityDeposit())
+            .paymentFrequency(contract.getPaymentFrequency())
+            .paymentDueDay(contract.getPaymentDueDay())
+            .terminationNoticeDays(contract.getTerminationNoticeDays())
+            .lateFeePercentage(contract.getLateFeePercentage())
+            .status(contract.getStatus())
+            .termsAndConditions(contract.getTermsAndConditions())
+            .notes(contract.getNotes())
+            .countryCode(contract.getCountryCode())
+            .countryMetadata(contract.getCountryMetadata())
+            .renewalMode(contract.getRenewalMode())
+            .renewalTermMonths(contract.getRenewalTermMonths())
+            .maxRenewals(contract.getMaxRenewals())
+            .landlordNoticeDays(contract.getLandlordNoticeDays())
+            .tenantNoticeDays(contract.getTenantNoticeDays())
+            .requiresTenantConfirmation(contract.getRequiresTenantConfirmation())
+            .rentAdjustmentType(contract.getRentAdjustmentType())
+            .rentAdjustmentValue(contract.getRentAdjustmentValue())
+            .landlordType(contract.getLandlordType())
+            .regionCode(contract.getRegionCode())
+            .createdAt(contract.getCreatedAt())
+            .updatedAt(contract.getUpdatedAt())
+            .createdBy(contract.getCreatedBy())
+            .updatedBy(contract.getUpdatedBy())
+            .deletedAt(contract.getDeletedAt())
+            .build();
 
     contract.setStatus(newStatus);
     contract.setUpdatedBy(principal.getUserId());
     contract.setUpdatedAt(clock.instant());
 
     Contract updatedContract = contractRepository.save(contract);
+
+    // E-06: Auto-cancel pending extensions when contract is terminated/expired
+    if (newStatus == TERMINATED || newStatus == EXPIRED) {
+      extensionRepository
+          .findDraftByContractId(contract.getId(), teamId)
+          .ifPresent(
+              draft -> {
+                extensionRepository.cancelByIdAndTeamId(
+                    draft.getId(), teamId, principal.getUserId());
+              });
+    }
 
     metricsService.incrementCounter(
         "contract.status.changed.total",
@@ -643,34 +721,43 @@ public class ContractService {
 
     // Store old values for audit
     Contract oldContract =
-        new Contract(
-            contract.getId(),
-            contract.getIdentifier(),
-            contract.getTeamId(),
-            contract.getPropertyId(),
-            contract.getContractType(),
-            contract.getStartDate(),
-            contract.getEndDate(),
-            contract.getSignedDate(),
-            contract.getRentAmount(),
-            contract.getDepositAmount(),
-            contract.getSecurityDeposit(),
-            contract.getPaymentFrequency(),
-            contract.getPaymentDueDay(),
-            contract.getAutoRenewal(),
-            contract.getRenewalNoticeDays(),
-            contract.getTerminationNoticeDays(),
-            contract.getLateFeePercentage(),
-            contract.getStatus(),
-            contract.getTermsAndConditions(),
-            contract.getNotes(),
-            contract.getCountryCode(),
-            contract.getCountryMetadata(),
-            contract.getCreatedAt(),
-            contract.getUpdatedAt(),
-            contract.getCreatedBy(),
-            contract.getUpdatedBy(),
-            contract.getDeletedAt());
+        Contract.builder()
+            .id(contract.getId())
+            .identifier(contract.getIdentifier())
+            .teamId(contract.getTeamId())
+            .propertyId(contract.getPropertyId())
+            .contractType(contract.getContractType())
+            .startDate(contract.getStartDate())
+            .endDate(contract.getEndDate())
+            .signedDate(contract.getSignedDate())
+            .rentAmount(contract.getRentAmount())
+            .depositAmount(contract.getDepositAmount())
+            .securityDeposit(contract.getSecurityDeposit())
+            .paymentFrequency(contract.getPaymentFrequency())
+            .paymentDueDay(contract.getPaymentDueDay())
+            .terminationNoticeDays(contract.getTerminationNoticeDays())
+            .lateFeePercentage(contract.getLateFeePercentage())
+            .status(contract.getStatus())
+            .termsAndConditions(contract.getTermsAndConditions())
+            .notes(contract.getNotes())
+            .countryCode(contract.getCountryCode())
+            .countryMetadata(contract.getCountryMetadata())
+            .renewalMode(contract.getRenewalMode())
+            .renewalTermMonths(contract.getRenewalTermMonths())
+            .maxRenewals(contract.getMaxRenewals())
+            .landlordNoticeDays(contract.getLandlordNoticeDays())
+            .tenantNoticeDays(contract.getTenantNoticeDays())
+            .requiresTenantConfirmation(contract.getRequiresTenantConfirmation())
+            .rentAdjustmentType(contract.getRentAdjustmentType())
+            .rentAdjustmentValue(contract.getRentAdjustmentValue())
+            .landlordType(contract.getLandlordType())
+            .regionCode(contract.getRegionCode())
+            .createdAt(contract.getCreatedAt())
+            .updatedAt(contract.getUpdatedAt())
+            .createdBy(contract.getCreatedBy())
+            .updatedBy(contract.getUpdatedBy())
+            .deletedAt(contract.getDeletedAt())
+            .build();
 
     contract.setStatus(DRAFT);
     contract.setUpdatedBy(principal.getUserId());
@@ -750,8 +837,6 @@ public class ContractService {
             .securityDeposit(sourceContract.getSecurityDeposit())
             .paymentFrequency(sourceContract.getPaymentFrequency())
             .paymentDueDay(sourceContract.getPaymentDueDay())
-            .autoRenewal(sourceContract.getAutoRenewal())
-            .renewalNoticeDays(sourceContract.getRenewalNoticeDays())
             .terminationNoticeDays(sourceContract.getTerminationNoticeDays())
             .lateFeePercentage(sourceContract.getLateFeePercentage())
             .status(DRAFT)
@@ -898,6 +983,19 @@ public class ContractService {
 
     PropertySummary propertySummary = propertyMapper.toSummary(property);
 
+    // Compute effective end date and extension statistics
+    List<ContractExtension> extensions =
+        contractExtensionService.getExtensionsForContract(contract.getId(), teamId);
+    Optional<LocalDate> effectiveEndDate =
+        EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), extensions);
+    int extensionCount = contractExtensionService.getExtensionCount(contract.getId(), teamId);
+    Optional<Integer> extensionsRemaining =
+        contract.getMaxRenewals().map(max -> max - extensionCount);
+
+    List<RentComponentResponse> componentResponses =
+        rentComponentMapper.toResponses(
+            rentComponentRepository.findByContractIdAndTeamId(contract.getId(), teamId));
+
     return new ContractResponse(
         contract.getIdentifier().orElseThrow(),
         Optional.of(propertySummary),
@@ -915,8 +1013,6 @@ public class ContractService {
         contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::currency),
         contract.getPaymentFrequency(),
         contract.getPaymentDueDay(),
-        contract.getAutoRenewal(),
-        contract.getRenewalNoticeDays(),
         contract.getTerminationNoticeDays(),
         contract.getLateFeePercentage(),
         contract.getStatus(),
@@ -924,6 +1020,20 @@ public class ContractService {
         contract.getNotes(),
         contract.getCountryCode(),
         contract.getCountryMetadata(),
+        contract.getRenewalMode(),
+        contract.getRenewalTermMonths(),
+        contract.getMaxRenewals(),
+        contract.getLandlordNoticeDays(),
+        contract.getTenantNoticeDays(),
+        contract.getRequiresTenantConfirmation(),
+        contract.getRentAdjustmentType(),
+        contract.getRentAdjustmentValue(),
+        contract.getLandlordType(),
+        contract.getRegionCode(),
+        effectiveEndDate,
+        extensionCount,
+        extensionsRemaining,
+        componentResponses,
         contract.getCreatedAt(),
         Optional.of(contract.getUpdatedAt()));
   }
@@ -956,6 +1066,16 @@ public class ContractService {
         tenantRepository.findByIdsAndTeamId(allTenantIds, teamId).stream()
             .collect(Collectors.toMap(Tenant::getId, t -> t));
 
+    // Batch load extensions for all contracts
+    List<ContractExtension> allExtensions =
+        extensionRepository.findByContractIdsAndTeamId(contractIds, teamId);
+    Map<UUID, List<ContractExtension>> extensionsByContract =
+        allExtensions.stream().collect(Collectors.groupingBy(ContractExtension::getContractId));
+
+    // Batch load rent components
+    Map<UUID, List<ContractRentComponent>> componentsByContract =
+        rentComponentRepository.findByContractIdsAndTeamId(contractIds, teamId);
+
     return contracts.stream()
         .map(
             contract -> {
@@ -984,6 +1104,28 @@ public class ContractService {
                       .flatMap(Optional::stream)
                       .findFirst();
 
+              // Compute effective end date and extension statistics
+              List<ContractExtension> extensions =
+                  extensionsByContract.getOrDefault(contract.getId(), List.of());
+              Optional<LocalDate> effectiveEndDate =
+                  EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), extensions);
+              int extensionCount =
+                  (int)
+                      extensions.stream()
+                          .filter(
+                              e ->
+                                  e.getStatus() == ContractExtension.ExtensionStatus.ACTIVE
+                                      || e.getStatus()
+                                          == ContractExtension.ExtensionStatus.SUPERSEDED)
+                          .filter(e -> e.getDeletedAt().isEmpty())
+                          .count();
+              Optional<Integer> extensionsRemaining =
+                  contract.getMaxRenewals().map(max -> max - extensionCount);
+
+              List<RentComponentResponse> componentResponses =
+                  rentComponentMapper.toResponses(
+                      componentsByContract.getOrDefault(contract.getId(), List.of()));
+
               return new ContractResponse(
                   contract.getIdentifier().orElseThrow(),
                   propertySummary,
@@ -1001,8 +1143,6 @@ public class ContractService {
                   contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::currency),
                   contract.getPaymentFrequency(),
                   contract.getPaymentDueDay(),
-                  contract.getAutoRenewal(),
-                  contract.getRenewalNoticeDays(),
                   contract.getTerminationNoticeDays(),
                   contract.getLateFeePercentage(),
                   contract.getStatus(),
@@ -1010,10 +1150,94 @@ public class ContractService {
                   contract.getNotes(),
                   contract.getCountryCode(),
                   contract.getCountryMetadata(),
+                  contract.getRenewalMode(),
+                  contract.getRenewalTermMonths(),
+                  contract.getMaxRenewals(),
+                  contract.getLandlordNoticeDays(),
+                  contract.getTenantNoticeDays(),
+                  contract.getRequiresTenantConfirmation(),
+                  contract.getRentAdjustmentType(),
+                  contract.getRentAdjustmentValue(),
+                  contract.getLandlordType(),
+                  contract.getRegionCode(),
+                  effectiveEndDate,
+                  extensionCount,
+                  extensionsRemaining,
+                  componentResponses,
                   contract.getCreatedAt(),
                   Optional.of(contract.getUpdatedAt()));
             })
         .toList();
+  }
+
+  private void saveRentComponents(
+      Contract contract, List<RentComponentRequest> components, UserPrincipal principal) {
+    String currency = contract.getRentAmount().currency();
+    UUID teamId = contract.getTeamId();
+    UUID userId = principal.getUserId();
+
+    List<ContractRentComponent> domainComponents = new ArrayList<>();
+    for (int i = 0; i < components.size(); i++) {
+      RentComponentRequest req = components.get(i);
+      ContractRentComponent comp =
+          ContractRentComponent.builder()
+              .identifier(Optional.of(newRentComponentId()))
+              .teamId(teamId)
+              .contractId(contract.getId())
+              .componentType(req.componentType())
+              .amount(com.buurman.util.MoneyAmount.of(req.amount(), currency))
+              .description(req.description())
+              .sortOrder(i)
+              .createdAt(clock.instant())
+              .updatedAt(clock.instant())
+              .createdBy(userId)
+              .updatedBy(userId)
+              .build();
+      domainComponents.add(comp);
+    }
+
+    rentComponentRepository.replaceForContract(contract.getId(), teamId, domainComponents);
+  }
+
+  private void validateRentComponents(List<RentComponentRequest> components) {
+    boolean hasBaseRent =
+        components.stream().anyMatch(c -> c.componentType() == RentComponentType.BASE_RENT);
+    if (!hasBaseRent) {
+      throw new BadRequestException("Rent components must include BASE_RENT");
+    }
+
+    // Check for duplicate non-OTHER types
+    Map<RentComponentType, Long> typeCounts =
+        components.stream()
+            .filter(c -> c.componentType() != RentComponentType.OTHER)
+            .collect(
+                Collectors.groupingBy(RentComponentRequest::componentType, Collectors.counting()));
+
+    typeCounts.forEach(
+        (type, count) -> {
+          if (count > 1) {
+            throw new BadRequestException("Duplicate rent component type: " + type);
+          }
+        });
+
+    // Validate OTHER components have descriptions
+    components.stream()
+        .filter(c -> c.componentType() == RentComponentType.OTHER)
+        .forEach(
+            c -> {
+              if (c.description().isEmpty() || c.description().get().isBlank()) {
+                throw new BadRequestException("OTHER rent components must have a description");
+              }
+            });
+  }
+
+  private com.buurman.util.MoneyAmount computeRentFromComponents(
+      List<RentComponentRequest> components, String currency) {
+    BigDecimal total =
+        components.stream()
+            .map(RentComponentRequest::amount)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    return com.buurman.util.MoneyAmount.of(total, currency);
   }
 
   private void validateCurrencyRequired(@Nullable String currency, @Nullable BigDecimal amount) {

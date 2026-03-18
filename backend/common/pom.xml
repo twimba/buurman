@@ -71,6 +71,12 @@
             <artifactId>mapstruct</artifactId>
         </dependency>
 
+        <!-- DataFaker (for HumanReadableIdGenerator) -->
+        <dependency>
+            <groupId>net.datafaker</groupId>
+            <artifactId>datafaker</artifactId>
+        </dependency>
+
         <!-- ULID (for SidGenerator) -->
         <dependency>
             <groupId>de.huxhorn.sulky</groupId>

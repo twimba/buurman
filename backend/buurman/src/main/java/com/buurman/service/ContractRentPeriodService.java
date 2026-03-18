@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.config.models.AppProperties;
 import com.buurman.domain.Contract;
+import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractRentPeriod;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
@@ -34,6 +35,7 @@ import com.buurman.dto.response.AddRentPeriodResult;
 import com.buurman.dto.response.RentPeriodResponse;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.mapper.ContractRentPeriodMapper;
+import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRentPeriodRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentRepository;
@@ -52,6 +54,7 @@ public class ContractRentPeriodService {
 
   private final ContractRentPeriodRepository rentPeriodRepository;
   private final ContractRepository contractRepository;
+  private final ContractExtensionRepository contractExtensionRepository;
   private final PaymentRepository paymentRepository;
   private final PropertyRepository propertyRepository;
   private final ContractRentPeriodMapper rentPeriodMapper;
@@ -70,7 +73,7 @@ public class ContractRentPeriodService {
     UUID teamId = principal.requireTeamId();
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
 
-    validateEffectiveFrom(contract, request.effectiveFrom());
+    validateEffectiveFrom(contract, request.effectiveFrom(), teamId);
     validateNoDuplicateEffectiveDate(contract.getId(), teamId, request.effectiveFrom());
     List<Payment> conflictingPayments =
         findConflictingPayments(contract.getId(), teamId, request.effectiveFrom());
@@ -194,7 +197,7 @@ public class ContractRentPeriodService {
       throw new BusinessRuleException("Can only edit rent periods that have not yet taken effect");
     }
 
-    validateEffectiveFrom(contract, request.effectiveFrom());
+    validateEffectiveFrom(contract, request.effectiveFrom(), teamId);
 
     // Store old values for audit
     BigDecimal oldRentAmount = period.getRentAmount().value();
@@ -330,11 +333,26 @@ public class ContractRentPeriodService {
 
   // --- Private helpers ---
 
-  private void validateEffectiveFrom(Contract contract, LocalDate effectiveFrom) {
+  private void validateEffectiveFrom(Contract contract, LocalDate effectiveFrom, UUID teamId) {
     if (effectiveFrom.isBefore(contract.getStartDate())) {
       throw new BusinessRuleException("Effective date cannot be before the contract start date");
     }
-    if (contract.getEndDate().filter(effectiveFrom::isAfter).isPresent()) {
+    List<ContractExtension> extensions =
+        contractExtensionRepository.findByContractIdAndTeamId(contract.getId(), teamId);
+    // Use the latest end date from any non-cancelled/non-declined extension (including DRAFT),
+    // falling back to the official effective end date. This allows rent adjustments to be
+    // scheduled within a pending extension period.
+    Optional<LocalDate> maxEndDate =
+        extensions.stream()
+            .filter(
+                e ->
+                    e.getStatus() != ContractExtension.ExtensionStatus.CANCELLED
+                        && e.getStatus() != ContractExtension.ExtensionStatus.DECLINED)
+            .filter(e -> e.getDeletedAt().isEmpty())
+            .flatMap(e -> e.getNewEndDate().stream())
+            .max(LocalDate::compareTo)
+            .or(() -> contract.getEndDate());
+    if (maxEndDate.filter(effectiveFrom::isAfter).isPresent()) {
       throw new BusinessRuleException("Effective date cannot be after the contract end date");
     }
   }
