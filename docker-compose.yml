@@ -132,7 +132,7 @@ services:
       - buurman-network
 
   flagsmith:
-    image: flagsmith/flagsmith:2.222.0
+    image: flagsmith/flagsmith:2.222.1
     container_name: buurman-flagsmith
     env_file: .env
     environment:
@@ -170,7 +170,7 @@ services:
       - buurman-network
 
   flagsmith-processor:
-    image: flagsmith/flagsmith:2.222.0
+    image: flagsmith/flagsmith:2.222.1
     container_name: buurman-flagsmith-processor
     command: run-task-processor
     env_file: .env
