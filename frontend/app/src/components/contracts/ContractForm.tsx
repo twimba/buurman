@@ -952,6 +952,25 @@ export const ContractForm = ({
             )}
           </div>
         </div>
+
+        {/* Renewal Configuration (inside Financial Terms) */}
+        <div className="mt-6 pt-6 border-t border-border-default">
+          <RenewalConfigForm
+            renewalMode={formData.renewalMode ?? 'NONE'}
+            renewalTermMonths={formData.renewalTermMonths}
+            maxRenewals={formData.maxRenewals}
+            landlordNoticeDays={formData.landlordNoticeDays}
+            tenantNoticeDays={formData.tenantNoticeDays}
+            requiresTenantConfirmation={formData.requiresTenantConfirmation}
+            rentAdjustmentType={formData.rentAdjustmentType ?? 'NONE'}
+            rentAdjustmentValue={formData.rentAdjustmentValue}
+            landlordType={formData.landlordType}
+            regionCode={formData.regionCode}
+            countryCode={propertyCountryCode}
+            onChange={handleChange}
+            defaultExpanded
+          />
+        </div>
       </div>
 
       {/* Payment Terms */}
@@ -1088,22 +1107,6 @@ export const ContractForm = ({
       </div>
 
       {/* Country-Specific Rental Details */}
-      {/* Renewal Configuration */}
-      <RenewalConfigForm
-        renewalMode={formData.renewalMode ?? 'NONE'}
-        renewalTermMonths={formData.renewalTermMonths}
-        maxRenewals={formData.maxRenewals}
-        landlordNoticeDays={formData.landlordNoticeDays}
-        tenantNoticeDays={formData.tenantNoticeDays}
-        requiresTenantConfirmation={formData.requiresTenantConfirmation}
-        rentAdjustmentType={formData.rentAdjustmentType ?? 'NONE'}
-        rentAdjustmentValue={formData.rentAdjustmentValue}
-        landlordType={formData.landlordType}
-        regionCode={formData.regionCode}
-        countryCode={propertyCountryCode}
-        onChange={handleChange}
-      />
-
       {propertyCountryCode ? (
         <div>
           <h3 className="text-lg font-semibold text-text-primary mb-2">

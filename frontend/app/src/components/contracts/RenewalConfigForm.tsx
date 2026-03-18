@@ -39,6 +39,7 @@ interface RenewalConfigFormProps {
   countryCode?: string;
   onChange: (field: string, value: unknown) => void;
   disabled?: boolean;
+  defaultExpanded?: boolean;
 }
 
 export const RenewalConfigForm = ({
@@ -55,8 +56,9 @@ export const RenewalConfigForm = ({
   countryCode,
   onChange,
   disabled = false,
+  defaultExpanded = false,
 }: RenewalConfigFormProps) => {
-  const [isExpanded, setIsExpanded] = useState(renewalMode !== 'NONE');
+  const [isExpanded, setIsExpanded] = useState(defaultExpanded || renewalMode !== 'NONE');
 
   const { data: jurisdictionDefaults, isLoading: loadingDefaults } =
     useJurisdictionDefaults(
