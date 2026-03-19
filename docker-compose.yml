@@ -116,7 +116,7 @@ services:
       - buurman-network
 
   seaweedfs-init:
-    image: amazon/aws-cli:2.34.11
+    image: amazon/aws-cli:2.34.12
     container_name: buurman-seaweedfs-init
     depends_on:
       seaweedfs:
