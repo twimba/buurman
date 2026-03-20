@@ -10,6 +10,7 @@ import java.math.RoundingMode;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -71,15 +72,25 @@ public class ContractExtensionDemoDataGenerator {
         String contractStatus = contract.get(CONTRACTS.STATUS);
         String renewalMode = contract.get(field("renewal_mode", String.class));
 
-        // Skip contracts without an end date (indefinite)
-        if (endDate == null) {
+        LocalDate startDate = contract.get(CONTRACTS.START_DATE);
+
+        // Skip contracts without start or end date (indefinite)
+        if (startDate == null || endDate == null) {
           continue;
         }
 
         String triggerType = "AUTOMATIC".equals(renewalMode) ? "AUTO" : "MANUAL";
 
-        // Generate 1-3 extensions per contract
-        int extensionCount = random.nextInt(1, 4);
+        // Scale extensions with contract duration
+        long contractYears = ChronoUnit.YEARS.between(startDate, endDate);
+        int extensionCount;
+        if (contractYears >= 10) {
+          extensionCount = random.nextInt(4, 7); // 4-6 extensions
+        } else if (contractYears >= 5) {
+          extensionCount = random.nextInt(2, 5); // 2-4 extensions
+        } else {
+          extensionCount = random.nextInt(1, 3); // 1-2 extensions
+        }
         LocalDate previousEndDate = endDate;
         // rentAmount comes through MoneyMinorUnitConverter, so it's already in major units
         BigDecimal currentRentMajor = rentAmount;
@@ -88,9 +99,15 @@ public class ContractExtensionDemoDataGenerator {
           // 12-month extension term
           LocalDate newEndDate = previousEndDate.plusMonths(12);
 
-          // Rent increase: 2-5%
+          // Rent increase varies: 1.5-3% for older periods, 2-5% for recent
+          double increaseBase;
+          if (extNum <= extensionCount / 2) {
+            increaseBase = 1.5 + random.nextDouble() * 1.5; // 1.5-3%
+          } else {
+            increaseBase = 2.0 + random.nextDouble() * 3.0; // 2-5%
+          }
           BigDecimal increasePercent =
-              BigDecimal.valueOf(2 + random.nextDouble() * 3).setScale(4, RoundingMode.HALF_UP);
+              BigDecimal.valueOf(increaseBase).setScale(4, RoundingMode.HALF_UP);
           BigDecimal newRentMajor =
               currentRentMajor
                   .multiply(
@@ -151,7 +168,9 @@ public class ContractExtensionDemoDataGenerator {
               .set(field("rent_adjustment_value", BigDecimal.class), increasePercent)
               .set(field("status", String.class), status)
               .set(field("trigger_type", String.class), triggerType)
-              .set(field("notes", String.class), buildNotes(extNum, increasePercent, status))
+              .set(
+                  field("notes", String.class),
+                  buildNotes(extNum, increasePercent, status, previousEndDate))
               .set(
                   field("declined_reason", String.class),
                   "DECLINED".equals(status) ? "Tenant declined the proposed rent increase" : null)
@@ -176,20 +195,24 @@ public class ContractExtensionDemoDataGenerator {
     }
   }
 
-  private String buildNotes(int extensionNumber, BigDecimal increasePercent, String status) {
+  private String buildNotes(
+      int extensionNumber, BigDecimal increasePercent, String status, LocalDate previousEndDate) {
+    String yearContext = previousEndDate != null ? " (" + previousEndDate.getYear() + ")" : "";
     return switch (status) {
       case "ACTIVE" ->
           String.format(
-              "Extension #%d — rent increased by %s%%",
-              extensionNumber, increasePercent.setScale(2, RoundingMode.HALF_UP));
+              "Extension #%d%s — rent increased by %s%%",
+              extensionNumber, yearContext, increasePercent.setScale(2, RoundingMode.HALF_UP));
       case "SUPERSEDED" ->
-          String.format("Extension #%d — superseded by subsequent renewal", extensionNumber);
+          String.format(
+              "Extension #%d%s — superseded by subsequent renewal", extensionNumber, yearContext);
       case "DRAFT" ->
           String.format(
-              "Extension #%d — pending approval, proposed %s%% increase",
-              extensionNumber, increasePercent.setScale(2, RoundingMode.HALF_UP));
-      case "DECLINED" -> String.format("Extension #%d — declined by tenant", extensionNumber);
-      default -> String.format("Extension #%d", extensionNumber);
+              "Extension #%d%s — pending approval, proposed %s%% increase",
+              extensionNumber, yearContext, increasePercent.setScale(2, RoundingMode.HALF_UP));
+      case "DECLINED" ->
+          String.format("Extension #%d%s — declined by tenant", extensionNumber, yearContext);
+      default -> String.format("Extension #%d%s", extensionNumber, yearContext);
     };
   }
 }

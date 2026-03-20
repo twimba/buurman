@@ -59,7 +59,7 @@ public class PortfolioDashboardService {
   public PortfolioDashboardResponse getPortfolioDashboard(
       Optional<Integer> months, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
-    int effectiveMonths = months.orElse(DEFAULT_MONTHS);
+    int effectiveMonths = months.orElse(0);
     String defaultCurrency = teamService.getDefaultCurrency(teamId);
 
     List<Property> allProperties = propertyRepository.findAllByTeamId(teamId);
@@ -295,6 +295,7 @@ public class PortfolioDashboardService {
 
     List<MonthlyDataPoint> aggregated =
         monthAggregates.entrySet().stream()
+            .sorted(Map.Entry.comparingByKey())
             .map(
                 entry ->
                     new MonthlyDataPoint(

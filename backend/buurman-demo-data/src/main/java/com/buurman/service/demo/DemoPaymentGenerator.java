@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -100,21 +101,51 @@ public class DemoPaymentGenerator {
           LocalDate paymentDate = null;
 
           if (isPast && !isCurrentMonth) {
-            // Past payments
-            if ("EXPIRED".equals(status)) {
-              paymentStatus = "PAID";
-            } else {
-              int roll = random.nextInt(100);
-              if (roll < 80) {
+            long monthsAgo =
+                ChronoUnit.MONTHS.between(dueDate.atStartOfDay(), today.atStartOfDay());
+            int roll = random.nextInt(100);
+            if (monthsAgo > 60) {
+              // > 5 years: nearly all paid
+              paymentStatus = roll < 98 ? "PAID" : "LATE";
+              if ("LATE".equals(paymentStatus)) {
+                paymentDate = dueDate.plusDays(random.nextInt(5, 30));
+              }
+            } else if (monthsAgo > 12) {
+              // 1-5 years: mostly paid
+              if (roll < 92) {
                 paymentStatus = "PAID";
-              } else if (roll < 95) {
+              } else if (roll < 97) {
+                paymentStatus = "LATE";
+                paymentDate = dueDate.plusDays(random.nextInt(5, 30));
+              } else if (roll < 99) {
+                paymentStatus = "OVERDUE";
+              } else {
+                paymentStatus = "PARTIALLY_PAID";
+              }
+            } else {
+              // Last year
+              if (roll < 85) {
+                paymentStatus = "PAID";
+              } else if (roll < 93) {
+                paymentStatus = "LATE";
+                paymentDate = dueDate.plusDays(random.nextInt(3, 15));
+              } else if (roll < 98) {
                 paymentStatus = "OVERDUE";
               } else {
                 paymentStatus = "PARTIALLY_PAID";
               }
             }
-            if ("PAID".equals(paymentStatus) || "PARTIALLY_PAID".equals(paymentStatus)) {
+
+            if ("PAID".equals(paymentStatus) && paymentDate == null) {
               paymentDate = dueDate.plusDays(random.nextInt(0, 5));
+            }
+            if ("PARTIALLY_PAID".equals(paymentStatus)) {
+              paymentDate = dueDate.plusDays(random.nextInt(0, 10));
+            }
+            // EXPIRED contracts: override all to PAID (tenant fulfilled obligations)
+            if ("EXPIRED".equals(status)) {
+              paymentStatus = "PAID";
+              paymentDate = dueDate.plusDays(random.nextInt(0, 3));
             }
           } else if (isCurrentMonth) {
             paymentStatus = random.nextInt(3) == 0 ? "PENDING" : "PAID";
@@ -123,6 +154,11 @@ public class DemoPaymentGenerator {
             }
           } else {
             paymentStatus = "PENDING";
+          }
+
+          LocalDateTime paymentCreatedAt = dueDate.atStartOfDay().minusDays(random.nextInt(0, 7));
+          if (paymentCreatedAt.isAfter(now)) {
+            paymentCreatedAt = now;
           }
 
           dsl.insertInto(PAYMENTS)
@@ -136,7 +172,7 @@ public class DemoPaymentGenerator {
               .set(PAYMENTS.PAYMENT_DATE, paymentDate)
               .set(PAYMENTS.STATUS, paymentStatus)
               .set(PAYMENTS.AUTO_GENERATED, true)
-              .set(PAYMENTS.CREATED_AT, now.minusDays(random.nextInt(1, 30)))
+              .set(PAYMENTS.CREATED_AT, paymentCreatedAt)
               .set(PAYMENTS.UPDATED_AT, now)
               .set(PAYMENTS.CREATED_BY, createdBy)
               .set(PAYMENTS.UPDATED_BY, createdBy)
@@ -172,6 +208,20 @@ public class DemoPaymentGenerator {
                 .set(PAYMENT_RECEIVALS.TEAM_ID, teamId)
                 .set(PAYMENT_RECEIVALS.PAYMENT_ID, paymentId)
                 .set(PAYMENT_RECEIVALS.AMOUNT, partialAmount)
+                .set(PAYMENT_RECEIVALS.CURRENCY, currency)
+                .set(PAYMENT_RECEIVALS.RECEIVAL_DATE, paymentDate)
+                .set(PAYMENT_RECEIVALS.CREATED_AT, now)
+                .set(PAYMENT_RECEIVALS.UPDATED_AT, now)
+                .set(PAYMENT_RECEIVALS.CREATED_BY, createdBy)
+                .set(PAYMENT_RECEIVALS.UPDATED_BY, createdBy)
+                .execute();
+          } else if ("LATE".equals(paymentStatus) && paymentDate != null) {
+            dsl.insertInto(PAYMENT_RECEIVALS)
+                .set(PAYMENT_RECEIVALS.ID, UUID.randomUUID())
+                .set(PAYMENT_RECEIVALS.IDENTIFIER, newPaymentReceivalId())
+                .set(PAYMENT_RECEIVALS.TEAM_ID, teamId)
+                .set(PAYMENT_RECEIVALS.PAYMENT_ID, paymentId)
+                .set(PAYMENT_RECEIVALS.AMOUNT, rentAmount)
                 .set(PAYMENT_RECEIVALS.CURRENCY, currency)
                 .set(PAYMENT_RECEIVALS.RECEIVAL_DATE, paymentDate)
                 .set(PAYMENT_RECEIVALS.CREATED_AT, now)

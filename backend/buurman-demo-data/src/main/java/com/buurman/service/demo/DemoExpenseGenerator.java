@@ -7,13 +7,14 @@ import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
 import org.jooq.DSLContext;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -30,43 +31,10 @@ public class DemoExpenseGenerator {
   private final Faker faker = new Faker(Locale.ENGLISH, new Random(42));
   private final Random random = new Random(42);
 
-  private static final String[] CATEGORIES = {
-    "MAINTENANCE",
-    "REPAIR",
-    "UTILITY",
-    "TAX",
-    "INSURANCE",
-    "LEGAL",
-    "CLEANING",
-    "LANDSCAPING",
-    "PROPERTY_MANAGEMENT",
-    "MARKETING",
-    "FEES",
-    "PROPERTY_TAX",
-    "OTHER"
-  };
-
-  private static final Map<String, ExpenseTemplate> TEMPLATES =
-      Map.ofEntries(
-          Map.entry("MAINTENANCE", new ExpenseTemplate(150, 500)),
-          Map.entry("REPAIR", new ExpenseTemplate(200, 1500)),
-          Map.entry("UTILITY", new ExpenseTemplate(100, 400)),
-          Map.entry("TAX", new ExpenseTemplate(500, 2000)),
-          Map.entry("INSURANCE", new ExpenseTemplate(300, 1200)),
-          Map.entry("LEGAL", new ExpenseTemplate(200, 800)),
-          Map.entry("CLEANING", new ExpenseTemplate(100, 350)),
-          Map.entry("LANDSCAPING", new ExpenseTemplate(80, 300)),
-          Map.entry("PROPERTY_MANAGEMENT", new ExpenseTemplate(150, 500)),
-          Map.entry("MARKETING", new ExpenseTemplate(200, 1500)),
-          Map.entry("FEES", new ExpenseTemplate(50, 400)),
-          Map.entry("PROPERTY_TAX", new ExpenseTemplate(800, 3000)),
-          Map.entry("OTHER", new ExpenseTemplate(50, 500)));
-
-  private record ExpenseTemplate(int minAmount, int maxAmount) {}
-
   public void generate(DemoDataContext ctx) {
     LocalDateTime now = LocalDateTime.now(clock);
     LocalDate today = LocalDate.now(clock);
+    int currentYear = today.getYear();
 
     for (var teamEntry : ctx.getTeamIds().entrySet()) {
       String teamKey = teamEntry.getKey();
@@ -74,7 +42,6 @@ public class DemoExpenseGenerator {
       UUID createdBy = ctx.getAdminUserForTeam(teamKey).orElse(null);
       String currency = ctx.getCurrencyForTeam(teamKey);
       List<UUID> propertyIds = ctx.getPropertyIdsByTeam().get(teamId);
-
       if (propertyIds == null) {
         continue;
       }
@@ -83,176 +50,302 @@ public class DemoExpenseGenerator {
 
       for (UUID propertyId : propertyIds) {
         String propCategory = ctx.getPropertyCategory(propertyId);
+        LocalDate acquisitionDate = ctx.getPropertyAcquisitionDate(propertyId);
+        int startYear = acquisitionDate.getYear();
         double categoryMultiplier =
-            "COMMERCIAL".equals(propCategory) || "INDUSTRIAL".equals(propCategory) ? 2.5 : 1.0;
-        int expenseCount = random.nextInt(6, 13);
+            ("COMMERCIAL".equals(propCategory) || "INDUSTRIAL".equals(propCategory)) ? 2.0 : 1.0;
 
-        for (int i = 0; i < expenseCount; i++) {
-          String category = CATEGORIES[random.nextInt(CATEGORIES.length)];
-          ExpenseTemplate template = TEMPLATES.get(category);
-          if (template == null) {
+        // Generate expenses for each COMPLETED year of ownership.
+        // For the current (partial) year, only generate recurring annual expenses (insurance, tax)
+        // to avoid concentrating a full year of expenses into just a few months.
+        int lastFullYear = currentYear - 1;
+        for (int year = startYear; year <= currentYear; year++) {
+          boolean isPartialYear = (year == currentYear);
+          int propertyAge = year - startYear;
+          double inflationFactor = Math.pow(1.025, currentYear - year);
+          double baseMultiplier = categoryMultiplier / inflationFactor;
+
+          // === RECURRING ANNUAL EXPENSES ===
+
+          // 1. Insurance premium (every year)
+          insertExpense(
+              propertyId,
+              teamId,
+              createdBy,
+              currency,
+              "INSURANCE",
+              randomAmount(300, 1200, baseMultiplier),
+              randomDateInYear(year),
+              "Annual building insurance premium",
+              "Annual renewal - " + year,
+              now);
+          teamExpenses++;
+          ctx.incrementExpenses();
+
+          // 2. Property tax (every year)
+          insertExpense(
+              propertyId,
+              teamId,
+              createdBy,
+              currency,
+              "PROPERTY_TAX",
+              randomAmount(800, 3000, baseMultiplier),
+              LocalDate.of(year, random.nextInt(1, 4), random.nextInt(1, 28)),
+              "Annual property tax - " + year,
+              null,
+              now);
+          teamExpenses++;
+          ctx.incrementExpenses();
+
+          // Skip random/periodic expenses for the current partial year
+          // to avoid concentrating a full year of costs into a few months
+          if (isPartialYear) {
             continue;
           }
 
-          int baseAmount = random.nextInt(template.minAmount(), template.maxAmount() + 1);
-          BigDecimal amount = BigDecimal.valueOf((long) (baseAmount * categoryMultiplier));
-          LocalDate expenseDate = today.minusDays(random.nextInt(30, 1095));
+          // 3. Annual maintenance/inspection
+          insertExpense(
+              propertyId,
+              teamId,
+              createdBy,
+              currency,
+              "MAINTENANCE",
+              randomAmount(150, 500, baseMultiplier),
+              randomDateInYear(year),
+              pick(
+                  "Annual inspection",
+                  "HVAC servicing",
+                  "Boiler annual service",
+                  "Fire safety check"),
+              null,
+              now);
+          teamExpenses++;
+          ctx.incrementExpenses();
 
-          String description = descriptionForCategory(category);
+          // === PERIODIC EXPENSES ===
 
-          String notes = null;
-          if (random.nextInt(10) < 4) {
-            notes =
+          // 4. Cleaning (commercial: 2x/year, residential: 0-1x/year)
+          int cleaningCount =
+              "COMMERCIAL".equals(propCategory) ? 2 : (random.nextInt(3) == 0 ? 1 : 0);
+          for (int c = 0; c < cleaningCount; c++) {
+            insertExpense(
+                propertyId,
+                teamId,
+                createdBy,
+                currency,
+                "CLEANING",
+                randomAmount(100, 350, baseMultiplier),
+                randomDateInYear(year),
                 pick(
-                    "Vendor: " + faker.company().name(),
-                    "Invoice #INV-" + String.format("%06d", random.nextInt(100000, 999999)),
-                    "Annual service contract",
-                    "Emergency call-out",
-                    "Paid via bank transfer",
-                    "Receipt on file");
+                    "Common area cleaning",
+                    "Window cleaning",
+                    "End-of-tenancy cleaning",
+                    "Deep clean"),
+                null,
+                now);
+            teamExpenses++;
+            ctx.incrementExpenses();
           }
 
-          dsl.insertInto(EXPENSES)
-              .set(EXPENSES.ID, UUID.randomUUID())
-              .set(EXPENSES.IDENTIFIER, newExpenseId())
-              .set(EXPENSES.TEAM_ID, teamId)
-              .set(EXPENSES.PROPERTY_ID, propertyId)
-              .set(EXPENSES.CATEGORY, category)
-              .set(EXPENSES.AMOUNT, amount)
-              .set(EXPENSES.CURRENCY, currency)
-              .set(EXPENSES.EXPENSE_DATE, expenseDate)
-              .set(EXPENSES.DESCRIPTION, description)
-              .set(EXPENSES.NOTES, notes)
-              .set(EXPENSES.CREATED_AT, now.minusDays(random.nextInt(1, 30)))
-              .set(EXPENSES.UPDATED_AT, now)
-              .set(EXPENSES.CREATED_BY, createdBy)
-              .set(EXPENSES.UPDATED_BY, createdBy)
-              .execute();
+          // 5. Landscaping (if residential/agricultural, ~50% of years)
+          if (("RESIDENTIAL".equals(propCategory) || "AGRICULTURAL".equals(propCategory))
+              && random.nextBoolean()) {
+            insertExpense(
+                propertyId,
+                teamId,
+                createdBy,
+                currency,
+                "LANDSCAPING",
+                randomAmount(80, 300, baseMultiplier),
+                randomDateInYear(year),
+                pick(
+                    "Garden maintenance",
+                    "Tree pruning",
+                    "Lawn mowing",
+                    "Hedge trimming",
+                    "Snow removal"),
+                null,
+                now);
+            teamExpenses++;
+            ctx.incrementExpenses();
+          }
 
-          teamExpenses++;
-          ctx.incrementExpenses();
-        }
+          // 6. Random repairs (0-2 per year, more for older properties)
+          int repairChance = propertyAge > 15 ? 60 : (propertyAge > 5 ? 40 : 25);
+          int repairCount = 0;
+          if (random.nextInt(100) < repairChance) {
+            repairCount++;
+          }
+          if (propertyAge > 10 && random.nextInt(100) < 30) {
+            repairCount++;
+          }
+          for (int r = 0; r < repairCount; r++) {
+            insertExpense(
+                propertyId,
+                teamId,
+                createdBy,
+                currency,
+                "REPAIR",
+                randomAmount(200, 1500, baseMultiplier),
+                randomDateInYear(year),
+                pick(
+                    "Plumbing repair",
+                    "Electrical repair",
+                    "Roof leak fix",
+                    "Window replacement",
+                    "Door lock replacement",
+                    "Boiler repair",
+                    "Pipe burst repair",
+                    "Damp treatment"),
+                "Vendor: " + faker.company().name(),
+                now);
+            teamExpenses++;
+            ctx.incrementExpenses();
+          }
 
-        // Large repair event: 20% of properties get 1 major expense
-        if (random.nextInt(5) == 0) {
-          BigDecimal majorAmount =
-              BigDecimal.valueOf(random.nextInt(2000, 8001))
-                  .multiply(BigDecimal.valueOf(categoryMultiplier > 1 ? 2 : 1));
-          dsl.insertInto(EXPENSES)
-              .set(EXPENSES.ID, UUID.randomUUID())
-              .set(EXPENSES.IDENTIFIER, newExpenseId())
-              .set(EXPENSES.TEAM_ID, teamId)
-              .set(EXPENSES.PROPERTY_ID, propertyId)
-              .set(EXPENSES.CATEGORY, "REPAIR")
-              .set(EXPENSES.AMOUNT, majorAmount)
-              .set(EXPENSES.CURRENCY, currency)
-              .set(EXPENSES.EXPENSE_DATE, today.minusDays(random.nextInt(30, 365)))
-              .set(
-                  EXPENSES.DESCRIPTION,
-                  pick(
-                      "Major roof replacement",
-                      "Complete HVAC system overhaul",
-                      "Foundation repair work",
-                      "Full electrical rewiring",
-                      "Extensive water damage restoration",
-                      "Structural reinforcement"))
-              .set(EXPENSES.NOTES, "Major repair - contractor: " + faker.company().name())
-              .set(EXPENSES.CREATED_AT, now.minusDays(random.nextInt(1, 30)))
-              .set(EXPENSES.UPDATED_AT, now)
-              .set(EXPENSES.CREATED_BY, createdBy)
-              .set(EXPENSES.UPDATED_BY, createdBy)
-              .execute();
-          teamExpenses++;
-          ctx.incrementExpenses();
+          // 7. Major repair every ~7 years (for properties older than 7 years)
+          if (propertyAge > 0 && propertyAge % 7 == 0) {
+            insertExpense(
+                propertyId,
+                teamId,
+                createdBy,
+                currency,
+                "REPAIR",
+                randomAmount(3000, 15000, baseMultiplier),
+                randomDateInYear(year),
+                pick(
+                    "Major roof replacement",
+                    "Complete HVAC system overhaul",
+                    "Foundation repair work",
+                    "Full electrical rewiring",
+                    "Extensive water damage restoration",
+                    "Structural reinforcement",
+                    "Complete bathroom renovation",
+                    "Kitchen overhaul"),
+                "Major repair - contractor: " + faker.company().name(),
+                now);
+            teamExpenses++;
+            ctx.incrementExpenses();
+          }
+
+          // 8. Utility expenses (50% of years for residential, always for commercial)
+          if ("COMMERCIAL".equals(propCategory)
+              || "INDUSTRIAL".equals(propCategory)
+              || random.nextBoolean()) {
+            insertExpense(
+                propertyId,
+                teamId,
+                createdBy,
+                currency,
+                "UTILITY",
+                randomAmount(100, 400, baseMultiplier),
+                randomDateInYear(year),
+                pick("Water bill", "Electricity (common areas)", "Gas bill", "Waste collection"),
+                null,
+                now);
+            teamExpenses++;
+            ctx.incrementExpenses();
+          }
+
+          // 9. Legal/fees (occasional, ~15% of years)
+          if (random.nextInt(100) < 15) {
+            insertExpense(
+                propertyId,
+                teamId,
+                createdBy,
+                currency,
+                random.nextBoolean() ? "LEGAL" : "FEES",
+                randomAmount(200, 800, baseMultiplier),
+                randomDateInYear(year),
+                pick(
+                    "Legal consultation fee",
+                    "Lease review",
+                    "Contract drafting fee",
+                    "Building permit fee",
+                    "Energy audit fee",
+                    "Notary fee"),
+                null,
+                now);
+            teamExpenses++;
+            ctx.incrementExpenses();
+          }
+
+          // 10. Property management fee (~40% of years)
+          if (random.nextInt(100) < 40) {
+            insertExpense(
+                propertyId,
+                teamId,
+                createdBy,
+                currency,
+                "PROPERTY_MANAGEMENT",
+                randomAmount(150, 500, baseMultiplier),
+                randomDateInYear(year),
+                pick(
+                    "Monthly management fee",
+                    "Property inspection report",
+                    "Tenant screening service"),
+                null,
+                now);
+            teamExpenses++;
+            ctx.incrementExpenses();
+          }
         }
       }
-
       log.info("Created {} expenses for team {}", teamExpenses, teamKey);
     }
   }
 
-  private String descriptionForCategory(String category) {
-    return switch (category) {
-      case "REPAIR" ->
-          pick(
-              "Plumbing repair",
-              "Electrical repair",
-              "Roof leak fix",
-              "Window replacement",
-              "Door lock replacement",
-              "Boiler repair",
-              "Pipe burst repair",
-              "Damp treatment");
-      case "MAINTENANCE" ->
-          pick(
-              "Annual inspection",
-              "HVAC servicing",
-              "Gutter cleaning",
-              "Chimney sweep",
-              "Fire safety check",
-              "Boiler annual service",
-              "Pest control treatment",
-              "Fire alarm testing");
-      case "UTILITY" ->
-          pick(
-              "Water bill",
-              "Electricity bill (common areas)",
-              "Gas bill",
-              "Internet service",
-              "Waste water treatment",
-              "District heating charge");
-      case "CLEANING" ->
-          pick(
-              "End-of-tenancy cleaning",
-              "Common area cleaning",
-              "Window cleaning",
-              "Carpet cleaning",
-              "Deep clean after renovation",
-              "Pressure washing exterior");
-      case "LANDSCAPING" ->
-          pick(
-              "Garden maintenance",
-              "Tree pruning",
-              "Lawn mowing service",
-              "Snow removal",
-              "Hedge trimming",
-              "Seasonal planting");
-      case "INSURANCE" ->
-          pick(
-              "Building insurance premium", "Liability insurance renewal",
-              "Contents insurance", "Flood insurance supplement");
-      case "TAX" ->
-          pick(
-              "Property tax payment", "Municipal tax levy",
-              "Land tax assessment", "Waste collection tax");
-      case "LEGAL" ->
-          pick(
-              "Legal consultation fee", "Lease review by solicitor",
-              "Eviction proceedings", "Contract drafting fee",
-              "Dispute mediation", "Regulatory compliance review");
-      case "PROPERTY_MANAGEMENT" ->
-          pick(
-              "Monthly management fee", "Tenant screening service",
-              "Property inspection report", "Key management service");
-      case "MARKETING" ->
-          pick(
-              "Property listing fee", "Professional photography",
-              "Virtual tour creation", "Advertising placement",
-              "Signage and brochures", "Online portal subscription");
-      case "FEES" ->
-          pick(
-              "Building permit fee", "Certificate of compliance",
-              "Energy audit fee", "Bank transfer fee",
-              "Government registration fee", "Notary fee");
-      case "PROPERTY_TAX" ->
-          pick(
-              "Annual property tax", "Supplemental tax bill",
-              "Special assessment levy", "Municipal surcharge");
-      default ->
-          pick(
-              "Miscellaneous expense", "Sundry costs",
-              "Administrative expense", "Contingency payment");
-    };
+  private BigDecimal randomAmount(int min, int max, double multiplier) {
+    int base = random.nextInt(min, max + 1);
+    return BigDecimal.valueOf((long) (base * multiplier));
+  }
+
+  private LocalDate randomDateInYear(int year) {
+    LocalDate today = LocalDate.now(clock);
+    int maxMonth = (year == today.getYear()) ? today.getMonthValue() : 12;
+    int month = random.nextInt(1, maxMonth + 1);
+    int maxDay = YearMonth.of(year, month).lengthOfMonth();
+    if (year == today.getYear() && month == today.getMonthValue()) {
+      maxDay = Math.min(maxDay, today.getDayOfMonth());
+    }
+    int day = random.nextInt(1, maxDay + 1);
+    return LocalDate.of(year, month, day);
+  }
+
+  @SuppressWarnings("NullAway")
+  private void insertExpense(
+      UUID propertyId,
+      UUID teamId,
+      @Nullable UUID createdBy,
+      String currency,
+      String category,
+      BigDecimal amount,
+      LocalDate expenseDate,
+      String description,
+      @Nullable String notes,
+      LocalDateTime now) {
+
+    LocalDateTime createdAt = expenseDate.atStartOfDay().plusDays(random.nextInt(0, 7));
+    if (createdAt.isAfter(now)) {
+      createdAt = now;
+    }
+
+    dsl.insertInto(EXPENSES)
+        .set(EXPENSES.ID, UUID.randomUUID())
+        .set(EXPENSES.IDENTIFIER, newExpenseId())
+        .set(EXPENSES.TEAM_ID, teamId)
+        .set(EXPENSES.PROPERTY_ID, propertyId)
+        .set(EXPENSES.CATEGORY, category)
+        .set(EXPENSES.AMOUNT, amount)
+        .set(EXPENSES.CURRENCY, currency)
+        .set(EXPENSES.EXPENSE_DATE, expenseDate)
+        .set(EXPENSES.DESCRIPTION, description)
+        .set(EXPENSES.NOTES, notes)
+        .set(EXPENSES.CREATED_AT, createdAt)
+        .set(EXPENSES.UPDATED_AT, now)
+        .set(EXPENSES.CREATED_BY, createdBy)
+        .set(EXPENSES.UPDATED_BY, createdBy)
+        .execute();
   }
 
   private String pick(String... options) {

@@ -27,6 +27,7 @@ import static com.buurman.jooq.generated.Tables.PROPERTY_FINANCINGS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_INDUSTRIAL_DETAILS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_INSURANCES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_OUTDOOR_AREAS;
+import static com.buurman.jooq.generated.Tables.PROPERTY_RESIDENTIAL_DETAILS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_TAXES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_TENANT_HISTORY;
 import static com.buurman.jooq.generated.Tables.PROPERTY_VALUATIONS;
@@ -50,7 +51,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.config.models.DemoDataProperties;
-import com.buurman.dto.response.DemoDataResponse;
 import com.buurman.service.S3StorageService;
 
 import lombok.RequiredArgsConstructor;
@@ -128,18 +128,6 @@ public class DemoDataService {
         ctx.getExpensesCreated(),
         ctx.getNotificationsCreated(),
         ctx.getDocumentsCreated());
-
-    new DemoDataResponse(
-        ctx.getTeamsCreated(),
-        ctx.getUsersCreated(),
-        ctx.getPropertiesCreated(),
-        ctx.getTenantsCreated(),
-        ctx.getContractsCreated(),
-        ctx.getPaymentsCreated(),
-        ctx.getExpensesCreated(),
-        ctx.getNotificationsCreated(),
-        ctx.getDocumentsCreated(),
-        durationMs);
   }
 
   @Transactional
@@ -264,7 +252,14 @@ public class DemoDataService {
     deleted = dsl.deleteFrom(EXPENSES).where(EXPENSES.TEAM_ID.in(demoTeamIds)).execute();
     log.debug("Deleted {} expenses", deleted);
 
-    // 9a0. Contract extensions (FK -> contracts)
+    // 9a0. Contract rent components (FK -> contracts)
+    deleted =
+        dsl.deleteFrom(DSL.table("contract_rent_components"))
+            .where(DSL.field("team_id", java.util.UUID.class).in(demoTeamIds))
+            .execute();
+    log.debug("Deleted {} contract rent components", deleted);
+
+    // 9a1. Contract extensions (FK -> contracts)
     deleted =
         dsl.deleteFrom(DSL.table("contract_extensions"))
             .where(DSL.field("team_id", java.util.UUID.class).in(demoTeamIds))
@@ -327,6 +322,12 @@ public class DemoDataService {
     log.debug("Deleted {} property outdoor areas", deleted);
 
     // 13b. Property category-specific details
+    deleted =
+        dsl.deleteFrom(PROPERTY_RESIDENTIAL_DETAILS)
+            .where(PROPERTY_RESIDENTIAL_DETAILS.TEAM_ID.in(demoTeamIds))
+            .execute();
+    log.debug("Deleted {} property residential details", deleted);
+
     deleted =
         dsl.deleteFrom(PROPERTY_COMMERCIAL_DETAILS)
             .where(PROPERTY_COMMERCIAL_DETAILS.TEAM_ID.in(demoTeamIds))

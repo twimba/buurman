@@ -1,5 +1,7 @@
 package com.buurman.service.demo;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +52,18 @@ public class DemoDataContext {
 
   // Tenant UUID -> whether the tenant is a business entity
   private final Map<UUID, Boolean> businessTenantFlags = new LinkedHashMap<>();
+
+  // Property UUID -> acquisition date (when the property was purchased)
+  private final Map<UUID, LocalDate> propertyAcquisitionDates = new LinkedHashMap<>();
+
+  // Property UUID -> country code (e.g., "NL", "DE", "GB")
+  private final Map<UUID, String> propertyCountryCodes = new LinkedHashMap<>();
+
+  // Property UUID -> current market rent baseline (for contract chain generation)
+  private final Map<UUID, BigDecimal> propertyRentBaselines = new LinkedHashMap<>();
+
+  // Property UUID -> property type (e.g., "APARTMENT", "HOUSE", "OFFICE")
+  private final Map<UUID, String> propertyTypes = new LinkedHashMap<>();
 
   // Counters
   @Getter private int teamsCreated;
@@ -102,6 +116,38 @@ public class DemoDataContext {
     return businessTenantFlags.getOrDefault(tenantId, false);
   }
 
+  public void putPropertyAcquisitionDate(UUID propertyId, LocalDate date) {
+    propertyAcquisitionDates.put(propertyId, date);
+  }
+
+  public LocalDate getPropertyAcquisitionDate(UUID propertyId) {
+    return propertyAcquisitionDates.getOrDefault(propertyId, LocalDate.of(2020, 1, 1));
+  }
+
+  public void putPropertyCountryCode(UUID propertyId, String countryCode) {
+    propertyCountryCodes.put(propertyId, countryCode);
+  }
+
+  public String getPropertyCountryCode(UUID propertyId) {
+    return propertyCountryCodes.getOrDefault(propertyId, "NL");
+  }
+
+  public void putPropertyRentBaseline(UUID propertyId, BigDecimal rent) {
+    propertyRentBaselines.put(propertyId, rent);
+  }
+
+  public BigDecimal getPropertyRentBaseline(UUID propertyId) {
+    return propertyRentBaselines.getOrDefault(propertyId, BigDecimal.valueOf(1200));
+  }
+
+  public void putPropertyType(UUID propertyId, String type) {
+    propertyTypes.put(propertyId, type);
+  }
+
+  public String getPropertyType(UUID propertyId) {
+    return propertyTypes.getOrDefault(propertyId, "APARTMENT");
+  }
+
   public void incrementTeams() {
     teamsCreated++;
   }
@@ -145,7 +191,7 @@ public class DemoDataContext {
           case "demo-team" -> userIds.get("demo.user@demo.buurman.io");
           case "team-alpha" -> userIds.get("admin@demo.buurman.io");
           case "team-beta" -> userIds.get("admin.team2@demo.buurman.io");
-          default -> userIds.values().iterator().next();
+          default -> userIds.values().stream().findFirst().orElse(null);
         });
   }
 }

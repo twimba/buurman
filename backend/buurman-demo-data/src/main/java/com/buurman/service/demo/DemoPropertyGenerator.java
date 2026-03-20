@@ -22,11 +22,12 @@ import static com.buurman.util.SidGenerator.newPropertyTaxId;
 import static com.buurman.util.SidGenerator.newValuationId;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -98,7 +99,7 @@ public class DemoPropertyGenerator {
     "Erste Bank", "Credit Suisse", "JPMorgan Chase", "Bank of Ireland"
   };
 
-  public static final int PROPERTIES_PER_TEAM = 12;
+  public static final int PROPERTIES_PER_TEAM = 30;
 
   // Country data with category-specific street pools
   private static final List<CountryData> COUNTRIES =
@@ -168,15 +169,15 @@ public class DemoPropertyGenerator {
                   "Hamburg",
                   "HH",
                   "Frankfurt",
-                  "BY",
+                  "HE",
                   "Cologne",
-                  "BY",
+                  "NW",
                   "Stuttgart",
-                  "BY",
+                  "BW",
                   "Düsseldorf",
-                  "BY",
+                  "NW",
                   "Dresden",
-                  "BE")),
+                  "SN")),
           new CountryData(
               "United Kingdom",
               List.of(
@@ -481,13 +482,13 @@ public class DemoPropertyGenerator {
                   "Portland",
                   "OR",
                   "Chicago",
-                  "NY",
+                  "IL",
                   "Houston",
-                  "CA",
+                  "TX",
                   "Miami",
-                  "NY",
+                  "FL",
                   "Seattle",
-                  "OR")),
+                  "WA")),
           new CountryData(
               "Ireland",
               List.of(
@@ -534,6 +535,16 @@ public class DemoPropertyGenerator {
 
   private final Clock clock;
 
+  // Property type cycling arrays per category
+  private static final String[] RESIDENTIAL_TYPES = {
+    "APARTMENT", "HOUSE", "STUDIO", "TOWNHOUSE", "VILLA", "APARTMENT", "HOUSE", "APARTMENT"
+  };
+  private static final String[] COMMERCIAL_TYPES = {
+    "OFFICE", "RETAIL", "RESTAURANT", "OFFICE", "RETAIL", "OFFICE"
+  };
+  private static final String[] INDUSTRIAL_TYPES = {"WAREHOUSE", "FACTORY", "WORKSHOP"};
+  private static final String[] AGRICULTURAL_TYPES = {"FARMLAND", "GREENHOUSE", "FARMLAND"};
+
   public void generate(DemoDataContext ctx) {
     LocalDateTime now = LocalDateTime.now(clock);
 
@@ -544,14 +555,19 @@ public class DemoPropertyGenerator {
       String currency = ctx.getCurrencyForTeam(teamKey);
       List<UUID> propertyIds = new ArrayList<>();
 
-      List<String> categories = generateCategoryMix(PROPERTIES_PER_TEAM);
-
       for (int i = 0; i < PROPERTIES_PER_TEAM; i++) {
         UUID propertyId = UUID.randomUUID();
-        String propertyCategory = categories.get(i);
-        String propertyType = randomTypeForCategory(propertyCategory);
-        String status = i < PROPERTIES_PER_TEAM - 1 ? "OCCUPIED" : "VACANT";
 
+        // Category distribution
+        String propertyCategory = categoryForIndex(i);
+
+        // Property type cycling within category
+        String propertyType = typeForIndex(propertyCategory, i);
+
+        // Default to VACANT; contract generator sets OCCUPIED for properties with ACTIVE contracts
+        String status = "VACANT";
+
+        // Country distribution: cycle through 12 countries
         CountryData country = COUNTRIES.get(i % COUNTRIES.size());
         List<String> streets = streetsForCategory(country, propertyCategory);
 
@@ -562,6 +578,9 @@ public class DemoPropertyGenerator {
 
         double lat = country.latMin() + random.nextDouble() * (country.latMax() - country.latMin());
         double lon = country.lonMin() + random.nextDouble() * (country.lonMax() - country.lonMin());
+
+        // Acquisition date based on index band
+        LocalDate acquisitionDate = acquisitionDateForIndex(i);
 
         int yearBuilt = random.nextInt(1920, 2020);
         BigDecimal area = areaForCategory(propertyCategory);
@@ -583,6 +602,13 @@ public class DemoPropertyGenerator {
         String heatingType = heatingTypeForCategory(propertyCategory);
         String coolingType = coolingTypeForCategory(propertyCategory);
         int floors = floorsForCategory(propertyCategory);
+
+        // created_at is around the acquisition date (property was "added" when acquired)
+        LocalDateTime createdAt = acquisitionDate.atStartOfDay().plusDays(random.nextInt(0, 30));
+
+        // Rent baseline for this property
+        BigDecimal rentBaseline =
+            rentBaselineForProperty(country.name(), propertyType, propertyCategory);
 
         Sid propertyIdentifier = newPropertyId();
         dsl.insertInto(PROPERTIES)
@@ -665,7 +691,7 @@ public class DemoPropertyGenerator {
                 PROPERTIES.HAS_STEP_FREE_ENTRANCE,
                 "COMMERCIAL".equals(propertyCategory) || random.nextInt(3) == 0)
             .set(PROPERTIES.HAS_ADAPTED_BATHROOM, false)
-            .set(PROPERTIES.CREATED_AT, now.minusDays(random.nextInt(30, 365)))
+            .set(PROPERTIES.CREATED_AT, createdAt)
             .set(PROPERTIES.UPDATED_AT, now)
             .set(PROPERTIES.CREATED_BY, createdBy)
             .set(PROPERTIES.UPDATED_BY, createdBy)
@@ -685,16 +711,28 @@ public class DemoPropertyGenerator {
 
         // Insert financial data into dedicated tables (all properties)
         insertFinancialData(
-            propertyId, teamId, createdBy, currency, propertyCategory, i, yearBuilt, now, ctx);
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            propertyCategory,
+            i,
+            yearBuilt,
+            acquisitionDate,
+            now,
+            ctx);
 
         propertyIds.add(propertyId);
         ctx.putIdentifier(propertyId, propertyIdentifier);
         ctx.putPropertyCategory(propertyId, propertyCategory);
+        ctx.putPropertyAcquisitionDate(propertyId, acquisitionDate);
+        ctx.putPropertyCountryCode(propertyId, country.name());
+        ctx.putPropertyRentBaseline(propertyId, rentBaseline);
+        ctx.putPropertyType(propertyId, propertyType);
         ctx.incrementProperties();
 
-        // Add outdoor areas for RESIDENTIAL and MIXED_USE properties only
-        if (("RESIDENTIAL".equals(propertyCategory) || "MIXED_USE".equals(propertyCategory))
-            && random.nextBoolean()) {
+        // Add outdoor areas for RESIDENTIAL properties only
+        if ("RESIDENTIAL".equals(propertyCategory) && random.nextBoolean()) {
           int outdoorCount = random.nextInt(1, 3);
           Set<String> usedTypes = new HashSet<>();
           for (int j = 0; j < outdoorCount; j++) {
@@ -723,32 +761,72 @@ public class DemoPropertyGenerator {
     }
   }
 
-  // --- Category mix generation ---
+  // --- Category and type distribution ---
 
-  private List<String> generateCategoryMix(int count) {
-    List<String> mix = new ArrayList<>();
-    mix.add("RESIDENTIAL");
-    mix.add("RESIDENTIAL");
-    mix.add("COMMERCIAL");
-    mix.add("INDUSTRIAL");
-    String[] extras = {"AGRICULTURAL", "MIXED_USE", "COMMERCIAL", "RESIDENTIAL"};
-    while (mix.size() < count) {
-      mix.add(extras[random.nextInt(extras.length)]);
+  private String categoryForIndex(int i) {
+    if (i <= 17) {
+      return "RESIDENTIAL";
+    } else if (i <= 23) {
+      return "COMMERCIAL";
+    } else if (i <= 26) {
+      return "INDUSTRIAL";
+    } else {
+      return "AGRICULTURAL";
     }
-    Collections.shuffle(mix, random);
-    return mix;
   }
 
-  private String randomTypeForCategory(String category) {
+  private String typeForIndex(String category, int i) {
     return switch (category) {
-      case "RESIDENTIAL" ->
-          pick(new String[] {"APARTMENT", "HOUSE", "STUDIO", "VILLA", "TOWNHOUSE"});
-      case "COMMERCIAL" -> pick(new String[] {"OFFICE", "RETAIL", "RESTAURANT", "CAFE"});
-      case "INDUSTRIAL" -> pick(new String[] {"WAREHOUSE", "WORKSHOP", "FACTORY", "GARAGE"});
-      case "AGRICULTURAL" -> pick(new String[] {"FARMLAND", "GREENHOUSE", "ORCHARD", "VINEYARD"});
-      case "MIXED_USE" -> "MIXED_USE";
+      case "RESIDENTIAL" -> RESIDENTIAL_TYPES[i % RESIDENTIAL_TYPES.length];
+      case "COMMERCIAL" -> COMMERCIAL_TYPES[(i - 18) % COMMERCIAL_TYPES.length];
+      case "INDUSTRIAL" -> INDUSTRIAL_TYPES[(i - 24) % INDUSTRIAL_TYPES.length];
+      case "AGRICULTURAL" -> AGRICULTURAL_TYPES[(i - 27) % AGRICULTURAL_TYPES.length];
       default -> "APARTMENT";
     };
+  }
+
+  // --- Acquisition date based on index band ---
+
+  private LocalDate acquisitionDateForIndex(int i) {
+    int startYear;
+    int endYear;
+    int endMonth;
+    int endDay;
+    if (i <= 4) {
+      startYear = 2000;
+      endYear = 2004;
+      endMonth = 12;
+      endDay = 31;
+    } else if (i <= 9) {
+      startYear = 2005;
+      endYear = 2009;
+      endMonth = 12;
+      endDay = 31;
+    } else if (i <= 14) {
+      startYear = 2010;
+      endYear = 2014;
+      endMonth = 12;
+      endDay = 31;
+    } else if (i <= 19) {
+      startYear = 2015;
+      endYear = 2019;
+      endMonth = 12;
+      endDay = 31;
+    } else if (i <= 24) {
+      startYear = 2020;
+      endYear = 2023;
+      endMonth = 12;
+      endDay = 31;
+    } else {
+      startYear = 2024;
+      endYear = 2025;
+      endMonth = 6;
+      endDay = 30;
+    }
+    LocalDate rangeStart = LocalDate.of(startYear, 1, 1);
+    LocalDate rangeEnd = LocalDate.of(endYear, endMonth, endDay);
+    long daysBetween = ChronoUnit.DAYS.between(rangeStart, rangeEnd);
+    return rangeStart.plusDays(random.nextLong(0, daysBetween + 1));
   }
 
   // --- Category-specific addresses ---
@@ -834,30 +912,125 @@ public class DemoPropertyGenerator {
     };
   }
 
-  // --- Category-specific financial ---
+  // --- Category-specific financial (era-aware) ---
 
-  private Long purchasePriceForCategory(String category, int i) {
-    long base =
+  /**
+   * Returns the 2024-baseline purchase price in minor units (cents) for the category, then deflates
+   * by ~3% per year for the acquisition year.
+   */
+  private long acquisitionPriceForCategory(String category, int i, int acquisitionYear) {
+    // 2024 baseline in EUR (major units)
+    long baseline2024 =
         switch (category) {
-          case "COMMERCIAL" -> 400_000 + i * 100_000L;
-          case "INDUSTRIAL" -> 500_000 + i * 150_000L;
-          case "AGRICULTURAL" -> 150_000 + i * 50_000L;
-          case "MIXED_USE" -> 350_000 + i * 80_000L;
-          default -> 200_000 + i * 75_000L;
+          case "COMMERCIAL" -> 400_000 + (i % 6) * 100_000L;
+          case "INDUSTRIAL" -> 500_000 + (i % 3) * 150_000L;
+          case "AGRICULTURAL" -> 150_000 + (i % 3) * 50_000L;
+          default -> 200_000 + (i % 18) * 30_000L;
         };
-    return base * 100L;
+    // Deflate by 3% per year from 2024
+    int yearsBack = 2024 - acquisitionYear;
+    double deflator = Math.pow(1.0 / 1.03, yearsBack);
+    return Math.round(baseline2024 * deflator); // major units (EUR) — JOOQ converter handles cents
   }
 
-  private Long marketValueForCategory(String category, int i) {
-    long base =
-        switch (category) {
-          case "COMMERCIAL" -> 440_000 + i * 110_000L;
-          case "INDUSTRIAL" -> 550_000 + i * 160_000L;
-          case "AGRICULTURAL" -> 170_000 + i * 55_000L;
-          case "MIXED_USE" -> 385_000 + i * 90_000L;
-          default -> 220_000 + i * 80_000L;
-        };
-    return base * 100L;
+  /**
+   * Returns the current (2025) market value in minor units (cents). Appreciation from acquisition
+   * at ~3% compound per year.
+   */
+  private long currentMarketValue(long acquisitionPriceMinor, int acquisitionYear) {
+    int yearsSince = 2025 - acquisitionYear;
+    double appreciation = Math.pow(1.03, yearsSince);
+    return Math.round(acquisitionPriceMinor * appreciation);
+  }
+
+  // --- Rent baseline calculation ---
+
+  private BigDecimal rentBaselineForProperty(
+      String countryName, String propertyType, String category) {
+    double base = 1200.0;
+    double countryMul = countryRentMultiplier(countryName);
+    double typeMul = typeRentMultiplier(propertyType, category);
+    return BigDecimal.valueOf(base * countryMul * typeMul).setScale(0, RoundingMode.HALF_UP);
+  }
+
+  private double countryRentMultiplier(String countryName) {
+    return switch (countryName) {
+      case "Netherlands" -> 1.0;
+      case "Germany" -> 0.85;
+      case "United Kingdom" -> 1.4;
+      case "France" -> 0.95;
+      case "Spain" -> 0.65;
+      case "Portugal" -> 0.55;
+      case "Belgium" -> 0.9;
+      case "Italy" -> 0.8;
+      case "Austria" -> 0.9;
+      case "Switzerland" -> 1.5;
+      case "United States" -> 1.3;
+      case "Ireland" -> 1.2;
+      default -> 1.0;
+    };
+  }
+
+  private double typeRentMultiplier(String propertyType, String category) {
+    return switch (category) {
+      case "RESIDENTIAL" ->
+          switch (propertyType) {
+            case "STUDIO" -> 0.65;
+            case "APARTMENT" -> 1.0;
+            case "HOUSE" -> 1.3;
+            case "TOWNHOUSE" -> 1.1;
+            case "VILLA" -> 2.0;
+            default -> 1.0;
+          };
+      case "COMMERCIAL" ->
+          switch (propertyType) {
+            case "OFFICE" -> 1.8;
+            case "RETAIL" -> 2.2;
+            case "RESTAURANT" -> 2.5;
+            default -> 1.8;
+          };
+      case "INDUSTRIAL" ->
+          switch (propertyType) {
+            case "WAREHOUSE" -> 2.5;
+            case "FACTORY" -> 3.5;
+            case "WORKSHOP" -> 2.0;
+            default -> 2.5;
+          };
+      case "AGRICULTURAL" ->
+          switch (propertyType) {
+            case "FARMLAND" -> 1.5;
+            case "GREENHOUSE" -> 2.0;
+            default -> 1.5;
+          };
+      default -> 1.0;
+    };
+  }
+
+  // --- Historical interest rate by acquisition year ---
+
+  private BigDecimal historicalInterestRate(int acquisitionYear) {
+    if (acquisitionYear <= 2005) {
+      // Pre-crisis: ECB rates ~4-5%, mortgage rates ~5-6%
+      return BigDecimal.valueOf(4.5 + random.nextDouble() * 1.5).setScale(2, RoundingMode.HALF_UP);
+    } else if (acquisitionYear <= 2010) {
+      // Financial crisis / recovery: rates dipping
+      return BigDecimal.valueOf(3.5 + random.nextDouble() * 1.5).setScale(2, RoundingMode.HALF_UP);
+    } else if (acquisitionYear <= 2015) {
+      // Post-crisis low rates
+      return BigDecimal.valueOf(2.5 + random.nextDouble() * 1.5).setScale(2, RoundingMode.HALF_UP);
+    } else if (acquisitionYear <= 2019) {
+      // ECB low-rate era: historic lows
+      return BigDecimal.valueOf(1.5 + random.nextDouble() * 1.0).setScale(2, RoundingMode.HALF_UP);
+    } else if (acquisitionYear <= 2021) {
+      // Pandemic lows
+      return BigDecimal.valueOf(1.2 + random.nextDouble() * 0.8).setScale(2, RoundingMode.HALF_UP);
+    } else if (acquisitionYear == 2022) {
+      // Rate hike cycle begins
+      return BigDecimal.valueOf(2.5 + random.nextDouble() * 1.5).setScale(2, RoundingMode.HALF_UP);
+    } else {
+      // 2023+: elevated rates
+      return BigDecimal.valueOf(3.5 + random.nextDouble() * 1.5).setScale(2, RoundingMode.HALF_UP);
+    }
   }
 
   // --- Category-specific details insertion ---
@@ -1022,15 +1195,23 @@ public class DemoPropertyGenerator {
       String propertyCategory,
       int i,
       int yearBuilt,
+      LocalDate acquisitionDate,
       LocalDateTime now,
       DemoDataContext ctx) {
 
-    long purchasePrice = purchasePriceForCategory(propertyCategory, i);
-    long marketValue = marketValueForCategory(propertyCategory, i);
-    LocalDate acquisitionDate = LocalDate.of(2015 + (i % 9), 1 + (i % 12), 15);
+    int acquisitionYear = acquisitionDate.getYear();
+    long purchasePrice = acquisitionPriceForCategory(propertyCategory, i, acquisitionYear);
+    long marketValue = currentMarketValue(purchasePrice, acquisitionYear);
 
-    // === ACQUISITION (all 12 properties) ===
-    String acquisitionType = i == 10 ? "INHERITANCE" : i == 11 ? "AUCTION" : "PURCHASE";
+    // === ACQUISITION (all 30 properties) ===
+    String acquisitionType;
+    if (i % 15 == 10) {
+      acquisitionType = "INHERITANCE";
+    } else if (i % 15 == 11) {
+      acquisitionType = "AUCTION";
+    } else {
+      acquisitionType = "PURCHASE";
+    }
     Long renovationCosts = null;
     String renovationCurrency = null;
     if (yearBuilt < 2000 && random.nextInt(10) < 4) {
@@ -1087,8 +1268,8 @@ public class DemoPropertyGenerator {
         .set(PROPERTY_ACQUISITIONS.UPDATED_BY, createdBy)
         .execute();
 
-    // === VALUATIONS (all 12, 2-3 per property) ===
-    // MARKET valuation
+    // === VALUATIONS (all 30, 2-3 per property) ===
+    // MARKET valuation — recent date, current market value
     dsl.insertInto(PROPERTY_VALUATIONS)
         .set(PROPERTY_VALUATIONS.ID, UUID.randomUUID())
         .set(PROPERTY_VALUATIONS.IDENTIFIER, newValuationId())
@@ -1097,7 +1278,7 @@ public class DemoPropertyGenerator {
         .set(PROPERTY_VALUATIONS.VALUATION_TYPE, "MARKET")
         .set(
             PROPERTY_VALUATIONS.VALUATION_DATE,
-            LocalDate.now(clock).minusMonths(random.nextInt(1, 12)))
+            LocalDate.now(clock).minusMonths(random.nextInt(1, 24)))
         .set(PROPERTY_VALUATIONS.AMOUNT, BigDecimal.valueOf(marketValue))
         .set(PROPERTY_VALUATIONS.CURRENCY, currency)
         .set(PROPERTY_VALUATIONS.SOURCE, APPRAISER_NAMES[i % APPRAISER_NAMES.length])
@@ -1128,8 +1309,8 @@ public class DemoPropertyGenerator {
         .set(PROPERTY_VALUATIONS.UPDATED_BY, createdBy)
         .execute();
 
-    // APPRAISAL valuation (90-95% of market, first 6 properties)
-    if (i < 6) {
+    // APPRAISAL valuation (90-95% of market, first 10 properties)
+    if (i < 10) {
       long appraisalValue = (long) (marketValue * (0.90 + random.nextDouble() * 0.05));
       dsl.insertInto(PROPERTY_VALUATIONS)
           .set(PROPERTY_VALUATIONS.ID, UUID.randomUUID())
@@ -1151,8 +1332,15 @@ public class DemoPropertyGenerator {
           .execute();
     }
 
-    // === FINANCING (props 1-9, prop 0 = paid off, 10 = inherited, 11 = auction) ===
-    if (i >= 1 && i <= 9) {
+    // === FINANCING (most properties, except inherited/auction special indices and first = paid
+    // off)
+    // Props with financing: indices 1-9, 12-24 (excluding 10,11,25,26 which are inheritance/auction
+    // or very recent). Prop 0 = paid off.
+    boolean hasFinancing =
+        (i >= 1 && i <= 24)
+            && !"INHERITANCE".equals(acquisitionType)
+            && !"AUCTION".equals(acquisitionType);
+    if (hasFinancing) {
       String rateType;
       int rateRoll = random.nextInt(10);
       if (rateRoll < 7) {
@@ -1163,24 +1351,45 @@ public class DemoPropertyGenerator {
         rateType = "HYBRID";
       }
 
-      BigDecimal interestRate = BigDecimal.valueOf(random.nextInt(250, 550), 2);
-      int termMonths =
-          "COMMERCIAL".equals(propertyCategory) || "INDUSTRIAL".equals(propertyCategory)
-              ? 240
-              : random.nextBoolean() ? 300 : 360;
-      long originalAmount = (long) (purchasePrice * 0.80);
+      BigDecimal interestRate = historicalInterestRate(acquisitionYear);
+      int termYears = 25 + random.nextInt(0, 6); // 25-30 years
+      int termMonths = termYears * 12;
+
+      // LTV ratio 55-75% (typical for investment properties)
+      double ltv = 0.55 + random.nextDouble() * 0.20;
+      long originalAmount = Math.round(purchasePrice * ltv);
+
       long monthlyPayment =
           calculateMonthlyPayment(originalAmount, interestRate.doubleValue(), termMonths);
-      long currentBalance = (long) (originalAmount * (0.70 + random.nextDouble() * 0.25));
+
+      // Current balance: remaining fraction based on years elapsed
+      int yearsElapsed = 2025 - acquisitionYear;
+      int totalYears = termYears;
+      double remainingFraction = Math.max(0.0, 1.0 - ((double) yearsElapsed / totalYears));
+      // Slightly adjust for amortization curve (early years pay mostly interest)
+      remainingFraction = Math.pow(remainingFraction, 0.7);
+      long currentBalance = Math.round(originalAmount * remainingFraction);
+
       String loanNumber =
-          "MTG-" + (2015 + (i % 9)) + "-" + String.format("%04d", random.nextInt(1000, 9999));
+          "MTG-" + acquisitionYear + "-" + String.format("%04d", random.nextInt(1000, 9999));
       String financingNotes = null;
       if (random.nextInt(10) < 3) {
-        financingNotes = "Fixed rate locked until " + (2025 + random.nextInt(1, 10));
+        financingNotes = "Fixed rate locked until " + (acquisitionYear + random.nextInt(5, 15));
       }
 
       UUID financingId = UUID.randomUUID();
       boolean isRefinanced = (i == 5);
+
+      // Determine status: if the loan end date is in the past, it's COMPLETED
+      LocalDate loanEndDate = acquisitionDate.plusMonths(termMonths);
+      String financingStatus;
+      if (isRefinanced) {
+        financingStatus = "REFINANCED";
+      } else if (loanEndDate.isBefore(LocalDate.now(clock))) {
+        financingStatus = "COMPLETED";
+      } else {
+        financingStatus = "ACTIVE";
+      }
 
       dsl.insertInto(PROPERTY_FINANCINGS)
           .set(PROPERTY_FINANCINGS.ID, financingId)
@@ -1200,9 +1409,9 @@ public class DemoPropertyGenerator {
           .set(PROPERTY_FINANCINGS.MONTHLY_PAYMENT_CURRENCY, currency)
           .set(PROPERTY_FINANCINGS.PAYMENT_VARIABLE, "VARIABLE".equals(rateType))
           .set(PROPERTY_FINANCINGS.START_DATE, acquisitionDate.plusDays(15))
-          .set(PROPERTY_FINANCINGS.END_DATE, acquisitionDate.plusMonths(termMonths))
+          .set(PROPERTY_FINANCINGS.END_DATE, loanEndDate)
           .set(PROPERTY_FINANCINGS.TERM_MONTHS, termMonths)
-          .set(PROPERTY_FINANCINGS.STATUS, isRefinanced ? "REFINANCED" : "ACTIVE")
+          .set(PROPERTY_FINANCINGS.STATUS, financingStatus)
           .set(PROPERTY_FINANCINGS.NOTES, financingNotes)
           .set(PROPERTY_FINANCINGS.CREATED_AT, now)
           .set(PROPERTY_FINANCINGS.UPDATED_AT, now)
@@ -1235,7 +1444,7 @@ public class DemoPropertyGenerator {
             .set(PROPERTY_FINANCINGS.ORIGINAL_AMOUNT_CURRENCY, currency)
             .set(
                 PROPERTY_FINANCINGS.CURRENT_BALANCE,
-                BigDecimal.valueOf((long) (currentBalance * 0.95)))
+                BigDecimal.valueOf(Math.round(currentBalance * 0.95)))
             .set(PROPERTY_FINANCINGS.CURRENT_BALANCE_CURRENCY, currency)
             .set(PROPERTY_FINANCINGS.INTEREST_RATE, lowerRate)
             .set(PROPERTY_FINANCINGS.MONTHLY_PAYMENT, BigDecimal.valueOf(refinancedPayment))
@@ -1256,9 +1465,9 @@ public class DemoPropertyGenerator {
       }
     }
 
-    // === INSURANCE (all 12, 1-3 policies each) ===
+    // === INSURANCE (all 30, 1-3 policies each) ===
     String provider = INSURANCE_PROVIDERS[i % INSURANCE_PROVIDERS.length];
-    long buildingPremium = (long) (marketValue * 0.002) + random.nextInt(100_00, 300_00);
+    long buildingPremium = (long) (marketValue * 0.002) + random.nextInt(100, 300);
     long coverageAmount = (long) (marketValue * (0.80 + random.nextDouble() * 0.20));
 
     // BUILDING insurance for all
@@ -1289,8 +1498,8 @@ public class DemoPropertyGenerator {
         .set(PROPERTY_INSURANCES.UPDATED_BY, createdBy)
         .execute();
 
-    // LIABILITY insurance (props 0-7)
-    if (i <= 7) {
+    // LIABILITY insurance (props 0-19)
+    if (i <= 19) {
       dsl.insertInto(PROPERTY_INSURANCES)
           .set(PROPERTY_INSURANCES.ID, UUID.randomUUID())
           .set(PROPERTY_INSURANCES.IDENTIFIER, newInsuranceId())
@@ -1303,9 +1512,7 @@ public class DemoPropertyGenerator {
               "LIB-" + String.format("%06d", random.nextInt(100000, 999999)))
           .set(PROPERTY_INSURANCES.COVERAGE_AMOUNT, BigDecimal.valueOf(500_000_00L))
           .set(PROPERTY_INSURANCES.COVERAGE_AMOUNT_CURRENCY, currency)
-          .set(
-              PROPERTY_INSURANCES.ANNUAL_PREMIUM,
-              BigDecimal.valueOf(random.nextInt(200_00, 600_00)))
+          .set(PROPERTY_INSURANCES.ANNUAL_PREMIUM, BigDecimal.valueOf(random.nextInt(200, 600)))
           .set(PROPERTY_INSURANCES.ANNUAL_PREMIUM_CURRENCY, currency)
           .set(PROPERTY_INSURANCES.PAYMENT_FREQUENCY, "ANNUALLY")
           .set(PROPERTY_INSURANCES.START_DATE, acquisitionDate)
@@ -1318,8 +1525,8 @@ public class DemoPropertyGenerator {
           .execute();
     }
 
-    // RENT_GUARANTEE insurance (props 3-6)
-    if (i >= 3 && i <= 6) {
+    // RENT_GUARANTEE insurance (residential props 3-14)
+    if (i >= 3 && i <= 14 && "RESIDENTIAL".equals(propertyCategory)) {
       dsl.insertInto(PROPERTY_INSURANCES)
           .set(PROPERTY_INSURANCES.ID, UUID.randomUUID())
           .set(PROPERTY_INSURANCES.IDENTIFIER, newInsuranceId())
@@ -1330,9 +1537,7 @@ public class DemoPropertyGenerator {
           .set(
               PROPERTY_INSURANCES.POLICY_NUMBER,
               "RGT-" + String.format("%06d", random.nextInt(100000, 999999)))
-          .set(
-              PROPERTY_INSURANCES.ANNUAL_PREMIUM,
-              BigDecimal.valueOf(random.nextInt(300_00, 800_00)))
+          .set(PROPERTY_INSURANCES.ANNUAL_PREMIUM, BigDecimal.valueOf(random.nextInt(300, 800)))
           .set(PROPERTY_INSURANCES.ANNUAL_PREMIUM_CURRENCY, currency)
           .set(PROPERTY_INSURANCES.PAYMENT_FREQUENCY, "ANNUALLY")
           .set(PROPERTY_INSURANCES.START_DATE, acquisitionDate.plusMonths(1))
@@ -1362,11 +1567,11 @@ public class DemoPropertyGenerator {
     }
     long taxAmount =
         switch (propertyCategory) {
-          case "COMMERCIAL" -> random.nextInt(2000_00, 5000_00);
-          case "INDUSTRIAL" -> random.nextInt(3000_00, 8000_00);
-          case "AGRICULTURAL" -> random.nextInt(500_00, 2000_00);
-          case "MIXED_USE" -> random.nextInt(2500_00, 6000_00);
-          default -> random.nextInt(1200_00, 3000_00);
+          case "COMMERCIAL" -> random.nextInt(2000, 5000);
+          case "INDUSTRIAL" -> random.nextInt(3000, 8000);
+          case "AGRICULTURAL" -> random.nextInt(500, 2000);
+          case "MIXED_USE" -> random.nextInt(2500, 6000);
+          default -> random.nextInt(1200, 3000);
         };
 
     dsl.insertInto(PROPERTY_TAXES)
@@ -1402,7 +1607,7 @@ public class DemoPropertyGenerator {
           .set(PROPERTY_TAXES.TEAM_ID, teamId)
           .set(PROPERTY_TAXES.TAX_TYPE, "LAND")
           .set(PROPERTY_TAXES.AUTHORITY, authority)
-          .set(PROPERTY_TAXES.ANNUAL_AMOUNT, BigDecimal.valueOf(random.nextInt(300_00, 1000_00)))
+          .set(PROPERTY_TAXES.ANNUAL_AMOUNT, BigDecimal.valueOf(random.nextInt(300, 1000)))
           .set(PROPERTY_TAXES.CURRENCY, currency)
           .set(PROPERTY_TAXES.PAYMENT_FREQUENCY, "ANNUALLY")
           .set(PROPERTY_TAXES.DUE_MONTHS, "3")
@@ -1423,7 +1628,7 @@ public class DemoPropertyGenerator {
           .set(PROPERTY_TAXES.TEAM_ID, teamId)
           .set(PROPERTY_TAXES.TAX_TYPE, "MUNICIPAL")
           .set(PROPERTY_TAXES.AUTHORITY, authority)
-          .set(PROPERTY_TAXES.ANNUAL_AMOUNT, BigDecimal.valueOf(random.nextInt(200_00, 800_00)))
+          .set(PROPERTY_TAXES.ANNUAL_AMOUNT, BigDecimal.valueOf(random.nextInt(200, 800)))
           .set(PROPERTY_TAXES.CURRENCY, currency)
           .set(PROPERTY_TAXES.PAYMENT_FREQUENCY, "ANNUALLY")
           .set(PROPERTY_TAXES.DUE_MONTHS, "9")
@@ -1449,7 +1654,7 @@ public class DemoPropertyGenerator {
               currency,
               "HOA",
               "Monthly HOA Dues",
-              random.nextInt(600_00, 1800_00),
+              random.nextInt(600, 1800),
               "MONTHLY",
               "1,2,3,4,5,6,7,8,9,10,11,12",
               acquisitionDate,
@@ -1462,7 +1667,7 @@ public class DemoPropertyGenerator {
             currency,
             "WASTE_MANAGEMENT",
             "Waste Collection Service",
-            random.nextInt(200_00, 500_00),
+            random.nextInt(200, 500),
             "QUARTERLY",
             "3,6,9,12",
             acquisitionDate,
@@ -1474,7 +1679,7 @@ public class DemoPropertyGenerator {
             currency,
             "WATER",
             "Water & Sewage",
-            random.nextInt(300_00, 800_00),
+            random.nextInt(300, 800),
             "QUARTERLY",
             "3,6,9,12",
             acquisitionDate,
@@ -1488,7 +1693,7 @@ public class DemoPropertyGenerator {
             currency,
             "MANAGEMENT",
             "Commercial Property Management",
-            random.nextInt(2400_00, 6000_00),
+            random.nextInt(2400, 6000),
             "MONTHLY",
             "1,2,3,4,5,6,7,8,9,10,11,12",
             acquisitionDate,
@@ -1500,7 +1705,7 @@ public class DemoPropertyGenerator {
             currency,
             "SECURITY",
             "Security Service",
-            random.nextInt(1200_00, 3600_00),
+            random.nextInt(1200, 3600),
             "MONTHLY",
             "1,2,3,4,5,6,7,8,9,10,11,12",
             acquisitionDate,
@@ -1512,7 +1717,7 @@ public class DemoPropertyGenerator {
             currency,
             "CLEANING",
             "Professional Cleaning",
-            random.nextInt(1800_00, 4200_00),
+            random.nextInt(1800, 4200),
             "MONTHLY",
             "1,2,3,4,5,6,7,8,9,10,11,12",
             acquisitionDate,
@@ -1524,7 +1729,7 @@ public class DemoPropertyGenerator {
             currency,
             "WASTE_MANAGEMENT",
             "Commercial Waste Disposal",
-            random.nextInt(600_00, 1500_00),
+            random.nextInt(600, 1500),
             "QUARTERLY",
             "3,6,9,12",
             acquisitionDate,
@@ -1538,7 +1743,7 @@ public class DemoPropertyGenerator {
             currency,
             "MANAGEMENT",
             "Industrial Site Management",
-            random.nextInt(3600_00, 9000_00),
+            random.nextInt(3600, 9000),
             "MONTHLY",
             "1,2,3,4,5,6,7,8,9,10,11,12",
             acquisitionDate,
@@ -1550,7 +1755,7 @@ public class DemoPropertyGenerator {
             currency,
             "SECURITY",
             "24/7 Security Service",
-            random.nextInt(2400_00, 6000_00),
+            random.nextInt(2400, 6000),
             "MONTHLY",
             "1,2,3,4,5,6,7,8,9,10,11,12",
             acquisitionDate,
@@ -1562,7 +1767,7 @@ public class DemoPropertyGenerator {
             currency,
             "WASTE_MANAGEMENT",
             "Industrial Waste Removal",
-            random.nextInt(1200_00, 3000_00),
+            random.nextInt(1200, 3000),
             "MONTHLY",
             "1,2,3,4,5,6,7,8,9,10,11,12",
             acquisitionDate,
@@ -1574,7 +1779,7 @@ public class DemoPropertyGenerator {
             currency,
             "UTILITIES",
             "Common Area Utilities",
-            random.nextInt(1800_00, 4800_00),
+            random.nextInt(1800, 4800),
             "QUARTERLY",
             "3,6,9,12",
             acquisitionDate,
@@ -1588,7 +1793,7 @@ public class DemoPropertyGenerator {
             currency,
             "WATER",
             "Irrigation Water Supply",
-            random.nextInt(400_00, 1200_00),
+            random.nextInt(400, 1200),
             "SEMI_ANNUALLY",
             "4,10",
             acquisitionDate,
@@ -1600,7 +1805,7 @@ public class DemoPropertyGenerator {
             currency,
             "MAINTENANCE_RESERVE",
             "Farm Maintenance Reserve",
-            random.nextInt(500_00, 1500_00),
+            random.nextInt(500, 1500),
             "ANNUALLY",
             "9",
             acquisitionDate,
@@ -1615,7 +1820,7 @@ public class DemoPropertyGenerator {
               currency,
               "HOA",
               "Building Association Fees",
-              random.nextInt(800_00, 2400_00),
+              random.nextInt(800, 2400),
               "MONTHLY",
               "1,2,3,4,5,6,7,8,9,10,11,12",
               acquisitionDate,
@@ -1628,7 +1833,7 @@ public class DemoPropertyGenerator {
             currency,
             "MANAGEMENT",
             "Mixed-Use Property Management",
-            random.nextInt(2000_00, 5000_00),
+            random.nextInt(2000, 5000),
             "MONTHLY",
             "1,2,3,4,5,6,7,8,9,10,11,12",
             acquisitionDate,
@@ -1640,7 +1845,7 @@ public class DemoPropertyGenerator {
             currency,
             "WASTE_MANAGEMENT",
             "Waste Collection Service",
-            random.nextInt(400_00, 1000_00),
+            random.nextInt(400, 1000),
             "QUARTERLY",
             "3,6,9,12",
             acquisitionDate,
@@ -1654,7 +1859,7 @@ public class DemoPropertyGenerator {
               currency,
               "MAINTENANCE_RESERVE",
               "Maintenance Reserve",
-              random.nextInt(500_00, 1000_00),
+              random.nextInt(500, 1000),
               "ANNUALLY",
               "9",
               acquisitionDate,

@@ -566,7 +566,8 @@ export const ContractDetailPage = () => {
                         <p className="text-sm text-text-secondary">End Date</p>
                         <p className="font-medium text-text-primary">
                           {formatDate(
-                            (contract.endDate ?? contract.effectiveEndDate) as string
+                            (contract.endDate ??
+                              contract.effectiveEndDate) as string
                           )}
                         </p>
                       </div>

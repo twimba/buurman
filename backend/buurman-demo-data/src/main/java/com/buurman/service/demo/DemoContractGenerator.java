@@ -9,9 +9,11 @@ import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -67,6 +69,7 @@ public class DemoContractGenerator {
 
   private static final String[] CONTRACT_TYPES = {"FIXED_TERM", "INDEFINITE"};
 
+  @SuppressWarnings("NullAway")
   public void generate(DemoDataContext ctx) {
     LocalDateTime now = LocalDateTime.now(clock);
     LocalDate today = LocalDate.now(clock);
@@ -84,340 +87,354 @@ public class DemoContractGenerator {
         continue;
       }
 
-      int contractCount = Math.min(propertyIds.size(), tenantIds.size());
-
-      // Sort tenants: put business tenants at end so they can match non-residential properties
+      // Sort tenants: individuals first, business last
       List<UUID> sortedTenants = new ArrayList<>(tenantIds);
       sortedTenants.sort(
           (a, b) -> {
             boolean aBiz = ctx.isBusinessTenant(a);
             boolean bBiz = ctx.isBusinessTenant(b);
-            return Boolean.compare(aBiz, bBiz); // individuals first, business last
+            return Boolean.compare(aBiz, bBiz);
           });
 
-      // Sort properties: put non-residential at end to match business tenants
+      // Sort properties: residential first, non-residential last
       List<UUID> sortedProperties = new ArrayList<>(propertyIds);
       sortedProperties.sort(
           (a, b) -> {
             boolean aRes = "RESIDENTIAL".equals(ctx.getPropertyCategory(a));
             boolean bRes = "RESIDENTIAL".equals(ctx.getPropertyCategory(b));
-            return Boolean.compare(
-                aRes, bRes); // non-residential first (false < true), then residential
+            return Boolean.compare(!aRes, !bRes);
           });
 
-      // Now reverse: we want residential first, non-residential last to match with business tenants
-      // Actually we want: individual tenants matched to residential, business to non-residential
-      // So pair from both ends: first individual+residential, then business+non-residential
-      // Simpler: just sort both so residential+individual come first
-      sortedProperties.sort(
-          (a, b) -> {
-            boolean aRes = "RESIDENTIAL".equals(ctx.getPropertyCategory(a));
-            boolean bRes = "RESIDENTIAL".equals(ctx.getPropertyCategory(b));
-            return Boolean.compare(!aRes, !bRes); // residential first
-          });
+      // Global tenant index across all properties in this team
+      int tenantIndex = 0;
+      int totalContracts = 0;
 
-      for (int i = 0; i < contractCount; i++) {
-        UUID contractId = UUID.randomUUID();
-        UUID propertyId = sortedProperties.get(i);
-        UUID tenantId = sortedTenants.get(i);
+      for (int propIdx = 0; propIdx < sortedProperties.size(); propIdx++) {
+        UUID propertyId = sortedProperties.get(propIdx);
         String propertyCategory = ctx.getPropertyCategory(propertyId);
-
-        // Determine contract scenario
-        String status;
-        LocalDate startDate;
-        LocalDate endDate;
-        LocalDate signedDate;
-
-        if (i < 2) {
-          // EXPIRED contracts (past)
-          status = "EXPIRED";
-          startDate = today.minusYears(3).minusMonths(random.nextInt(0, 6));
-          endDate = today.minusYears(1).minusMonths(random.nextInt(0, 12));
-          signedDate = startDate.minusDays(random.nextInt(7, 30));
-        } else if (i < contractCount - 2) {
-          // ACTIVE contracts (current)
-          status = "ACTIVE";
-          startDate = today.minusMonths(random.nextInt(6, 18));
-          if (random.nextBoolean()) {
-            endDate = today.plusMonths(endDateMonthsForCategory(propertyCategory));
-          } else {
-            endDate = null;
-          }
-          signedDate = startDate.minusDays(random.nextInt(7, 30));
-
-          // Mark property as occupied
-          dsl.update(PROPERTIES)
-              .set(PROPERTIES.STATUS, "OCCUPIED")
-              .where(PROPERTIES.ID.eq(propertyId))
-              .execute();
-        } else if (i == contractCount - 2) {
-          // TERMINATED
-          status = "TERMINATED";
-          startDate = today.minusYears(2);
-          endDate = today.minusMonths(random.nextInt(1, 6));
-          signedDate = startDate.minusDays(14);
-        } else {
-          // DRAFT (future)
-          status = "DRAFT";
-          startDate = today.plusMonths(1);
-          endDate = today.plusYears(1).plusMonths(1);
-          signedDate = null;
-        }
-
-        String contractType = CONTRACT_TYPES[i % CONTRACT_TYPES.length];
-        if (endDate == null) {
-          contractType = "INDEFINITE";
-        }
-
-        // Renewal mode: ~40% AUTOMATIC, ~20% MANUAL, ~40% NONE
-        String renewalMode;
-        int renewalTermMonths = 12;
-        Integer maxRenewals = null;
-        int landlordNoticeDays;
-        int tenantNoticeDays;
-        boolean requiresTenantConfirmation;
-        String rentAdjType;
-        BigDecimal rentAdjValue;
-
-        int renewalBucket = i % 5;
-        if (renewalBucket < 2) {
-          // 40% AUTOMATIC
-          renewalMode = "AUTOMATIC";
-          landlordNoticeDays = 90;
-          tenantNoticeDays = 30;
-          requiresTenantConfirmation = false;
-          rentAdjType = "FIXED_PERCENTAGE";
-          rentAdjValue =
-              BigDecimal.valueOf(2 + random.nextDouble() * 3)
-                  .setScale(4, java.math.RoundingMode.HALF_UP);
-        } else if (renewalBucket == 2) {
-          // 20% MANUAL
-          renewalMode = "MANUAL";
-          landlordNoticeDays = 90;
-          tenantNoticeDays = 30;
-          requiresTenantConfirmation = true;
-          maxRenewals = random.nextInt(2, 6);
-          rentAdjType = "MANUAL";
-          rentAdjValue = null;
-        } else {
-          // 40% NONE
-          renewalMode = "NONE";
-          landlordNoticeDays = 30;
-          tenantNoticeDays = 30;
-          requiresTenantConfirmation = false;
-          rentAdjType = "NONE";
-          rentAdjValue = null;
-        }
-
-        BigDecimal rentAmount = rentAmountForCategory(propertyCategory);
-        BigDecimal deposit = rentAmount.multiply(depositMultiplierForCategory(propertyCategory));
-        String paymentFrequency = paymentFrequencyForCategory(propertyCategory);
-        int terminationNoticeDays = terminationNoticeForCategory(propertyCategory);
-
-        // Resolve country from property
-        String propertyCountry =
-            dsl.select(PROPERTIES.COUNTRY_CODE)
-                .from(PROPERTIES)
-                .where(PROPERTIES.ID.eq(propertyId))
-                .fetchOneInto(String.class);
+        LocalDate acquisitionDate = ctx.getPropertyAcquisitionDate(propertyId);
+        BigDecimal rentBaseline = ctx.getPropertyRentBaseline(propertyId);
+        String propertyCountry = ctx.getPropertyCountryCode(propertyId);
         String countryCode = CountryMetadataRegistry.normalizeCountryCode(propertyCountry);
-        ContractCountryMetadata metadata =
-            countryCode != null ? buildDemoMetadata(countryCode) : null;
 
-        Sid contractIdentifier = newContractId();
-        dsl.insertInto(CONTRACTS)
-            .set(CONTRACTS.ID, contractId)
-            .set(CONTRACTS.IDENTIFIER, contractIdentifier)
-            .set(CONTRACTS.TEAM_ID, teamId)
-            .set(CONTRACTS.PROPERTY_ID, propertyId)
-            .set(CONTRACTS.CONTRACT_TYPE, contractType)
-            .set(CONTRACTS.START_DATE, startDate)
-            .set(CONTRACTS.END_DATE, endDate)
-            .set(CONTRACTS.SIGNED_DATE, signedDate)
-            .set(CONTRACTS.RENT_AMOUNT, rentAmount)
-            .set(CONTRACTS.DEPOSIT_AMOUNT, deposit)
-            .set(CONTRACTS.SECURITY_DEPOSIT, rentAmount)
-            .set(CONTRACTS.RENT_AMOUNT_CURRENCY, currency)
-            .set(CONTRACTS.DEPOSIT_AMOUNT_CURRENCY, currency)
-            .set(CONTRACTS.SECURITY_DEPOSIT_CURRENCY, currency)
-            .set(CONTRACTS.PAYMENT_FREQUENCY, paymentFrequency)
-            .set(CONTRACTS.PAYMENT_DUE_DAY, 1)
-            .set(field("renewal_mode", String.class), renewalMode)
-            .set(field("renewal_term_months", Integer.class), renewalTermMonths)
-            .set(field("max_renewals", Integer.class), maxRenewals)
-            .set(field("landlord_notice_days", Integer.class), landlordNoticeDays)
-            .set(field("tenant_notice_days", Integer.class), tenantNoticeDays)
-            .set(field("requires_tenant_confirmation", Boolean.class), requiresTenantConfirmation)
-            .set(field("rent_adjustment_type", String.class), rentAdjType)
-            .set(field("rent_adjustment_value", BigDecimal.class), rentAdjValue)
-            .set(CONTRACTS.TERMINATION_NOTICE_DAYS, terminationNoticeDays)
-            .set(CONTRACTS.LATE_FEE_PERCENTAGE, BigDecimal.valueOf(2))
-            .set(CONTRACTS.STATUS, status)
-            .set(CONTRACTS.NOTES, "Demo contract for testing purposes")
-            .set(field("country_code", String.class), countryCode)
-            .set(
-                field("country_metadata", JSONB.class),
-                metadata != null
-                    ? JSONB.jsonb(countryMetadataSerializer.serialize(metadata))
-                    : null)
-            .set(CONTRACTS.CREATED_AT, now.minusDays(random.nextInt(30, 365)))
-            .set(CONTRACTS.UPDATED_AT, now)
-            .set(CONTRACTS.CREATED_BY, createdBy)
-            .set(CONTRACTS.UPDATED_BY, createdBy)
-            .execute();
+        long yearsOwned = ChronoUnit.YEARS.between(acquisitionDate, today);
+        int chainLength = computeChainLength(yearsOwned);
 
-        // Insert primary tenant into contract_parties
-        dsl.insertInto(table("contract_parties"))
-            .set(field("id", UUID.class), UUID.randomUUID())
-            .set(field("identifier", String.class), newContractPartyId().value())
-            .set(field("team_id", UUID.class), teamId)
-            .set(field("contract_id", UUID.class), contractId)
-            .set(field("tenant_id", UUID.class), tenantId)
-            .set(field("role", String.class), "PRIMARY_TENANT")
-            .set(field("created_at", LocalDateTime.class), now)
-            .set(field("updated_at", LocalDateTime.class), now)
-            .set(field("created_by", UUID.class), createdBy)
-            .set(field("updated_by", UUID.class), createdBy)
-            .execute();
-
-        // Insert rent components (~70% of contracts get a breakdown)
-        if (i % 3 != 2) {
-          insertRentComponents(
-              contractId, teamId, createdBy, rentAmount, currency, propertyCategory, now);
-        }
-
-        contractIds.add(contractId);
-        ctx.putIdentifier(contractId, contractIdentifier);
-        ctx.incrementContracts();
-      }
-
-      // === HISTORICAL EXPIRED CONTRACTS (4-6 per team) ===
-      int historicalCount = random.nextInt(4, 7);
-      int extraTenantStart = 12; // indices 12-17 are extra tenants
-      int[] historicalPropertyIndices = {0, 2, 4, 6, 1, 3};
-
-      for (int h = 0; h < historicalCount && h < historicalPropertyIndices.length; h++) {
-        int propIdx = historicalPropertyIndices[h];
-        if (propIdx >= sortedProperties.size()) {
-          continue;
-        }
-        int tenantIdx = extraTenantStart + h;
-        if (tenantIdx >= sortedTenants.size()) {
+        if (chainLength == 0) {
           continue;
         }
 
-        UUID historicalContractId = UUID.randomUUID();
-        UUID historicalPropertyId = sortedProperties.get(propIdx);
-        UUID historicalTenantId = sortedTenants.get(tenantIdx);
-        String historicalCategory = ctx.getPropertyCategory(historicalPropertyId);
+        // Divide time from acquisition to today into roughly equal segments
+        long totalDays = ChronoUnit.DAYS.between(acquisitionDate, today);
+        long segmentDays = chainLength > 0 ? totalDays / chainLength : totalDays;
 
-        // Start 3-5 years ago, end 1-3 years ago (before current contracts)
-        LocalDate histStart =
-            today.minusYears(random.nextInt(3, 6)).minusMonths(random.nextInt(0, 6));
-        LocalDate histEnd =
-            today.minusYears(random.nextInt(1, 3)).minusMonths(random.nextInt(0, 6));
-        if (!histEnd.isAfter(histStart)) {
-          histEnd = histStart.plusYears(1);
+        BigDecimal previousRent = null;
+
+        for (int c = 0; c < chainLength; c++) {
+          boolean isLastContract = (c == chainLength - 1);
+
+          // Determine tenant (wrap around if we exceed the pool)
+          UUID tenantId = sortedTenants.get(tenantIndex % sortedTenants.size());
+          tenantIndex++;
+
+          // Compute start date
+          LocalDate startDate;
+          if (c == 0) {
+            // First contract: acquisition date + 1-6 months
+            startDate = acquisitionDate.plusMonths(random.nextInt(1, 7));
+          } else {
+            // Subsequent contracts: previous segment end + 0-3 months gap
+            LocalDate segmentEnd = acquisitionDate.plusDays(segmentDays * c);
+            startDate = segmentEnd.plusMonths(random.nextInt(0, 4));
+          }
+
+          // Clamp start date to not be in the future for non-last contracts
+          if (!isLastContract && startDate.isAfter(today)) {
+            startDate = today.minusMonths(1);
+          }
+
+          // Compute contract term based on category
+          int termMonths = contractTermMonthsForCategory(propertyCategory);
+
+          // Compute end date
+          LocalDate endDate;
+          if (isLastContract) {
+            endDate =
+                computeLastContractEndDate(
+                    propIdx, sortedProperties.size(), startDate, termMonths, today);
+          } else {
+            // Historical contracts: end at roughly the segment boundary
+            LocalDate segmentEnd = acquisitionDate.plusDays(segmentDays * (c + 1));
+            endDate = segmentEnd;
+            if (!endDate.isAfter(startDate)) {
+              endDate = startDate.plusMonths(termMonths);
+            }
+          }
+
+          // Determine status
+          String status =
+              computeStatus(propIdx, sortedProperties.size(), isLastContract, endDate, today);
+
+          // Compute rent for this contract
+          int contractYear = startDate.getYear();
+          int currentYear = today.getYear();
+          BigDecimal rent;
+          if (previousRent != null) {
+            // New contract in chain: 5-15% bump above previous (market rate reset)
+            double bump = 1.05 + random.nextDouble() * 0.10;
+            rent =
+                previousRent.multiply(BigDecimal.valueOf(bump)).setScale(0, RoundingMode.HALF_UP);
+          } else {
+            rent = rentForYear(rentBaseline, contractYear, currentYear);
+          }
+          previousRent = rent;
+
+          BigDecimal deposit = rent.multiply(depositMultiplierForCategory(propertyCategory));
+          String paymentFrequency = paymentFrequencyForCategory(propertyCategory);
+          int terminationNoticeDays = terminationNoticeForCategory(propertyCategory);
+
+          // Contract type
+          String contractType;
+          if (isLastContract && endDate == null) {
+            contractType = "INDEFINITE";
+          } else {
+            contractType = CONTRACT_TYPES[totalContracts % CONTRACT_TYPES.length];
+            if (endDate == null) {
+              contractType = "INDEFINITE";
+            }
+          }
+
+          // Signed date
+          LocalDate signedDate;
+          if ("DRAFT".equals(status)) {
+            signedDate = null;
+          } else {
+            signedDate = startDate.minusDays(random.nextInt(7, 30));
+          }
+
+          // Renewal mode distribution: ~40% AUTOMATIC, ~20% MANUAL, ~40% NONE
+          String renewalMode;
+          int renewalTermMonths = 12;
+          Integer maxRenewals = null;
+          int landlordNoticeDays;
+          int tenantNoticeDays;
+          boolean requiresTenantConfirmation;
+          String rentAdjType;
+          BigDecimal rentAdjValue;
+
+          int renewalBucket = totalContracts % 5;
+          if (renewalBucket < 2) {
+            renewalMode = "AUTOMATIC";
+            landlordNoticeDays = 90;
+            tenantNoticeDays = 30;
+            requiresTenantConfirmation = false;
+            rentAdjType = "FIXED_PERCENTAGE";
+            rentAdjValue =
+                BigDecimal.valueOf(2 + random.nextDouble() * 3).setScale(4, RoundingMode.HALF_UP);
+          } else if (renewalBucket == 2) {
+            renewalMode = "MANUAL";
+            landlordNoticeDays = 90;
+            tenantNoticeDays = 30;
+            requiresTenantConfirmation = true;
+            maxRenewals = random.nextInt(2, 6);
+            rentAdjType = "MANUAL";
+            rentAdjValue = null;
+          } else {
+            renewalMode = "NONE";
+            landlordNoticeDays = 30;
+            tenantNoticeDays = 30;
+            requiresTenantConfirmation = false;
+            rentAdjType = "NONE";
+            rentAdjValue = null;
+          }
+
+          // Country metadata
+          ContractCountryMetadata metadata =
+              countryCode != null ? buildDemoMetadata(countryCode) : null;
+
+          // Compute realistic created_at based on contract start
+          LocalDateTime createdAt;
+          if (signedDate != null) {
+            createdAt = signedDate.atStartOfDay().minusDays(random.nextInt(1, 14));
+          } else {
+            createdAt = now.minusDays(random.nextInt(1, 30));
+          }
+
+          // Mark property as occupied if last contract is ACTIVE
+          if (isLastContract && "ACTIVE".equals(status)) {
+            dsl.update(PROPERTIES)
+                .set(PROPERTIES.STATUS, "OCCUPIED")
+                .where(PROPERTIES.ID.eq(propertyId))
+                .execute();
+          }
+
+          UUID contractId = UUID.randomUUID();
+          Sid contractIdentifier = newContractId();
+          dsl.insertInto(CONTRACTS)
+              .set(CONTRACTS.ID, contractId)
+              .set(CONTRACTS.IDENTIFIER, contractIdentifier)
+              .set(CONTRACTS.TEAM_ID, teamId)
+              .set(CONTRACTS.PROPERTY_ID, propertyId)
+              .set(CONTRACTS.CONTRACT_TYPE, contractType)
+              .set(CONTRACTS.START_DATE, startDate)
+              .set(CONTRACTS.END_DATE, endDate)
+              .set(CONTRACTS.SIGNED_DATE, signedDate)
+              .set(CONTRACTS.RENT_AMOUNT, rent)
+              .set(CONTRACTS.DEPOSIT_AMOUNT, deposit)
+              .set(CONTRACTS.SECURITY_DEPOSIT, rent)
+              .set(CONTRACTS.RENT_AMOUNT_CURRENCY, currency)
+              .set(CONTRACTS.DEPOSIT_AMOUNT_CURRENCY, currency)
+              .set(CONTRACTS.SECURITY_DEPOSIT_CURRENCY, currency)
+              .set(CONTRACTS.PAYMENT_FREQUENCY, paymentFrequency)
+              .set(CONTRACTS.PAYMENT_DUE_DAY, 1)
+              .set(field("renewal_mode", String.class), renewalMode)
+              .set(field("renewal_term_months", Integer.class), renewalTermMonths)
+              .set(field("max_renewals", Integer.class), maxRenewals)
+              .set(field("landlord_notice_days", Integer.class), landlordNoticeDays)
+              .set(field("tenant_notice_days", Integer.class), tenantNoticeDays)
+              .set(field("requires_tenant_confirmation", Boolean.class), requiresTenantConfirmation)
+              .set(field("rent_adjustment_type", String.class), rentAdjType)
+              .set(field("rent_adjustment_value", BigDecimal.class), rentAdjValue)
+              .set(CONTRACTS.TERMINATION_NOTICE_DAYS, terminationNoticeDays)
+              .set(CONTRACTS.LATE_FEE_PERCENTAGE, BigDecimal.valueOf(2))
+              .set(CONTRACTS.STATUS, status)
+              .set(
+                  CONTRACTS.NOTES,
+                  isLastContract
+                      ? "Demo contract for testing purposes"
+                      : "Historical contract (contract " + (c + 1) + " of " + chainLength + ")")
+              .set(field("country_code", String.class), countryCode)
+              .set(
+                  field("country_metadata", JSONB.class),
+                  metadata != null
+                      ? JSONB.jsonb(countryMetadataSerializer.serialize(metadata))
+                      : null)
+              .set(CONTRACTS.CREATED_AT, createdAt)
+              .set(CONTRACTS.UPDATED_AT, now)
+              .set(CONTRACTS.CREATED_BY, createdBy)
+              .set(CONTRACTS.UPDATED_BY, createdBy)
+              .execute();
+
+          // Insert primary tenant into contract_parties
+          dsl.insertInto(table("contract_parties"))
+              .set(field("id", UUID.class), UUID.randomUUID())
+              .set(field("identifier", String.class), newContractPartyId().value())
+              .set(field("team_id", UUID.class), teamId)
+              .set(field("contract_id", UUID.class), contractId)
+              .set(field("tenant_id", UUID.class), tenantId)
+              .set(field("role", String.class), "PRIMARY_TENANT")
+              .set(field("created_at", LocalDateTime.class), now)
+              .set(field("updated_at", LocalDateTime.class), now)
+              .set(field("created_by", UUID.class), createdBy)
+              .set(field("updated_by", UUID.class), createdBy)
+              .execute();
+
+          // Insert rent components (~70% of contracts get a breakdown)
+          if (totalContracts % 3 != 2) {
+            insertRentComponents(
+                contractId, teamId, createdBy, rent, currency, propertyCategory, now);
+          }
+
+          contractIds.add(contractId);
+          ctx.putIdentifier(contractId, contractIdentifier);
+          ctx.incrementContracts();
+          totalContracts++;
         }
-        LocalDate histSigned = histStart.minusDays(random.nextInt(7, 30));
-
-        // Rent 80-90% of current (shows rent increase over time)
-        BigDecimal histRent =
-            rentAmountForCategory(historicalCategory)
-                .multiply(BigDecimal.valueOf(0.80 + random.nextDouble() * 0.10))
-                .setScale(2, java.math.RoundingMode.HALF_UP);
-        BigDecimal histDeposit = histRent.multiply(BigDecimal.valueOf(2));
-
-        String histContractType = CONTRACT_TYPES[h % CONTRACT_TYPES.length];
-
-        // Resolve country from property
-        String histCountry =
-            dsl.select(PROPERTIES.COUNTRY_CODE)
-                .from(PROPERTIES)
-                .where(PROPERTIES.ID.eq(historicalPropertyId))
-                .fetchOneInto(String.class);
-        String histCountryCode = CountryMetadataRegistry.normalizeCountryCode(histCountry);
-        ContractCountryMetadata histMetadata =
-            histCountryCode != null ? buildDemoMetadata(histCountryCode) : null;
-
-        Sid histContractIdentifier = newContractId();
-        dsl.insertInto(CONTRACTS)
-            .set(CONTRACTS.ID, historicalContractId)
-            .set(CONTRACTS.IDENTIFIER, histContractIdentifier)
-            .set(CONTRACTS.TEAM_ID, teamId)
-            .set(CONTRACTS.PROPERTY_ID, historicalPropertyId)
-            .set(CONTRACTS.CONTRACT_TYPE, histContractType)
-            .set(CONTRACTS.START_DATE, histStart)
-            .set(CONTRACTS.END_DATE, histEnd)
-            .set(CONTRACTS.SIGNED_DATE, histSigned)
-            .set(CONTRACTS.RENT_AMOUNT, histRent)
-            .set(CONTRACTS.DEPOSIT_AMOUNT, histDeposit)
-            .set(CONTRACTS.SECURITY_DEPOSIT, histRent)
-            .set(CONTRACTS.RENT_AMOUNT_CURRENCY, currency)
-            .set(CONTRACTS.DEPOSIT_AMOUNT_CURRENCY, currency)
-            .set(CONTRACTS.SECURITY_DEPOSIT_CURRENCY, currency)
-            .set(CONTRACTS.PAYMENT_FREQUENCY, paymentFrequencyForCategory(historicalCategory))
-            .set(CONTRACTS.PAYMENT_DUE_DAY, 1)
-            .set(field("renewal_mode", String.class), "NONE")
-            .set(field("landlord_notice_days", Integer.class), 30)
-            .set(field("tenant_notice_days", Integer.class), 30)
-            .set(field("requires_tenant_confirmation", Boolean.class), false)
-            .set(field("rent_adjustment_type", String.class), "NONE")
-            .set(
-                CONTRACTS.TERMINATION_NOTICE_DAYS, terminationNoticeForCategory(historicalCategory))
-            .set(CONTRACTS.LATE_FEE_PERCENTAGE, BigDecimal.valueOf(2))
-            .set(CONTRACTS.STATUS, "EXPIRED")
-            .set(CONTRACTS.NOTES, "Historical contract - expired " + histEnd)
-            .set(field("country_code", String.class), histCountryCode)
-            .set(
-                field("country_metadata", JSONB.class),
-                histMetadata != null
-                    ? JSONB.jsonb(countryMetadataSerializer.serialize(histMetadata))
-                    : null)
-            .set(CONTRACTS.CREATED_AT, now.minusDays(random.nextInt(365, 1800)))
-            .set(CONTRACTS.UPDATED_AT, now.minusDays(random.nextInt(30, 365)))
-            .set(CONTRACTS.CREATED_BY, createdBy)
-            .set(CONTRACTS.UPDATED_BY, createdBy)
-            .execute();
-
-        // Insert historical contract party
-        dsl.insertInto(table("contract_parties"))
-            .set(field("id", UUID.class), UUID.randomUUID())
-            .set(field("identifier", String.class), newContractPartyId().value())
-            .set(field("team_id", UUID.class), teamId)
-            .set(field("contract_id", UUID.class), historicalContractId)
-            .set(field("tenant_id", UUID.class), historicalTenantId)
-            .set(field("role", String.class), "PRIMARY_TENANT")
-            .set(field("created_at", LocalDateTime.class), now)
-            .set(field("updated_at", LocalDateTime.class), now)
-            .set(field("created_by", UUID.class), createdBy)
-            .set(field("updated_by", UUID.class), createdBy)
-            .execute();
-
-        contractIds.add(historicalContractId);
-        ctx.putIdentifier(historicalContractId, histContractIdentifier);
-        ctx.incrementContracts();
       }
 
       ctx.getContractIdsByTeam().put(teamId, contractIds);
       log.info(
-          "Created {} contracts ({} current + {} historical) for team {}",
-          contractIds.size(),
-          contractCount,
-          contractIds.size() - contractCount,
+          "Created {} contracts across {} properties for team {}",
+          totalContracts,
+          sortedProperties.size(),
           teamKey);
     }
   }
 
-  private BigDecimal rentAmountForCategory(String category) {
-    return BigDecimal.valueOf(
-        switch (category) {
-          case "COMMERCIAL" -> random.nextInt(1500, 8000);
-          case "INDUSTRIAL" -> random.nextInt(2000, 15000);
-          case "AGRICULTURAL" -> random.nextInt(500, 5000);
-          case "MIXED_USE" -> random.nextInt(2000, 10000);
-          default -> random.nextInt(800, 3000); // RESIDENTIAL
-        });
+  /** Determines how many contracts a property should have based on years owned. */
+  private int computeChainLength(long yearsOwned) {
+    if (yearsOwned >= 20) {
+      return random.nextInt(4, 6);
+    } else if (yearsOwned >= 15) {
+      return random.nextInt(3, 5);
+    } else if (yearsOwned >= 10) {
+      return random.nextInt(2, 4);
+    } else if (yearsOwned >= 5) {
+      return random.nextInt(1, 3);
+    } else if (yearsOwned >= 2) {
+      return 1;
+    } else {
+      return random.nextBoolean() ? 1 : 0;
+    }
+  }
+
+  /**
+   * Computes the end date for the last contract in a chain. Properties 27, 28 get
+   * TERMINATED/EXPIRED (recent end). Property 29 gets DRAFT. Properties 0-26 get ACTIVE with no end
+   * date (INDEFINITE) or future end.
+   */
+  @SuppressWarnings("NullAway")
+  private @org.jspecify.annotations.Nullable LocalDate computeLastContractEndDate(
+      int propIdx, int totalProperties, LocalDate startDate, int termMonths, LocalDate today) {
+    if (propIdx == totalProperties - 1) {
+      // DRAFT: future dates
+      return startDate.plusMonths(termMonths);
+    } else if (propIdx >= totalProperties - 3) {
+      // TERMINATED/EXPIRED: recently ended
+      return today.minusMonths(random.nextInt(1, 4));
+    } else {
+      // ACTIVE: ~50% INDEFINITE (null end), ~50% future end date
+      if (random.nextBoolean()) {
+        return null;
+      } else {
+        return today.plusMonths(random.nextInt(6, 36));
+      }
+    }
+  }
+
+  /** Computes the status for a contract based on property index and position in chain. */
+  private String computeStatus(
+      int propIdx,
+      int totalProperties,
+      boolean isLastContract,
+      LocalDate endDate,
+      LocalDate today) {
+    if (!isLastContract) {
+      return "EXPIRED";
+    }
+
+    // Last contract in the chain
+    if (propIdx == totalProperties - 1) {
+      return "DRAFT";
+    } else if (propIdx == totalProperties - 2) {
+      return "TERMINATED";
+    } else if (propIdx == totalProperties - 3) {
+      return "EXPIRED";
+    } else {
+      return "ACTIVE";
+    }
+  }
+
+  /**
+   * Deflates the current (2025) rent baseline backwards to compute the rent for a given year. Uses
+   * ~3% annual appreciation.
+   */
+  private BigDecimal rentForYear(BigDecimal currentBaseline, int contractYear, int currentYear) {
+    int yearsBack = currentYear - contractYear;
+    double deflationFactor = Math.pow(0.97, yearsBack);
+    return currentBaseline
+        .multiply(BigDecimal.valueOf(deflationFactor))
+        .setScale(0, RoundingMode.HALF_UP);
+  }
+
+  /** Returns a contract term in months based on category. */
+  private int contractTermMonthsForCategory(String category) {
+    return switch (category) {
+      case "COMMERCIAL" -> random.nextInt(36, 121); // 3-10 years
+      case "INDUSTRIAL" -> random.nextInt(60, 181); // 5-15 years
+      case "AGRICULTURAL" -> random.nextInt(12, 61); // 1-5 years
+      default -> random.nextInt(12, 61); // RESIDENTIAL: 1-5 years
+    };
   }
 
   private BigDecimal depositMultiplierForCategory(String category) {
@@ -435,15 +452,6 @@ public class DemoContractGenerator {
     };
   }
 
-  private int endDateMonthsForCategory(String category) {
-    return switch (category) {
-      case "COMMERCIAL" -> random.nextInt(36, 120); // 3-10 years
-      case "INDUSTRIAL" -> random.nextInt(60, 180); // 5-15 years
-      case "AGRICULTURAL" -> random.nextInt(12, 60); // 1-5 years
-      default -> random.nextInt(6, 24); // residential
-    };
-  }
-
   @SuppressWarnings("NullAway")
   private void insertRentComponents(
       UUID contractId,
@@ -455,10 +463,10 @@ public class DemoContractGenerator {
       LocalDateTime now) {
     // BASE_RENT: ~70% of total
     BigDecimal baseRent =
-        rentAmount.multiply(BigDecimal.valueOf(0.70)).setScale(2, java.math.RoundingMode.HALF_UP);
+        rentAmount.multiply(BigDecimal.valueOf(0.70)).setScale(2, RoundingMode.HALF_UP);
     // UTILITIES_ADVANCE: ~15%
     BigDecimal utilities =
-        rentAmount.multiply(BigDecimal.valueOf(0.15)).setScale(2, java.math.RoundingMode.HALF_UP);
+        rentAmount.multiply(BigDecimal.valueOf(0.15)).setScale(2, RoundingMode.HALF_UP);
     // SERVICE_COSTS: remainder
     BigDecimal serviceCosts = rentAmount.subtract(baseRent).subtract(utilities);
 

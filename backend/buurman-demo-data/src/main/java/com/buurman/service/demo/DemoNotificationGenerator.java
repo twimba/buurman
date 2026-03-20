@@ -488,6 +488,7 @@ public class DemoNotificationGenerator {
                   .from(table("contract_parties"))
                   .where(field("tenant_id", UUID.class).eq(tenantId))
                   .and(field("deleted_at").isNull())
+                  .limit(1)
                   .fetchOptional(field("contract_id", UUID.class))
                   .orElse(null);
           var tenantContract =

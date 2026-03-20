@@ -3,9 +3,12 @@ package com.buurman.service.demo;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.EXPENSES;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
+import static com.buurman.jooq.generated.Tables.PROPERTY_ACQUISITIONS;
 import static com.buurman.jooq.generated.Tables.TENANTS;
 
 import java.io.IOException;
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -38,6 +41,7 @@ public class DemoDocumentGenerator {
   private final DSLContext dsl;
   private final DocumentRepository documentRepository;
   private final S3StorageService s3StorageService;
+  private final Clock clock;
   private final Random random = new Random(42);
 
   /** PDF files loaded from classpath, keyed by filename. */
@@ -66,7 +70,15 @@ public class DemoDocumentGenerator {
           new DocTemplate(
               "Asbestos inspection report",
               "condition-report.pdf",
-              "Pre-renovation asbestos inspection"));
+              "Pre-renovation asbestos inspection"),
+          new DocTemplate(
+              "Annual maintenance report",
+              "condition-report.pdf",
+              "Year-end property inspection and maintenance summary"),
+          new DocTemplate(
+              "Tenant handbook",
+              "house-rules.pdf",
+              "Welcome guide and building information for tenants"));
 
   // --- Commercial property documents ---
   private static final List<DocTemplate> COMMERCIAL_PROPERTY_DOCS =
@@ -82,7 +94,11 @@ public class DemoDocumentGenerator {
           new DocTemplate(
               "Environmental assessment",
               "condition-report.pdf",
-              "Environmental impact assessment"));
+              "Environmental impact assessment"),
+          new DocTemplate(
+              "Health and safety assessment",
+              "condition-report.pdf",
+              "Workplace health and safety inspection report"));
 
   // --- Industrial property documents ---
   private static final List<DocTemplate> INDUSTRIAL_PROPERTY_DOCS =
@@ -173,10 +189,14 @@ public class DemoDocumentGenerator {
               "Repair estimate", "invoice-template.pdf", "Cost estimate before repair work"));
 
   public DemoDocumentGenerator(
-      DSLContext dsl, DocumentRepository documentRepository, S3StorageService s3StorageService) {
+      DSLContext dsl,
+      DocumentRepository documentRepository,
+      S3StorageService s3StorageService,
+      Clock clock) {
     this.dsl = dsl;
     this.documentRepository = documentRepository;
     this.s3StorageService = s3StorageService;
+    this.clock = clock;
     this.pdfPool = loadPdfPool();
   }
 
@@ -200,12 +220,18 @@ public class DemoDocumentGenerator {
       List<UUID> tenantIds = ctx.getTenantIdsByTeam().getOrDefault(teamId, List.of());
       List<UUID> contractIds = ctx.getContractIdsByTeam().getOrDefault(teamId, List.of());
 
-      // Property documents (2-3 per property, category-specific)
+      // Property documents (scaled by acquisition age — older properties accumulate more)
       for (UUID propertyId : propertyIds) {
         String prefix = fetchPropertyStreet(propertyId).map(this::slugify).orElse("property");
         String category = ctx.getPropertyCategory(propertyId);
         List<DocTemplate> templates = propertyDocsForCategory(category);
-        for (DocTemplate doc : pickRandom(templates, random.nextInt(2, 4))) {
+
+        LocalDate acqDate = fetchAcquisitionDate(propertyId);
+        int minDocs = acqDate.isBefore(LocalDate.of(2015, 1, 1)) ? 3 : 2;
+        int maxDocs = acqDate.isBefore(LocalDate.of(2010, 1, 1)) ? 5 : 4;
+        int docCount = random.nextInt(minDocs, maxDocs + 1);
+
+        for (DocTemplate doc : pickRandom(templates, docCount)) {
           if (uploadDocument(
               ctx,
               teamId,
@@ -242,7 +268,8 @@ public class DemoDocumentGenerator {
         }
       }
 
-      // Contract documents (2-3 per active contract, 1 for DRAFT)
+      // Contract documents (varies by status/age)
+      LocalDate fiveYearsAgo = LocalDate.now(clock).minusYears(5);
       for (UUID contractId : contractIds) {
         Record contract = dsl.selectFrom(CONTRACTS).where(CONTRACTS.ID.eq(contractId)).fetchOne();
         if (contract == null) {
@@ -250,7 +277,9 @@ public class DemoDocumentGenerator {
         }
 
         String status = contract.get(CONTRACTS.STATUS);
+
         if ("DRAFT".equals(status)) {
+          // Draft: just the unsigned agreement
           if (uploadDocument(
               ctx,
               teamId,
@@ -266,7 +295,14 @@ public class DemoDocumentGenerator {
           continue;
         }
 
-        for (DocTemplate doc : pickRandom(CONTRACT_DOCS, random.nextInt(2, 4))) {
+        // Expired contracts older than 5 years get only 1 doc
+        LocalDate endDate = contract.get(CONTRACTS.END_DATE);
+        boolean isOldExpired =
+            "EXPIRED".equals(status) && endDate != null && endDate.isBefore(fiveYearsAgo);
+
+        int docCount = isOldExpired ? 1 : random.nextInt(2, 4);
+
+        for (DocTemplate doc : pickRandom(CONTRACT_DOCS, docCount)) {
           if (uploadDocument(
               ctx,
               teamId,
@@ -282,11 +318,13 @@ public class DemoDocumentGenerator {
         }
       }
 
-      // Expense documents (~50% of expenses)
+      // Expense documents (~50% of RECENT expenses only — last 3 years)
+      LocalDate expenseCutoff = LocalDate.now(clock).minusYears(3);
       var expenseRecords =
           dsl.select(EXPENSES.ID, EXPENSES.IDENTIFIER, EXPENSES.DESCRIPTION, EXPENSES.CATEGORY)
               .from(EXPENSES)
               .where(EXPENSES.TEAM_ID.eq(teamId))
+              .and(EXPENSES.EXPENSE_DATE.greaterOrEqual(expenseCutoff))
               .fetch();
 
       for (var expense : expenseRecords) {
@@ -384,6 +422,15 @@ public class DemoDocumentGenerator {
             .from(PROPERTIES)
             .where(PROPERTIES.ID.eq(propertyId))
             .fetchOne(PROPERTIES.STREET));
+  }
+
+  private LocalDate fetchAcquisitionDate(UUID propertyId) {
+    return Optional.ofNullable(
+            dsl.select(PROPERTY_ACQUISITIONS.ACQUISITION_DATE)
+                .from(PROPERTY_ACQUISITIONS)
+                .where(PROPERTY_ACQUISITIONS.PROPERTY_ID.eq(propertyId))
+                .fetchOne(PROPERTY_ACQUISITIONS.ACQUISITION_DATE))
+        .orElse(LocalDate.now(clock));
   }
 
   private Optional<String> fetchTenantName(UUID tenantId) {

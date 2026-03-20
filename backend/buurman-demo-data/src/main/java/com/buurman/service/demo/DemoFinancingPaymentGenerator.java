@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -50,7 +51,9 @@ public class DemoFinancingPaymentGenerator {
                     PROPERTY_FINANCINGS.MONTHLY_PAYMENT,
                     PROPERTY_FINANCINGS.ORIGINAL_AMOUNT_CURRENCY,
                     PROPERTY_FINANCINGS.CURRENT_BALANCE,
-                    PROPERTY_FINANCINGS.STATUS)
+                    PROPERTY_FINANCINGS.ORIGINAL_AMOUNT,
+                    PROPERTY_FINANCINGS.STATUS,
+                    PROPERTY_FINANCINGS.START_DATE)
                 .from(PROPERTY_FINANCINGS)
                 .where(PROPERTY_FINANCINGS.ID.eq(financingId))
                 .fetchOne();
@@ -64,6 +67,10 @@ public class DemoFinancingPaymentGenerator {
           // Skip refinanced financings — payments belong to the new one
           continue;
         }
+        if ("COMPLETED".equals(status)) {
+          // Skip completed financings — mortgage is fully paid off
+          continue;
+        }
 
         BigDecimal interestRateBd = financing.get(PROPERTY_FINANCINGS.INTEREST_RATE);
         BigDecimal monthlyPaymentBd = financing.get(PROPERTY_FINANCINGS.MONTHLY_PAYMENT);
@@ -73,13 +80,30 @@ public class DemoFinancingPaymentGenerator {
         double annualRate = interestRateBd != null ? interestRateBd.doubleValue() : 3.5;
         double monthlyRate = annualRate / 100.0 / 12.0;
         long monthlyPayment = monthlyPaymentBd != null ? monthlyPaymentBd.longValue() : 100_000L;
-        long balance =
-            currentBalanceBd != null ? currentBalanceBd.longValue() : monthlyPayment * 300L;
 
-        // Generate last 24 months + 2 future months
+        // Use original amount as initial balance for full history
+        BigDecimal originalAmountBd = financing.get(PROPERTY_FINANCINGS.ORIGINAL_AMOUNT);
+        long balance =
+            originalAmountBd != null ? originalAmountBd.longValue() : monthlyPayment * 300L;
+
+        // Calculate months from financing start date to today + 2 future months
+        LocalDate startDate = financing.get(PROPERTY_FINANCINGS.START_DATE);
+        if (startDate == null) {
+          startDate = today.minusMonths(24);
+        }
+        long totalMonths = ChronoUnit.MONTHS.between(startDate, today) + 2;
+
+        // Generate full payment history from start date
         int teamPayments = 0;
-        for (int m = -24; m <= 2; m++) {
-          LocalDate paymentDate = today.plusMonths(m).withDayOfMonth(1);
+        for (long m = 0; m <= totalMonths; m++) {
+          // Stop generating once the loan is fully paid off
+          if (balance <= 0 && m > 0) {
+            break;
+          }
+
+          LocalDate paymentDate = startDate.plusMonths(m).withDayOfMonth(1);
+          boolean isFuture = paymentDate.isAfter(today);
+
           long interestAmount = (long) (balance * monthlyRate);
           long principalAmount = monthlyPayment - interestAmount;
           if (principalAmount < 0) {
@@ -90,8 +114,7 @@ public class DemoFinancingPaymentGenerator {
           String notes = null;
           boolean balanceDeducted = false;
 
-          if (m > 0) {
-            // Future: SCHEDULED
+          if (isFuture) {
             paymentStatus = "SCHEDULED";
           } else {
             int roll = random.nextInt(100);
@@ -136,6 +159,13 @@ public class DemoFinancingPaymentGenerator {
 
           teamPayments++;
         }
+
+        // Update financing current_balance to reflect actual amortization
+        dsl.update(PROPERTY_FINANCINGS)
+            .set(PROPERTY_FINANCINGS.CURRENT_BALANCE, BigDecimal.valueOf(balance))
+            .where(PROPERTY_FINANCINGS.ID.eq(financingId))
+            .execute();
+
         totalPayments += teamPayments;
       }
 

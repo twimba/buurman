@@ -9,6 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
+  ReferenceLine,
 } from 'recharts';
 import type { MonthlyDataPoint } from '@/types/property';
 
@@ -113,6 +114,24 @@ export const PortfolioCashFlowChart = ({
     [isDark]
   );
 
+  // Dynamic bar size: shrink bars when there are many months so they still align
+  const barSize = useMemo(() => {
+    const count = data.length;
+    if (count <= 6) {
+      return 30;
+    }
+    if (count <= 12) {
+      return 24;
+    }
+    if (count <= 24) {
+      return 14;
+    }
+    if (count <= 48) {
+      return 8;
+    }
+    return 5;
+  }, [data.length]);
+
   if (data.length === 0) {
     return (
       <div className="flex items-center justify-center h-80 text-text-secondary text-sm">
@@ -123,7 +142,7 @@ export const PortfolioCashFlowChart = ({
 
   return (
     <ResponsiveContainer width="100%" height={320}>
-      <ComposedChart data={chartData}>
+      <ComposedChart data={chartData} barGap={-barSize} barSize={barSize}>
         <CartesianGrid
           strokeDasharray="3 3"
           stroke={isDark ? '#2a2e3f' : '#e2e6f0'}
@@ -169,21 +188,17 @@ export const PortfolioCashFlowChart = ({
             return labels[value] ?? value;
           }}
         />
+        <ReferenceLine y={0} stroke={isDark ? '#4a4e5f' : '#b0b5c8'} />
         <Bar
           dataKey="income"
-          stackId="cashflow"
+          stackId="positive"
           fill={COLORS.income}
           radius={[2, 2, 0, 0]}
         />
-        <Bar
-          dataKey="negExpenses"
-          stackId="cashflow"
-          fill={COLORS.expenses}
-          radius={[0, 0, 2, 2]}
-        />
+        <Bar dataKey="negExpenses" stackId="negative" fill={COLORS.expenses} />
         <Bar
           dataKey="negMortgage"
-          stackId="cashflow"
+          stackId="negative"
           fill={COLORS.mortgage}
           radius={[0, 0, 2, 2]}
         />
