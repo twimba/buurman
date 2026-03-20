@@ -56,7 +56,7 @@
     "@types/react-is": "19.2.0",
     "@types/swagger-ui-react": "^5",
     "@vitejs/plugin-react": "6.0.1",
-    "eslint": "10.0.3",
+    "eslint": "10.1.0",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "7.0.1",
     "prettier": "3.8.1",
