@@ -50,6 +50,7 @@ const statusFilters = [
   { value: PaymentStatus.PARTIALLY_PAID, label: 'Partial' },
   { value: PaymentStatus.PAID, label: 'Paid' },
   { value: PaymentStatus.OVERDUE, label: 'Overdue' },
+  { value: PaymentStatus.LATE, label: 'Late' },
   { value: PaymentStatus.CANCELLED, label: 'Cancelled' },
 ];
 

@@ -7746,6 +7746,7 @@ paths:
               - PARTIALLY_PAID
               - PAID
               - OVERDUE
+              - LATE
               - CANCELLED
         - name: contractIdentifier
           in: query
@@ -19232,6 +19233,7 @@ components:
             - PARTIALLY_PAID
             - PAID
             - OVERDUE
+            - LATE
             - CANCELLED
         notes:
           type: string
@@ -19363,6 +19365,7 @@ components:
             - PARTIALLY_PAID
             - PAID
             - OVERDUE
+            - LATE
             - CANCELLED
         notes:
           type: string
