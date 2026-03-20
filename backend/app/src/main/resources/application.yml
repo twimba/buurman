@@ -201,7 +201,7 @@ management:
         http.server.requests: true
         buurman.s3.operation.seconds: true
         buurman.export.generation.seconds: true
-        buurman.email.send.seconds: true
+        buurman.notification.send.seconds: true
       percentiles:
         http.server.requests: 0.5,0.75,0.95,0.99
         buurman.s3.operation.seconds: 0.5,0.95,0.99
