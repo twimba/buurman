@@ -78,6 +78,32 @@ public class JobExecutionHistoryRepository {
         .execute();
   }
 
+  public void insertCompleted(
+      String jobName,
+      String jobGroup,
+      String triggerName,
+      String triggerGroup,
+      Instant startedAt,
+      Instant endedAt,
+      long durationMs,
+      String status,
+      Optional<String> errorMessage,
+      Optional<String> nodeId) {
+    dsl.insertInto(TABLE)
+        .set(ID, UUID.randomUUID())
+        .set(JOB_NAME, jobName)
+        .set(JOB_GROUP, jobGroup)
+        .set(TRIGGER_NAME, triggerName)
+        .set(TRIGGER_GROUP, triggerGroup)
+        .set(STARTED_AT, Timestamp.from(startedAt))
+        .set(ENDED_AT, Timestamp.from(endedAt))
+        .set(DURATION_MS, durationMs)
+        .set(STATUS, status)
+        .set(ERROR_MESSAGE, errorMessage.orElse(null))
+        .set(NODE_ID, nodeId.orElse(null))
+        .execute();
+  }
+
   public PageResponse<JobExecutionHistoryResponse> findAll(
       PageRequest pageRequest,
       @Nullable List<String> jobNameFilter,
