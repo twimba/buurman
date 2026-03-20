@@ -14,6 +14,7 @@ const statusConfig: Record<
   PARTIALLY_PAID: { label: 'Partial', color: 'blue' },
   PAID: { label: 'Paid', color: 'emerald' },
   OVERDUE: { label: 'Overdue', color: 'red' },
+  LATE: { label: 'Late', color: 'orange' },
   CANCELLED: { label: 'Cancelled', color: 'gray' },
 };
 

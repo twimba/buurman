@@ -24,6 +24,7 @@ public class Payment {
     PARTIALLY_PAID,
     PAID,
     OVERDUE,
+    LATE,
     CANCELLED
   }
 
