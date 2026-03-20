@@ -16,7 +16,15 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
   "id": null,
-  "links": [],
+  "links": [
+    { "title": "Backend", "type": "link", "url": "/d/buurman-backend-app", "icon": "dashboard", "tooltip": "JVM & System", "targetBlank": false },
+    { "title": "Operations", "type": "link", "url": "/d/buurman-operations", "icon": "dashboard", "tooltip": "Audit & Rate Limiting", "targetBlank": false },
+    { "title": "Database", "type": "link", "url": "/d/buurman-database", "icon": "dashboard", "tooltip": "PostgreSQL & HikariCP", "targetBlank": false },
+    { "title": "Auth", "type": "link", "url": "/d/buurman-auth", "icon": "dashboard", "tooltip": "Authentication & Security", "targetBlank": false },
+    { "title": "Business", "type": "link", "url": "/d/buurman-business", "icon": "dashboard", "tooltip": "Business Metrics", "targetBlank": false },
+    { "title": "Integrations", "type": "link", "url": "/d/buurman-integrations", "icon": "dashboard", "tooltip": "S3, Notifications, Geocoding", "targetBlank": false },
+    { "title": "Hetzner", "type": "link", "url": "/d/hetzner-servers", "icon": "dashboard", "tooltip": "Server Infrastructure", "targetBlank": false }
+  ],
   "panels": [
     {
       "collapsed": false,
@@ -114,7 +122,11 @@
         { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/dashboard.*\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Dashboard", "refId": "H" },
         { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/teams.*\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Teams", "refId": "I" },
         { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/auth.*\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Auth", "refId": "J" },
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/calendar-feeds.*\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Calendar Feeds", "refId": "K" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/calendar-feeds.*\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Calendar Feeds", "refId": "K" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/photos.*\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Photos", "refId": "L" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/notifications.*\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Notifications", "refId": "M" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/exports.*|/booklets.*\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Exports", "refId": "N" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/takeout.*\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Takeout", "refId": "O" }
       ]
     },
     {
@@ -141,7 +153,15 @@
         { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"$job\", uri=~\"/contracts.*\"}[$__rate_interval])))", "instant": false, "range": true, "legendFormat": "Contracts", "refId": "C" },
         { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"$job\", uri=~\"/payments.*\"}[$__rate_interval])))", "instant": false, "range": true, "legendFormat": "Payments", "refId": "D" },
         { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"$job\", uri=~\"/expenses.*\"}[$__rate_interval])))", "instant": false, "range": true, "legendFormat": "Expenses", "refId": "E" },
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"$job\", uri=~\"/reports.*\"}[$__rate_interval])))", "instant": false, "range": true, "legendFormat": "Reports", "refId": "F" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"$job\", uri=~\"/reports.*\"}[$__rate_interval])))", "instant": false, "range": true, "legendFormat": "Reports", "refId": "F" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"$job\", uri=~\"/documents.*\"}[$__rate_interval])))", "instant": false, "range": true, "legendFormat": "Documents", "refId": "G" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"$job\", uri=~\"/dashboard.*\"}[$__rate_interval])))", "instant": false, "range": true, "legendFormat": "Dashboard", "refId": "H" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"$job\", uri=~\"/teams.*\"}[$__rate_interval])))", "instant": false, "range": true, "legendFormat": "Teams", "refId": "I" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"$job\", uri=~\"/auth.*\"}[$__rate_interval])))", "instant": false, "range": true, "legendFormat": "Auth", "refId": "J" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"$job\", uri=~\"/calendar-feeds.*\"}[$__rate_interval])))", "instant": false, "range": true, "legendFormat": "Calendar Feeds", "refId": "K" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"$job\", uri=~\"/photos.*\"}[$__rate_interval])))", "instant": false, "range": true, "legendFormat": "Photos", "refId": "L" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"$job\", uri=~\"/notifications.*\"}[$__rate_interval])))", "instant": false, "range": true, "legendFormat": "Notifications", "refId": "M" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"$job\", uri=~\"/exports.*|/booklets.*\"}[$__rate_interval])))", "instant": false, "range": true, "legendFormat": "Exports", "refId": "N" }
       ]
     },
     {

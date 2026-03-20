@@ -16,7 +16,15 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
   "id": null,
-  "links": [],
+  "links": [
+    { "title": "App", "type": "link", "url": "/d/buurman-app", "icon": "dashboard", "tooltip": "API Overview", "targetBlank": false },
+    { "title": "Backend", "type": "link", "url": "/d/buurman-backend-app", "icon": "dashboard", "tooltip": "JVM & System", "targetBlank": false },
+    { "title": "Operations", "type": "link", "url": "/d/buurman-operations", "icon": "dashboard", "tooltip": "Audit & Rate Limiting", "targetBlank": false },
+    { "title": "Database", "type": "link", "url": "/d/buurman-database", "icon": "dashboard", "tooltip": "PostgreSQL & HikariCP", "targetBlank": false },
+    { "title": "Business", "type": "link", "url": "/d/buurman-business", "icon": "dashboard", "tooltip": "Business Metrics", "targetBlank": false },
+    { "title": "Integrations", "type": "link", "url": "/d/buurman-integrations", "icon": "dashboard", "tooltip": "S3, Notifications, Geocoding", "targetBlank": false },
+    { "title": "Hetzner", "type": "link", "url": "/d/hetzner-servers", "icon": "dashboard", "tooltip": "Server Infrastructure", "targetBlank": false }
+  ],
   "panels": [
     {
       "collapsed": false,
@@ -238,6 +246,216 @@
       "type": "timeseries",
       "targets": [
         { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum by (uri) (rate(http_server_requests_seconds_count{job=\"$job\", uri=~\"/auth.*\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "{{uri}}", "refId": "A" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 40 },
+      "id": 104,
+      "title": "Registration & Onboarding",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "blue", "value": null }] }, "unit": "short", "noValue": "No data" },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 41 },
+      "id": 40,
+      "options": { "colorMode": "value", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "title": "Teams Registered",
+      "type": "stat",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(increase(buurman_team_registered_total{job=\"$job\"}[$__range]))", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] }, "unit": "short", "noValue": "No data" },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 41 },
+      "id": 41,
+      "options": { "colorMode": "value", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "title": "Keycloak Users Created",
+      "type": "stat",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(increase(buurman_keycloak_user_creation_total{job=\"$job\"}[$__range]))", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] }, "unit": "short", "noValue": "No data" },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 41 },
+      "id": 42,
+      "options": { "colorMode": "value", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "title": "Invitations Sent",
+      "type": "stat",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(increase(buurman_registration_invitation_created_total{job=\"$job\"}[$__range]))", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] }, "unit": "short", "noValue": "No data" },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 41 },
+      "id": 43,
+      "options": { "colorMode": "value", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "title": "Invitations Used",
+      "type": "stat",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(increase(buurman_registration_invitation_used_total{job=\"$job\"}[$__range]))", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20 }, "unit": "ops" },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 45 },
+      "id": 44,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "Registration & Onboarding Activity",
+      "type": "timeseries",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_team_registered_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Teams Registered", "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_keycloak_user_creation_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Keycloak Users", "refId": "B" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_registration_invitation_created_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Invitations Created", "refId": "C" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_registration_invitation_used_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Invitations Used", "refId": "D" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20 }, "unit": "ops" },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Revoked" }, "properties": [{ "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } }] }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 45 },
+      "id": 45,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "Invitation Lifecycle",
+      "type": "timeseries",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_registration_invitation_created_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Created", "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_registration_invitation_validated_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Validated", "refId": "B" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_registration_invitation_used_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Used", "refId": "C" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_registration_invitation_revoked_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Revoked", "refId": "D" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 53 },
+      "id": 105,
+      "title": "Rate Limiting",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }, { "color": "red", "value": 100 }] }, "unit": "short", "noValue": "No data" },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 54 },
+      "id": 50,
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "title": "Rate Limit Rejections",
+      "type": "stat",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(increase(buurman_ratelimit_rejected_total{job=\"$job\"}[$__range]))", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "fixed", "fixedColor": "red" }, "custom": { "fillOpacity": 20 }, "unit": "ops" },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 58 },
+      "id": 51,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "Rate Limit Rejections Over Time",
+      "type": "timeseries",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_ratelimit_rejected_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Rejections", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "fixed", "fixedColor": "orange" }, "custom": { "fillOpacity": 20 }, "unit": "ops" },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 58 },
+      "id": 52,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "Rate Limit Errors Over Time",
+      "type": "timeseries",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_ratelimit_error_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Errors", "refId": "A" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 66 },
+      "id": 110,
+      "title": "Conversion & Validation",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 0.3 }, { "color": "green", "value": 0.6 }] }, "unit": "percentunit", "noValue": "No invitations" },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 67 },
+      "id": 46,
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "title": "Invitation Conversion Rate",
+      "type": "stat",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(increase(buurman_registration_invitation_used_total{job=\"$job\"}[$__range])) / sum(increase(buurman_registration_invitation_created_total{job=\"$job\"}[$__range]))", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 0.5 }, { "color": "green", "value": 0.8 }] }, "unit": "percentunit", "noValue": "No validations" },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 67 },
+      "id": 47,
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "title": "Validation Success Rate",
+      "type": "stat",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(increase(buurman_registration_invitation_used_total{job=\"$job\"}[$__range])) / sum(increase(buurman_registration_invitation_validated_total{job=\"$job\"}[$__range]))", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "fillOpacity": 20 }, "unit": "percentunit" },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 71 },
+      "id": 48,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "Conversion Rates Over Time",
+      "type": "timeseries",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_registration_invitation_used_total{job=\"$job\"}[$__rate_interval])) / sum(rate(buurman_registration_invitation_created_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Invite → Used", "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_registration_invitation_used_total{job=\"$job\"}[$__rate_interval])) / sum(rate(buurman_registration_invitation_validated_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Validated → Used", "refId": "B" }
       ]
     }
   ],

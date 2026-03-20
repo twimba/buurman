@@ -16,7 +16,15 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
   "id": null,
-  "links": [],
+  "links": [
+    { "title": "App", "type": "link", "url": "/d/buurman-app", "icon": "dashboard", "tooltip": "API Overview", "targetBlank": false },
+    { "title": "Backend", "type": "link", "url": "/d/buurman-backend-app", "icon": "dashboard", "tooltip": "JVM & HTTP", "targetBlank": false },
+    { "title": "Database", "type": "link", "url": "/d/buurman-database", "icon": "dashboard", "tooltip": "PostgreSQL & HikariCP", "targetBlank": false },
+    { "title": "Auth", "type": "link", "url": "/d/buurman-auth", "icon": "dashboard", "tooltip": "Authentication & Security", "targetBlank": false },
+    { "title": "Business", "type": "link", "url": "/d/buurman-business", "icon": "dashboard", "tooltip": "Business Metrics", "targetBlank": false },
+    { "title": "Operations", "type": "link", "url": "/d/buurman-operations", "icon": "dashboard", "tooltip": "Audit & Rate Limiting", "targetBlank": false },
+    { "title": "Integrations", "type": "link", "url": "/d/buurman-integrations", "icon": "dashboard", "tooltip": "S3, Notifications, Geocoding", "targetBlank": false }
+  ],
   "templating": {
     "list": [
       {
