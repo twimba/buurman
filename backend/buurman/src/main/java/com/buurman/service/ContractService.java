@@ -41,11 +41,11 @@ import com.buurman.domain.ContractRentComponent;
 import com.buurman.domain.Document;
 import com.buurman.domain.Property;
 import com.buurman.domain.RentComponentType;
-import com.buurman.domain.Tenant;
+import com.buurman.domain.Contact;
+import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
-import com.buurman.domain.identifier.TenantIdentifier;
 import com.buurman.domain.metadata.ContractCountryMetadata;
 import com.buurman.domain.metadata.CountryMetadataRegistry;
 import com.buurman.domain.metadata.CountryMetadataSerializer;
@@ -62,18 +62,18 @@ import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.PropertySummary;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.dto.response.RentComponentResponse;
-import com.buurman.dto.response.TenantSummary;
+import com.buurman.dto.response.ContactSummary;
 import com.buurman.exception.BadRequestException;
 import com.buurman.mapper.ContractMapper;
 import com.buurman.mapper.ContractRentComponentMapper;
 import com.buurman.mapper.PropertyMapper;
-import com.buurman.mapper.TenantMapper;
+import com.buurman.mapper.ContactMapper;
+import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRentComponentRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PropertyRepository;
-import com.buurman.repository.TenantRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
@@ -93,11 +93,11 @@ public class ContractService {
   private final ContractRentComponentRepository rentComponentRepository;
   private final ContractRentComponentMapper rentComponentMapper;
   private final PropertyRepository propertyRepository;
-  private final TenantRepository tenantRepository;
+  private final ContactRepository contactRepository;
   private final DocumentRepository documentRepository;
   private final ContractMapper contractMapper;
   private final PropertyMapper propertyMapper;
-  private final TenantMapper tenantMapper;
+  private final ContactMapper contactMapper;
   private final AuditService auditService;
   private final DocumentService documentService;
   private final PaymentSchedulingService paymentSchedulingService;
@@ -225,16 +225,15 @@ public class ContractService {
     auditService.logCreate(
         teamId, "CONTRACT", savedContract.getId(), principal.getUserId(), savedContract);
 
-    // Get primary tenant for notification
-    Tenant primaryTenant =
-        contractPartyService.getPrimaryTenantForContract(savedContract.getId(), teamId);
+    // Get primary contact for notification
+    Contact primaryContact =
+        contractPartyService.getPrimaryContactForContract(savedContract.getId(), teamId);
 
     String propertyName = property.getStreet() + ", " + property.getCity();
-    String tenantName =
-        primaryTenant.getFirstName() + primaryTenant.getLastName().map(n -> " " + n).orElse("");
+    String contactName = primaryContact.getDisplayName();
     Map<String, Object> contractVars = new HashMap<>();
     contractVars.put("propertyName", propertyName);
-    contractVars.put("tenantName", tenantName);
+    contractVars.put("tenantName", contactName);
     contractVars.put(
         "rentAmount",
         savedContract.getRentAmount().currency() + " " + savedContract.getRentAmount().value());
@@ -278,13 +277,13 @@ public class ContractService {
     return toResponses(contracts, teamId);
   }
 
-  public List<ContractResponse> getContractsByTenant(
-      TenantIdentifier tenantIdentifier, UserPrincipal principal) {
+  public List<ContractResponse> getContractsByContact(
+      ContactIdentifier contactIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
-    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, teamId);
+    Contact contact = contactRepository.getByIdentifierAndTeamId(contactIdentifier, teamId);
 
-    List<Contract> contracts = contractRepository.findByTenantIdViaParties(tenant.getId(), teamId);
+    List<Contract> contracts = contractRepository.findByContactIdViaParties(contact.getId(), teamId);
     return toResponses(contracts, teamId);
   }
 
@@ -676,14 +675,13 @@ public class ContractService {
 
     Property statusChangeProperty =
         propertyRepository.findByIdAndTeamId(contract.getPropertyId(), teamId).orElse(null);
-    Tenant primaryTenant =
-        contractPartyService.getPrimaryTenantForContract(contract.getId(), teamId);
+    Contact primaryContact =
+        contractPartyService.getPrimaryContactForContract(contract.getId(), teamId);
     String scPropertyName =
         statusChangeProperty != null
             ? statusChangeProperty.getStreet() + ", " + statusChangeProperty.getCity()
             : identifier.value();
-    String scTenantName =
-        primaryTenant.getFirstName() + primaryTenant.getLastName().map(n -> " " + n).orElse("");
+    String scContactName = primaryContact.getDisplayName();
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
             .teamId(Optional.of(teamId))
@@ -692,7 +690,7 @@ public class ContractService {
             .templateVariables(
                 Map.of(
                     "propertyName", scPropertyName,
-                    "tenantName", scTenantName,
+                    "tenantName", scContactName,
                     "oldStatus", oldStatus.name(),
                     "newStatus", newStatus.name(),
                     "baseUrl", appProperties.email().baseUrl()))
@@ -785,14 +783,13 @@ public class ContractService {
 
     Property reopenProperty =
         propertyRepository.findByIdAndTeamId(contract.getPropertyId(), teamId).orElse(null);
-    Tenant primaryTenant =
-        contractPartyService.getPrimaryTenantForContract(contract.getId(), teamId);
+    Contact reopenPrimaryContact =
+        contractPartyService.getPrimaryContactForContract(contract.getId(), teamId);
     String reopenPropertyName =
         reopenProperty != null
             ? reopenProperty.getStreet() + ", " + reopenProperty.getCity()
             : identifier.value();
-    String reopenTenantName =
-        primaryTenant.getFirstName() + primaryTenant.getLastName().map(n -> " " + n).orElse("");
+    String reopenContactName = reopenPrimaryContact.getDisplayName();
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
             .teamId(Optional.of(teamId))
@@ -803,7 +800,7 @@ public class ContractService {
                     "propertyName",
                     reopenPropertyName,
                     "tenantName",
-                    reopenTenantName,
+                    reopenContactName,
                     "oldStatus",
                     oldStatus.name(),
                     "baseUrl",
@@ -822,7 +819,7 @@ public class ContractService {
 
     Contract sourceContract = contractRepository.getByIdentifierAndTeamId(identifier, teamId);
 
-    // Create new contract with same data (without tenantId)
+    // Create new contract with same data
     Contract newContract =
         Contract.builder()
             .identifier(Optional.of(newContractId()))
@@ -974,10 +971,10 @@ public class ContractService {
     List<ContractPartyResponse> partyResponses =
         contractPartyService.buildPartyResponses(parties, teamId);
 
-    Optional<TenantSummary> primaryTenant =
+    Optional<ContactSummary> primaryContact =
         partyResponses.stream()
             .filter(p -> p.role() == ContractPartyRole.PRIMARY_TENANT)
-            .map(ContractPartyResponse::tenant)
+            .map(ContractPartyResponse::contact)
             .flatMap(Optional::stream)
             .findFirst();
 
@@ -1000,7 +997,7 @@ public class ContractService {
         contract.getIdentifier().orElseThrow(),
         Optional.of(propertySummary),
         partyResponses,
-        primaryTenant,
+        primaryContact,
         contract.getContractType(),
         contract.getStartDate(),
         contract.getEndDate(),
@@ -1038,7 +1035,7 @@ public class ContractService {
         Optional.of(contract.getUpdatedAt()));
   }
 
-  /** Batch build responses for a list of contracts (avoids N+1 for parties and tenants). */
+  /** Batch build responses for a list of contracts (avoids N+1 for parties and contacts). */
   private List<ContractResponse> toResponses(List<Contract> contracts, UUID teamId) {
     if (contracts.isEmpty()) {
       return List.of();
@@ -1055,16 +1052,16 @@ public class ContractService {
     Map<UUID, List<ContractParty>> partiesByContract =
         contractPartyService.getPartiesForContracts(contractIds, teamId);
 
-    // Batch load tenants for all parties
-    List<UUID> allTenantIds =
+    // Batch load contacts for all parties
+    List<UUID> allContactIds =
         partiesByContract.values().stream()
             .flatMap(List::stream)
-            .flatMap(p -> p.getTenantId().stream())
+            .flatMap(p -> p.getContactId().stream())
             .distinct()
             .toList();
-    Map<UUID, Tenant> tenantMap =
-        tenantRepository.findByIdsAndTeamId(allTenantIds, teamId).stream()
-            .collect(Collectors.toMap(Tenant::getId, t -> t));
+    Map<UUID, Contact> contactMap =
+        contactRepository.findByIdsAndTeamId(allContactIds, teamId).stream()
+            .collect(Collectors.toMap(Contact::getId, c -> c));
 
     // Batch load extensions for all contracts
     List<ContractExtension> allExtensions =
@@ -1089,18 +1086,18 @@ public class ContractService {
                   parties.stream()
                       .map(
                           party -> {
-                            Tenant tenant = party.getTenantId().map(tenantMap::get).orElse(null);
-                            Optional<TenantSummary> summary =
-                                Optional.ofNullable(tenant).map(tenantMapper::toSummary);
+                            Contact contact = party.getContactId().map(contactMap::get).orElse(null);
+                            Optional<ContactSummary> summary =
+                                Optional.ofNullable(contact).map(contactMapper::toSummary);
                             return new ContractPartyResponse(
                                 party.getIdentifier().orElseThrow(), summary, party.getRole());
                           })
                       .toList();
 
-              Optional<TenantSummary> primaryTenant =
+              Optional<ContactSummary> primaryContact =
                   partyResponses.stream()
                       .filter(p -> p.role() == ContractPartyRole.PRIMARY_TENANT)
-                      .map(ContractPartyResponse::tenant)
+                      .map(ContractPartyResponse::contact)
                       .flatMap(Optional::stream)
                       .findFirst();
 
@@ -1130,7 +1127,7 @@ public class ContractService {
                   contract.getIdentifier().orElseThrow(),
                   propertySummary,
                   partyResponses,
-                  primaryTenant,
+                  primaryContact,
                   contract.getContractType(),
                   contract.getStartDate(),
                   contract.getEndDate(),

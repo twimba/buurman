@@ -36,7 +36,7 @@ public class ContractPartyRepository {
   private static final Field<String> IDENTIFIER = field("identifier", String.class);
   private static final Field<UUID> TEAM_ID = field("team_id", UUID.class);
   private static final Field<UUID> CONTRACT_ID = field("contract_id", UUID.class);
-  private static final Field<UUID> TENANT_ID = field("tenant_id", UUID.class);
+  private static final Field<UUID> CONTACT_ID = field("contact_id", UUID.class);
   private static final Field<String> ROLE = field("role", String.class);
   private static final Field<Timestamp> CREATED_AT = field("created_at", Timestamp.class);
   private static final Field<Timestamp> UPDATED_AT = field("updated_at", Timestamp.class);
@@ -56,7 +56,7 @@ public class ContractPartyRepository {
         .set(IDENTIFIER, party.getIdentifier().orElseThrow().value())
         .set(TEAM_ID, party.getTeamId())
         .set(CONTRACT_ID, party.getContractId())
-        .set(TENANT_ID, party.getTenantId().orElse(null))
+        .set(CONTACT_ID, party.getContactId().orElse(null))
         .set(ROLE, party.getRole().name())
         .set(CREATED_AT, createdAt)
         .set(UPDATED_AT, updatedAt)
@@ -96,8 +96,8 @@ public class ContractPartyRepository {
         .orElseThrow(() -> new NotFoundException("Contract party not found"));
   }
 
-  public ContractParty getPrimaryTenantByContractIdAndTeamId(UUID contractId, UUID teamId) {
-    return findPrimaryTenantByContractIdAndTeamId(contractId, teamId)
+  public ContractParty getPrimaryContactByContractIdAndTeamId(UUID contractId, UUID teamId) {
+    return findPrimaryContactByContractIdAndTeamId(contractId, teamId)
         .orElseThrow(() -> new NotFoundException("Contract party not found"));
   }
 
@@ -108,7 +108,7 @@ public class ContractPartyRepository {
         .fetchOptional(this::toDomain);
   }
 
-  public Optional<ContractParty> findPrimaryTenantByContractIdAndTeamId(
+  public Optional<ContractParty> findPrimaryContactByContractIdAndTeamId(
       UUID contractId, UUID teamId) {
     return dsl.select()
         .from(CONTRACT_PARTIES)
@@ -121,28 +121,28 @@ public class ContractPartyRepository {
         .fetchOptional(this::toDomain);
   }
 
-  public Optional<ContractParty> findByTenantIdAndContractIdAndTeamId(
-      UUID tenantId, UUID contractId, UUID teamId) {
+  public Optional<ContractParty> findByContactIdAndContractIdAndTeamId(
+      UUID contactId, UUID contractId, UUID teamId) {
     return dsl.select()
         .from(CONTRACT_PARTIES)
         .where(
-            TENANT_ID
-                .eq(tenantId)
+            CONTACT_ID
+                .eq(contactId)
                 .and(CONTRACT_ID.eq(contractId))
                 .and(TEAM_ID.eq(teamId))
                 .and(DELETED_AT.isNull()))
         .fetchOptional(this::toDomain);
   }
 
-  public boolean existsByContractIdAndTenantIdAndTeamId(
-      UUID contractId, UUID tenantId, UUID teamId) {
+  public boolean existsByContractIdAndContactIdAndTeamId(
+      UUID contractId, UUID contactId, UUID teamId) {
     return dsl.fetchExists(
         dsl.selectOne()
             .from(CONTRACT_PARTIES)
             .where(
                 CONTRACT_ID
                     .eq(contractId)
-                    .and(TENANT_ID.eq(tenantId))
+                    .and(CONTACT_ID.eq(contactId))
                     .and(TEAM_ID.eq(teamId))
                     .and(DELETED_AT.isNull())));
   }
@@ -169,7 +169,7 @@ public class ContractPartyRepository {
     party.setIdentifier(java.util.Optional.of(com.buurman.domain.Sid.of(record.get(IDENTIFIER))));
     party.setTeamId(record.get(TEAM_ID));
     party.setContractId(record.get(CONTRACT_ID));
-    party.setTenantId(Optional.ofNullable(record.get(TENANT_ID)));
+    party.setContactId(Optional.ofNullable(record.get(CONTACT_ID)));
     party.setRole(ContractPartyRole.valueOf(record.get(ROLE)));
 
     Timestamp createdAtVal = record.get(CREATED_AT);

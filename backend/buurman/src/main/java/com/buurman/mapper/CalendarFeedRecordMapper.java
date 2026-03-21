@@ -27,7 +27,7 @@ public class CalendarFeedRecordMapper {
     feed.setFeedType(CalendarFeed.FeedType.valueOf(record.getFeedType()));
     feed.setContractId(Optional.ofNullable(record.getContractId()));
     feed.setPropertyId(Optional.ofNullable(record.getPropertyId()));
-    feed.setTenantId(Optional.ofNullable(record.getTenantId()));
+    feed.setContactId(Optional.ofNullable(record.getContactId()));
     feed.setEnabled(record.getEnabled());
     feed.setCreatedAt(record.getCreatedAt().toInstant(UTC));
     feed.setUpdatedAt(record.getUpdatedAt().toInstant(UTC));

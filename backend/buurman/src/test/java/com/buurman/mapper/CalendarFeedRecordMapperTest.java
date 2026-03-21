@@ -26,7 +26,7 @@ class CalendarFeedRecordMapperTest {
   private static final UUID USER_ID = UUID.randomUUID();
   private static final UUID CONTRACT_ID = UUID.randomUUID();
   private static final UUID PROPERTY_ID = UUID.randomUUID();
-  private static final UUID TENANT_ID = UUID.randomUUID();
+  private static final UUID CONTACT_ID = UUID.randomUUID();
   private static final UUID CREATED_BY = UUID.randomUUID();
   private static final UUID UPDATED_BY = UUID.randomUUID();
   private static final Sid IDENTIFIER = Sid.of("CAL01HQJK4B2X5M3N7P8Q9R0S1T2");
@@ -61,7 +61,7 @@ class CalendarFeedRecordMapperTest {
       assertThat(feed.getFeedType()).isEqualTo(FeedType.ALL_PAYMENTS);
       assertThat(feed.getContractId()).contains(CONTRACT_ID);
       assertThat(feed.getPropertyId()).contains(PROPERTY_ID);
-      assertThat(feed.getTenantId()).contains(TENANT_ID);
+      assertThat(feed.getContactId()).contains(CONTACT_ID);
       assertThat(feed.getEnabled()).isTrue();
       assertThat(feed.getCreatedAt()).isEqualTo(NOW.toInstant(ZoneOffset.UTC));
       assertThat(feed.getUpdatedAt()).isEqualTo(NOW.toInstant(ZoneOffset.UTC));
@@ -90,7 +90,7 @@ class CalendarFeedRecordMapperTest {
       CalendarFeedsRecord record = createCompleteRecord();
       record.setContractId(null);
       record.setPropertyId(null);
-      record.setTenantId(null);
+      record.setContactId(null);
 
       Optional<CalendarFeed> result = mapper.toDomain(record);
 
@@ -98,7 +98,7 @@ class CalendarFeedRecordMapperTest {
       CalendarFeed feed = result.get();
       assertThat(feed.getContractId()).isEmpty();
       assertThat(feed.getPropertyId()).isEmpty();
-      assertThat(feed.getTenantId()).isEmpty();
+      assertThat(feed.getContactId()).isEmpty();
     }
 
     @Test
@@ -137,7 +137,7 @@ class CalendarFeedRecordMapperTest {
     record.setFeedType("ALL_PAYMENTS");
     record.setContractId(CONTRACT_ID);
     record.setPropertyId(PROPERTY_ID);
-    record.setTenantId(TENANT_ID);
+    record.setContactId(CONTACT_ID);
     record.setEnabled(true);
     record.setCreatedAt(NOW);
     record.setUpdatedAt(NOW);

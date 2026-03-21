@@ -22,7 +22,7 @@ public class DatabaseMetricsService {
 
   private final AtomicLong propertiesCount = new AtomicLong();
   private final AtomicLong contractsCount = new AtomicLong();
-  private final AtomicLong tenantsCount = new AtomicLong();
+  private final AtomicLong contactsCount = new AtomicLong();
   private final AtomicLong paymentsCount = new AtomicLong();
   private final AtomicLong teamsCount = new AtomicLong();
   private final AtomicLong expensesCount = new AtomicLong();
@@ -41,8 +41,8 @@ public class DatabaseMetricsService {
     Gauge.builder(PREFIX + "contracts.count", contractsCount, AtomicLong::doubleValue)
         .description("Total active contracts")
         .register(registry);
-    Gauge.builder(PREFIX + "tenants.count", tenantsCount, AtomicLong::doubleValue)
-        .description("Total active tenants")
+    Gauge.builder(PREFIX + "contacts.count", contactsCount, AtomicLong::doubleValue)
+        .description("Total active contacts")
         .register(registry);
     Gauge.builder(PREFIX + "payments.count", paymentsCount, AtomicLong::doubleValue)
         .description("Total active payments")
@@ -74,7 +74,7 @@ public class DatabaseMetricsService {
     try {
       propertiesCount.set(metricsRepository.countProperties());
       contractsCount.set(metricsRepository.countContracts());
-      tenantsCount.set(metricsRepository.countTenants());
+      contactsCount.set(metricsRepository.countContacts());
       paymentsCount.set(metricsRepository.countPayments());
       teamsCount.set(metricsRepository.countTeams());
       expensesCount.set(metricsRepository.countExpenses());

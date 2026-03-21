@@ -26,7 +26,7 @@ import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractRentPeriod;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
-import com.buurman.domain.Tenant;
+import com.buurman.domain.Contact;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.ContractRentPeriodIdentifier;
 import com.buurman.dto.request.CreateRentPeriodRequest;
@@ -497,19 +497,18 @@ public class ContractRentPeriodService {
     try {
       Property property =
           propertyRepository.findByIdAndTeamId(contract.getPropertyId(), teamId).orElse(null);
-      Tenant primaryTenant =
-          contractPartyService.getPrimaryTenantForContract(contract.getId(), teamId);
+      Contact primaryContact =
+          contractPartyService.getPrimaryContactForContract(contract.getId(), teamId);
 
       String propertyName =
           property != null
               ? property.getStreet() + ", " + property.getCity()
               : contract.getIdentifier().orElseThrow().toString();
-      String tenantName =
-          primaryTenant.getFirstName() + primaryTenant.getLastName().map(n -> " " + n).orElse("");
+      String contactName = primaryContact.getDisplayName();
 
       Map<String, Object> vars = new HashMap<>();
       vars.put("propertyName", propertyName);
-      vars.put("tenantName", tenantName);
+      vars.put("tenantName", contactName);
       vars.put(
           "oldRentAmount",
           oldRentAmount != null

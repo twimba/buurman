@@ -5,7 +5,7 @@ import static com.buurman.jooq.generated.Tables.EXPENSES;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.jooq.generated.Tables.TEAMS;
-import static com.buurman.jooq.generated.Tables.TENANTS;
+import static com.buurman.jooq.generated.Tables.CONTACTS;
 import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.select;
 
@@ -39,10 +39,10 @@ public class DatabaseMetricsRepository {
         CONTRACTS, CONTRACTS.DELETED_AT.isNull().and(CONTRACTS.TEAM_ID.in(nonDemoTeamIds)));
   }
 
-  public long countTenants() {
+  public long countContacts() {
     var nonDemoTeamIds = select(TEAMS.ID).from(TEAMS).where(NOT_DEMO_TEAM);
     return dsl.fetchCount(
-        TENANTS, TENANTS.DELETED_AT.isNull().and(TENANTS.TEAM_ID.in(nonDemoTeamIds)));
+        CONTACTS, CONTACTS.DELETED_AT.isNull().and(CONTACTS.TEAM_ID.in(nonDemoTeamIds)));
   }
 
   public long countPayments() {

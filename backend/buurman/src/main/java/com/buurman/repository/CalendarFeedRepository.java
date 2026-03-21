@@ -77,7 +77,7 @@ public class CalendarFeedRepository {
       CalendarFeed.FeedType feedType,
       Optional<UUID> contractId,
       Optional<UUID> propertyId,
-      Optional<UUID> tenantId,
+      Optional<UUID> contactId,
       UUID userId,
       UUID teamId) {
     var condition =
@@ -97,9 +97,9 @@ public class CalendarFeedRepository {
             ? condition.and(CALENDAR_FEEDS.PROPERTY_ID.eq(propertyId.get()))
             : condition.and(CALENDAR_FEEDS.PROPERTY_ID.isNull());
     condition =
-        tenantId.isPresent()
-            ? condition.and(CALENDAR_FEEDS.TENANT_ID.eq(tenantId.get()))
-            : condition.and(CALENDAR_FEEDS.TENANT_ID.isNull());
+        contactId.isPresent()
+            ? condition.and(CALENDAR_FEEDS.CONTACT_ID.eq(contactId.get()))
+            : condition.and(CALENDAR_FEEDS.CONTACT_ID.isNull());
 
     return dsl.selectFrom(CALENDAR_FEEDS)
         .where(condition)
@@ -122,7 +122,7 @@ public class CalendarFeedRepository {
           .set(CALENDAR_FEEDS.FEED_TYPE, feed.getFeedType().name())
           .set(CALENDAR_FEEDS.CONTRACT_ID, feed.getContractId().orElse(null))
           .set(CALENDAR_FEEDS.PROPERTY_ID, feed.getPropertyId().orElse(null))
-          .set(CALENDAR_FEEDS.TENANT_ID, feed.getTenantId().orElse(null))
+          .set(CALENDAR_FEEDS.CONTACT_ID, feed.getContactId().orElse(null))
           .set(CALENDAR_FEEDS.ENABLED, feed.getEnabled())
           .set(CALENDAR_FEEDS.CREATED_AT, now)
           .set(CALENDAR_FEEDS.UPDATED_AT, now)

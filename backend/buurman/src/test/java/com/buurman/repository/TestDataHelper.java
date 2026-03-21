@@ -13,8 +13,9 @@ import org.jooq.impl.DSL;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
 import com.buurman.domain.Team;
-import com.buurman.domain.Tenant;
-import com.buurman.domain.TenantAddress;
+import com.buurman.domain.Contact;
+import com.buurman.domain.ContactAddress;
+import com.buurman.domain.ContactType;
 import com.buurman.mapper.OptionalMappingConfig;
 import com.buurman.util.MoneyAmount;
 import com.buurman.util.SidGenerator;
@@ -122,30 +123,33 @@ final class TestDataHelper {
     return id;
   }
 
-  static Tenant buildTenant(UUID teamId, UUID createdBy) {
-    Tenant t = new Tenant();
-    t.setIdentifier(Optional.of(SidGenerator.newTenantId()));
-    t.setTeamId(teamId);
-    t.setFirstName("Jan");
-    t.setLastName(Optional.of("de Vries"));
-    t.setEmail(Optional.of("jan@test.io"));
-    t.setPhone(Optional.of("+31612345678"));
-    t.setTaxNumber(Optional.empty());
-    t.setIdNumber(Optional.empty());
-    t.setAdditionalInfo(Optional.empty());
-    t.setCurrentPropertyId(Optional.empty());
-    t.setCreatedBy(createdBy);
-    t.setUpdatedBy(createdBy);
-    t.setDeletedAt(Optional.empty());
-    return t;
+  static Contact buildContact(UUID teamId, UUID createdBy) {
+    Contact c = new Contact();
+    c.setIdentifier(Optional.of(SidGenerator.newContactId()));
+    c.setTeamId(teamId);
+    c.setContactType(ContactType.INDIVIDUAL);
+    c.setDisplayName("Jan de Vries");
+    c.setFirstName("Jan");
+    c.setLastName(Optional.of("de Vries"));
+    c.setEmail(Optional.of("jan@test.io"));
+    c.setPhone(Optional.of("+31612345678"));
+    c.setTaxNumber(Optional.empty());
+    c.setIdNumber(Optional.empty());
+    c.setNotes(Optional.empty());
+    c.setCreatedBy(createdBy);
+    c.setUpdatedBy(createdBy);
+    c.setDeletedAt(Optional.empty());
+    return c;
   }
 
-  static UUID insertTenant(DSLContext dsl, UUID teamId, UUID createdBy) {
+  static UUID insertContact(DSLContext dsl, UUID teamId, UUID createdBy) {
     UUID id = UUID.randomUUID();
-    dsl.insertInto(DSL.table("tenants"))
+    dsl.insertInto(DSL.table("contacts"))
         .set(DSL.field("id", UUID.class), id)
-        .set(DSL.field("identifier", String.class), SidGenerator.newTenantId().value())
+        .set(DSL.field("identifier", String.class), SidGenerator.newContactId().value())
         .set(DSL.field("team_id", UUID.class), teamId)
+        .set(DSL.field("contact_type", String.class), "INDIVIDUAL")
+        .set(DSL.field("display_name", String.class), "Jan de Vries")
         .set(DSL.field("first_name", String.class), "Jan")
         .set(DSL.field("last_name", String.class), "de Vries")
         .set(DSL.field("email", String.class), "jan@test.io")
@@ -178,16 +182,16 @@ final class TestDataHelper {
     return id;
   }
 
-  static TenantAddress buildTenantAddress(UUID tenantId, UUID teamId, UUID createdBy) {
-    return TenantAddress.builder()
-        .tenantId(tenantId)
+  static ContactAddress buildContactAddress(UUID contactId, UUID teamId, UUID createdBy) {
+    return ContactAddress.builder()
+        .contactId(contactId)
         .teamId(teamId)
         .street("Herengracht 100")
         .city("Amsterdam")
         .postalCode("1015BN")
         .countryCode("NL")
-        .addressType(TenantAddress.AddressType.CURRENT)
-        .status(TenantAddress.AddressStatus.ACTIVE)
+        .addressType(ContactAddress.AddressType.CURRENT)
+        .status(ContactAddress.AddressStatus.ACTIVE)
         .latitude(Optional.of(52.3676))
         .longitude(Optional.of(4.9041))
         .geocodeAccuracy(Optional.of("ROOFTOP"))

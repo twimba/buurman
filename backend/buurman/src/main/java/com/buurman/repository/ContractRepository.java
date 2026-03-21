@@ -131,10 +131,10 @@ public class ContractRepository {
         .toList();
   }
 
-  public List<Contract> findByTenantIdViaParties(UUID tenantId, UUID teamId) {
+  public List<Contract> findByContactIdViaParties(UUID contactId, UUID teamId) {
     var CONTRACT_PARTIES = org.jooq.impl.DSL.table("contract_parties");
     var CP_CONTRACT_ID = org.jooq.impl.DSL.field("contract_parties.contract_id", UUID.class);
-    var CP_TENANT_ID = org.jooq.impl.DSL.field("contract_parties.tenant_id", UUID.class);
+    var CP_CONTACT_ID = org.jooq.impl.DSL.field("contract_parties.contact_id", UUID.class);
     var CP_TEAM_ID = org.jooq.impl.DSL.field("contract_parties.team_id", UUID.class);
     var CP_DELETED_AT = org.jooq.impl.DSL.field("contract_parties.deleted_at", LocalDateTime.class);
 
@@ -146,7 +146,7 @@ public class ContractRepository {
                 .where(
                     CP_CONTRACT_ID
                         .eq(CONTRACTS.ID)
-                        .and(CP_TENANT_ID.eq(tenantId))
+                        .and(CP_CONTACT_ID.eq(contactId))
                         .and(CP_TEAM_ID.eq(teamId))
                         .and(CP_DELETED_AT.isNull())))
         .and(CONTRACTS.TEAM_ID.eq(teamId))

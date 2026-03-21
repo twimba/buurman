@@ -12,10 +12,10 @@ import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.ContractPartyIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
-import com.buurman.domain.identifier.TenantIdentifier;
+import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.dto.request.AddContractPartyRequest;
 import com.buurman.dto.request.ChangeContractStatusRequest;
-import com.buurman.dto.request.ChangePrimaryTenantRequest;
+import com.buurman.dto.request.ChangePrimaryContactRequest;
 import com.buurman.dto.request.CreateContractRequest;
 import com.buurman.dto.request.GeneratePaymentsRequest;
 import com.buurman.dto.request.PageRequest;
@@ -74,8 +74,8 @@ public class ContractController implements ContractsApi {
 
     if (tenantIdentifier.isPresent()) {
       List<ContractResponse> results =
-          contractService.getContractsByTenant(
-              TenantIdentifier.of(tenantIdentifier.get()), principal);
+          contractService.getContractsByContact(
+              ContactIdentifier.of(tenantIdentifier.get()), principal);
       return PageResponse.of(results, 0, results.size(), results.size());
     }
 
@@ -152,10 +152,10 @@ public class ContractController implements ContractsApi {
 
   @Override
   public ContractPartyResponse changePrimaryTenant(
-      ContractIdentifier identifier, ChangePrimaryTenantRequest changePrimaryTenantRequest) {
+      ContractIdentifier identifier, ChangePrimaryContactRequest changePrimaryContactRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return contractPartyService.changePrimaryTenant(
-        identifier, changePrimaryTenantRequest, principal);
+    return contractPartyService.changePrimaryContact(
+        identifier, changePrimaryContactRequest, principal);
   }
 
   @Override

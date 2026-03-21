@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
-import com.buurman.domain.identifier.TenantIdentifier;
+import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.dto.response.PortfolioDashboardResponse;
 import com.buurman.dto.response.PropertyDashboardResponse;
 
@@ -22,7 +22,7 @@ public interface ExportService {
 
   byte[] generateContractReportPDF(ContractIdentifier contractIdentifier, UUID teamId);
 
-  byte[] generateTenantReportPDF(TenantIdentifier tenantIdentifier, UUID teamId);
+  byte[] generateContactReportPDF(ContactIdentifier contactIdentifier, UUID teamId);
 
   byte[] generatePropertyDashboardPDF(PropertyDashboardResponse dashboard);
 

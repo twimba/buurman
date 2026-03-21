@@ -47,7 +47,7 @@ public interface ContractMapper {
 
   @Mapping(target = "property", ignore = true)
   @Mapping(target = "parties", ignore = true)
-  @Mapping(target = "primaryTenant", ignore = true)
+  @Mapping(target = "primaryContact", ignore = true)
   @Mapping(target = "countryMetadata", ignore = true)
   @Mapping(target = "effectiveEndDate", ignore = true)
   @Mapping(target = "extensionCount", ignore = true)
@@ -71,7 +71,7 @@ public interface ContractMapper {
   ContractResponse toResponse(Contract contract);
 
   @Mapping(target = "property", ignore = true)
-  @Mapping(target = "primaryTenant", ignore = true)
+  @Mapping(target = "primaryContact", ignore = true)
   @Mapping(target = "rentAmount", expression = "java(contract.getRentAmount().value())")
   ContractSummary toSummary(Contract contract);
 

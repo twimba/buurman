@@ -45,7 +45,7 @@ import com.buurman.domain.Document;
 import com.buurman.domain.Payment;
 import com.buurman.domain.PaymentReceival;
 import com.buurman.domain.Property;
-import com.buurman.domain.Tenant;
+import com.buurman.domain.Contact;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.PaymentIdentifier;
@@ -67,19 +67,19 @@ import com.buurman.dto.response.PaymentResponse;
 import com.buurman.dto.response.PaymentStatsResponse;
 import com.buurman.dto.response.PropertySummary;
 import com.buurman.dto.response.RecentActivityResponse;
-import com.buurman.dto.response.TenantSummary;
+import com.buurman.dto.response.ContactSummary;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.mapper.ContractMapper;
 import com.buurman.mapper.PaymentMapper;
 import com.buurman.mapper.PaymentReceivalMapper;
 import com.buurman.mapper.PropertyMapper;
-import com.buurman.mapper.TenantMapper;
+import com.buurman.mapper.ContactMapper;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PaymentReceivalRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
-import com.buurman.repository.TenantRepository;
+import com.buurman.repository.ContactRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
@@ -101,7 +101,7 @@ public class PaymentService {
   private final PaymentReceivalRepository receivalRepository;
   private final ContractRepository contractRepository;
   private final PropertyRepository propertyRepository;
-  private final TenantRepository tenantRepository;
+  private final ContactRepository contactRepository;
   private final ContractPartyService contractPartyService;
   private final CurrencyEnforcementService currencyEnforcement;
   private final DocumentRepository documentRepository;
@@ -109,7 +109,7 @@ public class PaymentService {
   private final PaymentReceivalMapper receivalMapper;
   private final ContractMapper contractMapper;
   private final PropertyMapper propertyMapper;
-  private final TenantMapper tenantMapper;
+  private final ContactMapper contactMapper;
   private final AuditService auditService;
   private final DocumentService documentService;
   private final com.buurman.mapper.DocumentMapper documentMapper;
@@ -876,10 +876,10 @@ public class PaymentService {
             .flatMap(c -> propertyRepository.findByIdAndTeamId(c.getPropertyId(), teamId))
             .map(p -> p.getStreet() + ", " + p.getCity())
             .orElse("N/A");
-    String tenantName =
+    String contactName =
         contractOpt
-            .flatMap(c -> contractPartyService.findPrimaryTenantForContract(c.getId(), teamId))
-            .map(t -> t.getFirstName() + t.getLastName().map(n -> " " + n).orElse(""))
+            .flatMap(c -> contractPartyService.findPrimaryContactForContract(c.getId(), teamId))
+            .map(Contact::getDisplayName)
             .orElse("N/A");
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
@@ -891,7 +891,7 @@ public class PaymentService {
                     "propertyName",
                     propertyName,
                     "tenantName",
-                    tenantName,
+                    contactName,
                     "amount",
                     payment.getAmount().currency() + " " + payment.getAmount().value(),
                     "paymentDate",
@@ -911,10 +911,10 @@ public class PaymentService {
             .flatMap(c -> propertyRepository.findByIdAndTeamId(c.getPropertyId(), teamId))
             .map(p -> p.getStreet() + ", " + p.getCity())
             .orElse("N/A");
-    String tenantName =
+    String contactName =
         contractOpt
-            .flatMap(c -> contractPartyService.findPrimaryTenantForContract(c.getId(), teamId))
-            .map(t -> t.getFirstName() + t.getLastName().map(n -> " " + n).orElse(""))
+            .flatMap(c -> contractPartyService.findPrimaryContactForContract(c.getId(), teamId))
+            .map(Contact::getDisplayName)
             .orElse("N/A");
     String currency = payment.getAmount().currency();
     BigDecimal totalReceived =
@@ -923,7 +923,7 @@ public class PaymentService {
 
     Map<String, Object> vars = new HashMap<>();
     vars.put("propertyName", propertyName);
-    vars.put("tenantName", tenantName);
+    vars.put("tenantName", contactName);
     vars.put("receivalAmount", currency + " " + receivalAmount);
     vars.put("amount", currency + " " + payment.getAmount().value());
     vars.put("remainingBalance", currency + " " + remainingBalance);
@@ -969,9 +969,9 @@ public class PaymentService {
         propertyRepository.findByIdsAndTeamId(propertyIds, teamId).stream()
             .collect(toMap(Property::getId, identity()));
 
-    // Batch-fetch primary tenants via contract_parties
-    Map<UUID, Tenant> primaryTenantByContract =
-        contractPartyService.getPrimaryTenantsForContracts(contractIds, teamId);
+    // Batch-fetch primary contacts via contract_parties
+    Map<UUID, Contact> primaryContactByContract =
+        contractPartyService.getPrimaryContactsForContracts(contractIds, teamId);
 
     // Batch-fetch documents for all payments
     List<com.buurman.domain.Document> allDocs =
@@ -996,16 +996,16 @@ public class PaymentService {
       ContractSummary contractSummary =
           contract != null ? contractMapper.toSummary(contract) : null;
       PropertySummary propertySummary = null;
-      TenantSummary tenantSummary = null;
+      ContactSummary contactSummary = null;
 
       if (contract != null) {
         Property property = propertiesById.get(contract.getPropertyId());
-        Tenant tenant = primaryTenantByContract.get(contract.getId());
+        Contact contact = primaryContactByContract.get(contract.getId());
         if (property != null) {
           propertySummary = propertyMapper.toSummary(property);
         }
-        if (tenant != null) {
-          tenantSummary = tenantMapper.toSummary(tenant);
+        if (contact != null) {
+          contactSummary = contactMapper.toSummary(contact);
         }
       }
 
@@ -1028,7 +1028,7 @@ public class PaymentService {
           new PaymentResponse(
               base.identifier(),
               Optional.ofNullable(contractSummary),
-              Optional.ofNullable(tenantSummary),
+              Optional.ofNullable(contactSummary),
               Optional.ofNullable(propertySummary),
               base.amount(),
               base.currency(),
@@ -1071,10 +1071,10 @@ public class PaymentService {
               .map(propertyMapper::toSummary)
               .orElse(null);
 
-      TenantSummary tenantSummary =
+      ContactSummary contactSummary =
           contractPartyService
-              .findPrimaryTenantForContract(contract.getId(), teamId)
-              .map(tenantMapper::toSummary)
+              .findPrimaryContactForContract(contract.getId(), teamId)
+              .map(contactMapper::toSummary)
               .orElse(null);
 
       DocumentResponse proofOfPayment =
@@ -1094,7 +1094,7 @@ public class PaymentService {
       return new PaymentResponse(
           response.identifier(),
           Optional.of(contractSummary),
-          Optional.ofNullable(tenantSummary),
+          Optional.ofNullable(contactSummary),
           Optional.ofNullable(propertySummary),
           response.amount(),
           response.currency(),
@@ -1114,7 +1114,7 @@ public class PaymentService {
     return new PaymentResponse(
         response.identifier(),
         response.contract(),
-        response.tenant(),
+        response.contact(),
         response.property(),
         response.amount(),
         response.currency(),

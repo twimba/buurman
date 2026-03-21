@@ -12,11 +12,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import com.buurman.domain.ContactType;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Sid;
+import com.buurman.dto.response.ContactSummary;
 import com.buurman.dto.response.ContractPartyResponse;
-import com.buurman.dto.response.TenantSummary;
 
 @DisplayName("ContractPartyMapper")
 class ContractPartyMapperTest {
@@ -24,38 +25,39 @@ class ContractPartyMapperTest {
   private final ContractPartyMapper mapper = new ContractPartyMapper();
 
   private static final Sid PARTY_ID = Sid.of("CPT01HQJK4B2X5M3N7P8Q9R0S1T2");
-  private static final Sid TENANT_ID = Sid.of("TEN01HQJK4B2X5M3N7P8Q9R0S1T2");
+  private static final Sid CONTACT_ID = Sid.of("CON01HQJK4B2X5M3N7P8Q9R0S1T2");
 
   @Nested
   @DisplayName("toResponse")
   class ToResponse {
 
     @Test
-    @DisplayName("maps party with tenant summary")
-    void mapsWithTenantSummary() {
+    @DisplayName("maps party with contact summary")
+    void mapsWithContactSummary() {
       ContractParty party = createParty(ContractPartyRole.PRIMARY_TENANT);
-      TenantSummary tenant =
-          new TenantSummary(
-              TENANT_ID, "John", "Doe", Optional.of("john@example.com"), Optional.empty());
+      ContactSummary contact = new ContactSummary(
+          CONTACT_ID, ContactType.INDIVIDUAL, "John Doe",
+          Optional.of("John"), Optional.of("Doe"),
+          Optional.of("john@example.com"), Optional.empty());
 
-      ContractPartyResponse response = mapper.toResponse(party, tenant);
+      ContractPartyResponse response = mapper.toResponse(party, contact);
 
       assertThat(response.identifier()).isEqualTo(PARTY_ID);
       assertThat(response.role()).isEqualTo(ContractPartyRole.PRIMARY_TENANT);
-      assertThat(response.tenant()).isPresent();
-      assertThat(response.tenant().get().firstName()).isEqualTo("John");
+      assertThat(response.contact()).isPresent();
+      assertThat(response.contact().get().displayName()).isEqualTo("John Doe");
     }
 
     @Test
-    @DisplayName("maps party with null tenant summary to empty Optional")
-    void mapsWithNullTenantSummary() {
+    @DisplayName("maps party with null contact summary to empty Optional")
+    void mapsWithNullContactSummary() {
       ContractParty party = createParty(ContractPartyRole.GUARANTOR);
 
       ContractPartyResponse response = mapper.toResponse(party, null);
 
       assertThat(response.identifier()).isEqualTo(PARTY_ID);
       assertThat(response.role()).isEqualTo(ContractPartyRole.GUARANTOR);
-      assertThat(response.tenant()).isEmpty();
+      assertThat(response.contact()).isEmpty();
     }
 
     @Test
@@ -73,17 +75,16 @@ class ContractPartyMapperTest {
     @Test
     @DisplayName("throws when party has no identifier")
     void throwsWhenIdentifierMissing() {
-      ContractParty party =
-          ContractParty.builder()
-              .id(UUID.randomUUID())
-              .teamId(UUID.randomUUID())
-              .contractId(UUID.randomUUID())
-              .role(ContractPartyRole.PRIMARY_TENANT)
-              .createdAt(Instant.now())
-              .updatedAt(Instant.now())
-              .createdBy(UUID.randomUUID())
-              .updatedBy(UUID.randomUUID())
-              .build();
+      ContractParty party = ContractParty.builder()
+          .id(UUID.randomUUID())
+          .teamId(UUID.randomUUID())
+          .contractId(UUID.randomUUID())
+          .role(ContractPartyRole.PRIMARY_TENANT)
+          .createdAt(Instant.now())
+          .updatedAt(Instant.now())
+          .createdBy(UUID.randomUUID())
+          .updatedBy(UUID.randomUUID())
+          .build();
 
       assertThatThrownBy(() -> mapper.toResponse(party, null))
           .isInstanceOf(NoSuchElementException.class);

@@ -34,14 +34,14 @@ import com.buurman.mapper.DocumentMapper;
 import com.buurman.mapper.PaymentMapper;
 import com.buurman.mapper.PaymentReceivalMapper;
 import com.buurman.mapper.PropertyMapper;
-import com.buurman.mapper.TenantMapper;
+import com.buurman.mapper.ContactMapper;
 import com.buurman.repository.AuditLogRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PaymentReceivalRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
-import com.buurman.repository.TenantRepository;
+import com.buurman.repository.ContactRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.util.MoneyAmount;
@@ -61,7 +61,7 @@ class PaymentServiceTest {
   @Mock private PaymentReceivalRepository receivalRepository;
   @Mock private ContractRepository contractRepository;
   @Mock private PropertyRepository propertyRepository;
-  @Mock private TenantRepository tenantRepository;
+  @Mock private ContactRepository contactRepository;
   @Mock private ContractPartyService contractPartyService;
   @Mock private CurrencyEnforcementService currencyEnforcement;
   @Mock private DocumentRepository documentRepository;
@@ -69,7 +69,7 @@ class PaymentServiceTest {
   @Mock private PaymentReceivalMapper receivalMapper;
   @Mock private ContractMapper contractMapper;
   @Mock private PropertyMapper propertyMapper;
-  @Mock private TenantMapper tenantMapper;
+  @Mock private ContactMapper contactMapper;
   @Mock private AuditService auditService;
   @Mock private DocumentService documentService;
   @Mock private DocumentMapper documentMapper;
@@ -99,7 +99,7 @@ class PaymentServiceTest {
             receivalRepository,
             contractRepository,
             propertyRepository,
-            tenantRepository,
+            contactRepository,
             contractPartyService,
             currencyEnforcement,
             documentRepository,
@@ -107,7 +107,7 @@ class PaymentServiceTest {
             receivalMapper,
             contractMapper,
             propertyMapper,
-            tenantMapper,
+            contactMapper,
             auditService,
             documentService,
             documentMapper,

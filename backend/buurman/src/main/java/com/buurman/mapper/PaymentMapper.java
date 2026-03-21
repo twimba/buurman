@@ -33,7 +33,7 @@ public interface PaymentMapper {
   Payment toEntity(CreatePaymentRequest request);
 
   @Mapping(target = "contract", ignore = true)
-  @Mapping(target = "tenant", ignore = true)
+  @Mapping(target = "contact", ignore = true)
   @Mapping(target = "property", ignore = true)
   @Mapping(target = "proofOfPayment", ignore = true)
   @Mapping(target = "receipt", ignore = true)

@@ -12,21 +12,21 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import com.buurman.domain.TenantAddress;
+import com.buurman.domain.ContactAddress;
 import com.buurman.exception.NotFoundException;
 
-@DisplayName("TenantAddressRepository Integration")
-class TenantAddressRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
+@DisplayName("ContactAddressRepository Integration")
+class ContactAddressRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
 
-  private TenantAddressRepository repo;
-  private UUID tenantIdA;
-  private UUID tenantIdB;
+  private ContactAddressRepository repo;
+  private UUID contactIdA;
+  private UUID contactIdB;
 
   @BeforeEach
   void setUp() {
-    repo = new TenantAddressRepository(dsl, CLOCK);
-    tenantIdA = TestDataHelper.insertTenant(dsl, TEAM_A_ID, USER_ID);
-    tenantIdB = TestDataHelper.insertTenant(dsl, TEAM_B_ID, USER_ID);
+    repo = new ContactAddressRepository(dsl, CLOCK);
+    contactIdA = TestDataHelper.insertContact(dsl, TEAM_A_ID, USER_ID);
+    contactIdB = TestDataHelper.insertContact(dsl, TEAM_B_ID, USER_ID);
   }
 
   @Nested
@@ -36,14 +36,14 @@ class TenantAddressRepositoryIntegrationTest extends AbstractRepositoryIntegrati
     @Test
     @DisplayName("insert creates new address with generated ID and identifier")
     void insertCreatesAddress() {
-      TenantAddress address = TestDataHelper.buildTenantAddress(tenantIdA, TEAM_A_ID, USER_ID);
+      ContactAddress address = TestDataHelper.buildContactAddress(contactIdA, TEAM_A_ID, USER_ID);
 
-      TenantAddress saved = repo.save(address);
+      ContactAddress saved = repo.save(address);
 
       assertThat(saved.getId()).isNotNull();
       assertThat(saved.getIdentifier()).isPresent();
 
-      TenantAddress found = repo.getByIdAndTeamId(saved.getId(), TEAM_A_ID);
+      ContactAddress found = repo.getByIdAndTeamId(saved.getId(), TEAM_A_ID);
       assertThat(found.getStreet()).isEqualTo("Herengracht 100");
       assertThat(found.getCity()).isEqualTo("Amsterdam");
       assertThat(found.getCountryCode()).isEqualTo("NL");
@@ -54,14 +54,14 @@ class TenantAddressRepositoryIntegrationTest extends AbstractRepositoryIntegrati
     @Test
     @DisplayName("update modifies existing address")
     void updateModifiesAddress() {
-      TenantAddress address = TestDataHelper.buildTenantAddress(tenantIdA, TEAM_A_ID, USER_ID);
-      TenantAddress saved = repo.save(address);
+      ContactAddress address = TestDataHelper.buildContactAddress(contactIdA, TEAM_A_ID, USER_ID);
+      ContactAddress saved = repo.save(address);
 
       saved.setStreet("Keizersgracht 200");
       saved.setCity("Rotterdam");
       repo.save(saved);
 
-      TenantAddress found = repo.getByIdAndTeamId(saved.getId(), TEAM_A_ID);
+      ContactAddress found = repo.getByIdAndTeamId(saved.getId(), TEAM_A_ID);
       assertThat(found.getStreet()).isEqualTo("Keizersgracht 200");
       assertThat(found.getCity()).isEqualTo("Rotterdam");
     }
@@ -69,16 +69,14 @@ class TenantAddressRepositoryIntegrationTest extends AbstractRepositoryIntegrati
     @Test
     @DisplayName("update includes team_id in WHERE clause (multi-tenant safety)")
     void updateRespectsTeamId() {
-      TenantAddress address = TestDataHelper.buildTenantAddress(tenantIdA, TEAM_A_ID, USER_ID);
-      TenantAddress saved = repo.save(address);
+      ContactAddress address = TestDataHelper.buildContactAddress(contactIdA, TEAM_A_ID, USER_ID);
+      ContactAddress saved = repo.save(address);
 
-      // Attempt to update with wrong team_id — should silently fail (0 rows updated)
       saved.setTeamId(TEAM_B_ID);
       saved.setStreet("Should Not Change");
       repo.save(saved);
 
-      // Verify original address unchanged
-      TenantAddress found = repo.getByIdAndTeamId(saved.getId(), TEAM_A_ID);
+      ContactAddress found = repo.getByIdAndTeamId(saved.getId(), TEAM_A_ID);
       assertThat(found.getStreet()).isEqualTo("Herengracht 100");
     }
   }
@@ -88,22 +86,22 @@ class TenantAddressRepositoryIntegrationTest extends AbstractRepositoryIntegrati
   class Find {
 
     @Test
-    @DisplayName("findByTenantId returns addresses for the correct team")
-    void findByTenantIdReturnsForCorrectTeam() {
-      repo.save(TestDataHelper.buildTenantAddress(tenantIdA, TEAM_A_ID, USER_ID));
+    @DisplayName("findByContactId returns addresses for the correct team")
+    void findByContactIdReturnsForCorrectTeam() {
+      repo.save(TestDataHelper.buildContactAddress(contactIdA, TEAM_A_ID, USER_ID));
 
-      List<TenantAddress> results = repo.findByTenantId(tenantIdA, TEAM_A_ID);
+      List<ContactAddress> results = repo.findByContactId(contactIdA, TEAM_A_ID);
 
       assertThat(results).hasSize(1);
       assertThat(results.getFirst().getTeamId()).isEqualTo(TEAM_A_ID);
     }
 
     @Test
-    @DisplayName("findByTenantId with wrong team returns empty (multi-tenant isolation)")
-    void findByTenantIdWrongTeamReturnsEmpty() {
-      repo.save(TestDataHelper.buildTenantAddress(tenantIdA, TEAM_A_ID, USER_ID));
+    @DisplayName("findByContactId with wrong team returns empty (multi-tenant isolation)")
+    void findByContactIdWrongTeamReturnsEmpty() {
+      repo.save(TestDataHelper.buildContactAddress(contactIdA, TEAM_A_ID, USER_ID));
 
-      List<TenantAddress> results = repo.findByTenantId(tenantIdA, TEAM_B_ID);
+      List<ContactAddress> results = repo.findByContactId(contactIdA, TEAM_B_ID);
 
       assertThat(results).isEmpty();
     }
@@ -111,10 +109,10 @@ class TenantAddressRepositoryIntegrationTest extends AbstractRepositoryIntegrati
     @Test
     @DisplayName("findByIdentifierAndTeamId returns address")
     void findByIdentifierReturnsAddress() {
-      TenantAddress saved =
-          repo.save(TestDataHelper.buildTenantAddress(tenantIdA, TEAM_A_ID, USER_ID));
+      ContactAddress saved = repo.save(
+          TestDataHelper.buildContactAddress(contactIdA, TEAM_A_ID, USER_ID));
 
-      Optional<TenantAddress> found =
+      Optional<ContactAddress> found =
           repo.findByIdentifierAndTeamId(saved.getIdentifier().orElseThrow(), TEAM_A_ID);
 
       assertThat(found).isPresent();
@@ -124,10 +122,10 @@ class TenantAddressRepositoryIntegrationTest extends AbstractRepositoryIntegrati
     @Test
     @DisplayName("findByIdentifierAndTeamId with wrong team returns empty")
     void findByIdentifierWrongTeamReturnsEmpty() {
-      TenantAddress saved =
-          repo.save(TestDataHelper.buildTenantAddress(tenantIdA, TEAM_A_ID, USER_ID));
+      ContactAddress saved = repo.save(
+          TestDataHelper.buildContactAddress(contactIdA, TEAM_A_ID, USER_ID));
 
-      Optional<TenantAddress> found =
+      Optional<ContactAddress> found =
           repo.findByIdentifierAndTeamId(saved.getIdentifier().orElseThrow(), TEAM_B_ID);
 
       assertThat(found).isEmpty();
@@ -148,41 +146,39 @@ class TenantAddressRepositoryIntegrationTest extends AbstractRepositoryIntegrati
     @Test
     @DisplayName("soft delete hides address from find queries")
     void softDeleteHidesAddress() {
-      TenantAddress saved =
-          repo.save(TestDataHelper.buildTenantAddress(tenantIdA, TEAM_A_ID, USER_ID));
+      ContactAddress saved = repo.save(
+          TestDataHelper.buildContactAddress(contactIdA, TEAM_A_ID, USER_ID));
 
       repo.softDeleteByIdAndTeamId(saved.getId(), TEAM_A_ID);
 
-      assertThat(repo.findByTenantId(tenantIdA, TEAM_A_ID)).isEmpty();
+      assertThat(repo.findByContactId(contactIdA, TEAM_A_ID)).isEmpty();
       assertThat(repo.findByIdAndTeamId(saved.getId(), TEAM_A_ID)).isEmpty();
     }
 
     @Test
     @DisplayName("soft delete with wrong team does nothing")
     void softDeleteWrongTeamDoesNothing() {
-      TenantAddress saved =
-          repo.save(TestDataHelper.buildTenantAddress(tenantIdA, TEAM_A_ID, USER_ID));
+      ContactAddress saved = repo.save(
+          TestDataHelper.buildContactAddress(contactIdA, TEAM_A_ID, USER_ID));
 
       repo.softDeleteByIdAndTeamId(saved.getId(), TEAM_B_ID);
 
-      // Address should still be visible
       assertThat(repo.findByIdAndTeamId(saved.getId(), TEAM_A_ID)).isPresent();
     }
 
     @Test
-    @DisplayName("findByTenantId excludes soft-deleted addresses")
-    void findByTenantIdExcludesSoftDeleted() {
-      TenantAddress addr1 =
-          repo.save(TestDataHelper.buildTenantAddress(tenantIdA, TEAM_A_ID, USER_ID));
+    @DisplayName("findByContactId excludes soft-deleted addresses")
+    void findByContactIdExcludesSoftDeleted() {
+      ContactAddress addr1 = repo.save(
+          TestDataHelper.buildContactAddress(contactIdA, TEAM_A_ID, USER_ID));
 
-      // Soft-delete first so unique constraint allows second CURRENT/ACTIVE insert
       repo.softDeleteByIdAndTeamId(addr1.getId(), TEAM_A_ID);
 
-      TenantAddress addr2Src = TestDataHelper.buildTenantAddress(tenantIdA, TEAM_A_ID, USER_ID);
+      ContactAddress addr2Src = TestDataHelper.buildContactAddress(contactIdA, TEAM_A_ID, USER_ID);
       addr2Src.setStreet("Second Address");
-      TenantAddress addr2 = repo.save(addr2Src);
+      ContactAddress addr2 = repo.save(addr2Src);
 
-      List<TenantAddress> results = repo.findByTenantId(tenantIdA, TEAM_A_ID);
+      List<ContactAddress> results = repo.findByContactId(contactIdA, TEAM_A_ID);
       assertThat(results).hasSize(1);
       assertThat(results.getFirst().getStreet()).isEqualTo("Second Address");
     }

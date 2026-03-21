@@ -6,7 +6,7 @@ import static com.buurman.jooq.generated.Tables.EXPENSES;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.jooq.generated.Tables.TEAMS;
-import static com.buurman.jooq.generated.Tables.TENANTS;
+import static com.buurman.jooq.generated.Tables.CONTACTS;
 import static com.buurman.jooq.generated.Tables.USERS;
 import static org.jooq.impl.DSL.lower;
 
@@ -146,8 +146,8 @@ public class AuditLogRepository {
             .on(AUDIT_LOG.USER_ID.eq(USERS.ID))
             .leftJoin(PROPERTIES)
             .on(AUDIT_LOG.ENTITY_TYPE.eq("PROPERTY").and(AUDIT_LOG.ENTITY_ID.eq(PROPERTIES.ID)))
-            .leftJoin(TENANTS)
-            .on(AUDIT_LOG.ENTITY_TYPE.eq("TENANT").and(AUDIT_LOG.ENTITY_ID.eq(TENANTS.ID)))
+            .leftJoin(CONTACTS)
+            .on(AUDIT_LOG.ENTITY_TYPE.eq("CONTACT").and(AUDIT_LOG.ENTITY_ID.eq(CONTACTS.ID)))
             .leftJoin(CONTRACTS)
             .on(AUDIT_LOG.ENTITY_TYPE.eq("CONTRACT").and(AUDIT_LOG.ENTITY_ID.eq(CONTRACTS.ID)))
             .leftJoin(PAYMENTS)
@@ -179,12 +179,12 @@ public class AuditLogRepository {
                   .or(lower(PROPERTIES.CITY).like(searchPattern))
                   .or(lower(PROPERTIES.POSTAL_CODE).like(searchPattern))
                   .or(lower(PROPERTIES.COUNTRY_CODE).like(searchPattern))
-                  // Tenant search (name, email, phone, identifier)
-                  .or(lower(TENANTS.IDENTIFIER.cast(String.class)).like(searchPattern))
-                  .or(lower(TENANTS.FIRST_NAME).like(searchPattern))
-                  .or(lower(TENANTS.LAST_NAME).like(searchPattern))
-                  .or(lower(TENANTS.EMAIL).like(searchPattern))
-                  .or(lower(TENANTS.PHONE).like(searchPattern))
+                  // Contact search (name, email, phone, identifier)
+                  .or(lower(CONTACTS.IDENTIFIER.cast(String.class)).like(searchPattern))
+                  .or(lower(CONTACTS.FIRST_NAME).like(searchPattern))
+                  .or(lower(CONTACTS.LAST_NAME).like(searchPattern))
+                  .or(lower(CONTACTS.EMAIL).like(searchPattern))
+                  .or(lower(CONTACTS.PHONE).like(searchPattern))
                   // Contract search
                   .or(lower(CONTRACTS.IDENTIFIER.cast(String.class)).like(searchPattern))
                   // Payment search
@@ -223,9 +223,9 @@ public class AuditLogRepository {
                   .or(lower(PROPERTIES.IDENTIFIER.cast(String.class)).like(searchPattern))
                   .or(lower(PROPERTIES.STREET).like(searchPattern))
                   .or(lower(PROPERTIES.CITY).like(searchPattern))
-                  .or(lower(TENANTS.IDENTIFIER.cast(String.class)).like(searchPattern))
-                  .or(lower(TENANTS.FIRST_NAME).like(searchPattern))
-                  .or(lower(TENANTS.LAST_NAME).like(searchPattern))
+                  .or(lower(CONTACTS.IDENTIFIER.cast(String.class)).like(searchPattern))
+                  .or(lower(CONTACTS.FIRST_NAME).like(searchPattern))
+                  .or(lower(CONTACTS.LAST_NAME).like(searchPattern))
                   .or(lower(CONTRACTS.IDENTIFIER.cast(String.class)).like(searchPattern))
                   .or(lower(PAYMENTS.IDENTIFIER.cast(String.class)).like(searchPattern))
                   .or(lower(EXPENSES.IDENTIFIER.cast(String.class)).like(searchPattern))
@@ -258,8 +258,8 @@ public class AuditLogRepository {
             .on(AUDIT_LOG.USER_ID.eq(USERS.ID))
             .leftJoin(PROPERTIES)
             .on(AUDIT_LOG.ENTITY_TYPE.eq("PROPERTY").and(AUDIT_LOG.ENTITY_ID.eq(PROPERTIES.ID)))
-            .leftJoin(TENANTS)
-            .on(AUDIT_LOG.ENTITY_TYPE.eq("TENANT").and(AUDIT_LOG.ENTITY_ID.eq(TENANTS.ID)))
+            .leftJoin(CONTACTS)
+            .on(AUDIT_LOG.ENTITY_TYPE.eq("CONTACT").and(AUDIT_LOG.ENTITY_ID.eq(CONTACTS.ID)))
             .leftJoin(CONTRACTS)
             .on(AUDIT_LOG.ENTITY_TYPE.eq("CONTRACT").and(AUDIT_LOG.ENTITY_ID.eq(CONTRACTS.ID)))
             .leftJoin(PAYMENTS)
@@ -288,8 +288,8 @@ public class AuditLogRepository {
             .on(AUDIT_LOG.USER_ID.eq(USERS.ID))
             .leftJoin(PROPERTIES)
             .on(AUDIT_LOG.ENTITY_TYPE.eq("PROPERTY").and(AUDIT_LOG.ENTITY_ID.eq(PROPERTIES.ID)))
-            .leftJoin(TENANTS)
-            .on(AUDIT_LOG.ENTITY_TYPE.eq("TENANT").and(AUDIT_LOG.ENTITY_ID.eq(TENANTS.ID)))
+            .leftJoin(CONTACTS)
+            .on(AUDIT_LOG.ENTITY_TYPE.eq("CONTACT").and(AUDIT_LOG.ENTITY_ID.eq(CONTACTS.ID)))
             .leftJoin(CONTRACTS)
             .on(AUDIT_LOG.ENTITY_TYPE.eq("CONTRACT").and(AUDIT_LOG.ENTITY_ID.eq(CONTRACTS.ID)))
             .leftJoin(PAYMENTS)
@@ -362,12 +362,12 @@ public class AuditLogRepository {
               .where(PROPERTIES.ID.eq(entityId).and(PROPERTIES.TEAM_ID.eq(teamId)))
               .fetchOptional()
               .map(r -> r.get(PROPERTIES.IDENTIFIER));
-      case "tenant" ->
-          dsl.select(TENANTS.IDENTIFIER)
-              .from(TENANTS)
-              .where(TENANTS.ID.eq(entityId).and(TENANTS.TEAM_ID.eq(teamId)))
+      case "contact" ->
+          dsl.select(CONTACTS.IDENTIFIER)
+              .from(CONTACTS)
+              .where(CONTACTS.ID.eq(entityId).and(CONTACTS.TEAM_ID.eq(teamId)))
               .fetchOptional()
-              .map(r -> r.get(TENANTS.IDENTIFIER));
+              .map(r -> r.get(CONTACTS.IDENTIFIER));
       case "contract" ->
           dsl.select(CONTRACTS.IDENTIFIER)
               .from(CONTRACTS)
@@ -410,17 +410,12 @@ public class AuditLogRepository {
               .where(PROPERTIES.ID.eq(entityId).and(PROPERTIES.TEAM_ID.eq(teamId)))
               .fetchOptional()
               .map(r -> r.get(PROPERTIES.STREET) + ", " + r.get(PROPERTIES.CITY));
-      case "tenant" ->
-          dsl.select(TENANTS.FIRST_NAME, TENANTS.LAST_NAME)
-              .from(TENANTS)
-              .where(TENANTS.ID.eq(entityId).and(TENANTS.TEAM_ID.eq(teamId)))
+      case "contact" ->
+          dsl.select(CONTACTS.DISPLAY_NAME)
+              .from(CONTACTS)
+              .where(CONTACTS.ID.eq(entityId).and(CONTACTS.TEAM_ID.eq(teamId)))
               .fetchOptional()
-              .map(
-                  r -> {
-                    String firstName = r.get(TENANTS.FIRST_NAME);
-                    String lastName = r.get(TENANTS.LAST_NAME);
-                    return lastName != null ? firstName + " " + lastName : firstName;
-                  });
+              .map(r -> r.get(CONTACTS.DISPLAY_NAME));
       case "team" ->
           dsl.select(TEAMS.NAME)
               .from(TEAMS)

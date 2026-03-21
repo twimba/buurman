@@ -22,25 +22,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.buurman.domain.Contact;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
-import com.buurman.domain.Tenant;
+import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.ContractPartyIdentifier;
-import com.buurman.domain.identifier.TenantIdentifier;
 import com.buurman.dto.request.AddContractPartyRequest;
-import com.buurman.dto.request.ChangePrimaryTenantRequest;
+import com.buurman.dto.request.ChangePrimaryContactRequest;
 import com.buurman.dto.request.ContractPartyRequest;
-import com.buurman.dto.request.CreateTenantRequest;
+import com.buurman.dto.request.CreateContactRequest;
+import com.buurman.dto.response.ContactResponse;
+import com.buurman.dto.response.ContactSummary;
 import com.buurman.dto.response.ContractPartyResponse;
-import com.buurman.dto.response.TenantResponse;
-import com.buurman.dto.response.TenantSummary;
+import com.buurman.mapper.ContactMapper;
 import com.buurman.mapper.ContractPartyMapper;
-import com.buurman.mapper.TenantMapper;
+import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractPartyRepository;
 import com.buurman.repository.ContractRepository;
-import com.buurman.repository.TenantRepository;
 import com.buurman.security.UserPrincipal;
 
 import lombok.RequiredArgsConstructor;
@@ -53,10 +53,10 @@ public class ContractPartyService {
 
   private final ContractPartyRepository contractPartyRepository;
   private final ContractRepository contractRepository;
-  private final TenantRepository tenantRepository;
-  private final TenantService tenantService;
+  private final ContactRepository contactRepository;
+  private final ContactService contactService;
   private final ContractPartyMapper contractPartyMapper;
-  private final TenantMapper tenantMapper;
+  private final ContactMapper contactMapper;
   private final AuditService auditService;
   private final Clock clock;
 
@@ -74,25 +74,25 @@ public class ContractPartyService {
 
     if (request.role() == ContractPartyRole.PRIMARY_TENANT) {
       throw new IllegalArgumentException(
-          "Cannot add PRIMARY_TENANT directly. Use change primary tenant instead.");
+          "Cannot add PRIMARY_TENANT directly. Use change primary contact instead.");
     }
 
-    Tenant tenant =
-        resolveOrCreateTenant(
-            request.tenantIdentifier().map(TenantIdentifier::of).orElse(null),
-            request.newTenant().orElse(null),
+    Contact contact =
+        resolveOrCreateContact(
+            request.contactIdentifier().map(ContactIdentifier::of).orElse(null),
+            request.newContact().orElse(null),
             principal);
 
-    if (contractPartyRepository.existsByContractIdAndTenantIdAndTeamId(
-        contract.getId(), tenant.getId(), teamId)) {
-      throw new IllegalArgumentException("Tenant is already a party to this contract");
+    if (contractPartyRepository.existsByContractIdAndContactIdAndTeamId(
+        contract.getId(), contact.getId(), teamId)) {
+      throw new IllegalArgumentException("Contact is already a party to this contract");
     }
 
     ContractParty party = new ContractParty();
     party.setIdentifier(Optional.of(newContractPartyId()));
     party.setTeamId(teamId);
     party.setContractId(contract.getId());
-    party.setTenantId(Optional.of(tenant.getId()));
+    party.setContactId(Optional.of(contact.getId()));
     party.setRole(request.role());
     party.setCreatedAt(clock.instant());
     party.setUpdatedAt(clock.instant());
@@ -101,15 +101,15 @@ public class ContractPartyService {
 
     ContractParty saved = contractPartyRepository.save(party);
     log.info(
-        "Party added to contract {}: tenant {} as {}",
+        "Party added to contract {}: contact {} as {}",
         contractIdentifier,
-        tenant.getIdentifier().orElseThrow(),
+        contact.getIdentifier().orElseThrow(),
         request.role());
 
     // Audit log
-    String tenantName = tenant.getFirstName() + tenant.getLastName().map(n -> " " + n).orElse("");
+    String contactName = contact.getDisplayName();
     Map<String, Object> changedFields = new HashMap<>();
-    changedFields.put("partyAdded", tenantName);
+    changedFields.put("partyAdded", contactName);
     changedFields.put("role", request.role().name());
     auditService.logUpdate(
         teamId,
@@ -120,8 +120,8 @@ public class ContractPartyService {
         Map.of("parties", "updated"),
         changedFields);
 
-    TenantSummary tenantSummary = tenantMapper.toSummary(tenant);
-    return contractPartyMapper.toResponse(saved, tenantSummary);
+    ContactSummary contactSummary = contactMapper.toSummary(contact);
+    return contractPartyMapper.toResponse(saved, contactSummary);
   }
 
   @Transactional
@@ -144,21 +144,21 @@ public class ContractPartyService {
 
     if (party.getRole() == ContractPartyRole.PRIMARY_TENANT) {
       throw new IllegalArgumentException(
-          "Cannot remove primary tenant. Use change primary tenant instead.");
+          "Cannot remove primary contact. Use change primary contact instead.");
     }
 
     contractPartyRepository.softDeleteByIdAndTeamId(party.getId(), teamId);
     log.info("Party removed from contract {}: {}", contractIdentifier, partyIdentifier);
 
     // Audit log
-    String tenantName =
+    String contactName =
         party
-            .getTenantId()
-            .flatMap(tid -> tenantRepository.findByIdAndTeamId(tid, teamId))
-            .map(t -> t.getFirstName() + t.getLastName().map(n -> " " + n).orElse(""))
+            .getContactId()
+            .flatMap(cid -> contactRepository.findByIdAndTeamId(cid, teamId))
+            .map(Contact::getDisplayName)
             .orElse("Unknown");
     Map<String, Object> changedFields = new HashMap<>();
-    changedFields.put("partyRemoved", tenantName);
+    changedFields.put("partyRemoved", contactName);
     changedFields.put("role", party.getRole().name());
     auditService.logUpdate(
         teamId,
@@ -172,9 +172,9 @@ public class ContractPartyService {
 
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-  public ContractPartyResponse changePrimaryTenant(
+  public ContractPartyResponse changePrimaryContact(
       ContractIdentifier contractIdentifier,
-      ChangePrimaryTenantRequest request,
+      ChangePrimaryContactRequest request,
       UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
 
@@ -182,34 +182,33 @@ public class ContractPartyService {
 
     validateContractEditable(contract);
 
-    Tenant newTenant =
-        resolveOrCreateTenant(
-            request.tenantIdentifier().map(TenantIdentifier::of).orElse(null),
-            request.newTenant().orElse(null),
+    Contact newContact =
+        resolveOrCreateContact(
+            request.contactIdentifier().map(ContactIdentifier::of).orElse(null),
+            request.newContact().orElse(null),
             principal);
 
-    // Find current primary tenant
+    // Find current primary contact
     ContractParty currentPrimary =
-        contractPartyRepository.getPrimaryTenantByContractIdAndTeamId(contract.getId(), teamId);
+        contractPartyRepository.getPrimaryContactByContractIdAndTeamId(contract.getId(), teamId);
 
-    if (currentPrimary.getTenantId().filter(newTenant.getId()::equals).isPresent()) {
-      throw new IllegalArgumentException("This tenant is already the primary tenant");
+    if (currentPrimary.getContactId().filter(newContact.getId()::equals).isPresent()) {
+      throw new IllegalArgumentException("This contact is already the primary contact");
     }
 
-    String oldTenantName =
+    String oldContactName =
         currentPrimary
-            .getTenantId()
-            .flatMap(tid -> tenantRepository.findByIdAndTeamId(tid, teamId))
-            .map(t -> t.getFirstName() + t.getLastName().map(n -> " " + n).orElse(""))
+            .getContactId()
+            .flatMap(cid -> contactRepository.findByIdAndTeamId(cid, teamId))
+            .map(Contact::getDisplayName)
             .orElse("Unknown");
-    String newTenantName =
-        newTenant.getFirstName() + newTenant.getLastName().map(n -> " " + n).orElse("");
+    String newContactName = newContact.getDisplayName();
 
-    // If new tenant already exists as a different role on this contract, remove that entry
+    // If new contact already exists as a different role on this contract, remove that entry
     List<ContractParty> existingParties =
         contractPartyRepository.findByContractIdAndTeamId(contract.getId(), teamId);
     existingParties.stream()
-        .filter(p -> p.getTenantId().filter(newTenant.getId()::equals).isPresent())
+        .filter(p -> p.getContactId().filter(newContact.getId()::equals).isPresent())
         .findFirst()
         .ifPresent(
             existing -> contractPartyRepository.softDeleteByIdAndTeamId(existing.getId(), teamId));
@@ -222,7 +221,7 @@ public class ContractPartyService {
     newPrimary.setIdentifier(Optional.of(newContractPartyId()));
     newPrimary.setTeamId(teamId);
     newPrimary.setContractId(contract.getId());
-    newPrimary.setTenantId(Optional.of(newTenant.getId()));
+    newPrimary.setContactId(Optional.of(newContact.getId()));
     newPrimary.setRole(ContractPartyRole.PRIMARY_TENANT);
     newPrimary.setCreatedAt(clock.instant());
     newPrimary.setUpdatedAt(clock.instant());
@@ -231,26 +230,26 @@ public class ContractPartyService {
 
     ContractParty saved = contractPartyRepository.save(newPrimary);
     log.info(
-        "Primary tenant changed on contract {}: {} -> {}",
+        "Primary contact changed on contract {}: {} -> {}",
         contractIdentifier,
-        oldTenantName,
-        newTenantName);
+        oldContactName,
+        newContactName);
 
     // Audit log
     Map<String, Object> changedFields = new HashMap<>();
-    changedFields.put("primaryTenantChanged", newTenantName);
-    changedFields.put("previousPrimaryTenant", oldTenantName);
+    changedFields.put("primaryContactChanged", newContactName);
+    changedFields.put("previousPrimaryContact", oldContactName);
     auditService.logUpdate(
         teamId,
         "CONTRACT",
         contract.getId(),
         principal.getUserId(),
-        Map.of("primaryTenant", oldTenantName),
-        Map.of("primaryTenant", newTenantName),
+        Map.of("primaryContact", oldContactName),
+        Map.of("primaryContact", newContactName),
         changedFields);
 
-    TenantSummary tenantSummary = tenantMapper.toSummary(newTenant);
-    return contractPartyMapper.toResponse(saved, tenantSummary);
+    ContactSummary contactSummary = contactMapper.toSummary(newContact);
+    return contractPartyMapper.toResponse(saved, contactSummary);
   }
 
   /** Create parties for a new contract (called during contract creation). */
@@ -259,27 +258,26 @@ public class ContractPartyService {
       UUID contractId, List<ContractPartyRequest> parties, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     UUID userId = principal.getUserId();
-    Set<UUID> seenTenantIds = new HashSet<>();
+    Set<UUID> seenContactIds = new HashSet<>();
 
     for (ContractPartyRequest partyReq : parties) {
-      Tenant tenant =
-          resolveOrCreateTenant(
-              partyReq.tenantIdentifier().map(TenantIdentifier::of).orElse(null),
-              partyReq.newTenant().orElse(null),
+      Contact contact =
+          resolveOrCreateContact(
+              partyReq.contactIdentifier().map(ContactIdentifier::of).orElse(null),
+              partyReq.newContact().orElse(null),
               principal);
 
-      if (!seenTenantIds.add(tenant.getId())) {
-        String tenantName =
-            tenant.getFirstName() + tenant.getLastName().map(n -> " " + n).orElse("");
+      if (!seenContactIds.add(contact.getId())) {
+        String contactName = contact.getDisplayName();
         throw new IllegalArgumentException(
-            "Tenant \"" + tenantName + "\" is listed more than once in the contract parties");
+            "Contact \"" + contactName + "\" is listed more than once in the contract parties");
       }
 
       ContractParty party = new ContractParty();
       party.setIdentifier(Optional.of(newContractPartyId()));
       party.setTeamId(teamId);
       party.setContractId(contractId);
-      party.setTenantId(Optional.of(tenant.getId()));
+      party.setContactId(Optional.of(contact.getId()));
       party.setRole(partyReq.role());
       party.setCreatedAt(clock.instant());
       party.setUpdatedAt(clock.instant());
@@ -301,7 +299,7 @@ public class ContractPartyService {
       copy.setIdentifier(Optional.of(newContractPartyId()));
       copy.setTeamId(teamId);
       copy.setContractId(targetContractId);
-      copy.setTenantId(source.getTenantId());
+      copy.setContactId(source.getContactId());
       copy.setRole(source.getRole());
       copy.setCreatedAt(clock.instant());
       copy.setUpdatedAt(clock.instant());
@@ -316,15 +314,15 @@ public class ContractPartyService {
     contractPartyRepository.softDeleteByContractIdAndTeamId(contractId, teamId);
   }
 
-  /** Get the primary tenant for a contract. */
-  public Tenant getPrimaryTenantForContract(UUID contractId, UUID teamId) {
+  /** Get the primary contact for a contract. */
+  public Contact getPrimaryContactForContract(UUID contractId, UUID teamId) {
     ContractParty primary =
-        contractPartyRepository.getPrimaryTenantByContractIdAndTeamId(contractId, teamId);
-    UUID tenantId =
+        contractPartyRepository.getPrimaryContactByContractIdAndTeamId(contractId, teamId);
+    UUID contactId =
         primary
-            .getTenantId()
-            .orElseThrow(() -> new IllegalStateException("Primary tenant party has no tenant ID"));
-    return tenantRepository.getByIdAndTeamId(tenantId, teamId);
+            .getContactId()
+            .orElseThrow(() -> new IllegalStateException("Primary contact party has no contact ID"));
+    return contactRepository.getByIdAndTeamId(contactId, teamId);
   }
 
   /** Get all parties for a contract. */
@@ -340,51 +338,51 @@ public class ContractPartyService {
     return allParties.stream().collect(Collectors.groupingBy(ContractParty::getContractId));
   }
 
-  /** Build ContractPartyResponse list from parties, batch-loading tenants. */
+  /** Build ContractPartyResponse list from parties, batch-loading contacts. */
   public List<ContractPartyResponse> buildPartyResponses(List<ContractParty> parties, UUID teamId) {
     if (parties.isEmpty()) {
       return List.of();
     }
 
-    List<UUID> tenantIds =
+    List<UUID> contactIds =
         parties.stream()
-            .map(ContractParty::getTenantId)
+            .map(ContractParty::getContactId)
             .flatMap(Optional::stream)
             .distinct()
             .toList();
-    List<Tenant> tenants = tenantRepository.findByIdsAndTeamId(tenantIds, teamId);
-    Map<UUID, Tenant> tenantMap = tenants.stream().collect(Collectors.toMap(Tenant::getId, t -> t));
+    List<Contact> contacts = contactRepository.findByIdsAndTeamId(contactIds, teamId);
+    Map<UUID, Contact> contactMap = contacts.stream().collect(Collectors.toMap(Contact::getId, c -> c));
 
     return parties.stream()
         .map(
             party -> {
-              TenantSummary summary =
-                  party.getTenantId().map(tenantMap::get).map(tenantMapper::toSummary).orElse(null);
+              ContactSummary summary =
+                  party.getContactId().map(contactMap::get).map(contactMapper::toSummary).orElse(null);
               return contractPartyMapper.toResponse(party, summary);
             })
         .toList();
   }
 
-  /** Find primary tenant for a contract (null-safe version). */
-  public Optional<Tenant> findPrimaryTenantForContract(UUID contractId, UUID teamId) {
+  /** Find primary contact for a contract (null-safe version). */
+  public Optional<Contact> findPrimaryContactForContract(UUID contractId, UUID teamId) {
     return contractPartyRepository
-        .findPrimaryTenantByContractIdAndTeamId(contractId, teamId)
+        .findPrimaryContactByContractIdAndTeamId(contractId, teamId)
         .flatMap(
             party ->
                 party
-                    .getTenantId()
-                    .flatMap(tid -> tenantRepository.findByIdAndTeamId(tid, teamId)));
+                    .getContactId()
+                    .flatMap(cid -> contactRepository.findByIdAndTeamId(cid, teamId)));
   }
 
-  /** Batch-load primary tenants for multiple contracts. Returns contractId → Tenant map. */
-  public Map<UUID, Tenant> getPrimaryTenantsForContracts(
+  /** Batch-load primary contacts for multiple contracts. Returns contractId -> Contact map. */
+  public Map<UUID, Contact> getPrimaryContactsForContracts(
       Collection<UUID> contractIds, UUID teamId) {
     if (contractIds.isEmpty()) {
       return Map.of();
     }
     Map<UUID, List<ContractParty>> partiesByContract = getPartiesForContracts(contractIds, teamId);
-    Map<UUID, UUID> contractToTenantId = new HashMap<>();
-    Set<UUID> tenantIds = new HashSet<>();
+    Map<UUID, UUID> contractToContactId = new HashMap<>();
+    Set<UUID> contactIds = new HashSet<>();
     partiesByContract.forEach(
         (cId, parties) ->
             parties.stream()
@@ -392,42 +390,42 @@ public class ContractPartyService {
                 .findFirst()
                 .ifPresent(
                     p ->
-                        p.getTenantId()
+                        p.getContactId()
                             .ifPresent(
-                                tid -> {
-                                  contractToTenantId.put(cId, tid);
-                                  tenantIds.add(tid);
+                                cid -> {
+                                  contractToContactId.put(cId, cid);
+                                  contactIds.add(cid);
                                 })));
-    if (tenantIds.isEmpty()) {
+    if (contactIds.isEmpty()) {
       return Map.of();
     }
-    Map<UUID, Tenant> tenantsById =
-        tenantRepository.findByIdsAndTeamId(tenantIds, teamId).stream()
-            .collect(Collectors.toMap(Tenant::getId, t -> t));
-    Map<UUID, Tenant> result = new HashMap<>();
-    contractToTenantId.forEach(
-        (contractId, tenantId) -> {
-          Tenant tenant = tenantsById.get(tenantId);
-          if (tenant != null) {
-            result.put(contractId, tenant);
+    Map<UUID, Contact> contactsById =
+        contactRepository.findByIdsAndTeamId(contactIds, teamId).stream()
+            .collect(Collectors.toMap(Contact::getId, c -> c));
+    Map<UUID, Contact> result = new HashMap<>();
+    contractToContactId.forEach(
+        (contractId, contactId) -> {
+          Contact contact = contactsById.get(contactId);
+          if (contact != null) {
+            result.put(contractId, contact);
           }
         });
     return result;
   }
 
-  private Tenant resolveOrCreateTenant(
-      @Nullable TenantIdentifier tenantIdentifier,
-      @Nullable CreateTenantRequest newTenant,
+  private Contact resolveOrCreateContact(
+      @Nullable ContactIdentifier contactIdentifier,
+      @Nullable CreateContactRequest newContact,
       UserPrincipal principal) {
-    if (tenantIdentifier != null) {
-      return tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, principal.requireTeamId());
+    if (contactIdentifier != null) {
+      return contactRepository.getByIdentifierAndTeamId(contactIdentifier, principal.requireTeamId());
     }
-    if (newTenant != null) {
-      TenantResponse created = tenantService.createTenant(newTenant, principal);
-      return tenantRepository.getByIdentifierAndTeamId(
+    if (newContact != null) {
+      ContactResponse created = contactService.createContact(newContact, principal);
+      return contactRepository.getByIdentifierAndTeamId(
           created.identifier(), principal.requireTeamId());
     }
-    throw new IllegalArgumentException("Either tenantIdentifier or newTenant must be provided");
+    throw new IllegalArgumentException("Either contactIdentifier or newContact must be provided");
   }
 
   private void validateContractEditable(Contract contract) {
