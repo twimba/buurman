@@ -232,6 +232,10 @@
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
             <!--
                 OpenAPI Code Generation (API-first)
                 Generates Spring controller interfaces from OpenAPI specs.
