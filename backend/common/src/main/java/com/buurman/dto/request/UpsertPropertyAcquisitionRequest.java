@@ -9,7 +9,9 @@ import com.buurman.domain.PropertyAcquisition;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
+import com.buurman.util.Generated;
 
+@Generated
 public record UpsertPropertyAcquisitionRequest(
     @NotNull(message = "Acquisition type is required") PropertyAcquisition.AcquisitionType acquisitionType,
     Optional<LocalDate> acquisitionDate,

@@ -4,7 +4,9 @@ import java.time.Instant;
 import java.util.Optional;
 
 import com.buurman.domain.Sid;
+import com.buurman.util.Generated;
 
+@Generated
 public record NotificationResponse(
     Sid identifier,
     String notificationType,

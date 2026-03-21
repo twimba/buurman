@@ -6,7 +6,9 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.Sid;
+import com.buurman.util.Generated;
 
+@Generated
 public record RentPeriodResponse(
     Sid identifier,
     BigDecimal rentAmount,

@@ -9,7 +9,9 @@ import com.buurman.domain.identifier.ContractIdentifier;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import com.buurman.util.Generated;
 
+@Generated
 public record CreatePaymentRequest(
     @NotNull(message = "Contract identifier is required") ContractIdentifier contractIdentifier,
     @NotNull(message = "Amount is required") @Positive(message = "Amount must be positive") BigDecimal amount,

@@ -8,7 +8,9 @@ import com.buurman.domain.Expense.ExpenseCategory;
 
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+import com.buurman.util.Generated;
 
+@Generated
 public record UpdateExpenseRequest(
     Optional<ExpenseCategory> category,
     Optional<@Positive(message = "Amount must be positive") BigDecimal> amount,

@@ -1,7 +1,9 @@
 package com.buurman.dto.response.backoffice;
 
 import java.util.Map;
+import com.buurman.util.Generated;
 
+@Generated
 public record BackofficeDashboardResponse(
     long totalTeams,
     long totalUsers,

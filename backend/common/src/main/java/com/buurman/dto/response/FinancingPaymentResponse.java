@@ -7,7 +7,9 @@ import java.util.Optional;
 
 import com.buurman.domain.FinancingPayment;
 import com.buurman.domain.Sid;
+import com.buurman.util.Generated;
 
+@Generated
 public record FinancingPaymentResponse(
     Sid identifier,
     Sid financingIdentifier,

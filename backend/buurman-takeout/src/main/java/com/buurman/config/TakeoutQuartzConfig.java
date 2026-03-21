@@ -9,8 +9,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.buurman.job.TakeoutCleanupJob;
+import com.buurman.util.Generated;
 
 @Configuration
+@Generated
 public class TakeoutQuartzConfig {
 
   @Bean

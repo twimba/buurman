@@ -8,10 +8,12 @@ import com.twilio.Twilio;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import com.buurman.util.Generated;
 
 @Configuration
 @Profile("!local")
 @RequiredArgsConstructor
+@Generated
 public class TwilioConfig {
 
   private final TwilioProperties twilioProperties;

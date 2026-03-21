@@ -7,7 +7,9 @@ import com.buurman.domain.PropertyOccupancyPeriod.OccupancyEndReason;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import com.buurman.util.Generated;
 
+@Generated
 public record EndOccupancyPeriodRequest(
     @NotNull(message = "End date is required") LocalDate endDate,
     Optional<OccupancyEndReason> endReason,

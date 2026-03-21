@@ -7,7 +7,9 @@ import java.util.Optional;
 import com.buurman.domain.PropertyInsurance;
 
 import jakarta.validation.constraints.Positive;
+import com.buurman.util.Generated;
 
+@Generated
 public record UpdatePropertyInsuranceRequest(
     Optional<PropertyInsurance.InsuranceType> insuranceType,
     Optional<String> provider,

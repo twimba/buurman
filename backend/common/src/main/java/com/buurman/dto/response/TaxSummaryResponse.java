@@ -2,7 +2,9 @@ package com.buurman.dto.response;
 
 import java.math.BigDecimal;
 import java.util.List;
+import com.buurman.util.Generated;
 
+@Generated
 public record TaxSummaryResponse(
     int year,
     BigDecimal totalIncome,

@@ -8,7 +8,9 @@ import com.buurman.domain.FinancingPayment;
 
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
+import com.buurman.util.Generated;
 
+@Generated
 public record UpdateFinancingPaymentRequest(
     Optional<LocalDate> paymentDate,
     Optional<@Positive(message = "Total amount must be positive") BigDecimal> totalAmount,

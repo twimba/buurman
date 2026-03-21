@@ -10,7 +10,9 @@ import com.buurman.domain.identifier.UserIdentifier;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import com.buurman.util.Generated;
 
+@Generated
 public record CreateImpersonationRequest(
     @NotNull(message = "User identifier is required") UserIdentifier userIdentifier,
     @NotNull(message = "Team identifier is required") TeamIdentifier teamIdentifier,

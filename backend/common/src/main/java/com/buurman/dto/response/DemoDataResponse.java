@@ -1,5 +1,8 @@
 package com.buurman.dto.response;
 
+import com.buurman.util.Generated;
+
+@Generated
 public record DemoDataResponse(
     int teamsCreated,
     int usersCreated,

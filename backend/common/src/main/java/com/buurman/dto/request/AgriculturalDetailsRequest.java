@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 import jakarta.validation.constraints.Positive;
+import com.buurman.util.Generated;
 
+@Generated
 public record AgriculturalDetailsRequest(
     Optional<@Positive(message = "Total land area must be positive") BigDecimal> totalLandAreaValue,
     Optional<String> totalLandAreaUnit,

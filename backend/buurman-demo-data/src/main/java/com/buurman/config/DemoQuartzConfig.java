@@ -11,9 +11,11 @@ import org.springframework.context.annotation.Configuration;
 
 import com.buurman.config.models.DemoDataProperties;
 import com.buurman.job.DemoDataRegenerationJob;
+import com.buurman.util.Generated;
 
 @Configuration
 @ConditionalOnProperty(name = "buurman.demo.enabled", havingValue = "true")
+@Generated
 public class DemoQuartzConfig {
 
   @Bean

@@ -8,7 +8,9 @@ import com.buurman.domain.PropertyFinancing;
 
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
+import com.buurman.util.Generated;
 
+@Generated
 public record UpdatePropertyFinancingRequest(
     Optional<PropertyFinancing.FinancingType> financingType,
     Optional<PropertyFinancing.RateType> rateType,

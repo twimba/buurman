@@ -6,7 +6,9 @@ import java.util.Optional;
 
 import com.buurman.domain.Contract;
 import com.buurman.domain.Sid;
+import com.buurman.util.Generated;
 
+@Generated
 public record UpcomingRenewalResponse(
     Sid contractIdentifier,
     Optional<String> propertyName,

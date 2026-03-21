@@ -1,7 +1,9 @@
 package com.buurman.dto.response.backoffice;
 
 import java.util.Optional;
+import com.buurman.util.Generated;
 
+@Generated
 public record ScheduledJobResponse(
     String jobName,
     String jobGroup,

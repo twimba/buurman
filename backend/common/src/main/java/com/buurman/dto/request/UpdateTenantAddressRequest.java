@@ -6,7 +6,9 @@ import com.buurman.domain.TenantAddress;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import com.buurman.util.Generated;
 
+@Generated
 public record UpdateTenantAddressRequest(
     @NotBlank(message = "Street is required") String street,
     @NotBlank(message = "City is required") String city,

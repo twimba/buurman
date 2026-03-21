@@ -5,7 +5,9 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.buurman.domain.Sid;
+import com.buurman.util.Generated;
 
+@Generated
 public record RecentActivityResponse(
     String entityType,
     Sid entityIdentifier,

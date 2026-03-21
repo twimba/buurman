@@ -5,7 +5,9 @@ import java.time.Instant;
 import org.jspecify.annotations.Nullable;
 
 import com.buurman.domain.Sid;
+import com.buurman.util.Generated;
 
+@Generated
 public record TakeoutResponse(
     Sid identifier,
     String status,

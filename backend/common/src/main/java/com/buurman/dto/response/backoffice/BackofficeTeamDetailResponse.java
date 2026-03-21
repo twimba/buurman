@@ -7,7 +7,9 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.buurman.domain.Sid;
+import com.buurman.util.Generated;
 
+@Generated
 public record BackofficeTeamDetailResponse(
     Sid identifier,
     String teamName,

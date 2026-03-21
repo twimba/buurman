@@ -6,7 +6,9 @@ import java.util.Optional;
 
 import com.buurman.domain.Payment;
 import com.buurman.domain.Sid;
+import com.buurman.util.Generated;
 
+@Generated
 public record PaymentSummary(
     Sid identifier,
     BigDecimal amount,

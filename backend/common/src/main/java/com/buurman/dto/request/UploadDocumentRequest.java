@@ -5,7 +5,9 @@ import java.util.UUID;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import com.buurman.util.Generated;
 
+@Generated
 public record UploadDocumentRequest(
     @NotBlank(message = "Entity type is required") String entityType,
     @NotNull(message = "Entity ID is required") UUID entityId,

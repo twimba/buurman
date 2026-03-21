@@ -11,7 +11,9 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import com.buurman.util.Generated;
 
+@Generated
 public record CreatePropertyTaxRequest(
     @NotNull(message = "Tax type is required") PropertyTax.TaxType taxType,
     Optional<String> authority,

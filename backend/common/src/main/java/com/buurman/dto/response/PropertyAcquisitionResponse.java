@@ -7,7 +7,9 @@ import java.util.Optional;
 
 import com.buurman.domain.PropertyAcquisition;
 import com.buurman.domain.Sid;
+import com.buurman.util.Generated;
 
+@Generated
 public record PropertyAcquisitionResponse(
     Sid identifier,
     PropertyAcquisition.AcquisitionType acquisitionType,

@@ -41,12 +41,31 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <executions>
+                    <!-- Main report: only meaningful code (CI checks this) -->
                     <execution>
                         <id>aggregate-report</id>
                         <phase>verify</phase>
                         <goals>
                             <goal>report-aggregate</goal>
                         </goals>
+                        <configuration>
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco-aggregate</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <!-- Full report: everything included, for browsing -->
+                    <execution>
+                        <id>aggregate-report-full</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report-aggregate</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco-full</outputDirectory>
+                            <excludes>
+                                <!-- Override parent excludes: include everything except OpenAPI -->
+                                <exclude>com/buurman/generated/**</exclude>
+                            </excludes>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

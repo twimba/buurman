@@ -10,8 +10,10 @@ import org.jooq.impl.DefaultConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
+import com.buurman.util.Generated;
 
 @Configuration
+@Generated
 public class JooqConfig {
 
   @Bean

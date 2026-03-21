@@ -7,7 +7,9 @@ import com.buurman.domain.PaymentInstruction;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import com.buurman.util.Generated;
 
+@Generated
 public record CreatePaymentInstructionRequest(
     @NotBlank(message = "Name is required") String name,
     Optional<String> description,

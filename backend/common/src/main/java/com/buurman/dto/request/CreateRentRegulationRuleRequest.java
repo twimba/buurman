@@ -10,7 +10,9 @@ import com.buurman.domain.RentFrequency;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import com.buurman.util.Generated;
 
+@Generated
 public record CreateRentRegulationRuleRequest(
     @Min(1900) int year,
     @NotBlank String propertyCategory,

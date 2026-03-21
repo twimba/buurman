@@ -18,8 +18,10 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import jakarta.annotation.PostConstruct;
+import com.buurman.util.Generated;
 
 @Configuration
+@Generated
 public class SwaggerConfig {
 
   @PostConstruct

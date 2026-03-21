@@ -6,9 +6,11 @@ import org.springframework.context.annotation.Profile;
 
 import com.buurman.config.models.SendGridProperties;
 import com.sendgrid.SendGrid;
+import com.buurman.util.Generated;
 
 @Configuration
 @Profile("!local")
+@Generated
 public class SendGridConfig {
 
   @Bean
