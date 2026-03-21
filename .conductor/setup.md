@@ -49,8 +49,11 @@ make dev
 # Start backend (reads .env.backend automatically)
 make backend
 
-# Start frontend (use workspace port from .env)
-cd frontend && VITE_DEV_PORT=<app_port> VITE_HMR_PORT=<https_port> yarn dev:app
+# Start frontend app (reads ports from .env automatically)
+make frontend-app
+
+# Start frontend backoffice (optional, reads ports from .env automatically)
+make frontend-backoffice
 ```
 
 Port reference for each workspace number:
