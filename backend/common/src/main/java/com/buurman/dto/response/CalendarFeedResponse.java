@@ -13,7 +13,7 @@ public record CalendarFeedResponse(
     CalendarFeed.FeedType feedType,
     Optional<Sid> contractIdentifier,
     Optional<Sid> propertyIdentifier,
-    Optional<Sid> tenantIdentifier,
+    Optional<Sid> contactIdentifier,
     Optional<String> entityLabel,
     Boolean enabled,
     String feedUrl,

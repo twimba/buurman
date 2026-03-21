@@ -5,14 +5,14 @@ import com.buurman.util.Generated;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 @Generated
-public final class TenantIdentifier extends Sid {
+public final class ContactNoteIdentifier extends Sid {
 
-  private TenantIdentifier(String value) {
+  private ContactNoteIdentifier(String value) {
     super(value);
   }
 
   @JsonCreator
-  public static TenantIdentifier of(String value) {
-    return new TenantIdentifier(value);
+  public static ContactNoteIdentifier of(String value) {
+    return new ContactNoteIdentifier(value);
   }
 }

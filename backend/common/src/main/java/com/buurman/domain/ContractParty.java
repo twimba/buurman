@@ -19,7 +19,7 @@ public class ContractParty {
   @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private UUID teamId;
   private UUID contractId;
-  @Builder.Default private Optional<UUID> tenantId = Optional.empty();
+  @Builder.Default private Optional<UUID> contactId = Optional.empty();
   private ContractPartyRole role;
   private Instant createdAt;
   private Instant updatedAt;

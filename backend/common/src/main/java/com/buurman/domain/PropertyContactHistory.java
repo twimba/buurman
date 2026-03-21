@@ -14,12 +14,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PropertyTenantHistory {
+public class PropertyContactHistory {
 
   private UUID id;
   private UUID teamId;
   private UUID propertyId;
-  private UUID tenantId;
+  private UUID contactId;
   @Builder.Default private Optional<Instant> movedInAt = Optional.empty();
   @Builder.Default private Optional<Instant> movedOutAt = Optional.empty();
   private ActionType actionType;

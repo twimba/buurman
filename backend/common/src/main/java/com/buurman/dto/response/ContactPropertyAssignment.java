@@ -5,4 +5,4 @@ import java.util.Optional;
 import com.buurman.util.Generated;
 
 @Generated
-public record TenantPropertyAssignment(PropertySummary property, Optional<String> role) {}
+public record ContactPropertyAssignment(PropertySummary property, Optional<String> role) {}

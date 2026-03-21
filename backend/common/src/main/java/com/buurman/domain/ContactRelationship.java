@@ -14,19 +14,15 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tenant {
+public class ContactRelationship {
 
   private UUID id;
   @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private UUID teamId;
-  private String firstName;
-  @Builder.Default private Optional<String> lastName = Optional.empty();
-  @Builder.Default private Optional<String> email = Optional.empty();
-  @Builder.Default private Optional<String> phone = Optional.empty();
-  @Builder.Default private Optional<String> taxNumber = Optional.empty();
-  @Builder.Default private Optional<String> idNumber = Optional.empty();
-  @Builder.Default private Optional<String> additionalInfo = Optional.empty();
-  @Builder.Default private Optional<UUID> currentPropertyId = Optional.empty();
+  private UUID sourceContactId;
+  private UUID targetContactId;
+  private RelationshipType relationshipType;
+  @Builder.Default private Optional<String> notes = Optional.empty();
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;

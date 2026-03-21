@@ -14,14 +14,16 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TenantAddress {
+public class ContactAddress {
 
   public enum AddressType {
     CURRENT,
     MAILING,
     RELATIVE,
     WORK,
-    HISTORIC
+    HISTORIC,
+    REGISTERED_OFFICE,
+    BRANCH
   }
 
   public enum AddressStatus {
@@ -31,7 +33,7 @@ public class TenantAddress {
 
   private UUID id;
   @Builder.Default private Optional<Sid> identifier = Optional.empty();
-  private UUID tenantId;
+  private UUID contactId;
   private UUID teamId;
   private String street;
   private String city;
