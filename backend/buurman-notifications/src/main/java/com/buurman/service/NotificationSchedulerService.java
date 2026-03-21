@@ -108,10 +108,10 @@ public class NotificationSchedulerService {
                   user ->
                       notificationService.send(
                           SendNotificationRequest.builder()
-                              .teamId(team.getId())
+                              .teamId(Optional.of(team.getId()))
                               .notificationType(CONTRACT_EXPIRY)
-                              .recipientUserId(user.getId())
-                              .recipientEmail(user.getEmail())
+                              .recipientUserId(Optional.of(user.getId()))
+                              .recipientEmail(Optional.of(user.getEmail()))
                               .recipientPhone(user.getPhone())
                               .templateName("contract-expiry")
                               .templateVariables(
@@ -176,10 +176,10 @@ public class NotificationSchedulerService {
                   user ->
                       notificationService.send(
                           SendNotificationRequest.builder()
-                              .teamId(team.getId())
+                              .teamId(Optional.of(team.getId()))
                               .notificationType(PAYMENT_REMINDER)
-                              .recipientUserId(user.getId())
-                              .recipientEmail(user.getEmail())
+                              .recipientUserId(Optional.of(user.getId()))
+                              .recipientEmail(Optional.of(user.getEmail()))
                               .recipientPhone(user.getPhone())
                               .templateName("payment-reminder")
                               .templateVariables(

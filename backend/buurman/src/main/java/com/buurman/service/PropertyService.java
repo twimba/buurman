@@ -207,7 +207,7 @@ public class PropertyService {
     String propertyName = savedProperty.getStreet() + ", " + savedProperty.getCity();
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
-            .teamId(principal.requireTeamId())
+            .teamId(Optional.of(principal.requireTeamId()))
             .notificationType(PROPERTY_CREATED)
             .templateName("property-created")
             .templateVariables(

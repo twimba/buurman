@@ -732,7 +732,7 @@ public class ContractExtensionService {
       Map<String, Object> vars = buildNotificationVars(contract, extension, property);
       notificationService.sendToTeam(
           SendNotificationRequest.builder()
-              .teamId(teamId)
+              .teamId(Optional.of(teamId))
               .notificationType(CONTRACT_EXTENDED)
               .templateName("contract-extended")
               .templateVariables(vars)
@@ -751,7 +751,7 @@ public class ContractExtensionService {
       Map<String, Object> vars = buildNotificationVars(contract, extension, property);
       notificationService.sendToTeam(
           SendNotificationRequest.builder()
-              .teamId(teamId)
+              .teamId(Optional.of(teamId))
               .notificationType(CONTRACT_EXTENSION_PENDING)
               .templateName("contract-extension-pending")
               .templateVariables(vars)
@@ -784,7 +784,7 @@ public class ContractExtensionService {
 
       notificationService.sendToTeam(
           SendNotificationRequest.builder()
-              .teamId(teamId)
+              .teamId(Optional.of(teamId))
               .notificationType(CONTRACT_RENEWAL_REMINDER)
               .templateName("contract-renewal-reminder")
               .templateVariables(vars)
@@ -804,7 +804,7 @@ public class ContractExtensionService {
 
       notificationService.sendToTeam(
           SendNotificationRequest.builder()
-              .teamId(teamId)
+              .teamId(Optional.of(teamId))
               .notificationType(CONTRACT_ROLLED_OVER_TO_INDEFINITE)
               .templateName("contract-rolled-over")
               .templateVariables(vars)

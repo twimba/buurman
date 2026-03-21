@@ -87,12 +87,12 @@ class NotificationServiceImplTest {
             mapper);
   }
 
-  private SendNotificationRequest.Builder baseRequest() {
+  private SendNotificationRequest.SendNotificationRequestBuilder baseRequest() {
     return SendNotificationRequest.builder()
-        .teamId(TEAM_ID)
+        .teamId(Optional.of(TEAM_ID))
         .notificationType(PAYMENT_REMINDER)
-        .recipientUserId(USER_ID)
-        .recipientEmail("test@example.com")
+        .recipientUserId(Optional.of(USER_ID))
+        .recipientEmail(Optional.of("test@example.com"))
         .templateName("payment-reminder")
         .templateVariables(Map.of("key", "value"))
         .createdBy(CREATED_BY);
@@ -196,9 +196,9 @@ class NotificationServiceImplTest {
 
       SendNotificationRequest request =
           SendNotificationRequest.builder()
-              .teamId(TEAM_ID)
+              .teamId(Optional.of(TEAM_ID))
               .notificationType(PAYMENT_REMINDER)
-              .recipientEmail("tenant@example.com")
+              .recipientEmail(Optional.of("tenant@example.com"))
               .templateName("payment-reminder")
               .templateVariables(Map.of())
               .createdBy(CREATED_BY)
@@ -347,7 +347,7 @@ class NotificationServiceImplTest {
 
       SendNotificationRequest request =
           SendNotificationRequest.builder()
-              .teamId(TEAM_ID)
+              .teamId(Optional.of(TEAM_ID))
               .notificationType(VERIFICATION_CODE)
               .templateName("verification-code")
               .templateVariables(Map.of())
@@ -389,7 +389,7 @@ class NotificationServiceImplTest {
 
       // Recipient email is blank
       SendNotificationRequest request =
-          baseRequest().recipientEmail("  ").build();
+          baseRequest().recipientEmail(Optional.of("  ")).build();
 
       service.send(request);
 
@@ -423,9 +423,9 @@ class NotificationServiceImplTest {
       // This request should resolve to EMAIL channel (no user = default EMAIL)
       SendNotificationRequest request =
           SendNotificationRequest.builder()
-              .teamId(TEAM_ID)
+              .teamId(Optional.of(TEAM_ID))
               .notificationType(PAYMENT_REMINDER)
-              .recipientEmail("test@example.com")
+              .recipientEmail(Optional.of("test@example.com"))
               .templateName("payment-reminder")
               .templateVariables(Map.of())
               .createdBy(CREATED_BY)

@@ -134,9 +134,9 @@ public class TeamService {
     String inviterName = principal.getName();
     notificationService.send(
         SendNotificationRequest.builder()
-            .teamId(team.getId())
+            .teamId(Optional.of(team.getId()))
             .notificationType(TEAM_INVITATION)
-            .recipientEmail(invitation.getEmail())
+            .recipientEmail(Optional.of(invitation.getEmail()))
             .templateName("team-invitation")
             .templateVariables(
                 Map.of(
@@ -271,9 +271,9 @@ public class TeamService {
     String inviterName = principal.getName();
     notificationService.send(
         SendNotificationRequest.builder()
-            .teamId(team.getId())
+            .teamId(Optional.of(team.getId()))
             .notificationType(TEAM_INVITATION)
-            .recipientEmail(invitation.getEmail())
+            .recipientEmail(Optional.of(invitation.getEmail()))
             .templateName("team-invitation")
             .templateVariables(
                 Map.of(
@@ -349,10 +349,10 @@ public class TeamService {
                         team ->
                             notificationService.send(
                                 SendNotificationRequest.builder()
-                                    .teamId(team.getId())
+                                    .teamId(Optional.of(team.getId()))
                                     .notificationType(INVITATION_ACCEPTED)
-                                    .recipientUserId(inviter.getId())
-                                    .recipientEmail(inviter.getEmail())
+                                    .recipientUserId(Optional.of(inviter.getId()))
+                                    .recipientEmail(Optional.of(inviter.getEmail()))
                                     .recipientPhone(inviter.getPhone())
                                     .templateName("invitation-accepted")
                                     .templateVariables(
