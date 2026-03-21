@@ -96,14 +96,14 @@ public class ExecutionHistoryJobListener implements JobListener {
       insertFallbackRecord(context, status, errorMessage);
     }
 
-    recordSchedulerMetrics(context, exception);
+    recordSchedulerMetrics(context, Optional.ofNullable(exception));
   }
 
   private void recordSchedulerMetrics(
-      JobExecutionContext context, @Nullable JobExecutionException exception) {
+      JobExecutionContext context, Optional<JobExecutionException> exception) {
     try {
       String jobName = context.getJobDetail().getKey().getName();
-      String result = exception == null ? "success" : "failure";
+      String result = exception.isEmpty() ? "success" : "failure";
 
       metricsService.recordTimer(
           "scheduler.execution.seconds",
@@ -114,7 +114,7 @@ public class ExecutionHistoryJobListener implements JobListener {
       metricsService.incrementCounter(
           "scheduler.execution.total", "job_name", jobName, "result", result);
 
-      if (exception == null) {
+      if (exception.isEmpty()) {
         AtomicLong ts =
             lastSuccessTimestamps.computeIfAbsent(
                 jobName,
