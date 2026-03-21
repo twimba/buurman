@@ -84,6 +84,7 @@ public class NotificationOutboxJob implements Job {
         return;
       }
 
+      context.put("itemsProcessed", pending.size());
       log.info("Processing {} outbox entries", pending.size());
 
       if (isConsolidationEnabled()) {

@@ -23,6 +23,7 @@ public class ImpersonationSessionCleanupJob implements Job {
   public void execute(JobExecutionContext context) throws JobExecutionException {
     try {
       int expired = impersonationService.expireOverdueSessions();
+      context.put("itemsProcessed", expired);
       if (expired > 0) {
         log.info("Impersonation session cleanup: expired {} overdue sessions", expired);
       }

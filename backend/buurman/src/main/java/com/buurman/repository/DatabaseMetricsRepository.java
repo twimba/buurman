@@ -80,4 +80,14 @@ public class DatabaseMetricsRepository {
         .fetch()
         .map(r -> new LabelCount(r.value1(), r.value2()));
   }
+
+  public List<LabelCount> countPropertiesByStatus() {
+    var nonDemoTeamIds = select(TEAMS.ID).from(TEAMS).where(NOT_DEMO_TEAM);
+    return dsl.select(PROPERTIES.STATUS, count())
+        .from(PROPERTIES)
+        .where(PROPERTIES.DELETED_AT.isNull().and(PROPERTIES.TEAM_ID.in(nonDemoTeamIds)))
+        .groupBy(PROPERTIES.STATUS)
+        .fetch()
+        .map(r -> new LabelCount(r.value1(), r.value2()));
+  }
 }

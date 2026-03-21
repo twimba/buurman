@@ -45,6 +45,7 @@ public class TakeoutCleanupJob implements Job {
         takeoutRepository.softDelete(takeout.getId());
         cleaned++;
       }
+      context.put("itemsProcessed", cleaned);
       if (cleaned > 0) {
         log.info("Cleaned up {} expired data takeouts", cleaned);
       }

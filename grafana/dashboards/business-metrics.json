@@ -446,7 +446,7 @@
       "title": "Contracts Terminated",
       "type": "stat",
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(increase(buurman_contract_terminated_total{job=\"$job\"}[$__range]))", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(increase(buurman_contract_status_changed_total{job=\"$job\", to_status=\"TERMINATED\"}[$__range]))", "instant": true, "range": false, "legendFormat": "__auto", "refId": "A" }
       ]
     },
     {
@@ -494,7 +494,7 @@
       "type": "timeseries",
       "targets": [
         { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_contract_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Created", "refId": "A" },
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_contract_terminated_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Terminated", "refId": "B" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_contract_status_changed_total{job=\"$job\", to_status=\"TERMINATED\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Terminated", "refId": "B" },
         { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_contract_reopened_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Reopened", "refId": "C" },
         { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_contract_duplicated_total{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Duplicated", "refId": "D" }
       ]
@@ -511,7 +511,7 @@
       "title": "Monthly Rent Distribution",
       "type": "timeseries",
       "targets": [
-        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_contract_monthly_rent_amount_count{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Rent Creation Rate", "refId": "A" }
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "editorMode": "code", "expr": "sum(rate(buurman_contract_rent_amount_count{job=\"$job\"}[$__rate_interval]))", "instant": false, "range": true, "legendFormat": "Rent Creation Rate", "refId": "A" }
       ]
     },
     {
