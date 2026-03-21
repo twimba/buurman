@@ -35,7 +35,7 @@ jobs:
         working-directory: backend
         run: |
           mvn verify -pl common,buurman,buurman-notifications,buurman-booklets,coverage-report \
-            -Pquick -B -Dmaven.build.cache.enabled=false
+            -am -Pquick -B -Dmaven.build.cache.enabled=false
 
       - name: Generate coverage summary
         if: always()
