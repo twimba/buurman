@@ -95,24 +95,73 @@ class ContractRecordMapperTest {
     }
 
     @Test
-    @DisplayName("maps enum values correctly")
-    void mapsEnumValues() {
-      ContractsRecord record = createCompleteRecord();
-      record.setContractType("INDEFINITE");
-      record.setPaymentFrequency("QUARTERLY");
-      record.setStatus("DRAFT");
-      record.setRenewalMode("AUTOMATIC");
-      record.setRentAdjustmentType("FIXED_PERCENTAGE");
+    @DisplayName("maps all ContractType values")
+    void mapsAllContractTypeValues() {
+      for (ContractType type : ContractType.values()) {
+        ContractsRecord record = createCompleteRecord();
+        record.setContractType(type.name());
 
-      Optional<Contract> result = mapper.toDomain(record);
+        Optional<Contract> result = mapper.toDomain(record);
 
-      assertThat(result).isPresent();
-      Contract contract = result.get();
-      assertThat(contract.getContractType()).isEqualTo(ContractType.INDEFINITE);
-      assertThat(contract.getPaymentFrequency()).isEqualTo(PaymentFrequency.QUARTERLY);
-      assertThat(contract.getStatus()).isEqualTo(ContractStatus.DRAFT);
-      assertThat(contract.getRenewalMode()).isEqualTo(RenewalMode.AUTOMATIC);
-      assertThat(contract.getRentAdjustmentType()).isEqualTo(RentAdjustmentType.FIXED_PERCENTAGE);
+        assertThat(result).isPresent();
+        assertThat(result.get().getContractType()).isEqualTo(type);
+      }
+    }
+
+    @Test
+    @DisplayName("maps all PaymentFrequency values")
+    void mapsAllPaymentFrequencyValues() {
+      for (PaymentFrequency frequency : PaymentFrequency.values()) {
+        ContractsRecord record = createCompleteRecord();
+        record.setPaymentFrequency(frequency.name());
+
+        Optional<Contract> result = mapper.toDomain(record);
+
+        assertThat(result).isPresent();
+        assertThat(result.get().getPaymentFrequency()).isEqualTo(frequency);
+      }
+    }
+
+    @Test
+    @DisplayName("maps all ContractStatus values")
+    void mapsAllContractStatusValues() {
+      for (ContractStatus status : ContractStatus.values()) {
+        ContractsRecord record = createCompleteRecord();
+        record.setStatus(status.name());
+
+        Optional<Contract> result = mapper.toDomain(record);
+
+        assertThat(result).isPresent();
+        assertThat(result.get().getStatus()).isEqualTo(status);
+      }
+    }
+
+    @Test
+    @DisplayName("maps all RenewalMode values")
+    void mapsAllRenewalModeValues() {
+      for (RenewalMode mode : RenewalMode.values()) {
+        ContractsRecord record = createCompleteRecord();
+        record.setRenewalMode(mode.name());
+
+        Optional<Contract> result = mapper.toDomain(record);
+
+        assertThat(result).isPresent();
+        assertThat(result.get().getRenewalMode()).isEqualTo(mode);
+      }
+    }
+
+    @Test
+    @DisplayName("maps all RentAdjustmentType values")
+    void mapsAllRentAdjustmentTypeValues() {
+      for (RentAdjustmentType type : RentAdjustmentType.values()) {
+        ContractsRecord record = createCompleteRecord();
+        record.setRentAdjustmentType(type.name());
+
+        Optional<Contract> result = mapper.toDomain(record);
+
+        assertThat(result).isPresent();
+        assertThat(result.get().getRentAdjustmentType()).isEqualTo(type);
+      }
     }
 
     @Test
@@ -225,8 +274,25 @@ class ContractRecordMapperTest {
       // The mapper guard: if (metadataJsonb != null) skips deserialization.
       ContractsRecord record = createCompleteRecord();
 
-      mapper.toDomain(record);
+      Optional<Contract> result = mapper.toDomain(record);
 
+      verify(countryMetadataSerializer, never()).deserialize(anyString(), anyString());
+      assertThat(result).isPresent();
+      assertThat(result.get().getCountryMetadata()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("handles null countryCode without NPE")
+    void handlesNullCountryCodeWithoutNpe() {
+      ContractsRecord record = createCompleteRecord();
+      record.setCountryCode(null);
+      record.setCountryMetadata(null);
+
+      Optional<Contract> result = mapper.toDomain(record);
+
+      assertThat(result).isPresent();
+      assertThat(result.get().getCountryCode()).isEmpty();
+      assertThat(result.get().getCountryMetadata()).isEmpty();
       verify(countryMetadataSerializer, never()).deserialize(anyString(), anyString());
     }
 
@@ -311,6 +377,32 @@ class ContractRecordMapperTest {
       ContractsRecord record = createCompleteRecord();
       record.setDepositAmount(null);
       record.setDepositAmountCurrency(null);
+
+      Optional<Contract> result = mapper.toDomain(record);
+
+      assertThat(result).isPresent();
+      assertThat(result.get().getDepositAmount()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("returns empty Optional when deposit has amount but null currency")
+    void returnsEmptyWhenDepositAmountPresentButCurrencyNull() {
+      ContractsRecord record = createCompleteRecord();
+      record.setDepositAmount(new BigDecimal("2400.00"));
+      record.setDepositAmountCurrency(null);
+
+      Optional<Contract> result = mapper.toDomain(record);
+
+      assertThat(result).isPresent();
+      assertThat(result.get().getDepositAmount()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("returns empty Optional when deposit has null amount but present currency")
+    void returnsEmptyWhenDepositAmountNullButCurrencyPresent() {
+      ContractsRecord record = createCompleteRecord();
+      record.setDepositAmount(null);
+      record.setDepositAmountCurrency("EUR");
 
       Optional<Contract> result = mapper.toDomain(record);
 

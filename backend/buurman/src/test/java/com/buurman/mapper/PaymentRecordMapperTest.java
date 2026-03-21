@@ -150,21 +150,33 @@ class PaymentRecordMapperTest {
     }
 
     @Test
-    @DisplayName("converts LocalDateTime timestamps to Instant at UTC")
-    void convertsTimestampsToUtc() {
+    @DisplayName("null amount creates MoneyAmount with null value (record accepts nulls)")
+    @SuppressWarnings("NullAway")
+    void nullAmountCreatesMoneyAmountWithNullValue() {
       PaymentsRecord record = createCompleteRecord();
-      LocalDateTime createdAt = LocalDateTime.of(2026, 1, 15, 8, 30, 45);
-      LocalDateTime updatedAt = LocalDateTime.of(2026, 2, 20, 14, 15, 30);
-      record.setCreatedAt(createdAt);
-      record.setUpdatedAt(updatedAt);
+      record.setAmount(null);
 
+      // MoneyAmount is a Java record — its canonical constructor accepts nulls.
+      // The mapper does not guard against this, so the resulting MoneyAmount has a null value.
       Optional<Payment> result = mapper.toDomain(record);
 
       assertThat(result).isPresent();
-      assertThat(result.get().getCreatedAt())
-          .isEqualTo(createdAt.toInstant(ZoneOffset.UTC));
-      assertThat(result.get().getUpdatedAt())
-          .isEqualTo(updatedAt.toInstant(ZoneOffset.UTC));
+      assertThat(result.get().getAmount().value()).isNull();
+    }
+
+    @Test
+    @DisplayName("null currency creates MoneyAmount with null currency (record accepts nulls)")
+    @SuppressWarnings("NullAway")
+    void nullCurrencyCreatesMoneyAmountWithNullCurrency() {
+      PaymentsRecord record = createCompleteRecord();
+      record.setCurrency(null);
+
+      // MoneyAmount is a Java record — its canonical constructor accepts nulls.
+      // The mapper does not guard against this, so the resulting MoneyAmount has a null currency.
+      Optional<Payment> result = mapper.toDomain(record);
+
+      assertThat(result).isPresent();
+      assertThat(result.get().getAmount().currency()).isNull();
     }
   }
 

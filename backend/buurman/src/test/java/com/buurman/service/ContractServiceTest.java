@@ -17,9 +17,8 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
- * Tests the {@code validateStatusTransition} private method of ContractService via reflection.
- * This is the core business rule for contract state transitions and is worth testing in isolation
- * without spinning up the full service (which has 13+ dependencies).
+ * Uses reflection to test {@code validateStatusTransition} because ContractService has 13+
+ * constructor dependencies — mocking them all provides no value for this pure business-rule method.
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ContractService — status transitions")
@@ -30,17 +29,13 @@ class ContractServiceTest {
 
   @BeforeEach
   void setUp() throws Exception {
-    // Use reflection to access the private method since ContractService has 13+ constructor
-    // dependencies that would require massive mock setup for no benefit.
-    // We test the pure business logic only.
     Class<?> clazz = ContractService.class;
     validateStatusTransition =
         clazz.getDeclaredMethod(
             "validateStatusTransition", ContractStatus.class, ContractStatus.class);
     validateStatusTransition.setAccessible(true);
 
-    // Create a mock with CALLS_REAL_METHODS so we can invoke the private method on it.
-    // Since validateStatusTransition doesn't use any fields, this is safe.
+    // CALLS_REAL_METHODS so the private method body runs; it uses no fields, so this is safe.
     serviceInstance =
         org.mockito.Mockito.mock(
             ContractService.class,
@@ -83,18 +78,23 @@ class ContractServiceTest {
     @CsvSource({
       "DRAFT, TERMINATED",
       "DRAFT, EXPIRED",
+      "DRAFT, DRAFT",
       "PENDING_SIGNATURE, TERMINATED",
       "PENDING_SIGNATURE, EXPIRED",
+      "PENDING_SIGNATURE, PENDING_SIGNATURE",
       "ACTIVE, DRAFT",
       "ACTIVE, PENDING_SIGNATURE",
+      "ACTIVE, ACTIVE",
       "EXPIRED, DRAFT",
       "EXPIRED, ACTIVE",
       "EXPIRED, PENDING_SIGNATURE",
       "EXPIRED, TERMINATED",
+      "EXPIRED, EXPIRED",
       "TERMINATED, DRAFT",
       "TERMINATED, ACTIVE",
       "TERMINATED, PENDING_SIGNATURE",
-      "TERMINATED, EXPIRED"
+      "TERMINATED, EXPIRED",
+      "TERMINATED, TERMINATED"
     })
     @DisplayName("rejects invalid transition")
     void rejectsInvalidTransition(ContractStatus from, ContractStatus to) {

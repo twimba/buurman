@@ -1,6 +1,7 @@
 package com.buurman.service.export;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -241,6 +242,72 @@ class BookletHelperTest {
     @DisplayName("returns false for null")
     void returnsFalseForNull() {
       assertThat(BookletHelper.isTrue(null)).isFalse();
+    }
+  }
+
+  @Nested
+  @DisplayName("displayEnum")
+  class DisplayEnum {
+
+    @Test
+    @DisplayName("formats enum name replacing underscores with spaces and title-casing")
+    void formatsEnumName() {
+      assertThat(BookletHelper.displayEnum(java.time.DayOfWeek.MONDAY)).isEqualTo("Monday");
+    }
+
+    @Test
+    @DisplayName("returns dash for null enum")
+    void returnsDashForNull() {
+      assertThat(BookletHelper.displayEnum(null)).isEqualTo("\u2014");
+    }
+
+    @Test
+    @DisplayName("handles multi-word enum name")
+    void handlesMultiWordEnum() {
+      // DayOfWeek doesn't have underscores; use a custom approach
+      // displayEnum replaces _ with space then title-cases the full result
+      // For a name like "PENDING_SIGNATURE" (not available here), we test via formatEnumValue
+      assertThat(BookletHelper.displayEnum(java.time.Month.JANUARY)).isEqualTo("January");
+    }
+  }
+
+  @Nested
+  @DisplayName("sanitizeRichText (single-quoted event handlers)")
+  class SanitizeRichTextSingleQuoted {
+
+    @Test
+    @DisplayName("removes single-quoted event handlers")
+    void removesSingleQuotedEventHandlers() {
+      String result =
+          BookletHelper.sanitizeRichText("<div onmouseover='alert(1)'>hover</div>");
+      assertThat(result).isEqualTo("<div>hover</div>");
+    }
+  }
+
+  @Nested
+  @DisplayName("formatEnumValue edge cases")
+  class FormatEnumValueEdgeCases {
+
+    @Test
+    @DisplayName("empty string throws StringIndexOutOfBoundsException")
+    void emptyStringThrows() {
+      assertThatThrownBy(() -> BookletHelper.formatEnumValue(""))
+          .isInstanceOf(StringIndexOutOfBoundsException.class);
+    }
+
+    @Test
+    @DisplayName("single underscore returns empty (trailing empties discarded by split)")
+    void singleUnderscoreReturnsEmpty() {
+      // "_".split("_") returns [] in Java (trailing empty strings discarded)
+      assertThat(BookletHelper.formatEnumValue("_")).isEmpty();
+    }
+
+    @Test
+    @DisplayName("double underscore A__B throws on empty middle segment")
+    void doubleUnderscoreThrows() {
+      // "A__B".split("_") returns ["A", "", "B"] — empty segment fails substring(0,1)
+      assertThatThrownBy(() -> BookletHelper.formatEnumValue("A__B"))
+          .isInstanceOf(StringIndexOutOfBoundsException.class);
     }
   }
 

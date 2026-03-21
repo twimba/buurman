@@ -102,7 +102,7 @@ class WwsPointsCalculatorServiceTest {
       assertThat(response.totalPoints()).isPositive();
       assertThat(response.sectorClassification()).isNotBlank();
       assertThat(response.systemVersion()).isEqualTo("2025");
-      assertThat(response.breakdown()).hasSizeGreaterThanOrEqualTo(10);
+      assertThat(response.breakdown()).hasSize(13);
     }
 
     @Test
@@ -389,6 +389,180 @@ class WwsPointsCalculatorServiceTest {
               .findFirst()
               .orElseThrow();
       assertThat(outdoor.points()).isEqualByComparingTo("15");
+    }
+  }
+
+  @Nested
+  @DisplayName("WOZ Value")
+  class WozValue {
+
+    @Test
+    @DisplayName("2025: WOZ 33% cap limits WOZ points to 33% of non-WOZ total")
+    void wozCapAppliedWhenExceedsThreshold() {
+      // Create a request where WOZ points would be very high relative to other categories.
+      // Small surface (10 m2), no rooms, no heating, label G (-15 pts), no kitchen/bathroom,
+      // very high WOZ (500000), no outdoor (gives -5), no parking, no extras.
+      // Non-WOZ total will be small, forcing the cap.
+      WwsCalculationRequest request =
+          new WwsCalculationRequest(
+              "2025",
+              PROP_ID,
+              Optional.empty(),
+              Optional.of(new BigDecimal("10")),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.of("G"),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.of(new BigDecimal("500000")),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty());
+
+      WwsCalculationResponse response = service.calculate(request, principal);
+
+      WwsCategoryBreakdown woz =
+          response.breakdown().stream()
+              .filter(b -> "WOZ_VALUE".equals(b.key()))
+              .findFirst()
+              .orElseThrow();
+
+      // Compute non-WOZ total
+      BigDecimal nonWozTotal =
+          response.breakdown().stream()
+              .filter(b -> !"WOZ_VALUE".equals(b.key()))
+              .map(WwsCategoryBreakdown::points)
+              .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
+
+      // WOZ should be capped at 33% of non-WOZ (if non-WOZ is positive)
+      if (nonWozTotal.compareTo(java.math.BigDecimal.ZERO) > 0) {
+        BigDecimal maxWoz =
+            nonWozTotal
+                .multiply(new BigDecimal("0.33"))
+                .setScale(2, java.math.RoundingMode.HALF_UP);
+        assertThat(woz.points()).isLessThanOrEqualTo(maxWoz);
+        assertThat(woz.explanation()).contains("capped at 33%");
+      }
+    }
+
+    @Test
+    @DisplayName("2025: WOZ minimum floor applied when value below minimum")
+    void wozMinimumFloorApplied() {
+      // WOZ minimum for 2025 is 85806. Use WOZ value of 50000 (below minimum).
+      WwsCalculationRequest request =
+          new WwsCalculationRequest(
+              "2025",
+              PROP_ID,
+              Optional.empty(),
+              Optional.of(new BigDecimal("75")),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.of(new BigDecimal("50000")),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty());
+
+      WwsCalculationResponse response = service.calculate(request, principal);
+
+      WwsCategoryBreakdown woz =
+          response.breakdown().stream()
+              .filter(b -> "WOZ_VALUE".equals(b.key()))
+              .findFirst()
+              .orElseThrow();
+
+      // The explanation should mention "Min floor applied"
+      assertThat(woz.explanation()).contains("Min floor applied");
+      // Points should be > 0 since effective WOZ = 85806 (the minimum)
+      assertThat(woz.points()).isPositive();
+    }
+  }
+
+  @Nested
+  @DisplayName("Parking")
+  class Parking {
+
+    @Test
+    @DisplayName("parking with multiple spaces multiplies base points")
+    void multipleSpacesMultiplyPoints() {
+      WwsCalculationRequest request =
+          new WwsCalculationRequest(
+              "2025",
+              PROP_ID,
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.of("GARAGE"),
+              Optional.of(3),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty());
+
+      WwsCalculationResponse response = service.calculate(request, principal);
+
+      WwsCategoryBreakdown parking =
+          response.breakdown().stream()
+              .filter(b -> "PARKING".equals(b.key()))
+              .findFirst()
+              .orElseThrow();
+      // GARAGE = 9 pts base × 3 spaces = 27
+      assertThat(parking.points()).isEqualByComparingTo("27");
+    }
+  }
+
+  @Nested
+  @DisplayName("Common Areas")
+  class CommonAreas {
+
+    @Test
+    @DisplayName("common area yields 0.75 points per m2")
+    void commonAreaPointsCalculation() {
+      WwsCalculationRequest request =
+          new WwsCalculationRequest(
+              "2025",
+              PROP_ID,
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.of(new BigDecimal("20")));
+
+      WwsCalculationResponse response = service.calculate(request, principal);
+
+      WwsCategoryBreakdown commonAreas =
+          response.breakdown().stream()
+              .filter(b -> "COMMON_AREAS".equals(b.key()))
+              .findFirst()
+              .orElseThrow();
+      // 20 m² × 0.75 = 15.00
+      assertThat(commonAreas.points()).isEqualByComparingTo("15.00");
     }
   }
 

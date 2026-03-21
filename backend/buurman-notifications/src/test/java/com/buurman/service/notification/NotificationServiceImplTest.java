@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,6 +35,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.buurman.domain.Notification;
 import com.buurman.domain.NotificationOutbox;
+import com.buurman.domain.TeamMember;
+import com.buurman.domain.TeamRole;
+import com.buurman.domain.User;
 import com.buurman.domain.UserNotificationTypePreference;
 import com.buurman.domain.UserPreferences;
 import com.buurman.repository.NotificationOutboxRepository;
@@ -280,6 +284,159 @@ class NotificationServiceImplTest {
       ArgumentCaptor<Notification> captor = ArgumentCaptor.forClass(Notification.class);
       verify(notificationRepository).save(captor.capture());
       assertThat(captor.getValue().getStatus()).isEqualTo(PENDING);
+    }
+  }
+
+  @Nested
+  @DisplayName("sendToTeam")
+  class SendToTeam {
+
+    @Test
+    @DisplayName("sends notification to admin and editor members")
+    void sendsToAdminAndEditorMembers() {
+      UUID adminUserId = UUID.randomUUID();
+      UUID editorUserId = UUID.randomUUID();
+      UUID viewerUserId = UUID.randomUUID();
+
+      TeamMember admin =
+          TeamMember.builder()
+              .id(UUID.randomUUID())
+              .teamId(TEAM_ID)
+              .userId(adminUserId)
+              .role(TeamRole.TEAM_ADMIN)
+              .build();
+      TeamMember editor =
+          TeamMember.builder()
+              .id(UUID.randomUUID())
+              .teamId(TEAM_ID)
+              .userId(editorUserId)
+              .role(TeamRole.TEAM_EDITOR)
+              .build();
+      TeamMember viewer =
+          TeamMember.builder()
+              .id(UUID.randomUUID())
+              .teamId(TEAM_ID)
+              .userId(viewerUserId)
+              .role(TeamRole.TEAM_VIEWER)
+              .build();
+
+      when(teamMemberRepository.findByTeamId(TEAM_ID))
+          .thenReturn(List.of(admin, editor, viewer));
+
+      User adminUser =
+          User.builder()
+              .id(adminUserId)
+              .email("admin@example.com")
+              .firstName("Admin")
+              .lastName("User")
+              .build();
+      User editorUser =
+          User.builder()
+              .id(editorUserId)
+              .email("editor@example.com")
+              .firstName("Editor")
+              .lastName("User")
+              .build();
+
+      when(userRepository.findById(adminUserId)).thenReturn(Optional.of(adminUser));
+      when(userRepository.findById(editorUserId)).thenReturn(Optional.of(editorUser));
+
+      // Stub for VERIFICATION_CODE channel resolution (bypasses prefs)
+      stubEmailRender();
+      stubNotificationSave();
+
+      SendNotificationRequest request =
+          SendNotificationRequest.builder()
+              .teamId(TEAM_ID)
+              .notificationType(VERIFICATION_CODE)
+              .templateName("verification-code")
+              .templateVariables(Map.of())
+              .createdBy(CREATED_BY)
+              .build();
+
+      service.sendToTeam(request);
+
+      // Viewer should be skipped, admin and editor should each get a send() call
+      verify(notificationRepository, times(2)).save(any(Notification.class));
+    }
+
+    @Test
+    @DisplayName("returns immediately when teamId is empty")
+    void returnsImmediatelyWhenTeamIdEmpty() {
+      SendNotificationRequest request =
+          SendNotificationRequest.builder()
+              .notificationType(PAYMENT_REMINDER)
+              .templateName("payment-reminder")
+              .templateVariables(Map.of())
+              .createdBy(CREATED_BY)
+              .build();
+
+      service.sendToTeam(request);
+
+      verify(teamMemberRepository, never()).findByTeamId(any());
+      verify(notificationRepository, never()).save(any());
+    }
+  }
+
+  @Nested
+  @DisplayName("canSendViaChannel")
+  class CanSendViaChannel {
+
+    @Test
+    @DisplayName("skips channel when email is blank")
+    void skipsChannelWhenEmailBlank() {
+      stubConfigurableChannelResolution(true, false, true, true);
+
+      // Recipient email is blank
+      SendNotificationRequest request =
+          baseRequest().recipientEmail("  ").build();
+
+      service.send(request);
+
+      // Should not save to outbox because canSendViaChannel returns false for blank email
+      verify(outboxRepository, never()).save(any());
+    }
+  }
+
+  @Nested
+  @DisplayName("No sender for channel")
+  class NoSenderForChannel {
+
+    @Test
+    @DisplayName("logs warning when no sender registered for resolved channel")
+    void logWarningWhenNoSenderForChannel() {
+      // Create a service with no channel senders at all
+      ObjectMapper mapper = new ObjectMapper();
+      mapper.registerModule(new Jdk8Module());
+      NotificationServiceImpl emptyService =
+          new NotificationServiceImpl(
+              notificationRepository,
+              outboxRepository,
+              teamMemberRepository,
+              userPreferencesRepository,
+              userRepository,
+              notifTypePrefRepository,
+              featureFlagService,
+              List.of(), // No senders
+              mapper);
+
+      // This request should resolve to EMAIL channel (no user = default EMAIL)
+      SendNotificationRequest request =
+          SendNotificationRequest.builder()
+              .teamId(TEAM_ID)
+              .notificationType(PAYMENT_REMINDER)
+              .recipientEmail("test@example.com")
+              .templateName("payment-reminder")
+              .templateVariables(Map.of())
+              .createdBy(CREATED_BY)
+              .build();
+
+      // Should not throw, just log warning and skip
+      emptyService.send(request);
+
+      // No notification saved, no outbox saved (sender was null)
+      verify(notificationRepository, never()).save(any());
+      verify(outboxRepository, never()).save(any());
     }
   }
 }

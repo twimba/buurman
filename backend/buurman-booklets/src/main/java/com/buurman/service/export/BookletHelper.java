@@ -57,7 +57,7 @@ final class BookletHelper {
   }
 
   static String fmt(@Nullable BigDecimal value) {
-    return value != null ? String.format("%,.2f", value) : "0.00";
+    return value != null ? String.format(Locale.US, "%,.2f", value) : "0.00";
   }
 
   static String formatDate(@Nullable LocalDate date, DateTimeFormatter fmt) {

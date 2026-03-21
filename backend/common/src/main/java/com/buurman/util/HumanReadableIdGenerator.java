@@ -1,12 +1,11 @@
 package com.buurman.util;
 
+import static java.util.Locale.ENGLISH;
+
 import java.security.SecureRandom;
-import java.util.Locale;
 import java.util.function.Function;
 
 import net.datafaker.Faker;
-
-import static java.util.Locale.ENGLISH;
 
 public final class HumanReadableIdGenerator {
 
@@ -20,7 +19,8 @@ public final class HumanReadableIdGenerator {
     String animal1 = FAKER.animal().name().toLowerCase(ENGLISH);
     String adj2 = FAKER.word().adjective().toLowerCase(ENGLISH);
     String noun = FAKER.word().noun().toLowerCase(ENGLISH);
-    return String.format("%s-%s-%s-%s", sanitize(adj1), sanitize(animal1), sanitize(adj2), sanitize(noun));
+    return String.format(
+        "%s-%s-%s-%s", sanitize(adj1), sanitize(animal1), sanitize(adj2), sanitize(noun));
   }
 
   /**

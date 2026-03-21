@@ -42,9 +42,15 @@ class CurrencyUtilsTest {
     @Test
     @DisplayName("returns yen sign for JPY")
     void yenSymbol() {
-      // JPY symbol varies by locale — just verify it's not the code itself
+      // JPY symbol varies by locale — verify it resolved to a symbol, not the code itself
       String symbol = CurrencyUtils.getCurrencySymbol("JPY");
-      assertThat(symbol).isNotEmpty();
+      assertThat(symbol).isNotEqualTo("JPY");
+    }
+
+    @Test
+    @DisplayName("returns empty string for empty string")
+    void emptyForEmptyString() {
+      assertThat(CurrencyUtils.getCurrencySymbol("")).isEmpty();
     }
 
     @Test
@@ -73,6 +79,35 @@ class CurrencyUtilsTest {
       // Thousands separator is locale-dependent, so check digits are present
       assertThat(formatted).contains("234");
       assertThat(formatted).contains("56");
+    }
+
+    @Test
+    @DisplayName("formats zero amount")
+    void formatsZero() {
+      String formatted = CurrencyUtils.formatCurrency(BigDecimal.ZERO, "EUR");
+
+      assertThat(formatted).startsWith("\u20AC");
+      assertThat(formatted).contains("0");
+    }
+
+    @Test
+    @DisplayName("formats negative amount")
+    void formatsNegative() {
+      String formatted = CurrencyUtils.formatCurrency(new BigDecimal("-100.50"), "EUR");
+
+      assertThat(formatted).contains("100");
+      assertThat(formatted).contains("50");
+    }
+
+    @Test
+    @DisplayName("formats JPY with 0 fractional digits")
+    void formatsJpy() {
+      String formatted = CurrencyUtils.formatCurrency(new BigDecimal("1000"), "JPY");
+
+      // JPY has 0 fractional digits, so no decimal point
+      assertThat(formatted).doesNotContain(".");
+      // Thousands separator is locale-dependent (e.g., "¥1,000"), so check key digits
+      assertThat(formatted).contains("000");
     }
   }
 
@@ -138,6 +173,23 @@ class CurrencyUtilsTest {
     @DisplayName("whole number is valid for any currency")
     void wholeNumberValid() {
       assertThat(CurrencyUtils.isAmountValidForCurrency(new BigDecimal("100"), "EUR")).isTrue();
+    }
+
+    @Test
+    @DisplayName("exactly 2 decimal places is valid for EUR")
+    void exactBoundaryValid() {
+      assertThat(CurrencyUtils.isAmountValidForCurrency(new BigDecimal("10.99"), "EUR")).isTrue();
+    }
+  }
+
+  @Nested
+  @DisplayName("getFractionalDigits — additional")
+  class GetFractionalDigitsAdditional {
+
+    @Test
+    @DisplayName("returns 3 for BHD (3-digit currency)")
+    void bhdHasThreeDigits() {
+      assertThat(CurrencyUtils.getFractionalDigits("BHD")).isEqualTo(3);
     }
   }
 }

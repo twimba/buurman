@@ -5,6 +5,7 @@ import static com.buurman.domain.Contract.ContractType.FIXED_TERM;
 import static com.buurman.domain.Contract.ContractType.INDEFINITE;
 import static com.buurman.domain.ContractExtension.ExtensionStatus.DECLINED;
 import static com.buurman.domain.ContractExtension.ExtensionStatus.DRAFT;
+import static com.buurman.domain.ContractExtension.RentAdjustmentType.FIXED_AMOUNT;
 import static com.buurman.domain.ContractExtension.RentAdjustmentType.FIXED_PERCENTAGE;
 import static com.buurman.domain.ContractExtension.RentAdjustmentType.NONE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,6 +37,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.buurman.config.models.AppProperties;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
+import com.buurman.domain.ContractRentPeriod;
+import com.buurman.domain.Property;
 import com.buurman.domain.Sid;
 import com.buurman.domain.identifier.ContractExtensionIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
@@ -390,6 +393,225 @@ class ContractExtensionServiceTest {
 
       // 1000 * 1.05 = 1050.00
       assertThat(response.newRentAmount()).isEqualByComparingTo("1050.00");
+    }
+
+    @Test
+    @DisplayName("FIXED_AMOUNT with 50 EUR adds to rent correctly")
+    void fixedAmountAdjustsRent() {
+      Contract contract = activeFixedTermContract();
+      contract.setRentAdjustmentType(FIXED_AMOUNT);
+      contract.setRentAdjustmentValue(Optional.of(new BigDecimal("50")));
+
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
+          .thenReturn(contract);
+      when(extensionRepository.findDraftByContractId(CONTRACT_ID, TEAM_ID))
+          .thenReturn(Optional.empty());
+      when(extensionRepository.findActiveByContractId(CONTRACT_ID, TEAM_ID))
+          .thenReturn(Optional.empty());
+      when(extensionRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+          .thenReturn(List.of());
+      when(extensionRepository.getNextExtensionNumber(CONTRACT_ID, TEAM_ID)).thenReturn(1);
+      when(extensionRepository.save(any(ContractExtension.class)))
+          .thenAnswer(
+              inv -> {
+                ContractExtension ext = inv.getArgument(0);
+                ext.setId(UUID.randomUUID());
+                ext.setCreatedAt(Instant.now());
+                return ext;
+              });
+
+      CreateContractExtensionRequest request =
+          new CreateContractExtensionRequest(
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty());
+
+      ContractExtensionResponse response =
+          service.createExtension(CONTRACT_SID, request, principal);
+
+      // 1000 + 50 = 1050.00
+      assertThat(response.newRentAmount()).isEqualByComparingTo("1050.00");
+    }
+
+    @Test
+    @DisplayName("MANUAL rent adjustment uses explicit newRentAmount")
+    void manualRentAdjustmentUsesExplicitAmount() {
+      Contract contract = activeFixedTermContract();
+
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
+          .thenReturn(contract);
+      when(extensionRepository.findDraftByContractId(CONTRACT_ID, TEAM_ID))
+          .thenReturn(Optional.empty());
+      when(extensionRepository.findActiveByContractId(CONTRACT_ID, TEAM_ID))
+          .thenReturn(Optional.empty());
+      when(extensionRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+          .thenReturn(List.of());
+      when(extensionRepository.getNextExtensionNumber(CONTRACT_ID, TEAM_ID)).thenReturn(1);
+      when(extensionRepository.save(any(ContractExtension.class)))
+          .thenAnswer(
+              inv -> {
+                ContractExtension ext = inv.getArgument(0);
+                ext.setId(UUID.randomUUID());
+                ext.setCreatedAt(Instant.now());
+                return ext;
+              });
+
+      CreateContractExtensionRequest request =
+          new CreateContractExtensionRequest(
+              Optional.empty(),
+              Optional.of(new BigDecimal("1500.00")),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty());
+
+      ContractExtensionResponse response =
+          service.createExtension(CONTRACT_SID, request, principal);
+
+      assertThat(response.newRentAmount()).isEqualByComparingTo("1500.00");
+    }
+  }
+
+  @Nested
+  @DisplayName("activateExtension")
+  class ActivateExtension {
+
+    private ContractExtension draftExtension() {
+      return ContractExtension.builder()
+          .id(UUID.randomUUID())
+          .identifier(Optional.of(Sid.of("cex_test12345678901234567")))
+          .teamId(TEAM_ID)
+          .contractId(CONTRACT_ID)
+          .extensionNumber(1)
+          .previousEndDate(LocalDate.of(2026, 6, 30))
+          .newEndDate(Optional.of(LocalDate.of(2027, 6, 30)))
+          .previousRentAmount(MoneyAmount.of(new BigDecimal("1000.00"), "EUR"))
+          .newRentAmount(MoneyAmount.of(new BigDecimal("1050.00"), "EUR"))
+          .rentAdjustmentType(FIXED_PERCENTAGE)
+          .rentAdjustmentValue(Optional.of(new BigDecimal("5")))
+          .status(DRAFT)
+          .triggerType(ContractExtension.TriggerType.MANUAL)
+          .createdAt(Instant.now())
+          .updatedAt(Instant.now())
+          .createdBy(USER_ID)
+          .updatedBy(USER_ID)
+          .build();
+    }
+
+    @Test
+    @DisplayName("happy path: activates DRAFT extension, supersedes previous, creates rent period")
+    void activatesDraftExtension() {
+      Contract contract = activeFixedTermContract();
+      ContractExtension extension = draftExtension();
+      ContractExtensionIdentifier extSid =
+          ContractExtensionIdentifier.of("cex_test12345678901234567");
+
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
+          .thenReturn(contract);
+      when(extensionRepository.getByIdentifierAndTeamId(extSid, TEAM_ID))
+          .thenReturn(extension);
+      // No currently active extension
+      when(extensionRepository.findActiveByContractId(CONTRACT_ID, TEAM_ID))
+          .thenReturn(Optional.empty());
+      when(rentPeriodRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+          .thenReturn(List.of());
+      when(rentPeriodRepository.save(any(ContractRentPeriod.class)))
+          .thenAnswer(
+              inv -> {
+                ContractRentPeriod p = inv.getArgument(0);
+                p.setId(UUID.randomUUID());
+                return p;
+              });
+      when(extensionRepository.save(any(ContractExtension.class)))
+          .thenAnswer(inv -> inv.getArgument(0));
+      when(propertyRepository.getByIdAndTeamId(any(UUID.class), eq(TEAM_ID)))
+          .thenReturn(
+              Property.builder()
+                  .street("Test Street")
+                  .city("Amsterdam")
+                  .build());
+
+      ContractExtensionResponse response =
+          service.activateExtension(CONTRACT_SID, extSid, principal);
+
+      assertThat(response.status())
+          .isEqualTo(ContractExtension.ExtensionStatus.ACTIVE);
+      // Verify audit was logged
+      verify(auditService)
+          .logUpdate(
+              eq(TEAM_ID),
+              eq("CONTRACT_EXTENSION"),
+              any(UUID.class),
+              eq(USER_ID),
+              any(),
+              any(),
+              any());
+    }
+
+    @Test
+    @DisplayName("rejects activating non-DRAFT extension")
+    void rejectsActivatingNonDraft() {
+      Contract contract = activeFixedTermContract();
+      ContractExtension extension = draftExtension();
+      extension.setStatus(ContractExtension.ExtensionStatus.ACTIVE);
+      ContractExtensionIdentifier extSid =
+          ContractExtensionIdentifier.of("cex_test12345678901234567");
+
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
+          .thenReturn(contract);
+      when(extensionRepository.getByIdentifierAndTeamId(extSid, TEAM_ID))
+          .thenReturn(extension);
+
+      assertThatThrownBy(
+              () -> service.activateExtension(CONTRACT_SID, extSid, principal))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessageContaining("Cannot activate");
+    }
+  }
+
+  @Nested
+  @DisplayName("cancelExtension")
+  class CancelExtension {
+
+    @Test
+    @DisplayName("happy path: cancels DRAFT extension")
+    void cancelsDraftExtension() {
+      Contract contract = activeFixedTermContract();
+      UUID extensionId = UUID.randomUUID();
+      ContractExtension extension =
+          ContractExtension.builder()
+              .id(extensionId)
+              .identifier(Optional.of(Sid.of("cex_test12345678901234567")))
+              .teamId(TEAM_ID)
+              .contractId(CONTRACT_ID)
+              .extensionNumber(1)
+              .previousEndDate(LocalDate.of(2026, 6, 30))
+              .newEndDate(Optional.of(LocalDate.of(2027, 6, 30)))
+              .previousRentAmount(MoneyAmount.of(new BigDecimal("1000.00"), "EUR"))
+              .newRentAmount(MoneyAmount.of(new BigDecimal("1000.00"), "EUR"))
+              .rentAdjustmentType(NONE)
+              .status(DRAFT)
+              .triggerType(ContractExtension.TriggerType.MANUAL)
+              .createdAt(Instant.now())
+              .updatedAt(Instant.now())
+              .createdBy(USER_ID)
+              .updatedBy(USER_ID)
+              .build();
+
+      ContractExtensionIdentifier extSid =
+          ContractExtensionIdentifier.of("cex_test12345678901234567");
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
+          .thenReturn(contract);
+      when(extensionRepository.getByIdentifierAndTeamId(extSid, TEAM_ID))
+          .thenReturn(extension);
+
+      service.cancelExtension(CONTRACT_SID, extSid, principal);
+
+      verify(extensionRepository).cancelByIdAndTeamId(extensionId, TEAM_ID, USER_ID);
+      verify(auditService)
+          .logDelete(
+              eq(TEAM_ID), eq("CONTRACT_EXTENSION"), eq(extensionId), eq(USER_ID), any());
     }
   }
 }

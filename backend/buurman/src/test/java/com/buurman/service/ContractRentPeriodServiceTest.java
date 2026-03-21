@@ -30,6 +30,7 @@ import com.buurman.domain.Contract;
 import com.buurman.domain.ContractRentPeriod;
 import com.buurman.domain.Sid;
 import com.buurman.domain.identifier.ContractIdentifier;
+import com.buurman.domain.identifier.ContractRentPeriodIdentifier;
 import com.buurman.dto.request.CreateRentPeriodRequest;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.mapper.ContractRentPeriodMapper;
@@ -228,39 +229,145 @@ class ContractRentPeriodServiceTest {
   }
 
   @Nested
-  @DisplayName("getCurrentRent and getRentAtDate")
-  class RentLookups {
+  @DisplayName("addRentPeriod")
+  class AddRentPeriod {
 
     @Test
-    @DisplayName("getCurrentRent delegates to repository")
-    void getCurrentRentDelegatesToRepo() {
-      ContractRentPeriod period =
+    @DisplayName("happy path: saves period, closes previous, syncs contract rent")
+    void addRentPeriodHappyPath() {
+      Contract contract = activeContract();
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
+          .thenReturn(contract);
+      when(contractExtensionRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+          .thenReturn(List.of());
+      when(rentPeriodRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+          .thenReturn(List.of());
+
+      UUID prevPeriodId = UUID.randomUUID();
+      ContractRentPeriod previousPeriod =
           ContractRentPeriod.builder()
-              .rentAmount(MoneyAmount.of(new BigDecimal("1200.00"), "EUR"))
-              .effectiveFrom(LocalDate.of(2026, 3, 1))
+              .id(prevPeriodId)
+              .teamId(TEAM_ID)
+              .contractId(CONTRACT_ID)
+              .rentAmount(MoneyAmount.of(new BigDecimal("1000.00"), "EUR"))
+              .effectiveFrom(LocalDate.of(2026, 1, 1))
+              .createdBy(USER_ID)
+              .updatedBy(USER_ID)
               .build();
+      when(rentPeriodRepository.findPreviousPeriod(
+              eq(CONTRACT_ID), eq(TEAM_ID), any(LocalDate.class)))
+          .thenReturn(Optional.of(previousPeriod));
+      when(rentPeriodRepository.save(any(ContractRentPeriod.class)))
+          .thenAnswer(inv -> inv.getArgument(0));
       when(rentPeriodRepository.findCurrentByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
-          .thenReturn(Optional.of(period));
+          .thenReturn(Optional.empty());
+      when(paymentRepository.findPendingByContractIdFromDate(
+              eq(CONTRACT_ID), eq(TEAM_ID), any(LocalDate.class)))
+          .thenReturn(List.of());
+      when(rentPeriodMapper.toResponse(any(ContractRentPeriod.class), any()))
+          .thenReturn(null);
 
-      Optional<ContractRentPeriod> result = service.getCurrentRent(CONTRACT_ID, TEAM_ID);
+      CreateRentPeriodRequest request =
+          new CreateRentPeriodRequest(
+              new BigDecimal("1200.00"),
+              LocalDate.of(2026, 7, 1),
+              Optional.of("Annual rent increase"));
 
-      assertThat(result).isPresent();
-      assertThat(result.get().getRentAmount().value()).isEqualByComparingTo("1200.00");
+      service.addRentPeriod(CONTRACT_SID, request, principal);
+
+      // Verify new period saved with correct fields
+      ArgumentCaptor<ContractRentPeriod> captor =
+          ArgumentCaptor.forClass(ContractRentPeriod.class);
+      verify(rentPeriodRepository).save(captor.capture());
+      ContractRentPeriod saved = captor.getValue();
+      assertThat(saved.getRentAmount().value()).isEqualByComparingTo("1200.00");
+      assertThat(saved.getEffectiveFrom()).isEqualTo(LocalDate.of(2026, 7, 1));
+      assertThat(saved.getContractId()).isEqualTo(CONTRACT_ID);
+
+      // Verify previous period's effectiveTo was updated
+      verify(rentPeriodRepository)
+          .setEffectiveTo(prevPeriodId, TEAM_ID, LocalDate.of(2026, 6, 30));
     }
 
     @Test
-    @DisplayName("getRentAtDate delegates to repository with date")
-    void getRentAtDateDelegatesToRepo() {
-      LocalDate queryDate = LocalDate.of(2026, 6, 15);
-      when(rentPeriodRepository.findAtDateByContractIdAndTeamId(CONTRACT_ID, TEAM_ID, queryDate))
+    @DisplayName("effective date after contract end date throws exception")
+    void effectiveDateAfterContractEndThrows() {
+      Contract contract = activeContract();
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
+          .thenReturn(contract);
+      when(contractExtensionRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
+          .thenReturn(List.of());
+
+      // Contract ends 2027-01-01, effective date 2027-06-01 is after
+      CreateRentPeriodRequest request =
+          new CreateRentPeriodRequest(
+              new BigDecimal("1200.00"),
+              LocalDate.of(2027, 6, 1),
+              Optional.empty());
+
+      assertThatThrownBy(() -> service.addRentPeriod(CONTRACT_SID, request, principal))
+          .isInstanceOf(BusinessRuleException.class)
+          .hasMessageContaining("after the contract end date");
+    }
+  }
+
+  @Nested
+  @DisplayName("deleteRentPeriod")
+  class DeleteRentPeriod {
+
+    @Test
+    @DisplayName("happy path: deletes period and restores previous period effectiveTo")
+    void deleteRentPeriodHappyPath() {
+      Contract contract = activeContract();
+      UUID periodId = UUID.randomUUID();
+      ContractRentPeriodIdentifier periodSid =
+          ContractRentPeriodIdentifier.of("crp_test12345678901234567");
+      ContractRentPeriod period =
+          ContractRentPeriod.builder()
+              .id(periodId)
+              .identifier(Optional.of(Sid.of("crp_test12345678901234567")))
+              .teamId(TEAM_ID)
+              .contractId(CONTRACT_ID)
+              .rentAmount(MoneyAmount.of(new BigDecimal("1200.00"), "EUR"))
+              .effectiveFrom(LocalDate.of(2026, 7, 1))
+              .createdBy(USER_ID)
+              .updatedBy(USER_ID)
+              .build();
+
+      UUID prevPeriodId = UUID.randomUUID();
+      ContractRentPeriod previousPeriod =
+          ContractRentPeriod.builder()
+              .id(prevPeriodId)
+              .teamId(TEAM_ID)
+              .contractId(CONTRACT_ID)
+              .rentAmount(MoneyAmount.of(new BigDecimal("1000.00"), "EUR"))
+              .effectiveFrom(LocalDate.of(2026, 1, 1))
+              .createdBy(USER_ID)
+              .updatedBy(USER_ID)
+              .build();
+
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
+          .thenReturn(contract);
+      when(rentPeriodRepository.getByIdentifierAndTeamId(periodSid, TEAM_ID))
+          .thenReturn(period);
+      when(rentPeriodRepository.findPreviousPeriod(
+              CONTRACT_ID, TEAM_ID, LocalDate.of(2026, 7, 1)))
+          .thenReturn(Optional.of(previousPeriod));
+      when(rentPeriodRepository.findCurrentByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
           .thenReturn(Optional.empty());
+      when(paymentRepository.findPendingByContractIdFromDate(
+              eq(CONTRACT_ID), eq(TEAM_ID), any(LocalDate.class)))
+          .thenReturn(List.of());
 
-      Optional<ContractRentPeriod> result =
-          service.getRentAtDate(CONTRACT_ID, TEAM_ID, queryDate);
+      service.deleteRentPeriod(CONTRACT_SID, periodSid, principal);
 
-      assertThat(result).isEmpty();
-      verify(rentPeriodRepository)
-          .findAtDateByContractIdAndTeamId(CONTRACT_ID, TEAM_ID, queryDate);
+      // Verify soft delete was called
+      verify(rentPeriodRepository).softDeleteByIdAndTeamId(periodId, TEAM_ID);
+      // Verify previous period's effectiveTo was restored to NULL
+      verify(rentPeriodRepository).setEffectiveTo(prevPeriodId, TEAM_ID, null);
+      // Verify audit logged
+      verify(auditService)
+          .logDelete(eq(TEAM_ID), eq("CONTRACT"), eq(CONTRACT_ID), eq(USER_ID), any());
     }
   }
 }

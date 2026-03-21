@@ -1,6 +1,7 @@
 package com.buurman.config.jooq;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.math.BigDecimal;
 
@@ -68,6 +69,22 @@ class MoneyMinorUnitConverterTest {
     void negativeConverts() {
       assertThat(converter.to(new BigDecimal("-50.50"))).isEqualTo(-5050L);
     }
+
+    @Test
+    @DisplayName("throws ArithmeticException for excess precision")
+    void excessPrecisionThrows() {
+      assertThatThrownBy(() -> converter.to(new BigDecimal("100.123")))
+          .isInstanceOf(ArithmeticException.class);
+    }
+
+    @Test
+    @DisplayName("converts large value near Long.MAX_VALUE/100")
+    void largeValueConverts() {
+      // Long.MAX_VALUE = 9_223_372_036_854_775_807
+      // Long.MAX_VALUE / 100 = 92_233_720_368_547_758.07
+      BigDecimal largeValue = new BigDecimal("92233720368547758.07");
+      assertThat(converter.to(largeValue)).isEqualTo(9223372036854775807L);
+    }
   }
 
   @Nested
@@ -76,11 +93,20 @@ class MoneyMinorUnitConverterTest {
 
     @Test
     @DisplayName("from(to(x)) preserves value")
-    void roundTrip() {
+    void forwardRoundTrip() {
       BigDecimal original = new BigDecimal("123.45");
       BigDecimal result = converter.from(converter.to(original));
 
       assertThat(result).isEqualByComparingTo(original);
+    }
+
+    @Test
+    @DisplayName("to(from(x)) preserves value")
+    void reverseRoundTrip() {
+      Long original = 10012L;
+      Long result = converter.to(converter.from(original));
+
+      assertThat(result).isEqualTo(original);
     }
   }
 

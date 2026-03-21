@@ -1,6 +1,7 @@
 package com.buurman.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -58,9 +59,12 @@ class MoneyAmountTest {
     void presentForValidInputs() {
       Optional<MoneyAmount> result = MoneyAmount.ofNullable(new BigDecimal("50.00"), "USD");
 
-      assertThat(result).isPresent();
-      assertThat(result.get().value()).isEqualByComparingTo("50.00");
-      assertThat(result.get().currency()).isEqualTo("USD");
+      assertThat(result)
+          .hasValueSatisfying(
+              money -> {
+                assertThat(money.value()).isEqualByComparingTo("50.00");
+                assertThat(money.currency()).isEqualTo("USD");
+              });
     }
   }
 
@@ -90,6 +94,22 @@ class MoneyAmountTest {
       MoneyAmount money = MoneyAmount.of(BigDecimal.ZERO, "EUR");
 
       assertThat(money.toMinorUnits()).isEqualTo(0L);
+    }
+
+    @Test
+    @DisplayName("throws ArithmeticException for excess precision")
+    void excessPrecisionThrows() {
+      MoneyAmount money = MoneyAmount.of(new BigDecimal("100.123"), "EUR");
+
+      assertThatThrownBy(money::toMinorUnits).isInstanceOf(ArithmeticException.class);
+    }
+
+    @Test
+    @DisplayName("converts negative amount correctly")
+    void negativeAmount() {
+      MoneyAmount money = MoneyAmount.of(new BigDecimal("-50.00"), "EUR");
+
+      assertThat(money.toMinorUnits()).isEqualTo(-5000L);
     }
   }
 
@@ -127,6 +147,38 @@ class MoneyAmountTest {
       BigDecimal result = MoneyAmount.sumToMajorUnits(null, null);
 
       assertThat(result).isEqualByComparingTo(BigDecimal.ZERO);
+    }
+
+    @Test
+    @DisplayName("converts JPY sum (0 fractional digits) correctly")
+    void jpySumConverts() {
+      BigDecimal result = MoneyAmount.sumToMajorUnits(new BigDecimal("500"), "JPY");
+
+      assertThat(result).isEqualByComparingTo("500");
+    }
+  }
+
+  @Nested
+  @DisplayName("of null arguments")
+  @SuppressWarnings("NullAway")
+  class OfNullArguments {
+
+    @Test
+    @DisplayName("null value is accepted by record constructor — NPE deferred to toMinorUnits()")
+    void nullValueAccepted() {
+      MoneyAmount money = MoneyAmount.of(null, "EUR");
+
+      assertThat(money.value()).isNull();
+      assertThatThrownBy(money::toMinorUnits).isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    @DisplayName("null currency is accepted by record constructor — NPE deferred to toMinorUnits()")
+    void nullCurrencyAccepted() {
+      MoneyAmount money = MoneyAmount.of(BigDecimal.TEN, null);
+
+      assertThat(money.currency()).isNull();
+      assertThatThrownBy(money::toMinorUnits).isInstanceOf(NullPointerException.class);
     }
   }
 }
