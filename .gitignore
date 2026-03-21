@@ -21,6 +21,8 @@ build/
 
 # Environment
 .env
+.env.bak
+.env.backend
 *.log
 
 # Test coverage

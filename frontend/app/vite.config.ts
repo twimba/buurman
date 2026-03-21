@@ -26,12 +26,12 @@ export default defineConfig({
   ],
   define: defines,
   server: {
-    port: 5173,
+    port: parseInt(process.env.VITE_DEV_PORT || '5173', 10),
     host: true,
-    allowedHosts: ['app.local.buurman.io'],
+    allowedHosts: true,
     // HMR websocket goes through Traefik (wss://app.local.buurman.io:443)
     hmr: {
-      clientPort: 443,
+      clientPort: parseInt(process.env.VITE_HMR_PORT || '443', 10),
     },
   },
   build: {
