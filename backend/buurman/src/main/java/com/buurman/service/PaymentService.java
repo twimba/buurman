@@ -436,6 +436,11 @@ public class PaymentService {
     metricsService.incrementCounter("payment.marked.paid.total");
     metricsService.incrementCounter(
         "payment.status.changed.total", "from_status", oldStatus.name(), "to_status", "PAID");
+    metricsService.incrementCounterBy(
+        "payment.amount.paid.total",
+        payment.getAmount().value().doubleValue(),
+        "currency",
+        payment.getAmount().currency());
 
     log.info(
         "Marked payment {} as PAID on {} by user {}",

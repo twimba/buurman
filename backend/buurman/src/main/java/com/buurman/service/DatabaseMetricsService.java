@@ -29,6 +29,7 @@ public class DatabaseMetricsService {
 
   private final MultiGauge contractsByStatus;
   private final MultiGauge paymentsByStatus;
+  private final MultiGauge propertiesByStatus;
 
   public DatabaseMetricsService(
       DatabaseMetricsRepository metricsRepository, MeterRegistry registry) {
@@ -61,6 +62,10 @@ public class DatabaseMetricsService {
         MultiGauge.builder(PREFIX + "payments.by.status")
             .description("Payments grouped by status")
             .register(registry);
+    propertiesByStatus =
+        MultiGauge.builder(PREFIX + "properties.by.status")
+            .description("Properties grouped by status")
+            .register(registry);
 
     refreshCounts();
   }
@@ -76,6 +81,7 @@ public class DatabaseMetricsService {
 
       refreshContractsByStatus();
       refreshPaymentsByStatus();
+      refreshPropertiesByStatus();
     } catch (Exception e) {
       log.warn("Failed to refresh database metrics", e);
     }
@@ -97,5 +103,14 @@ public class DatabaseMetricsService {
                 lc -> MultiGauge.Row.of(Tags.of("status", lc.label()), lc.count()))
             .toList();
     paymentsByStatus.register(rows, true);
+  }
+
+  private void refreshPropertiesByStatus() {
+    var rows =
+        metricsRepository.countPropertiesByStatus().stream()
+            .<MultiGauge.Row<?>>map(
+                lc -> MultiGauge.Row.of(Tags.of("status", lc.label()), lc.count()))
+            .toList();
+    propertiesByStatus.register(rows, true);
   }
 }

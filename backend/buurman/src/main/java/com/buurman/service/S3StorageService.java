@@ -93,6 +93,7 @@ public class S3StorageService {
           "success");
       metricsService.incrementCounter(
           "s3.operation.total", "operation", "upload", "result", "success");
+      metricsService.incrementCounterBy("s3.upload.bytes.total", file.getSize());
 
       log.info("File uploaded to S3: {}", fileKey);
       return fileKey;
@@ -143,6 +144,7 @@ public class S3StorageService {
         "success");
     metricsService.incrementCounter(
         "s3.operation.total", "operation", "upload", "result", "success");
+    metricsService.incrementCounterBy("s3.upload.bytes.total", data.length);
 
     log.info("File uploaded to S3: {}", fileKey);
   }

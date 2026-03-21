@@ -2,6 +2,8 @@ package com.buurman.service;
 
 import static org.keycloak.representations.idm.CredentialRepresentation.PASSWORD;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -31,55 +33,88 @@ public class KeycloakService {
   private final Keycloak keycloak;
   private final String realm;
   private final String backofficeRealm;
+  private final MetricsService metricsService;
 
-  public KeycloakService(Keycloak keycloak, KeycloakProperties keycloakProperties) {
+  public KeycloakService(
+      Keycloak keycloak,
+      KeycloakProperties keycloakProperties,
+      MetricsService metricsService) {
     this.keycloak = keycloak;
     this.realm = keycloakProperties.realm();
     this.backofficeRealm = keycloakProperties.backofficeRealm();
+    this.metricsService = metricsService;
   }
 
   // --- App realm user management ---
 
   public String createUser(String email, String firstName, String lastName, String password) {
-    RealmResource realmResource = keycloak.realm(realm);
-    UsersResource usersResource = realmResource.users();
+    Instant start = Instant.now();
+    try {
+      RealmResource realmResource = keycloak.realm(realm);
+      UsersResource usersResource = realmResource.users();
 
-    UserRepresentation user = new UserRepresentation();
-    user.setEmail(email);
-    user.setUsername(email);
-    user.setFirstName(firstName);
-    user.setLastName(lastName);
-    user.setEnabled(true);
-    user.setEmailVerified(false);
+      UserRepresentation user = new UserRepresentation();
+      user.setEmail(email);
+      user.setUsername(email);
+      user.setFirstName(firstName);
+      user.setLastName(lastName);
+      user.setEnabled(true);
+      user.setEmailVerified(false);
 
-    CredentialRepresentation credential = new CredentialRepresentation();
-    credential.setTemporary(false);
-    credential.setType(PASSWORD);
-    credential.setValue(password);
-    user.setCredentials(List.of(credential));
+      CredentialRepresentation credential = new CredentialRepresentation();
+      credential.setTemporary(false);
+      credential.setType(PASSWORD);
+      credential.setValue(password);
+      user.setCredentials(List.of(credential));
 
-    Response response = usersResource.create(user);
+      Response response = usersResource.create(user);
 
-    if (response.getStatus() == HttpStatus.CONFLICT.value()) {
+      if (response.getStatus() == HttpStatus.CONFLICT.value()) {
+        response.close();
+        metricsService.recordTimer(
+            "keycloak.user.creation.seconds",
+            Duration.between(start, Instant.now()),
+            "result",
+            "failure");
+        throw new BusinessRuleException("A user with this email or username already exists");
+      }
+
+      if (response.getStatus() != HttpStatus.CREATED.value()) {
+        response.close();
+        metricsService.recordTimer(
+            "keycloak.user.creation.seconds",
+            Duration.between(start, Instant.now()),
+            "result",
+            "failure");
+        throw new ExternalServiceException(
+            "Failed to create user in Keycloak: " + response.getStatusInfo());
+      }
+
+      String location = response.getLocation().getPath();
+      String userId = location.substring(location.lastIndexOf('/') + 1);
+
       response.close();
-      throw new BusinessRuleException("A user with this email or username already exists");
+      metricsService.recordTimer(
+          "keycloak.user.creation.seconds",
+          Duration.between(start, Instant.now()),
+          "result",
+          "success");
+      return userId;
+    } catch (BusinessRuleException | ExternalServiceException e) {
+      throw e;
+    } catch (Exception e) {
+      metricsService.recordTimer(
+          "keycloak.user.creation.seconds",
+          Duration.between(start, Instant.now()),
+          "result",
+          "failure");
+      throw e;
     }
-
-    if (response.getStatus() != HttpStatus.CREATED.value()) {
-      response.close();
-      throw new ExternalServiceException(
-          "Failed to create user in Keycloak: " + response.getStatusInfo());
-    }
-
-    String location = response.getLocation().getPath();
-    String userId = location.substring(location.lastIndexOf('/') + 1);
-
-    response.close();
-    return userId;
   }
 
   public void deleteUser(String keycloakUserId) {
     deleteUserInRealm(keycloakUserId, realm);
+    metricsService.incrementCounter("keycloak.user.deletion.total", "result", "success");
   }
 
   public void disableUser(String keycloakUserId) {

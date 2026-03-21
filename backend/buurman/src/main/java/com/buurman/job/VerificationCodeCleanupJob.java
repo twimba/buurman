@@ -35,6 +35,7 @@ public class VerificationCodeCleanupJob implements Job {
 
       int emailDeleted = emailCodeRepository.deleteExpiredAndUsed(cutoff);
       int phoneDeleted = phoneCodeRepository.deleteExpiredAndUsed(cutoff);
+      context.put("itemsProcessed", emailDeleted + phoneDeleted);
 
       if (emailDeleted > 0 || phoneDeleted > 0) {
         log.info(

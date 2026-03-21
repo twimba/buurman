@@ -1,8 +1,11 @@
 package com.buurman.job;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.jspecify.annotations.Nullable;
 import org.quartz.JobExecutionContext;
@@ -14,6 +17,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.buurman.repository.JobExecutionHistoryRepository;
+import com.buurman.service.MetricsService;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +31,10 @@ public class ExecutionHistoryJobListener implements JobListener {
 
   private final JobExecutionHistoryRepository repository;
   private final Scheduler scheduler;
+  private final MetricsService metricsService;
+
+  private final ConcurrentHashMap<String, AtomicLong> lastSuccessTimestamps =
+      new ConcurrentHashMap<>();
 
   @PostConstruct
   public void register() throws SchedulerException {
@@ -86,6 +94,46 @@ public class ExecutionHistoryJobListener implements JobListener {
       }
     } else {
       insertFallbackRecord(context, status, errorMessage);
+    }
+
+    recordSchedulerMetrics(context, exception);
+  }
+
+  private void recordSchedulerMetrics(
+      JobExecutionContext context, @Nullable JobExecutionException exception) {
+    try {
+      String jobName = context.getJobDetail().getKey().getName();
+      String result = exception == null ? "success" : "failure";
+
+      metricsService.recordTimer(
+          "scheduler.execution.seconds",
+          Duration.ofMillis(context.getJobRunTime()),
+          "job_name",
+          jobName);
+
+      metricsService.incrementCounter(
+          "scheduler.execution.total", "job_name", jobName, "result", result);
+
+      if (exception == null) {
+        AtomicLong ts =
+            lastSuccessTimestamps.computeIfAbsent(
+                jobName,
+                name -> {
+                  AtomicLong atomicLong = new AtomicLong();
+                  metricsService.registerGauge(
+                      "scheduler.last.success.timestamp", atomicLong, "job_name", name);
+                  return atomicLong;
+                });
+        ts.set(Instant.now().getEpochSecond());
+      }
+
+      Object itemsProcessed = context.get("itemsProcessed");
+      if (itemsProcessed instanceof Number n && n.longValue() > 0) {
+        metricsService.incrementCounterBy(
+            "scheduler.items.processed.total", n.doubleValue(), "job_name", jobName);
+      }
+    } catch (Exception e) {
+      log.debug("Failed to record scheduler metrics: {}", e.getMessage());
     }
   }
 

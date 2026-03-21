@@ -62,6 +62,7 @@ public class TeamService {
   private final UserRepository userRepository;
   private final TeamMapper teamMapper;
   private final NotificationService notificationService;
+  private final MetricsService metricsService;
   private final AppProperties appProperties;
   private final Clock clock;
 
@@ -148,6 +149,8 @@ public class TeamService {
                     "expiresAt", formatInstantDate(invitation.getExpiresAt())))
             .createdBy(principal.getUserId())
             .build());
+
+    metricsService.incrementCounter("team.invitation.total", "result", "sent");
 
     return teamMapper.toInvitationResponse(
         invitation,
@@ -333,6 +336,8 @@ public class TeamService {
     invitation.setAcceptedBy(Optional.of(principal.getUserId()));
     invitationRepository.save(invitation);
 
+    metricsService.incrementCounter("team.invitation.total", "result", "accepted");
+
     // Switch to the invited team as default and active
     user.setDefaultTeamId(Optional.of(invitation.getTeamId()));
     user.setActiveTeamId(Optional.of(invitation.getTeamId()));
@@ -479,6 +484,7 @@ public class TeamService {
             });
 
     TeamPreferences savedPrefs = teamPreferencesRepository.save(prefs);
+    metricsService.incrementCounter("team.settings.updated.total");
     return toPreferencesResponse(savedPrefs);
   }
 

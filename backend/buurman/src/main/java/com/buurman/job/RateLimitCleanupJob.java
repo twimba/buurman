@@ -24,6 +24,7 @@ public class RateLimitCleanupJob implements Job {
   public void execute(JobExecutionContext context) throws JobExecutionException {
     try {
       int removed = rateLimitExpiredEntriesCleaner.removeExpired(CLEANUP_BATCH_SIZE);
+      context.put("itemsProcessed", removed);
       if (removed > 0) {
         log.info("Rate limit cleanup: removed {} expired bucket entries", removed);
       }

@@ -39,6 +39,7 @@ public class ThumbnailBackfillJob implements Job {
       return;
     }
 
+    context.put("itemsProcessed", photos.size());
     int success = 0;
     int failed = 0;
 

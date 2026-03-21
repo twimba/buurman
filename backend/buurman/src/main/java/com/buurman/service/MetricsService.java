@@ -27,6 +27,10 @@ public class MetricsService {
     Counter.builder(PREFIX + name).tags(tags).register(registry).increment();
   }
 
+  public void incrementCounterBy(String name, double amount, String... tags) {
+    Counter.builder(PREFIX + name).tags(tags).register(registry).increment(amount);
+  }
+
   public void recordTimer(String name, Duration duration, String... tags) {
     Timer.builder(PREFIX + name).tags(tags).register(registry).record(duration);
   }
