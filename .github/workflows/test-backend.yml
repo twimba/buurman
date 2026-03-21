@@ -34,7 +34,7 @@ jobs:
       - name: Run tests with coverage
         working-directory: backend
         run: |
-          mvn test -pl common,buurman,buurman-notifications,buurman-booklets \
+          mvn verify -pl common,buurman,buurman-notifications,buurman-booklets,coverage-report \
             -Pquick -B -Dmaven.build.cache.enabled=false
 
       - name: Generate coverage summary
@@ -101,16 +101,35 @@ jobs:
             fi
           done
 
-          # Totals
-          calc_pct() {
-            local missed=$1 covered=$2
-            local total=$((missed + covered))
-            if [ "$total" -eq 0 ]; then echo "N/A"; else echo "$((covered * 100 / total))%"; fi
-          }
+          # Aggregated totals from coverage-report module
+          AGG_CSV="coverage-report/target/site/jacoco-aggregate/jacoco.csv"
+          if [ -f "$AGG_CSV" ]; then
+            AGG_INST_MISSED=0; AGG_INST_COVERED=0
+            AGG_BRANCH_MISSED=0; AGG_BRANCH_COVERED=0
+            AGG_LINE_MISSED=0; AGG_LINE_COVERED=0
+            AGG_METHOD_MISSED=0; AGG_METHOD_COVERED=0
 
-          TOTAL_INST_PCT=$(calc_pct $TOTAL_INST_MISSED $TOTAL_INST_COVERED)
-          TOTAL_BRANCH_PCT=$(calc_pct $TOTAL_BRANCH_MISSED $TOTAL_BRANCH_COVERED)
-          TOTAL_LINE_PCT=$(calc_pct $TOTAL_LINE_MISSED $TOTAL_LINE_COVERED)
-          TOTAL_METHOD_PCT=$(calc_pct $TOTAL_METHOD_MISSED $TOTAL_METHOD_COVERED)
+            while IFS=',' read -r GROUP PACKAGE CLASS INST_M INST_C BRANCH_M BRANCH_C LINE_M LINE_C COMPL_M COMPL_C METHOD_M METHOD_C; do
+              AGG_INST_MISSED=$((AGG_INST_MISSED + INST_M))
+              AGG_INST_COVERED=$((AGG_INST_COVERED + INST_C))
+              AGG_BRANCH_MISSED=$((AGG_BRANCH_MISSED + BRANCH_M))
+              AGG_BRANCH_COVERED=$((AGG_BRANCH_COVERED + BRANCH_C))
+              AGG_LINE_MISSED=$((AGG_LINE_MISSED + LINE_M))
+              AGG_LINE_COVERED=$((AGG_LINE_COVERED + LINE_C))
+              AGG_METHOD_MISSED=$((AGG_METHOD_MISSED + METHOD_M))
+              AGG_METHOD_COVERED=$((AGG_METHOD_COVERED + METHOD_C))
+            done < <(tail -n +2 "$AGG_CSV")
 
-          echo "| **Total** | **${TOTAL_INST_PCT}** | **${TOTAL_BRANCH_PCT}** | **${TOTAL_LINE_PCT}** | **${TOTAL_METHOD_PCT}** |" >> "$GITHUB_STEP_SUMMARY"
+            calc_pct() {
+              local missed=$1 covered=$2
+              local total=$((missed + covered))
+              if [ "$total" -eq 0 ]; then echo "N/A"; else echo "$((covered * 100 / total))%"; fi
+            }
+
+            AGG_INST_PCT=$(calc_pct $AGG_INST_MISSED $AGG_INST_COVERED)
+            AGG_BRANCH_PCT=$(calc_pct $AGG_BRANCH_MISSED $AGG_BRANCH_COVERED)
+            AGG_LINE_PCT=$(calc_pct $AGG_LINE_MISSED $AGG_LINE_COVERED)
+            AGG_METHOD_PCT=$(calc_pct $AGG_METHOD_MISSED $AGG_METHOD_COVERED)
+
+            echo "| **Total** | **${AGG_INST_PCT}** | **${AGG_BRANCH_PCT}** | **${AGG_LINE_PCT}** | **${AGG_METHOD_PCT}** |" >> "$GITHUB_STEP_SUMMARY"
+          fi

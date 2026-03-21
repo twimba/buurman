@@ -29,6 +29,7 @@
         <module>buurman-takeout</module>
         <module>buurman-booklets</module>
         <module>app</module>
+        <module>coverage-report</module>
     </modules>
 
     <properties>

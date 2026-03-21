@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.buurman</groupId>
+        <artifactId>buurman-backend</artifactId>
+        <version>0.55.0</version>
+    </parent>
+
+    <artifactId>buurman-coverage-report</artifactId>
+    <name>Buurman Coverage Report</name>
+    <description>Aggregated JaCoCo coverage report across all modules</description>
+
+    <!-- Dependencies on all modules whose coverage we want to aggregate -->
+    <dependencies>
+        <dependency>
+            <groupId>com.buurman</groupId>
+            <artifactId>buurman-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.buurman</groupId>
+            <artifactId>buurman-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.buurman</groupId>
+            <artifactId>buurman-notifications</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.buurman</groupId>
+            <artifactId>buurman-booklets</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>aggregate-report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report-aggregate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -44,11 +44,12 @@ stats:
 test:
 	cd backend && mvn test -pl common,buurman,buurman-notifications,buurman-booklets -Pquick -Dmaven.build.cache.enabled=false
 
-## Run backend unit tests with JaCoCo coverage report
+## Run backend unit tests with JaCoCo coverage report (per-module + aggregated)
 test-coverage:
-	cd backend && mvn test -pl common,buurman,buurman-notifications,buurman-booklets -Pquick -Dmaven.build.cache.enabled=false
+	cd backend && mvn verify -pl common,buurman,buurman-notifications,buurman-booklets,coverage-report -Pquick -Dmaven.build.cache.enabled=false
 	@echo ""
 	@echo "Coverage reports:"
+	@echo "  Aggregated:          backend/coverage-report/target/site/jacoco-aggregate/index.html"
 	@echo "  common:              backend/common/target/site/jacoco/index.html"
 	@echo "  buurman:             backend/buurman/target/site/jacoco/index.html"
 	@echo "  buurman-notifications: backend/buurman-notifications/target/site/jacoco/index.html"
