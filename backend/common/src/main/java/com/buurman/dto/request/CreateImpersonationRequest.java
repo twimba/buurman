@@ -6,11 +6,11 @@ import java.util.Optional;
 import com.buurman.domain.ImpersonationMode;
 import com.buurman.domain.identifier.TeamIdentifier;
 import com.buurman.domain.identifier.UserIdentifier;
+import com.buurman.util.Generated;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import com.buurman.util.Generated;
 
 @Generated
 public record CreateImpersonationRequest(

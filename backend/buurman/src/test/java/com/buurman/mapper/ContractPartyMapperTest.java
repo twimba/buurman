@@ -34,8 +34,9 @@ class ContractPartyMapperTest {
     @DisplayName("maps party with tenant summary")
     void mapsWithTenantSummary() {
       ContractParty party = createParty(ContractPartyRole.PRIMARY_TENANT);
-      TenantSummary tenant = new TenantSummary(
-          TENANT_ID, "John", "Doe", Optional.of("john@example.com"), Optional.empty());
+      TenantSummary tenant =
+          new TenantSummary(
+              TENANT_ID, "John", "Doe", Optional.of("john@example.com"), Optional.empty());
 
       ContractPartyResponse response = mapper.toResponse(party, tenant);
 
@@ -72,16 +73,17 @@ class ContractPartyMapperTest {
     @Test
     @DisplayName("throws when party has no identifier")
     void throwsWhenIdentifierMissing() {
-      ContractParty party = ContractParty.builder()
-          .id(UUID.randomUUID())
-          .teamId(UUID.randomUUID())
-          .contractId(UUID.randomUUID())
-          .role(ContractPartyRole.PRIMARY_TENANT)
-          .createdAt(Instant.now())
-          .updatedAt(Instant.now())
-          .createdBy(UUID.randomUUID())
-          .updatedBy(UUID.randomUUID())
-          .build();
+      ContractParty party =
+          ContractParty.builder()
+              .id(UUID.randomUUID())
+              .teamId(UUID.randomUUID())
+              .contractId(UUID.randomUUID())
+              .role(ContractPartyRole.PRIMARY_TENANT)
+              .createdAt(Instant.now())
+              .updatedAt(Instant.now())
+              .createdBy(UUID.randomUUID())
+              .updatedBy(UUID.randomUUID())
+              .build();
 
       assertThatThrownBy(() -> mapper.toResponse(party, null))
           .isInstanceOf(NoSuchElementException.class);

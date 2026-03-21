@@ -54,9 +54,7 @@ class CountryGroupsTest {
     void allCodesAreIso3166() {
       for (CountryGroups.Group group : CountryGroups.GROUPS) {
         for (CountryGroups.Country country : group.countries()) {
-          assertThat(country.code())
-              .as("country code in %s", group.id())
-              .matches("[A-Z]{2}");
+          assertThat(country.code()).as("country code in %s", group.id()).matches("[A-Z]{2}");
         }
       }
     }
@@ -66,9 +64,7 @@ class CountryGroupsTest {
     void allNamesNonBlank() {
       for (CountryGroups.Group group : CountryGroups.GROUPS) {
         for (CountryGroups.Country country : group.countries()) {
-          assertThat(country.name())
-              .as("country name for %s", country.code())
-              .isNotBlank();
+          assertThat(country.name()).as("country name for %s", country.code()).isNotBlank();
         }
       }
     }
@@ -131,17 +127,14 @@ class CountryGroupsTest {
     @DisplayName("set is unmodifiable")
     void unmodifiable() {
       Set<String> codes = CountryGroups.allCountryCodes();
-      assertThatThrownBy(() -> codes.add("XX"))
-          .isInstanceOf(UnsupportedOperationException.class);
+      assertThatThrownBy(() -> codes.add("XX")).isInstanceOf(UnsupportedOperationException.class);
     }
 
     @Test
     @DisplayName("count matches total countries across all groups")
     void countMatchesGroups() {
       long totalCountries =
-          CountryGroups.GROUPS.stream()
-              .mapToLong(g -> g.countries().size())
-              .sum();
+          CountryGroups.GROUPS.stream().mapToLong(g -> g.countries().size()).sum();
       assertThat(CountryGroups.allCountryCodes()).hasSize((int) totalCountries);
     }
   }

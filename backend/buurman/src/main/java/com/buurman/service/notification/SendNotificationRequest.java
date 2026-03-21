@@ -4,10 +4,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import lombok.Builder;
-
 import com.buurman.domain.NotificationType;
 import com.buurman.domain.NotificationUrgency;
+
+import lombok.Builder;
 
 @Builder
 public record SendNotificationRequest(

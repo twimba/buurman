@@ -15,7 +15,6 @@ import {
   Brush,
   ReferenceArea,
 } from 'recharts';
-import type { BarShapeProps } from 'recharts';
 import {
   TrendingUp,
   DollarSign,
@@ -647,155 +646,7 @@ function ChartCard({
   );
 }
 
-// --- Custom bar shape for outflow stack rounding ---
-
-/**
- * Creates a Recharts shape function for outflow stack bars.
- * Rounds the bottom corners of the outermost bar (furthest from zero),
- * matching the income bar's rounded top corners for visual symmetry.
- *
- * For the outflow stack (expenses + mortgage stacked below zero):
- * - If this bar is "mortgage" and its value is non-zero -> round bottom corners
- * - If this bar is "expenses" and mortgage is 0 -> round bottom corners (it's the outermost)
- * - Otherwise -> sharp corners (this bar is interior to the stack)
- */
-function makeOutflowShape(dataKey: 'expenses' | 'mortgage') {
-  function OutflowBar(props: BarShapeProps): React.ReactElement | null {
-    const {
-      x = 0,
-      y = 0,
-      width = 0,
-      height = 0,
-      fill,
-      fillOpacity,
-      payload,
-    } = props;
-    if (height === 0 || width === 0) {
-      return null;
-    }
-
-    // Normalize: Recharts passes negative height for below-zero bars.
-    // SVG <rect> doesn't render with negative height, so always normalize.
-    const absH = Math.abs(height);
-    const top = height >= 0 ? y : y + height;
-    const bottom = top + absH;
-
-    const r = 4;
-    const isOutermost =
-      dataKey === 'mortgage'
-        ? (payload?.mortgage ?? 0) !== 0
-        : (payload?.mortgage ?? 0) === 0;
-
-    if (!isOutermost) {
-      return (
-        <rect
-          x={x}
-          y={top}
-          width={width}
-          height={absH}
-          fill={fill}
-          fillOpacity={fillOpacity}
-        />
-      );
-    }
-
-    // Rounded bottom corners only (outermost edge away from zero)
-    const clampedR = Math.min(r, width / 2, absH);
-    const d = [
-      `M ${x},${top}`,
-      `L ${x + width},${top}`,
-      `L ${x + width},${bottom - clampedR}`,
-      `Q ${x + width},${bottom} ${x + width - clampedR},${bottom}`,
-      `L ${x + clampedR},${bottom}`,
-      `Q ${x},${bottom} ${x},${bottom - clampedR}`,
-      `Z`,
-    ].join('');
-
-    return <path d={d} fill={fill} fillOpacity={fillOpacity} />;
-  }
-  OutflowBar.displayName = `OutflowBar(${dataKey})`;
-  return OutflowBar;
-}
-
-const expensesBarShape = makeOutflowShape('expenses');
-const mortgageBarShape = makeOutflowShape('mortgage');
-
 // --- Cash Flow Diverging Chart ---
-
-function CashFlowTooltip({
-  active,
-  payload,
-  label,
-  isDark,
-  currency,
-}: {
-  active?: boolean;
-  payload?: Array<{ dataKey?: string; value?: number }>;
-  label?: string;
-  isDark: boolean;
-  currency: string;
-}) {
-  if (!active || !payload?.length) {
-    return null;
-  }
-  const get = (key: string) =>
-    payload.find((p) => p.dataKey === key)?.value ?? 0;
-  const income = get('income') as number;
-  const expenses = get('expenses') as number;
-  const mortgage = get('mortgage') as number;
-  const net = get('net') as number;
-
-  const fmt = (v: number) => formatCurrency(Math.abs(v), currency);
-  const fmtSigned = (v: number) => {
-    const prefix = v >= 0 ? '+' : '-';
-    return `${prefix}${formatCurrency(Math.abs(v), currency).replace(/^-/, '')}`;
-  };
-
-  return (
-    <div
-      className="rounded-lg px-3 py-2.5 text-xs shadow-lg border"
-      style={{
-        backgroundColor: isDark ? '#14161f' : '#fff',
-        borderColor: isDark ? '#2a2e3f' : '#e2e6f0',
-        color: isDark ? '#eef0f6' : '#1a1d2e',
-      }}
-    >
-      <p className="font-semibold mb-1.5">{formatMonthTick(label as string)}</p>
-      <div className="space-y-0.5">
-        <div className="flex justify-between gap-4">
-          <span style={{ color: COLORS.income }}>Income</span>
-          <span className="font-medium">{fmt(income)}</span>
-        </div>
-        <div className="flex justify-between gap-4">
-          <span style={{ color: COLORS.expenses }}>Expenses</span>
-          <span className="font-medium">{fmt(expenses)}</span>
-        </div>
-        <div className="flex justify-between gap-4">
-          <span style={{ color: COLORS.mortgage }}>Mortgage</span>
-          <span className="font-medium">{fmt(mortgage)}</span>
-        </div>
-        <div
-          className="flex justify-between gap-4 border-t pt-1 mt-1 font-bold"
-          style={{ borderColor: isDark ? '#2a2e3f' : '#e2e6f0' }}
-        >
-          <span style={{ color: COLORS.net }}>Net</span>
-          <span style={{ color: net >= 0 ? COLORS.income : COLORS.expenses }}>
-            {fmtSigned(net)}
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-const CASHFLOW_SERIES = ['income', 'expenses', 'mortgage', 'net'] as const;
-type CashFlowSeriesKey = (typeof CASHFLOW_SERIES)[number];
-const CASHFLOW_LABELS: Record<CashFlowSeriesKey, string> = {
-  income: 'Income',
-  expenses: 'Expenses',
-  mortgage: 'Mortgage',
-  net: 'Net',
-};
 
 function CashFlowChart({
   data,
@@ -810,201 +661,116 @@ function CashFlowChart({
   const chartData = useMemo(
     () =>
       data.months.map((d) => ({
-        month: d.month,
-        income: d.income,
-        expenses: -Math.abs(d.expenses),
-        mortgage: -Math.abs(d.mortgage),
-        net: d.net,
+        ...d,
+        negExpenses: -d.expenses,
+        negMortgage: -d.mortgage,
       })),
     [data.months]
   );
 
-  // Clickable legend: net hidden by default
-  const [enabled, setEnabled] = useState<Set<CashFlowSeriesKey>>(
-    () => new Set<CashFlowSeriesKey>(['income', 'expenses', 'mortgage'])
+  const barSize = useMemo(() => {
+    const count = data.months.length;
+    if (count <= 6) {
+      return 30;
+    }
+    if (count <= 12) {
+      return 24;
+    }
+    if (count <= 24) {
+      return 14;
+    }
+    if (count <= 48) {
+      return 8;
+    }
+    return 5;
+  }, [data.months.length]);
+
+  const tooltipContentStyle = useMemo(
+    () => ({
+      backgroundColor: isDark ? '#14161f' : '#fff',
+      border: `1px solid ${isDark ? '#2a2e3f' : '#e2e6f0'}`,
+      borderRadius: '8px',
+      fontSize: '12px',
+      color: isDark ? '#eef0f6' : '#1a1d2e',
+    }),
+    [isDark]
   );
-
-  const toggle = useCallback((key: CashFlowSeriesKey) => {
-    setEnabled((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) {
-        if (next.size > 1) {
-          next.delete(key);
-        }
-      } else {
-        next.add(key);
-      }
-      return next;
-    });
-  }, []);
-
-  const {
-    visibleData,
-    refAreaLeft,
-    refAreaRight,
-    isZoomed,
-    handleMouseDown,
-    handleMouseMove,
-    handleMouseUp,
-    resetZoom,
-  } = useChartZoom(chartData);
 
   if (!data.months.length) {
     return <EmptyChart message="No transaction data" />;
   }
 
   return (
-    <div>
-      {isZoomed && (
-        <div className="flex justify-end mb-1">
-          <button
-            onClick={resetZoom}
-            className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded transition-colors"
-            style={{
-              color: isDark ? '#8b90a8' : '#6b7194',
-            }}
-          >
-            <RefreshCw className="h-3 w-3" />
-            Reset zoom
-          </button>
-        </div>
-      )}
-      <ResponsiveContainer width="100%" height={380}>
-        <ComposedChart
-          data={visibleData}
-          margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
-          stackOffset="sign"
-          barCategoryGap="0%"
-          barGap={0}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-        >
-          <CartesianGrid
-            strokeDasharray="3 3"
-            vertical={false}
-            stroke={isDark ? '#2a2e3f' : '#f0f0f0'}
-          />
-          <XAxis
-            dataKey="month"
-            tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
-            tickFormatter={formatMonthTick}
-          />
-          <YAxis
-            tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
-            tickFormatter={(v) => formatAxisValue(v, currency)}
-          />
-          <ReferenceLine
-            y={0}
-            stroke={isDark ? '#5c6180' : '#9ca0b8'}
-            strokeWidth={1.5}
-          />
-          <Tooltip
-            content={<CashFlowTooltip isDark={isDark} currency={currency} />}
-            cursor={{
-              fill: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
-            }}
-          />
-          {enabled.has('income') && (
-            <Bar
-              dataKey="income"
-              name="Income"
-              stackId="cashflow"
-              fill={COLORS.income}
-              fillOpacity={0.85}
-              radius={[4, 4, 0, 0]}
-              isAnimationActive={false}
-            />
-          )}
-          {enabled.has('expenses') && (
-            <Bar
-              dataKey="expenses"
-              name="Expenses"
-              stackId="cashflow"
-              fill={COLORS.expenses}
-              fillOpacity={0.85}
-              shape={expensesBarShape}
-              isAnimationActive={false}
-            />
-          )}
-          {enabled.has('mortgage') && (
-            <Bar
-              dataKey="mortgage"
-              name="Mortgage"
-              stackId="cashflow"
-              fill={COLORS.mortgage}
-              fillOpacity={0.85}
-              shape={mortgageBarShape}
-              isAnimationActive={false}
-            />
-          )}
-          {enabled.has('net') && (
-            <Line
-              type="monotone"
-              dataKey="net"
-              name="Net"
-              stroke={COLORS.net}
-              strokeWidth={2}
-              dot={{ fill: COLORS.net, r: 3 }}
-              activeDot={{ r: 5 }}
-              isAnimationActive={false}
-            />
-          )}
-          {refAreaLeft && refAreaRight && (
-            <ReferenceArea
-              x1={refAreaLeft}
-              x2={refAreaRight}
-              strokeOpacity={0.3}
-              fill={isDark ? 'rgba(92,124,250,0.15)' : 'rgba(92,124,250,0.1)'}
-            />
-          )}
-          {chartData.length > 6 && (
-            <Brush
-              key={isZoomed ? 'zoomed' : 'full'}
-              dataKey="month"
-              height={20}
-              stroke={isDark ? '#3a3f54' : '#c9cfd9'}
-              fill={isDark ? '#14161f' : '#f8f9fc'}
-              tickFormatter={formatMonthTick}
-            />
-          )}
-        </ComposedChart>
-      </ResponsiveContainer>
-      <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-2">
-        {CASHFLOW_SERIES.map((key) => {
-          const color = COLORS[key];
-          const active = enabled.has(key);
-          return (
-            <button
-              key={key}
-              onClick={() => toggle(key)}
-              className="inline-flex items-center gap-1.5 text-xs cursor-pointer"
-              style={{
-                color: active
-                  ? isDark
-                    ? '#eef0f6'
-                    : '#1a1d2e'
-                  : isDark
-                    ? '#5c6180'
-                    : '#9ca0b8',
-              }}
-            >
-              <span
-                className="inline-block w-3 h-3 rounded-sm shrink-0"
-                style={{
-                  backgroundColor: active
-                    ? color
-                    : isDark
-                      ? '#2a2e3f'
-                      : '#e2e6f0',
-                }}
-              />
-              {CASHFLOW_LABELS[key]}
-            </button>
-          );
-        })}
-      </div>
-    </div>
+    <ResponsiveContainer width="100%" height={320}>
+      <ComposedChart data={chartData} barGap={-barSize} barSize={barSize}>
+        <CartesianGrid
+          strokeDasharray="3 3"
+          stroke={isDark ? '#2a2e3f' : '#e2e6f0'}
+        />
+        <XAxis
+          dataKey="month"
+          tickFormatter={formatMonthTick}
+          tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
+        />
+        <YAxis
+          tickFormatter={(v: number) => formatAxisValue(v, currency)}
+          tick={{ fontSize: 11, fill: isDark ? '#8b90a8' : '#6b7194' }}
+        />
+        <Tooltip
+          contentStyle={tooltipContentStyle}
+          labelFormatter={(label) => formatMonthTick(String(label))}
+          formatter={(value, name) => {
+            const labels: Record<string, string> = {
+              income: 'Income',
+              negExpenses: 'Expenses',
+              negMortgage: 'Mortgage',
+              net: 'Net',
+            };
+            const num = typeof value === 'number' ? value : Number(value);
+            const display =
+              name === 'negExpenses' || name === 'negMortgage'
+                ? Math.abs(num)
+                : num;
+            return [
+              formatCurrency(display, currency),
+              labels[name ?? ''] ?? name,
+            ];
+          }}
+        />
+        <Legend
+          formatter={(value) => {
+            const labels: Record<string, string> = {
+              income: 'Income',
+              negExpenses: 'Expenses',
+              negMortgage: 'Mortgage',
+              net: 'Net',
+            };
+            return labels[value] ?? value;
+          }}
+        />
+        <ReferenceLine y={0} stroke={isDark ? '#4a4e5f' : '#b0b5c8'} />
+        <Bar
+          dataKey="income"
+          stackId="positive"
+          fill={COLORS.income}
+          radius={[2, 2, 0, 0]}
+        />
+        <Bar dataKey="negExpenses" stackId="negative" fill={COLORS.expenses} />
+        <Bar
+          dataKey="negMortgage"
+          stackId="negative"
+          fill={COLORS.mortgage}
+          radius={[0, 0, 2, 2]}
+        />
+        <Line
+          type="monotone"
+          dataKey="net"
+          stroke={COLORS.net}
+          strokeWidth={2}
+          dot={false}
+        />
+      </ComposedChart>
+    </ResponsiveContainer>
   );
 }
 

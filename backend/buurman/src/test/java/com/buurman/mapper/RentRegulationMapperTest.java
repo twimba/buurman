@@ -47,8 +47,8 @@ class RentRegulationMapperTest {
     @Test
     @DisplayName("maps all fields")
     void mapsAllFields() {
-      RentRegulationCountry country = createCountry(
-          Optional.of(Instant.now().minus(10, ChronoUnit.DAYS)));
+      RentRegulationCountry country =
+          createCountry(Optional.of(Instant.now().minus(10, ChronoUnit.DAYS)));
 
       RentRegulationCountryResponse response = mapper.toCountryResponse(country);
 
@@ -75,8 +75,8 @@ class RentRegulationMapperTest {
     @Test
     @DisplayName("marks as stale when reviewed over 180 days ago")
     void staleWhenReviewedLongAgo() {
-      RentRegulationCountry country = createCountry(
-          Optional.of(Instant.now().minus(200, ChronoUnit.DAYS)));
+      RentRegulationCountry country =
+          createCountry(Optional.of(Instant.now().minus(200, ChronoUnit.DAYS)));
 
       RentRegulationCountryResponse response = mapper.toCountryResponse(country);
 
@@ -86,8 +86,8 @@ class RentRegulationMapperTest {
     @Test
     @DisplayName("not stale when recently reviewed")
     void notStaleWhenRecent() {
-      RentRegulationCountry country = createCountry(
-          Optional.of(Instant.now().minus(10, ChronoUnit.DAYS)));
+      RentRegulationCountry country =
+          createCountry(Optional.of(Instant.now().minus(10, ChronoUnit.DAYS)));
 
       RentRegulationCountryResponse response = mapper.toCountryResponse(country);
 
@@ -102,8 +102,8 @@ class RentRegulationMapperTest {
     @Test
     @DisplayName("maps country fields, regions, and rules")
     void mapsAllParts() {
-      RentRegulationCountry country = createCountry(
-          Optional.of(Instant.now().minus(10, ChronoUnit.DAYS)));
+      RentRegulationCountry country =
+          createCountry(Optional.of(Instant.now().minus(10, ChronoUnit.DAYS)));
       List<RentRegulationRegion> regions = List.of(createRegion());
       List<RentRegulationRule> rules = List.of(createRule());
 
@@ -151,14 +151,15 @@ class RentRegulationMapperTest {
     @Test
     @DisplayName("maps empty summary")
     void mapsEmptySummary() {
-      RentRegulationRegion region = RentRegulationRegion.builder()
-          .identifier(Optional.of(REGION_ID))
-          .countryId(UUID.randomUUID())
-          .regionCode("ZH")
-          .regionName("South Holland")
-          .createdAt(Instant.now())
-          .updatedAt(Instant.now())
-          .build();
+      RentRegulationRegion region =
+          RentRegulationRegion.builder()
+              .identifier(Optional.of(REGION_ID))
+              .countryId(UUID.randomUUID())
+              .regionCode("ZH")
+              .regionName("South Holland")
+              .createdAt(Instant.now())
+              .updatedAt(Instant.now())
+              .build();
 
       RentRegulationRegionResponse response = mapper.toRegionResponse(region);
 
@@ -191,16 +192,17 @@ class RentRegulationMapperTest {
     @Test
     @DisplayName("maps optional fields as empty when not set")
     void mapsOptionalFieldsAsEmpty() {
-      RentRegulationRule rule = RentRegulationRule.builder()
-          .identifier(Optional.of(RULE_ID))
-          .countryId(UUID.randomUUID())
-          .year(2026)
-          .propertyCategory("COMMERCIAL")
-          .maxIncreaseType(MaxIncreaseType.NEGOTIATED)
-          .frequency(RentFrequency.ANNUAL)
-          .createdAt(Instant.now())
-          .updatedAt(Instant.now())
-          .build();
+      RentRegulationRule rule =
+          RentRegulationRule.builder()
+              .identifier(Optional.of(RULE_ID))
+              .countryId(UUID.randomUUID())
+              .year(2026)
+              .propertyCategory("COMMERCIAL")
+              .maxIncreaseType(MaxIncreaseType.NEGOTIATED)
+              .frequency(RentFrequency.ANNUAL)
+              .createdAt(Instant.now())
+              .updatedAt(Instant.now())
+              .build();
 
       RentRegulationRuleResponse response = mapper.toRuleResponse(rule);
 
@@ -302,12 +304,21 @@ class RentRegulationMapperTest {
     @DisplayName("creates rule from request")
     void createsRule() {
       UUID countryId = UUID.randomUUID();
-      CreateRentRegulationRuleRequest request = new CreateRentRegulationRuleRequest(
-          2026, "RESIDENTIAL", Optional.of("FREE"),
-          Optional.of(new BigDecimal("5.50")), MaxIncreaseType.FIXED_PERCENTAGE,
-          Optional.empty(), Optional.empty(), Optional.of(LocalDate.of(2026, 7, 1)),
-          Optional.of(30), Optional.of(RentFrequency.MONTHLY),
-          Optional.empty(), Optional.empty(), Optional.of("Test note"));
+      CreateRentRegulationRuleRequest request =
+          new CreateRentRegulationRuleRequest(
+              2026,
+              "RESIDENTIAL",
+              Optional.of("FREE"),
+              Optional.of(new BigDecimal("5.50")),
+              MaxIncreaseType.FIXED_PERCENTAGE,
+              Optional.empty(),
+              Optional.empty(),
+              Optional.of(LocalDate.of(2026, 7, 1)),
+              Optional.of(30),
+              Optional.of(RentFrequency.MONTHLY),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.of("Test note"));
 
       RentRegulationRule rule = mapper.toRule(request, countryId);
 
@@ -321,12 +332,21 @@ class RentRegulationMapperTest {
     @DisplayName("defaults frequency to ANNUAL when empty")
     void defaultsFrequencyToAnnual() {
       UUID countryId = UUID.randomUUID();
-      CreateRentRegulationRuleRequest request = new CreateRentRegulationRuleRequest(
-          2026, "RESIDENTIAL", Optional.empty(),
-          Optional.empty(), MaxIncreaseType.FROZEN,
-          Optional.empty(), Optional.empty(), Optional.empty(),
-          Optional.empty(), Optional.empty(),
-          Optional.empty(), Optional.empty(), Optional.empty());
+      CreateRentRegulationRuleRequest request =
+          new CreateRentRegulationRuleRequest(
+              2026,
+              "RESIDENTIAL",
+              Optional.empty(),
+              Optional.empty(),
+              MaxIncreaseType.FROZEN,
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty());
 
       RentRegulationRule rule = mapper.toRule(request, countryId);
 
@@ -342,14 +362,21 @@ class RentRegulationMapperTest {
     @DisplayName("updates all fields")
     void updatesAllFields() {
       RentRegulationRule existing = createRule();
-      UpdateRentRegulationRuleRequest request = new UpdateRentRegulationRuleRequest(
-          2027, "COMMERCIAL", Optional.of("FREE"),
-          Optional.of(new BigDecimal("6.00")), MaxIncreaseType.FIXED_PERCENTAGE,
-          Optional.of("New Index"), Optional.of(new BigDecimal("3.00")),
-          Optional.of(LocalDate.of(2027, 1, 1)), Optional.of(60),
-          Optional.of(RentFrequency.QUARTERLY),
-          Optional.of("New conditions"), Optional.of("https://example.com"),
-          Optional.of("Updated note"));
+      UpdateRentRegulationRuleRequest request =
+          new UpdateRentRegulationRuleRequest(
+              2027,
+              "COMMERCIAL",
+              Optional.of("FREE"),
+              Optional.of(new BigDecimal("6.00")),
+              MaxIncreaseType.FIXED_PERCENTAGE,
+              Optional.of("New Index"),
+              Optional.of(new BigDecimal("3.00")),
+              Optional.of(LocalDate.of(2027, 1, 1)),
+              Optional.of(60),
+              Optional.of(RentFrequency.QUARTERLY),
+              Optional.of("New conditions"),
+              Optional.of("https://example.com"),
+              Optional.of("Updated note"));
 
       mapper.updateRule(existing, request);
 
@@ -362,12 +389,21 @@ class RentRegulationMapperTest {
     @DisplayName("defaults frequency to ANNUAL when empty")
     void defaultsFrequencyToAnnual() {
       RentRegulationRule existing = createRule();
-      UpdateRentRegulationRuleRequest request = new UpdateRentRegulationRuleRequest(
-          2027, "RESIDENTIAL", Optional.empty(),
-          Optional.empty(), MaxIncreaseType.FROZEN,
-          Optional.empty(), Optional.empty(), Optional.empty(),
-          Optional.empty(), Optional.empty(),
-          Optional.empty(), Optional.empty(), Optional.empty());
+      UpdateRentRegulationRuleRequest request =
+          new UpdateRentRegulationRuleRequest(
+              2027,
+              "RESIDENTIAL",
+              Optional.empty(),
+              Optional.empty(),
+              MaxIncreaseType.FROZEN,
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty());
 
       mapper.updateRule(existing, request);
 

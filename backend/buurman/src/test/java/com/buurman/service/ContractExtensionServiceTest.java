@@ -29,7 +29,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -137,8 +136,7 @@ class ContractExtensionServiceTest {
     @DisplayName("creates DRAFT extension with computed new end date")
     void createsDraftExtension() {
       Contract contract = activeFixedTermContract();
-      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
-          .thenReturn(contract);
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID)).thenReturn(contract);
       when(extensionRepository.findDraftByContractId(CONTRACT_ID, TEAM_ID))
           .thenReturn(Optional.empty());
       when(extensionRepository.findActiveByContractId(CONTRACT_ID, TEAM_ID))
@@ -147,17 +145,21 @@ class ContractExtensionServiceTest {
           .thenReturn(List.of());
       when(extensionRepository.getNextExtensionNumber(CONTRACT_ID, TEAM_ID)).thenReturn(1);
       when(extensionRepository.save(any(ContractExtension.class)))
-          .thenAnswer(inv -> {
-            ContractExtension ext = inv.getArgument(0);
-            ext.setId(UUID.randomUUID());
-            ext.setCreatedAt(Instant.now());
-            return ext;
-          });
+          .thenAnswer(
+              inv -> {
+                ContractExtension ext = inv.getArgument(0);
+                ext.setId(UUID.randomUUID());
+                ext.setCreatedAt(Instant.now());
+                return ext;
+              });
 
       CreateContractExtensionRequest request =
           new CreateContractExtensionRequest(
-              Optional.empty(), Optional.empty(), Optional.empty(),
-              Optional.empty(), Optional.of("Annual renewal"));
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.of("Annual renewal"));
 
       ContractExtensionResponse response =
           service.createExtension(CONTRACT_SID, request, principal);
@@ -173,13 +175,15 @@ class ContractExtensionServiceTest {
     void rejectsNonActive() {
       Contract contract = activeFixedTermContract();
       contract.setStatus(Contract.ContractStatus.DRAFT);
-      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
-          .thenReturn(contract);
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID)).thenReturn(contract);
 
       CreateContractExtensionRequest request =
           new CreateContractExtensionRequest(
-              Optional.empty(), Optional.empty(), Optional.empty(),
-              Optional.empty(), Optional.empty());
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty());
 
       assertThatThrownBy(() -> service.createExtension(CONTRACT_SID, request, principal))
           .isInstanceOf(BusinessRuleException.class)
@@ -191,13 +195,15 @@ class ContractExtensionServiceTest {
     void rejectsIndefinite() {
       Contract contract = activeFixedTermContract();
       contract.setContractType(INDEFINITE);
-      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
-          .thenReturn(contract);
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID)).thenReturn(contract);
 
       CreateContractExtensionRequest request =
           new CreateContractExtensionRequest(
-              Optional.empty(), Optional.empty(), Optional.empty(),
-              Optional.empty(), Optional.empty());
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty());
 
       assertThatThrownBy(() -> service.createExtension(CONTRACT_SID, request, principal))
           .isInstanceOf(BusinessRuleException.class)
@@ -208,15 +214,17 @@ class ContractExtensionServiceTest {
     @DisplayName("rejects when draft extension already exists")
     void rejectsDuplicateDraft() {
       Contract contract = activeFixedTermContract();
-      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
-          .thenReturn(contract);
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID)).thenReturn(contract);
       when(extensionRepository.findDraftByContractId(CONTRACT_ID, TEAM_ID))
           .thenReturn(Optional.of(ContractExtension.builder().build()));
 
       CreateContractExtensionRequest request =
           new CreateContractExtensionRequest(
-              Optional.empty(), Optional.empty(), Optional.empty(),
-              Optional.empty(), Optional.empty());
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty());
 
       assertThatThrownBy(() -> service.createExtension(CONTRACT_SID, request, principal))
           .isInstanceOf(BusinessRuleException.class)
@@ -227,8 +235,7 @@ class ContractExtensionServiceTest {
     @DisplayName("rejects when new end date is before current end date")
     void rejectsEarlierEndDate() {
       Contract contract = activeFixedTermContract();
-      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
-          .thenReturn(contract);
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID)).thenReturn(contract);
       when(extensionRepository.findDraftByContractId(CONTRACT_ID, TEAM_ID))
           .thenReturn(Optional.empty());
       when(extensionRepository.findActiveByContractId(CONTRACT_ID, TEAM_ID))
@@ -239,7 +246,10 @@ class ContractExtensionServiceTest {
       CreateContractExtensionRequest request =
           new CreateContractExtensionRequest(
               Optional.of(LocalDate.of(2025, 1, 1)),
-              Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty());
 
       assertThatThrownBy(() -> service.createExtension(CONTRACT_SID, request, principal))
           .isInstanceOf(BadRequestException.class)
@@ -251,8 +261,7 @@ class ContractExtensionServiceTest {
     void rejectsMaxRenewals() {
       Contract contract = activeFixedTermContract();
       contract.setMaxRenewals(Optional.of(2));
-      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
-          .thenReturn(contract);
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID)).thenReturn(contract);
       when(extensionRepository.findDraftByContractId(CONTRACT_ID, TEAM_ID))
           .thenReturn(Optional.empty());
       when(extensionRepository.findActiveByContractId(CONTRACT_ID, TEAM_ID))
@@ -261,8 +270,11 @@ class ContractExtensionServiceTest {
 
       CreateContractExtensionRequest request =
           new CreateContractExtensionRequest(
-              Optional.empty(), Optional.empty(), Optional.empty(),
-              Optional.empty(), Optional.empty());
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty());
 
       assertThatThrownBy(() -> service.createExtension(CONTRACT_SID, request, principal))
           .isInstanceOf(BusinessRuleException.class)
@@ -300,8 +312,7 @@ class ContractExtensionServiceTest {
 
       ContractExtensionIdentifier extSid =
           ContractExtensionIdentifier.of("cex_test12345678901234567");
-      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
-          .thenReturn(contract);
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID)).thenReturn(contract);
       when(extensionRepository.getByIdentifierAndTeamId(extSid, TEAM_ID)).thenReturn(extension);
       when(extensionRepository.save(any(ContractExtension.class)))
           .thenAnswer(inv -> inv.getArgument(0));
@@ -341,15 +352,13 @@ class ContractExtensionServiceTest {
 
       ContractExtensionIdentifier extSid =
           ContractExtensionIdentifier.of("cex_test12345678901234567");
-      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
-          .thenReturn(contract);
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID)).thenReturn(contract);
       when(extensionRepository.getByIdentifierAndTeamId(extSid, TEAM_ID)).thenReturn(extension);
 
       DeclineContractExtensionRequest request =
           new DeclineContractExtensionRequest(Optional.of("reason"));
 
-      assertThatThrownBy(
-              () -> service.declineExtension(CONTRACT_SID, extSid, request, principal))
+      assertThatThrownBy(() -> service.declineExtension(CONTRACT_SID, extSid, request, principal))
           .isInstanceOf(BusinessRuleException.class)
           .hasMessageContaining("Cannot decline");
     }
@@ -366,8 +375,7 @@ class ContractExtensionServiceTest {
       contract.setRentAdjustmentType(FIXED_PERCENTAGE);
       contract.setRentAdjustmentValue(Optional.of(new BigDecimal("5")));
 
-      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
-          .thenReturn(contract);
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID)).thenReturn(contract);
       when(extensionRepository.findDraftByContractId(CONTRACT_ID, TEAM_ID))
           .thenReturn(Optional.empty());
       when(extensionRepository.findActiveByContractId(CONTRACT_ID, TEAM_ID))
@@ -376,17 +384,21 @@ class ContractExtensionServiceTest {
           .thenReturn(List.of());
       when(extensionRepository.getNextExtensionNumber(CONTRACT_ID, TEAM_ID)).thenReturn(1);
       when(extensionRepository.save(any(ContractExtension.class)))
-          .thenAnswer(inv -> {
-            ContractExtension ext = inv.getArgument(0);
-            ext.setId(UUID.randomUUID());
-            ext.setCreatedAt(Instant.now());
-            return ext;
-          });
+          .thenAnswer(
+              inv -> {
+                ContractExtension ext = inv.getArgument(0);
+                ext.setId(UUID.randomUUID());
+                ext.setCreatedAt(Instant.now());
+                return ext;
+              });
 
       CreateContractExtensionRequest request =
           new CreateContractExtensionRequest(
-              Optional.empty(), Optional.empty(), Optional.empty(),
-              Optional.empty(), Optional.empty());
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty());
 
       ContractExtensionResponse response =
           service.createExtension(CONTRACT_SID, request, principal);
@@ -402,8 +414,7 @@ class ContractExtensionServiceTest {
       contract.setRentAdjustmentType(FIXED_AMOUNT);
       contract.setRentAdjustmentValue(Optional.of(new BigDecimal("50")));
 
-      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
-          .thenReturn(contract);
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID)).thenReturn(contract);
       when(extensionRepository.findDraftByContractId(CONTRACT_ID, TEAM_ID))
           .thenReturn(Optional.empty());
       when(extensionRepository.findActiveByContractId(CONTRACT_ID, TEAM_ID))
@@ -440,8 +451,7 @@ class ContractExtensionServiceTest {
     void manualRentAdjustmentUsesExplicitAmount() {
       Contract contract = activeFixedTermContract();
 
-      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
-          .thenReturn(contract);
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID)).thenReturn(contract);
       when(extensionRepository.findDraftByContractId(CONTRACT_ID, TEAM_ID))
           .thenReturn(Optional.empty());
       when(extensionRepository.findActiveByContractId(CONTRACT_ID, TEAM_ID))
@@ -507,10 +517,8 @@ class ContractExtensionServiceTest {
       ContractExtensionIdentifier extSid =
           ContractExtensionIdentifier.of("cex_test12345678901234567");
 
-      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
-          .thenReturn(contract);
-      when(extensionRepository.getByIdentifierAndTeamId(extSid, TEAM_ID))
-          .thenReturn(extension);
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID)).thenReturn(contract);
+      when(extensionRepository.getByIdentifierAndTeamId(extSid, TEAM_ID)).thenReturn(extension);
       // No currently active extension
       when(extensionRepository.findActiveByContractId(CONTRACT_ID, TEAM_ID))
           .thenReturn(Optional.empty());
@@ -526,17 +534,12 @@ class ContractExtensionServiceTest {
       when(extensionRepository.save(any(ContractExtension.class)))
           .thenAnswer(inv -> inv.getArgument(0));
       when(propertyRepository.getByIdAndTeamId(any(UUID.class), eq(TEAM_ID)))
-          .thenReturn(
-              Property.builder()
-                  .street("Test Street")
-                  .city("Amsterdam")
-                  .build());
+          .thenReturn(Property.builder().street("Test Street").city("Amsterdam").build());
 
       ContractExtensionResponse response =
           service.activateExtension(CONTRACT_SID, extSid, principal);
 
-      assertThat(response.status())
-          .isEqualTo(ContractExtension.ExtensionStatus.ACTIVE);
+      assertThat(response.status()).isEqualTo(ContractExtension.ExtensionStatus.ACTIVE);
       // Verify audit was logged
       verify(auditService)
           .logUpdate(
@@ -558,13 +561,10 @@ class ContractExtensionServiceTest {
       ContractExtensionIdentifier extSid =
           ContractExtensionIdentifier.of("cex_test12345678901234567");
 
-      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
-          .thenReturn(contract);
-      when(extensionRepository.getByIdentifierAndTeamId(extSid, TEAM_ID))
-          .thenReturn(extension);
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID)).thenReturn(contract);
+      when(extensionRepository.getByIdentifierAndTeamId(extSid, TEAM_ID)).thenReturn(extension);
 
-      assertThatThrownBy(
-              () -> service.activateExtension(CONTRACT_SID, extSid, principal))
+      assertThatThrownBy(() -> service.activateExtension(CONTRACT_SID, extSid, principal))
           .isInstanceOf(BusinessRuleException.class)
           .hasMessageContaining("Cannot activate");
     }
@@ -601,17 +601,14 @@ class ContractExtensionServiceTest {
 
       ContractExtensionIdentifier extSid =
           ContractExtensionIdentifier.of("cex_test12345678901234567");
-      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
-          .thenReturn(contract);
-      when(extensionRepository.getByIdentifierAndTeamId(extSid, TEAM_ID))
-          .thenReturn(extension);
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID)).thenReturn(contract);
+      when(extensionRepository.getByIdentifierAndTeamId(extSid, TEAM_ID)).thenReturn(extension);
 
       service.cancelExtension(CONTRACT_SID, extSid, principal);
 
       verify(extensionRepository).cancelByIdAndTeamId(extensionId, TEAM_ID, USER_ID);
       verify(auditService)
-          .logDelete(
-              eq(TEAM_ID), eq("CONTRACT_EXTENSION"), eq(extensionId), eq(USER_ID), any());
+          .logDelete(eq(TEAM_ID), eq("CONTRACT_EXTENSION"), eq(extensionId), eq(USER_ID), any());
     }
   }
 }

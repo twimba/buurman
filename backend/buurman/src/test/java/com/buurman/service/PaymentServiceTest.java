@@ -1,8 +1,6 @@
 package com.buurman.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -22,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -53,7 +50,8 @@ import jakarta.validation.Validator;
 
 /**
  * Tests PaymentService private status methods via reflection. These methods are private with 24
- * constructor deps, so we construct the service manually and use reflection to invoke them directly.
+ * constructor deps, so we construct the service manually and use reflection to invoke them
+ * directly.
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("PaymentService — status state machine")
@@ -83,8 +81,7 @@ class PaymentServiceTest {
   @Mock private PlatformTransactionManager transactionManager;
   @Mock private Validator validator;
 
-  private final Clock clock =
-      Clock.fixed(Instant.parse("2026-03-01T12:00:00Z"), ZoneOffset.UTC);
+  private final Clock clock = Clock.fixed(Instant.parse("2026-03-01T12:00:00Z"), ZoneOffset.UTC);
 
   private PaymentService service;
 
@@ -125,8 +122,15 @@ class PaymentServiceTest {
 
     principal =
         new UserPrincipal(
-            USER_ID, "usr_test", "kc-id", "test@example.com", "Test User",
-            TEAM_ID, "team_test", TeamRole.TEAM_ADMIN, true);
+            USER_ID,
+            "usr_test",
+            "kc-id",
+            "test@example.com",
+            "Test User",
+            TEAM_ID,
+            "team_test",
+            TeamRole.TEAM_ADMIN,
+            true);
   }
 
   private Payment buildPayment(BigDecimal amount, LocalDate dueDate, PaymentStatus status) {
@@ -166,7 +170,8 @@ class PaymentServiceTest {
   /** Invokes the private {@code updatePaymentStatus(Payment, LocalDate)} via reflection. */
   private void invokeUpdateStatus(Payment payment, LocalDate today) throws Exception {
     java.lang.reflect.Method method =
-        PaymentService.class.getDeclaredMethod("updatePaymentStatus", Payment.class, LocalDate.class);
+        PaymentService.class.getDeclaredMethod(
+            "updatePaymentStatus", Payment.class, LocalDate.class);
     method.setAccessible(true);
     try {
       method.invoke(service, payment, today);
@@ -185,7 +190,8 @@ class PaymentServiceTest {
     @Test
     @DisplayName("PENDING when no receivals and due date is in the future")
     void pendingWhenNoReceivalsAndFutureDue() throws Exception {
-      Payment payment = buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1), PaymentStatus.PENDING);
+      Payment payment =
+          buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1), PaymentStatus.PENDING);
 
       when(receivalRepository.sumByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID, "EUR"))
           .thenReturn(BigDecimal.ZERO);
@@ -200,7 +206,8 @@ class PaymentServiceTest {
     @Test
     @DisplayName("OVERDUE when no receivals and due date has passed")
     void overdueWhenNoReceivalsAndPastDue() throws Exception {
-      Payment payment = buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 2, 1), PaymentStatus.PENDING);
+      Payment payment =
+          buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 2, 1), PaymentStatus.PENDING);
 
       when(receivalRepository.sumByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID, "EUR"))
           .thenReturn(BigDecimal.ZERO);
@@ -214,7 +221,8 @@ class PaymentServiceTest {
     @Test
     @DisplayName("PARTIALLY_PAID when some received but balance remains")
     void partiallyPaidWhenSomeReceived() throws Exception {
-      Payment payment = buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1), PaymentStatus.PENDING);
+      Payment payment =
+          buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1), PaymentStatus.PENDING);
 
       when(receivalRepository.sumByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID, "EUR"))
           .thenReturn(new BigDecimal("500.00"));
@@ -228,7 +236,8 @@ class PaymentServiceTest {
     @Test
     @DisplayName("PAID when total received equals amount — paymentDate set to latest receival date")
     void paidWhenFullyReceived() throws Exception {
-      Payment payment = buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1), PaymentStatus.PENDING);
+      Payment payment =
+          buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1), PaymentStatus.PENDING);
 
       when(receivalRepository.sumByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID, "EUR"))
           .thenReturn(new BigDecimal("1000.00"));
@@ -257,7 +266,8 @@ class PaymentServiceTest {
     @Test
     @DisplayName("PAID when overpaid — paymentDate set to latest receival date")
     void paidWhenOverpaid() throws Exception {
-      Payment payment = buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1), PaymentStatus.PENDING);
+      Payment payment =
+          buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1), PaymentStatus.PENDING);
 
       when(receivalRepository.sumByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID, "EUR"))
           .thenReturn(new BigDecimal("1200.00"));
@@ -280,7 +290,8 @@ class PaymentServiceTest {
     @Test
     @DisplayName("PARTIALLY_PAID clears paymentDate")
     void partiallyPaidClearsPaymentDate() throws Exception {
-      Payment payment = buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1), PaymentStatus.PAID);
+      Payment payment =
+          buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1), PaymentStatus.PAID);
       payment.setPaymentDate(Optional.of(LocalDate.of(2026, 2, 15)));
 
       when(receivalRepository.sumByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID, "EUR"))
@@ -295,7 +306,8 @@ class PaymentServiceTest {
     @Test
     @DisplayName("saves payment to repository with updated fields")
     void savesToRepository() throws Exception {
-      Payment payment = buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1), PaymentStatus.PENDING);
+      Payment payment =
+          buildPayment(new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1), PaymentStatus.PENDING);
 
       when(receivalRepository.sumByPaymentIdAndTeamId(PAYMENT_ID, TEAM_ID, "EUR"))
           .thenReturn(BigDecimal.ZERO);
@@ -317,7 +329,8 @@ class PaymentServiceTest {
     @Test
     @DisplayName("PENDING becomes OVERDUE when due date has passed")
     void pendingBecomesOverdue() throws Exception {
-      Payment payment = buildPayment(new BigDecimal("500.00"), LocalDate.of(2026, 2, 15), PaymentStatus.PENDING);
+      Payment payment =
+          buildPayment(new BigDecimal("500.00"), LocalDate.of(2026, 2, 15), PaymentStatus.PENDING);
 
       invokeUpdateStatus(payment, LocalDate.of(2026, 3, 1));
 
@@ -327,7 +340,8 @@ class PaymentServiceTest {
     @Test
     @DisplayName("PENDING stays PENDING when due date is today")
     void pendingStaysPendingOnDueDate() throws Exception {
-      Payment payment = buildPayment(new BigDecimal("500.00"), LocalDate.of(2026, 3, 1), PaymentStatus.PENDING);
+      Payment payment =
+          buildPayment(new BigDecimal("500.00"), LocalDate.of(2026, 3, 1), PaymentStatus.PENDING);
 
       invokeUpdateStatus(payment, LocalDate.of(2026, 3, 1));
 
@@ -337,7 +351,8 @@ class PaymentServiceTest {
     @Test
     @DisplayName("PAID is not changed to OVERDUE even if past due")
     void paidNotChangedToOverdue() throws Exception {
-      Payment payment = buildPayment(new BigDecimal("500.00"), LocalDate.of(2026, 1, 1), PaymentStatus.PAID);
+      Payment payment =
+          buildPayment(new BigDecimal("500.00"), LocalDate.of(2026, 1, 1), PaymentStatus.PAID);
 
       invokeUpdateStatus(payment, LocalDate.of(2026, 3, 1));
 
@@ -348,7 +363,8 @@ class PaymentServiceTest {
     @DisplayName("PARTIALLY_PAID is not changed to OVERDUE")
     void partiallyPaidNotChangedToOverdue() throws Exception {
       Payment payment =
-          buildPayment(new BigDecimal("500.00"), LocalDate.of(2026, 1, 1), PaymentStatus.PARTIALLY_PAID);
+          buildPayment(
+              new BigDecimal("500.00"), LocalDate.of(2026, 1, 1), PaymentStatus.PARTIALLY_PAID);
 
       invokeUpdateStatus(payment, LocalDate.of(2026, 3, 1));
 

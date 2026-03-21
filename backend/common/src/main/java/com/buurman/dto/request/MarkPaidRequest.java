@@ -3,8 +3,9 @@ package com.buurman.dto.request;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import jakarta.validation.constraints.NotNull;
 import com.buurman.util.Generated;
+
+import jakarta.validation.constraints.NotNull;
 
 @Generated
 public record MarkPaidRequest(

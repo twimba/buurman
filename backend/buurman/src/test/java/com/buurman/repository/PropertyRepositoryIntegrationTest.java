@@ -28,7 +28,9 @@ class PropertyRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
 
   @BeforeEach
   void setUp() {
-    repo = new PropertyRepository(dsl, TestDataHelper.wireMapper(new PropertyRecordMapperImpl()), CLOCK);
+    repo =
+        new PropertyRepository(
+            dsl, TestDataHelper.wireMapper(new PropertyRecordMapperImpl()), CLOCK);
   }
 
   @Nested
@@ -103,8 +105,7 @@ class PropertyRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
     void findByIdentifierWrongTeamReturnsEmpty() {
       Property saved = repo.save(TestDataHelper.buildProperty(TEAM_A_ID, USER_ID));
 
-      assertThat(
-          repo.findByIdentifierAndTeamId(saved.getIdentifier().orElseThrow(), TEAM_B_ID))
+      assertThat(repo.findByIdentifierAndTeamId(saved.getIdentifier().orElseThrow(), TEAM_B_ID))
           .isEmpty();
     }
 
@@ -182,7 +183,12 @@ class PropertyRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
       repo.save(vacant);
 
       PaginatedResult<Property> result =
-          repo.findAllByTeamIdPaginated(TEAM_A_ID, "OCCUPIED", null, null, PageRequest.of(null, null, null, (SortDirection) null));
+          repo.findAllByTeamIdPaginated(
+              TEAM_A_ID,
+              "OCCUPIED",
+              null,
+              null,
+              PageRequest.of(null, null, null, (SortDirection) null));
 
       assertThat(result.items()).hasSize(1);
       assertThat(result.totalElements()).isEqualTo(1);
@@ -195,7 +201,11 @@ class PropertyRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
 
       PaginatedResult<Property> result =
           repo.findAllByTeamIdPaginated(
-              TEAM_A_ID, null, "RESIDENTIAL", null, PageRequest.of(null, null, null, (SortDirection) null));
+              TEAM_A_ID,
+              null,
+              "RESIDENTIAL",
+              null,
+              PageRequest.of(null, null, null, (SortDirection) null));
 
       assertThat(result.items()).hasSize(1);
     }
@@ -206,7 +216,12 @@ class PropertyRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
       repo.save(TestDataHelper.buildProperty(TEAM_A_ID, USER_ID));
 
       PaginatedResult<Property> result =
-          repo.findAllByTeamIdPaginated(TEAM_A_ID, null, null, "main", PageRequest.of(null, null, null, (SortDirection) null));
+          repo.findAllByTeamIdPaginated(
+              TEAM_A_ID,
+              null,
+              null,
+              "main",
+              PageRequest.of(null, null, null, (SortDirection) null));
 
       assertThat(result.items()).hasSize(1);
     }
@@ -217,7 +232,8 @@ class PropertyRepositoryIntegrationTest extends AbstractRepositoryIntegrationTes
       repo.save(TestDataHelper.buildProperty(TEAM_A_ID, USER_ID));
 
       PaginatedResult<Property> result =
-          repo.findAllByTeamIdPaginated(TEAM_B_ID, null, null, null, PageRequest.of(null, null, null, (SortDirection) null));
+          repo.findAllByTeamIdPaginated(
+              TEAM_B_ID, null, null, null, PageRequest.of(null, null, null, (SortDirection) null));
 
       assertThat(result.items()).isEmpty();
     }

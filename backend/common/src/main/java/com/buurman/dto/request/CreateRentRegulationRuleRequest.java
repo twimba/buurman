@@ -6,11 +6,11 @@ import java.util.Optional;
 
 import com.buurman.domain.MaxIncreaseType;
 import com.buurman.domain.RentFrequency;
+import com.buurman.util.Generated;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import com.buurman.util.Generated;
 
 @Generated
 public record CreateRentRegulationRuleRequest(

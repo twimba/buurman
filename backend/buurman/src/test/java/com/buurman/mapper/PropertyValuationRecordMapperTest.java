@@ -107,8 +107,7 @@ class PropertyValuationRecordMapperTest {
       Optional<PropertyValuation> result = mapper.toDomain(record);
 
       assertThat(result).isPresent();
-      assertThat(result.get().getDeletedAt())
-          .contains(deletedAt.toInstant(ZoneOffset.UTC));
+      assertThat(result.get().getDeletedAt()).contains(deletedAt.toInstant(ZoneOffset.UTC));
     }
   }
 

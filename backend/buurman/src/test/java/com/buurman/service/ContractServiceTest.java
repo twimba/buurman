@@ -3,8 +3,6 @@ package com.buurman.service;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.buurman.domain.Contract.ContractStatus;
-
 import java.lang.reflect.Method;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +13,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.buurman.domain.Contract.ContractStatus;
 
 /**
  * Uses reflection to test {@code validateStatusTransition} because ContractService has 13+

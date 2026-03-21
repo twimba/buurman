@@ -2,8 +2,9 @@ package com.buurman.dto.request;
 
 import java.util.Optional;
 
-import jakarta.validation.constraints.Pattern;
 import com.buurman.util.Generated;
+
+import jakarta.validation.constraints.Pattern;
 
 @Generated
 public record UpdateUserPreferencesRequest(

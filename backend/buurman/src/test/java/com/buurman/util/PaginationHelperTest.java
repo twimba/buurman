@@ -56,7 +56,13 @@ class PaginationHelperTest {
 
       PaginatedResult<String> result =
           PaginationHelper.paginate(
-              dsl, table, condition, sortableFields, idField, PageRequest.of(0, 10, null, (SortDirection) null), r -> "mapped");
+              dsl,
+              table,
+              condition,
+              sortableFields,
+              idField,
+              PageRequest.of(0, 10, null, (SortDirection) null),
+              r -> "mapped");
 
       assertThat(result.totalElements()).isEqualTo(42);
       assertThat(result.items()).containsExactly("Alice", "Bob", "Charlie");
@@ -79,7 +85,13 @@ class PaginationHelperTest {
 
       PaginatedResult<String> result =
           PaginationHelper.paginate(
-              dsl, table, condition, sortableFields, idField, PageRequest.of(0, 10, "name", SortDirection.ASC), r -> "mapped");
+              dsl,
+              table,
+              condition,
+              sortableFields,
+              idField,
+              PageRequest.of(0, 10, "name", SortDirection.ASC),
+              r -> "mapped");
 
       assertThat(result.totalElements()).isEqualTo(5);
       assertThat(result.items()).containsExactly("item");
@@ -102,7 +114,13 @@ class PaginationHelperTest {
 
       PaginatedResult<String> result =
           PaginationHelper.paginate(
-              dsl, table, condition, sortableFields, idField, PageRequest.of(0, 10, "unknown_field", SortDirection.ASC), r -> "mapped");
+              dsl,
+              table,
+              condition,
+              sortableFields,
+              idField,
+              PageRequest.of(0, 10, "unknown_field", SortDirection.ASC),
+              r -> "mapped");
 
       assertThat(result.items()).hasSize(3);
     }
@@ -124,7 +142,13 @@ class PaginationHelperTest {
 
       PaginatedResult<String> result =
           PaginationHelper.paginate(
-              dsl, table, condition, sortableFields, idField, PageRequest.of(0, 10, "name", (SortDirection) null), r -> "mapped");
+              dsl,
+              table,
+              condition,
+              sortableFields,
+              idField,
+              PageRequest.of(0, 10, "name", (SortDirection) null),
+              r -> "mapped");
 
       assertThat(result.items()).hasSize(1);
     }
@@ -146,7 +170,13 @@ class PaginationHelperTest {
 
       PaginatedResult<String> result =
           PaginationHelper.paginate(
-              dsl, table, condition, sortableFields, idField, PageRequest.of(2, 25, null, (SortDirection) null), r -> "mapped");
+              dsl,
+              table,
+              condition,
+              sortableFields,
+              idField,
+              PageRequest.of(2, 25, null, (SortDirection) null),
+              r -> "mapped");
 
       assertThat(result.totalElements()).isEqualTo(100);
       assertThat(result.items()).isEmpty();
@@ -169,7 +199,13 @@ class PaginationHelperTest {
 
       PaginatedResult<String> result =
           PaginationHelper.paginate(
-              dsl, table, condition, sortableFields, idField, PageRequest.of(5, 25, null, (SortDirection) null), r -> "mapped");
+              dsl,
+              table,
+              condition,
+              sortableFields,
+              idField,
+              PageRequest.of(5, 25, null, (SortDirection) null),
+              r -> "mapped");
 
       assertThat(result.items()).isEmpty();
       assertThat(result.totalElements()).isEqualTo(10);

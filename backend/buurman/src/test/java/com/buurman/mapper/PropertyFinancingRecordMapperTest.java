@@ -62,8 +62,7 @@ class PropertyFinancingRecordMapperTest {
       assertThat(fin.getRateType()).isEqualTo(RateType.FIXED);
       assertThat(fin.getLenderName()).contains("ING Bank");
       assertThat(fin.getLoanNumber()).contains("LOAN-2026-001");
-      assertThat(fin.getOriginalAmount().value())
-          .isEqualByComparingTo(new BigDecimal("300000.00"));
+      assertThat(fin.getOriginalAmount().value()).isEqualByComparingTo(new BigDecimal("300000.00"));
       assertThat(fin.getOriginalAmount().currency()).isEqualTo("EUR");
       assertThat(fin.getCurrentBalance()).contains(new BigDecimal("280000.00"));
       assertThat(fin.getInterestRate()).contains(new BigDecimal("3.50"));
@@ -180,8 +179,7 @@ class PropertyFinancingRecordMapperTest {
       Optional<PropertyFinancing> result = mapper.toDomain(record);
 
       assertThat(result).isPresent();
-      assertThat(result.get().getDeletedAt())
-          .contains(deletedAt.toInstant(ZoneOffset.UTC));
+      assertThat(result.get().getDeletedAt()).contains(deletedAt.toInstant(ZoneOffset.UTC));
     }
   }
 

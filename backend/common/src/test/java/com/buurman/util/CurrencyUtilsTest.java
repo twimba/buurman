@@ -206,8 +206,7 @@ class CurrencyUtilsTest {
     @Test
     @DisplayName("1.2345 is invalid for BHD")
     void invalidBhdAmount() {
-      assertThat(CurrencyUtils.isAmountValidForCurrency(new BigDecimal("1.2345"), "BHD"))
-          .isFalse();
+      assertThat(CurrencyUtils.isAmountValidForCurrency(new BigDecimal("1.2345"), "BHD")).isFalse();
     }
   }
 

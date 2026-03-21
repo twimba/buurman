@@ -155,12 +155,7 @@ class ImpersonationRestrictionInterceptorTest {
 
     @ParameterizedTest(name = "{0} is also blocked in READ_ONLY mode")
     @ValueSource(
-        strings = {
-          "changePassword",
-          "updateEmail",
-          "deleteAccount",
-          "requestAccountDeletion"
-        })
+        strings = {"changePassword", "updateEmail", "deleteAccount", "requestAccountDeletion"})
     @DisplayName("also blocked in READ_ONLY")
     void blockedInReadOnlyMode(String methodName) throws Exception {
       setImpersonationContext(ImpersonationMode.READ_ONLY);
@@ -186,9 +181,7 @@ class ImpersonationRestrictionInterceptorTest {
       MockHttpServletResponse response = new MockHttpServletResponse();
 
       assertThatThrownBy(
-              () ->
-                  interceptor.preHandle(
-                      request, response, createHandlerMethod("safeMethod")))
+              () -> interceptor.preHandle(request, response, createHandlerMethod("safeMethod")))
           .isInstanceOf(ImpersonationRestrictionException.class)
           .hasMessageContaining("Write operations are not allowed in read-only impersonation mode");
     }
@@ -200,8 +193,7 @@ class ImpersonationRestrictionInterceptorTest {
       MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/v1/properties");
       MockHttpServletResponse response = new MockHttpServletResponse();
 
-      boolean result =
-          interceptor.preHandle(request, response, createHandlerMethod("safeMethod"));
+      boolean result = interceptor.preHandle(request, response, createHandlerMethod("safeMethod"));
 
       assertThat(result).isTrue();
     }
@@ -219,8 +211,7 @@ class ImpersonationRestrictionInterceptorTest {
       MockHttpServletRequest request = new MockHttpServletRequest(httpMethod, "/api/v1/properties");
       MockHttpServletResponse response = new MockHttpServletResponse();
 
-      boolean result =
-          interceptor.preHandle(request, response, createHandlerMethod("safeMethod"));
+      boolean result = interceptor.preHandle(request, response, createHandlerMethod("safeMethod"));
 
       assertThat(result).isTrue();
     }

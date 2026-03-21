@@ -3,7 +3,6 @@ package com.buurman.security;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -63,7 +62,8 @@ class JwtAuthenticationConverterTest {
 
   @BeforeEach
   void setUp() {
-    converter = new JwtAuthenticationConverter(userRepository, teamMemberRepository, teamRepository, CLOCK);
+    converter =
+        new JwtAuthenticationConverter(userRepository, teamMemberRepository, teamRepository, CLOCK);
   }
 
   private Jwt buildJwt(Map<String, Object> extraClaims) {
@@ -103,11 +103,7 @@ class JwtAuthenticationConverterTest {
   }
 
   private Team buildTeam(UUID teamId, Sid sid) {
-    return Team.builder()
-        .id(teamId)
-        .identifier(Optional.of(sid))
-        .name("Test Team")
-        .build();
+    return Team.builder().id(teamId).identifier(Optional.of(sid)).name("Test Team").build();
   }
 
   @Nested
@@ -241,7 +237,8 @@ class JwtAuthenticationConverterTest {
     }
 
     @Test
-    @DisplayName("priority 2: falls back to defaultTeamId when activeTeamId has no matching membership")
+    @DisplayName(
+        "priority 2: falls back to defaultTeamId when activeTeamId has no matching membership")
     void fallsBackToDefaultWhenActiveTeamNotInMemberships() {
       UUID unknownTeamId = UUID.randomUUID();
       User user = buildUser(Optional.of(unknownTeamId), Optional.of(TEAM_B_ID));
@@ -364,7 +361,8 @@ class JwtAuthenticationConverterTest {
       when(userRepository.findByKeycloakId(KEYCLOAK_ID)).thenReturn(Optional.of(user));
       when(teamMemberRepository.findAllByUserId(USER_ID)).thenReturn(Collections.emptyList());
 
-      Jwt jwt = buildJwt(Map.of("realm_access", Map.of("roles", List.of("BETA_TESTER", "PREMIUM"))));
+      Jwt jwt =
+          buildJwt(Map.of("realm_access", Map.of("roles", List.of("BETA_TESTER", "PREMIUM"))));
 
       UserAuthentication result = (UserAuthentication) converter.convert(jwt);
 
@@ -384,7 +382,9 @@ class JwtAuthenticationConverterTest {
           buildJwt(
               Map.of(
                   "realm_access",
-                  Map.of("roles", List.of("TEAM_ADMIN", "TEAM_EDITOR", "TEAM_VIEWER", "CUSTOM_ROLE"))));
+                  Map.of(
+                      "roles",
+                      List.of("TEAM_ADMIN", "TEAM_EDITOR", "TEAM_VIEWER", "CUSTOM_ROLE"))));
 
       UserAuthentication result = (UserAuthentication) converter.convert(jwt);
 
@@ -402,7 +402,9 @@ class JwtAuthenticationConverterTest {
 
       Jwt jwt =
           buildJwt(
-              Map.of("realm_access", Map.of("roles", List.of("default-roles-buurman", "CUSTOM_ROLE"))));
+              Map.of(
+                  "realm_access",
+                  Map.of("roles", List.of("default-roles-buurman", "CUSTOM_ROLE"))));
 
       UserAuthentication result = (UserAuthentication) converter.convert(jwt);
 
@@ -544,11 +546,7 @@ class JwtAuthenticationConverterTest {
       when(userRepository.findByKeycloakId(KEYCLOAK_ID)).thenReturn(Optional.of(user));
       when(teamMemberRepository.findAllByUserId(USER_ID)).thenReturn(Collections.emptyList());
 
-      Jwt jwt =
-          Jwt.withTokenValue("token")
-              .header("alg", "RS256")
-              .subject(KEYCLOAK_ID)
-              .build();
+      Jwt jwt = Jwt.withTokenValue("token").header("alg", "RS256").subject(KEYCLOAK_ID).build();
 
       UserAuthentication result = (UserAuthentication) converter.convert(jwt);
 
@@ -563,11 +561,7 @@ class JwtAuthenticationConverterTest {
       when(userRepository.findByKeycloakId(KEYCLOAK_ID)).thenReturn(Optional.of(user));
       when(teamMemberRepository.findAllByUserId(USER_ID)).thenReturn(Collections.emptyList());
 
-      Jwt jwt =
-          Jwt.withTokenValue("token")
-              .header("alg", "RS256")
-              .subject(KEYCLOAK_ID)
-              .build();
+      Jwt jwt = Jwt.withTokenValue("token").header("alg", "RS256").subject(KEYCLOAK_ID).build();
 
       UserAuthentication result = (UserAuthentication) converter.convert(jwt);
 

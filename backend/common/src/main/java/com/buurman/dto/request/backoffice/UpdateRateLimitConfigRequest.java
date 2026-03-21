@@ -1,8 +1,9 @@
 package com.buurman.dto.request.backoffice;
 
+import com.buurman.util.Generated;
+
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import com.buurman.util.Generated;
 
 @Generated
 public record UpdateRateLimitConfigRequest(

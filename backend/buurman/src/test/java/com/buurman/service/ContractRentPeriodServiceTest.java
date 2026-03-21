@@ -128,8 +128,7 @@ class ContractRentPeriodServiceTest {
 
       service.createInitialRentPeriod(contract, principal);
 
-      ArgumentCaptor<ContractRentPeriod> captor =
-          ArgumentCaptor.forClass(ContractRentPeriod.class);
+      ArgumentCaptor<ContractRentPeriod> captor = ArgumentCaptor.forClass(ContractRentPeriod.class);
       verify(rentPeriodRepository).save(captor.capture());
       ContractRentPeriod saved = captor.getValue();
       assertThat(saved.getEffectiveFrom()).isEqualTo(contract.getStartDate());
@@ -150,9 +149,7 @@ class ContractRentPeriodServiceTest {
 
       CreateRentPeriodRequest request =
           new CreateRentPeriodRequest(
-              new BigDecimal("1200.00"),
-              LocalDate.of(2025, 12, 1),
-              Optional.empty());
+              new BigDecimal("1200.00"), LocalDate.of(2025, 12, 1), Optional.empty());
 
       assertThatThrownBy(() -> service.addRentPeriod(CONTRACT_SID, request, principal))
           .isInstanceOf(BusinessRuleException.class)
@@ -163,8 +160,7 @@ class ContractRentPeriodServiceTest {
     @DisplayName("rejects duplicate effective date")
     void rejectsDuplicateEffectiveDate() {
       Contract contract = activeContract();
-      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
-          .thenReturn(contract);
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID)).thenReturn(contract);
       when(contractExtensionRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
           .thenReturn(List.of());
       when(rentPeriodRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
@@ -182,9 +178,7 @@ class ContractRentPeriodServiceTest {
 
       CreateRentPeriodRequest request =
           new CreateRentPeriodRequest(
-              new BigDecimal("1200.00"),
-              LocalDate.of(2026, 6, 1),
-              Optional.empty());
+              new BigDecimal("1200.00"), LocalDate.of(2026, 6, 1), Optional.empty());
 
       assertThatThrownBy(() -> service.addRentPeriod(CONTRACT_SID, request, principal))
           .isInstanceOf(BusinessRuleException.class)
@@ -220,8 +214,7 @@ class ContractRentPeriodServiceTest {
 
       service.updateInitialRentPeriod(contract, principal);
 
-      ArgumentCaptor<ContractRentPeriod> captor =
-          ArgumentCaptor.forClass(ContractRentPeriod.class);
+      ArgumentCaptor<ContractRentPeriod> captor = ArgumentCaptor.forClass(ContractRentPeriod.class);
       verify(rentPeriodRepository).save(captor.capture());
       assertThat(captor.getValue().getRentAmount().value()).isEqualByComparingTo("1100.00");
       assertThat(captor.getValue().getEffectiveFrom()).isEqualTo(LocalDate.of(2026, 2, 1));
@@ -236,8 +229,7 @@ class ContractRentPeriodServiceTest {
     @DisplayName("happy path: saves period, closes previous, syncs contract rent")
     void addRentPeriodHappyPath() {
       Contract contract = activeContract();
-      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
-          .thenReturn(contract);
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID)).thenReturn(contract);
       when(contractExtensionRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
           .thenReturn(List.of());
       when(rentPeriodRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
@@ -264,8 +256,7 @@ class ContractRentPeriodServiceTest {
       when(paymentRepository.findPendingByContractIdFromDate(
               eq(CONTRACT_ID), eq(TEAM_ID), any(LocalDate.class)))
           .thenReturn(List.of());
-      when(rentPeriodMapper.toResponse(any(ContractRentPeriod.class), any()))
-          .thenReturn(null);
+      when(rentPeriodMapper.toResponse(any(ContractRentPeriod.class), any())).thenReturn(null);
 
       CreateRentPeriodRequest request =
           new CreateRentPeriodRequest(
@@ -276,8 +267,7 @@ class ContractRentPeriodServiceTest {
       service.addRentPeriod(CONTRACT_SID, request, principal);
 
       // Verify new period saved with correct fields
-      ArgumentCaptor<ContractRentPeriod> captor =
-          ArgumentCaptor.forClass(ContractRentPeriod.class);
+      ArgumentCaptor<ContractRentPeriod> captor = ArgumentCaptor.forClass(ContractRentPeriod.class);
       verify(rentPeriodRepository).save(captor.capture());
       ContractRentPeriod saved = captor.getValue();
       assertThat(saved.getRentAmount().value()).isEqualByComparingTo("1200.00");
@@ -285,25 +275,21 @@ class ContractRentPeriodServiceTest {
       assertThat(saved.getContractId()).isEqualTo(CONTRACT_ID);
 
       // Verify previous period's effectiveTo was updated
-      verify(rentPeriodRepository)
-          .setEffectiveTo(prevPeriodId, TEAM_ID, LocalDate.of(2026, 6, 30));
+      verify(rentPeriodRepository).setEffectiveTo(prevPeriodId, TEAM_ID, LocalDate.of(2026, 6, 30));
     }
 
     @Test
     @DisplayName("effective date after contract end date throws exception")
     void effectiveDateAfterContractEndThrows() {
       Contract contract = activeContract();
-      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
-          .thenReturn(contract);
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID)).thenReturn(contract);
       when(contractExtensionRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
           .thenReturn(List.of());
 
       // Contract ends 2027-01-01, effective date 2027-06-01 is after
       CreateRentPeriodRequest request =
           new CreateRentPeriodRequest(
-              new BigDecimal("1200.00"),
-              LocalDate.of(2027, 6, 1),
-              Optional.empty());
+              new BigDecimal("1200.00"), LocalDate.of(2027, 6, 1), Optional.empty());
 
       assertThatThrownBy(() -> service.addRentPeriod(CONTRACT_SID, request, principal))
           .isInstanceOf(BusinessRuleException.class)
@@ -346,12 +332,9 @@ class ContractRentPeriodServiceTest {
               .updatedBy(USER_ID)
               .build();
 
-      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID))
-          .thenReturn(contract);
-      when(rentPeriodRepository.getByIdentifierAndTeamId(periodSid, TEAM_ID))
-          .thenReturn(period);
-      when(rentPeriodRepository.findPreviousPeriod(
-              CONTRACT_ID, TEAM_ID, LocalDate.of(2026, 7, 1)))
+      when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID)).thenReturn(contract);
+      when(rentPeriodRepository.getByIdentifierAndTeamId(periodSid, TEAM_ID)).thenReturn(period);
+      when(rentPeriodRepository.findPreviousPeriod(CONTRACT_ID, TEAM_ID, LocalDate.of(2026, 7, 1)))
           .thenReturn(Optional.of(previousPeriod));
       when(rentPeriodRepository.findCurrentByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
           .thenReturn(Optional.empty());

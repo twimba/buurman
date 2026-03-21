@@ -2,9 +2,10 @@ package com.buurman.dto.request;
 
 import java.util.List;
 
+import com.buurman.util.Generated;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import com.buurman.util.Generated;
 
 @Generated
 public record UpdateNotificationTypePreferencesRequest(@Valid @NotNull List<Entry> preferences) {

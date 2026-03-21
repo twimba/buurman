@@ -32,10 +32,13 @@ class ContractRentPeriodMapperTest {
     @Test
     @DisplayName("maps basic fields correctly")
     void mapsBasicFields() {
-      ContractRentPeriod period = createPeriod(
-          new BigDecimal("1200.00"), "EUR",
-          LocalDate.of(2026, 1, 1), Optional.of(LocalDate.of(2026, 12, 31)),
-          Optional.of("Initial period"));
+      ContractRentPeriod period =
+          createPeriod(
+              new BigDecimal("1200.00"),
+              "EUR",
+              LocalDate.of(2026, 1, 1),
+              Optional.of(LocalDate.of(2026, 12, 31)),
+              Optional.of("Initial period"));
 
       RentPeriodResponse response = mapper.toResponse(period, Optional.empty());
 
@@ -50,39 +53,49 @@ class ContractRentPeriodMapperTest {
     @Test
     @DisplayName("calculates positive percentage change")
     void calculatesPositivePercentageChange() {
-      ContractRentPeriod period = createPeriod(
-          new BigDecimal("1100.00"), "EUR",
-          LocalDate.of(2027, 1, 1), Optional.empty(), Optional.empty());
+      ContractRentPeriod period =
+          createPeriod(
+              new BigDecimal("1100.00"),
+              "EUR",
+              LocalDate.of(2027, 1, 1),
+              Optional.empty(),
+              Optional.empty());
 
-      RentPeriodResponse response = mapper.toResponse(
-          period, Optional.of(new BigDecimal("1000.00")));
+      RentPeriodResponse response =
+          mapper.toResponse(period, Optional.of(new BigDecimal("1000.00")));
 
       assertThat(response.percentageChange()).isPresent();
-      assertThat(response.percentageChange().get())
-          .isEqualByComparingTo(new BigDecimal("10.00"));
+      assertThat(response.percentageChange().get()).isEqualByComparingTo(new BigDecimal("10.00"));
     }
 
     @Test
     @DisplayName("calculates negative percentage change")
     void calculatesNegativePercentageChange() {
-      ContractRentPeriod period = createPeriod(
-          new BigDecimal("900.00"), "EUR",
-          LocalDate.of(2027, 1, 1), Optional.empty(), Optional.empty());
+      ContractRentPeriod period =
+          createPeriod(
+              new BigDecimal("900.00"),
+              "EUR",
+              LocalDate.of(2027, 1, 1),
+              Optional.empty(),
+              Optional.empty());
 
-      RentPeriodResponse response = mapper.toResponse(
-          period, Optional.of(new BigDecimal("1000.00")));
+      RentPeriodResponse response =
+          mapper.toResponse(period, Optional.of(new BigDecimal("1000.00")));
 
       assertThat(response.percentageChange()).isPresent();
-      assertThat(response.percentageChange().get())
-          .isEqualByComparingTo(new BigDecimal("-10.00"));
+      assertThat(response.percentageChange().get()).isEqualByComparingTo(new BigDecimal("-10.00"));
     }
 
     @Test
     @DisplayName("returns empty percentage when no previous amount")
     void returnsEmptyPercentageWhenNoPrevious() {
-      ContractRentPeriod period = createPeriod(
-          new BigDecimal("1200.00"), "EUR",
-          LocalDate.of(2026, 1, 1), Optional.empty(), Optional.empty());
+      ContractRentPeriod period =
+          createPeriod(
+              new BigDecimal("1200.00"),
+              "EUR",
+              LocalDate.of(2026, 1, 1),
+              Optional.empty(),
+              Optional.empty());
 
       RentPeriodResponse response = mapper.toResponse(period, Optional.empty());
 
@@ -92,12 +105,15 @@ class ContractRentPeriodMapperTest {
     @Test
     @DisplayName("returns empty percentage when previous amount is zero")
     void returnsEmptyPercentageWhenPreviousIsZero() {
-      ContractRentPeriod period = createPeriod(
-          new BigDecimal("1200.00"), "EUR",
-          LocalDate.of(2026, 1, 1), Optional.empty(), Optional.empty());
+      ContractRentPeriod period =
+          createPeriod(
+              new BigDecimal("1200.00"),
+              "EUR",
+              LocalDate.of(2026, 1, 1),
+              Optional.empty(),
+              Optional.empty());
 
-      RentPeriodResponse response = mapper.toResponse(
-          period, Optional.of(BigDecimal.ZERO));
+      RentPeriodResponse response = mapper.toResponse(period, Optional.of(BigDecimal.ZERO));
 
       assertThat(response.percentageChange()).isEmpty();
     }
@@ -111,13 +127,26 @@ class ContractRentPeriodMapperTest {
     @DisplayName("computes percentage change between consecutive periods")
     void computesPercentageChangeBetweenPeriods() {
       // List is DESC by effectiveFrom
-      List<ContractRentPeriod> periods = List.of(
-          createPeriod(new BigDecimal("1210.00"), "EUR",
-              LocalDate.of(2028, 1, 1), Optional.empty(), Optional.empty()),
-          createPeriod(new BigDecimal("1100.00"), "EUR",
-              LocalDate.of(2027, 1, 1), Optional.empty(), Optional.empty()),
-          createPeriod(new BigDecimal("1000.00"), "EUR",
-              LocalDate.of(2026, 1, 1), Optional.empty(), Optional.empty()));
+      List<ContractRentPeriod> periods =
+          List.of(
+              createPeriod(
+                  new BigDecimal("1210.00"),
+                  "EUR",
+                  LocalDate.of(2028, 1, 1),
+                  Optional.empty(),
+                  Optional.empty()),
+              createPeriod(
+                  new BigDecimal("1100.00"),
+                  "EUR",
+                  LocalDate.of(2027, 1, 1),
+                  Optional.empty(),
+                  Optional.empty()),
+              createPeriod(
+                  new BigDecimal("1000.00"),
+                  "EUR",
+                  LocalDate.of(2026, 1, 1),
+                  Optional.empty(),
+                  Optional.empty()));
 
       List<RentPeriodResponse> responses = mapper.toResponses(periods);
 
@@ -143,9 +172,14 @@ class ContractRentPeriodMapperTest {
     @Test
     @DisplayName("single period has no percentage change")
     void singlePeriodNoPercentage() {
-      List<ContractRentPeriod> periods = List.of(
-          createPeriod(new BigDecimal("1000.00"), "EUR",
-              LocalDate.of(2026, 1, 1), Optional.empty(), Optional.empty()));
+      List<ContractRentPeriod> periods =
+          List.of(
+              createPeriod(
+                  new BigDecimal("1000.00"),
+                  "EUR",
+                  LocalDate.of(2026, 1, 1),
+                  Optional.empty(),
+                  Optional.empty()));
 
       List<RentPeriodResponse> responses = mapper.toResponses(periods);
 
@@ -155,8 +189,11 @@ class ContractRentPeriodMapperTest {
   }
 
   private ContractRentPeriod createPeriod(
-      BigDecimal amount, String currency, LocalDate effectiveFrom,
-      Optional<LocalDate> effectiveTo, Optional<String> notes) {
+      BigDecimal amount,
+      String currency,
+      LocalDate effectiveFrom,
+      Optional<LocalDate> effectiveTo,
+      Optional<String> notes) {
     return ContractRentPeriod.builder()
         .id(UUID.randomUUID())
         .identifier(Optional.of(PERIOD_ID))

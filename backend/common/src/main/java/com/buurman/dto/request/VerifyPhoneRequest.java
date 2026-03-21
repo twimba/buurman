@@ -1,8 +1,9 @@
 package com.buurman.dto.request;
 
+import com.buurman.util.Generated;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import com.buurman.util.Generated;
 
 @Generated
 public record VerifyPhoneRequest(

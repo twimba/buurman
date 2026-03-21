@@ -196,10 +196,8 @@ class NotificationRecordMapperTest {
       Notification notification = result.get();
       assertThat(notification.getStatusUpdatedAt())
           .contains(statusUpdated.toInstant(ZoneOffset.UTC));
-      assertThat(notification.getFirstOpenedAt())
-          .contains(firstOpened.toInstant(ZoneOffset.UTC));
-      assertThat(notification.getFirstClickedAt())
-          .contains(firstClicked.toInstant(ZoneOffset.UTC));
+      assertThat(notification.getFirstOpenedAt()).contains(firstOpened.toInstant(ZoneOffset.UTC));
+      assertThat(notification.getFirstClickedAt()).contains(firstClicked.toInstant(ZoneOffset.UTC));
     }
 
     @Test
@@ -316,8 +314,7 @@ class NotificationRecordMapperTest {
       NotificationsRecord record = createCompleteRecord();
       record.setContentVariables(JSONB.jsonb("{}"));
 
-      when(objectMapper.readValue(eq("{}"), any(TypeReference.class)))
-          .thenReturn(Map.of());
+      when(objectMapper.readValue(eq("{}"), any(TypeReference.class))).thenReturn(Map.of());
 
       Optional<Notification> result = mapper.toDomain(record);
 

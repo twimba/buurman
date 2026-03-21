@@ -44,7 +44,8 @@ class WwsPointsCalculatorServiceTest {
 
   private static final Clock FIXED_CLOCK =
       Clock.fixed(Instant.parse("2026-01-15T12:00:00Z"), ZoneId.of("UTC"));
-  private static final PropertyIdentifier PROP_ID = PropertyIdentifier.of("prop_test123456789012345");
+  private static final PropertyIdentifier PROP_ID =
+      PropertyIdentifier.of("prop_test123456789012345");
 
   @BeforeEach
   void setUp() {

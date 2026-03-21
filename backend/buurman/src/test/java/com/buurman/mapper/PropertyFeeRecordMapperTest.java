@@ -59,8 +59,7 @@ class PropertyFeeRecordMapperTest {
       assertThat(fee.getTeamId()).isEqualTo(TEAM_ID);
       assertThat(fee.getFeeType()).isEqualTo(FeeType.HOA);
       assertThat(fee.getName()).contains("Monthly HOA");
-      assertThat(fee.getAnnualAmount().value())
-          .isEqualByComparingTo(new BigDecimal("3600.00"));
+      assertThat(fee.getAnnualAmount().value()).isEqualByComparingTo(new BigDecimal("3600.00"));
       assertThat(fee.getAnnualAmount().currency()).isEqualTo("EUR");
       assertThat(fee.getPaymentFrequency()).isEqualTo("MONTHLY");
       assertThat(fee.getDueMonths()).contains("1,2,3,4,5,6,7,8,9,10,11,12");
@@ -130,8 +129,7 @@ class PropertyFeeRecordMapperTest {
       Optional<PropertyFee> result = mapper.toDomain(record);
 
       assertThat(result).isPresent();
-      assertThat(result.get().getDeletedAt())
-          .contains(deletedAt.toInstant(ZoneOffset.UTC));
+      assertThat(result.get().getDeletedAt()).contains(deletedAt.toInstant(ZoneOffset.UTC));
     }
   }
 

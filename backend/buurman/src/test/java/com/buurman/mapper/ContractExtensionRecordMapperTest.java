@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.DisplayName;
@@ -80,8 +79,7 @@ class ContractExtensionRecordMapperTest {
       assertThat(ext.getPreviousRentAmount().value())
           .isEqualByComparingTo(new BigDecimal("1200.00"));
       assertThat(ext.getPreviousRentAmount().currency()).isEqualTo("EUR");
-      assertThat(ext.getNewRentAmount().value())
-          .isEqualByComparingTo(new BigDecimal("1236.00"));
+      assertThat(ext.getNewRentAmount().value()).isEqualByComparingTo(new BigDecimal("1236.00"));
       assertThat(ext.getNewRentAmount().currency()).isEqualTo("EUR");
     }
 
@@ -98,8 +96,7 @@ class ContractExtensionRecordMapperTest {
 
       assertThat(ext.getPreviousRentAmount().value())
           .isEqualByComparingTo(new BigDecimal("100000"));
-      assertThat(ext.getNewRentAmount().value())
-          .isEqualByComparingTo(new BigDecimal("103000"));
+      assertThat(ext.getNewRentAmount().value()).isEqualByComparingTo(new BigDecimal("103000"));
     }
 
     @Test

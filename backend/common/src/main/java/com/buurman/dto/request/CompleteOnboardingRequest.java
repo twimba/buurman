@@ -2,8 +2,9 @@ package com.buurman.dto.request;
 
 import java.util.Optional;
 
-import jakarta.validation.constraints.NotBlank;
 import com.buurman.util.Generated;
+
+import jakarta.validation.constraints.NotBlank;
 
 @Generated
 public record CompleteOnboardingRequest(

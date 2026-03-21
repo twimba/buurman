@@ -1,6 +1,7 @@
 package com.buurman.dto.response;
 
 import java.math.BigDecimal;
+
 import com.buurman.util.Generated;
 
 @Generated

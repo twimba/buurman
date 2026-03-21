@@ -1,8 +1,9 @@
 package com.buurman.dto.request;
 
+import com.buurman.util.Generated;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import com.buurman.util.Generated;
 
 @Generated
 public record BulkGeneratePaymentsRequest(

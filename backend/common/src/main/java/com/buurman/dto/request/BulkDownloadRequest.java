@@ -3,10 +3,10 @@ package com.buurman.dto.request;
 import java.util.List;
 
 import com.buurman.domain.Sid;
+import com.buurman.util.Generated;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import com.buurman.util.Generated;
 
 @Generated
 public record BulkDownloadRequest(

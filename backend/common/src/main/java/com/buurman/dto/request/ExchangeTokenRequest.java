@@ -2,8 +2,9 @@ package com.buurman.dto.request;
 
 import java.util.UUID;
 
-import jakarta.validation.constraints.NotNull;
 import com.buurman.util.Generated;
+
+import jakarta.validation.constraints.NotNull;
 
 @Generated
 public record ExchangeTokenRequest(

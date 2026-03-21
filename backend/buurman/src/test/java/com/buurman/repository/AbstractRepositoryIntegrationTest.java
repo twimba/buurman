@@ -1,11 +1,9 @@
 package com.buurman.repository;
 
-import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.UUID;
-
 import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
@@ -17,9 +15,9 @@ import org.postgresql.ds.PGSimpleDataSource;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 /**
- * Base class for repository integration tests. Starts a single shared PostgreSQL container, runs all
- * Flyway migrations once, and provides a DSLContext + fixed Clock. Each test gets a clean database
- * via truncation.
+ * Base class for repository integration tests. Starts a single shared PostgreSQL container, runs
+ * all Flyway migrations once, and provides a DSLContext + fixed Clock. Each test gets a clean
+ * database via truncation.
  */
 abstract class AbstractRepositoryIntegrationTest {
 
@@ -46,11 +44,7 @@ abstract class AbstractRepositoryIntegrationTest {
     ds.setUser(PG.getUsername());
     ds.setPassword(PG.getPassword());
 
-    Flyway.configure()
-        .dataSource(ds)
-        .locations("classpath:db/migration")
-        .load()
-        .migrate();
+    Flyway.configure().dataSource(ds).locations("classpath:db/migration").load().migrate();
 
     dsl = DSL.using((DataSource) ds, SQLDialect.POSTGRES);
   }
