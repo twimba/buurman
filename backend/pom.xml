@@ -29,7 +29,6 @@
         <module>buurman-takeout</module>
         <module>buurman-booklets</module>
         <module>app</module>
-        <module>coverage-report</module>
     </modules>
 
     <properties>
@@ -440,6 +439,13 @@
             <properties>
                 <spotless.check.skip>true</spotless.check.skip>
             </properties>
+        </profile>
+        <!-- Activate to include the aggregated JaCoCo coverage report module -->
+        <profile>
+            <id>coverage</id>
+            <modules>
+                <module>coverage-report</module>
+            </modules>
         </profile>
     </profiles>
 </project>

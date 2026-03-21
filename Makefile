@@ -46,7 +46,7 @@ test:
 
 ## Run backend unit tests with JaCoCo coverage report (per-module + aggregated)
 test-coverage:
-	cd backend && mvn verify -pl common,buurman,buurman-notifications,buurman-booklets,coverage-report -Pquick -Dmaven.build.cache.enabled=false
+	cd backend && mvn verify -pl common,buurman,buurman-notifications,buurman-booklets,coverage-report -Pquick,coverage -Dmaven.build.cache.enabled=false
 	@echo ""
 	@echo "Coverage reports:"
 	@echo "  Aggregated:          backend/coverage-report/target/site/jacoco-aggregate/index.html"
