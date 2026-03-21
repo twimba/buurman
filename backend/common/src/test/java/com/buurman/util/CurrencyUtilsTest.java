@@ -192,4 +192,45 @@ class CurrencyUtilsTest {
       assertThat(CurrencyUtils.getFractionalDigits("BHD")).isEqualTo(3);
     }
   }
+
+  @Nested
+  @DisplayName("isAmountValidForCurrency — additional")
+  class IsAmountValidAdditional {
+
+    @Test
+    @DisplayName("1.234 is valid for BHD (3 fractional digits)")
+    void validBhdAmount() {
+      assertThat(CurrencyUtils.isAmountValidForCurrency(new BigDecimal("1.234"), "BHD")).isTrue();
+    }
+
+    @Test
+    @DisplayName("1.2345 is invalid for BHD")
+    void invalidBhdAmount() {
+      assertThat(CurrencyUtils.isAmountValidForCurrency(new BigDecimal("1.2345"), "BHD"))
+          .isFalse();
+    }
+  }
+
+  @Nested
+  @DisplayName("formatCurrency — additional")
+  class FormatCurrencyAdditional {
+
+    @Test
+    @DisplayName("formats BHD with 3 fractional digits")
+    void formatsBhdThreeDigits() {
+      String formatted = CurrencyUtils.formatCurrency(new BigDecimal("1234.567"), "BHD");
+
+      assertThat(formatted).contains("234");
+      assertThat(formatted).contains("567");
+    }
+
+    @Test
+    @DisplayName("formats large amount with thousands separators")
+    void formatsLargeAmount() {
+      String formatted = CurrencyUtils.formatCurrency(new BigDecimal("1234567.89"), "EUR");
+
+      assertThat(formatted).startsWith("\u20AC");
+      assertThat(formatted).contains("89");
+    }
+  }
 }

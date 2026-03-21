@@ -159,6 +159,48 @@ class MoneyAmountTest {
   }
 
   @Nested
+  @DisplayName("toMinorUnits — additional")
+  class ToMinorUnitsAdditional {
+
+    @Test
+    @DisplayName("converts BHD amount to minor units (3 fractional digits)")
+    void bhdToMinorUnits() {
+      MoneyAmount money = MoneyAmount.of(new BigDecimal("1.234"), "BHD");
+
+      assertThat(money.toMinorUnits()).isEqualTo(1234L);
+    }
+
+    @Test
+    @DisplayName("converts large EUR amount without overflow")
+    void largeAmountNoOverflow() {
+      MoneyAmount money = MoneyAmount.of(new BigDecimal("999999999.99"), "EUR");
+
+      assertThat(money.toMinorUnits()).isEqualTo(99999999999L);
+    }
+  }
+
+  @Nested
+  @DisplayName("sumToMajorUnits — additional")
+  class SumToMajorUnitsAdditional {
+
+    @Test
+    @DisplayName("converts BHD minor units (3 digits) to major")
+    void bhdSumConverts() {
+      BigDecimal result = MoneyAmount.sumToMajorUnits(new BigDecimal("1234"), "BHD");
+
+      assertThat(result).isEqualByComparingTo("1.234");
+    }
+
+    @Test
+    @DisplayName("zero sum returns zero")
+    void zeroSum() {
+      BigDecimal result = MoneyAmount.sumToMajorUnits(BigDecimal.ZERO, "EUR");
+
+      assertThat(result).isEqualByComparingTo("0.00");
+    }
+  }
+
+  @Nested
   @DisplayName("of null arguments")
   @SuppressWarnings("NullAway")
   class OfNullArguments {
