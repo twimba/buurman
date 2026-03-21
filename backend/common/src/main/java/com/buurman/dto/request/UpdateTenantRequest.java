@@ -5,7 +5,9 @@ import java.util.Optional;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import com.buurman.util.Generated;
 
+@Generated
 public record UpdateTenantRequest(
     @NotBlank(message = "First name is required") String firstName,
     Optional<String> lastName,

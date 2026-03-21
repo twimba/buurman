@@ -9,7 +9,9 @@ import com.buurman.domain.PropertyTax;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
+import com.buurman.util.Generated;
 
+@Generated
 public record UpdatePropertyTaxRequest(
     Optional<PropertyTax.TaxType> taxType,
     Optional<String> authority,

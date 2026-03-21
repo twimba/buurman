@@ -10,7 +10,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
+import com.buurman.util.Generated;
 
+@Generated
 public record CreateFinancingPaymentRequest(
     @NotNull(message = "Payment date is required") LocalDate paymentDate,
     @NotNull(message = "Total amount is required") @Positive(message = "Total amount must be positive") BigDecimal totalAmount,

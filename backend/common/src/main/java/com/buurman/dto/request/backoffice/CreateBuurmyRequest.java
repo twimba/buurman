@@ -5,7 +5,9 @@ import java.util.Optional;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import com.buurman.util.Generated;
 
+@Generated
 public record CreateBuurmyRequest(
     @NotBlank @Email String email,
     Optional<@Size(min = 3, max = 50) String> username,

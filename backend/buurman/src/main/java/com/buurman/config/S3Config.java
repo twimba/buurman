@@ -15,9 +15,11 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import com.buurman.util.Generated;
 
 @Configuration
 @RequiredArgsConstructor
+@Generated
 public class S3Config {
 
   private final AwsS3Properties awsS3Properties;

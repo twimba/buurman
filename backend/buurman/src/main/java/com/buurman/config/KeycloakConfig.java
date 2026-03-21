@@ -9,9 +9,11 @@ import org.springframework.context.annotation.Configuration;
 import com.buurman.config.models.KeycloakProperties;
 
 import lombok.RequiredArgsConstructor;
+import com.buurman.util.Generated;
 
 @Configuration
 @RequiredArgsConstructor
+@Generated
 public class KeycloakConfig {
 
   private final KeycloakProperties keycloakProperties;

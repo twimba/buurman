@@ -9,7 +9,9 @@ import com.buurman.domain.PropertyOccupancyPeriod.OccupancyType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
+import com.buurman.util.Generated;
 
+@Generated
 public record CreateOccupancyPeriodRequest(
     @NotNull(message = "Start date is required") LocalDate startDate,
     @NotNull(message = "Occupancy type is required") OccupancyType type,

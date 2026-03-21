@@ -5,7 +5,9 @@ import java.util.Optional;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
+import com.buurman.util.Generated;
 
+@Generated
 public record CommercialDetailsRequest(
     Optional<@Positive(message = "Usable area must be positive") BigDecimal> usableAreaValue,
     Optional<String> usableAreaUnit,

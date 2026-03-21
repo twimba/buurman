@@ -6,7 +6,9 @@ import java.util.Map;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import com.buurman.util.Generated;
 
+@Generated
 public record UpdatePhoneNumberPolicyRequest(
     @NotNull(message = "Policy matrix is required") Map<String, List<String>> policyMatrix,
     @Min(value = 1, message = "Max codes per hour must be at least 1") @Max(value = 20, message = "Max codes per hour must be at most 20") int maxCodesPerHour,

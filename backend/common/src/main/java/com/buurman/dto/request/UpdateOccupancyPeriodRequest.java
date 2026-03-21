@@ -8,7 +8,9 @@ import com.buurman.domain.PropertyOccupancyPeriod.OccupancyType;
 
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
+import com.buurman.util.Generated;
 
+@Generated
 public record UpdateOccupancyPeriodRequest(
     Optional<LocalDate> startDate,
     Optional<OccupancyType> type,

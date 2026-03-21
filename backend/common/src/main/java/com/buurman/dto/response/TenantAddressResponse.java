@@ -5,7 +5,9 @@ import java.util.Optional;
 
 import com.buurman.domain.Sid;
 import com.buurman.domain.TenantAddress;
+import com.buurman.util.Generated;
 
+@Generated
 public record TenantAddressResponse(
     Sid identifier,
     String street,

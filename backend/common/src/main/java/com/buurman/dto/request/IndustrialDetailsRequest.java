@@ -5,7 +5,9 @@ import java.util.Optional;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
+import com.buurman.util.Generated;
 
+@Generated
 public record IndustrialDetailsRequest(
     Optional<@Positive(message = "Clear height must be positive") BigDecimal> clearHeightValue,
     Optional<String> clearHeightUnit,

@@ -1,0 +1,116 @@
+name: Backend Tests
+
+on:
+  pull_request:
+    paths:
+      - "backend/**"
+      - ".github/workflows/test-backend.yml"
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+
+env:
+  DOCKER_API_VERSION: "1.44"
+
+jobs:
+  test:
+    name: Unit Tests + Coverage
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+
+      - name: Run tests with coverage
+        working-directory: backend
+        run: |
+          mvn verify -pl common,buurman,buurman-notifications,buurman-booklets \
+            -am -Pquick -B -Dmaven.build.cache.enabled=false
+
+      - name: Generate coverage summary
+        if: always()
+        working-directory: backend
+        run: |
+          echo "## Backend Test Coverage" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Module | Instructions | Branches | Lines | Methods |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|--------|-------------|----------|-------|---------|" >> "$GITHUB_STEP_SUMMARY"
+
+          TOTAL_INST_MISSED=0
+          TOTAL_INST_COVERED=0
+          TOTAL_BRANCH_MISSED=0
+          TOTAL_BRANCH_COVERED=0
+          TOTAL_LINE_MISSED=0
+          TOTAL_LINE_COVERED=0
+          TOTAL_METHOD_MISSED=0
+          TOTAL_METHOD_COVERED=0
+
+          for MODULE in common buurman buurman-notifications buurman-booklets; do
+            CSV="${MODULE}/target/site/jacoco/jacoco.csv"
+            if [ -f "$CSV" ]; then
+              # Sum all rows (skip header)
+              INST_MISSED=0; INST_COVERED=0
+              BRANCH_MISSED=0; BRANCH_COVERED=0
+              LINE_MISSED=0; LINE_COVERED=0
+              METHOD_MISSED=0; METHOD_COVERED=0
+
+              while IFS=',' read -r GROUP PACKAGE CLASS INST_M INST_C BRANCH_M BRANCH_C LINE_M LINE_C COMPL_M COMPL_C METHOD_M METHOD_C; do
+                INST_MISSED=$((INST_MISSED + INST_M))
+                INST_COVERED=$((INST_COVERED + INST_C))
+                BRANCH_MISSED=$((BRANCH_MISSED + BRANCH_M))
+                BRANCH_COVERED=$((BRANCH_COVERED + BRANCH_C))
+                LINE_MISSED=$((LINE_MISSED + LINE_M))
+                LINE_COVERED=$((LINE_COVERED + LINE_C))
+                METHOD_MISSED=$((METHOD_MISSED + METHOD_M))
+                METHOD_COVERED=$((METHOD_COVERED + METHOD_C))
+              done < <(tail -n +2 "$CSV")
+
+              TOTAL_INST_MISSED=$((TOTAL_INST_MISSED + INST_MISSED))
+              TOTAL_INST_COVERED=$((TOTAL_INST_COVERED + INST_COVERED))
+              TOTAL_BRANCH_MISSED=$((TOTAL_BRANCH_MISSED + BRANCH_MISSED))
+              TOTAL_BRANCH_COVERED=$((TOTAL_BRANCH_COVERED + BRANCH_COVERED))
+              TOTAL_LINE_MISSED=$((TOTAL_LINE_MISSED + LINE_MISSED))
+              TOTAL_LINE_COVERED=$((TOTAL_LINE_COVERED + LINE_COVERED))
+              TOTAL_METHOD_MISSED=$((TOTAL_METHOD_MISSED + METHOD_MISSED))
+              TOTAL_METHOD_COVERED=$((TOTAL_METHOD_COVERED + METHOD_COVERED))
+
+              calc_pct() {
+                local missed=$1 covered=$2
+                local total=$((missed + covered))
+                if [ "$total" -eq 0 ]; then echo "N/A"; else echo "$((covered * 100 / total))%"; fi
+              }
+
+              INST_PCT=$(calc_pct $INST_MISSED $INST_COVERED)
+              BRANCH_PCT=$(calc_pct $BRANCH_MISSED $BRANCH_COVERED)
+              LINE_PCT=$(calc_pct $LINE_MISSED $LINE_COVERED)
+              METHOD_PCT=$(calc_pct $METHOD_MISSED $METHOD_COVERED)
+
+              echo "| \`${MODULE}\` | ${INST_PCT} | ${BRANCH_PCT} | ${LINE_PCT} | ${METHOD_PCT} |" >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "| \`${MODULE}\` | — | — | — | — |" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+
+          # Totals from per-module data
+          calc_pct() {
+            local missed=$1 covered=$2
+            local total=$((missed + covered))
+            if [ "$total" -eq 0 ]; then echo "N/A"; else echo "$((covered * 100 / total))%"; fi
+          }
+
+          TOTAL_INST_PCT=$(calc_pct $TOTAL_INST_MISSED $TOTAL_INST_COVERED)
+          TOTAL_BRANCH_PCT=$(calc_pct $TOTAL_BRANCH_MISSED $TOTAL_BRANCH_COVERED)
+          TOTAL_LINE_PCT=$(calc_pct $TOTAL_LINE_MISSED $TOTAL_LINE_COVERED)
+          TOTAL_METHOD_PCT=$(calc_pct $TOTAL_METHOD_MISSED $TOTAL_METHOD_COVERED)
+
+          echo "| **Total** | **${TOTAL_INST_PCT}** | **${TOTAL_BRANCH_PCT}** | **${TOTAL_LINE_PCT}** | **${TOTAL_METHOD_PCT}** |" >> "$GITHUB_STEP_SUMMARY"

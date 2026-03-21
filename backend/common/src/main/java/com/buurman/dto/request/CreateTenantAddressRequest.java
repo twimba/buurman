@@ -7,7 +7,9 @@ import com.buurman.domain.TenantAddress.AddressStatus;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import com.buurman.util.Generated;
 
+@Generated
 public record CreateTenantAddressRequest(
     @NotBlank(message = "Street is required") String street,
     @NotBlank(message = "City is required") String city,

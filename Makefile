@@ -1,4 +1,4 @@
-.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend frontend-app frontend-backoffice workspace-setup
+.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend frontend-app frontend-backoffice workspace-setup test test-coverage
 
 ## Start everything in Docker (including backend + app containers)
 up:
@@ -39,6 +39,21 @@ certs:
 
 stats:
 	scc --gen --no-gen --min --no-min --min-gen --no-min-gen --sort complexity  --avg-wage 100000 --sloccount-format --cocomo-project-type "ai-solo,0.25,1.03,1.0,1.0"
+
+## Run backend unit tests
+test:
+	cd backend && mvn test -pl common,buurman,buurman-notifications,buurman-booklets -Pquick -Dmaven.build.cache.enabled=false
+
+## Run backend unit tests with JaCoCo coverage report (per-module + aggregated)
+test-coverage:
+	cd backend && mvn verify -pl common,buurman,buurman-notifications,buurman-booklets,coverage-report -Pquick,coverage -Dmaven.build.cache.enabled=false
+	@echo ""
+	@echo "Coverage reports:"
+	@echo "  Aggregated:          backend/coverage-report/target/site/jacoco-aggregate/index.html"
+	@echo "  common:              backend/common/target/site/jacoco/index.html"
+	@echo "  buurman:             backend/buurman/target/site/jacoco/index.html"
+	@echo "  buurman-notifications: backend/buurman-notifications/target/site/jacoco/index.html"
+	@echo "  buurman-booklets:    backend/buurman-booklets/target/site/jacoco/index.html"
 
 ## Run backend locally (sources workspace env overrides if present)
 backend:

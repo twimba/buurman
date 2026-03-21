@@ -7,7 +7,9 @@ import java.util.Optional;
 
 import com.buurman.domain.PropertyValuation;
 import com.buurman.domain.Sid;
+import com.buurman.util.Generated;
 
+@Generated
 public record PropertyValuationResponse(
     Sid identifier,
     PropertyValuation.ValuationType valuationType,

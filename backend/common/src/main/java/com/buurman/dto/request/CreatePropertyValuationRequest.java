@@ -9,7 +9,9 @@ import com.buurman.domain.PropertyValuation;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import com.buurman.util.Generated;
 
+@Generated
 public record CreatePropertyValuationRequest(
     @NotNull(message = "Valuation type is required") PropertyValuation.ValuationType valuationType,
     @NotNull(message = "Valuation date is required") LocalDate valuationDate,

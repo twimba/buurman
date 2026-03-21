@@ -243,7 +243,7 @@ public class ContractService {
     contractVars.put("baseUrl", appProperties.email().baseUrl());
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
-            .teamId(teamId)
+            .teamId(Optional.of(teamId))
             .notificationType(CONTRACT_CREATED)
             .templateName("contract-created")
             .templateVariables(contractVars)
@@ -686,7 +686,7 @@ public class ContractService {
         primaryTenant.getFirstName() + primaryTenant.getLastName().map(n -> " " + n).orElse("");
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
-            .teamId(teamId)
+            .teamId(Optional.of(teamId))
             .notificationType(CONTRACT_STATUS_CHANGED)
             .templateName("contract-status-changed")
             .templateVariables(
@@ -795,7 +795,7 @@ public class ContractService {
         primaryTenant.getFirstName() + primaryTenant.getLastName().map(n -> " " + n).orElse("");
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
-            .teamId(teamId)
+            .teamId(Optional.of(teamId))
             .notificationType(CONTRACT_REOPENED)
             .templateName("contract-reopened")
             .templateVariables(

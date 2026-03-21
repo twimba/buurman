@@ -6,7 +6,9 @@ import java.util.Optional;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
+import com.buurman.util.Generated;
 
+@Generated
 public record UpdateRentPeriodRequest(
     @NotNull @DecimalMin(value = "0.01") BigDecimal rentAmount,
     @NotNull LocalDate effectiveFrom,

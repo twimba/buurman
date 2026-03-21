@@ -7,7 +7,9 @@ import java.util.Optional;
 
 import com.buurman.domain.Sid;
 import com.buurman.dto.request.WwsCalculationRequest;
+import com.buurman.util.Generated;
 
+@Generated
 public record WwsCalculationResponse(
     Optional<Sid> identifier,
     BigDecimal totalPoints,

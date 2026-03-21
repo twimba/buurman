@@ -3,7 +3,9 @@ package com.buurman.dto.response;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import com.buurman.util.Generated;
 
+@Generated
 public record PropertyFinancialSummaryResponse(
     Optional<PropertyAcquisitionResponse> acquisition,
     Optional<PropertyValuationResponse> latestValuation,

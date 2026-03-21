@@ -3,8 +3,10 @@ package com.buurman.config.models;
 import java.util.Optional;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import com.buurman.util.Generated;
 
 @ConfigurationProperties(prefix = "twilio")
+@Generated
 public record TwilioProperties(
     String accountSid,
     String authToken,

@@ -7,7 +7,9 @@ import com.buurman.domain.RentComponentType;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import com.buurman.util.Generated;
 
+@Generated
 public record RentComponentRequest(
     @NotNull(message = "Component type is required") RentComponentType componentType,
     @NotNull(message = "Amount is required") @Positive(message = "Amount must be positive") BigDecimal amount,

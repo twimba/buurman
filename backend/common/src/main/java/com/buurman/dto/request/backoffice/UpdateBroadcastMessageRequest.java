@@ -7,7 +7,9 @@ import java.util.Optional;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import com.buurman.util.Generated;
 
+@Generated
 public record UpdateBroadcastMessageRequest(
     @NotBlank @Size(max = 200) String title,
     @NotBlank String body,

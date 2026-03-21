@@ -7,7 +7,9 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import com.buurman.util.Generated;
 
+@Generated
 public record UpdateTeamSettingsRequest(
     @Valid Optional<PaymentSettings> payments, @Valid Optional<RegionalSettings> regional) {
 

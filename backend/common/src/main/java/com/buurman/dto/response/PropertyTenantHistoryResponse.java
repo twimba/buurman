@@ -4,7 +4,9 @@ import java.time.Instant;
 import java.util.Optional;
 
 import com.buurman.domain.PropertyTenantHistory;
+import com.buurman.util.Generated;
 
+@Generated
 public record PropertyTenantHistoryResponse(
     PropertySummary property,
     Optional<Instant> movedInAt,

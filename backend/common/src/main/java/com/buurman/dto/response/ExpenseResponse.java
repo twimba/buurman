@@ -8,7 +8,9 @@ import java.util.Optional;
 
 import com.buurman.domain.Expense;
 import com.buurman.domain.Sid;
+import com.buurman.util.Generated;
 
+@Generated
 public record ExpenseResponse(
     Sid identifier,
     Optional<PropertySummary> property,

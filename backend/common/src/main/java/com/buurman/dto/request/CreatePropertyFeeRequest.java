@@ -9,7 +9,9 @@ import com.buurman.domain.PropertyFee;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import com.buurman.util.Generated;
 
+@Generated
 public record CreatePropertyFeeRequest(
     @NotNull(message = "Fee type is required") PropertyFee.FeeType feeType,
     Optional<String> name,

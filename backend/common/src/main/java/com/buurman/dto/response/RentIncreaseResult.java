@@ -5,7 +5,9 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.identifier.ContractIdentifier;
+import com.buurman.util.Generated;
 
+@Generated
 public record RentIncreaseResult(
     ContractIdentifier contractIdentifier,
     String propertyName,

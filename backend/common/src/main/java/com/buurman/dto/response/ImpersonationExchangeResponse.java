@@ -1,7 +1,9 @@
 package com.buurman.dto.response;
 
 import com.buurman.domain.Sid;
+import com.buurman.util.Generated;
 
+@Generated
 public record ImpersonationExchangeResponse(
     String token,
     Sid sessionIdentifier,

@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Optional;
 
 import com.buurman.domain.Sid;
+import com.buurman.util.Generated;
 
+@Generated
 public record BackofficeUserDetailResponse(
     Sid identifier,
     String email,

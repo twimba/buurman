@@ -1,7 +1,8 @@
 package com.buurman.util;
 
+import static java.util.Locale.ENGLISH;
+
 import java.security.SecureRandom;
-import java.util.Locale;
 import java.util.function.Function;
 
 import net.datafaker.Faker;
@@ -9,22 +10,17 @@ import net.datafaker.Faker;
 public final class HumanReadableIdGenerator {
 
   private static final SecureRandom RANDOM = new SecureRandom();
-  private static final Faker FAKER = new Faker(Locale.ENGLISH, RANDOM);
+  private static final Faker FAKER = new Faker(ENGLISH, RANDOM);
 
   private HumanReadableIdGenerator() {}
 
   public static String generate() {
-    String adj1 = FAKER.resolve("adjective.positive").toLowerCase(Locale.ENGLISH);
-    String animal1 = FAKER.animal().name().toLowerCase(Locale.ENGLISH);
-    String adj2 = FAKER.resolve("adjective.positive").toLowerCase(Locale.ENGLISH);
-    String animal2 = FAKER.animal().name().toLowerCase(Locale.ENGLISH);
-    return sanitize(adj1)
-        + "-"
-        + sanitize(animal1)
-        + "-"
-        + sanitize(adj2)
-        + "-"
-        + sanitize(animal2);
+    String adj1 = FAKER.word().adjective().toLowerCase(ENGLISH);
+    String animal1 = FAKER.animal().name().toLowerCase(ENGLISH);
+    String adj2 = FAKER.word().adjective().toLowerCase(ENGLISH);
+    String noun = FAKER.word().noun().toLowerCase(ENGLISH);
+    return String.format(
+        "%s-%s-%s-%s", sanitize(adj1), sanitize(animal1), sanitize(adj2), sanitize(noun));
   }
 
   /**

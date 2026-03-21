@@ -152,7 +152,7 @@ public class PhoneVerificationService {
         SendNotificationRequest.builder()
             .teamId(user.getActiveTeamId())
             .notificationType(PHONE_VERIFICATION_CODE)
-            .recipientUserId(user.getId())
+            .recipientUserId(Optional.of(user.getId()))
             .recipientPhone(user.getPhone())
             .createdBy(user.getId())
             .templateName("phone-verification-code")

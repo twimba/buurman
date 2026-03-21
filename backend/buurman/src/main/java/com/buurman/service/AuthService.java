@@ -324,10 +324,10 @@ public class AuthService {
             verificationTeamId ->
                 notificationService.send(
                     SendNotificationRequest.builder()
-                        .teamId(verificationTeamId)
+                        .teamId(Optional.of(verificationTeamId))
                         .notificationType(VERIFICATION_CODE)
-                        .recipientUserId(user.getId())
-                        .recipientEmail(user.getEmail())
+                        .recipientUserId(Optional.of(user.getId()))
+                        .recipientEmail(Optional.of(user.getEmail()))
                         .recipientPhone(user.getPhone())
                         .createdBy(user.getId())
                         .templateName("verification-code")
@@ -476,10 +476,10 @@ public class AuthService {
             welcomeTeamId ->
                 notificationService.send(
                     SendNotificationRequest.builder()
-                        .teamId(welcomeTeamId)
+                        .teamId(Optional.of(welcomeTeamId))
                         .notificationType(WELCOME)
-                        .recipientUserId(user.getId())
-                        .recipientEmail(user.getEmail())
+                        .recipientUserId(Optional.of(user.getId()))
+                        .recipientEmail(Optional.of(user.getEmail()))
                         .recipientPhone(user.getPhone())
                         .createdBy(user.getId())
                         .templateName("welcome")

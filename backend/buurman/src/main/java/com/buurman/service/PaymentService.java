@@ -878,7 +878,7 @@ public class PaymentService {
             .orElse("N/A");
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
-            .teamId(teamId)
+            .teamId(Optional.of(teamId))
             .notificationType(PAYMENT_PAID)
             .templateName("payment-paid")
             .templateVariables(
@@ -926,7 +926,7 @@ public class PaymentService {
 
     notificationService.sendToTeam(
         SendNotificationRequest.builder()
-            .teamId(teamId)
+            .teamId(Optional.of(teamId))
             .notificationType(PAYMENT_RECEIVAL)
             .templateName("payment-receival")
             .templateVariables(vars)

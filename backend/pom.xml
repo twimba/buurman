@@ -49,6 +49,8 @@
         <bucket4j.version>8.17.0</bucket4j.version>
         <swagger-annotations.version>2.2.43</swagger-annotations.version>
         <poi.version>5.5.1</poi.version>
+        <!-- Default empty argLine; JaCoCo's prepare-agent goal overrides this. -->
+        <argLine/>
     </properties>
 
     <dependencyManagement>
@@ -393,6 +395,40 @@
                         <skip>true</skip>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <!-- JDK 21+ warns about Mockito's dynamic byte-buddy agent attachment.
+                             @{argLine} is set by JaCoCo's prepare-agent goal. -->
+                        <argLine>@{argLine} -XX:+EnableDynamicAgentLoading</argLine>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.8.13</version>
+                    <configuration>
+                        <excludes>
+                            <!-- OpenAPI-generated code — excluded by pattern -->
+                            <exclude>com/buurman/generated/**</exclude>
+                        </excludes>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>report</id>
+                            <phase>test</phase>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -403,6 +439,13 @@
             <properties>
                 <spotless.check.skip>true</spotless.check.skip>
             </properties>
+        </profile>
+        <!-- Activate to include the aggregated JaCoCo coverage report module -->
+        <profile>
+            <id>coverage</id>
+            <modules>
+                <module>coverage-report</module>
+            </modules>
         </profile>
     </profiles>
 </project>

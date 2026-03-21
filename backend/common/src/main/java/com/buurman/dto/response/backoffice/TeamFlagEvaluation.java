@@ -3,7 +3,9 @@ package com.buurman.dto.response.backoffice;
 import java.util.Map;
 
 import com.buurman.domain.Sid;
+import com.buurman.util.Generated;
 
+@Generated
 public record TeamFlagEvaluation(
     Sid teamIdentifier,
     String teamName,

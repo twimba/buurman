@@ -11,7 +11,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+import com.buurman.util.Generated;
 
+@Generated
 public record CreateExpenseRequest(
     @NotNull(message = "Property identifier is required") PropertyIdentifier propertyIdentifier,
     @NotNull(message = "Category is required") Expense.ExpenseCategory category,

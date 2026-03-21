@@ -8,7 +8,9 @@ import java.util.Optional;
 
 import com.buurman.domain.Property;
 import com.buurman.domain.Sid;
+import com.buurman.util.Generated;
 
+@Generated
 public record PropertyResponse(
     Sid identifier,
     Property.PropertyCategory propertyCategory,

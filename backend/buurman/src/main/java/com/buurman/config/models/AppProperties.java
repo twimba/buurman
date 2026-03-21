@@ -3,8 +3,10 @@ package com.buurman.config.models;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import com.buurman.util.Generated;
 
 @ConfigurationProperties(prefix = "app")
+@Generated
 public record AppProperties(
     String version, String publicUrl, Email email, Api api, Cors cors, Documents documents) {
   public record Email(String from, String fromName, String baseUrl) {}

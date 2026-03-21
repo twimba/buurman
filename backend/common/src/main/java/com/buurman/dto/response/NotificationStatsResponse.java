@@ -1,7 +1,9 @@
 package com.buurman.dto.response;
 
 import java.util.Map;
+import com.buurman.util.Generated;
 
+@Generated
 public record NotificationStatsResponse(
     long totalCount,
     long pendingCount,

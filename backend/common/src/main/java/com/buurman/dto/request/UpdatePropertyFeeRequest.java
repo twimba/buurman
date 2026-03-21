@@ -7,7 +7,9 @@ import java.util.Optional;
 import com.buurman.domain.PropertyFee;
 
 import jakarta.validation.constraints.Positive;
+import com.buurman.util.Generated;
 
+@Generated
 public record UpdatePropertyFeeRequest(
     Optional<PropertyFee.FeeType> feeType,
     Optional<String> name,

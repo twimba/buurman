@@ -7,7 +7,9 @@ import java.util.Optional;
 import com.buurman.domain.PropertyValuation;
 
 import jakarta.validation.constraints.Positive;
+import com.buurman.util.Generated;
 
+@Generated
 public record UpdatePropertyValuationRequest(
     Optional<PropertyValuation.ValuationType> valuationType,
     Optional<LocalDate> valuationDate,

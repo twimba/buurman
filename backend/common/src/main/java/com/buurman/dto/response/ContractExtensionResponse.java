@@ -7,7 +7,9 @@ import java.util.Optional;
 
 import com.buurman.domain.ContractExtension;
 import com.buurman.domain.Sid;
+import com.buurman.util.Generated;
 
+@Generated
 public record ContractExtensionResponse(
     Sid identifier,
     Sid contractIdentifier,
