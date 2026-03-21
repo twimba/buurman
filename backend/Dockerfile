@@ -18,7 +18,7 @@ COPY buurman-booklets/pom.xml buurman-booklets/
 COPY app/pom.xml app/
 COPY .mvn .mvn
 COPY lombok.config .
-RUN mvn dependency:go-offline -B -Dmaven.build.cache.enabled=false
+RUN mvn dependency:go-offline -B -fn -Dmaven.build.cache.enabled=false
 
 # Copy source
 COPY common/src common/src

@@ -49,7 +49,9 @@
         "composite": true,
         "clientRole": false,
         "composites": {
-          "realm": ["MONITORING_ACCESS"]
+          "realm": [
+            "MONITORING_ACCESS"
+          ]
         }
       },
       {
@@ -84,12 +86,16 @@
       "redirectUris": [
         "https://backoffice.local.buurman.io/*",
         "https://backoffice.buurman.io/*",
-        "http://localhost:5174/*"
+        "http://localhost:5174/*",
+        "https://w1-backoffice.local.buurman.io:1443/*",
+        "http://localhost:5184/*"
       ],
       "webOrigins": [
         "https://backoffice.local.buurman.io",
         "https://backoffice.buurman.io",
-        "http://localhost:5174"
+        "http://localhost:5174",
+        "https://w1-backoffice.local.buurman.io:1443",
+        "http://localhost:5184"
       ],
       "defaultClientScopes": [
         "web-origins",

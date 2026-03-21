@@ -9,11 +9,11 @@ export default defineConfig({
   plugins: [react()],
   define: defines,
   server: {
-    port: 5174,
+    port: parseInt(process.env.VITE_DEV_PORT || '5174', 10),
     host: true,
-    allowedHosts: ['backoffice.local.buurman.io'],
+    allowedHosts: true,
     hmr: {
-      clientPort: 443,
+      clientPort: parseInt(process.env.VITE_HMR_PORT || '443', 10),
     },
   },
   build: {

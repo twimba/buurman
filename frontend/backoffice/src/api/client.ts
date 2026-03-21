@@ -1,8 +1,10 @@
 import axios from "axios";
 import keycloak from "../config/keycloak";
 
-// Derive API base URL from current hostname: backoffice.X → api.X/backoffice
-const apiBaseUrl = `${window.location.protocol}//api.${window.location.hostname.replace(/^backoffice\./, "")}/backoffice`;
+// Derive API base URL from current hostname: backoffice.X → api.X/backoffice (handles workspace prefixes like w1-backoffice → w1-api)
+const apiHostname = window.location.hostname.replace(/\bbackoffice\b/, "api");
+const apiPort = window.location.port ? `:${window.location.port}` : "";
+const apiBaseUrl = `${window.location.protocol}//${apiHostname}${apiPort}/backoffice`;
 
 const client = axios.create({
   baseURL: apiBaseUrl,

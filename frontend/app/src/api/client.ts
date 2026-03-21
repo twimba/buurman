@@ -1,8 +1,10 @@
 import axios from 'axios';
 import keycloak from '../config/keycloak';
 
-// Derive API base URL from current hostname: app.X → api.X
-const apiBaseUrl = `${window.location.protocol}//api.${window.location.hostname.replace(/^app\./, '')}`;
+// Derive API base URL from current hostname: app.X → api.X (handles workspace prefixes like w1-app → w1-api)
+const apiHostname = window.location.hostname.replace(/\bapp\b/, 'api');
+const apiPort = window.location.port ? `:${window.location.port}` : '';
+const apiBaseUrl = `${window.location.protocol}//${apiHostname}${apiPort}`;
 
 const client = axios.create({
   baseURL: apiBaseUrl,

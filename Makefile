@@ -1,4 +1,4 @@
-.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend
+.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend frontend-app frontend-backoffice workspace-setup
 
 ## Start everything in Docker (including backend + app containers)
 up:
@@ -40,13 +40,32 @@ certs:
 stats:
 	scc --gen --no-gen --min --no-min --min-gen --no-min-gen --sort complexity  --avg-wage 100000 --sloccount-format --cocomo-project-type "ai-solo,0.25,1.03,1.0,1.0"
 
-## Run backend locally
+## Run backend locally (sources workspace env overrides if present)
 backend:
-	cd backend && mvn spring-boot:run -pl app -am
+	@if [ -f .env.backend ]; then \
+		echo "Sourcing workspace backend config from .env.backend"; \
+		. ./.env.backend && cd backend && mvn spring-boot:run -pl app -am; \
+	else \
+		cd backend && mvn spring-boot:run -pl app -am; \
+	fi
+
+## Run frontend app locally (reads ports from .env if present)
+frontend-app:
+	@VITE_DEV_PORT=$$(grep '^LOCAL_APP_PORT=' .env 2>/dev/null | cut -d= -f2 || echo 5173); \
+	VITE_HMR_PORT=$$(grep '^HTTPS_PORT=' .env 2>/dev/null | cut -d= -f2 || echo 443); \
+	echo "Starting app on port $$VITE_DEV_PORT (HMR via $$VITE_HMR_PORT)"; \
+	cd frontend && VITE_DEV_PORT=$$VITE_DEV_PORT VITE_HMR_PORT=$$VITE_HMR_PORT yarn dev:app
+
+## Run frontend backoffice locally (reads ports from .env if present)
+frontend-backoffice:
+	@VITE_DEV_PORT=$$(grep '^LOCAL_BACKOFFICE_PORT=' .env 2>/dev/null | cut -d= -f2 || echo 5174); \
+	VITE_HMR_PORT=$$(grep '^HTTPS_PORT=' .env 2>/dev/null | cut -d= -f2 || echo 443); \
+	echo "Starting backoffice on port $$VITE_DEV_PORT (HMR via $$VITE_HMR_PORT)"; \
+	cd frontend && VITE_DEV_PORT=$$VITE_DEV_PORT VITE_HMR_PORT=$$VITE_HMR_PORT yarn dev:backoffice
 
 backend-upgradable-dependencies:
 	mvn versions:display-dependency-updates -DallowMajorUpdates=false -Dversions.outputLineWidth=145 -Dmaven.version.ignore='(?i).*-(alpha|beta|rc|m)([-.]?\d+)?' -DprocessDependencyManagementTransitive=false
-	
+
 ## Generate TypeScript API clients from OpenAPI specs
 ## Bundle split OpenAPI source files into openapi/app.yaml
 bundle-openapi:
@@ -59,6 +78,12 @@ deploy-prod:
 	git fetch origin main
 	git tag -f prod origin/main
 	git push origin prod --force
+
+## Configure this directory as a parallel workspace (1-9)
+## Usage: make workspace-setup WS=1
+workspace-setup:
+	@if [ -z "$(WS)" ]; then echo "Usage: make workspace-setup WS=<1-9>"; exit 1; fi
+	bash scripts/setup-workspace.sh $(WS)
 
 ## Open iTerm2 tab with 3 panes: infrastructure (top), backend (middle), frontend (bottom)
 local:
