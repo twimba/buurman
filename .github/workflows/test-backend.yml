@@ -34,6 +34,7 @@ jobs:
       - name: Run tests with coverage
         working-directory: backend
         run: |
+          mvn install -N -B -Pquick
           mvn verify -pl common,buurman,buurman-notifications,buurman-booklets,coverage-report \
             -am -Pquick -B -Dmaven.build.cache.enabled=false
 
