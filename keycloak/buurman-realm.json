@@ -90,7 +90,9 @@
         "http://localhost:5173/*",
         "http://localhost:3000/*",
         "https://w1-app.local.buurman.io:1443/*",
-        "http://localhost:5183/*"
+        "http://localhost:5183/*",
+        "https://w2-app.local.buurman.io:2443/*",
+        "http://localhost:5193/*"
       ],
       "webOrigins": [
         "https://app.local.buurman.io",
@@ -98,7 +100,9 @@
         "http://localhost:5173",
         "http://localhost:3000",
         "https://w1-app.local.buurman.io:1443",
-        "http://localhost:5183"
+        "http://localhost:5183",
+        "https://w2-app.local.buurman.io:2443",
+        "http://localhost:5193"
       ],
       "defaultClientScopes": [
         "web-origins",
