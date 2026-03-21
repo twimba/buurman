@@ -14,9 +14,9 @@ public final class HumanReadableIdGenerator {
   private HumanReadableIdGenerator() {}
 
   public static String generate() {
-    String adj1 = FAKER.resolve("adjective.positive").toLowerCase(Locale.ENGLISH);
+    String adj1 = FAKER.word().adjective().toLowerCase(Locale.ENGLISH);
     String animal1 = FAKER.animal().name().toLowerCase(Locale.ENGLISH);
-    String adj2 = FAKER.resolve("adjective.positive").toLowerCase(Locale.ENGLISH);
+    String adj2 = FAKER.word().adjective().toLowerCase(Locale.ENGLISH);
     String animal2 = FAKER.animal().name().toLowerCase(Locale.ENGLISH);
     return sanitize(adj1)
         + "-"
