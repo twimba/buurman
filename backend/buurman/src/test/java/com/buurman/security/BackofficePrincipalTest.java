@@ -24,10 +24,7 @@ class BackofficePrincipalTest {
     void storesAllFields() {
       BackofficePrincipal principal =
           new BackofficePrincipal(
-              KEYCLOAK_ID,
-              Optional.of(EMAIL),
-              Optional.of(NAME),
-              Optional.of("BACKOFFICE_ADMIN"));
+              KEYCLOAK_ID, Optional.of(EMAIL), Optional.of(NAME), Optional.of("BACKOFFICE_ADMIN"));
 
       assertThat(principal.getKeycloakId()).isEqualTo(KEYCLOAK_ID);
       assertThat(principal.getEmail()).contains(EMAIL);
@@ -38,7 +35,8 @@ class BackofficePrincipalTest {
     @DisplayName("handles empty optionals")
     void handlesEmptyOptionals() {
       BackofficePrincipal principal =
-          new BackofficePrincipal(KEYCLOAK_ID, Optional.empty(), Optional.empty(), Optional.empty());
+          new BackofficePrincipal(
+              KEYCLOAK_ID, Optional.empty(), Optional.empty(), Optional.empty());
 
       assertThat(principal.getEmail()).isEmpty();
       assertThat(principal.getRole()).isEmpty();
@@ -63,7 +61,8 @@ class BackofficePrincipalTest {
     @DisplayName("falls back to keycloakId when name is absent")
     void fallsBackToKeycloakId() {
       BackofficePrincipal principal =
-          new BackofficePrincipal(KEYCLOAK_ID, Optional.of(EMAIL), Optional.empty(), Optional.empty());
+          new BackofficePrincipal(
+              KEYCLOAK_ID, Optional.of(EMAIL), Optional.empty(), Optional.empty());
 
       assertThat(principal.getName()).isEqualTo(KEYCLOAK_ID);
     }

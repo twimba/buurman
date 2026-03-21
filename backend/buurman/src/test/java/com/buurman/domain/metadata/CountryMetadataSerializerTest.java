@@ -21,10 +21,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 class CountryMetadataSerializerTest {
 
   private final ObjectMapper apiObjectMapper =
-      JsonMapper.builder()
-          .addModule(new JavaTimeModule())
-          .addModule(new Jdk8Module())
-          .build();
+      JsonMapper.builder().addModule(new JavaTimeModule()).addModule(new Jdk8Module()).build();
 
   private final CountryMetadataSerializer serializer =
       new CountryMetadataSerializer(apiObjectMapper);
@@ -103,7 +100,8 @@ class CountryMetadataSerializerTest {
           """
           {"sectorClassification":"social","wwsPoints":142,\
           "totalServiceCostsAmount":{"value":15000,"currency":"EUR"},\
-          "energyLabel":"A+"}""";
+          "energyLabel":"A+"}\
+          """;
 
       ContractCountryMetadata result = serializer.deserialize(json, "NL");
 
@@ -122,8 +120,10 @@ class CountryMetadataSerializerTest {
     @DisplayName("deserializes GenericContractMetadata for unknown country code")
     @SuppressWarnings("NullAway")
     void deserializesGenericMetadata() {
-      String json = """
-          {"energyCertificateRating":"C","maxDepositMonths":2}""";
+      String json =
+          """
+          {"energyCertificateRating":"C","maxDepositMonths":2}\
+          """;
 
       ContractCountryMetadata result = serializer.deserialize(json, "ZZ");
 
@@ -163,8 +163,10 @@ class CountryMetadataSerializerTest {
     @DisplayName("handles lowercase country code")
     @SuppressWarnings("NullAway")
     void handlesLowercaseCountryCode() {
-      String json = """
-          {"sectorClassification":"free"}""";
+      String json =
+          """
+          {"sectorClassification":"free"}\
+          """;
 
       ContractCountryMetadata result = serializer.deserialize(json, "nl");
 

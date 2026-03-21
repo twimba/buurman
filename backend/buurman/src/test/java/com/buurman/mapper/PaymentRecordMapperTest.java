@@ -118,8 +118,7 @@ class PaymentRecordMapperTest {
       Optional<Payment> result = mapper.toDomain(record);
 
       assertThat(result).isPresent();
-      assertThat(result.get().getDeletedAt())
-          .contains(deletedAt.toInstant(ZoneOffset.UTC));
+      assertThat(result.get().getDeletedAt()).contains(deletedAt.toInstant(ZoneOffset.UTC));
     }
 
     @Test
@@ -132,8 +131,7 @@ class PaymentRecordMapperTest {
       Optional<Payment> result = mapper.toDomain(record);
 
       assertThat(result).isPresent();
-      assertThat(result.get().getAmount().value())
-          .isEqualByComparingTo(new BigDecimal("2500.50"));
+      assertThat(result.get().getAmount().value()).isEqualByComparingTo(new BigDecimal("2500.50"));
       assertThat(result.get().getAmount().currency()).isEqualTo("USD");
     }
 

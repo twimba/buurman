@@ -2,6 +2,7 @@ package com.buurman.dto.response;
 
 import java.math.BigDecimal;
 import java.util.Optional;
+
 import com.buurman.util.Generated;
 
 @Generated

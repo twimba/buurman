@@ -5,9 +5,9 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.ContractExtension;
+import com.buurman.util.Generated;
 
 import jakarta.validation.constraints.Positive;
-import com.buurman.util.Generated;
 
 @Generated
 public record CreateContractExtensionRequest(

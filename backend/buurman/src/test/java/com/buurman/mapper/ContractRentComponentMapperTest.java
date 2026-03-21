@@ -34,9 +34,13 @@ class ContractRentComponentMapperTest {
     @Test
     @DisplayName("maps complete component to response")
     void mapsCompleteComponent() {
-      ContractRentComponent component = createComponent(
-          RentComponentType.BASE_RENT, new BigDecimal("1000.00"), "EUR",
-          Optional.of("Monthly base rent"), 1);
+      ContractRentComponent component =
+          createComponent(
+              RentComponentType.BASE_RENT,
+              new BigDecimal("1000.00"),
+              "EUR",
+              Optional.of("Monthly base rent"),
+              1);
 
       RentComponentResponse response = mapper.toResponse(component);
 
@@ -53,8 +57,8 @@ class ContractRentComponentMapperTest {
     @DisplayName("maps displayName for all component types")
     void mapsDisplayNameForAllTypes() {
       for (RentComponentType type : RentComponentType.values()) {
-        ContractRentComponent component = createComponent(
-            type, BigDecimal.ONE, "EUR", Optional.empty(), 0);
+        ContractRentComponent component =
+            createComponent(type, BigDecimal.ONE, "EUR", Optional.empty(), 0);
 
         RentComponentResponse response = mapper.toResponse(component);
 
@@ -66,8 +70,8 @@ class ContractRentComponentMapperTest {
     @Test
     @DisplayName("maps empty description")
     void mapsEmptyDescription() {
-      ContractRentComponent component = createComponent(
-          RentComponentType.PARKING, BigDecimal.TEN, "EUR", Optional.empty(), 5);
+      ContractRentComponent component =
+          createComponent(RentComponentType.PARKING, BigDecimal.TEN, "EUR", Optional.empty(), 5);
 
       RentComponentResponse response = mapper.toResponse(component);
 
@@ -77,10 +81,11 @@ class ContractRentComponentMapperTest {
     @Test
     @DisplayName("throws when identifier is missing")
     void throwsWhenIdentifierMissing() {
-      ContractRentComponent component = ContractRentComponent.builder()
-          .componentType(RentComponentType.BASE_RENT)
-          .amount(MoneyAmount.of(BigDecimal.ONE, "EUR"))
-          .build();
+      ContractRentComponent component =
+          ContractRentComponent.builder()
+              .componentType(RentComponentType.BASE_RENT)
+              .amount(MoneyAmount.of(BigDecimal.ONE, "EUR"))
+              .build();
 
       assertThatThrownBy(() -> mapper.toResponse(component))
           .isInstanceOf(NoSuchElementException.class);
@@ -94,11 +99,20 @@ class ContractRentComponentMapperTest {
     @Test
     @DisplayName("maps list of components")
     void mapsList() {
-      List<ContractRentComponent> components = List.of(
-          createComponent(RentComponentType.BASE_RENT, new BigDecimal("900.00"), "EUR",
-              Optional.empty(), 1),
-          createComponent(RentComponentType.SERVICE_COSTS, new BigDecimal("100.00"), "EUR",
-              Optional.empty(), 2));
+      List<ContractRentComponent> components =
+          List.of(
+              createComponent(
+                  RentComponentType.BASE_RENT,
+                  new BigDecimal("900.00"),
+                  "EUR",
+                  Optional.empty(),
+                  1),
+              createComponent(
+                  RentComponentType.SERVICE_COSTS,
+                  new BigDecimal("100.00"),
+                  "EUR",
+                  Optional.empty(),
+                  2));
 
       List<RentComponentResponse> responses = mapper.toResponses(components);
 
@@ -117,8 +131,11 @@ class ContractRentComponentMapperTest {
   }
 
   private ContractRentComponent createComponent(
-      RentComponentType type, BigDecimal amount, String currency,
-      Optional<String> description, int sortOrder) {
+      RentComponentType type,
+      BigDecimal amount,
+      String currency,
+      Optional<String> description,
+      int sortOrder) {
     return ContractRentComponent.builder()
         .id(UUID.randomUUID())
         .identifier(Optional.of(COMPONENT_ID))

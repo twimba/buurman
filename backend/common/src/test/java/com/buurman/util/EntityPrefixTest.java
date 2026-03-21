@@ -41,8 +41,7 @@ class EntityPrefixTest {
     @Test
     @DisplayName("all codes are unique")
     void allCodesUnique() {
-      List<String> codes =
-          Arrays.stream(EntityPrefix.values()).map(EntityPrefix::getCode).toList();
+      List<String> codes = Arrays.stream(EntityPrefix.values()).map(EntityPrefix::getCode).toList();
       assertThat(codes).doesNotHaveDuplicates();
     }
 

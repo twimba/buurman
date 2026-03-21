@@ -1,8 +1,8 @@
 package com.buurman.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
@@ -61,11 +61,11 @@ class WwsCalculationRecordMapperTest {
     @DisplayName("maps all fields from a complete record")
     void mapsCompleteRecord() throws Exception {
       WwsCalculationsRecord record = createCompleteRecord();
-      List<CategoryBreakdown> breakdown = List.of(
-          new CategoryBreakdown("area", "Area", "Oppervlakte",
-              new BigDecimal("44.00"), "Based on 44m2"));
-      when(objectMapper.readValue(anyString(), any(TypeReference.class)))
-          .thenReturn(breakdown);
+      List<CategoryBreakdown> breakdown =
+          List.of(
+              new CategoryBreakdown(
+                  "area", "Area", "Oppervlakte", new BigDecimal("44.00"), "Based on 44m2"));
+      when(objectMapper.readValue(anyString(), any(TypeReference.class))).thenReturn(breakdown);
 
       Optional<WwsCalculation> result = mapper.toDomain(record);
 
@@ -110,8 +110,7 @@ class WwsCalculationRecordMapperTest {
       record.setContractId(null);
       record.setMaxRentIndication(null);
       record.setNotes(null);
-      when(objectMapper.readValue(anyString(), any(TypeReference.class)))
-          .thenReturn(List.of());
+      when(objectMapper.readValue(anyString(), any(TypeReference.class))).thenReturn(List.of());
 
       Optional<WwsCalculation> result = mapper.toDomain(record);
 
@@ -128,14 +127,12 @@ class WwsCalculationRecordMapperTest {
       WwsCalculationsRecord record = createCompleteRecord();
       LocalDateTime deletedAt = LocalDateTime.of(2026, 6, 1, 0, 0, 0);
       record.setDeletedAt(deletedAt);
-      when(objectMapper.readValue(anyString(), any(TypeReference.class)))
-          .thenReturn(List.of());
+      when(objectMapper.readValue(anyString(), any(TypeReference.class))).thenReturn(List.of());
 
       Optional<WwsCalculation> result = mapper.toDomain(record);
 
       assertThat(result).isPresent();
-      assertThat(result.get().getDeletedAt())
-          .contains(deletedAt.toInstant(ZoneOffset.UTC));
+      assertThat(result.get().getDeletedAt()).contains(deletedAt.toInstant(ZoneOffset.UTC));
     }
   }
 

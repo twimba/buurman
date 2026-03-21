@@ -57,8 +57,7 @@ class FinancingPaymentRecordMapperTest {
       assertThat(payment.getFinancingId()).isEqualTo(FINANCING_ID);
       assertThat(payment.getTeamId()).isEqualTo(TEAM_ID);
       assertThat(payment.getPaymentDate()).isEqualTo(LocalDate.of(2026, 3, 1));
-      assertThat(payment.getTotalAmount().value())
-          .isEqualByComparingTo(new BigDecimal("1500.00"));
+      assertThat(payment.getTotalAmount().value()).isEqualByComparingTo(new BigDecimal("1500.00"));
       assertThat(payment.getTotalAmount().currency()).isEqualTo("EUR");
       assertThat(payment.getPrincipalAmount()).contains(new BigDecimal("800.00"));
       assertThat(payment.getInterestAmount()).contains(new BigDecimal("600.00"));
@@ -117,8 +116,7 @@ class FinancingPaymentRecordMapperTest {
       Optional<FinancingPayment> result = mapper.toDomain(record);
 
       assertThat(result).isPresent();
-      assertThat(result.get().getDeletedAt())
-          .contains(deletedAt.toInstant(ZoneOffset.UTC));
+      assertThat(result.get().getDeletedAt()).contains(deletedAt.toInstant(ZoneOffset.UTC));
     }
 
     @Test

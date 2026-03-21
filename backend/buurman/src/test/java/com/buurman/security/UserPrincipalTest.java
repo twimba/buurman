@@ -94,7 +94,8 @@ class UserPrincipalTest {
     }
 
     @Test
-    @DisplayName("three-arg optional constructor defaults isOwner to false and emailVerified to true")
+    @DisplayName(
+        "three-arg optional constructor defaults isOwner to false and emailVerified to true")
     void threeArgOptionalConstructorDefaultsOwnerAndVerified() {
       UserPrincipal principal =
           new UserPrincipal(

@@ -5,10 +5,10 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.PropertyOccupancyPeriod.OccupancyType;
+import com.buurman.util.Generated;
 
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
-import com.buurman.util.Generated;
 
 @Generated
 public record UpdateOccupancyPeriodRequest(

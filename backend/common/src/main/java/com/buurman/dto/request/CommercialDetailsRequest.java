@@ -3,9 +3,10 @@ package com.buurman.dto.request;
 import java.math.BigDecimal;
 import java.util.Optional;
 
+import com.buurman.util.Generated;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
-import com.buurman.util.Generated;
 
 @Generated
 public record CommercialDetailsRequest(

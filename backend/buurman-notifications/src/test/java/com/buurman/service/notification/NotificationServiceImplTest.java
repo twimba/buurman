@@ -263,8 +263,7 @@ class NotificationServiceImplTest {
 
       service.send(baseRequest().build());
 
-      ArgumentCaptor<NotificationOutbox> captor =
-          ArgumentCaptor.forClass(NotificationOutbox.class);
+      ArgumentCaptor<NotificationOutbox> captor = ArgumentCaptor.forClass(NotificationOutbox.class);
       verify(outboxRepository).save(captor.capture());
       NotificationOutbox outbox = captor.getValue();
       assertThat(outbox.getChannel()).isEqualTo(EMAIL);
@@ -320,8 +319,7 @@ class NotificationServiceImplTest {
               .role(TeamRole.TEAM_VIEWER)
               .build();
 
-      when(teamMemberRepository.findByTeamId(TEAM_ID))
-          .thenReturn(List.of(admin, editor, viewer));
+      when(teamMemberRepository.findByTeamId(TEAM_ID)).thenReturn(List.of(admin, editor, viewer));
 
       User adminUser =
           User.builder()
@@ -388,8 +386,7 @@ class NotificationServiceImplTest {
       stubConfigurableChannelResolution(true, false, true, true);
 
       // Recipient email is blank
-      SendNotificationRequest request =
-          baseRequest().recipientEmail(Optional.of("  ")).build();
+      SendNotificationRequest request = baseRequest().recipientEmail(Optional.of("  ")).build();
 
       service.send(request);
 

@@ -118,8 +118,7 @@ class ImpersonationPrincipalTest {
     void formatsAuditDisplayName() {
       ImpersonationPrincipal principal = createPrincipal(ImpersonationMode.FULL);
 
-      assertThat(principal.getAuditDisplayName())
-          .isEqualTo("Admin User on behalf of Jane Tenant");
+      assertThat(principal.getAuditDisplayName()).isEqualTo("Admin User on behalf of Jane Tenant");
     }
   }
 }

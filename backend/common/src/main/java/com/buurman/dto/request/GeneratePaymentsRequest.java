@@ -3,10 +3,11 @@ package com.buurman.dto.request;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import com.buurman.util.Generated;
+
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import com.buurman.util.Generated;
 
 @Generated
 public record GeneratePaymentsRequest(

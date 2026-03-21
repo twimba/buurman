@@ -231,8 +231,7 @@ class ContractRecordMapperTest {
       Optional<Contract> result = mapper.toDomain(record);
 
       assertThat(result).isPresent();
-      assertThat(result.get().getDeletedAt())
-          .contains(deletedAt.toInstant(ZoneOffset.UTC));
+      assertThat(result.get().getDeletedAt()).contains(deletedAt.toInstant(ZoneOffset.UTC));
     }
 
     @Test
@@ -319,10 +318,9 @@ class ContractRecordMapperTest {
       record.setCountryMetadata(JSONB.jsonb("{\"sectorClassification\":\"FREE\"}"));
 
       NlContractMetadata nlMetadata =
-          new NlContractMetadata("FREE", 200, true, false, true, true, true, false, false,
-              null, true, null, "A");
-      when(countryMetadataSerializer.deserialize(
-          "{\"sectorClassification\":\"FREE\"}", "NL"))
+          new NlContractMetadata(
+              "FREE", 200, true, false, true, true, true, false, false, null, true, null, "A");
+      when(countryMetadataSerializer.deserialize("{\"sectorClassification\":\"FREE\"}", "NL"))
           .thenReturn(nlMetadata);
 
       Optional<Contract> result = mapper.toDomain(record);
@@ -348,7 +346,6 @@ class ContractRecordMapperTest {
       // contract.setCountryMetadata(Optional.ofNullable(null)) => Optional.empty()
       assertThat(result.get().getCountryMetadata()).isEmpty();
     }
-
   }
 
   @Nested

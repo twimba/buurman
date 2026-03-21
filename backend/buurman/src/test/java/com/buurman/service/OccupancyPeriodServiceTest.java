@@ -30,7 +30,6 @@ import com.buurman.domain.Property;
 import com.buurman.domain.Property.PropertyStatus;
 import com.buurman.domain.PropertyOccupancyPeriod;
 import com.buurman.domain.PropertyOccupancyPeriod.OccupancyType;
-import com.buurman.domain.Sid;
 import com.buurman.domain.TeamRole;
 import com.buurman.domain.identifier.OccupancyPeriodIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
@@ -57,8 +56,7 @@ class OccupancyPeriodServiceTest {
   @Mock private PropertyAcquisitionRepository acquisitionRepository;
   @Mock private PropertyFinancingRepository financingRepository;
 
-  private final Clock clock =
-      Clock.fixed(Instant.parse("2026-03-01T12:00:00Z"), ZoneOffset.UTC);
+  private final Clock clock = Clock.fixed(Instant.parse("2026-03-01T12:00:00Z"), ZoneOffset.UTC);
 
   private OccupancyPeriodService service;
 
@@ -85,8 +83,15 @@ class OccupancyPeriodServiceTest {
 
     principal =
         new UserPrincipal(
-            USER_ID, "usr_test", "kc-id", "test@example.com", "Test User",
-            TEAM_ID, "team_test", TeamRole.TEAM_ADMIN, true);
+            USER_ID,
+            "usr_test",
+            "kc-id",
+            "test@example.com",
+            "Test User",
+            TEAM_ID,
+            "team_test",
+            TeamRole.TEAM_ADMIN,
+            true);
 
     property = new Property();
     property.setId(PROPERTY_ID);
@@ -101,8 +106,7 @@ class OccupancyPeriodServiceTest {
     @Test
     @DisplayName("creates period when no overlaps — captures saved entity")
     void createsWhenNoOverlaps() {
-      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID))
-          .thenReturn(property);
+      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
       when(repository.findOverlapping(
               eq(PROPERTY_ID), eq(TEAM_ID), any(LocalDate.class), any(LocalDate.class), isNull()))
           .thenReturn(List.of());
@@ -140,8 +144,7 @@ class OccupancyPeriodServiceTest {
     @Test
     @DisplayName("future start date does not change property status")
     void futureStartDateDoesNotChangePropertyStatus() {
-      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID))
-          .thenReturn(property);
+      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
       when(repository.findOverlapping(
               eq(PROPERTY_ID), eq(TEAM_ID), any(LocalDate.class), any(LocalDate.class), isNull()))
           .thenReturn(List.of());
@@ -168,8 +171,7 @@ class OccupancyPeriodServiceTest {
     @Test
     @DisplayName("rejects overlapping occupancy periods")
     void rejectsOverlapping() {
-      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID))
-          .thenReturn(property);
+      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
 
       PropertyOccupancyPeriod existing = new PropertyOccupancyPeriod();
       existing.setId(UUID.randomUUID());
@@ -194,8 +196,7 @@ class OccupancyPeriodServiceTest {
     @Test
     @DisplayName("sets property to SELF_OCCUPIED when period starts today or earlier")
     void setsPropertyStatusWhenStartsToday() {
-      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID))
-          .thenReturn(property);
+      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
       when(repository.findOverlapping(
               eq(PROPERTY_ID), eq(TEAM_ID), any(LocalDate.class), any(LocalDate.class), isNull()))
           .thenReturn(List.of());
@@ -249,16 +250,14 @@ class OccupancyPeriodServiceTest {
       PropertyOccupancyPeriod period = buildActivePeriod();
       property.setStatus(PropertyStatus.SELF_OCCUPIED);
 
-      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID))
-          .thenReturn(property);
+      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
       when(repository.getByIdentifierAndTeamId(PERIOD_SID, TEAM_ID)).thenReturn(period);
 
       EndOccupancyPeriodRequest request =
           new EndOccupancyPeriodRequest(
               LocalDate.of(2026, 3, 1), Optional.empty(), Optional.empty());
 
-      OccupancyPeriodResponse response =
-          service.end(PROPERTY_SID, PERIOD_SID, request, principal);
+      OccupancyPeriodResponse response = service.end(PROPERTY_SID, PERIOD_SID, request, principal);
 
       assertThat(response).isNotNull();
       assertThat(response.endDate()).isPresent().contains(LocalDate.of(2026, 3, 1));
@@ -273,8 +272,7 @@ class OccupancyPeriodServiceTest {
       PropertyOccupancyPeriod period = buildActivePeriod();
       period.setStartDate(LocalDate.of(2026, 2, 1));
 
-      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID))
-          .thenReturn(property);
+      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
       when(repository.getByIdentifierAndTeamId(PERIOD_SID, TEAM_ID)).thenReturn(period);
 
       EndOccupancyPeriodRequest request =
@@ -309,8 +307,7 @@ class OccupancyPeriodServiceTest {
       period.setEndDate(Optional.empty());
       period.setType(OccupancyType.PERSONAL);
 
-      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID))
-          .thenReturn(property);
+      when(propertyRepository.getByIdentifierAndTeamId(PROPERTY_SID, TEAM_ID)).thenReturn(property);
       when(repository.getByIdentifierAndTeamId(PERIOD_SID, TEAM_ID)).thenReturn(period);
 
       service.delete(PROPERTY_SID, PERIOD_SID, principal);

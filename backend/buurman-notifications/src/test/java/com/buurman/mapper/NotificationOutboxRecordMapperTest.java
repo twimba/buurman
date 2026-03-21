@@ -120,8 +120,7 @@ class NotificationOutboxRecordMapperTest {
       Optional<NotificationOutbox> result = mapper.toDomain(record);
 
       assertThat(result).isPresent();
-      assertThat(result.get().getNextRetryAt())
-          .isEqualTo(nextRetry.toInstant(ZoneOffset.UTC));
+      assertThat(result.get().getNextRetryAt()).isEqualTo(nextRetry.toInstant(ZoneOffset.UTC));
     }
 
     @Test
@@ -158,8 +157,7 @@ class NotificationOutboxRecordMapperTest {
       Optional<NotificationOutbox> result = mapper.toDomain(record);
 
       assertThat(result).isPresent();
-      assertThat(result.get().getProcessedAt())
-          .contains(processed.toInstant(ZoneOffset.UTC));
+      assertThat(result.get().getProcessedAt()).contains(processed.toInstant(ZoneOffset.UTC));
     }
 
     @Test

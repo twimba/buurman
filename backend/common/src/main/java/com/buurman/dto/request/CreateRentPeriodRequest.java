@@ -4,9 +4,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import com.buurman.util.Generated;
+
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
-import com.buurman.util.Generated;
 
 @Generated
 public record CreateRentPeriodRequest(

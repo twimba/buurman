@@ -129,8 +129,7 @@ class PaymentSchedulingServiceTest {
     @Test
     @DisplayName("skips when auto-generation is disabled")
     void skipsWhenAutoGenerationDisabled() {
-      when(contractRepository.getByIdAndTeamId(CONTRACT_ID, TEAM_ID))
-          .thenReturn(activeContract());
+      when(contractRepository.getByIdAndTeamId(CONTRACT_ID, TEAM_ID)).thenReturn(activeContract());
       TeamPreferences prefs = defaultPrefs();
       prefs.setAutoGenerationEnabled(false);
       when(teamPreferencesRepository.getByTeamId(TEAM_ID)).thenReturn(prefs);
@@ -143,8 +142,7 @@ class PaymentSchedulingServiceTest {
     @Test
     @DisplayName("generates payments respecting paymentsAheadCount with correct fields")
     void generatesPaymentsRespectingAheadCount() {
-      when(contractRepository.getByIdAndTeamId(CONTRACT_ID, TEAM_ID))
-          .thenReturn(activeContract());
+      when(contractRepository.getByIdAndTeamId(CONTRACT_ID, TEAM_ID)).thenReturn(activeContract());
       when(teamPreferencesRepository.getByTeamId(TEAM_ID)).thenReturn(defaultPrefs());
       when(contractExtensionRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
           .thenReturn(List.of());
@@ -198,14 +196,11 @@ class PaymentSchedulingServiceTest {
 
       ArgumentCaptor<Payment> captor = ArgumentCaptor.forClass(Payment.class);
       verify(paymentRepository, atLeastOnce()).save(captor.capture());
-      List<LocalDate> dueDates =
-          captor.getAllValues().stream().map(Payment::getDueDate).toList();
+      List<LocalDate> dueDates = captor.getAllValues().stream().map(Payment::getDueDate).toList();
       // Clock: 2026-03-15, quarterly, due day 1 -> 2026-06-01, 2026-09-01, 2026-12-01
       assertThat(dueDates)
           .containsExactly(
-              LocalDate.of(2026, 6, 1),
-              LocalDate.of(2026, 9, 1),
-              LocalDate.of(2026, 12, 1));
+              LocalDate.of(2026, 6, 1), LocalDate.of(2026, 9, 1), LocalDate.of(2026, 12, 1));
     }
 
     @Test
@@ -236,11 +231,9 @@ class PaymentSchedulingServiceTest {
 
       ArgumentCaptor<Payment> captor = ArgumentCaptor.forClass(Payment.class);
       verify(paymentRepository, atLeastOnce()).save(captor.capture());
-      List<LocalDate> dueDates =
-          captor.getAllValues().stream().map(Payment::getDueDate).toList();
+      List<LocalDate> dueDates = captor.getAllValues().stream().map(Payment::getDueDate).toList();
       // Clock: 2026-03-15, annually, due day 1 -> 2027-03-01, 2028-03-01
-      assertThat(dueDates)
-          .containsExactly(LocalDate.of(2027, 3, 1), LocalDate.of(2028, 3, 1));
+      assertThat(dueDates).containsExactly(LocalDate.of(2027, 3, 1), LocalDate.of(2028, 3, 1));
     }
 
     @Test
@@ -274,8 +267,7 @@ class PaymentSchedulingServiceTest {
     @Test
     @DisplayName("skips due dates with existing payments")
     void skipsExistingPayments() {
-      when(contractRepository.getByIdAndTeamId(CONTRACT_ID, TEAM_ID))
-          .thenReturn(activeContract());
+      when(contractRepository.getByIdAndTeamId(CONTRACT_ID, TEAM_ID)).thenReturn(activeContract());
       when(teamPreferencesRepository.getByTeamId(TEAM_ID)).thenReturn(defaultPrefs());
       when(contractExtensionRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
           .thenReturn(List.of());
@@ -283,11 +275,12 @@ class PaymentSchedulingServiceTest {
       when(paymentRepository.existsByContractIdAndDueDate(eq(CONTRACT_ID), any(LocalDate.class)))
           .thenReturn(true, false, false);
       when(paymentRepository.save(any(Payment.class)))
-          .thenAnswer(inv -> {
-            Payment p = inv.getArgument(0);
-            p.setId(UUID.randomUUID());
-            return p;
-          });
+          .thenAnswer(
+              inv -> {
+                Payment p = inv.getArgument(0);
+                p.setId(UUID.randomUUID());
+                return p;
+              });
 
       int count = service.generateFuturePaymentsForContract(CONTRACT_ID, TEAM_ID, USER_ID);
 
@@ -302,19 +295,19 @@ class PaymentSchedulingServiceTest {
     @Test
     @DisplayName("ACTIVE triggers payment generation")
     void activeTriggersGeneration() {
-      when(contractRepository.getByIdAndTeamId(CONTRACT_ID, TEAM_ID))
-          .thenReturn(activeContract());
+      when(contractRepository.getByIdAndTeamId(CONTRACT_ID, TEAM_ID)).thenReturn(activeContract());
       when(teamPreferencesRepository.getByTeamId(TEAM_ID)).thenReturn(defaultPrefs());
       when(contractExtensionRepository.findByContractIdAndTeamId(CONTRACT_ID, TEAM_ID))
           .thenReturn(List.of());
       when(paymentRepository.existsByContractIdAndDueDate(eq(CONTRACT_ID), any(LocalDate.class)))
           .thenReturn(false);
       when(paymentRepository.save(any(Payment.class)))
-          .thenAnswer(inv -> {
-            Payment p = inv.getArgument(0);
-            p.setId(UUID.randomUUID());
-            return p;
-          });
+          .thenAnswer(
+              inv -> {
+                Payment p = inv.getArgument(0);
+                p.setId(UUID.randomUUID());
+                return p;
+              });
 
       service.handleContractStatusChange(CONTRACT_ID, ACTIVE, TEAM_ID, USER_ID);
 
@@ -359,10 +352,8 @@ class PaymentSchedulingServiceTest {
       service.handleContractStatusChange(CONTRACT_ID, EXPIRED, TEAM_ID, USER_ID);
 
       verify(paymentRepository).findFuturePendingByContractId(CONTRACT_ID, TEAM_ID);
-      verify(paymentRepository)
-          .softDeleteByIdAndTeamId(futurePayment1.getId(), TEAM_ID);
-      verify(paymentRepository)
-          .softDeleteByIdAndTeamId(futurePayment2.getId(), TEAM_ID);
+      verify(paymentRepository).softDeleteByIdAndTeamId(futurePayment1.getId(), TEAM_ID);
+      verify(paymentRepository).softDeleteByIdAndTeamId(futurePayment2.getId(), TEAM_ID);
     }
   }
 }

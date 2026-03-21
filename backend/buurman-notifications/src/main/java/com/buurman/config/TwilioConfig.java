@@ -4,11 +4,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import com.buurman.config.models.TwilioProperties;
+import com.buurman.util.Generated;
 import com.twilio.Twilio;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import com.buurman.util.Generated;
 
 @Configuration
 @Profile("!local")

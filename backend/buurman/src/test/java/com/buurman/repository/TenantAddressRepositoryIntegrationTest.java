@@ -111,8 +111,8 @@ class TenantAddressRepositoryIntegrationTest extends AbstractRepositoryIntegrati
     @Test
     @DisplayName("findByIdentifierAndTeamId returns address")
     void findByIdentifierReturnsAddress() {
-      TenantAddress saved = repo.save(
-          TestDataHelper.buildTenantAddress(tenantIdA, TEAM_A_ID, USER_ID));
+      TenantAddress saved =
+          repo.save(TestDataHelper.buildTenantAddress(tenantIdA, TEAM_A_ID, USER_ID));
 
       Optional<TenantAddress> found =
           repo.findByIdentifierAndTeamId(saved.getIdentifier().orElseThrow(), TEAM_A_ID);
@@ -124,8 +124,8 @@ class TenantAddressRepositoryIntegrationTest extends AbstractRepositoryIntegrati
     @Test
     @DisplayName("findByIdentifierAndTeamId with wrong team returns empty")
     void findByIdentifierWrongTeamReturnsEmpty() {
-      TenantAddress saved = repo.save(
-          TestDataHelper.buildTenantAddress(tenantIdA, TEAM_A_ID, USER_ID));
+      TenantAddress saved =
+          repo.save(TestDataHelper.buildTenantAddress(tenantIdA, TEAM_A_ID, USER_ID));
 
       Optional<TenantAddress> found =
           repo.findByIdentifierAndTeamId(saved.getIdentifier().orElseThrow(), TEAM_B_ID);
@@ -148,8 +148,8 @@ class TenantAddressRepositoryIntegrationTest extends AbstractRepositoryIntegrati
     @Test
     @DisplayName("soft delete hides address from find queries")
     void softDeleteHidesAddress() {
-      TenantAddress saved = repo.save(
-          TestDataHelper.buildTenantAddress(tenantIdA, TEAM_A_ID, USER_ID));
+      TenantAddress saved =
+          repo.save(TestDataHelper.buildTenantAddress(tenantIdA, TEAM_A_ID, USER_ID));
 
       repo.softDeleteByIdAndTeamId(saved.getId(), TEAM_A_ID);
 
@@ -160,8 +160,8 @@ class TenantAddressRepositoryIntegrationTest extends AbstractRepositoryIntegrati
     @Test
     @DisplayName("soft delete with wrong team does nothing")
     void softDeleteWrongTeamDoesNothing() {
-      TenantAddress saved = repo.save(
-          TestDataHelper.buildTenantAddress(tenantIdA, TEAM_A_ID, USER_ID));
+      TenantAddress saved =
+          repo.save(TestDataHelper.buildTenantAddress(tenantIdA, TEAM_A_ID, USER_ID));
 
       repo.softDeleteByIdAndTeamId(saved.getId(), TEAM_B_ID);
 
@@ -172,8 +172,8 @@ class TenantAddressRepositoryIntegrationTest extends AbstractRepositoryIntegrati
     @Test
     @DisplayName("findByTenantId excludes soft-deleted addresses")
     void findByTenantIdExcludesSoftDeleted() {
-      TenantAddress addr1 = repo.save(
-          TestDataHelper.buildTenantAddress(tenantIdA, TEAM_A_ID, USER_ID));
+      TenantAddress addr1 =
+          repo.save(TestDataHelper.buildTenantAddress(tenantIdA, TEAM_A_ID, USER_ID));
 
       // Soft-delete first so unique constraint allows second CURRENT/ACTIVE insert
       repo.softDeleteByIdAndTeamId(addr1.getId(), TEAM_A_ID);

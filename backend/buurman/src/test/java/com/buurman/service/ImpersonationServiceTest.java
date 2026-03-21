@@ -8,7 +8,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.Clock;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.Optional;
@@ -54,8 +53,7 @@ class ImpersonationServiceTest {
   @Mock private ImpersonationProperties properties;
   @Mock private KeycloakProperties keycloakProperties;
 
-  private final Clock clock =
-      Clock.fixed(Instant.parse("2026-03-01T12:00:00Z"), ZoneOffset.UTC);
+  private final Clock clock = Clock.fixed(Instant.parse("2026-03-01T12:00:00Z"), ZoneOffset.UTC);
 
   private ImpersonationService service;
 
@@ -92,7 +90,8 @@ class ImpersonationServiceTest {
 
       service.endSession(SESSION_SID, ImpersonationEndReason.ADMIN_TERMINATED);
 
-      verify(sessionRepository).endSession(session.getId(), ImpersonationEndReason.ADMIN_TERMINATED);
+      verify(sessionRepository)
+          .endSession(session.getId(), ImpersonationEndReason.ADMIN_TERMINATED);
     }
 
     @Test

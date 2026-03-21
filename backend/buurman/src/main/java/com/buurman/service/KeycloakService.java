@@ -36,9 +36,7 @@ public class KeycloakService {
   private final MetricsService metricsService;
 
   public KeycloakService(
-      Keycloak keycloak,
-      KeycloakProperties keycloakProperties,
-      MetricsService metricsService) {
+      Keycloak keycloak, KeycloakProperties keycloakProperties, MetricsService metricsService) {
     this.keycloak = keycloak;
     this.realm = keycloakProperties.realm();
     this.backofficeRealm = keycloakProperties.backofficeRealm();

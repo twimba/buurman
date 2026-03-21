@@ -12,7 +12,6 @@ import org.jooq.impl.DSL;
 
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
-import com.buurman.domain.Sid;
 import com.buurman.domain.Team;
 import com.buurman.domain.Tenant;
 import com.buurman.domain.TenantAddress;
@@ -52,7 +51,9 @@ final class TestDataHelper {
         .set(DSL.field("id", UUID.class), userId)
         .set(DSL.field("identifier", String.class), SidGenerator.newUserId().value())
         .set(DSL.field("keycloak_id", String.class), "kc-" + userId)
-        .set(DSL.field("email", String.class), "user-" + userId.toString().substring(0, 8) + "@test.io")
+        .set(
+            DSL.field("email", String.class),
+            "user-" + userId.toString().substring(0, 8) + "@test.io")
         .set(DSL.field("first_name", String.class), "Test")
         .set(DSL.field("last_name", String.class), "User")
         .set(DSL.field("created_at", LocalDateTime.class), NOW)

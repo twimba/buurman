@@ -51,8 +51,9 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     @Test
     @DisplayName("insert creates a new payment with generated ID")
     void insertCreatesPayment() {
-      Payment payment = TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1));
+      Payment payment =
+          TestDataHelper.buildPayment(
+              TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1));
 
       Payment saved = repo.save(payment);
 
@@ -69,8 +70,14 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     @Test
     @DisplayName("update modifies payment amount and status")
     void updateModifiesPayment() {
-      Payment saved = repo.save(TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1)));
+      Payment saved =
+          repo.save(
+              TestDataHelper.buildPayment(
+                  TEAM_A_ID,
+                  contractIdA,
+                  USER_ID,
+                  new BigDecimal("1000.00"),
+                  LocalDate.of(2026, 4, 1)));
 
       saved.setStatus(PaymentStatus.PAID);
       saved.setPaymentDate(Optional.of(LocalDate.of(2026, 3, 28)));
@@ -84,8 +91,14 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     @Test
     @DisplayName("update respects team_id in WHERE clause")
     void updateRespectsTeamId() {
-      Payment saved = repo.save(TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1)));
+      Payment saved =
+          repo.save(
+              TestDataHelper.buildPayment(
+                  TEAM_A_ID,
+                  contractIdA,
+                  USER_ID,
+                  new BigDecimal("1000.00"),
+                  LocalDate.of(2026, 4, 1)));
 
       saved.setTeamId(TEAM_B_ID);
       saved.setStatus(PaymentStatus.CANCELLED);
@@ -103,21 +116,36 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     @Test
     @DisplayName("findByIdentifierAndTeamId with wrong team returns empty")
     void findByIdentifierWrongTeamReturnsEmpty() {
-      Payment saved = repo.save(TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1)));
+      Payment saved =
+          repo.save(
+              TestDataHelper.buildPayment(
+                  TEAM_A_ID,
+                  contractIdA,
+                  USER_ID,
+                  new BigDecimal("1000.00"),
+                  LocalDate.of(2026, 4, 1)));
 
-      assertThat(
-          repo.findByIdentifierAndTeamId(saved.getIdentifier().orElseThrow(), TEAM_B_ID))
+      assertThat(repo.findByIdentifierAndTeamId(saved.getIdentifier().orElseThrow(), TEAM_B_ID))
           .isEmpty();
     }
 
     @Test
     @DisplayName("findByContractId returns payments for the contract")
     void findByContractIdReturnsPayments() {
-      repo.save(TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1)));
-      repo.save(TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 5, 1)));
+      repo.save(
+          TestDataHelper.buildPayment(
+              TEAM_A_ID,
+              contractIdA,
+              USER_ID,
+              new BigDecimal("1000.00"),
+              LocalDate.of(2026, 4, 1)));
+      repo.save(
+          TestDataHelper.buildPayment(
+              TEAM_A_ID,
+              contractIdA,
+              USER_ID,
+              new BigDecimal("1000.00"),
+              LocalDate.of(2026, 5, 1)));
 
       List<Payment> payments = repo.findByContractId(contractIdA, TEAM_A_ID);
 
@@ -127,8 +155,13 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     @Test
     @DisplayName("findByContractId with wrong team returns empty")
     void findByContractIdWrongTeamReturnsEmpty() {
-      repo.save(TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1)));
+      repo.save(
+          TestDataHelper.buildPayment(
+              TEAM_A_ID,
+              contractIdA,
+              USER_ID,
+              new BigDecimal("1000.00"),
+              LocalDate.of(2026, 4, 1)));
 
       assertThat(repo.findByContractId(contractIdA, TEAM_B_ID)).isEmpty();
     }
@@ -136,10 +169,16 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     @Test
     @DisplayName("findAllByTeamId isolates teams")
     void findAllByTeamIdIsolatesTeams() {
-      repo.save(TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1)));
-      repo.save(TestDataHelper.buildPayment(
-          TEAM_B_ID, contractIdB, USER_ID, new BigDecimal("500.00"), LocalDate.of(2026, 4, 1)));
+      repo.save(
+          TestDataHelper.buildPayment(
+              TEAM_A_ID,
+              contractIdA,
+              USER_ID,
+              new BigDecimal("1000.00"),
+              LocalDate.of(2026, 4, 1)));
+      repo.save(
+          TestDataHelper.buildPayment(
+              TEAM_B_ID, contractIdB, USER_ID, new BigDecimal("500.00"), LocalDate.of(2026, 4, 1)));
 
       assertThat(repo.findAllByTeamId(TEAM_A_ID)).hasSize(1);
       assertThat(repo.findAllByTeamId(TEAM_B_ID)).hasSize(1);
@@ -149,8 +188,9 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     @DisplayName("getByIdentifierAndTeamId throws for missing payment")
     void getByIdentifierThrowsForMissing() {
       assertThatThrownBy(
-          () -> repo.getByIdentifierAndTeamId(
-              com.buurman.util.SidGenerator.newPaymentId(), TEAM_A_ID))
+              () ->
+                  repo.getByIdentifierAndTeamId(
+                      com.buurman.util.SidGenerator.newPaymentId(), TEAM_A_ID))
           .isInstanceOf(NotFoundException.class);
     }
   }
@@ -163,11 +203,21 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     @DisplayName("findOverduePayments returns pending payments past due date")
     void findOverduePayments() {
       // Past-due pending payment (clock is fixed at 2026-03-01)
-      repo.save(TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 2, 1)));
+      repo.save(
+          TestDataHelper.buildPayment(
+              TEAM_A_ID,
+              contractIdA,
+              USER_ID,
+              new BigDecimal("1000.00"),
+              LocalDate.of(2026, 2, 1)));
       // Future pending payment
-      repo.save(TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1)));
+      repo.save(
+          TestDataHelper.buildPayment(
+              TEAM_A_ID,
+              contractIdA,
+              USER_ID,
+              new BigDecimal("1000.00"),
+              LocalDate.of(2026, 4, 1)));
 
       List<Payment> overdue = repo.findOverduePayments(TEAM_A_ID);
 
@@ -178,8 +228,9 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     @Test
     @DisplayName("findOverduePayments excludes paid payments")
     void findOverdueExcludesPaid() {
-      Payment p = TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 2, 1));
+      Payment p =
+          TestDataHelper.buildPayment(
+              TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 2, 1));
       p.setStatus(PaymentStatus.PAID);
       p.setPaymentDate(Optional.of(LocalDate.of(2026, 2, 15)));
       repo.save(p);
@@ -190,11 +241,15 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     @Test
     @DisplayName("existsByContractIdAndDueDate returns true for existing combination")
     void existsByContractIdAndDueDateTrue() {
-      repo.save(TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1)));
+      repo.save(
+          TestDataHelper.buildPayment(
+              TEAM_A_ID,
+              contractIdA,
+              USER_ID,
+              new BigDecimal("1000.00"),
+              LocalDate.of(2026, 4, 1)));
 
-      assertThat(repo.existsByContractIdAndDueDate(contractIdA, LocalDate.of(2026, 4, 1)))
-          .isTrue();
+      assertThat(repo.existsByContractIdAndDueDate(contractIdA, LocalDate.of(2026, 4, 1))).isTrue();
     }
 
     @Test
@@ -207,10 +262,20 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     @Test
     @DisplayName("findPendingByContractIdFromDate returns pending from given date")
     void findPendingByContractIdFromDate() {
-      repo.save(TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 2, 1)));
-      repo.save(TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1)));
+      repo.save(
+          TestDataHelper.buildPayment(
+              TEAM_A_ID,
+              contractIdA,
+              USER_ID,
+              new BigDecimal("1000.00"),
+              LocalDate.of(2026, 2, 1)));
+      repo.save(
+          TestDataHelper.buildPayment(
+              TEAM_A_ID,
+              contractIdA,
+              USER_ID,
+              new BigDecimal("1000.00"),
+              LocalDate.of(2026, 4, 1)));
 
       List<Payment> result =
           repo.findPendingByContractIdFromDate(contractIdA, TEAM_A_ID, LocalDate.of(2026, 3, 1));
@@ -223,11 +288,21 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     @DisplayName("findFuturePendingByContractId returns pending after today")
     void findFuturePending() {
       // Past
-      repo.save(TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 2, 1)));
+      repo.save(
+          TestDataHelper.buildPayment(
+              TEAM_A_ID,
+              contractIdA,
+              USER_ID,
+              new BigDecimal("1000.00"),
+              LocalDate.of(2026, 2, 1)));
       // Future
-      repo.save(TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1)));
+      repo.save(
+          TestDataHelper.buildPayment(
+              TEAM_A_ID,
+              contractIdA,
+              USER_ID,
+              new BigDecimal("1000.00"),
+              LocalDate.of(2026, 4, 1)));
 
       List<Payment> result = repo.findFuturePendingByContractId(contractIdA, TEAM_A_ID);
 
@@ -244,10 +319,16 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     @DisplayName("getPendingStats calculates count and total for pending payments")
     void getPendingStatsCalculatesCorrectly() {
       // Future pending
-      repo.save(TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1)));
-      repo.save(TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("500.00"), LocalDate.of(2026, 5, 1)));
+      repo.save(
+          TestDataHelper.buildPayment(
+              TEAM_A_ID,
+              contractIdA,
+              USER_ID,
+              new BigDecimal("1000.00"),
+              LocalDate.of(2026, 4, 1)));
+      repo.save(
+          TestDataHelper.buildPayment(
+              TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("500.00"), LocalDate.of(2026, 5, 1)));
 
       Optional<AmountStats> stats = repo.getPendingStats(TEAM_A_ID);
 
@@ -262,8 +343,9 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     @DisplayName("getOverdueStats returns stats for overdue payments")
     void getOverdueStatsCalculatesCorrectly() {
       // Past-due pending
-      repo.save(TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("800.00"), LocalDate.of(2026, 2, 1)));
+      repo.save(
+          TestDataHelper.buildPayment(
+              TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("800.00"), LocalDate.of(2026, 2, 1)));
 
       Optional<AmountStats> stats = repo.getOverdueStats(TEAM_A_ID);
 
@@ -275,14 +357,16 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     @DisplayName("getMonthlyPaidTrend groups paid amounts by month")
     void getMonthlyPaidTrendGroupsByMonth() {
       // Two paid payments in different months
-      Payment p1 = TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 1, 1));
+      Payment p1 =
+          TestDataHelper.buildPayment(
+              TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 1, 1));
       p1.setStatus(PaymentStatus.PAID);
       p1.setPaymentDate(Optional.of(LocalDate.of(2026, 1, 15)));
       repo.save(p1);
 
-      Payment p2 = TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 2, 1));
+      Payment p2 =
+          TestDataHelper.buildPayment(
+              TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 2, 1));
       p2.setStatus(PaymentStatus.PAID);
       p2.setPaymentDate(Optional.of(LocalDate.of(2026, 2, 15)));
       repo.save(p2);
@@ -296,8 +380,13 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     @Test
     @DisplayName("findCurrencyByTeamId returns currency from first payment")
     void findCurrencyByTeamId() {
-      repo.save(TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1)));
+      repo.save(
+          TestDataHelper.buildPayment(
+              TEAM_A_ID,
+              contractIdA,
+              USER_ID,
+              new BigDecimal("1000.00"),
+              LocalDate.of(2026, 4, 1)));
 
       Optional<String> currency = repo.findCurrencyByTeamId(TEAM_A_ID);
 
@@ -307,8 +396,9 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     @Test
     @DisplayName("findEarliestPaymentDate returns earliest paid payment date")
     void findEarliestPaymentDate() {
-      Payment p = TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 1, 1));
+      Payment p =
+          TestDataHelper.buildPayment(
+              TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 1, 1));
       p.setStatus(PaymentStatus.PAID);
       p.setPaymentDate(Optional.of(LocalDate.of(2026, 1, 10)));
       repo.save(p);
@@ -327,14 +417,31 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     @DisplayName("findAllByTeamIdPaginated with OVERDUE virtual status")
     void paginatedWithOverdueStatus() {
       // Past-due pending
-      repo.save(TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 2, 1)));
+      repo.save(
+          TestDataHelper.buildPayment(
+              TEAM_A_ID,
+              contractIdA,
+              USER_ID,
+              new BigDecimal("1000.00"),
+              LocalDate.of(2026, 2, 1)));
       // Future pending
-      repo.save(TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1)));
+      repo.save(
+          TestDataHelper.buildPayment(
+              TEAM_A_ID,
+              contractIdA,
+              USER_ID,
+              new BigDecimal("1000.00"),
+              LocalDate.of(2026, 4, 1)));
 
-      PaginatedResult<Payment> result = repo.findAllByTeamIdPaginated(
-          TEAM_A_ID, "OVERDUE", null, null, null, null, PageRequest.of(null, null, null, (String) null));
+      PaginatedResult<Payment> result =
+          repo.findAllByTeamIdPaginated(
+              TEAM_A_ID,
+              "OVERDUE",
+              null,
+              null,
+              null,
+              null,
+              PageRequest.of(null, null, null, (String) null));
 
       assertThat(result.items()).hasSize(1);
       assertThat(result.items().getFirst().getDueDate()).isEqualTo(LocalDate.of(2026, 2, 1));
@@ -343,11 +450,23 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     @Test
     @DisplayName("findAllByTeamIdPaginated with propertyId filter via subquery")
     void paginatedWithPropertyIdFilter() {
-      repo.save(TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1)));
+      repo.save(
+          TestDataHelper.buildPayment(
+              TEAM_A_ID,
+              contractIdA,
+              USER_ID,
+              new BigDecimal("1000.00"),
+              LocalDate.of(2026, 4, 1)));
 
-      PaginatedResult<Payment> result = repo.findAllByTeamIdPaginated(
-          TEAM_A_ID, null, null, propertyIdA, null, null, PageRequest.of(null, null, null, (SortDirection) null));
+      PaginatedResult<Payment> result =
+          repo.findAllByTeamIdPaginated(
+              TEAM_A_ID,
+              null,
+              null,
+              propertyIdA,
+              null,
+              null,
+              PageRequest.of(null, null, null, (SortDirection) null));
 
       assertThat(result.items()).hasSize(1);
     }
@@ -355,11 +474,23 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     @Test
     @DisplayName("findAllByTeamIdPaginated does not return other team's payments")
     void paginatedIsolatesTeams() {
-      repo.save(TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1)));
+      repo.save(
+          TestDataHelper.buildPayment(
+              TEAM_A_ID,
+              contractIdA,
+              USER_ID,
+              new BigDecimal("1000.00"),
+              LocalDate.of(2026, 4, 1)));
 
-      PaginatedResult<Payment> result = repo.findAllByTeamIdPaginated(
-          TEAM_B_ID, null, null, null, null, null, PageRequest.of(null, null, null, (SortDirection) null));
+      PaginatedResult<Payment> result =
+          repo.findAllByTeamIdPaginated(
+              TEAM_B_ID,
+              null,
+              null,
+              null,
+              null,
+              null,
+              PageRequest.of(null, null, null, (SortDirection) null));
 
       assertThat(result.items()).isEmpty();
     }
@@ -372,8 +503,14 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     @Test
     @DisplayName("soft delete hides payment from find queries")
     void softDeleteHidesPayment() {
-      Payment saved = repo.save(TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1)));
+      Payment saved =
+          repo.save(
+              TestDataHelper.buildPayment(
+                  TEAM_A_ID,
+                  contractIdA,
+                  USER_ID,
+                  new BigDecimal("1000.00"),
+                  LocalDate.of(2026, 4, 1)));
 
       repo.softDeleteByIdAndTeamId(saved.getId(), TEAM_A_ID);
 
@@ -384,8 +521,14 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     @Test
     @DisplayName("soft delete with wrong team does nothing")
     void softDeleteWrongTeamDoesNothing() {
-      Payment saved = repo.save(TestDataHelper.buildPayment(
-          TEAM_A_ID, contractIdA, USER_ID, new BigDecimal("1000.00"), LocalDate.of(2026, 4, 1)));
+      Payment saved =
+          repo.save(
+              TestDataHelper.buildPayment(
+                  TEAM_A_ID,
+                  contractIdA,
+                  USER_ID,
+                  new BigDecimal("1000.00"),
+                  LocalDate.of(2026, 4, 1)));
 
       repo.softDeleteByIdAndTeamId(saved.getId(), TEAM_B_ID);
 

@@ -28,8 +28,7 @@ class BackofficeJwtAuthenticationConverterTest {
       Optional<String> email,
       Optional<String> name,
       Optional<Map<String, Object>> realmAccess) {
-    Jwt.Builder builder =
-        Jwt.withTokenValue("token").header("alg", "RS256").subject(keycloakId);
+    Jwt.Builder builder = Jwt.withTokenValue("token").header("alg", "RS256").subject(keycloakId);
     email.ifPresent(e -> builder.claim("email", e));
     name.ifPresent(n -> builder.claim("name", n));
     realmAccess.ifPresent(ra -> builder.claim("realm_access", ra));
@@ -38,11 +37,15 @@ class BackofficeJwtAuthenticationConverterTest {
 
   private Jwt buildJwtWithRoles(String keycloakId, Map<String, Object> realmAccess) {
     return buildJwt(
-        keycloakId, Optional.of("admin@buurman.io"), Optional.of("Admin"), Optional.of(realmAccess));
+        keycloakId,
+        Optional.of("admin@buurman.io"),
+        Optional.of("Admin"),
+        Optional.of(realmAccess));
   }
 
   private Jwt buildJwtMinimal(String keycloakId) {
-    return buildJwt(keycloakId, Optional.of("admin@buurman.io"), Optional.of("Admin"), Optional.empty());
+    return buildJwt(
+        keycloakId, Optional.of("admin@buurman.io"), Optional.of("Admin"), Optional.empty());
   }
 
   @Nested
@@ -70,8 +73,7 @@ class BackofficeJwtAuthenticationConverterTest {
     @Test
     @DisplayName("wraps absent email claim as empty Optional")
     void wrapsAbsentEmail() {
-      Jwt jwt =
-          buildJwt("kc-admin-123", Optional.empty(), Optional.of("Admin"), Optional.empty());
+      Jwt jwt = buildJwt("kc-admin-123", Optional.empty(), Optional.of("Admin"), Optional.empty());
 
       BackofficeAuthentication result = (BackofficeAuthentication) converter.convert(jwt);
 
@@ -100,8 +102,7 @@ class BackofficeJwtAuthenticationConverterTest {
     void extractsRealmRoles() {
       Jwt jwt =
           buildJwtWithRoles(
-              "kc-admin-123",
-              Map.of("roles", List.of("BACKOFFICE_ADMIN", "SUPPORT_AGENT")));
+              "kc-admin-123", Map.of("roles", List.of("BACKOFFICE_ADMIN", "SUPPORT_AGENT")));
 
       BackofficeAuthentication result = (BackofficeAuthentication) converter.convert(jwt);
 
@@ -138,8 +139,7 @@ class BackofficeJwtAuthenticationConverterTest {
     @Test
     @DisplayName("returns empty authorities when roles is not a collection")
     void emptyWhenRolesNotCollection() {
-      Jwt jwt =
-          buildJwtWithRoles("kc-admin-123", Map.of("roles", "not_a_list"));
+      Jwt jwt = buildJwtWithRoles("kc-admin-123", Map.of("roles", "not_a_list"));
 
       BackofficeAuthentication result = (BackofficeAuthentication) converter.convert(jwt);
 
@@ -154,8 +154,7 @@ class BackofficeJwtAuthenticationConverterTest {
     @Test
     @DisplayName("sets role to BACKOFFICE_ADMIN when present in realm roles")
     void setsBackofficeAdminRole() {
-      Jwt jwt =
-          buildJwtWithRoles("kc-admin-123", Map.of("roles", List.of("BACKOFFICE_ADMIN")));
+      Jwt jwt = buildJwtWithRoles("kc-admin-123", Map.of("roles", List.of("BACKOFFICE_ADMIN")));
 
       BackofficeAuthentication result = (BackofficeAuthentication) converter.convert(jwt);
 
@@ -165,8 +164,7 @@ class BackofficeJwtAuthenticationConverterTest {
     @Test
     @DisplayName("sets empty role when BACKOFFICE_ADMIN is not in realm roles")
     void emptyRoleWhenNotBackofficeAdmin() {
-      Jwt jwt =
-          buildJwtWithRoles("kc-admin-123", Map.of("roles", List.of("SUPPORT_AGENT")));
+      Jwt jwt = buildJwtWithRoles("kc-admin-123", Map.of("roles", List.of("SUPPORT_AGENT")));
 
       BackofficeAuthentication result = (BackofficeAuthentication) converter.convert(jwt);
 

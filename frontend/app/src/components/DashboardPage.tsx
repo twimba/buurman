@@ -92,7 +92,12 @@ export const DashboardPage = () => {
       return [];
     }
     return allPayments
-      .filter((p) => p.status === 'PENDING' || p.status === 'OVERDUE' || p.status === 'LATE')
+      .filter(
+        (p) =>
+          p.status === 'PENDING' ||
+          p.status === 'OVERDUE' ||
+          p.status === 'LATE'
+      )
       .sort(
         (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
       );
@@ -383,7 +388,8 @@ export const DashboardPage = () => {
         ) : unpaidPayments.length > 0 ? (
           <div className="divide-y divide-border-default">
             {unpaidPayments.slice(0, 10).map((payment) => {
-              const isOverdue = payment.status === 'OVERDUE' || payment.status === 'LATE';
+              const isOverdue =
+                payment.status === 'OVERDUE' || payment.status === 'LATE';
               return (
                 <div
                   key={payment.identifier}

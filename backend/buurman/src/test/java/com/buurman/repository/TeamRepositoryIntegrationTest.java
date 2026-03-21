@@ -13,8 +13,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import com.buurman.domain.Sid;
-import com.buurman.domain.Team;
 import com.buurman.domain.SortDirection;
+import com.buurman.domain.Team;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.TeamRecordMapper;
@@ -155,7 +155,8 @@ class TeamRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
     @Test
     @DisplayName("findAllPaginated returns teams with pagination metadata")
     void findAllPaginatedReturnsPaginatedResult() {
-      PaginatedResult<Team> result = repo.findAllPaginated(PageRequest.of(null, null, null, (SortDirection) null), null);
+      PaginatedResult<Team> result =
+          repo.findAllPaginated(PageRequest.of(null, null, null, (SortDirection) null), null);
 
       assertThat(result.items()).isNotEmpty();
       assertThat(result.totalElements()).isGreaterThanOrEqualTo(2);
@@ -164,7 +165,8 @@ class TeamRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
     @Test
     @DisplayName("findAllPaginated filters by search term")
     void findAllPaginatedSearchFilters() {
-      PaginatedResult<Team> result = repo.findAllPaginated(PageRequest.of(null, null, null, (SortDirection) null), "Team A");
+      PaginatedResult<Team> result =
+          repo.findAllPaginated(PageRequest.of(null, null, null, (SortDirection) null), "Team A");
 
       assertThat(result.items()).hasSize(1);
       assertThat(result.items().getFirst().getName()).isEqualTo("Team A");
@@ -177,7 +179,9 @@ class TeamRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest {
       Team saved = repo.save(team);
       repo.softDeleteById(saved.getId());
 
-      PaginatedResult<Team> result = repo.findAllPaginated(PageRequest.of(null, null, null, (SortDirection) null), saved.getName());
+      PaginatedResult<Team> result =
+          repo.findAllPaginated(
+              PageRequest.of(null, null, null, (SortDirection) null), saved.getName());
 
       assertThat(result.items()).noneMatch(t -> t.getId().equals(saved.getId()));
     }

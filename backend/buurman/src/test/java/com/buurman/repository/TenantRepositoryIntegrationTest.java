@@ -12,8 +12,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import com.buurman.domain.Tenant;
 import com.buurman.domain.SortDirection;
+import com.buurman.domain.Tenant;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.TenantRecordMapperImpl;
@@ -198,7 +198,8 @@ class TenantRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest 
       repo.save(t2);
 
       PaginatedResult<Tenant> result =
-          repo.findAllByTeamIdPaginated(TEAM_A_ID, null, PageRequest.of(null, null, null, (SortDirection) null));
+          repo.findAllByTeamIdPaginated(
+              TEAM_A_ID, null, PageRequest.of(null, null, null, (SortDirection) null));
 
       assertThat(result.items()).hasSize(2);
       assertThat(result.totalElements()).isEqualTo(2);
@@ -214,7 +215,8 @@ class TenantRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest 
       repo.save(t2);
 
       PaginatedResult<Tenant> result =
-          repo.findAllByTeamIdPaginated(TEAM_A_ID, "Piet", PageRequest.of(null, null, null, (SortDirection) null));
+          repo.findAllByTeamIdPaginated(
+              TEAM_A_ID, "Piet", PageRequest.of(null, null, null, (SortDirection) null));
 
       assertThat(result.items()).hasSize(1);
       assertThat(result.items().getFirst().getFirstName()).isEqualTo("Piet");

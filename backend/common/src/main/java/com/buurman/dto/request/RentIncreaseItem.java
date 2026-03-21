@@ -4,9 +4,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import com.buurman.domain.identifier.ContractIdentifier;
+import com.buurman.util.Generated;
 
 import jakarta.validation.constraints.NotNull;
-import com.buurman.util.Generated;
 
 @Generated
 public record RentIncreaseItem(

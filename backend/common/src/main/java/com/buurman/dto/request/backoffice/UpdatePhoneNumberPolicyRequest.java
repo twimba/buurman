@@ -3,10 +3,11 @@ package com.buurman.dto.request.backoffice;
 import java.util.List;
 import java.util.Map;
 
+import com.buurman.util.Generated;
+
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import com.buurman.util.Generated;
 
 @Generated
 public record UpdatePhoneNumberPolicyRequest(

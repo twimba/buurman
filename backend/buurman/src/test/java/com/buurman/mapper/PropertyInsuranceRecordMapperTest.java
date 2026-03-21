@@ -64,8 +64,7 @@ class PropertyInsuranceRecordMapperTest {
       assertThat(ins.getCoverageAmount().get().value())
           .isEqualByComparingTo(new BigDecimal("500000.00"));
       assertThat(ins.getCoverageAmount().get().currency()).isEqualTo("EUR");
-      assertThat(ins.getAnnualPremium().value())
-          .isEqualByComparingTo(new BigDecimal("2400.00"));
+      assertThat(ins.getAnnualPremium().value()).isEqualByComparingTo(new BigDecimal("2400.00"));
       assertThat(ins.getAnnualPremium().currency()).isEqualTo("EUR");
       assertThat(ins.getPaymentFrequency()).isEqualTo("MONTHLY");
       assertThat(ins.getStartDate()).contains(LocalDate.of(2026, 1, 1));
@@ -147,8 +146,7 @@ class PropertyInsuranceRecordMapperTest {
       Optional<PropertyInsurance> result = mapper.toDomain(record);
 
       assertThat(result).isPresent();
-      assertThat(result.get().getDeletedAt())
-          .contains(deletedAt.toInstant(ZoneOffset.UTC));
+      assertThat(result.get().getDeletedAt()).contains(deletedAt.toInstant(ZoneOffset.UTC));
     }
   }
 

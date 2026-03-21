@@ -7,9 +7,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.buurman.config.models.KeycloakProperties;
+import com.buurman.util.Generated;
 
 import lombok.RequiredArgsConstructor;
-import com.buurman.util.Generated;
 
 @Configuration
 @RequiredArgsConstructor

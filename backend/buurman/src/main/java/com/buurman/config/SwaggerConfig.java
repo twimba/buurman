@@ -7,6 +7,7 @@ import org.springframework.core.Ordered;
 
 import com.buurman.security.SwaggerAccessFilter;
 import com.buurman.service.FeatureFlagService;
+import com.buurman.util.Generated;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
 import io.swagger.v3.core.util.Json;
@@ -18,7 +19,6 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import jakarta.annotation.PostConstruct;
-import com.buurman.util.Generated;
 
 @Configuration
 @Generated

@@ -45,8 +45,7 @@ class ImpersonationJwtFilterTest {
 
   private static final Instant NOW = Instant.parse("2026-03-15T10:00:00Z");
   private static final Clock CLOCK = Clock.fixed(NOW, ZoneOffset.UTC);
-  private static final String JWT_SECRET =
-      "super-secret-key-that-is-at-least-32-chars-long!!";
+  private static final String JWT_SECRET = "super-secret-key-that-is-at-least-32-chars-long!!";
 
   private static final UUID USER_ID = UUID.randomUUID();
   private static final String USER_IDENTIFIER = "USR01HQJK4B2X5M3N7P8Q9R0S1T2";
@@ -70,7 +69,11 @@ class ImpersonationJwtFilterTest {
   @BeforeEach
   void setUp() {
     properties =
-        new ImpersonationProperties(JWT_SECRET, Duration.ofMinutes(60), Duration.ofMinutes(15), "https://app.local.buurman.io");
+        new ImpersonationProperties(
+            JWT_SECRET,
+            Duration.ofMinutes(60),
+            Duration.ofMinutes(15),
+            "https://app.local.buurman.io");
     objectMapper = new ObjectMapper();
     filter = new ImpersonationJwtFilter(properties, sessionRepository, objectMapper, CLOCK);
   }
@@ -225,8 +228,7 @@ class ImpersonationJwtFilterTest {
           Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication());
       assertThat(auth.getAuthorities())
           .extracting("authority")
-          .containsExactlyInAnyOrder(
-              "ROLE_TEAM_ADMIN", "ROLE_TEAM_EDITOR", "ROLE_TEAM_VIEWER");
+          .containsExactlyInAnyOrder("ROLE_TEAM_ADMIN", "ROLE_TEAM_EDITOR", "ROLE_TEAM_VIEWER");
     }
 
     @Test
@@ -304,9 +306,7 @@ class ImpersonationJwtFilterTest {
 
       Authentication auth =
           Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication());
-      assertThat(auth.getAuthorities())
-          .extracting("authority")
-          .containsExactly("ROLE_TEAM_VIEWER");
+      assertThat(auth.getAuthorities()).extracting("authority").containsExactly("ROLE_TEAM_VIEWER");
     }
   }
 

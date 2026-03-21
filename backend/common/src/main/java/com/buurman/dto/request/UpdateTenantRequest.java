@@ -2,10 +2,11 @@ package com.buurman.dto.request;
 
 import java.util.Optional;
 
+import com.buurman.util.Generated;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import com.buurman.util.Generated;
 
 @Generated
 public record UpdateTenantRequest(

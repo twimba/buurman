@@ -5,10 +5,10 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.Expense.ExpenseCategory;
+import com.buurman.util.Generated;
 
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import com.buurman.util.Generated;
 
 @Generated
 public record UpdateExpenseRequest(

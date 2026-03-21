@@ -23,8 +23,7 @@ class BookletHelperTest {
     void escapesSpecialChars() {
       String result = BookletHelper.escapeHtml("<script>alert('xss' & \"hack\")</script>");
       assertThat(result)
-          .isEqualTo(
-              "&lt;script&gt;alert(&#39;xss&#39; &amp; &quot;hack&quot;)&lt;/script&gt;");
+          .isEqualTo("&lt;script&gt;alert(&#39;xss&#39; &amp; &quot;hack&quot;)&lt;/script&gt;");
     }
 
     @Test
@@ -81,8 +80,7 @@ class BookletHelperTest {
     @Test
     @DisplayName("converts UPPER_SNAKE_CASE to Title Case")
     void convertsSnakeCaseToTitleCase() {
-      assertThat(BookletHelper.formatEnumValue("PENDING_SIGNATURE"))
-          .isEqualTo("Pending Signature");
+      assertThat(BookletHelper.formatEnumValue("PENDING_SIGNATURE")).isEqualTo("Pending Signature");
     }
 
     @Test
@@ -130,8 +128,7 @@ class BookletHelperTest {
     @Test
     @DisplayName("formats date with given formatter")
     void formatsDate() {
-      assertThat(BookletHelper.formatDate(LocalDate.of(2026, 3, 15), FMT))
-          .isEqualTo("15/03/2026");
+      assertThat(BookletHelper.formatDate(LocalDate.of(2026, 3, 15), FMT)).isEqualTo("15/03/2026");
     }
 
     @Test
@@ -278,8 +275,7 @@ class BookletHelperTest {
     @Test
     @DisplayName("removes single-quoted event handlers")
     void removesSingleQuotedEventHandlers() {
-      String result =
-          BookletHelper.sanitizeRichText("<div onmouseover='alert(1)'>hover</div>");
+      String result = BookletHelper.sanitizeRichText("<div onmouseover='alert(1)'>hover</div>");
       assertThat(result).isEqualTo("<div>hover</div>");
     }
   }

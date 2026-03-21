@@ -5,10 +5,10 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.FinancingPayment;
+import com.buurman.util.Generated;
 
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
-import com.buurman.util.Generated;
 
 @Generated
 public record UpdateFinancingPaymentRequest(

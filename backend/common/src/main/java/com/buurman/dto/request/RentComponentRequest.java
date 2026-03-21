@@ -4,10 +4,10 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 import com.buurman.domain.RentComponentType;
+import com.buurman.util.Generated;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import com.buurman.util.Generated;
 
 @Generated
 public record RentComponentRequest(
