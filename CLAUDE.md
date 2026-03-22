@@ -42,9 +42,9 @@ The backend is a 10-module Maven project:
 - `app` — thin shell, assembles fat JAR (`buurman-app`)
 
 - Build: `cd backend && mvn clean install -DskipTests`
-- Run: `cd backend && mvn spring-boot:run -pl app -am` (port **8081**)
+- Run: `cd backend && mvn spring-boot:run -pl buurman-app -am` (port **8081**)
 - Quick build (skip formatting): `cd backend && mvn package -DskipTests -Pquick`
-- Tests: `cd backend && mvn test` / `mvn test -pl buurman -Dtest=ClassName#methodName`
+- Tests: `cd backend && mvn test` / `mvn test -pl buurman-core -Dtest=ClassName#methodName`
 - Regenerate JOOQ after migration changes: `cd backend && mvn generate-sources -pl jooq -am`
 - Build cache: enabled locally (`.mvn/extensions.xml`), disabled in CI (`-Dmaven.build.cache.enabled=false`)
 
@@ -142,7 +142,7 @@ backend/
 ├── jooq/                    JOOQ codegen + Flyway migrations (0 hand-written Java)
 │   ├── src/main/resources/db/migration/  (28 SQL migrations)
 │   └── target/generated-sources/jooq/   (generated JOOQ records)
-├── buurman/                 Core module (~259 files, buurman-core)
+├── buurman-core/            Core module (~259 files, buurman-core)
 │   └── com.buurman
 │       ├── config/              Security, S3, Swagger, Quartz config
 │       ├── controller/          REST endpoints (thin, delegates to services)
@@ -188,7 +188,7 @@ backend/
 │   └── com.buurman
 │       ├── controller/          BookletController
 │       └── service/export/      ExportServiceImpl + 14 exporters
-└── app/                     Thin shell — fat JAR assembly (1 file)
+└── buurman-app/             Thin shell — fat JAR assembly (1 file)
     └── com.buurman           BuurmanApplication.java + all resources
 ```
 
@@ -257,10 +257,10 @@ frontend/
 2. Regenerate JOOQ: `cd backend && mvn generate-sources -pl jooq -am`
 3. Domain POJO in `backend/common/src/.../domain/`
 4. Request/Response DTOs in `backend/common/src/.../dto/`
-5. JOOQ repository in `backend/buurman/src/.../repository/` with manual `team_id` filtering
-6. MapStruct mapper in `backend/buurman/src/.../mapper/`
-7. Service with `@Transactional` and `@PreAuthorize` in `backend/buurman/src/.../service/`
-8. REST controller (thin) in `backend/buurman/src/.../controller/`
+5. JOOQ repository in `backend/buurman-core/src/.../repository/` with manual `team_id` filtering
+6. MapStruct mapper in `backend/buurman-core/src/.../mapper/`
+7. Service with `@Transactional` and `@PreAuthorize` in `backend/buurman-core/src/.../service/`
+8. REST controller (thin) in `backend/buurman-core/src/.../controller/`
 9. Frontend: API module in `frontend/app/src/`, React Query hook, page components, routes
 
 ## Important Rules

@@ -295,7 +295,7 @@ echo "Generating .env.backend for host-mode development..."
 cat > "$PROJECT_DIR/.env.backend" << EOF
 # Backend environment overrides for workspace ${WS}
 # Source this before running the backend on the host:
-#   source .env.backend && cd backend && mvn spring-boot:run -pl app -am
+#   source .env.backend && cd backend && mvn spring-boot:run -pl buurman-app -am
 #
 # Or use: make backend (which sources this automatically)
 

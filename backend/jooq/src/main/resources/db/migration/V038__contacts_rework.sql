@@ -1,6 +1,7 @@
 -- =============================================================================
 -- V038__contacts_rework.sql
--- Rework tenants -> contacts: rename tables, add new columns, create new tables
+-- Rework tenants -> contacts: rename tables, add new columns, create new
+-- tables, link expenses/payments to contacts, move rent components to periods
 -- =============================================================================
 -- ---------------------------------------------------------------------------
 -- 1. Rename tenants -> contacts
@@ -59,10 +60,8 @@ ADD CONSTRAINT chk_contacts_invoice_email CHECK (
     OR invoice_email ~ '^[^@\s]+@[^@\s]+\.[^@\s]+$'
 );
 
--- -------------------------------------------------------------------------
--- Gap 6 (additional): first_name nullable for COMPANY/SERVICE_PROVIDER
+-- first_name nullable for COMPANY/SERVICE_PROVIDER
 -- INDIVIDUAL requires first_name; COMPANY/SERVICE_PROVIDER requires company_name
--- -------------------------------------------------------------------------
 ALTER TABLE contacts
 ALTER COLUMN first_name
 DROP NOT NULL;
@@ -90,9 +89,7 @@ SET
         ELSE first_name
     END;
 
--- -------------------------------------------------------------------------
--- Gap 7 (additional): display_name must never be empty after computation
--- -------------------------------------------------------------------------
+-- display_name must never be empty after computation
 ALTER TABLE contacts
 ADD CONSTRAINT chk_contacts_display_name_not_empty CHECK (
     display_name IS NOT NULL
@@ -236,10 +233,6 @@ RENAME TO idx_contact_history_team;
 ALTER TABLE contract_parties
 RENAME COLUMN tenant_id TO contact_id;
 
--- -------------------------------------------------------------------------
--- Gap 2: Rename unique index (cheaper than drop+create). Use DO block to
--- handle the case where the index might not exist under the old name.
--- -------------------------------------------------------------------------
 DO $$
 BEGIN
     IF EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'uq_contract_parties_contract_tenant') THEN
@@ -267,12 +260,6 @@ ADD CONSTRAINT chk_contract_parties_role CHECK (
     )
 );
 
--- -------------------------------------------------------------------------
--- Gap 4: contract_parties.contact_id stays NOT NULL.
--- Decision: All contract party roles (including SIGNER) must reference a
--- contact that exists in the system. The Optional<UUID> in the domain is a
--- pre-existing inconsistency to be fixed separately.
--- -------------------------------------------------------------------------
 -- ---------------------------------------------------------------------------
 -- 5. Update notifications: rename recipient_tenant_id -> recipient_contact_id
 -- ---------------------------------------------------------------------------
@@ -291,11 +278,6 @@ RENAME COLUMN tenant_id TO contact_id;
 ALTER INDEX idx_calendar_feeds_tenant_id
 RENAME TO idx_calendar_feeds_contact_id;
 
--- -------------------------------------------------------------------------
--- Gap 1: Drop and recreate CHECK constraint with contact_id.
--- PostgreSQL ALTER RENAME COLUMN does NOT auto-update CHECK constraint text,
--- so we must drop and recreate it referencing the new column name.
--- -------------------------------------------------------------------------
 ALTER TABLE calendar_feeds
 DROP CONSTRAINT IF EXISTS chk_calendar_feeds_entity_required;
 
@@ -330,9 +312,6 @@ ADD CONSTRAINT chk_calendar_feeds_entity_required CHECK (
 -- ---------------------------------------------------------------------------
 -- 7. New table: contact_notes (timeline/interaction entries)
 -- ---------------------------------------------------------------------------
--- Gap 3: contact_id FK uses ON DELETE CASCADE. In the soft-delete model,
--- contacts are never hard-deleted in normal operation. CASCADE is a safety
--- net for exceptional hard deletes (e.g., GDPR data purge) to avoid orphans.
 CREATE TABLE contact_notes (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     identifier VARCHAR(29) NOT NULL,
@@ -344,6 +323,7 @@ CREATE TABLE contact_notes (
     occurred_at TIMESTAMP NOT NULL DEFAULT now(),
     follow_up_date DATE,
     follow_up_reminder_sent BOOLEAN NOT NULL DEFAULT FALSE,
+    pinned BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     updated_at TIMESTAMP NOT NULL DEFAULT now(),
     created_by UUID NOT NULL REFERENCES users (id),
@@ -381,12 +361,14 @@ WHERE
     AND follow_up_reminder_sent = FALSE
     AND deleted_at IS NULL;
 
+CREATE INDEX idx_contact_notes_pinned ON contact_notes (contact_id, pinned)
+WHERE
+    pinned = TRUE
+    AND deleted_at IS NULL;
+
 -- ---------------------------------------------------------------------------
 -- 8. New table: contact_relationships
 -- ---------------------------------------------------------------------------
--- Gap 3: source_contact_id and target_contact_id FKs use ON DELETE CASCADE.
--- Same rationale as contact_notes: soft-delete model means hard delete is
--- exceptional (GDPR purge). CASCADE prevents orphaned relationship rows.
 CREATE TABLE contact_relationships (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     identifier VARCHAR(29) NOT NULL,
@@ -404,14 +386,12 @@ CREATE TABLE contact_relationships (
     CONSTRAINT chk_contact_relationships_no_self CHECK (source_contact_id != target_contact_id),
     CONSTRAINT chk_contact_relationships_type CHECK (
         relationship_type IN (
-            'EMPLOYEE_OF',
+            'WORKS_FOR',
             'CONTACT_PERSON_FOR',
-            'LEGAL_REPRESENTATIVE_OF',
             'GUARANTOR_FOR',
             'FAMILY_OF',
             'PARTNER_OF',
-            'PARENT_OF',
-            'CHILD_OF'
+            'OTHER'
         )
     ),
     CONSTRAINT uq_contact_relationships_pair UNIQUE (
@@ -440,7 +420,7 @@ WHERE
 CREATE TABLE contact_tags (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     team_id UUID NOT NULL REFERENCES teams (id),
-    contact_id UUID NOT NULL REFERENCES contacts (id),
+    contact_id UUID NOT NULL REFERENCES contacts (id) ON DELETE CASCADE,
     tag VARCHAR(40) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     created_by UUID NOT NULL REFERENCES users (id),
@@ -449,14 +429,12 @@ CREATE TABLE contact_tags (
         tag IN (
             'VIP',
             'PROSPECT',
-            'PROBLEM',
-            'LONG_TERM',
-            'COMMERCIAL',
-            'RESIDENTIAL',
             'LATE_PAYER',
-            'REFERRED',
-            'PREFERRED_VENDOR',
-            'DO_NOT_CONTACT'
+            'LONG_TERM',
+            'KEY_HOLDER',
+            'DO_NOT_CONTACT',
+            'FORMER_TENANT',
+            'REFERRED'
         )
     )
 );
@@ -470,9 +448,6 @@ CREATE INDEX idx_contact_tags_tag ON contact_tags (team_id, tag);
 -- ---------------------------------------------------------------------------
 -- 10. Migrate additional_info to contact_notes for existing rows
 -- ---------------------------------------------------------------------------
--- Migration-only identifiers: 'CNT' + 26 uppercase hex chars from UUID.
--- Uses replace(gen_random_uuid()::text, '-', '') to get 32 hex chars without
--- requiring pgcrypto extension. All new records use SidGenerator at runtime.
 INSERT INTO
     contact_notes (
         id,
@@ -517,3 +492,105 @@ WHERE
 -- Drop additional_info column after migration
 ALTER TABLE contacts
 DROP COLUMN IF EXISTS additional_info;
+
+-- ---------------------------------------------------------------------------
+-- 11. Link expenses and payments to contacts
+-- ---------------------------------------------------------------------------
+ALTER TABLE expenses
+ADD COLUMN contact_id UUID REFERENCES contacts (id);
+
+CREATE INDEX idx_expenses_contact_id ON expenses (contact_id)
+WHERE
+    contact_id IS NOT NULL;
+
+ALTER TABLE payments
+ADD COLUMN contact_id UUID REFERENCES contacts (id);
+
+CREATE INDEX idx_payments_contact_id ON payments (contact_id)
+WHERE
+    contact_id IS NOT NULL;
+
+CREATE INDEX idx_expenses_team_contact ON expenses (team_id, contact_id)
+WHERE
+    contact_id IS NOT NULL
+    AND deleted_at IS NULL;
+
+CREATE INDEX idx_payments_team_contact ON payments (team_id, contact_id)
+WHERE
+    contact_id IS NOT NULL
+    AND deleted_at IS NULL;
+
+-- Backfill payments.contact_id from the contract's primary tenant party
+UPDATE payments p
+SET
+    contact_id = cp.contact_id
+FROM
+    contract_parties cp
+WHERE
+    cp.contract_id = p.contract_id
+    AND cp.team_id = p.team_id
+    AND cp.role = 'PRIMARY_TENANT'
+    AND cp.deleted_at IS NULL
+    AND p.contact_id IS NULL
+    AND p.deleted_at IS NULL;
+
+-- ---------------------------------------------------------------------------
+-- 12. Move rent components from contract-level to rent-period-level
+-- ---------------------------------------------------------------------------
+ALTER TABLE contract_rent_components
+ADD COLUMN rent_period_id UUID;
+
+-- Backfill: link each contract's active components to its current/latest rent period
+UPDATE contract_rent_components crc
+SET
+    rent_period_id = (
+        SELECT
+            crp.id
+        FROM
+            contract_rent_periods crp
+        WHERE
+            crp.contract_id = crc.contract_id
+            AND crp.team_id = crc.team_id
+            AND crp.deleted_at IS NULL
+        ORDER BY
+            crp.effective_from DESC
+        LIMIT
+            1
+    )
+WHERE
+    crc.deleted_at IS NULL;
+
+-- For soft-deleted components that couldn't be linked, link to latest period (including deleted)
+UPDATE contract_rent_components crc
+SET
+    rent_period_id = (
+        SELECT
+            crp.id
+        FROM
+            contract_rent_periods crp
+        WHERE
+            crp.contract_id = crc.contract_id
+            AND crp.team_id = crc.team_id
+        ORDER BY
+            crp.effective_from DESC
+        LIMIT
+            1
+    )
+WHERE
+    crc.rent_period_id IS NULL;
+
+ALTER TABLE contract_rent_components
+ALTER COLUMN rent_period_id
+SET NOT NULL;
+
+ALTER TABLE contract_rent_components
+ADD CONSTRAINT fk_rent_comp_rent_period FOREIGN KEY (rent_period_id) REFERENCES contract_rent_periods (id);
+
+DROP INDEX IF EXISTS uq_rent_comp_typed;
+
+CREATE UNIQUE INDEX uq_rent_comp_typed ON contract_rent_components (rent_period_id, component_type)
+WHERE
+    component_type != 'OTHER'
+    AND deleted_at IS NULL;
+
+CREATE INDEX idx_rent_comp_rent_period_id ON contract_rent_components (rent_period_id);

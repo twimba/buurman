@@ -22,13 +22,13 @@
     <modules>
         <module>common</module>
         <module>jooq</module>
-        <module>buurman</module>
+        <module>buurman-core</module>
         <module>buurman-notifications</module>
         <module>buurman-backoffice</module>
         <module>buurman-demo-data</module>
         <module>buurman-takeout</module>
         <module>buurman-booklets</module>
-        <module>app</module>
+        <module>buurman-app</module>
     </modules>
 
     <properties>

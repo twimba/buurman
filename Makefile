@@ -42,16 +42,16 @@ stats:
 
 ## Run backend unit tests
 test:
-	cd backend && mvn test -pl common,buurman,buurman-notifications,buurman-booklets -Pquick -Dmaven.build.cache.enabled=false
+	cd backend && mvn test -pl common,buurman-core,buurman-notifications,buurman-booklets -Pquick -Dmaven.build.cache.enabled=false
 
 ## Run backend unit tests with JaCoCo coverage report (per-module + aggregated)
 test-coverage:
-	cd backend && mvn verify -pl common,buurman,buurman-notifications,buurman-booklets,coverage-report -Pquick,coverage -Dmaven.build.cache.enabled=false
+	cd backend && mvn verify -pl common,buurman-core,buurman-notifications,buurman-booklets,coverage-report -Pquick,coverage -Dmaven.build.cache.enabled=false
 	@echo ""
 	@echo "Coverage reports:"
 	@echo "  Aggregated:          backend/coverage-report/target/site/jacoco-aggregate/index.html"
 	@echo "  common:              backend/common/target/site/jacoco/index.html"
-	@echo "  buurman:             backend/buurman/target/site/jacoco/index.html"
+	@echo "  buurman-core:        backend/buurman-core/target/site/jacoco/index.html"
 	@echo "  buurman-notifications: backend/buurman-notifications/target/site/jacoco/index.html"
 	@echo "  buurman-booklets:    backend/buurman-booklets/target/site/jacoco/index.html"
 
@@ -63,9 +63,9 @@ backend:
 	@set -a; [ -f .env ] && . ./.env; set +a; \
 	if [ -f .env.backend ]; then \
 		echo "Sourcing workspace backend config from .env.backend"; \
-		. ./.env.backend && cd backend && mvn install -pl app -am -DskipTests -Pquick && mvn spring-boot:run -pl app; \
+		. ./.env.backend && cd backend && mvn install -pl buurman-app -am -DskipTests -Pquick && mvn spring-boot:run -pl buurman-app; \
 	else \
-		cd backend && mvn install -pl app -am -DskipTests -Pquick && mvn spring-boot:run -pl app; \
+		cd backend && mvn install -pl buurman-app -am -DskipTests -Pquick && mvn spring-boot:run -pl buurman-app; \
 	fi
 
 ## Run frontend app locally (loads .env for VITE_* variables)
@@ -131,7 +131,7 @@ local:
 		-e '      set backendPane to (split horizontally with default profile)' \
 		-e '    end tell' \
 		-e '    tell backendPane' \
-		-e '      write text "cd /Users/luis.santos/projects/buurman/backend && sleep 10 && mvn install -pl app -am -DskipTests -Pquick && mvn spring-boot:run -pl app"' \
+		-e '      write text "cd /Users/luis.santos/projects/buurman/backend && sleep 10 && mvn install -pl buurman-app -am -DskipTests -Pquick && mvn spring-boot:run -pl buurman-app"' \
 		-e '      set frontendPane to (split horizontally with default profile)' \
 		-e '    end tell' \
 		-e '    tell frontendPane' \
