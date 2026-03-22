@@ -576,5 +576,984 @@
     refresh();
     setInterval(refresh, INTERVAL);
   </script>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       KONAMI CODE EASTER EGG: ENTER THE MATRIX
+       ↑ ↑ ↓ ↓ ← → ← → B A
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <script>
+  (function() {
+    'use strict';
+
+    /* ──────────────────────────────────────────
+       KONAMI CODE DETECTION
+       ────────────────────────────────────────── */
+    const KONAMI = [38,38,40,40,37,39,37,39,66,65];
+    let pos = 0;
+    let matrixActive = false;
+
+    document.addEventListener('keydown', e => {
+      if (matrixActive) { return; }
+      if (e.keyCode === KONAMI[pos]) {
+        pos++;
+        // Subtle green flash on each correct key
+        if (pos > 0 && pos < KONAMI.length) {
+          const flash = document.createElement('div');
+          flash.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,255,65,0.03);z-index:99998;pointer-events:none;';
+          document.body.appendChild(flash);
+          setTimeout(() => flash.remove(), 150);
+        }
+        if (pos === KONAMI.length) {
+          pos = 0;
+          enterTheMatrix();
+        }
+      } else {
+        pos = 0;
+      }
+    });
+
+    /* ──────────────────────────────────────────
+       AUDIO ENGINE (Web Audio API)
+       ────────────────────────────────────────── */
+    let audioCtx, masterGain, droneNodes = [];
+
+    function initAudio() {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      masterGain = audioCtx.createGain();
+      masterGain.gain.value = 0;
+      masterGain.connect(audioCtx.destination);
+    }
+
+    function startDrone() {
+      if (!audioCtx) { return; }
+      // Eerie layered ambient drone
+      const layers = [
+        { freq: 40,   type: 'sawtooth', gain: 0.06, filterFreq: 120 },
+        { freq: 60,   type: 'sine',     gain: 0.04, filterFreq: 180 },
+        { freq: 80,   type: 'triangle', gain: 0.03, filterFreq: 200 },
+        { freq: 120,  type: 'sine',     gain: 0.025, filterFreq: 250 },
+        { freq: 160,  type: 'sine',     gain: 0.015, filterFreq: 300 },
+      ];
+      layers.forEach(l => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        const filter = audioCtx.createBiquadFilter();
+        osc.type = l.type;
+        osc.frequency.value = l.freq;
+        // Add slow LFO for movement
+        const lfo = audioCtx.createOscillator();
+        const lfoGain = audioCtx.createGain();
+        lfo.frequency.value = 0.1 + Math.random() * 0.3;
+        lfoGain.gain.value = l.freq * 0.02;
+        lfo.connect(lfoGain);
+        lfoGain.connect(osc.frequency);
+        lfo.start();
+        filter.type = 'lowpass';
+        filter.frequency.value = l.filterFreq;
+        filter.Q.value = 1.5;
+        gain.gain.value = l.gain;
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(masterGain);
+        osc.start();
+        droneNodes.push({ osc, gain, filter, lfo, lfoGain });
+      });
+      // Add noise layer for texture
+      const bufferSize = audioCtx.sampleRate * 2;
+      const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const output = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) { output[i] = Math.random() * 2 - 1; }
+      const noise = audioCtx.createBufferSource();
+      noise.buffer = noiseBuffer;
+      noise.loop = true;
+      const noiseGain = audioCtx.createGain();
+      noiseGain.gain.value = 0.008;
+      const noiseFilter = audioCtx.createBiquadFilter();
+      noiseFilter.type = 'bandpass';
+      noiseFilter.frequency.value = 800;
+      noiseFilter.Q.value = 0.5;
+      noise.connect(noiseFilter);
+      noiseFilter.connect(noiseGain);
+      noiseGain.connect(masterGain);
+      noise.start();
+      droneNodes.push({ osc: noise, gain: noiseGain, filter: noiseFilter });
+      masterGain.gain.linearRampToValueAtTime(0.12, audioCtx.currentTime + 4);
+    }
+
+    function stopDrone() {
+      if (!audioCtx || !masterGain) { return; }
+      masterGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1.5);
+      setTimeout(() => {
+        droneNodes.forEach(n => {
+          try { n.osc.stop(); } catch(e) {}
+          try { if (n.lfo) { n.lfo.stop(); } } catch(e) {}
+        });
+        droneNodes = [];
+      }, 2000);
+    }
+
+    function playKeystroke() {
+      if (!audioCtx) { return; }
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'square';
+      osc.frequency.value = 600 + Math.random() * 600;
+      gain.gain.value = 0.04;
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.06);
+      osc.connect(gain);
+      gain.connect(masterGain);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.06);
+    }
+
+    function playGlitchSound() {
+      if (!audioCtx) { return; }
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.value = 100 + Math.random() * 2000;
+      gain.gain.value = 0.06;
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+      osc.connect(gain);
+      gain.connect(masterGain);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.15);
+    }
+
+    /* ──────────────────────────────────────────
+       DIGITAL RAIN (Canvas)
+       ────────────────────────────────────────── */
+    let rainCanvas, rainCtx, rainAnim;
+    const MATRIX_CHARS = '\u30A2\u30A4\u30A6\u30A8\u30AA\u30AB\u30AD\u30AF\u30B1\u30B3\u30B5\u30B7\u30B9\u30BB\u30BD\u30BF\u30C1\u30C4\u30C6\u30C8\u30CA\u30CB\u30CC\u30CD\u30CE\u30CF\u30D2\u30D5\u30D8\u30DB\u30DE\u30DF\u30E0\u30E1\u30E2\u30E4\u30E6\u30E8\u30E9\u30EA\u30EB\u30EC\u30ED\u30EF\u30F2\u30F30123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<>{}[]|/\\!@#$%^&*()+=~';
+
+    function createRain() {
+      rainCanvas = document.createElement('canvas');
+      rainCanvas.id = 'matrix-rain';
+      rainCanvas.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;pointer-events:none;opacity:0;transition:opacity 2s;';
+      document.body.appendChild(rainCanvas);
+      rainCtx = rainCanvas.getContext('2d');
+
+      const fontSize = 14;
+      let columns, drops, speeds, brightness, trails;
+
+      function initColumns() {
+        rainCanvas.width = window.innerWidth * window.devicePixelRatio;
+        rainCanvas.height = window.innerHeight * window.devicePixelRatio;
+        rainCanvas.style.width = window.innerWidth + 'px';
+        rainCanvas.style.height = window.innerHeight + 'px';
+        rainCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        columns = Math.floor(window.innerWidth / fontSize);
+        drops = new Array(columns).fill(0).map(() => Math.random() * -100);
+        speeds = new Array(columns).fill(0).map(() => 0.3 + Math.random() * 1.2);
+        brightness = new Array(columns).fill(0).map(() => 0.5 + Math.random() * 0.5);
+        trails = new Array(columns).fill(0).map(() => 15 + Math.floor(Math.random() * 25));
+      }
+      initColumns();
+
+      function draw() {
+        // Fade effect - creates the trail
+        rainCtx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        rainCtx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+        rainCtx.font = fontSize + 'px monospace';
+
+        for (let i = 0; i < columns; i++) {
+          const char = MATRIX_CHARS[Math.floor(Math.random() * MATRIX_CHARS.length)];
+          const y = drops[i] * fontSize;
+          const b = brightness[i];
+
+          // Head character (bright white-green)
+          const headAlpha = 0.9 + b * 0.1;
+          rainCtx.fillStyle = `rgba(${200 + b * 55}, 255, ${200 + b * 55}, ${headAlpha})`;
+          rainCtx.fillText(char, i * fontSize, y);
+
+          // Secondary bright char just behind head
+          if (drops[i] > 1) {
+            const char2 = MATRIX_CHARS[Math.floor(Math.random() * MATRIX_CHARS.length)];
+            rainCtx.fillStyle = `rgba(0, ${200 + b * 55}, 0, ${0.7 + b * 0.2})`;
+            rainCtx.fillText(char2, i * fontSize, y - fontSize);
+          }
+
+          // Random mid-trail flicker
+          if (Math.random() > 0.97 && drops[i] > 5) {
+            const flickerY = y - (2 + Math.random() * trails[i]) * fontSize;
+            const flickerChar = MATRIX_CHARS[Math.floor(Math.random() * MATRIX_CHARS.length)];
+            rainCtx.fillStyle = `rgba(0, ${180 + Math.random() * 75}, 0, ${0.4 + Math.random() * 0.3})`;
+            rainCtx.fillText(flickerChar, i * fontSize, flickerY);
+          }
+
+          // Reset when off screen
+          if (y > window.innerHeight + 100 && Math.random() > 0.98) {
+            drops[i] = Math.random() * -20;
+            speeds[i] = 0.3 + Math.random() * 1.2;
+            brightness[i] = 0.5 + Math.random() * 0.5;
+          }
+          drops[i] += speeds[i];
+        }
+        rainAnim = requestAnimationFrame(draw);
+      }
+
+      window.addEventListener('resize', initColumns);
+      draw();
+      setTimeout(() => { rainCanvas.style.opacity = '0.5'; }, 100);
+    }
+
+    function destroyRain() {
+      if (rainAnim) { cancelAnimationFrame(rainAnim); rainAnim = null; }
+      if (rainCanvas) {
+        rainCanvas.style.opacity = '0';
+        setTimeout(() => { if (rainCanvas) { rainCanvas.remove(); rainCanvas = null; } }, 2000);
+      }
+    }
+
+    /* ──────────────────────────────────────────
+       CRT OVERLAY + SCANLINES
+       ────────────────────────────────────────── */
+    function createCRT() {
+      const crt = document.createElement('div');
+      crt.id = 'matrix-crt';
+      document.body.appendChild(crt);
+      requestAnimationFrame(() => { crt.style.opacity = '1'; });
+    }
+
+    /* ──────────────────────────────────────────
+       RANDOM GLITCH EFFECTS
+       ────────────────────────────────────────── */
+    let glitchInterval;
+    function startGlitchEffects() {
+      glitchInterval = setInterval(() => {
+        if (!matrixActive) { return; }
+        if (Math.random() > 0.7) {
+          const hub = document.getElementById('hub');
+          if (!hub) { return; }
+          // Screen tear effect
+          const tear = document.createElement('div');
+          const tearY = Math.random() * 100;
+          const tearH = 2 + Math.random() * 8;
+          tear.style.cssText = `position:fixed;top:${tearY}%;left:0;width:100vw;height:${tearH}px;background:rgba(0,255,65,${0.1 + Math.random()*0.2});z-index:9999;pointer-events:none;transform:translateX(${-5 + Math.random()*10}px);mix-blend-mode:screen;`;
+          document.body.appendChild(tear);
+          playGlitchSound();
+          setTimeout(() => tear.remove(), 50 + Math.random() * 100);
+
+          // Occasionally RGB split the whole page
+          if (Math.random() > 0.6) {
+            hub.style.textShadow = `${-2 + Math.random()*4}px 0 rgba(255,0,0,0.4), ${-2 + Math.random()*4}px 0 rgba(0,0,255,0.4)`;
+            setTimeout(() => { hub.style.textShadow = ''; }, 80 + Math.random() * 120);
+          }
+        }
+      }, 3000 + Math.random() * 5000);
+    }
+
+    function stopGlitchEffects() {
+      if (glitchInterval) { clearInterval(glitchInterval); glitchInterval = null; }
+    }
+
+    /* ──────────────────────────────────────────
+       BOOT SEQUENCE — "Wake up, Neo..."
+       ────────────────────────────────────────── */
+    function bootSequence() {
+      return new Promise(resolve => {
+        const overlay = document.createElement('div');
+        overlay.id = 'matrix-boot';
+        overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:99999;background:#000;display:flex;align-items:center;justify-content:center;flex-direction:column;opacity:1;';
+        const terminal = document.createElement('div');
+        terminal.style.cssText = 'font-family:"Courier New",monospace;color:#00ff41;font-size:clamp(0.9rem,2.5vw,1.4rem);text-align:left;max-width:650px;width:90%;padding:2rem;line-height:2;';
+        overlay.appendChild(terminal);
+        document.body.appendChild(overlay);
+
+        // Blinking cursor element
+        const cursor = document.createElement('span');
+        cursor.textContent = '█';
+        cursor.style.cssText = 'animation:blink-cursor 0.7s step-end infinite;';
+
+        const lines = [
+          { text: 'Wake up, Neo...', pause: 2000, clear: true },
+          { text: 'The Matrix has you...', pause: 2000, clear: true },
+          { text: 'Follow the white rabbit.', pause: 1800, clear: true },
+          { text: '', pause: 800, clear: false },
+          { text: 'Knock, knock, Neo.', pause: 1500, clear: false },
+        ];
+
+        let lineIdx = 0;
+        let currentLine = null;
+
+        function typeLine() {
+          if (lineIdx >= lines.length) {
+            // DRAMATIC EXIT — green flash, then black, then resolve
+            setTimeout(() => {
+              // First flash: bright green
+              overlay.style.transition = 'background 0.08s';
+              overlay.style.background = '#00ff41';
+              playGlitchSound();
+              setTimeout(() => {
+                overlay.style.background = '#000';
+                setTimeout(() => {
+                  // Second flash
+                  overlay.style.background = 'rgba(0,255,65,0.3)';
+                  playGlitchSound();
+                  setTimeout(() => {
+                    overlay.style.background = '#000';
+                    setTimeout(() => {
+                      // Fade out
+                      overlay.style.transition = 'opacity 0.8s';
+                      overlay.style.opacity = '0';
+                      setTimeout(() => {
+                        overlay.remove();
+                        resolve();
+                      }, 800);
+                    }, 200);
+                  }, 80);
+                }, 150);
+              }, 80);
+            }, 600);
+            return;
+          }
+
+          const line = lines[lineIdx];
+          if (line.text === '') {
+            lineIdx++;
+            setTimeout(typeLine, line.pause);
+            return;
+          }
+
+          currentLine = document.createElement('div');
+          currentLine.style.cssText = 'text-shadow:0 0 10px #00ff41,0 0 20px rgba(0,255,65,0.3);min-height:1.8em;';
+          terminal.appendChild(currentLine);
+
+          let charIdx = 0;
+          function typeChar() {
+            if (charIdx < line.text.length) {
+              // Remove cursor, add char, re-add cursor
+              if (cursor.parentNode) { cursor.remove(); }
+              currentLine.textContent += line.text[charIdx];
+              currentLine.appendChild(cursor);
+              charIdx++;
+              playKeystroke();
+              setTimeout(typeChar, 40 + Math.random() * 70);
+            } else {
+              // Done typing this line
+              if (cursor.parentNode) { cursor.remove(); }
+              lineIdx++;
+              if (line.clear) {
+                setTimeout(() => {
+                  currentLine.style.transition = 'opacity 0.5s';
+                  currentLine.style.opacity = '0';
+                  setTimeout(() => { currentLine.remove(); typeLine(); }, 500);
+                }, line.pause);
+              } else {
+                setTimeout(typeLine, line.pause);
+              }
+            }
+          }
+          typeChar();
+        }
+
+        // Start with a brief darkness + cursor blink
+        setTimeout(typeLine, 1200);
+      });
+    }
+
+    /* ──────────────────────────────────────────
+       MATRIX THEME CSS
+       ────────────────────────────────────────── */
+    function injectMatrixStyles() {
+      const style = document.createElement('style');
+      style.id = 'matrix-theme';
+      style.textContent = `
+        /* ═══ Cursor blink for boot sequence ═══ */
+        @keyframes blink-cursor {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0; }
+        }
+
+        /* ═══ Override all CSS variables ═══ */
+        body.matrix-mode {
+          --surface-page: #000000;
+          --surface-card: rgba(0, 18, 0, 0.88);
+          --surface-inset: rgba(0, 35, 0, 0.5);
+          --text-primary: #00ff41;
+          --text-secondary: #00cc33;
+          --text-muted: #009922;
+          --text-disabled: #006611;
+          --text-link: #00ff41;
+          --border-default: rgba(0, 255, 65, 0.15);
+          --border-subtle: rgba(0, 255, 65, 0.08);
+          --border-strong: rgba(0, 255, 65, 0.35);
+          --primary-50: rgba(0, 255, 65, 0.08);
+          --primary-100: rgba(0, 255, 65, 0.12);
+          --primary-500: #00ff41;
+          --primary-600: #00cc33;
+          --primary-700: #00ff41;
+          --primary-900: #00ff41;
+          --success: #00ff41;
+          --success-bg: rgba(0, 255, 65, 0.08);
+          --success-border: rgba(0, 255, 65, 0.25);
+          --warning: #00ff41;
+          --warning-bg: rgba(0, 255, 65, 0.08);
+          --warning-border: rgba(0, 255, 65, 0.25);
+          --info: #00ff41;
+          --info-bg: rgba(0, 255, 65, 0.08);
+          --cat-app-bg: rgba(0, 255, 65, 0.06);
+          --cat-app-border: rgba(0, 255, 65, 0.2);
+          --cat-app-text: #00ff41;
+          --cat-backend-bg: rgba(0, 255, 65, 0.06);
+          --cat-backend-border: rgba(0, 255, 65, 0.2);
+          --cat-backend-text: #00ff41;
+          --cat-auth-bg: rgba(0, 255, 65, 0.06);
+          --cat-auth-border: rgba(0, 255, 65, 0.2);
+          --cat-auth-text: #00ff41;
+          --cat-devtools-bg: rgba(0, 255, 65, 0.06);
+          --cat-devtools-border: rgba(0, 255, 65, 0.2);
+          --cat-devtools-text: #00ff41;
+          --cat-monitoring-bg: rgba(0, 255, 65, 0.06);
+          --cat-monitoring-border: rgba(0, 255, 65, 0.2);
+          --cat-monitoring-text: #00ff41;
+          --shadow-xs: 0 0 5px rgba(0, 255, 65, 0.08);
+          --shadow-sm: 0 0 10px rgba(0, 255, 65, 0.12);
+          --shadow-md: 0 0 20px rgba(0, 255, 65, 0.15);
+          --shadow-lg: 0 0 30px rgba(0, 255, 65, 0.2);
+          --shadow-ring: 0 0 0 3px rgba(0, 255, 65, 0.15);
+          --font-body: 'Courier New', 'Lucida Console', 'Monaco', monospace;
+          --font-mono: 'Courier New', 'Lucida Console', 'Monaco', monospace;
+
+          background: #000 !important;
+          font-family: 'Courier New', 'Lucida Console', monospace !important;
+          animation: matrix-flicker 8s ease-in-out infinite;
+        }
+
+        @keyframes matrix-flicker {
+          0%, 95%, 100% { opacity: 1; }
+          96% { opacity: 0.96; }
+          97% { opacity: 1; }
+          98% { opacity: 0.97; }
+        }
+
+        /* Hub container stays above rain */
+        body.matrix-mode .hub {
+          position: relative;
+          z-index: 2;
+        }
+
+        /* ═══ Header ═══ */
+        body.matrix-mode .header {
+          border-bottom-color: rgba(0, 255, 65, 0.2);
+        }
+
+        body.matrix-mode .header-title {
+          font-family: 'Courier New', monospace !important;
+          text-shadow: 0 0 10px #00ff41, 0 0 20px rgba(0, 255, 65, 0.4), 0 0 40px rgba(0, 255, 65, 0.15);
+          animation: title-glitch 4s ease-in-out infinite;
+          position: relative;
+        }
+
+        @keyframes title-glitch {
+          0%, 88%, 100% {
+            text-shadow: 0 0 10px #00ff41, 0 0 20px rgba(0, 255, 65, 0.4);
+            transform: translate(0);
+            filter: none;
+          }
+          89% {
+            text-shadow: -3px 0 #ff0040, 3px 0 #0040ff, 0 0 10px #00ff41;
+            transform: translate(-3px, 1px) skewX(-1deg);
+          }
+          90% {
+            text-shadow: 3px 0 #ff0040, -3px 0 #0040ff, 0 0 10px #00ff41;
+            transform: translate(3px, -1px) skewX(1deg);
+          }
+          91% {
+            text-shadow: -2px 0 #ff0040, 2px 0 #0040ff, 0 0 10px #00ff41;
+            transform: translate(-1px, 0) skewX(-0.5deg);
+          }
+          92% {
+            text-shadow: 0 0 10px #00ff41, 0 0 20px rgba(0, 255, 65, 0.4);
+            transform: translate(0);
+          }
+        }
+
+        /* Logo green filter + glow */
+        body.matrix-mode .logo {
+          filter: brightness(0) invert(1) sepia(1) saturate(10) hue-rotate(85deg)
+                  drop-shadow(0 0 8px #00ff41) drop-shadow(0 0 20px rgba(0, 255, 65, 0.4));
+          transition: filter 0.3s;
+        }
+        body.matrix-mode .logo:hover {
+          filter: brightness(0) invert(1) sepia(1) saturate(10) hue-rotate(85deg)
+                  drop-shadow(0 0 15px #00ff41) drop-shadow(0 0 30px rgba(0, 255, 65, 0.6));
+        }
+
+        /* ═══ Workspace Cards ═══ */
+        body.matrix-mode .ws-card {
+          background: rgba(0, 18, 0, 0.88) !important;
+          border: 1px solid rgba(0, 255, 65, 0.2) !important;
+          box-shadow: 0 0 15px rgba(0, 255, 65, 0.08),
+                      inset 0 0 40px rgba(0, 255, 65, 0.02),
+                      inset 0 1px 0 rgba(0, 255, 65, 0.1) !important;
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+          position: relative;
+          overflow: hidden;
+        }
+
+        /* Animated scan line on cards */
+        body.matrix-mode .ws-card::before {
+          content: '';
+          position: absolute;
+          top: -100%;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(
+            180deg,
+            transparent 0%,
+            rgba(0, 255, 65, 0.03) 45%,
+            rgba(0, 255, 65, 0.08) 50%,
+            rgba(0, 255, 65, 0.03) 55%,
+            transparent 100%
+          );
+          animation: card-scan 6s ease-in-out infinite;
+          pointer-events: none;
+        }
+
+        @keyframes card-scan {
+          0% { top: -100%; }
+          100% { top: 200%; }
+        }
+
+        body.matrix-mode .ws-card:hover {
+          border-color: rgba(0, 255, 65, 0.5) !important;
+          box-shadow: 0 0 30px rgba(0, 255, 65, 0.15),
+                      0 0 60px rgba(0, 255, 65, 0.05),
+                      inset 0 0 50px rgba(0, 255, 65, 0.04) !important;
+          transform: perspective(800px) rotateY(1.5deg) rotateX(-0.5deg) translateY(-3px) !important;
+        }
+
+        /* Stagger card scan animations */
+        body.matrix-mode .ws-card:nth-child(2n)::before { animation-delay: -2s; }
+        body.matrix-mode .ws-card:nth-child(3n)::before { animation-delay: -4s; }
+
+        /* Card text glow */
+        body.matrix-mode .ws-name {
+          text-shadow: 0 0 8px rgba(0, 255, 65, 0.5);
+        }
+
+        body.matrix-mode .ws-badge {
+          border-color: rgba(0, 255, 65, 0.3) !important;
+          text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+        }
+
+        body.matrix-mode .ws-branch {
+          border-color: rgba(0, 255, 65, 0.15) !important;
+          background: rgba(0, 255, 65, 0.05) !important;
+        }
+
+        /* ═══ Service Chips ═══ */
+        body.matrix-mode .svc {
+          background: rgba(0, 255, 65, 0.05) !important;
+          color: #00ff41 !important;
+          border-color: rgba(0, 255, 65, 0.18) !important;
+          transition: all 0.2s !important;
+        }
+        body.matrix-mode .svc:hover {
+          background: rgba(0, 255, 65, 0.12) !important;
+          border-color: rgba(0, 255, 65, 0.4) !important;
+          box-shadow: 0 0 12px rgba(0, 255, 65, 0.2), inset 0 0 12px rgba(0, 255, 65, 0.05) !important;
+          transform: translateY(-1px) scale(1.02) !important;
+        }
+
+        /* Status dots — all glow green */
+        body.matrix-mode .dot {
+          background: #00ff41 !important;
+          box-shadow: 0 0 4px #00ff41, 0 0 8px rgba(0, 255, 65, 0.6), 0 0 16px rgba(0, 255, 65, 0.3) !important;
+          animation: dot-pulse-matrix 2s ease-in-out infinite;
+        }
+        @keyframes dot-pulse-matrix {
+          0%, 100% { box-shadow: 0 0 4px #00ff41, 0 0 8px rgba(0, 255, 65, 0.6); }
+          50% { box-shadow: 0 0 6px #00ff41, 0 0 12px rgba(0, 255, 65, 0.8), 0 0 20px rgba(0, 255, 65, 0.4); }
+        }
+
+        /* ═══ Quick Links ═══ */
+        body.matrix-mode .qlink {
+          background: rgba(0, 18, 0, 0.8) !important;
+          color: #00ff41 !important;
+          border-color: rgba(0, 255, 65, 0.15) !important;
+          transition: all 0.25s !important;
+        }
+        body.matrix-mode .qlink:hover {
+          border-color: rgba(0, 255, 65, 0.45) !important;
+          box-shadow: 0 0 20px rgba(0, 255, 65, 0.15), inset 0 0 15px rgba(0, 255, 65, 0.03) !important;
+          text-shadow: 0 0 8px rgba(0, 255, 65, 0.6);
+        }
+        body.matrix-mode .qlink svg {
+          filter: drop-shadow(0 0 3px rgba(0, 255, 65, 0.5));
+        }
+
+        body.matrix-mode .section-label {
+          text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+          letter-spacing: 0.15em;
+        }
+
+        /* ═══ Legend ═══ */
+        body.matrix-mode .legend {
+          border-top-color: rgba(0, 255, 65, 0.15);
+        }
+
+        /* ═══ CRT Overlay ═══ */
+        #matrix-crt {
+          position: fixed;
+          top: 0; left: 0;
+          width: 100vw; height: 100vh;
+          z-index: 10000;
+          pointer-events: none;
+          opacity: 0;
+          transition: opacity 0.8s;
+          background: repeating-linear-gradient(
+            0deg,
+            rgba(0, 0, 0, 0.12) 0px,
+            rgba(0, 0, 0, 0.12) 1px,
+            transparent 1px,
+            transparent 3px
+          );
+        }
+        #matrix-crt::before {
+          content: '';
+          position: absolute;
+          top: 0; left: 0; right: 0; bottom: 0;
+          background: radial-gradient(
+            ellipse at center,
+            transparent 50%,
+            rgba(0, 0, 0, 0.35) 100%
+          );
+        }
+        #matrix-crt::after {
+          content: '';
+          position: absolute;
+          top: 0; left: 0; right: 0; bottom: 0;
+          background: linear-gradient(
+            180deg,
+            transparent 0%,
+            rgba(0, 255, 65, 0.015) 50%,
+            transparent 100%
+          );
+          animation: crt-scanline 8s linear infinite;
+        }
+        @keyframes crt-scanline {
+          0% { transform: translateY(-100%); }
+          100% { transform: translateY(100%); }
+        }
+
+        /* ═══ Custom Cursor ═══ */
+        body.matrix-mode, body.matrix-mode * {
+          cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Ccircle cx='10' cy='10' r='2' fill='%2300ff41'/%3E%3Ccircle cx='10' cy='10' r='5' fill='none' stroke='%2300ff41' stroke-width='0.8' opacity='0.5'/%3E%3Ccircle cx='10' cy='10' r='8' fill='none' stroke='%2300ff41' stroke-width='0.4' opacity='0.25'/%3E%3C/svg%3E") 10 10, crosshair !important;
+        }
+        body.matrix-mode a, body.matrix-mode a * {
+          cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Ccircle cx='10' cy='10' r='3' fill='%2300ff41'/%3E%3Ccircle cx='10' cy='10' r='7' fill='none' stroke='%2300ff41' stroke-width='0.6' opacity='0.4'/%3E%3C/svg%3E") 10 10, pointer !important;
+        }
+
+        /* ═══ Custom Scrollbar ═══ */
+        body.matrix-mode::-webkit-scrollbar { width: 6px; }
+        body.matrix-mode::-webkit-scrollbar-track { background: #000; }
+        body.matrix-mode::-webkit-scrollbar-thumb {
+          background: #00ff41;
+          border-radius: 3px;
+          box-shadow: 0 0 6px rgba(0, 255, 65, 0.5);
+        }
+
+        /* ═══ Exit Button (Blue Pill) ═══ */
+        #matrix-exit {
+          position: fixed;
+          bottom: 1.5rem;
+          right: 1.5rem;
+          z-index: 10001;
+          background: linear-gradient(135deg, #1a0a3e 0%, #2563eb 50%, #1a0a3e 100%);
+          background-size: 200% 200%;
+          animation: pill-glow 3s ease-in-out infinite;
+          color: #c0d0ff;
+          border: 1px solid rgba(59, 130, 246, 0.5);
+          padding: 0.6rem 1.2rem;
+          border-radius: 24px;
+          font-family: 'Courier New', monospace;
+          font-size: 0.78rem;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          cursor: pointer !important;
+          box-shadow: 0 0 20px rgba(59, 130, 246, 0.3), 0 0 40px rgba(59, 130, 246, 0.1);
+          transition: all 0.3s ease;
+          text-transform: uppercase;
+          opacity: 0;
+          transform: translateY(20px);
+          animation: pill-glow 3s ease-in-out infinite, pill-appear 0.6s 0.5s ease forwards;
+        }
+        @keyframes pill-glow {
+          0%, 100% { background-position: 0% 50%; box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+          50% { background-position: 100% 50%; box-shadow: 0 0 30px rgba(59, 130, 246, 0.5), 0 0 60px rgba(59, 130, 246, 0.2); }
+        }
+        @keyframes pill-appear {
+          to { opacity: 1; transform: translateY(0); }
+        }
+        #matrix-exit:hover {
+          background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #2563eb 100%);
+          color: #fff;
+          box-shadow: 0 0 30px rgba(59, 130, 246, 0.5), 0 0 60px rgba(59, 130, 246, 0.3);
+          transform: translateY(-2px) scale(1.05);
+        }
+        #matrix-exit:active {
+          transform: translateY(0) scale(0.98);
+        }
+
+        /* ═══ Ambient particle layer ═══ */
+        #matrix-particles {
+          position: fixed;
+          top: 0; left: 0;
+          width: 100vw; height: 100vh;
+          z-index: 1;
+          pointer-events: none;
+          opacity: 0;
+          transition: opacity 2s;
+        }
+
+        /* ═══ Matrix mode reveal animation ═══ */
+        body.matrix-mode .hub {
+          animation: hub-reveal 1s ease-out forwards;
+        }
+        @keyframes hub-reveal {
+          0% { opacity: 0; transform: perspective(1000px) rotateX(5deg) translateY(30px); filter: blur(5px); }
+          100% { opacity: 1; transform: perspective(1000px) rotateX(0) translateY(0); filter: blur(0); }
+        }
+
+        /* ═══ "There is no spoon" tooltip ═══ */
+        body.matrix-mode .logo {
+          position: relative;
+        }
+        body.matrix-mode .header-left {
+          position: relative;
+        }
+        body.matrix-mode .header-left::after {
+          content: 'There is no spoon.';
+          position: absolute;
+          bottom: -20px;
+          left: 0;
+          font-family: 'Courier New', monospace;
+          font-size: 0.6rem;
+          color: rgba(0, 255, 65, 0);
+          transition: color 0.3s;
+          pointer-events: none;
+          white-space: nowrap;
+          text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+        }
+        body.matrix-mode .header-left:hover::after {
+          color: rgba(0, 255, 65, 0.5);
+        }
+
+        /* ═══ Animated border gradient on cards ═══ */
+        body.matrix-mode .ws-card::after {
+          content: '';
+          position: absolute;
+          top: -1px; left: -1px; right: -1px; bottom: -1px;
+          border-radius: 9px;
+          background: linear-gradient(
+            var(--border-angle, 0deg),
+            transparent 0%,
+            rgba(0, 255, 65, 0.4) 25%,
+            transparent 50%,
+            rgba(0, 255, 65, 0.2) 75%,
+            transparent 100%
+          );
+          z-index: -1;
+          opacity: 0;
+          transition: opacity 0.3s;
+          animation: border-rotate 8s linear infinite;
+        }
+        body.matrix-mode .ws-card:hover::after {
+          opacity: 1;
+        }
+        @property --border-angle {
+          syntax: '<angle>';
+          initial-value: 0deg;
+          inherits: false;
+        }
+        @keyframes border-rotate {
+          to { --border-angle: 360deg; }
+        }
+
+        /* ═══ Selection color ═══ */
+        body.matrix-mode ::selection {
+          background: rgba(0, 255, 65, 0.3);
+          color: #fff;
+        }
+
+        /* ═══ Link hover glow ═══ */
+        body.matrix-mode a:hover {
+          text-shadow: 0 0 12px rgba(0, 255, 65, 0.7) !important;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    /* ──────────────────────────────────────────
+       FLOATING PARTICLES
+       ────────────────────────────────────────── */
+    let particleCanvas, particleCtx, particleAnim;
+
+    function createParticles() {
+      particleCanvas = document.createElement('canvas');
+      particleCanvas.id = 'matrix-particles';
+      document.body.appendChild(particleCanvas);
+
+      particleCtx = particleCanvas.getContext('2d');
+      const particles = [];
+      const PARTICLE_COUNT = 50;
+
+      function resize() {
+        particleCanvas.width = window.innerWidth * window.devicePixelRatio;
+        particleCanvas.height = window.innerHeight * window.devicePixelRatio;
+        particleCanvas.style.width = window.innerWidth + 'px';
+        particleCanvas.style.height = window.innerHeight + 'px';
+        particleCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      // Initialize particles
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        particles.push({
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * window.innerHeight,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: -0.1 - Math.random() * 0.4,
+          size: 1 + Math.random() * 2,
+          alpha: 0.1 + Math.random() * 0.3,
+          char: MATRIX_CHARS[Math.floor(Math.random() * MATRIX_CHARS.length)],
+          rotation: Math.random() * Math.PI * 2,
+          rotSpeed: (Math.random() - 0.5) * 0.02,
+        });
+      }
+
+      function draw() {
+        particleCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        particleCtx.font = '10px monospace';
+
+        particles.forEach(p => {
+          particleCtx.save();
+          particleCtx.translate(p.x, p.y);
+          particleCtx.rotate(p.rotation);
+          particleCtx.fillStyle = `rgba(0, 255, 65, ${p.alpha})`;
+          particleCtx.fillText(p.char, 0, 0);
+          particleCtx.restore();
+
+          p.x += p.vx;
+          p.y += p.vy;
+          p.rotation += p.rotSpeed;
+
+          // Wrap around
+          if (p.y < -10) { p.y = window.innerHeight + 10; p.x = Math.random() * window.innerWidth; }
+          if (p.x < -10) { p.x = window.innerWidth + 10; }
+          if (p.x > window.innerWidth + 10) { p.x = -10; }
+
+          // Randomly change character
+          if (Math.random() > 0.99) {
+            p.char = MATRIX_CHARS[Math.floor(Math.random() * MATRIX_CHARS.length)];
+          }
+        });
+
+        particleAnim = requestAnimationFrame(draw);
+      }
+
+      draw();
+      setTimeout(() => { particleCanvas.style.opacity = '0.6'; }, 500);
+    }
+
+    function destroyParticles() {
+      if (particleAnim) { cancelAnimationFrame(particleAnim); particleAnim = null; }
+      if (particleCanvas) {
+        particleCanvas.style.opacity = '0';
+        setTimeout(() => { if (particleCanvas) { particleCanvas.remove(); particleCanvas = null; } }, 2000);
+      }
+    }
+
+    /* ──────────────────────────────────────────
+       EXIT BUTTON (Blue Pill)
+       ────────────────────────────────────────── */
+    function createExitButton() {
+      const btn = document.createElement('button');
+      btn.id = 'matrix-exit';
+      btn.innerHTML = '\u{1F48A} Take the Blue Pill';
+      btn.onclick = exitTheMatrix;
+      document.body.appendChild(btn);
+    }
+
+    /* ──────────────────────────────────────────
+       ENTER THE MATRIX
+       ────────────────────────────────────────── */
+    async function enterTheMatrix() {
+      if (matrixActive) { return; }
+      matrixActive = true;
+
+      // Inject styles first (needed for boot sequence cursor animation)
+      injectMatrixStyles();
+
+      // Init audio (may fail if no user gesture — that's OK)
+      try { initAudio(); } catch(e) {}
+      try { startDrone(); } catch(e) {}
+
+      // Boot sequence
+      await bootSequence();
+
+      // Apply matrix theme
+      document.body.classList.add('matrix-mode');
+
+      // Start visual effects
+      createRain();
+      createParticles();
+      createCRT();
+      createExitButton();
+      startGlitchEffects();
+    }
+
+    /* ──────────────────────────────────────────
+       EXIT THE MATRIX (Blue Pill)
+       ────────────────────────────────────────── */
+    function exitTheMatrix() {
+      matrixActive = false;
+
+      // Flash white (waking up)
+      const flash = document.createElement('div');
+      flash.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#fff;z-index:99999;opacity:0;transition:opacity 0.15s;pointer-events:none;';
+      document.body.appendChild(flash);
+      requestAnimationFrame(() => { flash.style.opacity = '1'; });
+
+      setTimeout(() => {
+        // Remove matrix class
+        document.body.classList.remove('matrix-mode');
+
+        // Remove injected styles
+        const style = document.getElementById('matrix-theme');
+        if (style) { style.remove(); }
+
+        // Stop all effects
+        destroyRain();
+        destroyParticles();
+        stopGlitchEffects();
+        stopDrone();
+
+        // Remove CRT
+        const crt = document.getElementById('matrix-crt');
+        if (crt) { crt.style.opacity = '0'; setTimeout(() => crt.remove(), 500); }
+
+        // Remove exit button
+        const btn = document.getElementById('matrix-exit');
+        if (btn) { btn.remove(); }
+
+        // Remove hub text shadow if glitch left it
+        const hub = document.getElementById('hub');
+        if (hub) { hub.style.textShadow = ''; }
+
+        // Fade out white flash
+        flash.style.transition = 'opacity 0.5s';
+        flash.style.opacity = '0';
+        setTimeout(() => flash.remove(), 500);
+      }, 200);
+    }
+  })();
+  </script>
 </body>
 </html>
