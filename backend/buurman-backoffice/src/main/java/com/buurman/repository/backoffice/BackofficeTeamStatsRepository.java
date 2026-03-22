@@ -5,7 +5,7 @@ import static com.buurman.jooq.generated.Tables.DOCUMENTS;
 import static com.buurman.jooq.generated.Tables.EXPENSES;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
-import static com.buurman.jooq.generated.Tables.TENANTS;
+import static com.buurman.jooq.generated.Tables.CONTACTS;
 import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.sum;
 
@@ -35,11 +35,11 @@ public class BackofficeTeamStatsRepository {
             dsl.selectCount()
                 .from(PROPERTIES)
                 .where(PROPERTIES.TEAM_ID.eq(teamId).and(PROPERTIES.DELETED_AT.isNull())));
-    long tenants =
+    long contacts =
         fetchCount(
             dsl.selectCount()
-                .from(TENANTS)
-                .where(TENANTS.TEAM_ID.eq(teamId).and(TENANTS.DELETED_AT.isNull())));
+                .from(CONTACTS)
+                .where(CONTACTS.TEAM_ID.eq(teamId).and(CONTACTS.DELETED_AT.isNull())));
     long contracts =
         fetchCount(
             dsl.selectCount()
@@ -60,7 +60,7 @@ public class BackofficeTeamStatsRepository {
             dsl.selectCount()
                 .from(DOCUMENTS)
                 .where(DOCUMENTS.TEAM_ID.eq(teamId).and(DOCUMENTS.DELETED_AT.isNull())));
-    return new DataCounts(properties, tenants, contracts, expenses, payments, documents);
+    return new DataCounts(properties, contacts, contracts, expenses, payments, documents);
   }
 
   private static long fetchCount(org.jooq.SelectConditionStep<?> query) {

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
-import com.buurman.domain.identifier.TenantIdentifier;
+import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.dto.response.PortfolioDashboardResponse;
 import com.buurman.dto.response.PropertyDashboardResponse;
 import com.buurman.service.ExportService;
@@ -28,7 +28,7 @@ public class ExportServiceImpl implements ExportService {
   private final TransactionPdfExporter transactionPdfExporter;
   private final PropertyBookletExporter propertyBookletExporter;
   private final ContractBookletExporter contractBookletExporter;
-  private final TenantBookletExporter tenantBookletExporter;
+  private final ContactBookletExporter contactBookletExporter;
   private final PropertyDashboardPdfExporter propertyDashboardPdfExporter;
   private final PropertyDashboardCsvExporter propertyDashboardCsvExporter;
   private final PortfolioDashboardPdfExporter portfolioDashboardPdfExporter;
@@ -66,9 +66,9 @@ public class ExportServiceImpl implements ExportService {
   }
 
   @Override
-  public byte[] generateTenantReportPDF(TenantIdentifier tenantIdentifier, UUID teamId) {
+  public byte[] generateContactReportPDF(ContactIdentifier contactIdentifier, UUID teamId) {
     return withMetrics(
-        "tenant_report", () -> tenantBookletExporter.generate(tenantIdentifier, teamId));
+        "contact_report", () -> contactBookletExporter.generate(contactIdentifier, teamId));
   }
 
   @Override

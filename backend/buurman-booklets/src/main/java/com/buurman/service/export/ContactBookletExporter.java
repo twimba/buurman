@@ -36,20 +36,20 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
+import com.buurman.domain.Contact;
+import com.buurman.domain.ContactAddress;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
-import com.buurman.domain.Tenant;
-import com.buurman.domain.TenantAddress;
-import com.buurman.domain.identifier.TenantIdentifier;
+import com.buurman.domain.identifier.ContactIdentifier;
+import com.buurman.repository.ContactAddressRepository;
+import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
-import com.buurman.repository.TenantAddressRepository;
-import com.buurman.repository.TenantRepository;
 import com.buurman.service.ContractPartyService;
 import com.buurman.service.EffectiveEndDateHelper;
 import com.buurman.util.CurrencyUtils;
@@ -58,10 +58,10 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class TenantBookletExporter {
+public class ContactBookletExporter {
 
-  private final TenantRepository tenantRepository;
-  private final TenantAddressRepository tenantAddressRepository;
+  private final ContactRepository contactRepository;
+  private final ContactAddressRepository contactAddressRepository;
   private final ContractRepository contractRepository;
   private final ContractExtensionRepository contractExtensionRepository;
   private final PaymentRepository paymentRepository;
@@ -70,32 +70,34 @@ public class TenantBookletExporter {
   private final PdfRenderer pdfRenderer;
   private final Clock clock;
 
-  public byte[] generate(TenantIdentifier tenantIdentifier, UUID teamId) {
-    Tenant tenant = tenantRepository.getByIdentifierAndTeamId(tenantIdentifier, teamId);
+  public byte[] generate(ContactIdentifier contactIdentifier, UUID teamId) {
+    Contact contact = contactRepository.getByIdentifierAndTeamId(contactIdentifier, teamId);
 
-    List<TenantAddress> addresses = tenantAddressRepository.findByTenantId(tenant.getId(), teamId);
-    List<Contract> contracts = contractRepository.findByTenantIdViaParties(tenant.getId(), teamId);
+    List<ContactAddress> addresses =
+        contactAddressRepository.findByContactId(contact.getId(), teamId);
+    List<Contract> contracts =
+        contractRepository.findByContactIdViaParties(contact.getId(), teamId);
 
     List<Payment> allPayments = new ArrayList<>();
-    for (Contract contract : contracts) {
-      allPayments.addAll(paymentRepository.findByContractId(contract.getId(), teamId));
+    for (Contract c : contracts) {
+      allPayments.addAll(paymentRepository.findByContractId(c.getId(), teamId));
     }
 
     Map<UUID, Property> propertyMap = new HashMap<>();
-    for (Contract contract : contracts) {
-      if (!propertyMap.containsKey(contract.getPropertyId())) {
+    for (Contract c : contracts) {
+      if (!propertyMap.containsKey(c.getPropertyId())) {
         propertyRepository
-            .findByIdAndTeamId(contract.getPropertyId(), teamId)
+            .findByIdAndTeamId(c.getPropertyId(), teamId)
             .ifPresent(p -> propertyMap.put(p.getId(), p));
       }
     }
 
     Map<UUID, ContractPartyRole> contractRoles = new HashMap<>();
-    for (Contract contract : contracts) {
-      contractPartyService.getPartiesForContract(contract.getId(), teamId).stream()
-          .filter(p -> p.getTenantId().map(id -> id.equals(tenant.getId())).orElse(false))
+    for (Contract c : contracts) {
+      contractPartyService.getPartiesForContract(c.getId(), teamId).stream()
+          .filter(p -> p.getContactId().map(id -> id.equals(contact.getId())).orElse(false))
           .findFirst()
-          .ifPresent(p -> contractRoles.put(contract.getId(), p.getRole()));
+          .ifPresent(p -> contractRoles.put(c.getId(), p.getRole()));
     }
 
     // Bulk-load extensions and group by contract ID
@@ -107,7 +109,7 @@ public class TenantBookletExporter {
 
     String html =
         buildHtml(
-            tenant,
+            contact,
             addresses,
             contracts,
             allPayments,
@@ -117,11 +119,11 @@ public class TenantBookletExporter {
     return pdfRenderer.renderHtml(html);
   }
 
-  // ── HTML building ───────────────────────────────────────────────
+  // -- HTML building ---
 
   private String buildHtml(
-      Tenant tenant,
-      List<TenantAddress> addresses,
+      Contact contact,
+      List<ContactAddress> addresses,
       List<Contract> contracts,
       List<Payment> allPayments,
       Map<UUID, Property> propertyMap,
@@ -131,9 +133,7 @@ public class TenantBookletExporter {
     DateTimeFormatter shortFmt = DateTimeFormatter.ofPattern("MMM d, yyyy");
     String generatedDate = LocalDate.now(clock).format(dateFmt);
 
-    String fullName =
-        escapeHtml(tenant.getFirstName())
-            + tenant.getLastName().map(n -> " " + escapeHtml(n)).orElse("");
+    String fullName = escapeHtml(contact.getDisplayName());
 
     BigDecimal totalPaid =
         allPayments.stream()
@@ -150,7 +150,7 @@ public class TenantBookletExporter {
             .filter(c -> c.getStatus() != null && c.getStatus().name().equals("ACTIVE"))
             .count();
 
-    String currentPropertyName = resolveCurrentPropertyName(tenant, propertyMap);
+    String currentPropertyName = resolveCurrentPropertyName(contracts, propertyMap);
 
     String css =
         BookletCss.base()
@@ -164,7 +164,7 @@ public class TenantBookletExporter {
 
     appendCoverPage(
         html,
-        tenant,
+        contact,
         fullName,
         generatedDate,
         activeContracts,
@@ -172,7 +172,7 @@ public class TenantBookletExporter {
         currentPropertyName);
     appendProfilePage(
         html,
-        tenant,
+        contact,
         fullName,
         currentPropertyName,
         totalPaid,
@@ -188,60 +188,60 @@ public class TenantBookletExporter {
     return html.toString();
   }
 
-  // ── Page: Cover ─────────────────────────────────────────────────
+  // -- Page: Cover ---
 
   private void appendCoverPage(
       StringBuilder html,
-      Tenant tenant,
+      Contact contact,
       String fullName,
       String generatedDate,
       long activeContracts,
       int totalContracts,
       String currentPropertyName) {
-    appendCoverStart(html, "TENANT BOOKLET", fullName, generatedDate);
+    appendCoverStart(html, "CONTACT BOOKLET", fullName, generatedDate);
 
     html.append("<table class='cover-summary'>");
     html.append("<tr>");
-    appendCoverCell(html, "Email", tenant.getEmail().map(BookletHelper::escapeHtml).orElse("—"));
-    appendCoverCell(html, "Phone", tenant.getPhone().map(BookletHelper::escapeHtml).orElse("—"));
+    appendCoverCell(html, "Email", contact.getEmail().map(BookletHelper::escapeHtml).orElse("—"));
+    appendCoverCell(html, "Phone", contact.getPhone().map(BookletHelper::escapeHtml).orElse("—"));
     html.append("</tr><tr>");
     appendCoverCell(html, "Active Contracts", String.valueOf(activeContracts));
     appendCoverCell(html, "Total Contracts", String.valueOf(totalContracts));
     html.append("</tr><tr>");
     appendCoverCell(html, "Current Property", currentPropertyName);
-    appendCoverCell(html, "Reference", tenant.getIdentifier().orElseThrow().value());
+    appendCoverCell(html, "Reference", contact.getIdentifier().orElseThrow().value());
     html.append("</tr>");
     html.append("</table>");
 
     appendCoverEnd(html);
   }
 
-  // ── Page: Tenant Profile ────────────────────────────────────────
+  // -- Page: Contact Profile ---
 
   private void appendProfilePage(
       StringBuilder html,
-      Tenant tenant,
+      Contact contact,
       String fullName,
       String currentPropertyName,
       BigDecimal totalPaid,
       BigDecimal totalPending,
       long activeContracts,
       int totalContracts) {
-    appendPageStart(html, "Tenant Profile");
+    appendPageStart(html, "Contact Profile");
 
     appendSectionTitle(html, "Personal Information");
     html.append("<table class='detail-grid'>");
     html.append("<tr>");
     appendField(html, "Full Name", fullName);
-    appendField(html, "Email", tenant.getEmail().orElse(null));
+    appendField(html, "Email", contact.getEmail().orElse(null));
     html.append("</tr><tr>");
-    appendField(html, "Phone", tenant.getPhone().orElse(null));
-    appendField(html, "Reference", "#" + tenant.getIdentifier().orElseThrow().value());
+    appendField(html, "Phone", contact.getPhone().orElse(null));
+    appendField(html, "Reference", "#" + contact.getIdentifier().orElseThrow().value());
     html.append("</tr>");
-    if (tenant.getTaxNumber().isPresent() || tenant.getIdNumber().isPresent()) {
+    if (contact.getTaxNumber().isPresent() || contact.getIdNumber().isPresent()) {
       html.append("<tr>");
-      appendField(html, "Tax Number", tenant.getTaxNumber().orElse(null));
-      appendField(html, "Government ID", tenant.getIdNumber().orElse(null));
+      appendField(html, "Tax Number", contact.getTaxNumber().orElse(null));
+      appendField(html, "Government ID", contact.getIdNumber().orElse(null));
       html.append("</tr>");
     }
     html.append("<tr>");
@@ -250,13 +250,13 @@ public class TenantBookletExporter {
     html.append("</tr>");
     html.append("</table>");
 
-    tenant
-        .getAdditionalInfo()
+    contact
+        .getNotes()
         .filter(s -> !s.isBlank())
         .ifPresent(
-            info ->
+            notes ->
                 html.append("<div class='text-block'><strong>Additional Information</strong><br/>")
-                    .append(sanitizeRichText(info))
+                    .append(sanitizeRichText(notes))
                     .append("</div>"));
 
     appendSectionTitle(html, "Financial Summary");
@@ -291,9 +291,9 @@ public class TenantBookletExporter {
     appendPageEnd(html);
   }
 
-  // ── Page: Addresses ─────────────────────────────────────────────
+  // -- Page: Addresses ---
 
-  private void appendAddressesPage(StringBuilder html, List<TenantAddress> addresses) {
+  private void appendAddressesPage(StringBuilder html, List<ContactAddress> addresses) {
     if (addresses.isEmpty()) {
       return;
     }
@@ -303,7 +303,7 @@ public class TenantBookletExporter {
         .append(addresses.size())
         .append(" address(es) on file</p>");
 
-    for (TenantAddress addr : addresses) {
+    for (ContactAddress addr : addresses) {
       String type =
           addr.getAddressType() != null ? formatEnumValue(addr.getAddressType().name()) : "Other";
       boolean isActive = addr.getStatus() != null && addr.getStatus().name().equals("ACTIVE");
@@ -349,7 +349,7 @@ public class TenantBookletExporter {
     appendPageEnd(html);
   }
 
-  // ── Page: Rental History ────────────────────────────────────────
+  // -- Page: Rental History ---
 
   private void appendRentalHistoryPage(
       StringBuilder html,
@@ -449,7 +449,7 @@ public class TenantBookletExporter {
     appendPageEnd(html);
   }
 
-  // ── Page: Payment History ───────────────────────────────────────
+  // -- Page: Payment History ---
 
   private void appendPaymentHistoryPage(
       StringBuilder html, List<Payment> allPayments, DateTimeFormatter shortFmt) {
@@ -564,12 +564,14 @@ public class TenantBookletExporter {
     appendPageEnd(html);
   }
 
-  // ── Helpers ─────────────────────────────────────────────────────
+  // -- Helpers ---
 
-  private String resolveCurrentPropertyName(Tenant tenant, Map<UUID, Property> propertyMap) {
-    return tenant
-        .getCurrentPropertyId()
-        .map(propertyMap::get)
+  private String resolveCurrentPropertyName(
+      List<Contract> contracts, Map<UUID, Property> propertyMap) {
+    return contracts.stream()
+        .filter(c -> c.getStatus() != null && c.getStatus().name().equals("ACTIVE"))
+        .findFirst()
+        .map(c -> propertyMap.get(c.getPropertyId()))
         .map(p -> escapeHtml(p.getStreet()) + ", " + escapeHtml(p.getCity()))
         .orElse("—");
   }

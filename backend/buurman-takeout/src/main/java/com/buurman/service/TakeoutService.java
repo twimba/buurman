@@ -21,8 +21,8 @@ import static com.buurman.jooq.generated.Tables.PROPERTY_TAXES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_VALUATIONS;
 import static com.buurman.jooq.generated.Tables.TEAMS;
 import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
-import static com.buurman.jooq.generated.Tables.TENANTS;
-import static com.buurman.jooq.generated.Tables.TENANT_ADDRESSES;
+import static com.buurman.jooq.generated.Tables.CONTACTS;
+import static com.buurman.jooq.generated.Tables.CONTACT_ADDRESSES;
 import static com.buurman.util.FeatureFlags.TAKEOUT_MAX_EXPORTS;
 
 import java.io.ByteArrayOutputStream;
@@ -55,7 +55,7 @@ import com.buurman.domain.Sid;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.DataTakeoutIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
-import com.buurman.domain.identifier.TenantIdentifier;
+import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.TakeoutResponse;
@@ -164,8 +164,8 @@ public class TakeoutService {
         // Define export categories with progress tracking
         ExportCategory[] categories = {
           new ExportCategory("properties.csv", () -> exportTable(PROPERTIES, teamId)),
-          new ExportCategory("tenants.csv", () -> exportTable(TENANTS, teamId)),
-          new ExportCategory("tenant-addresses.csv", () -> exportTable(TENANT_ADDRESSES, teamId)),
+          new ExportCategory("contacts.csv", () -> exportTable(CONTACTS, teamId)),
+          new ExportCategory("contact-addresses.csv", () -> exportTable(CONTACT_ADDRESSES, teamId)),
           new ExportCategory("contracts.csv", () -> exportTable(CONTRACTS, teamId)),
           new ExportCategory("contract-parties.csv", () -> exportTable(CONTRACT_PARTIES, teamId)),
           new ExportCategory(
@@ -199,10 +199,10 @@ public class TakeoutService {
 
         // Collect identifiers for booklet generation
         List<Sid> propertyIdentifiers = fetchIdentifiers(PROPERTIES, teamId);
-        List<Sid> tenantIdentifiers = fetchIdentifiers(TENANTS, teamId);
+        List<Sid> contactIdentifiers = fetchIdentifiers(CONTACTS, teamId);
         List<Sid> contractIdentifiers = fetchIdentifiers(CONTRACTS, teamId);
         int totalBooklets =
-            propertyIdentifiers.size() + tenantIdentifiers.size() + contractIdentifiers.size();
+            propertyIdentifiers.size() + contactIdentifiers.size() + contractIdentifiers.size();
         int totalSteps = categories.length + totalBooklets + 2; // +2 for team.json and manifest
         int completed = 0;
 
@@ -228,14 +228,14 @@ public class TakeoutService {
           completed++;
           takeoutRepository.updateProgress(takeoutId, (int) ((completed * 85.0) / totalSteps));
         }
-        for (Sid identifier : tenantIdentifiers) {
+        for (Sid identifier : contactIdentifiers) {
           try {
             byte[] pdf =
-                exportService.generateTenantReportPDF(
-                    TenantIdentifier.of(identifier.value()), teamId);
-            addZipEntry(zos, bookletFolder + "/tenants/" + identifier.value() + ".pdf", pdf);
+                exportService.generateContactReportPDF(
+                    ContactIdentifier.of(identifier.value()), teamId);
+            addZipEntry(zos, bookletFolder + "/contacts/" + identifier.value() + ".pdf", pdf);
           } catch (Exception e) {
-            log.warn("Failed to generate tenant booklet for {}: {}", identifier, e.getMessage());
+            log.warn("Failed to generate contact booklet for {}: {}", identifier, e.getMessage());
           }
           completed++;
           takeoutRepository.updateProgress(takeoutId, (int) ((completed * 85.0) / totalSteps));
@@ -265,7 +265,7 @@ public class TakeoutService {
                 dateSuffix,
                 categories,
                 propertyIdentifiers.size(),
-                tenantIdentifiers.size(),
+                contactIdentifiers.size(),
                 contractIdentifiers.size());
         addZipEntry(zos, folderName + "/manifest.json", manifest);
         takeoutRepository.updateProgress(takeoutId, 95);
@@ -404,7 +404,7 @@ public class TakeoutService {
       String dateSuffix,
       ExportCategory[] categories,
       int propertyBooklets,
-      int tenantBooklets,
+      int contactBooklets,
       int contractBooklets) {
     try {
       ObjectNode manifest = objectMapper.createObjectNode();
@@ -422,7 +422,7 @@ public class TakeoutService {
 
       ObjectNode booklets = manifest.putObject("booklets");
       booklets.put("properties", propertyBooklets);
-      booklets.put("tenants", tenantBooklets);
+      booklets.put("contacts", contactBooklets);
       booklets.put("contracts", contractBooklets);
 
       return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(manifest);

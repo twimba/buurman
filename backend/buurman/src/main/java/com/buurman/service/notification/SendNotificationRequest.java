@@ -14,7 +14,7 @@ public record SendNotificationRequest(
     Optional<UUID> teamId,
     NotificationType notificationType,
     Optional<UUID> recipientUserId,
-    Optional<UUID> recipientTenantId,
+    Optional<UUID> recipientContactId,
     Optional<String> recipientEmail,
     Optional<String> recipientPhone,
     String templateName,
@@ -27,7 +27,7 @@ public record SendNotificationRequest(
   public static class SendNotificationRequestBuilder {
     private Optional<UUID> teamId = Optional.empty();
     private Optional<UUID> recipientUserId = Optional.empty();
-    private Optional<UUID> recipientTenantId = Optional.empty();
+    private Optional<UUID> recipientContactId = Optional.empty();
     private Optional<String> recipientEmail = Optional.empty();
     private Optional<String> recipientPhone = Optional.empty();
     private NotificationUrgency urgency = NotificationUrgency.NORMAL;

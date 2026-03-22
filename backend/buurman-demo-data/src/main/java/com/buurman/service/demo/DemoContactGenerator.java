@@ -1,9 +1,9 @@
 package com.buurman.service.demo;
 
-import static com.buurman.jooq.generated.Tables.TENANTS;
-import static com.buurman.jooq.generated.Tables.TENANT_ADDRESSES;
-import static com.buurman.util.SidGenerator.newTenantAddressId;
-import static com.buurman.util.SidGenerator.newTenantId;
+import static com.buurman.jooq.generated.Tables.CONTACTS;
+import static com.buurman.jooq.generated.Tables.CONTACT_ADDRESSES;
+import static com.buurman.util.SidGenerator.newContactAddressId;
+import static com.buurman.util.SidGenerator.newContactId;
 
 import java.math.BigDecimal;
 import java.time.Clock;
@@ -28,13 +28,13 @@ import net.datafaker.Faker;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class DemoTenantGenerator {
+public class DemoContactGenerator {
 
   private final DSLContext dsl;
   private final Clock clock;
   private final Random random = new Random(42);
 
-  public static final int TENANTS_PER_TEAM = 55;
+  public static final int CONTACTS_PER_TEAM = 55;
 
   private static final String[] COUNTRY_CODES = {
     "NL", "DE", "GB", "FR", "ES", "PT", "BE", "IT", "AT", "CH", "US", "IE"
@@ -278,12 +278,12 @@ public class DemoTenantGenerator {
       String teamKey = teamEntry.getKey();
       UUID teamId = teamEntry.getValue();
       UUID createdBy = ctx.getAdminUserForTeam(teamKey).orElse(null);
-      List<UUID> tenantIds = new ArrayList<>();
+      List<UUID> contactIds = new ArrayList<>();
 
-      int businessStart = (int) (TENANTS_PER_TEAM * 0.6); // first 60% individual, rest business
+      int businessStart = (int) (CONTACTS_PER_TEAM * 0.6); // first 60% individual, rest business
 
-      for (int i = 0; i < TENANTS_PER_TEAM; i++) {
-        UUID tenantId = UUID.randomUUID();
+      for (int i = 0; i < CONTACTS_PER_TEAM; i++) {
+        UUID contactId = UUID.randomUUID();
         boolean isBusiness = i >= businessStart;
         String country = COUNTRY_CODES[i % COUNTRY_CODES.length];
         Faker countryFaker = Objects.requireNonNull(COUNTRY_FAKERS.get(country));
@@ -312,7 +312,7 @@ public class DemoTenantGenerator {
           email = "info." + teamSlug + "." + i + "@" + slug + domain;
           phone = phoneForCountry(country, random);
           taxNumber = taxIdForCountry(country, random);
-          additionalInfo = "Business tenant - " + companyName;
+          additionalInfo = "Business contact - " + companyName;
         } else {
           firstName = countryFaker.name().firstName();
           lastName = countryFaker.name().lastName();
@@ -329,58 +329,58 @@ public class DemoTenantGenerator {
           taxNumber = taxIdForCountry(country, random);
         }
 
-        Sid tenantIdentifier = newTenantId();
-        dsl.insertInto(TENANTS)
-            .set(TENANTS.ID, tenantId)
-            .set(TENANTS.IDENTIFIER, tenantIdentifier)
-            .set(TENANTS.TEAM_ID, teamId)
-            .set(TENANTS.FIRST_NAME, firstName)
-            .set(TENANTS.LAST_NAME, lastName)
-            .set(TENANTS.EMAIL, email)
-            .set(TENANTS.PHONE, phone)
-            .set(TENANTS.TAX_NUMBER, taxNumber)
-            .set(TENANTS.ID_NUMBER, String.format("%09d", random.nextInt(100000000, 999999999)))
-            .set(TENANTS.ADDITIONAL_INFO, additionalInfo)
-            .set(TENANTS.CREATED_AT, now.minusDays(random.nextInt(30, 3650)))
-            .set(TENANTS.UPDATED_AT, now)
-            .set(TENANTS.CREATED_BY, createdBy)
-            .set(TENANTS.UPDATED_BY, createdBy)
+        Sid contactIdentifier = newContactId();
+        dsl.insertInto(CONTACTS)
+            .set(CONTACTS.ID, contactId)
+            .set(CONTACTS.IDENTIFIER, contactIdentifier)
+            .set(CONTACTS.TEAM_ID, teamId)
+            .set(CONTACTS.FIRST_NAME, firstName)
+            .set(CONTACTS.LAST_NAME, lastName)
+            .set(CONTACTS.EMAIL, email)
+            .set(CONTACTS.PHONE, phone)
+            .set(CONTACTS.TAX_NUMBER, taxNumber)
+            .set(CONTACTS.ID_NUMBER, String.format("%09d", random.nextInt(100000000, 999999999)))
+            .set(CONTACTS.NOTES, additionalInfo)
+            .set(CONTACTS.CREATED_AT, now.minusDays(random.nextInt(30, 3650)))
+            .set(CONTACTS.UPDATED_AT, now)
+            .set(CONTACTS.CREATED_BY, createdBy)
+            .set(CONTACTS.UPDATED_BY, createdBy)
             .execute();
 
-        // Add CURRENT address for each tenant (one active per tenant allowed)
+        // Add CURRENT address for each contact (one active per contact allowed)
         String[] cities = Objects.requireNonNull(COUNTRY_CITIES.get(country));
         String city = cities[random.nextInt(cities.length)];
         int houseNum = random.nextInt(1, 200);
         String postalCode = postalCodeForCountry(country, random);
         BigDecimal[] latLon = latLonForCountry(country, random);
 
-        dsl.insertInto(TENANT_ADDRESSES)
-            .set(TENANT_ADDRESSES.ID, UUID.randomUUID())
-            .set(TENANT_ADDRESSES.IDENTIFIER, newTenantAddressId())
-            .set(TENANT_ADDRESSES.TENANT_ID, tenantId)
-            .set(TENANT_ADDRESSES.TEAM_ID, teamId)
-            .set(TENANT_ADDRESSES.STREET, countryFaker.address().streetName() + " " + houseNum)
-            .set(TENANT_ADDRESSES.CITY, city)
-            .set(TENANT_ADDRESSES.POSTAL_CODE, postalCode)
-            .set(TENANT_ADDRESSES.COUNTRY_CODE, country)
-            .set(TENANT_ADDRESSES.ADDRESS_TYPE, "CURRENT")
-            .set(TENANT_ADDRESSES.STATUS, "ACTIVE")
-            .set(TENANT_ADDRESSES.LATITUDE, latLon[0])
-            .set(TENANT_ADDRESSES.LONGITUDE, latLon[1])
-            .set(TENANT_ADDRESSES.CREATED_AT, now)
-            .set(TENANT_ADDRESSES.UPDATED_AT, now)
-            .set(TENANT_ADDRESSES.CREATED_BY, createdBy)
-            .set(TENANT_ADDRESSES.UPDATED_BY, createdBy)
+        dsl.insertInto(CONTACT_ADDRESSES)
+            .set(CONTACT_ADDRESSES.ID, UUID.randomUUID())
+            .set(CONTACT_ADDRESSES.IDENTIFIER, newContactAddressId())
+            .set(CONTACT_ADDRESSES.CONTACT_ID, contactId)
+            .set(CONTACT_ADDRESSES.TEAM_ID, teamId)
+            .set(CONTACT_ADDRESSES.STREET, countryFaker.address().streetName() + " " + houseNum)
+            .set(CONTACT_ADDRESSES.CITY, city)
+            .set(CONTACT_ADDRESSES.POSTAL_CODE, postalCode)
+            .set(CONTACT_ADDRESSES.COUNTRY_CODE, country)
+            .set(CONTACT_ADDRESSES.ADDRESS_TYPE, "CURRENT")
+            .set(CONTACT_ADDRESSES.STATUS, "ACTIVE")
+            .set(CONTACT_ADDRESSES.LATITUDE, latLon[0])
+            .set(CONTACT_ADDRESSES.LONGITUDE, latLon[1])
+            .set(CONTACT_ADDRESSES.CREATED_AT, now)
+            .set(CONTACT_ADDRESSES.UPDATED_AT, now)
+            .set(CONTACT_ADDRESSES.CREATED_BY, createdBy)
+            .set(CONTACT_ADDRESSES.UPDATED_BY, createdBy)
             .execute();
 
-        tenantIds.add(tenantId);
-        ctx.putIdentifier(tenantId, tenantIdentifier);
-        ctx.putBusinessTenantFlag(tenantId, isBusiness);
-        ctx.incrementTenants();
+        contactIds.add(contactId);
+        ctx.putIdentifier(contactId, contactIdentifier);
+        ctx.putBusinessContactFlag(contactId, isBusiness);
+        ctx.incrementContacts();
       }
 
-      ctx.getTenantIdsByTeam().put(teamId, tenantIds);
-      log.info("Created {} tenants for team {}", TENANTS_PER_TEAM, teamKey);
+      ctx.getContactIdsByTeam().put(teamId, contactIds);
+      log.info("Created {} contacts for team {}", CONTACTS_PER_TEAM, teamKey);
     }
   }
 

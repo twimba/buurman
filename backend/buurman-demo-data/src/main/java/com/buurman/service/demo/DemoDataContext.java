@@ -31,8 +31,8 @@ public class DemoDataContext {
   // Team UUID -> list of property UUIDs
   @Getter private final Map<UUID, List<UUID>> propertyIdsByTeam = new LinkedHashMap<>();
 
-  // Team UUID -> list of tenant UUIDs
-  @Getter private final Map<UUID, List<UUID>> tenantIdsByTeam = new LinkedHashMap<>();
+  // Team UUID -> list of contact UUIDs
+  @Getter private final Map<UUID, List<UUID>> contactIdsByTeam = new LinkedHashMap<>();
 
   // Team UUID -> list of contract UUIDs
   @Getter private final Map<UUID, List<UUID>> contractIdsByTeam = new LinkedHashMap<>();
@@ -50,8 +50,8 @@ public class DemoDataContext {
   // MIXED_USE)
   private final Map<UUID, String> propertyCategoriesByProperty = new LinkedHashMap<>();
 
-  // Tenant UUID -> whether the tenant is a business entity
-  private final Map<UUID, Boolean> businessTenantFlags = new LinkedHashMap<>();
+  // Contact UUID -> whether the contact is a business entity
+  private final Map<UUID, Boolean> businessContactFlags = new LinkedHashMap<>();
 
   // Property UUID -> acquisition date (when the property was purchased)
   private final Map<UUID, LocalDate> propertyAcquisitionDates = new LinkedHashMap<>();
@@ -69,7 +69,7 @@ public class DemoDataContext {
   @Getter private int teamsCreated;
   @Getter private int usersCreated;
   @Getter private int propertiesCreated;
-  @Getter private int tenantsCreated;
+  @Getter private int contactsCreated;
   @Getter private int contractsCreated;
   @Getter private int paymentsCreated;
   @Getter private int expensesCreated;
@@ -108,12 +108,12 @@ public class DemoDataContext {
     return propertyCategoriesByProperty.getOrDefault(propertyId, "RESIDENTIAL");
   }
 
-  public void putBusinessTenantFlag(UUID tenantId, boolean isBusiness) {
-    businessTenantFlags.put(tenantId, isBusiness);
+  public void putBusinessContactFlag(UUID contactId, boolean isBusiness) {
+    businessContactFlags.put(contactId, isBusiness);
   }
 
-  public boolean isBusinessTenant(UUID tenantId) {
-    return businessTenantFlags.getOrDefault(tenantId, false);
+  public boolean isBusinessContact(UUID contactId) {
+    return businessContactFlags.getOrDefault(contactId, false);
   }
 
   public void putPropertyAcquisitionDate(UUID propertyId, LocalDate date) {
@@ -160,8 +160,8 @@ public class DemoDataContext {
     propertiesCreated++;
   }
 
-  public void incrementTenants() {
-    tenantsCreated++;
+  public void incrementContacts() {
+    contactsCreated++;
   }
 
   public void incrementContracts() {

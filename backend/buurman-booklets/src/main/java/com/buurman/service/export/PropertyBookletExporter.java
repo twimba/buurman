@@ -58,7 +58,7 @@ import com.buurman.domain.PropertyCommercialDetails;
 import com.buurman.domain.PropertyIndustrialDetails;
 import com.buurman.domain.PropertyOutdoorArea;
 import com.buurman.domain.PropertyResidentialDetails;
-import com.buurman.domain.Tenant;
+import com.buurman.domain.Contact;
 import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.response.PropertyDashboardResponse;
 import com.buurman.dto.response.PropertyDashboardResponse.CategorySlice;
@@ -1172,8 +1172,8 @@ public class PropertyBookletExporter {
     }
 
     List<UUID> contractIds = contracts.stream().map(Contract::getId).toList();
-    Map<UUID, Tenant> primaryTenants =
-        contractPartyService.getPrimaryTenantsForContracts(contractIds, teamId);
+    Map<UUID, Contact> primaryContacts =
+        contractPartyService.getPrimaryContactsForContracts(contractIds, teamId);
 
     // Bulk-load extensions and group by contract ID
     List<ContractExtension> allExtensions =
@@ -1193,15 +1193,12 @@ public class PropertyBookletExporter {
     html.append("</tr></thead><tbody>");
 
     for (Contract contract : contracts) {
-      Tenant tenant = primaryTenants.get(contract.getId());
-      String tenantName =
-          tenant != null
-              ? tenant.getFirstName() + tenant.getLastName().map(n -> " " + n).orElse("")
-              : "Unknown";
+      Contact contact = primaryContacts.get(contract.getId());
+      String contactName = contact != null ? contact.getDisplayName() : "Unknown";
 
       html.append("<tr>");
       html.append("<td>#").append(contract.getIdentifier().orElseThrow().value()).append("</td>");
-      html.append("<td>").append(escapeHtml(tenantName)).append("</td>");
+      html.append("<td>").append(escapeHtml(contactName)).append("</td>");
       List<ContractExtension> extensions =
           extensionsByContract.getOrDefault(contract.getId(), List.of());
       Optional<LocalDate> effectiveEndDate =

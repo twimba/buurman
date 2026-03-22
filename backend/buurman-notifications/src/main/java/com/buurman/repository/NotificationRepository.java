@@ -74,7 +74,7 @@ public class NotificationRepository {
         .set(NOTIFICATIONS.RECIPIENT_EMAIL, notification.getRecipientEmail().orElse(null))
         .set(NOTIFICATIONS.RECIPIENT_PHONE, notification.getRecipientPhone().orElse(null))
         .set(NOTIFICATIONS.RECIPIENT_USER_ID, notification.getRecipientUserId().orElse(null))
-        .set(NOTIFICATIONS.RECIPIENT_TENANT_ID, notification.getRecipientTenantId().orElse(null))
+        .set(NOTIFICATIONS.RECIPIENT_CONTACT_ID, notification.getRecipientContactId().orElse(null))
         .set(NOTIFICATIONS.CHANNEL, notification.getChannel().name())
         .set(NOTIFICATIONS.CONTENT_TEMPLATE, notification.getContentTemplate().orElse(null))
         .set(NOTIFICATIONS.CONTENT_VARIABLES, contentVariablesJson)
@@ -95,7 +95,7 @@ public class NotificationRepository {
 
   /**
    * Find notification by identifier. When teamId is null, searches across all teams (admin/system
-   * use only). For tenant-scoped lookups, always pass a non-null teamId.
+   * use only). For team-scoped lookups, always pass a non-null teamId.
    */
   public Optional<Notification> findByIdentifierAndTeamId(Sid identifier, @Nullable UUID teamId) {
     Condition condition = NOTIFICATIONS.IDENTIFIER.eq(identifier);

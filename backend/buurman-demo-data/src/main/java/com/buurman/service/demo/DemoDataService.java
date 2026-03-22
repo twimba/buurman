@@ -29,13 +29,13 @@ import static com.buurman.jooq.generated.Tables.PROPERTY_INSURANCES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_OUTDOOR_AREAS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_RESIDENTIAL_DETAILS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_TAXES;
-import static com.buurman.jooq.generated.Tables.PROPERTY_TENANT_HISTORY;
+import static com.buurman.jooq.generated.Tables.PROPERTY_CONTACT_HISTORY;
 import static com.buurman.jooq.generated.Tables.PROPERTY_VALUATIONS;
 import static com.buurman.jooq.generated.Tables.TEAMS;
 import static com.buurman.jooq.generated.Tables.TEAM_INVITATIONS;
 import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
-import static com.buurman.jooq.generated.Tables.TENANTS;
-import static com.buurman.jooq.generated.Tables.TENANT_ADDRESSES;
+import static com.buurman.jooq.generated.Tables.CONTACTS;
+import static com.buurman.jooq.generated.Tables.CONTACT_ADDRESSES;
 import static com.buurman.jooq.generated.Tables.USERS;
 import static com.buurman.jooq.generated.Tables.USER_PREFERENCES;
 import static com.buurman.jooq.generated.Tables.USER_TEAM_NOTIFICATION_PREFERENCES;
@@ -68,7 +68,7 @@ public class DemoDataService {
   private final DemoUserGenerator userGenerator;
   private final DemoTeamMemberGenerator teamMemberGenerator;
   private final DemoPropertyGenerator propertyGenerator;
-  private final DemoTenantGenerator tenantGenerator;
+  private final DemoContactGenerator contactGenerator;
   private final DemoContractGenerator contractGenerator;
   private final ContractExtensionDemoDataGenerator contractExtensionGenerator;
   private final DemoPaymentGenerator paymentGenerator;
@@ -116,13 +116,13 @@ public class DemoDataService {
     long durationMs = clock.millis() - startTime;
 
     log.info(
-        "Demo data generation completed in {}ms: {} teams, {} users, {} properties, {} tenants, {}"
+        "Demo data generation completed in {}ms: {} teams, {} users, {} properties, {} contacts, {}"
             + " contracts, {} payments, {} expenses, {} notifications, {} documents",
         durationMs,
         ctx.getTeamsCreated(),
         ctx.getUsersCreated(),
         ctx.getPropertiesCreated(),
-        ctx.getTenantsCreated(),
+        ctx.getContactsCreated(),
         ctx.getContractsCreated(),
         ctx.getPaymentsCreated(),
         ctx.getExpensesCreated(),
@@ -137,7 +137,7 @@ public class DemoDataService {
     teamMemberGenerator.generate(ctx);
     propertyGenerator.generate(ctx);
     financingPaymentGenerator.generate(ctx);
-    tenantGenerator.generate(ctx);
+    contactGenerator.generate(ctx);
     contractGenerator.generate(ctx);
     contractExtensionGenerator.generate(ctx);
     paymentInstructionGenerator.generate(ctx);
@@ -291,21 +291,21 @@ public class DemoDataService {
             .execute();
     log.debug("Deleted {} payment instructions", deleted);
 
-    // 9. Property tenant history
+    // 9. Property contact history
     deleted =
-        dsl.deleteFrom(PROPERTY_TENANT_HISTORY)
-            .where(PROPERTY_TENANT_HISTORY.TEAM_ID.in(demoTeamIds))
+        dsl.deleteFrom(PROPERTY_CONTACT_HISTORY)
+            .where(PROPERTY_CONTACT_HISTORY.TEAM_ID.in(demoTeamIds))
             .execute();
-    log.debug("Deleted {} property tenant history entries", deleted);
+    log.debug("Deleted {} property contact history entries", deleted);
 
-    // 10. Tenant addresses (FK -> tenants)
+    // 10. Contact addresses (FK -> contacts)
     deleted =
-        dsl.deleteFrom(TENANT_ADDRESSES).where(TENANT_ADDRESSES.TEAM_ID.in(demoTeamIds)).execute();
-    log.debug("Deleted {} tenant addresses", deleted);
+        dsl.deleteFrom(CONTACT_ADDRESSES).where(CONTACT_ADDRESSES.TEAM_ID.in(demoTeamIds)).execute();
+    log.debug("Deleted {} contact addresses", deleted);
 
-    // 11. Tenants
-    deleted = dsl.deleteFrom(TENANTS).where(TENANTS.TEAM_ID.in(demoTeamIds)).execute();
-    log.debug("Deleted {} tenants", deleted);
+    // 11. Contacts
+    deleted = dsl.deleteFrom(CONTACTS).where(CONTACTS.TEAM_ID.in(demoTeamIds)).execute();
+    log.debug("Deleted {} contacts", deleted);
 
     // 12. Property amenities
     deleted =

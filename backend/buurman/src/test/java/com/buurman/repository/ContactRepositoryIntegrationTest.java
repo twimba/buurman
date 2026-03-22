@@ -55,7 +55,7 @@ class ContactRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
       Contact contact = TestDataHelper.buildContact(TEAM_A_ID, USER_ID);
       Contact saved = repo.save(contact);
 
-      saved.setFirstName("Piet");
+      saved.setFirstName(Optional.of("Piet"));
       saved.setLastName(Optional.of("Jansen"));
       saved.setDisplayName("Piet Jansen");
       repo.save(saved);
@@ -72,7 +72,7 @@ class ContactRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
       Contact saved = repo.save(contact);
 
       saved.setTeamId(TEAM_B_ID);
-      saved.setFirstName("Hacked");
+      saved.setFirstName(Optional.of("Hacked"));
       repo.save(saved);
 
       Contact found = repo.getByIdAndTeamId(saved.getId(), TEAM_A_ID);
@@ -110,7 +110,7 @@ class ContactRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     void findAllByTeamIdReturnsOnlyTeamContacts() {
       repo.save(TestDataHelper.buildContact(TEAM_A_ID, USER_ID));
       Contact contactB = TestDataHelper.buildContact(TEAM_B_ID, USER_ID);
-      contactB.setFirstName("Bob");
+      contactB.setFirstName(Optional.of("Bob"));
       contactB.setDisplayName("Bob de Vries");
       contactB.setEmail(Optional.of("bob@test.io"));
       repo.save(contactB);
@@ -195,7 +195,7 @@ class ContactRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     void findAllByTeamIdPaginated() {
       repo.save(TestDataHelper.buildContact(TEAM_A_ID, USER_ID));
       Contact c2 = TestDataHelper.buildContact(TEAM_A_ID, USER_ID);
-      c2.setFirstName("Piet");
+      c2.setFirstName(Optional.of("Piet"));
       c2.setDisplayName("Piet de Vries");
       c2.setEmail(Optional.of("piet@test.io"));
       repo.save(c2);
@@ -212,7 +212,7 @@ class ContactRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
     void findAllByTeamIdPaginatedWithSearch() {
       repo.save(TestDataHelper.buildContact(TEAM_A_ID, USER_ID));
       Contact c2 = TestDataHelper.buildContact(TEAM_A_ID, USER_ID);
-      c2.setFirstName("Piet");
+      c2.setFirstName(Optional.of("Piet"));
       c2.setDisplayName("Piet de Vries");
       c2.setEmail(Optional.of("piet@test.io"));
       repo.save(c2);

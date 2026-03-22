@@ -41,7 +41,7 @@ public class NotificationRecordMapper {
     notification.setRecipientEmail(Optional.ofNullable(record.getRecipientEmail()));
     notification.setRecipientPhone(Optional.ofNullable(record.getRecipientPhone()));
     notification.setRecipientUserId(Optional.ofNullable(record.getRecipientUserId()));
-    notification.setRecipientTenantId(Optional.ofNullable(record.getRecipientTenantId()));
+    notification.setRecipientContactId(Optional.ofNullable(record.getRecipientContactId()));
     notification.setChannel(NotificationChannel.valueOf(record.getChannel()));
     notification.setContentTemplate(Optional.ofNullable(record.getContentTemplate()));
 

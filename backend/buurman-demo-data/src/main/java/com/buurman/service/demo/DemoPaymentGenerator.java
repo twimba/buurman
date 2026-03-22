@@ -142,7 +142,7 @@ public class DemoPaymentGenerator {
             if ("PARTIALLY_PAID".equals(paymentStatus)) {
               paymentDate = dueDate.plusDays(random.nextInt(0, 10));
             }
-            // EXPIRED contracts: override all to PAID (tenant fulfilled obligations)
+            // EXPIRED contracts: override all to PAID (contact fulfilled obligations)
             if ("EXPIRED".equals(status)) {
               paymentStatus = "PAID";
               paymentDate = dueDate.plusDays(random.nextInt(0, 3));

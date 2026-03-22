@@ -80,19 +80,19 @@ public class DemoContractGenerator {
       UUID createdBy = ctx.getAdminUserForTeam(teamKey).orElse(null);
       String currency = ctx.getCurrencyForTeam(teamKey);
       List<UUID> propertyIds = ctx.getPropertyIdsByTeam().get(teamId);
-      List<UUID> tenantIds = ctx.getTenantIdsByTeam().get(teamId);
+      List<UUID> contactIds = ctx.getContactIdsByTeam().get(teamId);
       List<UUID> contractIds = new ArrayList<>();
 
-      if (propertyIds == null || tenantIds == null) {
+      if (propertyIds == null || contactIds == null) {
         continue;
       }
 
-      // Sort tenants: individuals first, business last
-      List<UUID> sortedTenants = new ArrayList<>(tenantIds);
-      sortedTenants.sort(
+      // Sort contacts: individuals first, business last
+      List<UUID> sortedContacts = new ArrayList<>(contactIds);
+      sortedContacts.sort(
           (a, b) -> {
-            boolean aBiz = ctx.isBusinessTenant(a);
-            boolean bBiz = ctx.isBusinessTenant(b);
+            boolean aBiz = ctx.isBusinessContact(a);
+            boolean bBiz = ctx.isBusinessContact(b);
             return Boolean.compare(aBiz, bBiz);
           });
 
@@ -105,8 +105,8 @@ public class DemoContractGenerator {
             return Boolean.compare(!aRes, !bRes);
           });
 
-      // Global tenant index across all properties in this team
-      int tenantIndex = 0;
+      // Global contact index across all properties in this team
+      int contactIndex = 0;
       int totalContracts = 0;
 
       for (int propIdx = 0; propIdx < sortedProperties.size(); propIdx++) {
@@ -133,9 +133,9 @@ public class DemoContractGenerator {
         for (int c = 0; c < chainLength; c++) {
           boolean isLastContract = (c == chainLength - 1);
 
-          // Determine tenant (wrap around if we exceed the pool)
-          UUID tenantId = sortedTenants.get(tenantIndex % sortedTenants.size());
-          tenantIndex++;
+          // Determine contact (wrap around if we exceed the pool)
+          UUID contactId = sortedContacts.get(contactIndex % sortedContacts.size());
+          contactIndex++;
 
           // Compute start date
           LocalDate startDate;
@@ -315,13 +315,13 @@ public class DemoContractGenerator {
               .set(CONTRACTS.UPDATED_BY, createdBy)
               .execute();
 
-          // Insert primary tenant into contract_parties
+          // Insert primary contact into contract_parties
           dsl.insertInto(table("contract_parties"))
               .set(field("id", UUID.class), UUID.randomUUID())
               .set(field("identifier", String.class), newContractPartyId().value())
               .set(field("team_id", UUID.class), teamId)
               .set(field("contract_id", UUID.class), contractId)
-              .set(field("tenant_id", UUID.class), tenantId)
+              .set(field("contact_id", UUID.class), contactId)
               .set(field("role", String.class), "PRIMARY_TENANT")
               .set(field("created_at", LocalDateTime.class), now)
               .set(field("updated_at", LocalDateTime.class), now)

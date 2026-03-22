@@ -74,7 +74,7 @@ class NotificationRecordMapperTest {
       assertThat(notification.getRecipientEmail()).contains("tenant@example.com");
       assertThat(notification.getRecipientPhone()).isEmpty();
       assertThat(notification.getRecipientUserId()).contains(RECIPIENT_USER_ID);
-      assertThat(notification.getRecipientTenantId()).isEmpty();
+      assertThat(notification.getRecipientContactId()).isEmpty();
       assertThat(notification.getChannel()).isEqualTo(NotificationChannel.EMAIL);
       assertThat(notification.getContentTemplate()).contains("payment-reminder");
       assertThat(notification.getContentVariables()).isEmpty();
@@ -145,7 +145,7 @@ class NotificationRecordMapperTest {
       record.setRecipientEmail(null);
       record.setRecipientPhone(null);
       record.setRecipientUserId(null);
-      record.setRecipientTenantId(null);
+      record.setRecipientContactId(null);
       record.setContentTemplate(null);
       record.setProviderMessageId(null);
       record.setProviderStatus(null);
@@ -166,7 +166,7 @@ class NotificationRecordMapperTest {
       assertThat(notification.getRecipientEmail()).isEmpty();
       assertThat(notification.getRecipientPhone()).isEmpty();
       assertThat(notification.getRecipientUserId()).isEmpty();
-      assertThat(notification.getRecipientTenantId()).isEmpty();
+      assertThat(notification.getRecipientContactId()).isEmpty();
       assertThat(notification.getContentTemplate()).isEmpty();
       assertThat(notification.getProviderMessageId()).isEmpty();
       assertThat(notification.getProviderStatus()).isEmpty();
@@ -241,16 +241,16 @@ class NotificationRecordMapperTest {
     }
 
     @Test
-    @DisplayName("maps non-null recipientTenantId")
-    void mapsRecipientTenantId() {
+    @DisplayName("maps non-null recipientContactId")
+    void mapsRecipientContactId() {
       NotificationsRecord record = createCompleteRecord();
-      UUID tenantId = UUID.randomUUID();
-      record.setRecipientTenantId(tenantId);
+      UUID contactId = UUID.randomUUID();
+      record.setRecipientContactId(contactId);
 
       Optional<Notification> result = mapper.toDomain(record);
 
       assertThat(result).isPresent();
-      assertThat(result.get().getRecipientTenantId()).contains(tenantId);
+      assertThat(result.get().getRecipientContactId()).contains(contactId);
     }
   }
 
@@ -335,7 +335,7 @@ class NotificationRecordMapperTest {
     record.setRecipientEmail("tenant@example.com");
     record.setRecipientPhone(null);
     record.setRecipientUserId(RECIPIENT_USER_ID);
-    record.setRecipientTenantId(null);
+    record.setRecipientContactId(null);
     record.setChannel("EMAIL");
     record.setContentTemplate("payment-reminder");
     record.setContentVariables(null);

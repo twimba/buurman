@@ -120,7 +120,7 @@ public class NotificationServiceImpl implements NotificationService {
       notification.setRecipientEmail(request.recipientEmail());
       notification.setRecipientPhone(request.recipientPhone());
       notification.setRecipientUserId(request.recipientUserId());
-      notification.setRecipientTenantId(request.recipientTenantId());
+      notification.setRecipientContactId(request.recipientContactId());
       notification.setChannel(channel);
       notification.setContentTemplate(Optional.of(request.templateName()));
       notification.setContentVariables(Optional.of(request.templateVariables()));
@@ -191,7 +191,7 @@ public class NotificationServiceImpl implements NotificationService {
                         .teamId(request.teamId())
                         .notificationType(request.notificationType())
                         .recipientUserId(Optional.of(user.getId()))
-                        .recipientTenantId(request.recipientTenantId())
+                        .recipientContactId(request.recipientContactId())
                         .recipientEmail(Optional.of(user.getEmail()))
                         .recipientPhone(user.getPhone())
                         .templateName(request.templateName())
@@ -233,7 +233,7 @@ public class NotificationServiceImpl implements NotificationService {
     resent.setRecipientEmail(original.getRecipientEmail());
     resent.setRecipientPhone(original.getRecipientPhone());
     resent.setRecipientUserId(original.getRecipientUserId());
-    resent.setRecipientTenantId(original.getRecipientTenantId());
+    resent.setRecipientContactId(original.getRecipientContactId());
     resent.setChannel(original.getChannel());
     resent.setContentTemplate(original.getContentTemplate());
     resent.setContentVariables(original.getContentVariables());
@@ -289,7 +289,7 @@ public class NotificationServiceImpl implements NotificationService {
   }
 
   private List<NotificationChannel> resolveChannels(SendNotificationRequest request) {
-    // No user → EMAIL only (e.g., tenant notifications)
+    // No user → EMAIL only (e.g., contact notifications)
     if (request.recipientUserId().isEmpty()) {
       return List.of(EMAIL);
     }
@@ -359,7 +359,7 @@ public class NotificationServiceImpl implements NotificationService {
                     .teamId(request.teamId())
                     .notificationType(request.notificationType())
                     .recipientUserId(request.recipientUserId())
-                    .recipientTenantId(request.recipientTenantId())
+                    .recipientContactId(request.recipientContactId())
                     .recipientEmail(request.recipientEmail())
                     .recipientPhone(Optional.of(phone))
                     .templateName(request.templateName())
@@ -393,7 +393,7 @@ public class NotificationServiceImpl implements NotificationService {
           User user = userRepository.findById(request.recipientUserId().get()).orElse(null);
           yield user != null && user.getPhoneVerifiedAt().isPresent();
         }
-        yield true; // Non-user SMS (e.g. tenant notifications)
+        yield true; // Non-user SMS (e.g. contact notifications)
       }
     };
   }

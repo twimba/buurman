@@ -50,7 +50,7 @@ import com.buurman.domain.Payment;
 import com.buurman.domain.PaymentInstruction;
 import com.buurman.domain.PaymentReceival;
 import com.buurman.domain.Property;
-import com.buurman.domain.Tenant;
+import com.buurman.domain.Contact;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractPaymentInstructionRepository;
@@ -60,7 +60,7 @@ import com.buurman.repository.PaymentInstructionRepository;
 import com.buurman.repository.PaymentReceivalRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
-import com.buurman.repository.TenantRepository;
+import com.buurman.repository.ContactRepository;
 import com.buurman.service.ContractPartyService;
 import com.buurman.service.EffectiveEndDateHelper;
 import com.buurman.util.CurrencyUtils;
@@ -73,7 +73,7 @@ public class ContractBookletExporter {
 
   private final ContractRepository contractRepository;
   private final PropertyRepository propertyRepository;
-  private final TenantRepository tenantRepository;
+  private final ContactRepository contactRepository;
   private final PaymentRepository paymentRepository;
   private final PaymentReceivalRepository paymentReceivalRepository;
   private final ContractPaymentInstructionRepository contractPaymentInstructionRepository;
@@ -99,16 +99,16 @@ public class ContractBookletExporter {
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
     Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
 
-    // Load parties + tenants
+    // Load parties + contacts
     List<ContractParty> parties =
         contractPartyService.getPartiesForContract(contract.getId(), teamId);
-    Set<UUID> tenantIds = new HashSet<>();
+    Set<UUID> contactIds = new HashSet<>();
     for (ContractParty party : parties) {
-      party.getTenantId().ifPresent(tenantIds::add);
+      party.getContactId().ifPresent(contactIds::add);
     }
-    Map<UUID, Tenant> tenantMap =
-        tenantRepository.findByIdsAndTeamId(tenantIds, teamId).stream()
-            .collect(toMap(Tenant::getId, t -> t));
+    Map<UUID, Contact> contactMap =
+        contactRepository.findByIdsAndTeamId(contactIds, teamId).stream()
+            .collect(toMap(Contact::getId, t -> t));
 
     // Load payments + receivals
     List<Payment> payments = paymentRepository.findByContractId(contract.getId(), teamId);
@@ -154,7 +154,7 @@ public class ContractBookletExporter {
             contract,
             property,
             parties,
-            tenantMap,
+            contactMap,
             payments,
             receivedByPayment,
             rentPeriods,
@@ -170,7 +170,7 @@ public class ContractBookletExporter {
       Contract contract,
       Property property,
       List<ContractParty> parties,
-      Map<UUID, Tenant> tenantMap,
+      Map<UUID, Contact> contactMap,
       List<Payment> payments,
       Map<UUID, BigDecimal> receivedByPayment,
       List<ContractRentPeriod> rentPeriods,
@@ -182,11 +182,8 @@ public class ContractBookletExporter {
     String ccy = contract.getRentAmount().currency();
 
     String primaryName =
-        findPrimaryTenant(parties, tenantMap)
-            .map(
-                t ->
-                    escapeHtml(t.getFirstName())
-                        + t.getLastName().map(n -> " " + escapeHtml(n)).orElse(""))
+        findPrimaryContact(parties, contactMap)
+            .map(t -> escapeHtml(t.getDisplayName()))
             .orElse("—");
 
     PaymentAggregation agg = aggregatePayments(payments, receivedByPayment);
@@ -208,7 +205,7 @@ public class ContractBookletExporter {
         html, contract, property, primaryName, ccy, dateFmt, generatedDate, effectiveEndDate);
     appendContractDetailsPage(
         html, contract, property, rentPeriods, dateFmt, ccy, effectiveEndDate);
-    appendPartiesPage(html, parties, tenantMap);
+    appendPartiesPage(html, parties, contactMap);
     appendPaymentInstructionsPage(html, allCpis, piMap, dateFmt);
     appendPaymentOverviewPage(html, payments, receivedByPayment, agg, ccy, dateFmt);
 
@@ -410,7 +407,7 @@ public class ContractBookletExporter {
   // ── Page: Contract Parties ──────────────────────────────────────
 
   private void appendPartiesPage(
-      StringBuilder html, List<ContractParty> parties, Map<UUID, Tenant> tenantMap) {
+      StringBuilder html, List<ContractParty> parties, Map<UUID, Contact> contactMap) {
     appendPageStart(html, "Contract Parties");
 
     appendSectionTitle(html, "Parties (" + parties.size() + ")");
@@ -428,7 +425,7 @@ public class ContractBookletExporter {
         });
 
     for (ContractParty party : sortedParties) {
-      Tenant t = party.getTenantId().map(tenantMap::get).orElse(null);
+      Contact t =party.getContactId().map(contactMap::get).orElse(null);
       if (t == null) {
         continue;
       }
@@ -448,8 +445,7 @@ public class ContractBookletExporter {
       html.append("</div>");
 
       html.append("<div class='party-name'>");
-      html.append(escapeHtml(t.getFirstName()));
-      t.getLastName().ifPresent(n -> html.append(" ").append(escapeHtml(n)));
+      html.append(escapeHtml(t.getDisplayName()));
       html.append("</div>");
 
       html.append("<table class='party-details'>");
@@ -853,12 +849,12 @@ public class ContractBookletExporter {
 
   // ── Helpers ─────────────────────────────────────────────────────
 
-  private Optional<Tenant> findPrimaryTenant(
-      List<ContractParty> parties, Map<UUID, Tenant> tenantMap) {
+  private Optional<Contact> findPrimaryContact(
+      List<ContractParty> parties, Map<UUID, Contact> contactMap) {
     return parties.stream()
         .filter(p -> p.getRole() == ContractPartyRole.PRIMARY_TENANT)
         .findFirst()
-        .flatMap(p -> p.getTenantId().map(tenantMap::get));
+        .flatMap(p -> p.getContactId().map(contactMap::get));
   }
 
   private PaymentAggregation aggregatePayments(
@@ -906,6 +902,9 @@ public class ContractBookletExporter {
       case GUARANTOR -> "#b45309";
       case COSIGNER -> "#6d28d9";
       case EXTRA_TENANT -> "#0f766e";
+      case SIGNER -> "#374151";
+      case CORPORATE_TENANT -> "#0369a1";
+      case AUTHORIZED_REPRESENTATIVE -> "#9333ea";
     };
   }
 
@@ -915,6 +914,9 @@ public class ContractBookletExporter {
       case GUARANTOR -> "#fffbeb";
       case COSIGNER -> "#f5f3ff";
       case EXTRA_TENANT -> "#f0fdfa";
+      case SIGNER -> "#f9fafb";
+      case CORPORATE_TENANT -> "#f0f9ff";
+      case AUTHORIZED_REPRESENTATIVE -> "#faf5ff";
     };
   }
 

@@ -129,7 +129,7 @@ final class TestDataHelper {
     c.setTeamId(teamId);
     c.setContactType(ContactType.INDIVIDUAL);
     c.setDisplayName("Jan de Vries");
-    c.setFirstName("Jan");
+    c.setFirstName(Optional.of("Jan"));
     c.setLastName(Optional.of("de Vries"));
     c.setEmail(Optional.of("jan@test.io"));
     c.setPhone(Optional.of("+31612345678"));

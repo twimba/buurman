@@ -4,7 +4,7 @@ import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.EXPENSES;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_ACQUISITIONS;
-import static com.buurman.jooq.generated.Tables.TENANTS;
+import static com.buurman.jooq.generated.Tables.CONTACTS;
 
 import java.io.IOException;
 import java.time.Clock;
@@ -130,8 +130,8 @@ public class DemoDocumentGenerator {
               "Water extraction and irrigation rights"),
           new DocTemplate("Land survey", "generic-form.pdf", "Cadastral land survey report"));
 
-  // --- Individual tenant documents ---
-  private static final List<DocTemplate> INDIVIDUAL_TENANT_DOCS =
+  // --- Individual contact documents ---
+  private static final List<DocTemplate> INDIVIDUAL_CONTACT_DOCS =
       List.of(
           new DocTemplate(
               "ID verification", "generic-form.pdf", "Copy of passport/ID for tenant verification"),
@@ -148,8 +148,8 @@ public class DemoDocumentGenerator {
           new DocTemplate(
               "Rental application", "rental-application.pdf", "Completed rental application form"));
 
-  // --- Business tenant documents ---
-  private static final List<DocTemplate> BUSINESS_TENANT_DOCS =
+  // --- Business contact documents ---
+  private static final List<DocTemplate> BUSINESS_CONTACT_DOCS =
       List.of(
           new DocTemplate(
               "Chamber of Commerce registration",
@@ -217,7 +217,7 @@ public class DemoDocumentGenerator {
       int teamDocuments = 0;
 
       List<UUID> propertyIds = ctx.getPropertyIdsByTeam().getOrDefault(teamId, List.of());
-      List<UUID> tenantIds = ctx.getTenantIdsByTeam().getOrDefault(teamId, List.of());
+      List<UUID> contactIds = ctx.getContactIdsByTeam().getOrDefault(teamId, List.of());
       List<UUID> contractIds = ctx.getContractIdsByTeam().getOrDefault(teamId, List.of());
 
       // Property documents (scaled by acquisition age — older properties accumulate more)
@@ -247,18 +247,18 @@ public class DemoDocumentGenerator {
         }
       }
 
-      // Tenant documents (1-2 per tenant, type-specific)
-      for (UUID tenantId : tenantIds) {
-        String prefix = fetchTenantName(tenantId).map(this::slugify).orElse("tenant");
-        boolean isBusiness = ctx.isBusinessTenant(tenantId);
-        List<DocTemplate> templates = isBusiness ? BUSINESS_TENANT_DOCS : INDIVIDUAL_TENANT_DOCS;
+      // Contact documents (1-2 per contact, type-specific)
+      for (UUID contactId : contactIds) {
+        String prefix = fetchContactName(contactId).map(this::slugify).orElse("contact");
+        boolean isBusiness = ctx.isBusinessContact(contactId);
+        List<DocTemplate> templates = isBusiness ? BUSINESS_CONTACT_DOCS : INDIVIDUAL_CONTACT_DOCS;
         for (DocTemplate doc : pickRandom(templates, random.nextInt(1, 3))) {
           if (uploadDocument(
               ctx,
               teamId,
               uploadedBy,
-              "TENANT",
-              tenantId,
+              "CONTACT",
+              contactId,
               doc.title,
               prefix + "-" + doc.pdfResource,
               doc.pdfResource,
@@ -433,14 +433,14 @@ public class DemoDocumentGenerator {
         .orElse(LocalDate.now(clock));
   }
 
-  private Optional<String> fetchTenantName(UUID tenantId) {
+  private Optional<String> fetchContactName(UUID contactId) {
     Record r =
-        dsl.select(TENANTS.FIRST_NAME, TENANTS.LAST_NAME)
-            .from(TENANTS)
-            .where(TENANTS.ID.eq(tenantId))
+        dsl.select(CONTACTS.FIRST_NAME, CONTACTS.LAST_NAME)
+            .from(CONTACTS)
+            .where(CONTACTS.ID.eq(contactId))
             .fetchOne();
     return r != null
-        ? Optional.of(r.get(TENANTS.FIRST_NAME) + " " + r.get(TENANTS.LAST_NAME))
+        ? Optional.of(r.get(CONTACTS.FIRST_NAME) + " " + r.get(CONTACTS.LAST_NAME))
         : Optional.empty();
   }
 

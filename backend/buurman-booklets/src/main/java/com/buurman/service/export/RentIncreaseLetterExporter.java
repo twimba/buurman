@@ -25,14 +25,14 @@ import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Property;
-import com.buurman.domain.Tenant;
-import com.buurman.domain.TenantAddress;
+import com.buurman.domain.Contact;
+import com.buurman.domain.ContactAddress;
 import com.buurman.domain.identifier.ContractExtensionIdentifier;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyRepository;
-import com.buurman.repository.TenantAddressRepository;
-import com.buurman.repository.TenantRepository;
+import com.buurman.repository.ContactAddressRepository;
+import com.buurman.repository.ContactRepository;
 import com.buurman.service.ContractPartyService;
 import com.buurman.util.CurrencyUtils;
 
@@ -45,8 +45,8 @@ public class RentIncreaseLetterExporter {
   private final ContractExtensionRepository extensionRepository;
   private final ContractRepository contractRepository;
   private final PropertyRepository propertyRepository;
-  private final TenantRepository tenantRepository;
-  private final TenantAddressRepository tenantAddressRepository;
+  private final ContactRepository contactRepository;
+  private final ContactAddressRepository contactAddressRepository;
   private final ContractPartyService contractPartyService;
   private final PdfRenderer pdfRenderer;
   private final Clock clock;
@@ -59,20 +59,20 @@ public class RentIncreaseLetterExporter {
 
     List<ContractParty> parties =
         contractPartyService.getPartiesForContract(contract.getId(), teamId);
-    Set<UUID> tenantIds = new HashSet<>();
+    Set<UUID> contactIds = new HashSet<>();
     for (ContractParty party : parties) {
-      party.getTenantId().ifPresent(tenantIds::add);
+      party.getContactId().ifPresent(contactIds::add);
     }
-    Map<UUID, Tenant> tenantMap =
-        tenantRepository.findByIdsAndTeamId(tenantIds, teamId).stream()
-            .collect(toMap(Tenant::getId, t -> t));
+    Map<UUID, Contact> contactMap =
+        contactRepository.findByIdsAndTeamId(contactIds, teamId).stream()
+            .collect(toMap(Contact::getId, t -> t));
 
-    // Find primary tenant and their mailing/current address
-    Optional<Tenant> primaryTenant = findPrimaryTenant(parties, tenantMap);
-    Optional<TenantAddress> tenantAddress =
-        primaryTenant.flatMap(t -> findMailingAddress(t.getId(), teamId));
+    // Find primary contact and their mailing/current address
+    Optional<Contact> primaryContact = findPrimaryContact(parties, contactMap);
+    Optional<ContactAddress> contactAddress =
+        primaryContact.flatMap(t -> findMailingAddress(t.getId(), teamId));
 
-    String html = buildHtml(extension, contract, property, primaryTenant, tenantAddress);
+    String html = buildHtml(extension, contract, property, primaryContact, contactAddress);
     return pdfRenderer.renderHtml(html);
   }
 
@@ -82,8 +82,8 @@ public class RentIncreaseLetterExporter {
       ContractExtension extension,
       Contract contract,
       Property property,
-      Optional<Tenant> primaryTenant,
-      Optional<TenantAddress> tenantAddress) {
+      Optional<Contact> primaryContact,
+      Optional<ContactAddress> contactAddress) {
     DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH);
     String generatedDate = LocalDate.now(clock).format(dateFmt);
     String ccy = extension.getNewRentAmount().currency();
@@ -98,8 +98,8 @@ public class RentIncreaseLetterExporter {
         extension,
         contract,
         property,
-        primaryTenant,
-        tenantAddress,
+        primaryContact,
+        contactAddress,
         ccy,
         dateFmt,
         generatedDate);
@@ -115,8 +115,8 @@ public class RentIncreaseLetterExporter {
       ContractExtension extension,
       Contract contract,
       Property property,
-      Optional<Tenant> primaryTenant,
-      Optional<TenantAddress> tenantAddress,
+      Optional<Contact> primaryContact,
+      Optional<ContactAddress> contactAddress,
       String ccy,
       DateTimeFormatter dateFmt,
       String generatedDate) {
@@ -132,13 +132,12 @@ public class RentIncreaseLetterExporter {
 
     // Addressee
     html.append("<div class='letter-addressee'>");
-    primaryTenant.ifPresentOrElse(
+    primaryContact.ifPresentOrElse(
         tenant -> {
           html.append("<div class='addressee-name'>");
-          html.append(escapeHtml(tenant.getFirstName()));
-          tenant.getLastName().ifPresent(n -> html.append(" ").append(escapeHtml(n)));
+          html.append(escapeHtml(tenant.getDisplayName()));
           html.append("</div>");
-          tenantAddress.ifPresent(
+          contactAddress.ifPresent(
               addr -> {
                 html.append("<div>").append(escapeHtml(addr.getStreet())).append("</div>");
                 html.append("<div>")
@@ -157,12 +156,10 @@ public class RentIncreaseLetterExporter {
 
     // Salutation
     String salutation =
-        primaryTenant
+        primaryContact
             .map(
                 t ->
-                    "Dear "
-                        + escapeHtml(t.getFirstName())
-                        + t.getLastName().map(n -> " " + escapeHtml(n)).orElse(""))
+                    "Dear " + escapeHtml(t.getDisplayName()))
             .orElse("Dear Tenant");
     html.append("<div class='letter-body'>");
     html.append("<p>").append(salutation).append(",</p>");
@@ -282,30 +279,30 @@ public class RentIncreaseLetterExporter {
 
   // ── Helpers ─────────────────────────────────────────────────────
 
-  private Optional<Tenant> findPrimaryTenant(
-      List<ContractParty> parties, Map<UUID, Tenant> tenantMap) {
+  private Optional<Contact> findPrimaryContact(
+      List<ContractParty> parties, Map<UUID, Contact> contactMap) {
     return parties.stream()
         .filter(p -> p.getRole() == ContractPartyRole.PRIMARY_TENANT)
         .findFirst()
-        .flatMap(p -> p.getTenantId().map(tenantMap::get));
+        .flatMap(p -> p.getContactId().map(contactMap::get));
   }
 
-  private Optional<TenantAddress> findMailingAddress(UUID tenantId, UUID teamId) {
-    List<TenantAddress> addresses = tenantAddressRepository.findByTenantId(tenantId, teamId);
+  private Optional<ContactAddress> findMailingAddress(UUID contactId, UUID teamId) {
+    List<ContactAddress> addresses = contactAddressRepository.findByContactId(contactId, teamId);
     // Prefer MAILING address, fall back to CURRENT
     return addresses.stream()
         .filter(
             a ->
-                a.getAddressType() == TenantAddress.AddressType.MAILING
-                    && a.getStatus() == TenantAddress.AddressStatus.ACTIVE)
+                a.getAddressType() == ContactAddress.AddressType.MAILING
+                    && a.getStatus() == ContactAddress.AddressStatus.ACTIVE)
         .findFirst()
         .or(
             () ->
                 addresses.stream()
                     .filter(
                         a ->
-                            a.getAddressType() == TenantAddress.AddressType.CURRENT
-                                && a.getStatus() == TenantAddress.AddressStatus.ACTIVE)
+                            a.getAddressType() == ContactAddress.AddressType.CURRENT
+                                && a.getStatus() == ContactAddress.AddressStatus.ACTIVE)
                     .findFirst());
   }
 
