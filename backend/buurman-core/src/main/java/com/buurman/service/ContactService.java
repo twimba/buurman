@@ -749,7 +749,8 @@ public class ContactService {
       Map<UUID, User> usersById) {
     Property property =
         Optional.ofNullable(propertiesById.get(history.getPropertyId()))
-            .orElseThrow(() -> new NotFoundException("Property not found: " + history.getPropertyId()));
+            .orElseThrow(
+                () -> new NotFoundException("Property not found: " + history.getPropertyId()));
 
     PropertySummary propertySummary =
         new PropertySummary(

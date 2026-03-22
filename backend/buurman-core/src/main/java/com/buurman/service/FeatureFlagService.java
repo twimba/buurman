@@ -107,86 +107,92 @@ public class FeatureFlagService {
 
   /** Get remote config value for a flag (identity-aware). */
   public Optional<Object> getValue(String flagKey, UserPrincipal principal) {
-    return client().flatMap(
-        client -> {
-          try {
-            String identity = buildIdentity(principal);
-            Map<String, Object> traits = buildTraits(principal);
-            Flags flags = client.getIdentityFlags(identity, traits);
-            return Optional.ofNullable(flags.getFeatureValue(flagKey));
-          } catch (Exception e) {
-            log.warn("Failed to get value for flag '{}' for identity, returning empty", flagKey, e);
-            return Optional.empty();
-          }
-        });
+    return client()
+        .flatMap(
+            client -> {
+              try {
+                String identity = buildIdentity(principal);
+                Map<String, Object> traits = buildTraits(principal);
+                Flags flags = client.getIdentityFlags(identity, traits);
+                return Optional.ofNullable(flags.getFeatureValue(flagKey));
+              } catch (Exception e) {
+                log.warn(
+                    "Failed to get value for flag '{}' for identity, returning empty", flagKey, e);
+                return Optional.empty();
+              }
+            });
   }
 
   /** Get all evaluated flags for the current user (for the frontend endpoint). */
   public Map<String, Object> getAllFlags(UserPrincipal principal) {
     Map<String, Object> result = new HashMap<>();
-    client().ifPresent(
-        client -> {
-          try {
-            Flags flags = client.getIdentityFlags(buildIdentity(principal), buildTraits(principal));
-            flags
-                .getAllFlags()
-                .forEach(
-                    flag -> {
-                      Map<String, Object> flagData = new HashMap<>();
-                      flagData.put("enabled", flag.getEnabled());
-                      flagData.put("value", flag.getValue());
-                      result.put(flag.getFeatureName(), flagData);
-                    });
-          } catch (Exception e) {
-            log.warn("Failed to get all flags for identity, returning empty map", e);
-          }
-        });
+    client()
+        .ifPresent(
+            client -> {
+              try {
+                Flags flags =
+                    client.getIdentityFlags(buildIdentity(principal), buildTraits(principal));
+                flags
+                    .getAllFlags()
+                    .forEach(
+                        flag -> {
+                          Map<String, Object> flagData = new HashMap<>();
+                          flagData.put("enabled", flag.getEnabled());
+                          flagData.put("value", flag.getValue());
+                          result.put(flag.getFeatureName(), flagData);
+                        });
+              } catch (Exception e) {
+                log.warn("Failed to get all flags for identity, returning empty map", e);
+              }
+            });
     return result;
   }
 
   /** Get all environment-level flags (no identity context). */
   public Map<String, Object> getAllEnvironmentFlags() {
     Map<String, Object> result = new HashMap<>();
-    client().ifPresent(
-        client -> {
-          try {
-            Flags flags = client.getEnvironmentFlags();
-            flags
-                .getAllFlags()
-                .forEach(
-                    flag -> {
-                      Map<String, Object> flagData = new HashMap<>();
-                      flagData.put("enabled", flag.getEnabled());
-                      flagData.put("value", flag.getValue());
-                      result.put(flag.getFeatureName(), flagData);
-                    });
-          } catch (Exception e) {
-            log.warn("Failed to get environment flags, returning empty map", e);
-          }
-        });
+    client()
+        .ifPresent(
+            client -> {
+              try {
+                Flags flags = client.getEnvironmentFlags();
+                flags
+                    .getAllFlags()
+                    .forEach(
+                        flag -> {
+                          Map<String, Object> flagData = new HashMap<>();
+                          flagData.put("enabled", flag.getEnabled());
+                          flagData.put("value", flag.getValue());
+                          result.put(flag.getFeatureName(), flagData);
+                        });
+              } catch (Exception e) {
+                log.warn("Failed to get environment flags, returning empty map", e);
+              }
+            });
     return result;
   }
 
   /** Get all flags for an arbitrary identity (for backoffice user inspection). */
   public Map<String, Object> getAllFlagsForIdentity(String identity, Map<String, Object> traits) {
     Map<String, Object> result = new HashMap<>();
-    client().ifPresent(
-        client -> {
-          try {
-            Flags flags = client.getIdentityFlags(identity, traits);
-            flags
-                .getAllFlags()
-                .forEach(
-                    flag -> {
-                      Map<String, Object> flagData = new HashMap<>();
-                      flagData.put("enabled", flag.getEnabled());
-                      flagData.put("value", flag.getValue());
-                      result.put(flag.getFeatureName(), flagData);
-                    });
-          } catch (Exception e) {
-            log.warn("Failed to get flags for identity '{}', returning empty map", identity, e);
-          }
-        });
+    client()
+        .ifPresent(
+            client -> {
+              try {
+                Flags flags = client.getIdentityFlags(identity, traits);
+                flags
+                    .getAllFlags()
+                    .forEach(
+                        flag -> {
+                          Map<String, Object> flagData = new HashMap<>();
+                          flagData.put("enabled", flag.getEnabled());
+                          flagData.put("value", flag.getValue());
+                          result.put(flag.getFeatureName(), flagData);
+                        });
+              } catch (Exception e) {
+                log.warn("Failed to get flags for identity '{}', returning empty map", identity, e);
+              }
+            });
     return result;
   }
 

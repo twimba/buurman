@@ -157,21 +157,21 @@ class PaymentRecordMapperTest {
 
       // MoneyAmount.of() calls value.setScale() which requires non-null value.
       // DB enforces amount NOT NULL, so this scenario cannot occur in practice.
-      assertThatThrownBy(() -> mapper.toDomain(record))
-          .isInstanceOf(NullPointerException.class);
+      assertThatThrownBy(() -> mapper.toDomain(record)).isInstanceOf(NullPointerException.class);
     }
 
     @Test
-    @DisplayName("null currency throws NullPointerException (MoneyAmount.of requires non-null currency)")
+    @DisplayName(
+        "null currency throws NullPointerException (MoneyAmount.of requires non-null currency)")
     @SuppressWarnings("NullAway")
     void nullCurrencyThrowsNpe() {
       PaymentsRecord record = createCompleteRecord();
       record.setCurrency(null);
 
-      // MoneyAmount.of() calls CurrencyUtils.getFractionalDigits() which requires non-null currency.
+      // MoneyAmount.of() calls CurrencyUtils.getFractionalDigits() which requires non-null
+      // currency.
       // DB defaults currency to 'EUR', so this scenario is unlikely in practice.
-      assertThatThrownBy(() -> mapper.toDomain(record))
-          .isInstanceOf(NullPointerException.class);
+      assertThatThrownBy(() -> mapper.toDomain(record)).isInstanceOf(NullPointerException.class);
     }
   }
 
