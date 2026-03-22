@@ -38,8 +38,7 @@ export const PropertyComparisonChart = ({
   const sorted = useMemo(() => {
     return [...data]
       .filter((d) => d.monthlyCashFlow != null)
-      .sort((a, b) => (b.monthlyCashFlow ?? 0) - (a.monthlyCashFlow ?? 0))
-      .slice(0, 10);
+      .sort((a, b) => (b.monthlyCashFlow ?? 0) - (a.monthlyCashFlow ?? 0));
   }, [data]);
 
   const tooltipStyle = useMemo(
