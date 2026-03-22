@@ -102,6 +102,7 @@ public class ContactRepository {
             .map(mapper::toDomain));
   }
 
+  // TODO: Consider pg_trgm GIN indexes for fuzzy/partial-match search performance
   public List<Contact> searchByTeamId(UUID teamId, String searchTerm) {
     String searchPattern = "%" + searchTerm.toLowerCase(Locale.ROOT) + "%";
     return List.copyOf(
@@ -419,6 +420,9 @@ public class ContactRepository {
   /**
    * Returns contact activity items from 6 sources via UNION ALL, paginated at the database level.
    * Sources: contact_notes, audit_log, contract_parties, payments, documents, notifications.
+   *
+   * <p>TODO: The UNION ALL count + data queries execute the same sub-selects twice.
+   * Consider wrapping in a CTE or caching the count to avoid double execution.
    */
   public PaginatedResult<ContactActivityItem> findActivityByContactIdPaginated(
       UUID contactId, UUID teamId, PageRequest pageRequest) {

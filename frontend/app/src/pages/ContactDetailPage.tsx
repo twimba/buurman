@@ -461,8 +461,11 @@ export const ContactDetailPage = () => {
 
         {/* Tabs */}
         <div className="border-b border-border-default mb-6 overflow-x-auto">
-          <div className="flex gap-6 min-w-max">
+          <div className="flex gap-6 min-w-max" role="tablist" aria-label="Contact detail tabs">
             <button
+              role="tab"
+              aria-selected={activeTab === 'overview'}
+              aria-controls="tabpanel-overview"
               onClick={() => setActiveTab('overview')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'overview'
@@ -474,6 +477,9 @@ export const ContactDetailPage = () => {
               Overview
             </button>
             <button
+              role="tab"
+              aria-selected={activeTab === 'notes'}
+              aria-controls="tabpanel-notes"
               onClick={() => setActiveTab('notes')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'notes'
@@ -485,6 +491,9 @@ export const ContactDetailPage = () => {
               Notes {notes.length > 0 && `(${notes.length})`}
             </button>
             <button
+              role="tab"
+              aria-selected={activeTab === 'activity'}
+              aria-controls="tabpanel-activity"
               onClick={() => setActiveTab('activity')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'activity'
@@ -496,6 +505,9 @@ export const ContactDetailPage = () => {
               Activity
             </button>
             <button
+              role="tab"
+              aria-selected={activeTab === 'financials'}
+              aria-controls="tabpanel-financials"
               onClick={() => setActiveTab('financials')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'financials'
@@ -507,6 +519,9 @@ export const ContactDetailPage = () => {
               Financials
             </button>
             <button
+              role="tab"
+              aria-selected={activeTab === 'relationships'}
+              aria-controls="tabpanel-relationships"
               onClick={() => setActiveTab('relationships')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'relationships'
@@ -518,6 +533,9 @@ export const ContactDetailPage = () => {
               Relationships
             </button>
             <button
+              role="tab"
+              aria-selected={activeTab === 'files'}
+              aria-controls="tabpanel-files"
               onClick={() => setActiveTab('files')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'files'
@@ -531,6 +549,9 @@ export const ContactDetailPage = () => {
                 `(${documents.length + photos.length})`}
             </button>
             <button
+              role="tab"
+              aria-selected={activeTab === 'addresses'}
+              aria-controls="tabpanel-addresses"
               onClick={() => setActiveTab('addresses')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'addresses'
@@ -546,7 +567,7 @@ export const ContactDetailPage = () => {
 
         {/* ===== Tab 1: Overview ===== */}
         {activeTab === 'overview' && (
-          <div className="space-y-6">
+          <div id="tabpanel-overview" role="tabpanel" className="space-y-6">
             {/* Contextual Alerts */}
             {(overdueFollowUps.length > 0 ||
               expiringContracts.length > 0 ||
@@ -990,24 +1011,36 @@ export const ContactDetailPage = () => {
         )}
 
         {/* ===== Tab 2: Notes ===== */}
-        {activeTab === 'notes' && <ContactNotesTab contactId={id} />}
+        {activeTab === 'notes' && (
+          <div id="tabpanel-notes" role="tabpanel">
+            <ContactNotesTab contactId={id} />
+          </div>
+        )}
 
         {/* ===== Tab 3: Activity ===== */}
-        {activeTab === 'activity' && <ContactActivityTab contactId={id} />}
+        {activeTab === 'activity' && (
+          <div id="tabpanel-activity" role="tabpanel">
+            <ContactActivityTab contactId={id} />
+          </div>
+        )}
 
         {/* ===== Tab: Financials ===== */}
         {activeTab === 'financials' && (
-          <ContactFinancialsTab contactIdentifier={id} />
+          <div id="tabpanel-financials" role="tabpanel">
+            <ContactFinancialsTab contactIdentifier={id} />
+          </div>
         )}
 
-        {/* ===== Tab 3: Relationships ===== */}
+        {/* ===== Tab: Relationships ===== */}
         {activeTab === 'relationships' && (
-          <ContactRelationshipsTab contactId={id} />
+          <div id="tabpanel-relationships" role="tabpanel">
+            <ContactRelationshipsTab contactId={id} />
+          </div>
         )}
 
-        {/* ===== Tab 4: Files ===== */}
+        {/* ===== Tab: Files ===== */}
         {activeTab === 'files' && (
-          <div className="space-y-6">
+          <div id="tabpanel-files" role="tabpanel" className="space-y-6">
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <h2 className="text-lg font-semibold text-text-primary mb-4">
                 Documents
@@ -1044,7 +1077,7 @@ export const ContactDetailPage = () => {
 
         {/* ===== Tab 5: Addresses ===== */}
         {activeTab === 'addresses' && (
-          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+          <div id="tabpanel-addresses" role="tabpanel" className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
             <ContactAddressList contactId={id} />
           </div>
         )}

@@ -287,6 +287,7 @@ export const ContactListPage = () => {
               value={searchTerm}
               onChange={(e) => handleSearch(e.target.value)}
               placeholder="Search by name, email, or phone..."
+              aria-label="Search contacts"
               className="w-full pl-10 pr-4 py-2 border border-border-strong rounded focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary"
             />
           </div>

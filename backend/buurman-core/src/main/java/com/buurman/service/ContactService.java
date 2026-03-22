@@ -72,6 +72,8 @@ import com.buurman.util.PaginationHelper.PaginatedResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+// TODO: This service is large (~600 lines). Consider splitting GDPR erase, photo management,
+//  and duplicate detection into dedicated services when it grows further.
 @Service
 @Slf4j
 @RequiredArgsConstructor
