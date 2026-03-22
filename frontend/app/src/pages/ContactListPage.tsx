@@ -7,7 +7,7 @@ import { ErrorMessage } from '@/components/ErrorMessage';
 import { Plus, Users, User, Search } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
-import { Pagination, RefreshButton } from '@buurman/ui';
+import { Pagination, RefreshButton, EmptyState } from '@buurman/ui';
 
 export const ContactListPage = () => {
   const navigate = useNavigate();
@@ -128,23 +128,23 @@ export const ContactListPage = () => {
             )}
           </>
         ) : (
-          /* Empty State */
-          <div className="flex flex-col items-center justify-center py-16 bg-surface-card rounded-lg">
-            <User className="h-16 w-16 text-text-disabled mb-4" />
-            <h3 className="text-lg font-semibold text-text-primary mb-2">
-              No contacts yet
-            </h3>
-            <p className="text-text-secondary mb-6">
-              Get started by adding your first contact
-            </p>
-            <button
-              onClick={() => navigate('/contacts/new')}
-              disabled={!canEditData}
-              className="bg-primary-500 text-white px-6 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
-            >
-              <Plus className="h-5 w-5" />
-              Add Contact
-            </button>
+          <div className="bg-surface-card rounded-lg">
+            <EmptyState
+              icon={<Users className="h-12 w-12" />}
+              title="No contacts yet"
+              description="Add your tenants, companies, and service providers to keep everything organized."
+              variant="page"
+              actions={
+                <button
+                  onClick={() => navigate('/contacts/new')}
+                  disabled={!canEditData}
+                  className="bg-primary-500 text-white px-6 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
+                >
+                  <Plus className="h-5 w-5" />
+                  Add first contact
+                </button>
+              }
+            />
           </div>
         )}
       </div>

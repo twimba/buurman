@@ -36,6 +36,7 @@ public class ExportServiceImpl implements ExportService {
   private final TransactionExcelExporter transactionExcelExporter;
   private final PropertyDashboardExcelExporter propertyDashboardExcelExporter;
   private final PortfolioDashboardExcelExporter portfolioDashboardExcelExporter;
+  private final ContactCsvExporter contactCsvExporter;
   private final MetricsService metricsService;
   private final Clock clock;
 
@@ -112,6 +113,11 @@ public class ExportServiceImpl implements ExportService {
   public byte[] generatePortfolioDashboardExcel(PortfolioDashboardResponse dashboard) {
     return withMetrics(
         "portfolio_dashboard_excel", () -> portfolioDashboardExcelExporter.generate(dashboard));
+  }
+
+  @Override
+  public byte[] generateContactsCSV(UUID teamId) {
+    return withMetrics("contacts_csv", () -> contactCsvExporter.generate(teamId));
   }
 
   private byte[] withMetrics(String exportType, Supplier<byte[]> generator) {

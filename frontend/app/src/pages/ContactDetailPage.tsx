@@ -4,10 +4,11 @@ import { useTabState } from '@/hooks/useTabState';
 import {
   useContact,
   useDeleteContact,
-  useContactAuditLog,
+  useEraseContactData,
   useContactDocuments,
   useContactPhotos,
   useContactAddresses,
+  useContactNotes,
   useUploadContactDocument,
   useUploadContactPhoto,
   useSetContactMainPhoto,
@@ -20,20 +21,23 @@ import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
-import { formatAuditValue } from '@/utils/formatAuditValue';
 import { trackEvent } from '@/utils/analytics';
 import { AnalyticsEvent } from '@/constants/analyticsEvents';
 import { DocumentList } from '@/components/properties/DocumentList';
 import { PhotoGallery } from '@/components/properties/PhotoGallery';
 import { Avatar } from '@/components/common/Avatar';
 import { ContactAddressList } from '@/components/contacts/ContactAddressList';
+import { ContactNotesTab } from '@/components/contacts/ContactNotesTab';
+import { ContactActivityTab } from '@/components/contacts/ContactActivityTab';
+import { ContactRelationshipsTab } from '@/components/contacts/ContactRelationshipsTab';
+import { ContactTagsTab } from '@/components/contacts/ContactTagsTab';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
 import {
   ContractStatus,
   ContractPartyRole,
   PARTY_ROLE_LABELS,
 } from '@/types/contract';
-import { Button, PageHeader } from '@buurman/ui';
+import { Button, PageHeader, StatusBadge } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import {
   Edit,
@@ -44,18 +48,21 @@ import {
   Home,
   X,
   FileText,
-  Image,
   MapPin,
   Plus,
-  History,
   Search,
   ChevronUp,
   ChevronDown,
   Download,
-  Eye,
+  Activity,
+  Users,
+  FolderOpen,
+  AlertCircle,
+  Calendar,
+  Building2,
+  ShieldAlert,
 } from 'lucide-react';
 import client from '@/api/client';
-import { formatDistanceToNow } from 'date-fns';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { getCurrencySymbol } from '@/utils/currencies';
 
@@ -66,6 +73,18 @@ const ROLE_COLORS: Record<ContractPartyRole, string> = {
   [ContractPartyRole.EXTRA_TENANT]: 'bg-success-bg text-success-text',
 };
 
+const CONTACT_TYPE_LABELS: Record<string, string> = {
+  INDIVIDUAL: 'Individual',
+  COMPANY: 'Company',
+  SERVICE_PROVIDER: 'Service Provider',
+};
+
+const CONTACT_TYPE_COLORS: Record<string, 'info' | 'warning' | 'success'> = {
+  INDIVIDUAL: 'info',
+  COMPANY: 'warning',
+  SERVICE_PROVIDER: 'success',
+};
+
 const RoleBadge = ({ role }: { role: ContractPartyRole }) => (
   <span
     className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full ${ROLE_COLORS[role] ?? 'bg-surface-inset text-text-primary'}`}
@@ -74,22 +93,17 @@ const RoleBadge = ({ role }: { role: ContractPartyRole }) => (
   </span>
 );
 
+const TAB_IDS = ['overview', 'activity', 'relationships', 'files', 'addresses'] as const;
+
 export const ContactDetailPage = () => {
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { canEditData } = useTeam();
-  const [activeTab, setActiveTab] = useTabState('info', [
-    'info',
-    'photos',
-    'documents',
-    'addresses',
-    'contracts',
-    'history',
-  ] as const);
+  const { canEditData, activeTeam } = useTeam();
+  const isAdmin = activeTeam?.role === 'TEAM_ADMIN';
+  const [activeTab, setActiveTab] = useTabState('overview', TAB_IDS);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
-    new Set()
-  );
+  const [showEraseModal, setShowEraseModal] = useState(false);
+  const [eraseConfirmText, setEraseConfirmText] = useState('');
   const [isMetadataExpanded, setIsMetadataExpanded] = useState(false);
 
   const { formatDate } = useFormatDate();
@@ -115,11 +129,6 @@ export const ContactDetailPage = () => {
   }, [contactIdentifier]);
 
   const {
-    data: auditLog = [],
-    isLoading: auditLoading,
-    error: auditError,
-  } = useContactAuditLog(id);
-  const {
     data: allDocuments = [],
     isLoading: docsLoading,
     error: docsError,
@@ -139,10 +148,12 @@ export const ContactDetailPage = () => {
     [contractsData]
   );
   const { data: addresses = [] } = useContactAddresses(id);
+  const { data: notes = [] } = useContactNotes(id);
 
   const documents = allDocuments;
 
   const deleteContactMutation = useDeleteContact();
+  const eraseContactMutation = useEraseContactData();
   const uploadDocumentMutation = useUploadContactDocument(id);
   const uploadPhotoMutation = useUploadContactPhoto(id);
   const setMainPhotoMutation = useSetContactMainPhoto(id);
@@ -158,6 +169,18 @@ export const ContactDetailPage = () => {
       navigate('/contacts');
     } catch (err) {
       console.error('Failed to delete contact:', err);
+    }
+  };
+
+  const handleErase = async () => {
+    if (!id || eraseConfirmText !== 'ERASE') {
+      return;
+    }
+    try {
+      await eraseContactMutation.mutateAsync(id);
+      navigate('/contacts');
+    } catch (err) {
+      console.error('Failed to erase contact data:', err);
     }
   };
 
@@ -189,7 +212,7 @@ export const ContactDetailPage = () => {
     await setMainPhotoMutation.mutateAsync(photoId);
   };
 
-  // Get properties from active contracts with the contact's role
+  // Active contract properties for Overview tab
   const activeContractProperties = contracts
     ? contracts
         .filter((contract) => contract.status === ContractStatus.ACTIVE)
@@ -210,6 +233,51 @@ export const ContactDetailPage = () => {
             )
         )
     : [];
+
+  // Expiring contracts (within 30 days)
+  const expiringContracts = useMemo(() => {
+    const now = new Date();
+    const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+    return contracts.filter((c) => {
+      if (c.status !== ContractStatus.ACTIVE) {
+        return false;
+      }
+      const endDate = c.effectiveEndDate ?? c.endDate;
+      if (!endDate) {
+        return false;
+      }
+      const end = new Date(endDate);
+      return end >= now && end <= thirtyDaysFromNow;
+    });
+  }, [contracts]);
+
+  // Upcoming follow-ups from notes
+  const overdueFollowUps = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0];
+    return notes.filter(
+      (n) => n.followUpDate && n.followUpDate < today
+    );
+  }, [notes]);
+
+  const upcomingFollowUps = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0];
+    return notes
+      .filter((n) => n.followUpDate && n.followUpDate >= today)
+      .sort((a, b) => (a.followUpDate! < b.followUpDate! ? -1 : 1))
+      .slice(0, 5);
+  }, [notes]);
+
+  // Missing fields alerts
+  const missingFields = useMemo(() => {
+    const missing: string[] = [];
+    if (!contact?.email) {
+      missing.push('email');
+    }
+    if (!contact?.phone) {
+      missing.push('phone');
+    }
+    return missing;
+  }, [contact]);
 
   // Contracts filtering, sorting, and pagination
   const filteredAndSortedContracts = useMemo(() => {
@@ -300,13 +368,27 @@ export const ContactDetailPage = () => {
     );
   }
 
+  const displayName = contact.displayName ?? `${contact.firstName} ${contact.lastName ?? ''}`.trim();
+
   return (
     <div className="min-h-screen bg-background">
       <div className="px-4 py-8">
         {/* Header */}
         <PageHeader
-          title={`${contact.firstName} ${contact.lastName}`}
-          subtitle={`#${contact.identifier}`}
+          title={displayName}
+          subtitle={
+            <div className="flex items-center gap-2">
+              <span>#{contact.identifier}</span>
+              {contact.contactType && (
+                <StatusBadge
+                  variant={CONTACT_TYPE_COLORS[contact.contactType] ?? 'neutral'}
+                  size="sm"
+                >
+                  {CONTACT_TYPE_LABELS[contact.contactType] ?? contact.contactType}
+                </StatusBadge>
+              )}
+            </div>
+          }
           backTo="/contacts"
           avatar={
             <Avatar
@@ -367,6 +449,15 @@ export const ContactDetailPage = () => {
               >
                 Delete
               </Button>
+              {isAdmin && contact.dataRetentionStatus !== 'ANONYMIZED' && (
+                <Button
+                  variant="danger"
+                  leftIcon={<ShieldAlert />}
+                  onClick={() => setShowEraseModal(true)}
+                >
+                  Erase Data
+                </Button>
+              )}
             </>
           }
         />
@@ -375,36 +466,48 @@ export const ContactDetailPage = () => {
         <div className="border-b border-border-default mb-6">
           <div className="flex gap-6">
             <button
-              onClick={() => setActiveTab('info')}
-              className={`pb-3 px-1 font-medium transition-colors ${
-                activeTab === 'info'
+              onClick={() => setActiveTab('overview')}
+              className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
+                activeTab === 'overview'
                   ? 'border-b-2 border-primary-500 text-primary-500 dark:text-primary-300'
                   : 'text-text-secondary hover:text-text-primary'
               }`}
             >
-              Information
+              <User className="h-4 w-4" />
+              Overview
             </button>
             <button
-              onClick={() => setActiveTab('photos')}
+              onClick={() => setActiveTab('activity')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
-                activeTab === 'photos'
+                activeTab === 'activity'
                   ? 'border-b-2 border-primary-500 text-primary-500 dark:text-primary-300'
                   : 'text-text-secondary hover:text-text-primary'
               }`}
             >
-              <Image className="h-4 w-4" />
-              Photos {photos.length > 0 && `(${photos.length})`}
+              <Activity className="h-4 w-4" />
+              Activity
             </button>
             <button
-              onClick={() => setActiveTab('documents')}
+              onClick={() => setActiveTab('relationships')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
-                activeTab === 'documents'
+                activeTab === 'relationships'
                   ? 'border-b-2 border-primary-500 text-primary-500 dark:text-primary-300'
                   : 'text-text-secondary hover:text-text-primary'
               }`}
             >
-              <FileText className="h-4 w-4" />
-              Documents {documents.length > 0 && `(${documents.length})`}
+              <Users className="h-4 w-4" />
+              Relationships
+            </button>
+            <button
+              onClick={() => setActiveTab('files')}
+              className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
+                activeTab === 'files'
+                  ? 'border-b-2 border-primary-500 text-primary-500 dark:text-primary-300'
+                  : 'text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              <FolderOpen className="h-4 w-4" />
+              Files {(documents.length + photos.length) > 0 && `(${documents.length + photos.length})`}
             </button>
             <button
               onClick={() => setActiveTab('addresses')}
@@ -417,114 +520,177 @@ export const ContactDetailPage = () => {
               <MapPin className="h-4 w-4" />
               Addresses {addresses.length > 0 && `(${addresses.length})`}
             </button>
-            <button
-              onClick={() => setActiveTab('contracts')}
-              className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
-                activeTab === 'contracts'
-                  ? 'border-b-2 border-primary-500 text-primary-500 dark:text-primary-300'
-                  : 'text-text-secondary hover:text-text-primary'
-              }`}
-            >
-              <FileText className="h-4 w-4" />
-              Contracts {contracts.length > 0 && `(${contracts.length})`}
-            </button>
-            <button
-              onClick={() => setActiveTab('history')}
-              className={`pb-3 px-1 font-medium transition-colors ${
-                activeTab === 'history'
-                  ? 'border-b-2 border-primary-500 text-primary-500 dark:text-primary-300'
-                  : 'text-text-secondary hover:text-text-primary'
-              }`}
-            >
-              History {auditLog.length > 0 && `(${auditLog.length})`}
-            </button>
           </div>
         </div>
 
-        {/* Tab Content */}
-        {activeTab === 'info' && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Contact Information */}
-            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-              <h2 className="text-lg font-semibold text-text-primary mb-4">
-                Contact Information
-              </h2>
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <User className="h-5 w-5 text-text-muted " />
-                  <div>
-                    <p className="text-sm text-text-secondary">Name</p>
-                    <p className="font-medium text-text-primary">
-                      {contact.firstName} {contact.lastName}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Mail className="h-5 w-5 text-text-muted " />
-                  <div>
-                    <p className="text-sm text-text-secondary">Email</p>
-                    <p className="font-medium text-text-primary">
-                      {contact.email}
-                    </p>
-                  </div>
-                </div>
-                {contact.phone && (
-                  <div className="flex items-center gap-3">
-                    <Phone className="h-5 w-5 text-text-muted " />
-                    <div>
-                      <p className="text-sm text-text-secondary">Phone</p>
-                      <p className="font-medium text-text-primary">
-                        {contact.phone}
-                      </p>
-                    </div>
+        {/* ===== Tab 1: Overview ===== */}
+        {activeTab === 'overview' && (
+          <div className="space-y-6">
+            {/* Contextual Alerts */}
+            {(overdueFollowUps.length > 0 || expiringContracts.length > 0 || missingFields.length > 0) && (
+              <div className="space-y-2">
+                {overdueFollowUps.length > 0 && (
+                  <div className="flex items-center gap-2 bg-error-bg text-error-text px-4 py-3 rounded-lg">
+                    <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                    <span className="text-sm font-medium">
+                      {overdueFollowUps.length} overdue follow-up{overdueFollowUps.length > 1 ? 's' : ''}
+                    </span>
                   </div>
                 )}
-                {contact.taxNumber && (
-                  <div className="flex items-center gap-3">
-                    <FileText className="h-5 w-5 text-text-muted " />
-                    <div>
-                      <p className="text-sm text-text-secondary">Tax Number</p>
-                      <p className="font-medium text-text-primary">
-                        {contact.taxNumber}
-                      </p>
-                    </div>
+                {expiringContracts.length > 0 && (
+                  <div className="flex items-center gap-2 bg-warning-bg text-warning-text px-4 py-3 rounded-lg">
+                    <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                    <span className="text-sm font-medium">
+                      {expiringContracts.length} contract{expiringContracts.length > 1 ? 's' : ''} expiring within 30 days
+                    </span>
                   </div>
                 )}
-                {contact.idNumber && (
-                  <div className="flex items-center gap-3">
-                    <FileText className="h-5 w-5 text-text-muted " />
-                    <div>
-                      <p className="text-sm text-text-secondary">
-                        Government ID Number
-                      </p>
-                      <p className="font-medium text-text-primary">
-                        {contact.idNumber}
-                      </p>
-                    </div>
+                {missingFields.length > 0 && (
+                  <div className="flex items-center gap-2 bg-info-bg text-info-text px-4 py-3 rounded-lg">
+                    <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                    <span className="text-sm font-medium">
+                      Missing: {missingFields.join(', ')}
+                    </span>
                   </div>
                 )}
               </div>
+            )}
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Contact Information */}
+              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+                <h2 className="text-lg font-semibold text-text-primary mb-4">
+                  Contact Information
+                </h2>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <User className="h-5 w-5 text-text-muted" />
+                    <div>
+                      <p className="text-sm text-text-secondary">Name</p>
+                      <p className="font-medium text-text-primary">
+                        {contact.firstName} {contact.lastName}
+                      </p>
+                    </div>
+                  </div>
+                  {contact.companyName && (
+                    <div className="flex items-center gap-3">
+                      <Building2 className="h-5 w-5 text-text-muted" />
+                      <div>
+                        <p className="text-sm text-text-secondary">Company</p>
+                        <p className="font-medium text-text-primary">
+                          {contact.companyName}
+                          {contact.tradeName && (
+                            <span className="text-text-secondary ml-1">({contact.tradeName})</span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-3">
+                    <Mail className="h-5 w-5 text-text-muted" />
+                    <div>
+                      <p className="text-sm text-text-secondary">Email</p>
+                      <p className="font-medium text-text-primary">
+                        {contact.email ? (
+                          <a href={`mailto:${contact.email}`} className="hover:text-primary-500">
+                            {contact.email}
+                          </a>
+                        ) : (
+                          <span className="text-text-muted italic">Not set</span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  {contact.phone && (
+                    <div className="flex items-center gap-3">
+                      <Phone className="h-5 w-5 text-text-muted" />
+                      <div>
+                        <p className="text-sm text-text-secondary">Phone</p>
+                        <p className="font-medium text-text-primary">
+                          <a href={`tel:${contact.phone}`} className="hover:text-primary-500">
+                            {contact.phone}
+                          </a>
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  {contact.taxNumber && (
+                    <div className="flex items-center gap-3">
+                      <FileText className="h-5 w-5 text-text-muted" />
+                      <div>
+                        <p className="text-sm text-text-secondary">Tax Number</p>
+                        <p className="font-medium text-text-primary">
+                          {contact.taxNumber}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  {contact.idNumber && (
+                    <div className="flex items-center gap-3">
+                      <FileText className="h-5 w-5 text-text-muted" />
+                      <div>
+                        <p className="text-sm text-text-secondary">
+                          Government ID Number
+                        </p>
+                        <p className="font-medium text-text-primary">
+                          {contact.idNumber}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  {contact.dateOfBirth && (
+                    <div className="flex items-center gap-3">
+                      <Calendar className="h-5 w-5 text-text-muted" />
+                      <div>
+                        <p className="text-sm text-text-secondary">Date of Birth</p>
+                        <p className="font-medium text-text-primary">
+                          {formatDate(contact.dateOfBirth)}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Additional Info + Tags */}
+              <div className="space-y-6">
+                <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+                  <h2 className="text-lg font-semibold text-text-primary mb-4">
+                    Additional Information
+                  </h2>
+                  {contact.additionalInfo ? (
+                    <RichTextDisplay content={contact.additionalInfo} />
+                  ) : contact.notes ? (
+                    <RichTextDisplay content={contact.notes} />
+                  ) : (
+                    <p className="text-sm text-text-muted italic">
+                      No additional information available
+                    </p>
+                  )}
+                </div>
+
+                {/* Tags inline */}
+                <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+                  <ContactTagsTab contactId={id} />
+                </div>
+              </div>
             </div>
 
-            {/* Additional Information */}
+            {/* Active Contracts & Properties */}
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-              <h2 className="text-lg font-semibold text-text-primary mb-4">
-                Additional Information
-              </h2>
-              {contact.additionalInfo ? (
-                <RichTextDisplay content={contact.additionalInfo} />
-              ) : (
-                <p className="text-sm text-text-muted italic">
-                  No additional information available
-                </p>
-              )}
-            </div>
-
-            {/* Current Properties (from Active Contracts) */}
-            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 lg:col-span-2">
-              <h2 className="text-lg font-semibold text-text-primary mb-4">
-                Current Properties
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-text-primary">
+                  Active Contracts & Properties
+                </h2>
+                <button
+                  onClick={() => navigate(`/contracts/new?contactId=${id}`)}
+                  disabled={!canEditData}
+                  className="text-sm text-primary-500 hover:text-primary-600 flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Contract
+                </button>
+              </div>
               {contractsLoading ? (
                 <LoadingSpinner />
               ) : activeContractProperties.length > 0 ? (
@@ -561,10 +727,176 @@ export const ContactDetailPage = () => {
                   No active contracts for this contact
                 </p>
               )}
+
+              {/* All contracts mini-table */}
+              {contracts.length > 0 && (
+                <div className="mt-6 pt-4 border-t border-border-default">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-sm font-semibold text-text-secondary uppercase">
+                      All Contracts ({contracts.length})
+                    </h3>
+                    {contracts.length > 5 && (
+                      <div className="relative">
+                        <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
+                        <input
+                          type="text"
+                          placeholder="Search..."
+                          value={contractsSearchTerm}
+                          onChange={(e) => {
+                            setContractsSearchTerm(e.target.value);
+                            setContractsCurrentPage(1);
+                          }}
+                          className="pl-8 pr-3 py-1.5 text-sm border border-border-strong rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+                    )}
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-border-default text-sm">
+                      <thead className="bg-surface-page">
+                        <tr>
+                          <th
+                            className="px-4 py-2 text-left text-xs font-medium text-text-secondary uppercase cursor-pointer hover:bg-surface-inset"
+                            onClick={() => handleContractsSort('property')}
+                          >
+                            Property
+                          </th>
+                          <th className="px-4 py-2 text-left text-xs font-medium text-text-secondary uppercase">
+                            Role
+                          </th>
+                          <th
+                            className="px-4 py-2 text-left text-xs font-medium text-text-secondary uppercase cursor-pointer hover:bg-surface-inset"
+                            onClick={() => handleContractsSort('startDate')}
+                          >
+                            <div className="flex items-center gap-1">
+                              Period
+                              {contractsSortField === 'startDate' &&
+                                (contractsSortOrder === 'asc' ? (
+                                  <ChevronUp className="h-3 w-3" />
+                                ) : (
+                                  <ChevronDown className="h-3 w-3" />
+                                ))}
+                            </div>
+                          </th>
+                          <th
+                            className="px-4 py-2 text-left text-xs font-medium text-text-secondary uppercase cursor-pointer hover:bg-surface-inset"
+                            onClick={() => handleContractsSort('rentAmount')}
+                          >
+                            Rent
+                          </th>
+                          <th
+                            className="px-4 py-2 text-left text-xs font-medium text-text-secondary uppercase cursor-pointer hover:bg-surface-inset"
+                            onClick={() => handleContractsSort('status')}
+                          >
+                            Status
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border-default">
+                        {paginatedContracts.map((contract) => {
+                          const party = contract.parties?.find(
+                            (p) => p.contact.identifier === id
+                          );
+                          return (
+                            <tr
+                              key={contract.identifier}
+                              onClick={() =>
+                                navigate(`/contracts/${contract.identifier}`)
+                              }
+                              className="hover:bg-primary-50 cursor-pointer transition-colors"
+                            >
+                              <td className="px-4 py-3">
+                                {contract.property.street}
+                              </td>
+                              <td className="px-4 py-3">
+                                {party?.role ? (
+                                  <RoleBadge role={party.role} />
+                                ) : (
+                                  <span className="text-text-muted">-</span>
+                                )}
+                              </td>
+                              <td className="px-4 py-3 text-text-secondary">
+                                {formatDate(contract.startDate)}
+                                {' — '}
+                                {(contract.effectiveEndDate ?? contract.endDate)
+                                  ? formatDate(
+                                      (contract.effectiveEndDate ?? contract.endDate) as string
+                                    )
+                                  : 'Ongoing'}
+                              </td>
+                              <td className="px-4 py-3 font-medium">
+                                {getCurrencySymbol(contract.rentAmountCurrency)}{' '}
+                                {contract.rentAmount.toFixed(2)}
+                              </td>
+                              <td className="px-4 py-3">
+                                <ContractStatusBadge status={contract.status} />
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                  {contractsTotalPages > 1 && (
+                    <div className="flex items-center justify-between mt-3 text-sm">
+                      <span className="text-text-secondary">
+                        Page {contractsCurrentPage} of {contractsTotalPages}
+                      </span>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => setContractsCurrentPage(contractsCurrentPage - 1)}
+                          disabled={contractsCurrentPage === 1}
+                          className="px-2 py-1 border border-border-strong rounded text-xs disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
+                        >
+                          Previous
+                        </button>
+                        <button
+                          onClick={() => setContractsCurrentPage(contractsCurrentPage + 1)}
+                          disabled={contractsCurrentPage === contractsTotalPages}
+                          className="px-2 py-1 border border-border-strong rounded text-xs disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
+            {/* Follow-ups */}
+            {(overdueFollowUps.length > 0 || upcomingFollowUps.length > 0) && (
+              <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+                <h2 className="text-lg font-semibold text-text-primary mb-4">
+                  Follow-ups
+                </h2>
+                <div className="space-y-2">
+                  {overdueFollowUps.map((note) => (
+                    <div
+                      key={note.identifier}
+                      className="flex items-center gap-3 px-3 py-2 bg-error-bg rounded text-sm"
+                    >
+                      <AlertCircle className="h-4 w-4 text-error-text flex-shrink-0" />
+                      <span className="text-error-text font-medium">Overdue: {formatDate(note.followUpDate!)}</span>
+                      <span className="text-text-secondary truncate">{note.subject ?? note.body.substring(0, 60)}</span>
+                    </div>
+                  ))}
+                  {upcomingFollowUps.map((note) => (
+                    <div
+                      key={note.identifier}
+                      className="flex items-center gap-3 px-3 py-2 bg-surface-inset rounded text-sm"
+                    >
+                      <Calendar className="h-4 w-4 text-text-muted flex-shrink-0" />
+                      <span className="font-medium">{formatDate(note.followUpDate!)}</span>
+                      <span className="text-text-secondary truncate">{note.subject ?? note.body.substring(0, 60)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Metadata */}
-            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 lg:col-span-2">
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <button
                 onClick={() => setIsMetadataExpanded(!isMetadataExpanded)}
                 className="w-full flex items-center justify-between text-left group"
@@ -573,9 +905,9 @@ export const ContactDetailPage = () => {
                   Metadata
                 </h2>
                 {isMetadataExpanded ? (
-                  <ChevronUp className="h-5 w-5 text-text-secondary group-hover:text-text-secondary " />
+                  <ChevronUp className="h-5 w-5 text-text-secondary" />
                 ) : (
-                  <ChevronDown className="h-5 w-5 text-text-secondary group-hover:text-text-secondary " />
+                  <ChevronDown className="h-5 w-5 text-text-secondary" />
                 )}
               </button>
               {isMetadataExpanded && (
@@ -606,567 +938,60 @@ export const ContactDetailPage = () => {
           </div>
         )}
 
-        {activeTab === 'photos' && (
-          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-            <PhotoGallery
-              photos={photos}
-              isLoading={photosLoading}
-              error={photosError}
-              onUpload={handleUploadPhoto}
-              onSetMain={handleSetMainPhoto}
-              onDelete={handleDeletePhoto}
-              isUploading={uploadPhotoMutation.isPending}
-              isDeleting={deletePhotoMutation.isPending}
-              readOnly={!canEditData}
-            />
+        {/* ===== Tab 2: Activity ===== */}
+        {activeTab === 'activity' && (
+          <div className="space-y-6">
+            <ContactNotesTab contactId={id} />
+            <ContactActivityTab contactId={id} />
           </div>
         )}
 
-        {activeTab === 'documents' && (
-          <DocumentList
-            documents={documents}
-            isLoading={docsLoading}
-            error={docsError}
-            onUpload={handleUploadDocument}
-            onDelete={handleDeleteDocument}
-            isUploading={uploadDocumentMutation.isPending}
-            isDeleting={deleteDocumentMutation.isPending}
-            readOnly={!canEditData}
-          />
+        {/* ===== Tab 3: Relationships ===== */}
+        {activeTab === 'relationships' && (
+          <ContactRelationshipsTab contactId={id} />
         )}
 
+        {/* ===== Tab 4: Files ===== */}
+        {activeTab === 'files' && (
+          <div className="space-y-6">
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+              <h2 className="text-lg font-semibold text-text-primary mb-4">
+                Documents
+              </h2>
+              <DocumentList
+                documents={documents}
+                isLoading={docsLoading}
+                error={docsError}
+                onUpload={handleUploadDocument}
+                onDelete={handleDeleteDocument}
+                isUploading={uploadDocumentMutation.isPending}
+                isDeleting={deleteDocumentMutation.isPending}
+                readOnly={!canEditData}
+              />
+            </div>
+            <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+              <h2 className="text-lg font-semibold text-text-primary mb-4">
+                Photos
+              </h2>
+              <PhotoGallery
+                photos={photos}
+                isLoading={photosLoading}
+                error={photosError}
+                onUpload={handleUploadPhoto}
+                onSetMain={handleSetMainPhoto}
+                onDelete={handleDeletePhoto}
+                isUploading={uploadPhotoMutation.isPending}
+                isDeleting={deletePhotoMutation.isPending}
+                readOnly={!canEditData}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* ===== Tab 5: Addresses ===== */}
         {activeTab === 'addresses' && (
           <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
             <ContactAddressList contactId={id} />
-          </div>
-        )}
-
-        {activeTab === 'contracts' && (
-          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-text-primary">
-                Contracts ({filteredAndSortedContracts.length})
-              </h2>
-              <button
-                onClick={() => navigate(`/contracts/new?contactId=${id}`)}
-                disabled={!canEditData}
-                className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
-              >
-                <Plus className="h-4 w-4" />
-                Add Contract
-              </button>
-            </div>
-            {contractsLoading ? (
-              <LoadingSpinner />
-            ) : contractsError ? (
-              <ErrorMessage message="Failed to load contracts" />
-            ) : contracts.length === 0 ? (
-              <div className="text-center py-12">
-                <FileText className="h-12 w-12 text-text-disabled mx-auto mb-3" />
-                <p className="text-text-secondary mb-4">
-                  No contracts for this contact
-                </p>
-                <button
-                  onClick={() => navigate(`/contracts/new?contactId=${id}`)}
-                  disabled={!canEditData}
-                  className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
-                >
-                  <Plus className="h-4 w-4" />
-                  Create First Contract
-                </button>
-              </div>
-            ) : (
-              <>
-                {/* Search Bar */}
-                <div className="mb-4">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-text-muted " />
-                    <input
-                      type="text"
-                      placeholder="Search by contract #, property, type..."
-                      value={contractsSearchTerm}
-                      onChange={(e) => {
-                        setContractsSearchTerm(e.target.value);
-                        setContractsCurrentPage(1);
-                      }}
-                      className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-                </div>
-
-                {/* Table */}
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-border-default">
-                    <thead className="bg-surface-page">
-                      <tr>
-                        <th
-                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                          onClick={() => handleContractsSort('startDate')}
-                        >
-                          <div className="flex items-center gap-1">
-                            Contract #
-                            {contractsSortField === 'startDate' &&
-                              (contractsSortOrder === 'asc' ? (
-                                <ChevronUp className="h-4 w-4" />
-                              ) : (
-                                <ChevronDown className="h-4 w-4" />
-                              ))}
-                          </div>
-                        </th>
-                        <th
-                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                          onClick={() => handleContractsSort('property')}
-                        >
-                          <div className="flex items-center gap-1">
-                            Property
-                            {contractsSortField === 'property' &&
-                              (contractsSortOrder === 'asc' ? (
-                                <ChevronUp className="h-4 w-4" />
-                              ) : (
-                                <ChevronDown className="h-4 w-4" />
-                              ))}
-                          </div>
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                          Role
-                        </th>
-                        <th
-                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                          onClick={() => handleContractsSort('contractType')}
-                        >
-                          <div className="flex items-center gap-1">
-                            Type
-                            {contractsSortField === 'contractType' &&
-                              (contractsSortOrder === 'asc' ? (
-                                <ChevronUp className="h-4 w-4" />
-                              ) : (
-                                <ChevronDown className="h-4 w-4" />
-                              ))}
-                          </div>
-                        </th>
-                        <th
-                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                          onClick={() => handleContractsSort('startDate')}
-                        >
-                          <div className="flex items-center gap-1">
-                            Start Date
-                            {contractsSortField === 'startDate' &&
-                              (contractsSortOrder === 'asc' ? (
-                                <ChevronUp className="h-4 w-4" />
-                              ) : (
-                                <ChevronDown className="h-4 w-4" />
-                              ))}
-                          </div>
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                          End Date
-                        </th>
-                        <th
-                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                          onClick={() => handleContractsSort('rentAmount')}
-                        >
-                          <div className="flex items-center gap-1">
-                            Rent Amount
-                            {contractsSortField === 'rentAmount' &&
-                              (contractsSortOrder === 'asc' ? (
-                                <ChevronUp className="h-4 w-4" />
-                              ) : (
-                                <ChevronDown className="h-4 w-4" />
-                              ))}
-                          </div>
-                        </th>
-                        <th
-                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                          onClick={() => handleContractsSort('status')}
-                        >
-                          <div className="flex items-center gap-1">
-                            Status
-                            {contractsSortField === 'status' &&
-                              (contractsSortOrder === 'asc' ? (
-                                <ChevronUp className="h-4 w-4" />
-                              ) : (
-                                <ChevronDown className="h-4 w-4" />
-                              ))}
-                          </div>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-surface-card divide-y divide-border-default">
-                      {paginatedContracts.length === 0 ? (
-                        <tr>
-                          <td
-                            colSpan={8}
-                            className="px-6 py-12 text-center text-text-secondary"
-                          >
-                            No contracts found matching your search
-                          </td>
-                        </tr>
-                      ) : (
-                        paginatedContracts.map((contract) => (
-                          <tr
-                            key={contract.identifier}
-                            onClick={() =>
-                              navigate(`/contracts/${contract.identifier}`)
-                            }
-                            className="hover:bg-primary-50 cursor-pointer transition-colors"
-                          >
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-primary-500 dark:text-primary-300">
-                                #{contract.identifier}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-text-primary">
-                                {contract.property.street}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              {(() => {
-                                const party = contract.parties?.find(
-                                  (p) => p.contact.identifier === id
-                                );
-                                return party?.role ? (
-                                  <RoleBadge role={party.role} />
-                                ) : (
-                                  <span className="text-sm text-text-muted">
-                                    -
-                                  </span>
-                                );
-                              })()}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-text-primary">
-                                {contract.contractType.replace('_', '')}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-text-primary">
-                                {formatDate(contract.startDate)}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-text-primary">
-                                {(contract.effectiveEndDate ?? contract.endDate)
-                                  ? formatDate(
-                                      (contract.effectiveEndDate ??
-                                        contract.endDate) as string
-                                    )
-                                  : '-'}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-text-primary">
-                                {getCurrencySymbol(contract.rentAmountCurrency)}{' '}
-                                {contract.rentAmount.toFixed(2)}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <ContractStatusBadge status={contract.status} />
-                            </td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-
-                {/* Pagination */}
-                {contractsTotalPages > 1 && (
-                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-border-default">
-                    <div className="text-sm text-text-secondary">
-                      Showing{' '}
-                      {(contractsCurrentPage - 1) * contractsPerPage + 1} to{' '}
-                      {Math.min(
-                        contractsCurrentPage * contractsPerPage,
-                        filteredAndSortedContracts.length
-                      )}{' '}
-                      of {filteredAndSortedContracts.length} contracts
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() =>
-                          setContractsCurrentPage(contractsCurrentPage - 1)
-                        }
-                        disabled={contractsCurrentPage === 1}
-                        className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
-                      >
-                        Previous
-                      </button>
-                      <span className="px-3 py-1 text-sm text-text-secondary">
-                        Page {contractsCurrentPage} of {contractsTotalPages}
-                      </span>
-                      <button
-                        onClick={() =>
-                          setContractsCurrentPage(contractsCurrentPage + 1)
-                        }
-                        disabled={contractsCurrentPage === contractsTotalPages}
-                        className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
-                      >
-                        Next
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        )}
-
-        {activeTab === 'history' && (
-          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-            <h2 className="text-xl font-semibold text-text-primary mb-4">
-              Contact History
-            </h2>
-            {auditLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <LoadingSpinner />
-              </div>
-            ) : auditError ? (
-              <ErrorMessage message="Failed to load history" />
-            ) : auditLog.length > 0 ? (
-              <div className="space-y-4">
-                {auditLog.map((activity) => {
-                  const activityKey = `${activity.entityType}-${activity.entityIdentifier}-${activity.timestamp}`;
-                  const isExpanded = expandedAuditItems.has(activityKey);
-                  const hasChanges =
-                    activity.action === 'UPDATE' &&
-                    activity.changedFields &&
-                    Object.keys(activity.changedFields).length > 0;
-
-                  return (
-                    <div
-                      key={activityKey}
-                      className="border border-border-default rounded-lg overflow-hidden"
-                    >
-                      <div
-                        className={`flex items-start gap-4 p-4 transition-colors ${
-                          hasChanges
-                            ? 'cursor-pointer hover:bg-surface-inset'
-                            : ''
-                        }`}
-                        onClick={() =>
-                          hasChanges &&
-                          setExpandedAuditItems((prev) => {
-                            const newSet = new Set(prev);
-                            if (newSet.has(activityKey)) {
-                              newSet.delete(activityKey);
-                            } else {
-                              newSet.add(activityKey);
-                            }
-                            return newSet;
-                          })
-                        }
-                      >
-                        <div
-                          className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
-                            activity.action === 'CREATE'
-                              ? 'bg-success-bg'
-                              : activity.action === 'UPDATE'
-                                ? 'bg-info-bg'
-                                : 'bg-error-bg'
-                          }`}
-                        >
-                          <span
-                            className={`text-xs font-semibold ${
-                              activity.action === 'CREATE'
-                                ? 'text-success-text'
-                                : activity.action === 'UPDATE'
-                                  ? 'text-info-text'
-                                  : 'text-error-text'
-                            }`}
-                          >
-                            {activity.action.charAt(0)}
-                          </span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-text-primary">
-                            {activity.description}
-                          </p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <p className="text-xs text-text-secondary">
-                              {formatDistanceToNow(
-                                new Date(activity.timestamp),
-                                {
-                                  addSuffix: true,
-                                }
-                              )}
-                            </p>
-                            {activity.impersonatedBy && (
-                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-warning-bg text-warning-text">
-                                <Eye className="h-3 w-3" />
-                                Impersonated
-                              </span>
-                            )}
-                          </div>
-                          {hasChanges && (
-                            <p className="text-xs text-primary-500 mt-1">
-                              {isExpanded
-                                ? 'Click to hide changes'
-                                : 'Click to view changes'}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      {isExpanded && hasChanges && (
-                        <div className="bg-surface-page px-4 py-3 border-t border-border-default">
-                          <h4 className="text-xs font-semibold text-text-secondary mb-2 uppercase">
-                            Changed Fields
-                          </h4>
-                          <div className="space-y-2">
-                            {Object.entries(activity.changedFields ?? {})
-                              .filter(([field]) => field !== 'updatedAt')
-                              .map(([field, value]) => {
-                                // Skip internal count fields
-                                if (
-                                  field === 'documentCount' ||
-                                  field === 'photoCount'
-                                )
-                                  return null;
-
-                                // Skip marker fields for edit operations (fileName is context only)
-                                if (
-                                  field === 'photoEdited' ||
-                                  field === 'documentEdited'
-                                )
-                                  return null;
-                                if (
-                                  field === 'fileName' &&
-                                  (activity.changedFields?.photoEdited ||
-                                    activity.changedFields?.documentEdited)
-                                )
-                                  return null;
-
-                                // Special handling for document/photo upload/delete operations
-                                if (
-                                  field === 'documentAdded' ||
-                                  field === 'documentRemoved' ||
-                                  field === 'photoAdded' ||
-                                  field === 'photoRemoved'
-                                ) {
-                                  const category =
-                                    activity.changedFields?.category;
-                                  const title = activity.changedFields?.title;
-                                  return (
-                                    <div
-                                      key={field}
-                                      className="bg-surface-card rounded p-2 text-xs"
-                                    >
-                                      <div className="font-semibold text-text-secondary mb-1">
-                                        File Name
-                                      </div>
-                                      <div className="text-text-primary">
-                                        {String(value)}
-                                      </div>
-                                      {title ? (
-                                        <>
-                                          <div className="font-semibold text-text-secondary mb-1 mt-2">
-                                            Title
-                                          </div>
-                                          <div className="text-text-primary">
-                                            {String(title)}
-                                          </div>
-                                        </>
-                                      ) : null}
-                                      <div className="font-semibold text-text-secondary mb-1 mt-2">
-                                        Type
-                                      </div>
-                                      <div className="text-text-primary">
-                                        {category === 'PHOTO'
-                                          ? 'Photo'
-                                          : 'Document'}
-                                      </div>
-                                    </div>
-                                  );
-                                }
-
-                                // Skip category and title for upload/delete operations (already shown above)
-                                if (
-                                  (field === 'category' || field === 'title') &&
-                                  (activity.changedFields?.documentAdded ||
-                                    activity.changedFields?.documentRemoved ||
-                                    activity.changedFields?.photoAdded ||
-                                    activity.changedFields?.photoRemoved)
-                                ) {
-                                  return null;
-                                }
-
-                                return (
-                                  <div
-                                    key={field}
-                                    className="bg-surface-card rounded p-2 text-xs"
-                                  >
-                                    <div className="font-semibold text-text-secondary mb-1">
-                                      {field
-                                        .replace(/([A-Z])/g, ' $1')
-                                        .replace(/^./, (str) =>
-                                          str.toUpperCase()
-                                        )
-                                        .trim()}
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-2">
-                                      <div>
-                                        <span className="text-text-secondary">
-                                          Old:{' '}
-                                        </span>
-                                        {typeof activity.oldValues?.[field] ===
-                                          'string' &&
-                                        /<[a-z][\s\S]*>/i.test(
-                                          activity.oldValues[field]
-                                        ) ? (
-                                          <RichTextDisplay
-                                            content={activity.oldValues[field]}
-                                            className="text-xs text-error-text line-through [&_p]:m-0 inline"
-                                          />
-                                        ) : (
-                                          <span className="text-error-text line-through">
-                                            {formatAuditValue(
-                                              activity.oldValues?.[field]
-                                            )}
-                                          </span>
-                                        )}
-                                      </div>
-                                      <div>
-                                        <span className="text-text-secondary">
-                                          New:{' '}
-                                        </span>
-                                        {typeof activity.newValues?.[field] ===
-                                          'string' &&
-                                        /<[a-z][\s\S]*>/i.test(
-                                          activity.newValues[field]
-                                        ) ? (
-                                          <RichTextDisplay
-                                            content={activity.newValues[field]}
-                                            className="text-xs text-success-text font-medium [&_p]:m-0 inline"
-                                          />
-                                        ) : (
-                                          <span className="text-success-text font-medium">
-                                            {formatAuditValue(
-                                              activity.newValues?.[field]
-                                            )}
-                                          </span>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <History className="h-12 w-12 text-text-disabled mx-auto mb-3" />
-                <p className="text-text-secondary">No history available</p>
-                <p className="text-sm text-text-muted mt-1">
-                  Changes to this contact will appear here
-                </p>
-              </div>
-            )}
           </div>
         )}
 
@@ -1203,6 +1028,66 @@ export const ContactDetailPage = () => {
                   isLoading={deleteContactMutation.isPending}
                 >
                   Delete
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* GDPR Erase Confirmation Modal */}
+        {showEraseModal && (
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-surface-card rounded-lg p-6 max-w-md w-full mx-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-error-text">
+                  Permanently erase all personal data?
+                </h3>
+                <button
+                  onClick={() => {
+                    setShowEraseModal(false);
+                    setEraseConfirmText('');
+                  }}
+                  className="text-text-muted hover:text-text-secondary"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <p className="text-text-secondary mb-4">
+                This will permanently erase all personal data for this contact.
+                Financial records linked via contracts are retained for legal
+                compliance. This action cannot be undone.
+              </p>
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-text-primary mb-1">
+                  Type <span className="font-mono font-bold">ERASE</span> to
+                  confirm
+                </label>
+                <input
+                  type="text"
+                  value={eraseConfirmText}
+                  onChange={(e) => setEraseConfirmText(e.target.value)}
+                  placeholder="ERASE"
+                  className="w-full px-3 py-2 border border-border-strong rounded focus:border-error-text focus:ring-1 focus:ring-error-text bg-surface-card text-text-primary"
+                />
+              </div>
+              <div className="flex gap-3 justify-end">
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    setShowEraseModal(false);
+                    setEraseConfirmText('');
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="danger"
+                  leftIcon={<ShieldAlert />}
+                  onClick={handleErase}
+                  disabled={eraseConfirmText !== 'ERASE'}
+                  isLoading={eraseContactMutation.isPending}
+                >
+                  Erase Data
                 </Button>
               </div>
             </div>

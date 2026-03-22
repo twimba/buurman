@@ -16,10 +16,12 @@ public record ContactListItemResponse(
     String displayName,
     Optional<String> firstName,
     Optional<String> lastName,
-    Optional<String> companyName,
     Optional<String> email,
     Optional<String> phone,
+    Optional<String> companyName,
     Optional<String> mainPhotoThumbnailUrl,
     List<ContactTag> tags,
     int activeContractCount,
-    Instant createdAt) {}
+    Optional<String> dataRetentionStatus,
+    Instant createdAt,
+    Optional<Instant> updatedAt) {}

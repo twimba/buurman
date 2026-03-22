@@ -4882,7 +4882,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PageResponseContactResponse'
+                $ref: '#/components/schemas/PageResponseContactListItemResponse'
         "400":
           description: Bad request - validation error or malformed input
           content:
@@ -15073,6 +15073,41 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
+  /booklets/contacts/csv:
+    get:
+      tags:
+        - Booklets
+      summary: Export contacts list to CSV
+      description: Download all contacts for the team as a CSV file
+      operationId: exportContactsCsv
+      responses:
+        "200":
+          description: OK
+          content:
+            "text/csv":
+              schema:
+                type: string
+                format: byte
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
   /booklets/property/{propertyIdentifier}:
     get:
       tags:
@@ -18433,6 +18468,52 @@ components:
           type: string
       required:
         - property
+    ContactListItemResponse:
+      type: object
+      description: Lightweight contact summary for list views with active contract count
+      properties:
+        identifier:
+          type: string
+          description: Unique contact identifier
+          example: cnt_01HZQX7V8B3K5M2N4P6R9T0W
+        contactType:
+          $ref: '#/components/schemas/ContactType'
+        displayName:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        companyName:
+          type: string
+        mainPhotoThumbnailUrl:
+          type: string
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactTag'
+        activeContractCount:
+          type: integer
+          format: int32
+          description: Number of active contracts this contact is party to
+        dataRetentionStatus:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - activeContractCount
+        - contactType
+        - createdAt
+        - displayName
+        - identifier
     ContactResponse:
       type: object
       description: Contact details including contact information and active property assignments
@@ -23281,6 +23362,35 @@ components:
               type: string
       required:
         - policyMatrix
+    PageResponseContactListItemResponse:
+      type: object
+      description: Paginated response wrapper with content and pagination metadata
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/ContactListItemResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
     PageResponseContactResponse:
       type: object
       description: Paginated response wrapper with content and pagination metadata

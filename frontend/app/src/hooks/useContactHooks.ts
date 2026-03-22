@@ -8,7 +8,6 @@ import * as contactsApi from '../api/contacts';
 import {
   CreateContactRequest,
   UpdateContactRequest,
-  LinkContactToPropertyRequest,
   CreateContactAddressRequest,
   UpdateContactAddressRequest,
   CreateContactNoteRequest,
@@ -89,45 +88,6 @@ export const useDeleteContact = () => {
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       showToast('Contact deleted successfully', 'success');
       trackEvent(AnalyticsEvent.CONTACT_DELETED);
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
-  });
-};
-
-export const useLinkContactToProperty = (contactId: string) => {
-  const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: (data: LinkContactToPropertyRequest) =>
-      contactsApi.linkContactToProperty(contactId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contacts'] });
-      queryClient.invalidateQueries({ queryKey: ['contact', contactId] });
-      queryClient.invalidateQueries({
-        queryKey: ['contactAuditLog', contactId],
-      });
-      queryClient.invalidateQueries({ queryKey: ['properties'] });
-    },
-    onError: (error) => {
-      showToast(getErrorMessage(error), 'error');
-    },
-  });
-};
-
-export const useUnlinkContactFromProperty = (contactId: string) => {
-  const queryClient = useQueryClient();
-  const { showToast } = useToast();
-  return useMutation({
-    mutationFn: () => contactsApi.unlinkContactFromProperty(contactId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contacts'] });
-      queryClient.invalidateQueries({ queryKey: ['contact', contactId] });
-      queryClient.invalidateQueries({
-        queryKey: ['contactAuditLog', contactId],
-      });
-      queryClient.invalidateQueries({ queryKey: ['properties'] });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -374,6 +334,10 @@ export const useCreateContactNote = (contactId: string) => {
         queryKey: ['contactAuditLog', contactId],
       });
       showToast('Note created successfully', 'success');
+      trackEvent(AnalyticsEvent.CONTACT_NOTE_CREATED, {
+        interactionType: data.interactionType,
+        hasFollowUp: !!data.followUpDate,
+      });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -493,6 +457,9 @@ export const useCreateContactRelationship = (contactId: string) => {
         queryKey: ['contactAuditLog', contactId],
       });
       showToast('Relationship created successfully', 'success');
+      trackEvent(AnalyticsEvent.CONTACT_RELATIONSHIP_CREATED, {
+        relationshipType: data.relationshipType,
+      });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -573,6 +540,7 @@ export const useAddContactTag = (contactId: string) => {
         queryKey: ['contactAuditLog', contactId],
       });
       showToast('Tag added successfully', 'success');
+      trackEvent(AnalyticsEvent.CONTACT_TAG_ADDED, { tag: data.tag });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -596,6 +564,7 @@ export const useRemoveContactTag = (contactId: string) => {
         queryKey: ['contactAuditLog', contactId],
       });
       showToast('Tag removed successfully', 'success');
+      trackEvent(AnalyticsEvent.CONTACT_TAG_REMOVED, { tag });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -614,5 +583,25 @@ export const useContactActivity = (
     queryFn: () => contactsApi.getContactActivity(contactId ?? '', params),
     enabled: !!contactId,
     placeholderData: keepPreviousData,
+  });
+};
+
+// --- GDPR Erase ---
+
+export const useEraseContactData = () => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (contactId: string) =>
+      contactsApi.eraseContactData(contactId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contacts'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      showToast('Contact data erased', 'success');
+      trackEvent(AnalyticsEvent.CONTACT_DATA_ERASED);
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
   });
 };

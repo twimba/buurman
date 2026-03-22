@@ -49,6 +49,14 @@ public class BookletController implements BookletsApi {
   }
 
   @Override
+  public byte[] exportContactsCsv() {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    httpServletResponse.setHeader("Content-Disposition", "attachment; filename=contacts.csv");
+    httpServletResponse.setContentType("text/csv");
+    return exportService.generateContactsCSV(principal.requireTeamId());
+  }
+
+  @Override
   public byte[] exportContractBooklet(ContractIdentifier contractIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     httpServletResponse.setHeader(

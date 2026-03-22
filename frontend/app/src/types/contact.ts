@@ -210,29 +210,50 @@ export interface PropertyContactHistoryResponse {
 
 // Request interfaces — manual (generated adds to all optional fields)
 
+export type ContactType = 'INDIVIDUAL' | 'COMPANY' | 'SERVICE_PROVIDER';
+
+export const CONTACT_TYPE_LABELS: Record<ContactType, string> = {
+  INDIVIDUAL: 'Individual',
+  COMPANY: 'Company',
+  SERVICE_PROVIDER: 'Service Provider',
+};
+
 export interface CreateContactRequest {
-  firstName: string;
+  contactType: ContactType;
+  firstName?: string;
   lastName?: string;
   email?: string;
   phone?: string;
   taxNumber?: string;
   idNumber?: string;
-  additionalInfo?: string;
+  idExpiryDate?: string;
+  dateOfBirth?: string;
+  companyName?: string;
+  tradeName?: string;
+  industry?: string;
+  website?: string;
+  invoiceEmail?: string;
+  notes?: string;
+  tags?: ContactTag[];
 }
 
 export interface UpdateContactRequest {
-  firstName: string;
+  contactType: ContactType;
+  firstName?: string;
   lastName?: string;
   email?: string;
   phone?: string;
   taxNumber?: string;
   idNumber?: string;
-  additionalInfo?: string;
-}
-
-export interface LinkContactToPropertyRequest {
-  propertyIdentifier: string;
-  movedInAt?: string;
+  idExpiryDate?: string;
+  dateOfBirth?: string;
+  companyName?: string;
+  tradeName?: string;
+  industry?: string;
+  website?: string;
+  invoiceEmail?: string;
+  notes?: string;
+  tags?: ContactTag[];
 }
 
 export interface CreateContactAddressRequest {

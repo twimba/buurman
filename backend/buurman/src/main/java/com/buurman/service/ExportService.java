@@ -38,4 +38,6 @@ public interface ExportService {
   byte[] generatePropertyDashboardExcel(PropertyDashboardResponse dashboard);
 
   byte[] generatePortfolioDashboardExcel(PortfolioDashboardResponse dashboard);
+
+  byte[] generateContactsCSV(UUID teamId);
 }

@@ -38,6 +38,8 @@ import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Contact;
 import com.buurman.domain.ContactAddress;
+import com.buurman.domain.ContactNote;
+import com.buurman.domain.ContactRelationship;
 import com.buurman.domain.ContactTag;
 import com.buurman.domain.ContactType;
 import com.buurman.domain.Contract;
@@ -45,13 +47,17 @@ import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
+import com.buurman.domain.User;
 import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.repository.ContactAddressRepository;
+import com.buurman.repository.ContactNoteRepository;
+import com.buurman.repository.ContactRelationshipRepository;
 import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
+import com.buurman.repository.UserRepository;
 import com.buurman.service.ContractPartyService;
 import com.buurman.service.EffectiveEndDateHelper;
 import com.buurman.util.CurrencyUtils;
@@ -64,6 +70,9 @@ public class ContactBookletExporter {
 
   private final ContactRepository contactRepository;
   private final ContactAddressRepository contactAddressRepository;
+  private final ContactNoteRepository contactNoteRepository;
+  private final ContactRelationshipRepository contactRelationshipRepository;
+  private final UserRepository userRepository;
   private final ContractRepository contractRepository;
   private final ContractExtensionRepository contractExtensionRepository;
   private final PaymentRepository paymentRepository;
@@ -109,6 +118,17 @@ public class ContactBookletExporter {
     Map<UUID, List<ContractExtension>> extensionsByContract =
         allExtensions.stream().collect(Collectors.groupingBy(ContractExtension::getContractId));
 
+    // Notes — most recent 20
+    List<ContactNote> notes =
+        contactNoteRepository.findByContactIdAndTeamId(contact.getId(), teamId).stream()
+            .sorted(Comparator.comparing(ContactNote::getOccurredAt).reversed())
+            .limit(20)
+            .toList();
+
+    // Relationships
+    List<ContactRelationship> relationships =
+        contactRelationshipRepository.findByContactIdAndTeamId(contact.getId(), teamId);
+
     String html =
         buildHtml(
             contact,
@@ -117,7 +137,10 @@ public class ContactBookletExporter {
             allPayments,
             propertyMap,
             contractRoles,
-            extensionsByContract);
+            extensionsByContract,
+            notes,
+            relationships,
+            teamId);
     return pdfRenderer.renderHtml(html);
   }
 
@@ -130,7 +153,10 @@ public class ContactBookletExporter {
       List<Payment> allPayments,
       Map<UUID, Property> propertyMap,
       Map<UUID, ContractPartyRole> contractRoles,
-      Map<UUID, List<ContractExtension>> extensionsByContract) {
+      Map<UUID, List<ContractExtension>> extensionsByContract,
+      List<ContactNote> notes,
+      List<ContactRelationship> relationships,
+      UUID teamId) {
     DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH);
     DateTimeFormatter shortFmt = DateTimeFormatter.ofPattern("MMM d, yyyy");
     String generatedDate = LocalDate.now(clock).format(dateFmt);
@@ -185,6 +211,8 @@ public class ContactBookletExporter {
     appendRentalHistoryPage(
         html, contracts, propertyMap, contractRoles, extensionsByContract, shortFmt);
     appendPaymentHistoryPage(html, allPayments, shortFmt);
+    appendNotesPage(html, notes, contact, shortFmt);
+    appendRelationshipsPage(html, relationships, contact, teamId);
 
     appendDocumentEnd(html);
     return html.toString();
@@ -616,6 +644,115 @@ public class ContactBookletExporter {
           .append("'>")
           .append(formatEnumValue(payStatus))
           .append("</span></td>");
+      html.append("</tr>");
+    }
+
+    html.append("</tbody></table>");
+    appendPageEnd(html);
+  }
+
+  // -- Page: Notes ---
+
+  private void appendNotesPage(
+      StringBuilder html,
+      List<ContactNote> notes,
+      Contact contact,
+      DateTimeFormatter dateFmt) {
+    if (notes.isEmpty()) {
+      return;
+    }
+
+    appendPageStart(html, "Notes");
+
+    // Batch-load user names for note authors
+    List<UUID> creatorIds = notes.stream().map(ContactNote::getCreatedBy).distinct().toList();
+    Map<UUID, String> userNames = new HashMap<>();
+    for (UUID userId : creatorIds) {
+      userRepository.findById(userId)
+          .ifPresent(user -> userNames.put(userId, user.getFullName()));
+    }
+
+    for (ContactNote note : notes) {
+      html.append("<div style='margin-bottom:12px;padding:10px;border:1px solid #e5e7eb;border-radius:6px;'>");
+      html.append("<div style='display:flex;justify-content:space-between;margin-bottom:4px;'>");
+      html.append("<span style='font-size:11px;color:#6b7280;'>");
+      html.append(escapeHtml(note.getInteractionType().getDisplayName()));
+      if (note.isPinned()) {
+        html.append(" &bull; Pinned");
+      }
+      html.append("</span>");
+      html.append("<span style='font-size:11px;color:#6b7280;'>");
+      html.append(note.getOccurredAt().atZone(java.time.ZoneId.systemDefault()).toLocalDate().format(dateFmt));
+      String authorName = userNames.getOrDefault(note.getCreatedBy(), "Unknown");
+      html.append(" &bull; ").append(escapeHtml(authorName));
+      html.append("</span>");
+      html.append("</div>");
+
+      note.getSubject().filter(s -> !s.isBlank()).ifPresent(subject -> {
+        html.append("<div style='font-weight:600;font-size:12px;margin-bottom:4px;'>");
+        html.append(escapeHtml(subject));
+        html.append("</div>");
+      });
+
+      String body = sanitizeRichText(note.getBody());
+      if (body.length() > 500) {
+        body = body.substring(0, 500) + "...";
+      }
+      html.append("<div style='font-size:11px;color:#374151;'>").append(body).append("</div>");
+      html.append("</div>");
+    }
+
+    appendPageEnd(html);
+  }
+
+  // -- Page: Relationships ---
+
+  private void appendRelationshipsPage(
+      StringBuilder html,
+      List<ContactRelationship> relationships,
+      Contact contact,
+      UUID teamId) {
+    if (relationships.isEmpty()) {
+      return;
+    }
+
+    appendPageStart(html, "Relationships");
+
+    // Bulk-load related contacts
+    List<UUID> relatedIds = relationships.stream()
+        .map(rel -> rel.getSourceContactId().equals(contact.getId())
+            ? rel.getTargetContactId()
+            : rel.getSourceContactId())
+        .distinct()
+        .toList();
+    Map<UUID, String> contactNames = new HashMap<>();
+    for (UUID id : relatedIds) {
+      contactRepository.findByIdAndTeamId(id, teamId)
+          .ifPresent(c -> contactNames.put(id, c.getDisplayName()));
+    }
+
+    html.append("<table class='payment-table'>");
+    html.append("<thead><tr>");
+    html.append("<th>Related Contact</th><th>Relationship</th><th>Notes</th>");
+    html.append("</tr></thead><tbody>");
+
+    for (ContactRelationship rel : relationships) {
+      UUID relatedContactId;
+      String displayLabel;
+      if (rel.getSourceContactId().equals(contact.getId())) {
+        relatedContactId = rel.getTargetContactId();
+        displayLabel = rel.getRelationshipType().getDisplayName();
+      } else {
+        relatedContactId = rel.getSourceContactId();
+        displayLabel = rel.getRelationshipType().inverseDisplayName();
+      }
+
+      String relatedName = escapeHtml(contactNames.getOrDefault(relatedContactId, "Unknown"));
+
+      html.append("<tr>");
+      html.append("<td>").append(relatedName).append("</td>");
+      html.append("<td>").append(escapeHtml(displayLabel)).append("</td>");
+      html.append("<td>").append(rel.getNotes().map(BookletHelper::escapeHtml).orElse("—")).append("</td>");
       html.append("</tr>");
     }
 

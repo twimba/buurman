@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Contact;
+import com.buurman.domain.ContactType;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
@@ -82,6 +83,8 @@ public class ContractPartyService {
             request.contactIdentifier().map(ContactIdentifier::of).orElse(null),
             request.newContact().orElse(null),
             principal);
+
+    validateContactTypeForRole(contact, request.role());
 
     if (contractPartyRepository.existsByContractIdAndContactIdAndTeamId(
         contract.getId(), contact.getId(), teamId)) {
@@ -188,6 +191,8 @@ public class ContractPartyService {
             request.newContact().orElse(null),
             principal);
 
+    validateContactTypeForRole(newContact, ContractPartyRole.PRIMARY_TENANT);
+
     // Find current primary contact
     ContractParty currentPrimary =
         contractPartyRepository.getPrimaryContactByContractIdAndTeamId(contract.getId(), teamId);
@@ -266,6 +271,8 @@ public class ContractPartyService {
               partyReq.contactIdentifier().map(ContactIdentifier::of).orElse(null),
               partyReq.newContact().orElse(null),
               principal);
+
+      validateContactTypeForRole(contact, partyReq.role());
 
       if (!seenContactIds.add(contact.getId())) {
         String contactName = contact.getDisplayName();
@@ -426,6 +433,28 @@ public class ContractPartyService {
           created.identifier(), principal.requireTeamId());
     }
     throw new IllegalArgumentException("Either contactIdentifier or newContact must be provided");
+  }
+
+  private void validateContactTypeForRole(Contact contact, ContractPartyRole role) {
+    switch (contact.getContactType()) {
+      case SERVICE_PROVIDER -> throw new IllegalArgumentException(
+          "Service providers cannot be added as contract parties");
+      case INDIVIDUAL -> {
+        if (role == ContractPartyRole.CORPORATE_TENANT
+            || role == ContractPartyRole.AUTHORIZED_REPRESENTATIVE) {
+          throw new IllegalArgumentException(
+              "Individual contacts cannot have role: " + role.getDisplayName());
+        }
+      }
+      case COMPANY -> {
+        if (role == ContractPartyRole.PRIMARY_TENANT
+            || role == ContractPartyRole.EXTRA_TENANT) {
+          throw new IllegalArgumentException(
+              "Company contacts cannot have role: " + role.getDisplayName()
+              + ". Use CORPORATE_TENANT instead.");
+        }
+      }
+    }
   }
 
   private void validateContractEditable(Contract contract) {

@@ -3,7 +3,6 @@ import {
   ContactResponse,
   CreateContactRequest,
   UpdateContactRequest,
-  LinkContactToPropertyRequest,
   PropertyContactHistoryResponse,
   ContactAddressResponse,
   CreateContactAddressRequest,
@@ -50,26 +49,6 @@ export const updateContact = async (
 
 export const deleteContact = async (id: string): Promise<void> => {
   await client.delete(`/contacts/${id}`);
-};
-
-export const linkContactToProperty = async (
-  contactId: string,
-  data: LinkContactToPropertyRequest
-): Promise<ContactResponse> => {
-  const response = await client.post(
-    `/contacts/${contactId}/link-property`,
-    data
-  );
-  return response.data;
-};
-
-export const unlinkContactFromProperty = async (
-  contactId: string
-): Promise<ContactResponse> => {
-  const response = await client.post(
-    `/contacts/${contactId}/unlink-property`
-  );
-  return response.data;
 };
 
 export const getContactHistory = async (
@@ -341,4 +320,12 @@ export const checkContactDuplicates = async (
 ): Promise<{ matches: Array<{ contact: { identifier: string; firstName: string; lastName?: string; email?: string; phone?: string }; matchField: string; matchType: string }> }> => {
   const response = await client.post('/contacts/check-duplicates', data);
   return response.data;
+};
+
+// --- GDPR Erase ---
+
+export const eraseContactData = async (
+  contactId: string
+): Promise<void> => {
+  await client.post(`/contacts/${contactId}/erase`);
 };

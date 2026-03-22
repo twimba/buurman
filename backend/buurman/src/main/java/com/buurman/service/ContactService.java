@@ -19,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.domain.Contact;
 import com.buurman.domain.ContactAddress;
-import com.buurman.domain.ContactNote;
 import com.buurman.domain.ContactTag;
 import com.buurman.domain.ContactType;
 import com.buurman.exception.BadRequestException;
@@ -42,6 +41,7 @@ import com.buurman.dto.request.UpdateContactAddressRequest;
 import com.buurman.dto.request.UpdateContactRequest;
 import com.buurman.dto.response.ContactAddressResponse;
 import com.buurman.dto.response.ContactActivityItem;
+import com.buurman.dto.response.ContactListItemResponse;
 import com.buurman.dto.response.ContactPropertyAssignment;
 import com.buurman.dto.response.ContactResponse;
 import com.buurman.dto.response.DocumentResponse;
@@ -55,6 +55,7 @@ import com.buurman.repository.ContactAddressRepository;
 import com.buurman.repository.ContactNoteRepository;
 import com.buurman.repository.ContactRelationshipRepository;
 import com.buurman.repository.ContactRepository;
+import com.buurman.repository.ContactRepository.ContactWithCount;
 import com.buurman.repository.ContactTagRepository;
 import com.buurman.repository.ContractPartyRepository;
 import com.buurman.repository.ContractRepository;
@@ -108,6 +109,8 @@ public class ContactService {
                               "Contact with email " + email + " already exists");
                         }));
 
+    validateContactRequest(request.contactType(), request.firstName(), request.companyName());
+
     Contact contact = contactMapper.toEntity(request);
     contact.setIdentifier(Optional.of(newContactId()));
     contact.setTeamId(principal.requireTeamId());
@@ -144,16 +147,58 @@ public class ContactService {
     return contacts.stream().map(contact -> toResponse(contact, principal.requireTeamId())).toList();
   }
 
-  public PageResponse<ContactResponse> getContactsPaginated(
+  public PageResponse<ContactListItemResponse> getContactsPaginated(
       UserPrincipal principal, @Nullable String search, PageRequest pageRequest) {
-    PaginatedResult<Contact> result =
-        contactRepository.findAllByTeamIdPaginated(principal.requireTeamId(), search, pageRequest);
-    List<ContactResponse> responses =
+    UUID teamId = principal.requireTeamId();
+    PaginatedResult<ContactWithCount> result =
+        contactRepository.findAllByTeamIdPaginatedWithCounts(teamId, search, pageRequest);
+
+    // Batch-load tags for all contacts on the page
+    List<UUID> contactIds =
+        result.items().stream().map(cwc -> cwc.contact().getId()).toList();
+    Map<UUID, List<ContactTag>> tagsByContactId =
+        contactTagRepository.findByContactIdsGrouped(contactIds);
+
+    // Batch-load main photo thumbnails for all contacts on the page
+    Map<UUID, Optional<String>> thumbnailsByContactId =
+        resolveMainPhotoThumbnails(contactIds, teamId);
+
+    List<ContactListItemResponse> responses =
         result.items().stream()
-            .map(contact -> toResponse(contact, principal.requireTeamId()))
+            .map(cwc -> {
+              Contact contact = cwc.contact();
+              List<ContactTag> tags =
+                  tagsByContactId.getOrDefault(contact.getId(), List.of());
+              Optional<String> thumbnailUrl =
+                  thumbnailsByContactId.getOrDefault(contact.getId(), Optional.empty());
+              return contactMapper.toListItem(
+                  contact, cwc.activeContractCount(), tags, thumbnailUrl);
+            })
             .toList();
     return PageResponse.of(
         responses, pageRequest.page(), pageRequest.size(), result.totalElements());
+  }
+
+  private Map<UUID, Optional<String>> resolveMainPhotoThumbnails(
+      List<UUID> contactIds, UUID teamId) {
+    if (contactIds.isEmpty()) {
+      return Map.of();
+    }
+    Map<UUID, Optional<String>> result = new java.util.HashMap<>();
+    for (UUID contactId : contactIds) {
+      List<Photo> photos =
+          photoRepository.findByEntityAndTeamId("CONTACT", contactId, teamId);
+      Optional<String> thumbnailUrl =
+          photos.stream()
+              .filter(Photo::getIsMainPhoto)
+              .findFirst()
+              .map(photo -> {
+                String key = photo.getThumbnailFileKey().orElse(photo.getFileKey());
+                return s3StorageService.generatePresignedUrl(key).toString();
+              });
+      result.put(contactId, thumbnailUrl);
+    }
+    return result;
   }
 
   public ContactResponse getContact(ContactIdentifier identifier, UserPrincipal principal) {
@@ -185,9 +230,17 @@ public class ContactService {
                           }
                         }));
 
+    validateContactRequest(request.contactType(), request.firstName(), request.companyName());
+
+    // Clear irrelevant fields when contact type changes
+    UpdateContactRequest effectiveRequest = request;
+    if (contact.getContactType() != request.contactType()) {
+      effectiveRequest = clearFieldsForTypeChange(request);
+    }
+
     Contact oldContact = cloneContact(contact);
-    contactMapper.updateEntity(contact, request);
-    contact.setDisplayName(computeDisplayName(request.contactType(), request));
+    contactMapper.updateEntity(contact, effectiveRequest);
+    contact.setDisplayName(computeDisplayName(effectiveRequest.contactType(), effectiveRequest));
     contact.setUpdatedBy(principal.getUserId());
 
     Contact updatedContact = contactRepository.save(contact);
@@ -244,68 +297,11 @@ public class ContactService {
     UUID teamId = principal.requireTeamId();
     Contact contact = contactRepository.getByIdentifierAndTeamId(identifier, teamId);
 
-    List<ContactActivityItem> auditItems =
-        auditService.getEntityAuditLog(teamId, "CONTACT", contact.getId()).stream()
-            .map(this::auditEntryToActivityItem)
-            .toList();
+    PaginatedResult<ContactActivityItem> result =
+        contactRepository.findActivityByContactIdPaginated(contact.getId(), teamId, pageRequest);
 
-    List<ContactNote> notes = contactNoteRepository.findByContactIdAndTeamId(contact.getId(), teamId);
-    List<ContactActivityItem> noteItems =
-        notes.stream().map(this::noteToActivityItem).toList();
-
-    List<ContactActivityItem> merged = new ArrayList<>();
-    merged.addAll(auditItems);
-    merged.addAll(noteItems);
-    merged.sort((a, b) -> b.occurredAt().compareTo(a.occurredAt()));
-
-    int total = merged.size();
-    int offset = pageRequest.page() * pageRequest.size();
-    int toIndex = Math.min(offset + pageRequest.size(), total);
-    List<ContactActivityItem> page =
-        (offset >= total) ? List.of() : List.copyOf(merged.subList(offset, toIndex));
-
-    return PageResponse.of(page, pageRequest.page(), pageRequest.size(), total);
-  }
-
-  private ContactActivityItem auditEntryToActivityItem(RecentActivityResponse activity) {
-    return new ContactActivityItem(
-        "AUDIT",
-        activity.timestamp(),
-        activity.description().orElse(activity.action()),
-        Optional.of(activity.entityIdentifier()),
-        Optional.of(activity.entityType()),
-        Optional.empty(),
-        Optional.empty(),
-        Optional.empty(),
-        Optional.empty(),
-        Optional.empty(),
-        activity.userName());
-  }
-
-  private ContactActivityItem noteToActivityItem(ContactNote note) {
-    String createdByName =
-        userRepository
-            .findById(note.getCreatedBy())
-            .map(User::getFullName)
-            .orElse("Unknown User");
-
-    String description =
-        note.getSubject()
-            .filter(s -> !s.isBlank())
-            .orElseGet(() -> note.getInteractionType().getDisplayName() + " note");
-
-    return new ContactActivityItem(
-        "NOTE",
-        note.getOccurredAt(),
-        description,
-        Optional.empty(),
-        Optional.empty(),
-        note.getIdentifier(),
-        Optional.of(note.getInteractionType()),
-        Optional.of(note.getBody()),
-        note.getSubject(),
-        Optional.of(note.isPinned()),
-        Optional.of(createdByName));
+    return PageResponse.of(
+        result.items(), pageRequest.page(), pageRequest.size(), result.totalElements());
   }
 
   public DocumentResponse uploadDocument(
@@ -684,20 +680,54 @@ public class ContactService {
       @Nullable String firstName,
       @Nullable String lastName,
       @Nullable String companyName) {
-    if (contactType == ContactType.COMPANY) {
-      return companyName != null ? companyName : "";
-    }
-    StringBuilder sb = new StringBuilder();
-    if (firstName != null && !firstName.isBlank()) {
-      sb.append(firstName);
-    }
-    if (lastName != null && !lastName.isBlank()) {
-      if (!sb.isEmpty()) {
-        sb.append(" ");
+    return switch (contactType) {
+      case INDIVIDUAL -> {
+        String first = firstName != null ? firstName : "";
+        String last = lastName != null ? lastName : "";
+        yield (first + " " + last).trim();
       }
-      sb.append(lastName);
+      case COMPANY, SERVICE_PROVIDER -> {
+        if (companyName == null || companyName.isBlank()) {
+          throw new BadRequestException("Company name is required for " + contactType);
+        }
+        yield companyName;
+      }
+    };
+  }
+
+  private UpdateContactRequest clearFieldsForTypeChange(UpdateContactRequest request) {
+    return switch (request.contactType()) {
+      case INDIVIDUAL -> new UpdateContactRequest(
+          request.contactType(), request.firstName(), request.lastName(),
+          Optional.empty(), Optional.empty(), Optional.empty(),
+          request.email(), Optional.empty(), request.phone(),
+          Optional.empty(), request.taxNumber(), request.idNumber(),
+          request.dateOfBirth(), request.idExpiryDate(), request.notes(), request.tags());
+      case COMPANY, SERVICE_PROVIDER -> new UpdateContactRequest(
+          request.contactType(), request.firstName(), request.lastName(),
+          request.companyName(), request.tradeName(), request.industry(),
+          request.email(), request.invoiceEmail(), request.phone(),
+          request.website(), request.taxNumber(), Optional.empty(),
+          Optional.empty(), Optional.empty(), request.notes(), request.tags());
+    };
+  }
+
+  private void validateContactRequest(ContactType contactType,
+      Optional<String> firstName, Optional<String> companyName) {
+    switch (contactType) {
+      case INDIVIDUAL -> {
+        if (firstName.isEmpty() || firstName.get().isBlank()) {
+          throw new BadRequestException(
+              "firstName is required for INDIVIDUAL contacts");
+        }
+      }
+      case COMPANY, SERVICE_PROVIDER -> {
+        if (companyName.isEmpty() || companyName.get().isBlank()) {
+          throw new BadRequestException(
+              "companyName is required for COMPANY/SERVICE_PROVIDER contacts");
+        }
+      }
     }
-    return sb.toString();
   }
 
   private Contact cloneContact(Contact contact) {

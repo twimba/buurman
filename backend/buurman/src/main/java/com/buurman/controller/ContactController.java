@@ -26,6 +26,7 @@ import com.buurman.dto.request.UpdateContactRequest;
 import com.buurman.dto.response.ContactAddressResponse;
 import com.buurman.dto.response.ContactNoteResponse;
 import com.buurman.dto.response.ContactRelationshipResponse;
+import com.buurman.dto.response.ContactListItemResponse;
 import com.buurman.dto.response.ContactResponse;
 import com.buurman.dto.response.DocumentResponse;
 import com.buurman.dto.response.DuplicateCheckResponse;

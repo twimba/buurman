@@ -291,6 +291,7 @@
                                 <schemaMapping>PageResponseContractResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <schemaMapping>PageResponseExpenseResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <schemaMapping>PageResponsePaymentResponse=com.buurman.dto.response.PageResponse</schemaMapping>
+                                <schemaMapping>PageResponseContactListItemResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <schemaMapping>PageResponseContactResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <schemaMapping>PageResponseContactActivityItem=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <schemaMapping>PageResponseNotificationResponse=com.buurman.dto.response.PageResponse</schemaMapping>
@@ -336,6 +337,7 @@
                                 <schemaMapping>DataTakeoutIdentifier=com.buurman.domain.identifier.DataTakeoutIdentifier</schemaMapping>
                                 <schemaMapping>PageResponseTakeoutResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <!-- BUUR-77: Contact schema mappings -->
+                                <schemaMapping>ContactListItemResponse=com.buurman.dto.response.ContactListItemResponse</schemaMapping>
                                 <schemaMapping>ContactResponse=com.buurman.dto.response.ContactResponse</schemaMapping>
                                 <schemaMapping>ContactAddressResponse=com.buurman.dto.response.ContactAddressResponse</schemaMapping>
                                 <schemaMapping>ContactSummary=com.buurman.dto.response.ContactSummary</schemaMapping>
@@ -439,6 +441,7 @@
                                 <importMapping>TeamResponse=com.buurman.dto.response.TeamResponse</importMapping>
                                 <importMapping>ContactAddressResponse=com.buurman.dto.response.ContactAddressResponse</importMapping>
                                 <importMapping>ContactPropertyAssignment=com.buurman.dto.response.ContactPropertyAssignment</importMapping>
+                                <importMapping>ContactListItemResponse=com.buurman.dto.response.ContactListItemResponse</importMapping>
                                 <importMapping>ContactResponse=com.buurman.dto.response.ContactResponse</importMapping>
                                 <importMapping>ContactSummary=com.buurman.dto.response.ContactSummary</importMapping>
                                 <importMapping>ContactNoteResponse=com.buurman.dto.response.ContactNoteResponse</importMapping>

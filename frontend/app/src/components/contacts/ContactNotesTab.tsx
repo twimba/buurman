@@ -42,6 +42,8 @@ import {
   StickyNote,
   MoreHorizontal,
   Calendar,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -98,16 +100,19 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
   );
   const [deleteNoteId, setDeleteNoteId] = useState<string | null>(null);
   const [form, setForm] = useState<NoteFormData>(emptyForm());
+  const [showDateSection, setShowDateSection] = useState(false);
 
   const handleOpenCreate = () => {
     setEditingNote(null);
     setForm(emptyForm());
+    setShowDateSection(false);
     setShowFormModal(true);
   };
 
   const handleOpenEdit = (note: ContactNoteResponse) => {
     setEditingNote(note);
     setForm(noteToForm(note));
+    setShowDateSection(!!note.followUpDate);
     setShowFormModal(true);
   };
 
@@ -115,6 +120,7 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
     setShowFormModal(false);
     setEditingNote(null);
     setForm(emptyForm());
+    setShowDateSection(false);
   };
 
   const handleSubmit = async () => {
@@ -321,36 +327,25 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
         }
       >
         <div className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <FormField label="Interaction Type" required>
-              <Select
-                value={form.interactionType}
-                onChange={(e) =>
-                  setForm((f) => ({
-                    ...f,
-                    interactionType: e.target.value as InteractionType,
-                  }))
-                }
-              >
-                {Object.entries(INTERACTION_TYPE_LABELS).map(
-                  ([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  )
-                )}
-              </Select>
-            </FormField>
-            <FormField label="Occurred At" required>
-              <Input
-                type="datetime-local"
-                value={form.occurredAt}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, occurredAt: e.target.value }))
-                }
-              />
-            </FormField>
-          </div>
+          <FormField label="Interaction Type" required>
+            <Select
+              value={form.interactionType}
+              onChange={(e) =>
+                setForm((f) => ({
+                  ...f,
+                  interactionType: e.target.value as InteractionType,
+                }))
+              }
+            >
+              {Object.entries(INTERACTION_TYPE_LABELS).map(
+                ([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                )
+              )}
+            </Select>
+          </FormField>
           <FormField label="Subject">
             <Input
               value={form.subject}
@@ -367,15 +362,43 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
               placeholder="Write your note..."
             />
           </FormField>
-          <FormField label="Follow-up Date">
-            <Input
-              type="date"
-              value={form.followUpDate}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, followUpDate: e.target.value }))
-              }
-            />
-          </FormField>
+
+          {/* Collapsed date section */}
+          <button
+            type="button"
+            onClick={() => setShowDateSection(!showDateSection)}
+            className="flex items-center gap-1.5 text-sm text-primary-500 hover:text-primary-600 transition-colors"
+          >
+            <Calendar className="h-4 w-4" />
+            Set date & follow-up
+            {showDateSection ? (
+              <ChevronUp className="h-3.5 w-3.5" />
+            ) : (
+              <ChevronDown className="h-3.5 w-3.5" />
+            )}
+          </button>
+          {showDateSection && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pl-6 border-l-2 border-primary-200">
+              <FormField label="Date of interaction" required>
+                <Input
+                  type="datetime-local"
+                  value={form.occurredAt}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, occurredAt: e.target.value }))
+                  }
+                />
+              </FormField>
+              <FormField label="Follow-up date">
+                <Input
+                  type="date"
+                  value={form.followUpDate}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, followUpDate: e.target.value }))
+                  }
+                />
+              </FormField>
+            </div>
+          )}
         </div>
       </ModalWrapper>
 

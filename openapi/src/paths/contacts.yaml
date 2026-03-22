@@ -495,7 +495,7 @@ collection:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PageResponseContactResponse'
+              $ref: '#/components/schemas/PageResponseContactListItemResponse'
       "400":
         description: Bad request - validation error or malformed input
         content:
