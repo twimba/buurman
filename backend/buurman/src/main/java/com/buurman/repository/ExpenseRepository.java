@@ -96,6 +96,23 @@ public class ExpenseRepository {
         .toList();
   }
 
+  public List<Expense> findByContactIdAndTeamId(UUID contactId, UUID teamId) {
+    return dsl
+        .selectFrom(EXPENSES)
+        .where(
+            EXPENSES
+                .CONTACT_ID
+                .eq(contactId)
+                .and(EXPENSES.TEAM_ID.eq(teamId))
+                .and(EXPENSES.DELETED_AT.isNull()))
+        .orderBy(EXPENSES.EXPENSE_DATE.desc())
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .flatMap(Optional::stream)
+        .toList();
+  }
+
   public List<Expense> findByCategory(Expense.ExpenseCategory category, UUID teamId) {
     return dsl
         .selectFrom(EXPENSES)
@@ -156,6 +173,7 @@ public class ExpenseRepository {
           .set(EXPENSES.EXPENSE_DATE, expense.getExpenseDate())
           .set(EXPENSES.DESCRIPTION, expense.getDescription())
           .set(EXPENSES.NOTES, expense.getNotes().orElse(null))
+          .set(EXPENSES.CONTACT_ID, expense.getContactId().orElse(null))
           .set(EXPENSES.CREATED_AT, createdAt)
           .set(EXPENSES.UPDATED_AT, updatedAt)
           .set(EXPENSES.CREATED_BY, expense.getCreatedBy())
@@ -179,6 +197,7 @@ public class ExpenseRepository {
           .set(EXPENSES.EXPENSE_DATE, expense.getExpenseDate())
           .set(EXPENSES.DESCRIPTION, expense.getDescription())
           .set(EXPENSES.NOTES, expense.getNotes().orElse(null))
+          .set(EXPENSES.CONTACT_ID, expense.getContactId().orElse(null))
           .set(EXPENSES.UPDATED_AT, updatedAt)
           .set(EXPENSES.UPDATED_BY, expense.getUpdatedBy())
           .where(EXPENSES.ID.eq(expense.getId()).and(EXPENSES.TEAM_ID.eq(expense.getTeamId())))
@@ -194,6 +213,7 @@ public class ExpenseRepository {
       UUID teamId,
       @Nullable String category,
       @Nullable UUID propertyId,
+      @Nullable UUID contactId,
       @Nullable LocalDate dateFrom,
       @Nullable LocalDate dateTo,
       PageRequest pageRequest) {
@@ -203,6 +223,9 @@ public class ExpenseRepository {
     }
     if (propertyId != null) {
       condition = condition.and(EXPENSES.PROPERTY_ID.eq(propertyId));
+    }
+    if (contactId != null) {
+      condition = condition.and(EXPENSES.CONTACT_ID.eq(contactId));
     }
     if (dateFrom != null) {
       condition = condition.and(EXPENSES.EXPENSE_DATE.ge(dateFrom));

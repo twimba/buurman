@@ -28,12 +28,14 @@ import com.buurman.config.models.AppProperties;
 import com.buurman.domain.AmountStats;
 import com.buurman.domain.Expense;
 import com.buurman.domain.Property;
+import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ExpenseIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.CreateExpenseRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateExpenseRequest;
 import com.buurman.dto.response.BulkCreateResult;
+import com.buurman.dto.response.ContactSummary;
 import com.buurman.dto.response.DocumentResponse;
 import com.buurman.dto.response.ExpenseResponse;
 import com.buurman.dto.response.ExpenseStatsResponse;
@@ -41,8 +43,10 @@ import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.PropertySummary;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.exception.BadRequestException;
+import com.buurman.mapper.ContactMapper;
 import com.buurman.mapper.ExpenseMapper;
 import com.buurman.mapper.PropertyMapper;
+import com.buurman.repository.ContactRepository;
 import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.ExpenseRepository;
 import com.buurman.repository.PropertyRepository;
@@ -64,9 +68,11 @@ public class ExpenseService {
 
   private final ExpenseRepository expenseRepository;
   private final PropertyRepository propertyRepository;
+  private final ContactRepository contactRepository;
   private final DocumentRepository documentRepository;
   private final ExpenseMapper expenseMapper;
   private final PropertyMapper propertyMapper;
+  private final ContactMapper contactMapper;
   private final CurrencyEnforcementService currencyEnforcement;
   private final AuditService auditService;
   private final DocumentService documentService;
@@ -138,8 +144,18 @@ public class ExpenseService {
         propertyRepository.getByIdentifierAndTeamId(
             request.propertyIdentifier(), principal.requireTeamId());
 
+    Optional<UUID> contactId =
+        request
+            .contactIdentifier()
+            .map(
+                cid ->
+                    contactRepository
+                        .getByIdentifierAndTeamId(cid, principal.requireTeamId())
+                        .getId());
+
     Expense expense = expenseMapper.toEntity(request);
     expense.setPropertyId(property.getId());
+    expense.setContactId(contactId);
     expense.setIdentifier(Optional.of(newExpenseId()));
     expense.setTeamId(principal.requireTeamId());
     expense.setCreatedBy(principal.getUserId());
@@ -194,12 +210,19 @@ public class ExpenseService {
       UserPrincipal principal,
       @Nullable String category,
       @Nullable UUID propertyId,
+      @Nullable UUID contactId,
       @Nullable LocalDate dateFrom,
       @Nullable LocalDate dateTo,
       PageRequest pageRequest) {
     PaginatedResult<Expense> result =
         expenseRepository.findAllByTeamIdPaginated(
-            principal.requireTeamId(), category, propertyId, dateFrom, dateTo, pageRequest);
+            principal.requireTeamId(),
+            category,
+            propertyId,
+            contactId,
+            dateFrom,
+            dateTo,
+            pageRequest);
     List<ExpenseResponse> responses =
         result.items().stream()
             .map(expense -> enrichExpenseResponse(expense, principal.requireTeamId()))
@@ -210,6 +233,10 @@ public class ExpenseService {
 
   public UUID resolvePropertyId(PropertyIdentifier propertyIdentifier, UUID teamId) {
     return propertyRepository.getByIdentifierAndTeamId(propertyIdentifier, teamId).getId();
+  }
+
+  public UUID resolveContactId(ContactIdentifier contactIdentifier, UUID teamId) {
+    return contactRepository.getByIdentifierAndTeamId(contactIdentifier, teamId).getId();
   }
 
   public ExpenseStatsResponse getExpenseStats(UserPrincipal principal) {
@@ -280,6 +307,16 @@ public class ExpenseService {
     ExpenseResponse oldState = enrichExpenseResponse(expense, principal.requireTeamId());
 
     expenseMapper.updateEntity(expense, request);
+    request
+        .contactIdentifier()
+        .ifPresent(
+            cid -> {
+              UUID resolvedContactId =
+                  contactRepository
+                      .getByIdentifierAndTeamId(cid, principal.requireTeamId())
+                      .getId();
+              expense.setContactId(Optional.of(resolvedContactId));
+            });
     expense.setUpdatedBy(principal.getUserId());
     expense.setUpdatedAt(clock.instant());
     request
@@ -450,6 +487,13 @@ public class ExpenseService {
             .map(propertyMapper::toSummary)
             .orElse(null);
 
+    // Enrich with contact summary
+    Optional<ContactSummary> contactSummary =
+        expense
+            .getContactId()
+            .flatMap(cid -> contactRepository.findByIdAndTeamId(cid, teamId))
+            .map(contactMapper::toSummary);
+
     // Get attached documents
     List<DocumentResponse> documents =
         documentRepository.findByEntityAndTeamId("EXPENSE", expense.getId(), teamId).stream()
@@ -459,6 +503,7 @@ public class ExpenseService {
     return new ExpenseResponse(
         response.identifier(),
         Optional.ofNullable(propertySummary),
+        contactSummary,
         response.category(),
         response.amount(),
         response.currency(),

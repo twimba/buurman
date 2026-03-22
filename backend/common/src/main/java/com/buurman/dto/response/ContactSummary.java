@@ -3,6 +3,7 @@ package com.buurman.dto.response;
 import java.util.Optional;
 
 import com.buurman.domain.ContactType;
+import com.buurman.domain.DataRetentionStatus;
 import com.buurman.domain.Sid;
 import com.buurman.util.Generated;
 
@@ -14,4 +15,5 @@ public record ContactSummary(
     Optional<String> firstName,
     Optional<String> lastName,
     Optional<String> email,
-    Optional<String> phone) {}
+    Optional<String> phone,
+    DataRetentionStatus dataRetentionStatus) {}

@@ -31,6 +31,7 @@ import { ContactNotesTab } from '@/components/contacts/ContactNotesTab';
 import { ContactActivityTab } from '@/components/contacts/ContactActivityTab';
 import { ContactRelationshipsTab } from '@/components/contacts/ContactRelationshipsTab';
 import { ContactTagsTab } from '@/components/contacts/ContactTagsTab';
+import { ContactFinancialsTab } from '@/components/contacts/ContactFinancialsTab';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
 import {
   ContractStatus,
@@ -57,6 +58,7 @@ import {
   Activity,
   Users,
   FolderOpen,
+  Wallet,
   AlertCircle,
   Calendar,
   Building2,
@@ -91,6 +93,7 @@ const TAB_IDS = [
   'overview',
   'notes',
   'activity',
+  'financials',
   'relationships',
   'files',
   'addresses',
@@ -493,6 +496,17 @@ export const ContactDetailPage = () => {
             >
               <Activity className="h-4 w-4" />
               Activity
+            </button>
+            <button
+              onClick={() => setActiveTab('financials')}
+              className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
+                activeTab === 'financials'
+                  ? 'border-b-2 border-primary-500 text-primary-500 dark:text-primary-300'
+                  : 'text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              <Wallet className="h-4 w-4" />
+              Financials
             </button>
             <button
               onClick={() => setActiveTab('relationships')}
@@ -990,6 +1004,11 @@ export const ContactDetailPage = () => {
             <ContactNotesTab contactId={id} />
             <ContactActivityTab contactId={id} />
           </div>
+        )}
+
+        {/* ===== Tab: Financials ===== */}
+        {activeTab === 'financials' && (
+          <ContactFinancialsTab contactIdentifier={id} />
         )}
 
         {/* ===== Tab 3: Relationships ===== */}

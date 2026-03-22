@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.Payment.PaymentStatus;
+import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.util.Generated;
 
 import jakarta.validation.constraints.Positive;
@@ -15,4 +16,5 @@ public record UpdatePaymentRequest(
     Optional<String> currency,
     Optional<LocalDate> dueDate,
     Optional<PaymentStatus> status,
-    Optional<String> notes) {}
+    Optional<String> notes,
+    Optional<ContactIdentifier> contactIdentifier) {}

@@ -3,6 +3,7 @@ import { X, CalendarCheck } from 'lucide-react';
 import { CreatePaymentRequest } from '@/types/payment';
 import { MoneyInput } from '@/components/common/MoneyInput';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
+import { ContactSelector } from '@/components/common/ContactSelector';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 
 interface RegisterPaymentFormProps {
@@ -32,6 +33,7 @@ export const RegisterPaymentForm = ({
     currency: defaultCurrency || '',
     paymentDate: new Date().toISOString().split('T')[0],
     notes: '',
+    contactIdentifier: undefined as string | undefined,
   });
 
   useEffect(() => {
@@ -55,6 +57,7 @@ export const RegisterPaymentForm = ({
       amount: 0,
       paymentDate: new Date().toISOString().split('T')[0],
       notes: '',
+      contactIdentifier: undefined,
     }));
     setErrors({});
     /* eslint-enable react-hooks/set-state-in-effect */
@@ -85,6 +88,7 @@ export const RegisterPaymentForm = ({
     }
     await onSubmit({
       contractIdentifier,
+      contactIdentifier: formData.contactIdentifier,
       amount: formData.amount,
       currency: formData.currency,
       dueDate: formData.paymentDate,
@@ -167,6 +171,36 @@ export const RegisterPaymentForm = ({
         {errors.paymentDate && (
           <p className="mt-1 text-sm text-error-text">{errors.paymentDate}</p>
         )}
+      </div>
+
+      {/* Contact (optional) */}
+      <div>
+        <label className="block text-sm font-medium text-text-secondary mb-2">
+          Contact
+        </label>
+        <div className="flex gap-2">
+          <div className="flex-1">
+            <ContactSelector
+              value={formData.contactIdentifier}
+              onChange={(value) =>
+                setFormData({ ...formData, contactIdentifier: value })
+              }
+              disabled={isLoading}
+            />
+          </div>
+          {formData.contactIdentifier && (
+            <button
+              type="button"
+              onClick={() =>
+                setFormData({ ...formData, contactIdentifier: undefined })
+              }
+              className="px-3 py-2 text-sm bg-surface-inset hover:bg-neutral-100 border border-border-strong rounded-md transition-colors"
+              disabled={isLoading}
+            >
+              Clear
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Notes */}

@@ -18,6 +18,7 @@ public interface ExpenseMapper {
   @Mapping(target = "identifier", ignore = true)
   @Mapping(target = "teamId", ignore = true)
   @Mapping(target = "propertyId", ignore = true)
+  @Mapping(target = "contactId", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
   @Mapping(target = "createdBy", ignore = true)
@@ -29,6 +30,7 @@ public interface ExpenseMapper {
   Expense toEntity(CreateExpenseRequest request);
 
   @Mapping(target = "property", ignore = true)
+  @Mapping(target = "contact", ignore = true)
   @Mapping(target = "documents", ignore = true)
   @Mapping(target = "amount", expression = "java(expense.getAmount().value())")
   @Mapping(target = "currency", expression = "java(expense.getAmount().currency())")
@@ -39,6 +41,7 @@ public interface ExpenseMapper {
   @Mapping(target = "identifier", ignore = true)
   @Mapping(target = "teamId", ignore = true)
   @Mapping(target = "propertyId", ignore = true)
+  @Mapping(target = "contactId", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
   @Mapping(target = "createdBy", ignore = true)

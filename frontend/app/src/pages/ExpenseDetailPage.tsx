@@ -32,6 +32,7 @@ import {
   Package,
   History,
   Eye,
+  User,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useFormatDate } from '@/hooks/useFormatDate';
@@ -88,6 +89,7 @@ export const ExpenseDetailPage = () => {
 
   const handleUpdate = async (data: CreateExpenseRequest) => {
     const updateData: UpdateExpenseRequest = {
+      contactIdentifier: data.contactIdentifier,
       category: data.category,
       amount: data.amount,
       currency: data.currency,
@@ -252,10 +254,10 @@ export const ExpenseDetailPage = () => {
                 </div>
               </div>
 
-              {/* Property Info */}
+              {/* Property & Contact Info */}
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
                 <h2 className="text-lg font-semibold text-text-primary mb-4">
-                  Property Information
+                  Property & Contact
                 </h2>
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
@@ -273,6 +275,34 @@ export const ExpenseDetailPage = () => {
                       <p className="text-xs text-text-secondary mt-1">
                         #{expense.property.identifier}
                       </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <User className="h-5 w-5 text-text-muted mt-1" />
+                    <div className="flex-1">
+                      <p className="text-sm text-text-secondary">Contact</p>
+                      {expense.contact ? (
+                        <>
+                          <button
+                            onClick={() =>
+                              navigate(
+                                `/contacts/${expense.contact!.identifier}`
+                              )
+                            }
+                            className="font-medium text-primary-500 hover:underline text-left"
+                          >
+                            {expense.contact.firstName}{' '}
+                            {expense.contact.lastName}
+                          </button>
+                          <p className="text-xs text-text-secondary mt-1">
+                            #{expense.contact.identifier}
+                          </p>
+                        </>
+                      ) : (
+                        <p className="text-sm text-text-muted">
+                          No contact linked
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>

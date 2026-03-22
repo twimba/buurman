@@ -1,4 +1,5 @@
 import { PropertySummary, DocumentResponse } from './property';
+import { ContactSummary } from './contact';
 
 // Enum — re-exported from generated
 export {
@@ -14,6 +15,7 @@ import { ExpenseResponseCategory } from '../generated/models';
 
 export interface CreateExpenseRequest {
   propertyIdentifier: string;
+  contactIdentifier?: string;
   category: ExpenseResponseCategory;
   amount: number;
   currency?: string;
@@ -23,6 +25,7 @@ export interface CreateExpenseRequest {
 }
 
 export interface UpdateExpenseRequest {
+  contactIdentifier?: string;
   category?: ExpenseResponseCategory;
   amount?: number;
   currency?: string;
@@ -34,6 +37,7 @@ export interface UpdateExpenseRequest {
 export interface ExpenseResponse {
   identifier: string;
   property: PropertySummary;
+  contact?: ContactSummary;
   category: ExpenseResponseCategory;
   amount: number;
   currency: string;
@@ -61,6 +65,7 @@ export interface CategoryTotal {
 export interface GetExpensesParams {
   category?: ExpenseResponseCategory;
   propertyIdentifier?: string;
+  contactIdentifier?: string;
   dateFrom?: string;
   dateTo?: string;
 }

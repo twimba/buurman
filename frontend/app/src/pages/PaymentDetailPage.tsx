@@ -404,6 +404,7 @@ export const PaymentDetailPage = () => {
 
   const handleUpdate = async (data: CreatePaymentRequest) => {
     const updateData: UpdatePaymentRequest = {
+      contactIdentifier: data.contactIdentifier,
       amount: data.amount,
       currency: data.currency,
       dueDate: data.dueDate,

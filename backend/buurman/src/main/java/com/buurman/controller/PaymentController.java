@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.PaymentIdentifier;
@@ -69,6 +70,7 @@ public class PaymentController implements PaymentsApi {
       Optional<String> status,
       Optional<String> contractIdentifier,
       Optional<String> propertyIdentifier,
+      Optional<String> contactIdentifier,
       Optional<LocalDate> dateFrom,
       Optional<LocalDate> dateTo,
       Optional<Integer> page,
@@ -84,6 +86,7 @@ public class PaymentController implements PaymentsApi {
         status.orElse(null),
         contractIdentifier.map(ContractIdentifier::of).orElse(null),
         propertyIdentifier.map(PropertyIdentifier::of).orElse(null),
+        contactIdentifier.map(ContactIdentifier::of).orElse(null),
         dateFrom.orElse(null),
         dateTo.orElse(null),
         pageRequest);

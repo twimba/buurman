@@ -8,6 +8,7 @@ import {
 } from '@/types/expense';
 import { MoneyInput } from '@/components/common/MoneyInput';
 import { PropertySelector } from '@/components/common/PropertySelector';
+import { ContactSelector } from '@/components/common/ContactSelector';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 
@@ -38,6 +39,7 @@ export const ExpenseForm = ({
   const [formData, setFormData] = useState<CreateExpenseRequest>({
     propertyIdentifier:
       prefilledPropertyId || expense?.property.identifier || '',
+    contactIdentifier: expense?.contact?.identifier,
     category: expense?.category ?? ExpenseCategory.MAINTENANCE,
     amount: expense?.amount ?? 0,
     currency: expense?.currency || defaultCurrency || '',
@@ -51,6 +53,7 @@ export const ExpenseForm = ({
     setLastSyncedExpense(expense);
     setFormData({
       propertyIdentifier: expense.property.identifier,
+      contactIdentifier: expense.contact?.identifier,
       category: expense.category,
       amount: expense.amount,
       currency: expense.currency,
@@ -78,6 +81,7 @@ export const ExpenseForm = ({
     /* eslint-disable react-hooks/set-state-in-effect */
     setFormData((prev) => ({
       ...prev,
+      contactIdentifier: undefined,
       amount: 0,
       expenseDate: '',
       description: '',
@@ -181,6 +185,39 @@ export const ExpenseForm = ({
             </option>
           ))}
         </select>
+      </div>
+
+      {/* Contact (optional) */}
+      <div>
+        <label className="block text-sm font-medium text-text-secondary mb-2">
+          Contact
+        </label>
+        <div className="flex gap-2 items-center">
+          <div className="flex-1">
+            <ContactSelector
+              value={formData.contactIdentifier}
+              onChange={(selected) =>
+                setFormData({
+                  ...formData,
+                  contactIdentifier: selected || undefined,
+                })
+              }
+              disabled={isLoading}
+            />
+          </div>
+          {formData.contactIdentifier && (
+            <button
+              type="button"
+              onClick={() =>
+                setFormData({ ...formData, contactIdentifier: undefined })
+              }
+              className="px-2 py-2 text-sm text-text-secondary hover:text-error-text border border-border-strong rounded-md hover:bg-surface-inset transition-colors"
+              disabled={isLoading}
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Amount */}

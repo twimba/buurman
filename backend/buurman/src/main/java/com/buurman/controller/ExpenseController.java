@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.ExpenseIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
@@ -57,6 +58,7 @@ public class ExpenseController implements ExpensesApi {
   public PageResponse getExpenses(
       Optional<String> category,
       Optional<String> propertyIdentifier,
+      Optional<String> contactIdentifier,
       Optional<LocalDate> dateFrom,
       Optional<LocalDate> dateTo,
       Optional<Integer> page,
@@ -73,10 +75,17 @@ public class ExpenseController implements ExpensesApi {
           expenseService.resolvePropertyId(
               PropertyIdentifier.of(propertyIdentifier.get()), principal.requireTeamId());
     }
+    UUID contactId = null;
+    if (contactIdentifier.isPresent()) {
+      contactId =
+          expenseService.resolveContactId(
+              ContactIdentifier.of(contactIdentifier.get()), principal.requireTeamId());
+    }
     return expenseService.getExpensesPaginated(
         principal,
         category.orElse(null),
         propertyId,
+        contactId,
         dateFrom.orElse(null),
         dateTo.orElse(null),
         pageRequest);

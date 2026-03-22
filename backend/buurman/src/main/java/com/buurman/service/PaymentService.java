@@ -46,6 +46,7 @@ import com.buurman.domain.Document;
 import com.buurman.domain.Payment;
 import com.buurman.domain.PaymentReceival;
 import com.buurman.domain.Property;
+import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.PaymentIdentifier;
@@ -179,8 +180,14 @@ public class PaymentService {
     boolean markAsPaid = request.markAsPaid().orElse(false);
     LocalDate paymentDate = markAsPaid ? request.paymentDate().orElse(LocalDate.now(clock)) : null;
 
+    Optional<UUID> contactId =
+        request
+            .contactIdentifier()
+            .map(cid -> contactRepository.getByIdentifierAndTeamId(cid, teamId).getId());
+
     Payment payment = paymentMapper.toEntity(request);
     payment.setContractId(contract.getId());
+    payment.setContactId(contactId);
     payment.setIdentifier(Optional.of(newPaymentId()));
     payment.setTeamId(teamId);
     payment.setStatus(markAsPaid ? PAID : PENDING);
@@ -269,6 +276,7 @@ public class PaymentService {
       @Nullable String status,
       @Nullable ContractIdentifier contractIdentifier,
       @Nullable PropertyIdentifier propertyIdentifier,
+      @Nullable ContactIdentifier contactIdentifier,
       @Nullable LocalDate dateFrom,
       @Nullable LocalDate dateTo,
       PageRequest pageRequest) {
@@ -286,12 +294,19 @@ public class PaymentService {
               propertyIdentifier, principal.requireTeamId());
       propertyId = property.getId();
     }
+    UUID contactId = null;
+    if (contactIdentifier != null) {
+      var contact =
+          contactRepository.getByIdentifierAndTeamId(contactIdentifier, principal.requireTeamId());
+      contactId = contact.getId();
+    }
     PaginatedResult<Payment> result =
         paymentRepository.findAllByTeamIdPaginated(
             principal.requireTeamId(),
             status,
             contractId,
             propertyId,
+            contactId,
             dateFrom,
             dateTo,
             pageRequest);
@@ -361,6 +376,14 @@ public class PaymentService {
     PaymentResponse oldState = enrichPaymentResponse(payment, teamId);
 
     paymentMapper.updateEntity(payment, request);
+    request
+        .contactIdentifier()
+        .ifPresent(
+            cid -> {
+              UUID resolvedContactId =
+                  contactRepository.getByIdentifierAndTeamId(cid, teamId).getId();
+              payment.setContactId(Optional.of(resolvedContactId));
+            });
     payment.setUpdatedBy(principal.getUserId());
     payment.setUpdatedAt(clock.instant());
 
@@ -973,6 +996,19 @@ public class PaymentService {
     Map<UUID, Contact> primaryContactByContract =
         contractPartyService.getPrimaryContactsForContracts(contractIds, teamId);
 
+    // Batch-fetch explicit contacts assigned to payments
+    Set<UUID> explicitContactIds =
+        payments.stream()
+            .map(Payment::getContactId)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(toSet());
+    Map<UUID, Contact> explicitContactsById =
+        explicitContactIds.isEmpty()
+            ? Map.of()
+            : contactRepository.findByIdsAndTeamId(explicitContactIds, teamId).stream()
+                .collect(toMap(Contact::getId, identity()));
+
     // Batch-fetch documents for all payments
     List<com.buurman.domain.Document> allDocs =
         documentRepository.findByEntityTypeAndEntityIdsAndTeamId("PAYMENT", paymentIds, teamId);
@@ -1000,7 +1036,12 @@ public class PaymentService {
 
       if (contract != null) {
         Property property = propertiesById.get(contract.getPropertyId());
-        Contact contact = primaryContactByContract.get(contract.getId());
+        // Prefer explicit contact on payment, fall back to contract's primary contact
+        Contact contact =
+            payment
+                .getContactId()
+                .map(explicitContactsById::get)
+                .orElseGet(() -> primaryContactByContract.get(contract.getId()));
         if (property != null) {
           propertySummary = propertyMapper.toSummary(property);
         }
@@ -1072,8 +1113,12 @@ public class PaymentService {
               .orElse(null);
 
       ContactSummary contactSummary =
-          contractPartyService
-              .findPrimaryContactForContract(contract.getId(), teamId)
+          payment
+              .getContactId()
+              .flatMap(cid -> contactRepository.findByIdAndTeamId(cid, teamId))
+              .or(
+                  () ->
+                      contractPartyService.findPrimaryContactForContract(contract.getId(), teamId))
               .map(contactMapper::toSummary)
               .orElse(null);
 
@@ -1138,10 +1183,10 @@ public class PaymentService {
     }
     if (!CurrencyUtils.isAmountValidForCurrency(amount, currencyCode)) {
       int allowed = CurrencyUtils.getFractionalDigits(currencyCode);
-      throw new BusinessRuleException(
-          String.format(
-              "%s amounts cannot have more than %d decimal place%s",
-              currencyCode, allowed, allowed == 1 ? "" : "s"));
+      String msg =
+          "%s amounts cannot have more than %d decimal place%s"
+              .formatted(currencyCode, allowed, allowed == 1 ? "" : "s");
+      throw new BusinessRuleException(msg);
     }
   }
 }

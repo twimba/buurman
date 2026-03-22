@@ -3,6 +3,7 @@ import { X, Calendar, Save, Info } from 'lucide-react';
 import { PaymentResponse, CreatePaymentRequest } from '@/types/payment';
 import { MoneyInput } from '@/components/common/MoneyInput';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
+import { ContactSelector } from '@/components/common/ContactSelector';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 import { useCurrencies, getFractionalDigits } from '@/hooks/useCurrencies';
 import { useRentPeriods } from '@/hooks/useRentPeriodHooks';
@@ -38,6 +39,7 @@ export const PaymentForm = ({
     CreatePaymentRequest & { paymentDate?: string }
   >({
     contractIdentifier: contractIdentifier,
+    contactIdentifier: payment?.contact?.identifier ?? undefined,
     amount: payment?.amount ?? 0,
     currency: payment?.currency || defaultCurrency || '',
     dueDate: payment?.dueDate ?? new Date().toISOString().split('T')[0],
@@ -50,6 +52,7 @@ export const PaymentForm = ({
     setLastSyncedPayment(payment);
     setFormData({
       contractIdentifier: payment.contract.identifier,
+      contactIdentifier: payment.contact?.identifier ?? undefined,
       amount: payment.amount,
       currency: payment.currency,
       dueDate: payment.dueDate,
@@ -76,6 +79,7 @@ export const PaymentForm = ({
     /* eslint-disable react-hooks/set-state-in-effect */
     setFormData((prev) => ({
       ...prev,
+      contactIdentifier: undefined,
       amount: 0,
       dueDate: new Date().toISOString().split('T')[0],
       notes: '',
@@ -275,6 +279,36 @@ export const PaymentForm = ({
           </div>
         </div>
       )}
+
+      {/* Contact (optional) */}
+      <div>
+        <label className="block text-sm font-medium text-text-secondary mb-2">
+          Contact
+        </label>
+        <div className="flex gap-2">
+          <div className="flex-1">
+            <ContactSelector
+              value={formData.contactIdentifier}
+              onChange={(value) =>
+                setFormData({ ...formData, contactIdentifier: value })
+              }
+              disabled={isLoading}
+            />
+          </div>
+          {formData.contactIdentifier && (
+            <button
+              type="button"
+              onClick={() =>
+                setFormData({ ...formData, contactIdentifier: undefined })
+              }
+              className="px-3 py-2 text-sm bg-surface-inset hover:bg-neutral-100 border border-border-strong rounded-md transition-colors"
+              disabled={isLoading}
+            >
+              Clear
+            </button>
+          )}
+        </div>
+      </div>
 
       {/* Notes */}
       <div>

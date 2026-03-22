@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.util.Generated;
 
@@ -19,4 +20,5 @@ public record CreatePaymentRequest(
     @NotNull(message = "Due date is required") LocalDate dueDate,
     Optional<String> notes,
     Optional<Boolean> markAsPaid,
-    Optional<LocalDate> paymentDate) {}
+    Optional<LocalDate> paymentDate,
+    Optional<ContactIdentifier> contactIdentifier) {}

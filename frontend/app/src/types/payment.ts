@@ -16,6 +16,7 @@ import type { PaymentResponseStatus } from '../generated/models';
 
 export interface CreatePaymentRequest {
   contractIdentifier: string;
+  contactIdentifier?: string;
   amount: number;
   currency?: string;
   dueDate: string;
@@ -25,6 +26,7 @@ export interface CreatePaymentRequest {
 }
 
 export interface UpdatePaymentRequest {
+  contactIdentifier?: string;
   amount?: number;
   currency?: string;
   dueDate?: string;
@@ -94,6 +96,7 @@ export interface GetPaymentsParams {
   status?: PaymentResponseStatus | 'OVERDUE';
   contractIdentifier?: string;
   propertyIdentifier?: string;
+  contactIdentifier?: string;
   dateFrom?: string;
   dateTo?: string;
 }
