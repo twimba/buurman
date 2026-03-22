@@ -222,6 +222,7 @@ body {
 .icon-blue { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
 .icon-green { background: linear-gradient(135deg, var(--success), var(--success-dark)); }
 .icon-amber { background: linear-gradient(135deg, #f59f00, #e67700); }
+.icon-gradient { background: linear-gradient(135deg, var(--primary), #f59f00, var(--success)); }
 
 /* ── Gradient Text ───────────────────────────────── */
 .gradient-text {

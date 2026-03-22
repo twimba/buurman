@@ -392,6 +392,11 @@
     margin-bottom: 1.5rem;
 }
 
+.feature-card--teaser {
+    border: 2px dashed var(--primary);
+    background: linear-gradient(135deg, rgba(2,132,199,0.02), rgba(16,185,129,0.02));
+}
+
 .feature-illustration {
     width: 100%;
     border-radius: var(--radius);
