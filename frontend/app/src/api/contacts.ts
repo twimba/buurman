@@ -8,6 +8,14 @@ import {
   ContactAddressResponse,
   CreateContactAddressRequest,
   UpdateContactAddressRequest,
+  ContactNoteResponse,
+  CreateContactNoteRequest,
+  UpdateContactNoteRequest,
+  ContactRelationshipResponse,
+  CreateContactRelationshipRequest,
+  UpdateContactRelationshipRequest,
+  AddContactTagRequest,
+  ContactActivityItem,
 } from '../types/contact';
 import { DocumentResponse, PhotoResponse } from '../types/property';
 import { RecentActivity } from './dashboard';
@@ -197,4 +205,140 @@ export const deleteContactAddress = async (
   addressId: string
 ): Promise<void> => {
   await client.delete(`/contacts/${contactId}/addresses/${addressId}`);
+};
+
+// --- Contact Notes ---
+
+export const getContactNotes = async (
+  contactId: string
+): Promise<ContactNoteResponse[]> => {
+  const response = await client.get(`/contacts/${contactId}/notes`);
+  return response.data;
+};
+
+export const createContactNote = async (
+  contactId: string,
+  data: CreateContactNoteRequest
+): Promise<ContactNoteResponse> => {
+  const response = await client.post(`/contacts/${contactId}/notes`, data);
+  return response.data;
+};
+
+export const updateContactNote = async (
+  contactId: string,
+  noteId: string,
+  data: UpdateContactNoteRequest
+): Promise<ContactNoteResponse> => {
+  const response = await client.put(
+    `/contacts/${contactId}/notes/${noteId}`,
+    data
+  );
+  return response.data;
+};
+
+export const deleteContactNote = async (
+  contactId: string,
+  noteId: string
+): Promise<void> => {
+  await client.delete(`/contacts/${contactId}/notes/${noteId}`);
+};
+
+export const pinContactNote = async (
+  contactId: string,
+  noteId: string
+): Promise<ContactNoteResponse> => {
+  const response = await client.post(
+    `/contacts/${contactId}/notes/${noteId}/pin`
+  );
+  return response.data;
+};
+
+export const unpinContactNote = async (
+  contactId: string,
+  noteId: string
+): Promise<ContactNoteResponse> => {
+  const response = await client.post(
+    `/contacts/${contactId}/notes/${noteId}/unpin`
+  );
+  return response.data;
+};
+
+// --- Contact Relationships ---
+
+export const getContactRelationships = async (
+  contactId: string
+): Promise<ContactRelationshipResponse[]> => {
+  const response = await client.get(`/contacts/${contactId}/relationships`);
+  return response.data;
+};
+
+export const createContactRelationship = async (
+  contactId: string,
+  data: CreateContactRelationshipRequest
+): Promise<ContactRelationshipResponse> => {
+  const response = await client.post(
+    `/contacts/${contactId}/relationships`,
+    data
+  );
+  return response.data;
+};
+
+export const updateContactRelationship = async (
+  contactId: string,
+  relationshipId: string,
+  data: UpdateContactRelationshipRequest
+): Promise<ContactRelationshipResponse> => {
+  const response = await client.put(
+    `/contacts/${contactId}/relationships/${relationshipId}`,
+    data
+  );
+  return response.data;
+};
+
+export const deleteContactRelationship = async (
+  contactId: string,
+  relationshipId: string
+): Promise<void> => {
+  await client.delete(
+    `/contacts/${contactId}/relationships/${relationshipId}`
+  );
+};
+
+// --- Contact Tags ---
+
+export const addContactTag = async (
+  contactId: string,
+  data: AddContactTagRequest
+): Promise<ContactResponse> => {
+  const response = await client.post(`/contacts/${contactId}/tags`, data);
+  return response.data;
+};
+
+export const removeContactTag = async (
+  contactId: string,
+  tag: string
+): Promise<ContactResponse> => {
+  const response = await client.delete(`/contacts/${contactId}/tags/${tag}`);
+  return response.data;
+};
+
+// --- Contact Activity ---
+
+export const getContactActivity = async (
+  contactId: string,
+  params?: PageParams
+): Promise<PageResponse<ContactActivityItem>> => {
+  const response = await client.get(`/contacts/${contactId}/activity`, {
+    params,
+  });
+  return response.data;
+};
+
+// --- Duplicate Check ---
+
+export const checkContactDuplicates = async (
+  data: CreateContactRequest
+): Promise<{ matches: Array<{ contact: { identifier: string; firstName: string; lastName?: string; email?: string; phone?: string }; matchField: string; matchType: string }> }> => {
+  const response = await client.post('/contacts/check-duplicates', data);
+  return response.data;
 };

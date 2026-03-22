@@ -11,6 +11,11 @@ import {
   LinkContactToPropertyRequest,
   CreateContactAddressRequest,
   UpdateContactAddressRequest,
+  CreateContactNoteRequest,
+  UpdateContactNoteRequest,
+  CreateContactRelationshipRequest,
+  UpdateContactRelationshipRequest,
+  AddContactTagRequest,
 } from '../types/contact';
 import type { PageParams } from '@/types/common';
 import { useToast } from '../context/ToastContext';
@@ -339,5 +344,275 @@ export const useDeleteContactAddress = (contactId: string) => {
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
     },
+  });
+};
+
+// --- Contact Notes ---
+
+export const useContactNotes = (contactId: string | undefined) => {
+  return useQuery({
+    queryKey: ['contactNotes', contactId],
+    queryFn: () => contactsApi.getContactNotes(contactId ?? ''),
+    enabled: !!contactId,
+  });
+};
+
+export const useCreateContactNote = (contactId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (data: CreateContactNoteRequest) =>
+      contactsApi.createContactNote(contactId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['contactNotes', contactId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['contactActivity', contactId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['contactAuditLog', contactId],
+      });
+      showToast('Note created successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const useUpdateContactNote = (
+  contactId: string,
+  noteId: string
+) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (data: UpdateContactNoteRequest) =>
+      contactsApi.updateContactNote(contactId, noteId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['contactNotes', contactId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['contactActivity', contactId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['contactAuditLog', contactId],
+      });
+      showToast('Note updated successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const useDeleteContactNote = (contactId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (noteId: string) =>
+      contactsApi.deleteContactNote(contactId, noteId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['contactNotes', contactId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['contactActivity', contactId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['contactAuditLog', contactId],
+      });
+      showToast('Note deleted successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const usePinContactNote = (contactId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (noteId: string) =>
+      contactsApi.pinContactNote(contactId, noteId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['contactNotes', contactId],
+      });
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const useUnpinContactNote = (contactId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (noteId: string) =>
+      contactsApi.unpinContactNote(contactId, noteId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['contactNotes', contactId],
+      });
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+// --- Contact Relationships ---
+
+export const useContactRelationships = (contactId: string | undefined) => {
+  return useQuery({
+    queryKey: ['contactRelationships', contactId],
+    queryFn: () => contactsApi.getContactRelationships(contactId ?? ''),
+    enabled: !!contactId,
+  });
+};
+
+export const useCreateContactRelationship = (contactId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (data: CreateContactRelationshipRequest) =>
+      contactsApi.createContactRelationship(contactId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['contactRelationships', contactId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['contactActivity', contactId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['contactAuditLog', contactId],
+      });
+      showToast('Relationship created successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const useUpdateContactRelationship = (
+  contactId: string,
+  relationshipId: string
+) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (data: UpdateContactRelationshipRequest) =>
+      contactsApi.updateContactRelationship(
+        contactId,
+        relationshipId,
+        data
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['contactRelationships', contactId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['contactActivity', contactId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['contactAuditLog', contactId],
+      });
+      showToast('Relationship updated successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const useDeleteContactRelationship = (contactId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (relationshipId: string) =>
+      contactsApi.deleteContactRelationship(contactId, relationshipId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['contactRelationships', contactId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['contactActivity', contactId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['contactAuditLog', contactId],
+      });
+      showToast('Relationship deleted successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+// --- Contact Tags ---
+
+export const useAddContactTag = (contactId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (data: AddContactTagRequest) =>
+      contactsApi.addContactTag(contactId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contact', contactId] });
+      queryClient.invalidateQueries({ queryKey: ['contacts'] });
+      queryClient.invalidateQueries({
+        queryKey: ['contactActivity', contactId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['contactAuditLog', contactId],
+      });
+      showToast('Tag added successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const useRemoveContactTag = (contactId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: (tag: string) =>
+      contactsApi.removeContactTag(contactId, tag),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contact', contactId] });
+      queryClient.invalidateQueries({ queryKey: ['contacts'] });
+      queryClient.invalidateQueries({
+        queryKey: ['contactActivity', contactId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['contactAuditLog', contactId],
+      });
+      showToast('Tag removed successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+// --- Contact Activity ---
+
+export const useContactActivity = (
+  contactId: string | undefined,
+  params?: PageParams
+) => {
+  return useQuery({
+    queryKey: ['contactActivity', contactId, params],
+    queryFn: () => contactsApi.getContactActivity(contactId ?? '', params),
+    enabled: !!contactId,
+    placeholderData: keepPreviousData,
   });
 };
