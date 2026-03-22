@@ -34,19 +34,25 @@ mkdir -p "$LOCK_DIR"
 LOCK_FILE="$LOCK_DIR/w${WS}.lock"
 
 if [ -f "$LOCK_FILE" ]; then
-  echo "ERROR: Workspace ${WS} is already reserved ($(cat "$LOCK_FILE"))"
-  echo ""
-  echo "Available workspaces:"
-  for n in $(seq 1 9); do
-    if [ ! -f "$LOCK_DIR/w${n}.lock" ]; then
-      echo "  $n"
-    fi
-  done
-  exit 1
+  EXISTING="$(cat "$LOCK_FILE")"
+  if [ "$EXISTING" = "$PROJECT_DIR" ]; then
+    echo "Re-running setup for workspace ${WS} (already reserved by this directory)"
+  else
+    echo "ERROR: Workspace ${WS} is already reserved by a different directory:"
+    echo "  $EXISTING"
+    echo ""
+    echo "Available workspaces:"
+    for n in $(seq 1 9); do
+      if [ ! -f "$LOCK_DIR/w${n}.lock" ]; then
+        echo "  $n"
+      fi
+    done
+    exit 1
+  fi
+else
+  echo "$PROJECT_DIR" > "$LOCK_FILE"
+  echo "Reserved workspace ${WS} (lock: $LOCK_FILE)"
 fi
-
-echo "$PROJECT_DIR" > "$LOCK_FILE"
-echo "Reserved workspace ${WS} (lock: $LOCK_FILE)"
 
 # --- Port Calculations ---
 HTTPS_PORT=$((443 + WS * 1000))
@@ -349,6 +355,9 @@ echo "  make backend"
 echo "Start frontends app (in other terminals):"
 echo "  make frontend-app"
 echo "  make frontend-backoffice"
+echo ""
+echo "Buurman Hub (workspace directory dashboard):"
+echo "  make hub                → http://localhost:3333"
 echo ""
 echo "Base URLs:"
 echo "  https://${HP}<application>.local.buurman.io${PORT_SUFFIX}"

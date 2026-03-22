@@ -4,18 +4,31 @@ set -euo pipefail
 echo "Starting workspace setup..."
 
 # ---------------------------------------------------------------------------
-# Step 1: Pick an available workspace number (1-9) via lock files
+# Step 1: Find workspace number — reuse existing lock or pick first available
 # ---------------------------------------------------------------------------
 LOCK_DIR="$HOME/.buurman/workspaces"
 mkdir -p "$LOCK_DIR"
+PROJECT_DIR="$(pwd)"
 
+# Check if this directory already owns a workspace lock
 WS=""
 for n in $(seq 1 9); do
-  if [ ! -f "$LOCK_DIR/w${n}.lock" ]; then
+  if [ -f "$LOCK_DIR/w${n}.lock" ] && [ "$(cat "$LOCK_DIR/w${n}.lock")" = "$PROJECT_DIR" ]; then
     WS=$n
+    echo "Re-using existing workspace $WS (already reserved by this directory)"
     break
   fi
 done
+
+# If not found, pick the first available number
+if [ -z "$WS" ]; then
+  for n in $(seq 1 9); do
+    if [ ! -f "$LOCK_DIR/w${n}.lock" ]; then
+      WS=$n
+      break
+    fi
+  done
+fi
 
 if [ -z "$WS" ]; then
   echo "ERROR: All workspace numbers (1-9) are reserved."
@@ -182,6 +195,7 @@ printf "  ${DIM}│${RESET} ${GREEN}%-${QLT}s${RESET} ${DIM}│${RESET} %-${QRT}
 printf "  ${DIM}│${RESET} ${GREEN}%-${QLT}s${RESET} ${DIM}│${RESET} %-${QRT}s ${DIM}│${RESET}\n" "make backend"              "Start Spring Boot (port ${BACKEND_HOST_PORT})"
 printf "  ${DIM}│${RESET} ${GREEN}%-${QLT}s${RESET} ${DIM}│${RESET} %-${QRT}s ${DIM}│${RESET}\n" "make frontend-app"         "Start Vite app (port ${LOCAL_APP_PORT})"
 printf "  ${DIM}│${RESET} ${GREEN}%-${QLT}s${RESET} ${DIM}│${RESET} %-${QRT}s ${DIM}│${RESET}\n" "make frontend-backoffice"  "Start Vite backoffice (port ${LOCAL_BACKOFFICE_PORT})"
+printf "  ${DIM}│${RESET} ${GREEN}%-${QLT}s${RESET} ${DIM}│${RESET} %-${QRT}s ${DIM}│${RESET}\n" "make hub"                  "Workspace dashboard (http://localhost:3333)"
 printf "  ${DIM}└%s┴%s┘${RESET}\n" "$QL_D" "$QR_D"
 echo ""
 

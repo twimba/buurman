@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buurman Hub</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%236366f1'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='central' text-anchor='middle' font-family='system-ui' font-weight='700' font-size='18' fill='white'%3EB%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,600,700,800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* Surfaces */
+      --surface-page: #fafaf9;
+      --surface-card: #ffffff;
+      --surface-inset: #f5f5f4;
+
+      /* Text */
+      --text-primary: #1c1917;
+      --text-secondary: #57534e;
+      --text-muted: #78716c;
+      --text-disabled: #a8a29e;
+      --text-link: #6366f1;
+
+      /* Borders */
+      --border-default: #e7e5e4;
+      --border-subtle: #f5f5f4;
+      --border-strong: #d6d3d1;
+
+      /* Primary (indigo) */
+      --primary-50: #eef2ff;
+      --primary-100: #e0e7ff;
+      --primary-500: #6366f1;
+      --primary-600: #4f46e5;
+      --primary-700: #4338ca;
+      --primary-900: #312e81;
+
+      /* Semantic */
+      --success: #059669;
+      --success-bg: #ecfdf5;
+      --success-border: #a7f3d0;
+      --warning: #d97706;
+      --warning-bg: #fffbeb;
+      --warning-border: #fde68a;
+      --info: #0284c7;
+      --info-bg: #f0f9ff;
+
+      /* Category colors */
+      --cat-app-bg: #eef2ff;
+      --cat-app-border: #c7d2fe;
+      --cat-app-text: #4338ca;
+      --cat-backend-bg: #f5f3ff;
+      --cat-backend-border: #ddd6fe;
+      --cat-backend-text: #6d28d9;
+      --cat-auth-bg: #fffbeb;
+      --cat-auth-border: #fde68a;
+      --cat-auth-text: #b45309;
+      --cat-devtools-bg: #fff1f2;
+      --cat-devtools-border: #fecdd3;
+      --cat-devtools-text: #be123c;
+      --cat-monitoring-bg: #ecfdf5;
+      --cat-monitoring-border: #a7f3d0;
+      --cat-monitoring-text: #047857;
+
+      /* Shadows (warm stone tint) */
+      --shadow-xs: 0 1px 2px rgba(28, 25, 23, 0.04);
+      --shadow-sm: 0 1px 3px rgba(28, 25, 23, 0.06), 0 1px 2px rgba(28, 25, 23, 0.04);
+      --shadow-md: 0 4px 8px -2px rgba(28, 25, 23, 0.06), 0 2px 4px -2px rgba(28, 25, 23, 0.04);
+      --shadow-lg: 0 12px 24px -4px rgba(28, 25, 23, 0.08), 0 4px 8px -4px rgba(28, 25, 23, 0.03);
+      --shadow-ring: 0 0 0 3px rgba(99, 102, 241, 0.15);
+
+      /* Typography */
+      --font-body: "Satoshi", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--surface-page);
+      color: var(--text-primary);
+      line-height: 1.55;
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .hub {
+      max-width: 880px;
+      margin: 0 auto;
+    }
+
+    /* ─── Header ─── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border-default);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo {
+      width: 34px;
+      height: 34px;
+      background: var(--primary-500);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 17px;
+      color: #fff;
+      flex-shrink: 0;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .workspace-count {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--primary-700);
+      background: var(--primary-50);
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      border: 1px solid var(--primary-100);
+    }
+
+    .refresh-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border-strong);
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    .refresh-dot.pulse {
+      background: var(--success);
+      box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+      animation: dot-fade 1.2s ease-out forwards;
+    }
+    @keyframes dot-fade {
+      0% { box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2); }
+      100% { box-shadow: 0 0 0 0px rgba(5, 150, 105, 0); background: var(--border-strong); }
+    }
+
+    /* ─── Workspace Cards ─── */
+    .workspaces {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .ws-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-default);
+      border-radius: 8px;
+      padding: 1.15rem 1.35rem 1.1rem;
+      box-shadow: var(--shadow-sm);
+      transition: border-color 0.15s, box-shadow 0.15s;
+      opacity: 0;
+      transform: translateY(6px);
+      animation: card-in 0.3s ease forwards;
+    }
+    .ws-card:hover {
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow-md);
+    }
+    @keyframes card-in {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      margin-bottom: 0.15rem;
+      flex-wrap: wrap;
+    }
+
+    .ws-badge {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--primary-700);
+      background: var(--primary-50);
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+      border: 1px solid rgba(99, 102, 241, 0.12);
+    }
+
+    .ws-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .ws-branch {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      background: var(--surface-inset);
+      padding: 0.12rem 0.5rem;
+      border-radius: 4px;
+      border: 1px solid var(--border-subtle);
+      max-width: 340px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
+    }
+
+    .ws-path {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-disabled);
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* ─── Service Chips ─── */
+    .services {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .svc {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.28rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.73rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .svc:hover {
+      box-shadow: var(--shadow-sm);
+      filter: brightness(0.97);
+      transform: translateY(-0.5px);
+    }
+    .svc:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    /* Category-specific styling */
+    .svc[data-cat="app"] {
+      background: var(--cat-app-bg);
+      color: var(--cat-app-text);
+      border-color: var(--cat-app-border);
+    }
+    .svc[data-cat="backend"] {
+      background: var(--cat-backend-bg);
+      color: var(--cat-backend-text);
+      border-color: var(--cat-backend-border);
+    }
+    .svc[data-cat="auth"] {
+      background: var(--cat-auth-bg);
+      color: var(--cat-auth-text);
+      border-color: var(--cat-auth-border);
+    }
+    .svc[data-cat="devtools"] {
+      background: var(--cat-devtools-bg);
+      color: var(--cat-devtools-text);
+      border-color: var(--cat-devtools-border);
+    }
+    .svc[data-cat="monitoring"] {
+      background: var(--cat-monitoring-bg);
+      color: var(--cat-monitoring-text);
+      border-color: var(--cat-monitoring-border);
+    }
+
+    /* Status dots */
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot.docker {
+      background: var(--success);
+      box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15);
+    }
+    .dot.host {
+      background: var(--warning);
+      box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.12);
+    }
+    .dot.unknown {
+      background: var(--text-disabled);
+    }
+
+    /* ─── Empty / Error States ─── */
+    .state-box {
+      text-align: center;
+      padding: 4rem 2rem;
+      opacity: 0;
+      animation: card-in 0.35s ease 0.1s forwards;
+    }
+    .state-box h2 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+    .state-box p {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      max-width: 360px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    .state-box code {
+      font-family: var(--font-mono);
+      background: var(--surface-inset);
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      border: 1px solid var(--border-default);
+      color: var(--text-primary);
+    }
+
+    /* ─── Footer Legend ─── */
+    .legend {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1.25rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid var(--border-default);
+      font-size: 0.68rem;
+      font-weight: 500;
+      color: var(--text-disabled);
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .legend-refresh {
+      margin-left: auto;
+      font-size: 0.65rem;
+      color: var(--text-disabled);
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 640px) {
+      body { padding: 1rem 0.75rem; }
+      .header { flex-direction: column; align-items: flex-start; gap: 0.6rem; }
+      .header-right { align-self: flex-end; margin-top: -1.6rem; }
+      .ws-card { padding: 1rem 1rem 0.9rem; }
+      .ws-branch { max-width: 200px; }
+      .card-top { gap: 0.4rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="hub" id="hub"></div>
+
+  <script>
+    const INTERVAL = 10000;
+
+    function esc(s) {
+      const el = document.createElement("span");
+      el.textContent = s;
+      return el.innerHTML;
+    }
+
+    function renderHeader(count) {
+      return `
+        <div class="header">
+          <div class="header-left">
+            <div class="logo">B</div>
+            <span class="header-title">Buurman Hub</span>
+          </div>
+          <div class="header-right">
+            <span class="workspace-count">${count} workspace${count !== 1 ? "s" : ""}</span>
+            <div class="refresh-dot" id="rdot" title="Auto-refreshes every 10s"></div>
+          </div>
+        </div>`;
+    }
+
+    function renderCard(ws, idx) {
+      const branch = ws.branch
+        ? `<span class="ws-branch" title="${esc(ws.branch)}">${esc(ws.branch)}</span>`
+        : "";
+
+      const chips = ws.services.map(s => {
+        const tip = s.status === "docker" ? "Running in Docker"
+                  : s.status === "host" ? "Running on host"
+                  : "Status unknown";
+        return `<a class="svc" href="${s.url}" target="_blank" rel="noopener"
+                   data-cat="${s.category}" title="${tip}">
+                  <span class="dot ${s.status}"></span>${s.label}</a>`;
+      }).join("");
+
+      return `
+        <div class="ws-card" style="animation-delay:${idx * 0.05}s">
+          <div class="card-top">
+            <span class="ws-badge">W${ws.number}</span>
+            <span class="ws-name">${esc(ws.name)}</span>
+            ${branch}
+          </div>
+          <div class="ws-path">${esc(ws.path)}</div>
+          <div class="services">${chips}</div>
+        </div>`;
+    }
+
+    function render(workspaces) {
+      const hub = document.getElementById("hub");
+
+      if (workspaces === null) {
+        hub.innerHTML = renderHeader(0) + `
+          <div class="state-box">
+            <h2>Unable to fetch workspace data</h2>
+            <p>Check that the hub server is running.</p>
+          </div>`;
+        return;
+      }
+
+      const n = workspaces.length;
+      let html = renderHeader(n);
+
+      if (n === 0) {
+        html += `
+          <div class="state-box">
+            <h2>No active workspaces</h2>
+            <p>Set up a workspace to get started:<br><code>make workspace-setup WS=1</code></p>
+          </div>`;
+      } else {
+        html += '<div class="workspaces">';
+        workspaces.forEach((ws, i) => { html += renderCard(ws, i); });
+        html += "</div>";
+        html += `
+          <div class="legend">
+            <span class="legend-item"><span class="dot docker"></span> Docker</span>
+            <span class="legend-item"><span class="dot host"></span> Host</span>
+            <span class="legend-item"><span class="dot unknown"></span> Unknown</span>
+            <span class="legend-refresh">Refreshes every 10s</span>
+          </div>`;
+      }
+
+      hub.innerHTML = html;
+    }
+
+    async function refresh() {
+      try {
+        const res = await fetch("/api/workspaces");
+        render(await res.json());
+      } catch {
+        render(null);
+      }
+      const dot = document.getElementById("rdot");
+      if (dot) {
+        dot.classList.remove("pulse");
+        void dot.offsetWidth;
+        dot.classList.add("pulse");
+      }
+    }
+
+    refresh();
+    setInterval(refresh, INTERVAL);
+  </script>
+</body>
+</html>

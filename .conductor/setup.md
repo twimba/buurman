@@ -56,6 +56,10 @@ make frontend-app
 make frontend-backoffice
 ```
 
+### Buurman Hub (optional)
+
+Run `make hub` to open a workspace directory dashboard at **http://localhost:3333**. It auto-detects all active workspaces, shows service links with live status (Docker/host), and refreshes every 10 seconds. Useful when running multiple workspaces simultaneously.
+
 Port reference for each workspace number:
 
 | WS | HTTPS | PostgreSQL | Backend | App (Vite) | Backoffice (Vite) | SMTP |
