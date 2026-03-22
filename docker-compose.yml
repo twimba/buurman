@@ -91,7 +91,7 @@ services:
       - "traefik.http.routers.${HOSTNAME_PREFIX:-}keycloak.tls=true"
       - "traefik.http.routers.${HOSTNAME_PREFIX:-}keycloak.middlewares=${HOSTNAME_PREFIX:-}keycloak-headers"
       - "traefik.http.services.${HOSTNAME_PREFIX:-}keycloak.loadbalancer.server.port=8080"
-      - "traefik.http.middlewares.${HOSTNAME_PREFIX:-}keycloak-headers.headers.customResponseHeaders.Content-Security-Policy=frame-src 'self'; frame-ancestors 'self' https://*.local.buurman.io https://*.buurman.io; object-src 'none'"
+      - "traefik.http.middlewares.${HOSTNAME_PREFIX:-}keycloak-headers.headers.customResponseHeaders.Content-Security-Policy=frame-src 'self'; frame-ancestors 'self' https://*.local.buurman.io https://*.local.buurman.io:* https://*.buurman.io; object-src 'none'"
       - "traefik.http.middlewares.${HOSTNAME_PREFIX:-}keycloak-headers.headers.customResponseHeaders.X-Frame-Options="
     depends_on:
       postgres:
@@ -171,7 +171,7 @@ services:
       - "traefik.http.routers.${HOSTNAME_PREFIX:-}flagsmith.tls=true"
       - "traefik.http.routers.${HOSTNAME_PREFIX:-}flagsmith.middlewares=${HOSTNAME_PREFIX:-}flagsmith-headers"
       - "traefik.http.services.${HOSTNAME_PREFIX:-}flagsmith.loadbalancer.server.port=8000"
-      - "traefik.http.middlewares.${HOSTNAME_PREFIX:-}flagsmith-headers.headers.customResponseHeaders.Content-Security-Policy=frame-src 'self'; frame-ancestors 'self' https://*.local.buurman.io https://*.buurman.io; object-src 'none'"
+      - "traefik.http.middlewares.${HOSTNAME_PREFIX:-}flagsmith-headers.headers.customResponseHeaders.Content-Security-Policy=frame-src 'self'; frame-ancestors 'self' https://*.local.buurman.io https://*.local.buurman.io:* https://*.buurman.io; object-src 'none'"
       - "traefik.http.middlewares.${HOSTNAME_PREFIX:-}flagsmith-headers.headers.customResponseHeaders.X-Frame-Options="
     ports:
       - "${FLAGSMITH_HOST_PORT:-8000}:8000"
