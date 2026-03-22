@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Save, Plus, Trash2, UserPlus, ArrowLeft } from 'lucide-react';
 import {
@@ -75,6 +75,7 @@ const InlineContactForm = ({
   errors,
   errorPrefix,
   disabled,
+  onBlockingChange,
 }: {
   value: CreateContactRequest;
   onChange: (data: CreateContactRequest) => void;
@@ -82,11 +83,16 @@ const InlineContactForm = ({
   errors: Record<string, string>;
   errorPrefix: string;
   disabled?: boolean;
+  onBlockingChange?: (blocking: boolean) => void;
 }) => {
   const inputClass =
     'w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary text-sm';
 
-  const { matches, dismissed, setDismissed, check } = useDuplicateCheck();
+  const { matches, dismissed, setDismissed, check, blocking } = useDuplicateCheck();
+
+  useEffect(() => {
+    onBlockingChange?.(blocking);
+  }, [blocking, onBlockingChange]);
 
   const handleChange = (updated: CreateContactRequest) => {
     onChange(updated);
@@ -314,6 +320,21 @@ export const ContractForm = ({
 
   const [contractIdentifier, setContractIdentifier] = useState(
     contract?.identifier
+  );
+
+  // Track duplicate-blocking state from all inline contact forms
+  const [dupBlockers, setDupBlockers] = useState<Record<string, boolean>>({});
+  const anyDuplicateBlocking = Object.values(dupBlockers).some(Boolean);
+  const handleDupBlocking = useCallback(
+    (key: string) => (blocking: boolean) => {
+      setDupBlockers((prev) => {
+        if (prev[key] === blocking) {
+          return prev;
+        }
+        return { ...prev, [key]: blocking };
+      });
+    },
+    []
   );
 
   // Look up selected property's country for metadata form
@@ -723,6 +744,7 @@ export const ContractForm = ({
                     errors={errors}
                     errorPrefix="primary"
                     disabled={isLoading}
+                    onBlockingChange={handleDupBlocking('primary')}
                   />
                 )}
               </div>
@@ -832,6 +854,7 @@ export const ContractForm = ({
                         errors={errors}
                         errorPrefix={`party_${index}`}
                         disabled={isLoading}
+                        onBlockingChange={handleDupBlocking(`party_${index}`)}
                       />
                     </div>
                   )}
@@ -1237,18 +1260,26 @@ export const ContractForm = ({
           <X className="h-4 w-4" />
           Cancel
         </button>
-        <button
-          type="submit"
-          className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors disabled:opacity-50 flex items-center gap-2"
-          disabled={isLoading}
-        >
-          <Save className="h-4 w-4" />
-          {isLoading
-            ? 'Saving...'
-            : contract
-              ? 'Update Contract'
-              : 'Create Contract'}
-        </button>
+        <div className="relative group/submit">
+          <button
+            type="submit"
+            className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            disabled={isLoading || anyDuplicateBlocking}
+          >
+            <Save className="h-4 w-4" />
+            {isLoading
+              ? 'Saving...'
+              : contract
+                ? 'Update Contract'
+                : 'Create Contract'}
+          </button>
+          {anyDuplicateBlocking && (
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 text-xs font-medium text-white bg-neutral-800 dark:bg-neutral-700 rounded-lg whitespace-nowrap opacity-0 group-hover/submit:opacity-100 transition-opacity duration-150 shadow-lg pointer-events-none">
+              Review the duplicate warning above and dismiss it to continue
+              <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-neutral-800 dark:border-t-neutral-700" />
+            </div>
+          )}
+        </div>
       </div>
     </form>
   );
@@ -1281,6 +1312,18 @@ const ContractPartiesEditor = ({
   const [inlineNewPrimary, setInlineNewPrimary] =
     useState<CreateContactRequest>({ ...EMPTY_NEW_CONTACT });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [dupBlockers, setDupBlockers] = useState<Record<string, boolean>>({});
+  const handleDupBlocking = useCallback(
+    (key: string) => (blocking: boolean) => {
+      setDupBlockers((prev) => {
+        if (prev[key] === blocking) {
+          return prev;
+        }
+        return { ...prev, [key]: blocking };
+      });
+    },
+    []
+  );
 
   const addPartyMutation = useAddContractParty(contract.identifier);
   const removePartyMutation = useRemoveContractParty(contract.identifier);
@@ -1471,6 +1514,7 @@ const ContractPartiesEditor = ({
                 errors={errors}
                 errorPrefix="change_primary"
                 disabled={isBusy}
+                onBlockingChange={handleDupBlocking('change_primary')}
               />
               <div className="flex gap-2 justify-end">
                 <button
@@ -1481,14 +1525,22 @@ const ContractPartiesEditor = ({
                 >
                   Cancel
                 </button>
-                <button
-                  type="button"
-                  onClick={handleChangePrimary}
-                  className="px-3 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors text-sm"
-                  disabled={isBusy}
-                >
-                  Confirm
-                </button>
+                <div className="relative group/confirm-primary">
+                  <button
+                    type="button"
+                    onClick={handleChangePrimary}
+                    className="px-3 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isBusy || dupBlockers['change_primary']}
+                  >
+                    Confirm
+                  </button>
+                  {dupBlockers['change_primary'] && (
+                    <div className="absolute bottom-full right-0 mb-2 px-3 py-2 text-xs font-medium text-white bg-neutral-800 dark:bg-neutral-700 rounded-lg whitespace-nowrap opacity-0 group-hover/confirm-primary:opacity-100 transition-opacity duration-150 shadow-lg pointer-events-none">
+                      Dismiss the duplicate warning first
+                      <div className="absolute top-full right-4 -mt-px border-4 border-transparent border-t-neutral-800 dark:border-t-neutral-700" />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}
@@ -1593,6 +1645,7 @@ const ContractPartiesEditor = ({
                 errors={errors}
                 errorPrefix="add_party"
                 disabled={isBusy}
+                onBlockingChange={handleDupBlocking('add_party')}
               />
               <div className="flex gap-2 justify-end mt-2">
                 <button
@@ -1603,14 +1656,22 @@ const ContractPartiesEditor = ({
                 >
                   Cancel
                 </button>
-                <button
-                  type="button"
-                  onClick={handleAddParty}
-                  className="px-3 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors text-sm"
-                  disabled={isBusy}
-                >
-                  Add
-                </button>
+                <div className="relative group/confirm-add">
+                  <button
+                    type="button"
+                    onClick={handleAddParty}
+                    className="px-3 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isBusy || dupBlockers['add_party']}
+                  >
+                    Add
+                  </button>
+                  {dupBlockers['add_party'] && (
+                    <div className="absolute bottom-full right-0 mb-2 px-3 py-2 text-xs font-medium text-white bg-neutral-800 dark:bg-neutral-700 rounded-lg whitespace-nowrap opacity-0 group-hover/confirm-add:opacity-100 transition-opacity duration-150 shadow-lg pointer-events-none">
+                      Dismiss the duplicate warning first
+                      <div className="absolute top-full right-4 -mt-px border-4 border-transparent border-t-neutral-800 dark:border-t-neutral-700" />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}

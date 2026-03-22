@@ -49,7 +49,9 @@ export function useDuplicateCheck() {
     clearTimeout(timerRef.current);
   }, []);
 
-  return { matches, dismissed, setDismissed, check, reset };
+  const blocking = matches.length > 0 && !dismissed;
+
+  return { matches, dismissed, setDismissed, check, reset, blocking };
 }
 
 /**
@@ -97,9 +99,9 @@ export function DuplicateContactWarning({
           <button
             type="button"
             onClick={onDismiss}
-            className="ml-2 text-amber-500 hover:text-amber-700 dark:hover:text-amber-300"
+            className="ml-2 font-medium text-amber-700 dark:text-amber-300 hover:text-amber-900 dark:hover:text-amber-100 underline underline-offset-2"
           >
-            Dismiss
+            Not a duplicate
           </button>
         </div>
       </div>
@@ -149,9 +151,9 @@ export function DuplicateContactWarning({
           <button
             type="button"
             onClick={onDismiss}
-            className="mt-2 text-xs text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200"
+            className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-amber-400 dark:border-amber-600 text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/40 hover:bg-amber-200 dark:hover:bg-amber-900/60 transition-colors"
           >
-            Dismiss — this is not a duplicate
+            Not a duplicate — continue
           </button>
         </div>
       </div>

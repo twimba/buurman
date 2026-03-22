@@ -409,7 +409,7 @@ export const AdjustRentModal = ({
                           Component total (
                           {formatCurrency(componentsTotal, currency)}) differs
                           from the new rent amount (
-                          {formatCurrency(parsedAmount!, currency)}). The rent
+                          {formatCurrency(parsedAmount ?? 0, currency)}). The rent
                           amount will be used as the official total.
                         </span>
                       </div>

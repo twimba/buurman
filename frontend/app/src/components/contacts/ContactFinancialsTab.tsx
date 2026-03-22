@@ -25,8 +25,8 @@ export const ContactFinancialsTab = ({
     contactIdentifier,
   });
 
-  const expenses = expensesData?.content ?? [];
-  const payments = paymentsData?.content ?? [];
+  const expenses = useMemo(() => expensesData?.content ?? [], [expensesData]);
+  const payments = useMemo(() => paymentsData?.content ?? [], [paymentsData]);
 
   const expenseTotal = useMemo(() => {
     if (expenses.length === 0) {

@@ -63,6 +63,7 @@ export const ContactForm = ({
     dismissed: dismissedDuplicates,
     setDismissed: setDismissedDuplicates,
     check: checkForDuplicates,
+    blocking: duplicateBlocking,
   } = useDuplicateCheck();
 
   const originalType = (contact?.contactType as ContactType) ?? 'INDIVIDUAL';
@@ -546,18 +547,26 @@ export const ContactForm = ({
             <X className="h-4 w-4" />
             Cancel
           </button>
-          <button
-            type="submit"
-            className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors disabled:opacity-50 flex items-center gap-2"
-            disabled={isLoading}
-          >
-            <Save className="h-4 w-4" />
-            {isLoading
-              ? 'Saving...'
-              : contact
-                ? 'Update Contact'
-                : 'Create Contact'}
-          </button>
+          <div className="relative group/submit">
+            <button
+              type="submit"
+              className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              disabled={isLoading || (!contact && duplicateBlocking)}
+            >
+              <Save className="h-4 w-4" />
+              {isLoading
+                ? 'Saving...'
+                : contact
+                  ? 'Update Contact'
+                  : 'Create Contact'}
+            </button>
+            {!contact && duplicateBlocking && (
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 text-xs font-medium text-white bg-neutral-800 dark:bg-neutral-700 rounded-lg whitespace-nowrap opacity-0 group-hover/submit:opacity-100 transition-opacity duration-150 shadow-lg pointer-events-none">
+                Review the duplicate warning above and dismiss it to continue
+                <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-neutral-800 dark:border-t-neutral-700" />
+              </div>
+            )}
+          </div>
         </div>
       </form>
 

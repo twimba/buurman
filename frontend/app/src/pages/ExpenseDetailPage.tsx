@@ -286,7 +286,7 @@ export const ExpenseDetailPage = () => {
                           <button
                             onClick={() =>
                               navigate(
-                                `/contacts/${expense.contact!.identifier}`
+                                `/contacts/${expense.contact?.identifier}`
                               )
                             }
                             className="font-medium text-primary-500 hover:underline text-left"

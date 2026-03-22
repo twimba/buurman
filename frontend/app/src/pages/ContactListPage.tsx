@@ -64,6 +64,7 @@ export const ContactListPage = () => {
     setDismissed: setQuickAddDupDismissed,
     check: checkQuickAddDuplicates,
     reset: resetQuickAddDuplicates,
+    blocking: quickAddDupBlocking,
   } = useDuplicateCheck();
   const {
     pageParams,
@@ -482,15 +483,23 @@ export const ContactListPage = () => {
                 >
                   Cancel
                 </button>
-                <button
-                  type="button"
-                  onClick={handleQuickAddSubmit}
-                  disabled={createMutation.isPending}
-                  className="bg-primary-500 text-white px-4 py-1.5 text-sm rounded hover:bg-primary-600 transition-colors flex items-center gap-1.5 disabled:opacity-50"
-                >
-                  <Save className="h-3.5 w-3.5" />
-                  {createMutation.isPending ? 'Creating...' : 'Create'}
-                </button>
+                <div className="relative group/submit">
+                  <button
+                    type="button"
+                    onClick={handleQuickAddSubmit}
+                    disabled={createMutation.isPending || quickAddDupBlocking}
+                    className="bg-primary-500 text-white px-4 py-1.5 text-sm rounded hover:bg-primary-600 transition-colors flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Save className="h-3.5 w-3.5" />
+                    {createMutation.isPending ? 'Creating...' : 'Create'}
+                  </button>
+                  {quickAddDupBlocking && (
+                    <div className="absolute bottom-full right-0 mb-2 px-3 py-2 text-xs font-medium text-white bg-neutral-800 dark:bg-neutral-700 rounded-lg whitespace-nowrap opacity-0 group-hover/submit:opacity-100 transition-opacity duration-150 shadow-lg pointer-events-none">
+                      Dismiss the duplicate warning first
+                      <div className="absolute top-full right-4 -mt-px border-4 border-transparent border-t-neutral-800 dark:border-t-neutral-700" />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
