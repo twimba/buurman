@@ -9,7 +9,7 @@ registries:
     password: ${{ secrets.GHCR_TOKEN }}
   dockerhub:
     type: docker-registry
-    url: https://registry.hub.docker.com
+    url: https://index.docker.io/v1/
     username: ${{ secrets.DOCKERHUB_USERNAME }}
     password: ${{ secrets.DOCKERHUB_PASSWORD }}
 updates:
