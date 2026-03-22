@@ -13,7 +13,6 @@ import org.quartz.JobExecutionException;
 import org.quartz.JobListener;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.buurman.repository.JobExecutionHistoryRepository;
@@ -24,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
-@Lazy(false)
 @Slf4j
 @RequiredArgsConstructor
 public class ExecutionHistoryJobListener implements JobListener {
