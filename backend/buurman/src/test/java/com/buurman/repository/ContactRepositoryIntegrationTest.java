@@ -44,7 +44,7 @@ class ContactRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
       assertThat(saved.getCreatedAt()).isNotNull();
 
       Contact found = repo.getByIdAndTeamId(saved.getId(), TEAM_A_ID);
-      assertThat(found.getFirstName()).isEqualTo("Jan");
+      assertThat(found.getFirstName()).contains("Jan");
       assertThat(found.getLastName()).contains("de Vries");
       assertThat(found.getEmail()).contains("jan@test.io");
     }
@@ -61,7 +61,7 @@ class ContactRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
       repo.save(saved);
 
       Contact found = repo.getByIdAndTeamId(saved.getId(), TEAM_A_ID);
-      assertThat(found.getFirstName()).isEqualTo("Piet");
+      assertThat(found.getFirstName()).contains("Piet");
       assertThat(found.getLastName()).contains("Jansen");
     }
 
@@ -76,7 +76,7 @@ class ContactRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
       repo.save(saved);
 
       Contact found = repo.getByIdAndTeamId(saved.getId(), TEAM_A_ID);
-      assertThat(found.getFirstName()).isEqualTo("Jan");
+      assertThat(found.getFirstName()).contains("Jan");
     }
   }
 
@@ -119,9 +119,9 @@ class ContactRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
       List<Contact> teamBContacts = repo.findAllByTeamId(TEAM_B_ID);
 
       assertThat(teamAContacts).hasSize(1);
-      assertThat(teamAContacts.getFirst().getFirstName()).isEqualTo("Jan");
+      assertThat(teamAContacts.getFirst().getFirstName()).contains("Jan");
       assertThat(teamBContacts).hasSize(1);
-      assertThat(teamBContacts.getFirst().getFirstName()).isEqualTo("Bob");
+      assertThat(teamBContacts.getFirst().getFirstName()).contains("Bob");
     }
 
     @Test
@@ -132,7 +132,7 @@ class ContactRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
       Optional<Contact> found = repo.findByEmailAndTeamId("jan@test.io", TEAM_A_ID);
 
       assertThat(found).isPresent();
-      assertThat(found.get().getFirstName()).isEqualTo("Jan");
+      assertThat(found.get().getFirstName()).contains("Jan");
     }
 
     @Test
@@ -223,7 +223,7 @@ class ContactRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
               TEAM_A_ID, "Piet", PageRequest.of(null, null, null, (SortDirection) null));
 
       assertThat(result.items()).hasSize(1);
-      assertThat(result.items().getFirst().getFirstName()).isEqualTo("Piet");
+      assertThat(result.items().getFirst().getFirstName()).contains("Piet");
     }
   }
 

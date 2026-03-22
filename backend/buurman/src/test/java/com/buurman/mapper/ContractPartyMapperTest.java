@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import com.buurman.domain.ContactType;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
+import com.buurman.domain.DataRetentionStatus;
 import com.buurman.domain.Sid;
 import com.buurman.dto.response.ContactSummary;
 import com.buurman.dto.response.ContractPartyResponse;
@@ -43,7 +44,8 @@ class ContractPartyMapperTest {
               Optional.of("John"),
               Optional.of("Doe"),
               Optional.of("john@example.com"),
-              Optional.empty());
+              Optional.empty(),
+              DataRetentionStatus.ACTIVE);
 
       ContractPartyResponse response = mapper.toResponse(party, contact);
 

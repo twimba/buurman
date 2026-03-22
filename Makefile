@@ -60,24 +60,27 @@ test-coverage:
 ## spring-boot:run forks a lifecycle that bypasses the build cache, so we compile
 ## separately to avoid re-running JOOQ/OpenAPI codegen on every restart.
 backend:
-	@if [ -f .env.backend ]; then \
+	@set -a; [ -f .env ] && . ./.env; set +a; \
+	if [ -f .env.backend ]; then \
 		echo "Sourcing workspace backend config from .env.backend"; \
 		. ./.env.backend && cd backend && mvn install -pl app -am -DskipTests -Pquick && mvn spring-boot:run -pl app; \
 	else \
 		cd backend && mvn install -pl app -am -DskipTests -Pquick && mvn spring-boot:run -pl app; \
 	fi
 
-## Run frontend app locally (reads ports from .env if present)
+## Run frontend app locally (loads .env for VITE_* variables)
 frontend-app:
-	@VITE_DEV_PORT=$$(grep '^LOCAL_APP_PORT=' .env 2>/dev/null | cut -d= -f2 || echo 5173); \
-	VITE_HMR_PORT=$$(grep '^HTTPS_PORT=' .env 2>/dev/null | cut -d= -f2 || echo 443); \
+	@set -a; [ -f .env ] && . ./.env; set +a; \
+	VITE_DEV_PORT=$${LOCAL_APP_PORT:-5173}; \
+	VITE_HMR_PORT=$${HTTPS_PORT:-443}; \
 	echo "Starting app on port $$VITE_DEV_PORT (HMR via $$VITE_HMR_PORT)"; \
 	cd frontend && VITE_DEV_PORT=$$VITE_DEV_PORT VITE_HMR_PORT=$$VITE_HMR_PORT yarn dev:app
 
-## Run frontend backoffice locally (reads ports from .env if present)
+## Run frontend backoffice locally (loads .env for VITE_* variables)
 frontend-backoffice:
-	@VITE_DEV_PORT=$$(grep '^LOCAL_BACKOFFICE_PORT=' .env 2>/dev/null | cut -d= -f2 || echo 5174); \
-	VITE_HMR_PORT=$$(grep '^HTTPS_PORT=' .env 2>/dev/null | cut -d= -f2 || echo 443); \
+	@set -a; [ -f .env ] && . ./.env; set +a; \
+	VITE_DEV_PORT=$${LOCAL_BACKOFFICE_PORT:-5174}; \
+	VITE_HMR_PORT=$${HTTPS_PORT:-443}; \
 	echo "Starting backoffice on port $$VITE_DEV_PORT (HMR via $$VITE_HMR_PORT)"; \
 	cd frontend && VITE_DEV_PORT=$$VITE_DEV_PORT VITE_HMR_PORT=$$VITE_HMR_PORT yarn dev:backoffice
 

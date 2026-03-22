@@ -26,7 +26,7 @@ import {
 import { RichTextEditor } from '@/components/common/RichTextEditor';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { Avatar } from '@/components/common/Avatar';
-import { Plus, Edit, Trash2, Users } from 'lucide-react';
+import { Plus, Edit, Trash2, Users, ShieldOff } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 interface RelationshipFormData {
@@ -167,22 +167,33 @@ export const ContactRelationshipsTab = ({
             >
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <Avatar
-                    firstName={rel.relatedContact.firstName}
-                    lastName={rel.relatedContact.lastName}
-                    size="md"
-                  />
+                  {rel.relatedContact.dataRetentionStatus === 'ANONYMIZED' ? (
+                    <div className="h-10 w-10 rounded-full bg-surface-inset flex items-center justify-center">
+                      <ShieldOff className="h-5 w-5 text-text-muted" />
+                    </div>
+                  ) : (
+                    <Avatar
+                      firstName={rel.relatedContact.firstName ?? rel.relatedContact.displayName}
+                      lastName={rel.relatedContact.lastName}
+                      size="md"
+                    />
+                  )}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <button
-                        onClick={() =>
-                          navigate(`/contacts/${rel.relatedContact.identifier}`)
-                        }
-                        className="text-sm font-medium text-primary-500 hover:text-primary-600 hover:underline"
-                      >
-                        {rel.relatedContact.firstName}{' '}
-                        {rel.relatedContact.lastName}
-                      </button>
+                      {rel.relatedContact.dataRetentionStatus === 'ANONYMIZED' ? (
+                        <span className="text-sm font-medium text-text-muted italic">
+                          Erased contact
+                        </span>
+                      ) : (
+                        <button
+                          onClick={() =>
+                            navigate(`/contacts/${rel.relatedContact.identifier}`)
+                          }
+                          className="text-sm font-medium text-primary-500 hover:text-primary-600 hover:underline"
+                        >
+                          {rel.relatedContact.displayName}
+                        </button>
+                      )}
                       <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-surface-inset text-text-secondary">
                         {rel.displayLabel}
                       </span>

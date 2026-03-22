@@ -441,6 +441,7 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
               null,
               null,
               null,
+              null,
               PageRequest.of(null, null, null, (String) null));
 
       assertThat(result.items()).hasSize(1);
@@ -466,6 +467,7 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
               propertyIdA,
               null,
               null,
+              null,
               PageRequest.of(null, null, null, (SortDirection) null));
 
       assertThat(result.items()).hasSize(1);
@@ -485,6 +487,7 @@ class PaymentRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
       PaginatedResult<Payment> result =
           repo.findAllByTeamIdPaginated(
               TEAM_B_ID,
+              null,
               null,
               null,
               null,

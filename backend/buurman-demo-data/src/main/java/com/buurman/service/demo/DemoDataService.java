@@ -282,14 +282,14 @@ public class DemoDataService {
             .execute();
     log.debug("Deleted {} contract rent periods", deleted);
 
-    // 9b. Contract parties (FK -> contracts, tenants)
+    // 9b. Contract parties (FK -> contracts, contacts)
     deleted =
         dsl.deleteFrom(DSL.table("contract_parties"))
             .where(DSL.field("team_id", java.util.UUID.class).in(demoTeamIds))
             .execute();
     log.debug("Deleted {} contract parties", deleted);
 
-    // 9c. Contracts (FK -> properties, tenants)
+    // 9c. Contracts (FK -> properties, contacts)
     deleted = dsl.deleteFrom(CONTRACTS).where(CONTRACTS.TEAM_ID.in(demoTeamIds)).execute();
     log.debug("Deleted {} contracts", deleted);
 

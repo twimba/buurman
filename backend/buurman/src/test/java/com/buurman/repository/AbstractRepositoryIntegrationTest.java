@@ -60,9 +60,12 @@ abstract class AbstractRepositoryIntegrationTest {
     dsl.deleteFrom(DSL.table("contract_parties")).execute();
     dsl.deleteFrom(DSL.table("contract_extensions")).execute();
     dsl.deleteFrom(DSL.table("contracts")).execute();
-    dsl.deleteFrom(DSL.table("tenant_addresses")).execute();
-    dsl.deleteFrom(DSL.table("property_tenant_history")).execute();
-    dsl.deleteFrom(DSL.table("tenants")).execute();
+    dsl.deleteFrom(DSL.table("contact_tags")).execute();
+    dsl.deleteFrom(DSL.table("contact_relationships")).execute();
+    dsl.deleteFrom(DSL.table("contact_notes")).execute();
+    dsl.deleteFrom(DSL.table("contact_addresses")).execute();
+    dsl.deleteFrom(DSL.table("property_contact_history")).execute();
+    dsl.deleteFrom(DSL.table("contacts")).execute();
     dsl.deleteFrom(DSL.table("property_amenities")).execute();
     dsl.deleteFrom(DSL.table("property_fees")).execute();
     dsl.deleteFrom(DSL.table("property_occupancy_periods")).execute();

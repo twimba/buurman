@@ -250,7 +250,7 @@ public class DemoContractGenerator {
 
           // Country metadata
           ContractCountryMetadata metadata =
-              countryCode != null ? buildDemoMetadata(countryCode) : null;
+              countryCode != null ? buildDemoMetadata(countryCode, currency) : null;
 
           // Compute realistic created_at based on contract start
           LocalDateTime createdAt;
@@ -542,7 +542,7 @@ public class DemoContractGenerator {
     };
   }
 
-  private ContractCountryMetadata buildDemoMetadata(String countryCode) {
+  private ContractCountryMetadata buildDemoMetadata(String countryCode, String currency) {
     return switch (countryCode) {
       case "NL" ->
           new NlContractMetadata(
@@ -555,9 +555,9 @@ public class DemoContractGenerator {
               false,
               false,
               false,
-              MoneyAmount.of(BigDecimal.valueOf(150), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(150), currency),
               false,
-              MoneyAmount.of(BigDecimal.valueOf(879), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(879), currency),
               "C");
       case "DE" ->
           new DeContractMetadata(
@@ -565,16 +565,16 @@ public class DemoContractGenerator {
               true,
               "STANDARD",
               false,
-              MoneyAmount.of(BigDecimal.valueOf(200), "EUR"),
-              MoneyAmount.of(BigDecimal.valueOf(2100), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(200), currency),
+              MoneyAmount.of(BigDecimal.valueOf(2100), currency),
               3,
               "VERBRAUCH",
               "C",
               BigDecimal.valueOf(125));
       case "FR" ->
           new FrContractMetadata(
-              MoneyAmount.of(BigDecimal.valueOf(25, 1), "EUR"),
-              MoneyAmount.of(BigDecimal.valueOf(30), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(25, 1), currency),
+              MoneyAmount.of(BigDecimal.valueOf(30), currency),
               true,
               true,
               "C",
@@ -584,7 +584,7 @@ public class DemoContractGenerator {
               true,
               true,
               true,
-              MoneyAmount.of(BigDecimal.valueOf(900), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(900), currency),
               1);
       case "BE" ->
           new BeContractMetadata(
@@ -598,7 +598,13 @@ public class DemoContractGenerator {
               "2024-01");
       case "GB" ->
           new UkContractMetadata(
-              "AST", "DPS", "C", true, true, true, MoneyAmount.of(BigDecimal.valueOf(1500), "GBP"));
+              "AST",
+              "DPS",
+              "C",
+              true,
+              true,
+              true,
+              MoneyAmount.of(BigDecimal.valueOf(1500), currency));
       case "US" ->
           new UsContractMetadata(
               "NY",
@@ -606,17 +612,17 @@ public class DemoContractGenerator {
               "New York City",
               false,
               true,
-              MoneyAmount.of(BigDecimal.valueOf(5000), "USD"),
+              MoneyAmount.of(BigDecimal.valueOf(5000), currency),
               2);
       case "ES" ->
           new EsContractMetadata(
               true,
               false,
               BigDecimal.valueOf(1200),
-              MoneyAmount.of(BigDecimal.valueOf(800), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(800), currency),
               1,
               "D",
-              MoneyAmount.of(BigDecimal.valueOf(1600), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(1600), currency),
               2);
       case "PT" ->
           new PtContractMetadata("NRAU", false, BigDecimal.valueOf(1.0154), "IMI-2024-98765", "B");
@@ -627,60 +633,65 @@ public class DemoContractGenerator {
               BigDecimal.valueOf(21),
               "REG-2024-MI-12345",
               "B",
-              MoneyAmount.of(BigDecimal.valueOf(2400), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(2400), currency),
               3);
       case "AT" ->
           new AtContractMetadata(
               "MRG",
               "B",
-              MoneyAmount.of(BigDecimal.valueOf(180), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(180), currency),
               3,
-              MoneyAmount.of(BigDecimal.valueOf(2400), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(2400), currency),
               true,
-              MoneyAmount.of(BigDecimal.valueOf(6.5), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(6.5), currency),
               "EA-2024-AT-001");
       case "CH" ->
           new ChContractMetadata(
               "ZH",
               "Zurich",
-              MoneyAmount.of(BigDecimal.valueOf(250), "CHF"),
+              MoneyAmount.of(BigDecimal.valueOf(250), currency),
               3,
-              MoneyAmount.of(BigDecimal.valueOf(4500), "CHF"),
+              MoneyAmount.of(BigDecimal.valueOf(4500), currency),
               true,
               BigDecimal.valueOf(1.5));
       case "DK" ->
           new DkContractMetadata(
               "PRIVATE",
               "C",
-              MoneyAmount.of(BigDecimal.valueOf(30000), "DKK"),
+              MoneyAmount.of(BigDecimal.valueOf(30000), currency),
               3,
-              MoneyAmount.of(BigDecimal.valueOf(30000), "DKK"),
+              MoneyAmount.of(BigDecimal.valueOf(30000), currency),
               3,
               true);
       case "SE" ->
           new SeContractMetadata(
-              "PRIVATE", true, "C", MoneyAmount.of(BigDecimal.valueOf(25000), "SEK"), 3, true);
+              "PRIVATE", true, "C", MoneyAmount.of(BigDecimal.valueOf(25000), currency), 3, true);
       case "FI" ->
           new FiContractMetadata(
-              "INDEFINITE", "C", MoneyAmount.of(BigDecimal.valueOf(1500), "EUR"), 2, false);
+              "INDEFINITE", "C", MoneyAmount.of(BigDecimal.valueOf(1500), currency), 2, false);
       case "NO" ->
           new NoContractMetadata(
-              "RESIDENTIAL", "C", MoneyAmount.of(BigDecimal.valueOf(30000), "NOK"), 3, true, false);
+              "RESIDENTIAL",
+              "C",
+              MoneyAmount.of(BigDecimal.valueOf(30000), currency),
+              3,
+              true,
+              false);
       case "IE" ->
           new IeContractMetadata(
               "PART4",
               "B2",
-              MoneyAmount.of(BigDecimal.valueOf(2000), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(2000), currency),
               1,
               true,
               true,
-              MoneyAmount.of(BigDecimal.valueOf(1800), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(1800), currency),
               "BER-2024-IE-001");
       case "PL" ->
           new PlContractMetadata(
               "ZWYKLY",
               "C",
-              MoneyAmount.of(BigDecimal.valueOf(4000), "PLN"),
+              MoneyAmount.of(BigDecimal.valueOf(4000), currency),
               2,
               true,
               "EC-2024-PL-001",
@@ -689,55 +700,55 @@ public class DemoContractGenerator {
           new CzContractMetadata(
               "INDEFINITE",
               "C",
-              MoneyAmount.of(BigDecimal.valueOf(30000), "CZK"),
+              MoneyAmount.of(BigDecimal.valueOf(30000), currency),
               3,
-              MoneyAmount.of(BigDecimal.valueOf(5000), "CZK"),
+              MoneyAmount.of(BigDecimal.valueOf(5000), currency),
               false);
       case "HU" ->
           new HuContractMetadata(
               "DEFINITE",
               "CC",
-              MoneyAmount.of(BigDecimal.valueOf(300000), "HUF"),
+              MoneyAmount.of(BigDecimal.valueOf(300000), currency),
               2,
-              MoneyAmount.of(BigDecimal.valueOf(25000), "HUF"),
+              MoneyAmount.of(BigDecimal.valueOf(25000), currency),
               false);
       case "RO" ->
           new RoContractMetadata(
               "DEFINITE",
               "C",
-              MoneyAmount.of(BigDecimal.valueOf(3000), "RON"),
+              MoneyAmount.of(BigDecimal.valueOf(3000), currency),
               2,
               true,
-              MoneyAmount.of(BigDecimal.valueOf(500), "RON"));
+              MoneyAmount.of(BigDecimal.valueOf(500), currency));
       case "GR" ->
           new GrContractMetadata(
               "RESIDENTIAL",
               "C",
-              MoneyAmount.of(BigDecimal.valueOf(1500), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(1500), currency),
               2,
               false,
-              MoneyAmount.of(BigDecimal.valueOf(80), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(80), currency),
               "TAX-2024-GR-001");
       case "BR" ->
           new BrContractMetadata(
               "RESIDENCIAL",
-              MoneyAmount.of(BigDecimal.valueOf(5000), "BRL"),
+              MoneyAmount.of(BigDecimal.valueOf(5000), currency),
               3,
               false,
-              MoneyAmount.of(BigDecimal.valueOf(800), "BRL"),
+              MoneyAmount.of(BigDecimal.valueOf(800), currency),
               "MAT-2024-BR-001",
               false);
       case "CA" ->
           new CaContractMetadata(
-              "ON", true, MoneyAmount.of(BigDecimal.valueOf(2000), "CAD"), 2, true, null);
+              "ON", true, MoneyAmount.of(BigDecimal.valueOf(2000), currency), 2, true, null);
       case "MX" ->
           new MxContractMetadata(
               "CDMX",
               "DEFINITE",
-              MoneyAmount.of(BigDecimal.valueOf(15000), "MXN"),
+              MoneyAmount.of(BigDecimal.valueOf(15000), currency),
               1,
               false,
-              MoneyAmount.of(BigDecimal.valueOf(2000), "MXN"));
+              MoneyAmount.of(BigDecimal.valueOf(2000), currency));
       default -> new GenericContractMetadata(null, null, null, null, null, "Demo generic metadata");
     };
   }

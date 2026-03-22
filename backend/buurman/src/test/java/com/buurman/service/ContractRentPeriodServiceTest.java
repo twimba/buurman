@@ -35,6 +35,7 @@ import com.buurman.dto.request.CreateRentPeriodRequest;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.mapper.ContractRentPeriodMapper;
 import com.buurman.repository.ContractExtensionRepository;
+import com.buurman.repository.ContractRentComponentRepository;
 import com.buurman.repository.ContractRentPeriodRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentRepository;
@@ -48,6 +49,7 @@ import com.buurman.util.MoneyAmount;
 class ContractRentPeriodServiceTest {
 
   @Mock private ContractRentPeriodRepository rentPeriodRepository;
+  @Mock private ContractRentComponentRepository rentComponentRepository;
   @Mock private ContractRepository contractRepository;
   @Mock private ContractExtensionRepository contractExtensionRepository;
   @Mock private PaymentRepository paymentRepository;
@@ -74,6 +76,7 @@ class ContractRentPeriodServiceTest {
     service =
         new ContractRentPeriodService(
             rentPeriodRepository,
+            rentComponentRepository,
             contractRepository,
             contractExtensionRepository,
             paymentRepository,
@@ -149,7 +152,10 @@ class ContractRentPeriodServiceTest {
 
       CreateRentPeriodRequest request =
           new CreateRentPeriodRequest(
-              new BigDecimal("1200.00"), LocalDate.of(2025, 12, 1), Optional.empty());
+              new BigDecimal("1200.00"),
+              LocalDate.of(2025, 12, 1),
+              Optional.empty(),
+              Optional.empty());
 
       assertThatThrownBy(() -> service.addRentPeriod(CONTRACT_SID, request, principal))
           .isInstanceOf(BusinessRuleException.class)
@@ -178,7 +184,10 @@ class ContractRentPeriodServiceTest {
 
       CreateRentPeriodRequest request =
           new CreateRentPeriodRequest(
-              new BigDecimal("1200.00"), LocalDate.of(2026, 6, 1), Optional.empty());
+              new BigDecimal("1200.00"),
+              LocalDate.of(2026, 6, 1),
+              Optional.empty(),
+              Optional.empty());
 
       assertThatThrownBy(() -> service.addRentPeriod(CONTRACT_SID, request, principal))
           .isInstanceOf(BusinessRuleException.class)
@@ -262,7 +271,8 @@ class ContractRentPeriodServiceTest {
           new CreateRentPeriodRequest(
               new BigDecimal("1200.00"),
               LocalDate.of(2026, 7, 1),
-              Optional.of("Annual rent increase"));
+              Optional.of("Annual rent increase"),
+              Optional.empty());
 
       service.addRentPeriod(CONTRACT_SID, request, principal);
 
@@ -289,7 +299,10 @@ class ContractRentPeriodServiceTest {
       // Contract ends 2027-01-01, effective date 2027-06-01 is after
       CreateRentPeriodRequest request =
           new CreateRentPeriodRequest(
-              new BigDecimal("1200.00"), LocalDate.of(2027, 6, 1), Optional.empty());
+              new BigDecimal("1200.00"),
+              LocalDate.of(2027, 6, 1),
+              Optional.empty(),
+              Optional.empty());
 
       assertThatThrownBy(() -> service.addRentPeriod(CONTRACT_SID, request, principal))
           .isInstanceOf(BusinessRuleException.class)
