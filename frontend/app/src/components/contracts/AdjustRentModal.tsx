@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import {
   X,
   TrendingUp,
@@ -112,8 +112,12 @@ export const AdjustRentModal = ({
     RentComponentResponseItem[]
   >([]);
 
-  // Re-initialize component form when the reference period changes
-  useEffect(() => {
+  // Reset component form when the reference period changes.
+  // setState during render is the React-recommended pattern for syncing derived state
+  // (avoids the setState-in-effect lint error). See: react.dev/learn/you-might-not-need-an-effect
+  const prevReferenceRef = useRef(referenceComponents);
+  if (prevReferenceRef.current !== referenceComponents) {
+    prevReferenceRef.current = referenceComponents;
     setComponents(
       referenceComponents.map((c) => ({
         componentType: c.componentType,
@@ -122,7 +126,7 @@ export const AdjustRentModal = ({
       }))
     );
     setRemovedOriginals([]);
-  }, [referenceComponents]);
+  }
 
   const hasCurrentComponents = referenceComponents.length > 0;
 

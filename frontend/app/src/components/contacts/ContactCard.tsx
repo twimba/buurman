@@ -1,7 +1,7 @@
 import {
   ContactListItemResponse,
-  ContactTag,
   CONTACT_TAG_LABELS,
+  TAG_COLORS,
   ContactType,
   CONTACT_TYPE_LABELS,
 } from '@/types/contact';
@@ -16,17 +16,6 @@ const CONTACT_TYPE_COLORS: Record<ContactType, BadgeColorVariant> = {
   INDIVIDUAL: 'blue',
   COMPANY: 'amber',
   SERVICE_PROVIDER: 'green',
-};
-
-const TAG_COLORS: Record<ContactTag, BadgeColorVariant> = {
-  [ContactTag.VIP]: 'amber',
-  [ContactTag.PROSPECT]: 'blue',
-  [ContactTag.LATE_PAYER]: 'red',
-  [ContactTag.LONG_TERM]: 'green',
-  [ContactTag.KEY_HOLDER]: 'cyan',
-  [ContactTag.DO_NOT_CONTACT]: 'red',
-  [ContactTag.FORMER_TENANT]: 'gray',
-  [ContactTag.REFERRED]: 'teal',
 };
 
 const MAX_VISIBLE_TAGS = 3;

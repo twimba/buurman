@@ -26,6 +26,7 @@ import { InteractiveMap } from '../common/InteractiveMap';
 import { useTeam } from '@/context/TeamContext';
 import { useToast } from '@/context/ToastContext';
 import { getErrorMessage } from '@/utils/errorMessages';
+import { ConfirmDialog } from '@buurman/ui';
 
 interface ContactAddressListProps {
   contactId: string;
@@ -59,6 +60,7 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
   const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [expandedMapId, setExpandedMapId] = useState<string | null>(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
   // Table state
   const [searchTerm, setSearchTerm] = useState('');
@@ -82,15 +84,12 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
     setEditingAddressId(null);
   };
 
-  const handleDeleteAddress = async (addressId: string) => {
-    if (
-      !confirm(
-        'Are you sure you want to delete this address? This action cannot be undone.'
-      )
-    ) {
+  const handleDeleteAddress = async () => {
+    if (!pendingDeleteId) {
       return;
     }
-    await deleteMutation.mutateAsync(addressId);
+    await deleteMutation.mutateAsync(pendingDeleteId);
+    setPendingDeleteId(null);
   };
 
   const getTypeBadgeColor = (type: AddressType) => {
@@ -416,7 +415,7 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
                               </button>
                               <button
                                 onClick={() =>
-                                  handleDeleteAddress(address.identifier)
+                                  setPendingDeleteId(address.identifier)
                                 }
                                 className="p-2 text-text-secondary hover:text-error-text hover:bg-error-bg rounded"
                                 title="Delete address"
@@ -499,6 +498,18 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
             </button>
           </div>
         )
+      )}
+
+      {pendingDeleteId !== null && (
+        <ConfirmDialog
+          title="Delete Address"
+          message="Are you sure you want to delete this address? This action cannot be undone."
+          confirmLabel="Delete"
+          variant="danger"
+          isLoading={deleteMutation.isPending}
+          onConfirm={handleDeleteAddress}
+          onCancel={() => setPendingDeleteId(null)}
+        />
       )}
     </div>
   );

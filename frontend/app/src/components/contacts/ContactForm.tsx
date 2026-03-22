@@ -275,7 +275,7 @@ export const ContactForm = ({
                 onClick={() => handleTypeChange(type)}
                 className={`px-4 py-2 rounded-lg border text-sm font-medium transition-colors ${
                   formData.contactType === type
-                    ? 'border-primary-500 bg-primary-50 text-primary-700'
+                    ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-950 dark:text-primary-300'
                     : 'border-border-strong bg-surface-card text-text-secondary hover:bg-surface-inset'
                 }`}
               >

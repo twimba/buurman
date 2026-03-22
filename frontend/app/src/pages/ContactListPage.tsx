@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useContacts, useCreateContact } from '@/hooks/useContactHooks';
 import { ContactCard } from '@/components/contacts/ContactCard';
@@ -95,16 +95,25 @@ export const ContactListPage = () => {
     }
   }, [quickAdd, showQuickAdd, checkQuickAddDuplicates]);
 
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const handleSearch = useCallback(
     (value: string) => {
       setSearchTerm(value);
-      setTimeout(() => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+      debounceRef.current = setTimeout(() => {
         setDebouncedSearch(value);
         resetPage();
       }, 500);
     },
     [resetPage]
   );
+  useEffect(() => () => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+  }, []);
 
   const handleContactTypeChange = (type: ContactType | undefined) => {
     setContactTypeFilter(type);

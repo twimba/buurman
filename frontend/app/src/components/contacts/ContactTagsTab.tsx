@@ -3,23 +3,12 @@ import { useAddContactTag, useRemoveContactTag } from '@/hooks/useContactHooks';
 import {
   ContactTag,
   CONTACT_TAG_LABELS,
+  TAG_COLORS,
   ContactResponse,
 } from '@/types/contact';
 import { useTeam } from '@/context/TeamContext';
 import { Button, StatusBadge } from '@buurman/ui';
-import type { BadgeColorVariant } from '@buurman/ui';
 import { Plus, X, Tag } from 'lucide-react';
-
-const TAG_COLORS: Record<ContactTag, BadgeColorVariant> = {
-  [ContactTag.VIP]: 'purple',
-  [ContactTag.PROSPECT]: 'blue',
-  [ContactTag.LATE_PAYER]: 'red',
-  [ContactTag.LONG_TERM]: 'green',
-  [ContactTag.KEY_HOLDER]: 'amber',
-  [ContactTag.DO_NOT_CONTACT]: 'rose',
-  [ContactTag.FORMER_TENANT]: 'gray',
-  [ContactTag.REFERRED]: 'teal',
-};
 
 interface ContactTagsTabProps {
   contactId: string;

@@ -700,9 +700,7 @@ export const ContactDetailPage = () => {
                   <h2 className="text-lg font-semibold text-text-primary mb-4">
                     Additional Information
                   </h2>
-                  {contact.additionalInfo ? (
-                    <RichTextDisplay content={contact.additionalInfo} />
-                  ) : contact.notes ? (
+                  {contact.notes ? (
                     <RichTextDisplay content={contact.notes} />
                   ) : (
                     <p className="text-sm text-text-muted italic">
@@ -712,9 +710,7 @@ export const ContactDetailPage = () => {
                 </div>
 
                 {/* Tags inline */}
-                <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-                  <ContactTagsTab contactId={id} contact={contact} />
-                </div>
+                <ContactTagsTab contactId={id} contact={contact} />
               </div>
             </div>
 
@@ -845,7 +841,7 @@ export const ContactDetailPage = () => {
                               onClick={() =>
                                 navigate(`/contracts/${contract.identifier}`)
                               }
-                              className="hover:bg-primary-50 cursor-pointer transition-colors"
+                              className="hover:bg-primary-50 dark:hover:bg-primary-950 cursor-pointer transition-colors"
                             >
                               <td className="px-4 py-3">
                                 {contract.property.street}
@@ -999,12 +995,7 @@ export const ContactDetailPage = () => {
         {activeTab === 'notes' && <ContactNotesTab contactId={id} />}
 
         {/* ===== Tab 3: Activity ===== */}
-        {activeTab === 'activity' && (
-          <div className="space-y-6">
-            <ContactNotesTab contactId={id} />
-            <ContactActivityTab contactId={id} />
-          </div>
-        )}
+        {activeTab === 'activity' && <ContactActivityTab contactId={id} />}
 
         {/* ===== Tab: Financials ===== */}
         {activeTab === 'financials' && (

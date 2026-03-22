@@ -85,6 +85,27 @@ export const CONTACT_TAG_LABELS: Record<ContactTag, string> = {
   [ContactTag.REFERRED]: 'Referred',
 };
 
+export type TagColorVariant =
+  | 'gray'
+  | 'red'
+  | 'amber'
+  | 'green'
+  | 'teal'
+  | 'blue'
+  | 'purple'
+  | 'rose';
+
+export const TAG_COLORS: Record<ContactTag, TagColorVariant> = {
+  [ContactTag.VIP]: 'purple',
+  [ContactTag.PROSPECT]: 'blue',
+  [ContactTag.LATE_PAYER]: 'red',
+  [ContactTag.LONG_TERM]: 'green',
+  [ContactTag.KEY_HOLDER]: 'amber',
+  [ContactTag.DO_NOT_CONTACT]: 'rose',
+  [ContactTag.FORMER_TENANT]: 'gray',
+  [ContactTag.REFERRED]: 'teal',
+};
+
 // --- Contact sub-resource response types ---
 
 export interface ContactNoteResponse {
@@ -182,7 +203,7 @@ export interface ContactListItemResponse {
 
 export interface ContactResponse {
   identifier: string;
-  contactType?: string;
+  contactType: ContactType;
   displayName?: string;
   firstName: string;
   lastName?: string;
@@ -190,7 +211,6 @@ export interface ContactResponse {
   phone?: string;
   taxNumber?: string;
   idNumber?: string;
-  additionalInfo?: string;
   companyName?: string;
   tradeName?: string;
   industry?: string;
@@ -199,7 +219,7 @@ export interface ContactResponse {
   dateOfBirth?: string;
   idExpiryDate?: string;
   notes?: string;
-  tags?: ContactTag[];
+  tags: ContactTag[];
   dataRetentionStatus?: string;
   mainPhotoUrl?: string;
   mainPhotoThumbnailUrl?: string;

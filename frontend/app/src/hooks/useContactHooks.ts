@@ -602,8 +602,9 @@ export const useEraseContactData = () => {
   const { showToast } = useToast();
   return useMutation({
     mutationFn: (contactId: string) => contactsApi.eraseContactData(contactId),
-    onSuccess: () => {
+    onSuccess: (_data, contactId) => {
       queryClient.invalidateQueries({ queryKey: ['contacts'] });
+      queryClient.invalidateQueries({ queryKey: ['contact', contactId] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       showToast('Contact data erased', 'success');
       trackEvent(AnalyticsEvent.CONTACT_DATA_ERASED);

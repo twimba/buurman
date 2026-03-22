@@ -15,6 +15,7 @@ import {
 } from '@/types/contact';
 import { useTeam } from '@/context/TeamContext';
 import { ContactSelector } from '@/components/common/ContactSelector';
+import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import {
   Button,
   ModalWrapper,
@@ -199,10 +200,9 @@ export const ContactRelationshipsTab = ({
                       </span>
                     </div>
                     {rel.notes && (
-                      <div
-                        className="text-sm text-text-secondary mt-1 line-clamp-2 [&_p]:m-0 [&_ul]:m-0 [&_ol]:m-0"
-                        dangerouslySetInnerHTML={{ __html: rel.notes }}
-                      />
+                      <div className="text-sm text-text-secondary mt-1 line-clamp-2">
+                        <RichTextDisplay content={rel.notes} />
+                      </div>
                     )}
                     <p className="text-xs text-text-muted mt-1">
                       Added{' '}
