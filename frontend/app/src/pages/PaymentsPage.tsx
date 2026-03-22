@@ -432,7 +432,10 @@ export const PaymentsPage = () => {
                           contractStatus={payment.contract.status}
                           propertyStreet={payment.property.street}
                           propertyCity={payment.property.city}
-                          contactFirstName={payment.contact.firstName ?? payment.contact.displayName}
+                          contactFirstName={
+                            payment.contact.firstName ??
+                            payment.contact.displayName
+                          }
                           contactLastName={payment.contact.lastName}
                         />
                       </td>

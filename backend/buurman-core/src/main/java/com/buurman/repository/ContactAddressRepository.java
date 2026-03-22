@@ -151,8 +151,7 @@ public class ContactAddressRepository {
 
   public void hardDeleteByContactId(UUID contactId, UUID teamId) {
     dsl.deleteFrom(CONTACT_ADDRESSES)
-        .where(
-            CONTACT_ADDRESSES.CONTACT_ID.eq(contactId).and(CONTACT_ADDRESSES.TEAM_ID.eq(teamId)))
+        .where(CONTACT_ADDRESSES.CONTACT_ID.eq(contactId).and(CONTACT_ADDRESSES.TEAM_ID.eq(teamId)))
         .execute();
   }
 

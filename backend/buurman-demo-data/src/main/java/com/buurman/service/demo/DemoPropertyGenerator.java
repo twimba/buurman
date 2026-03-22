@@ -917,8 +917,8 @@ public class DemoPropertyGenerator {
   // --- Category-specific financial (era-aware) ---
 
   /**
-   * Derives purchase price from the property's monthly rent baseline and a target gross yield.
-   * This ensures all properties have realistic price-to-rent ratios regardless of country or type,
+   * Derives purchase price from the property's monthly rent baseline and a target gross yield. This
+   * ensures all properties have realistic price-to-rent ratios regardless of country or type,
    * preventing perpetually cash-flow-negative properties. Target yield: 5.0-7.5%.
    */
   private long acquisitionPriceFromRent(BigDecimal monthlyRent, int i, int acquisitionYear) {

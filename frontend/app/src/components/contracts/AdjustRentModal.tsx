@@ -300,321 +300,321 @@ export const AdjustRentModal = ({
         </>
       }
     >
-      <form
-        id="adjust-rent-form"
-        onSubmit={handleSubmit}
-        className="space-y-4"
-      >
-            {/* Effective From — first so the reference rent updates below */}
-            <div>
-              <label
-                htmlFor="effectiveFrom"
-                className="block text-sm font-medium text-text-secondary mb-1"
-              >
-                Effective From
-              </label>
-              <input
-                id="effectiveFrom"
-                type="date"
-                value={effectiveFrom}
-                onChange={(e) => setEffectiveFrom(e.target.value)}
-                className="w-full px-3 py-2 border border-border-strong rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 bg-surface-card text-text-primary"
-                disabled={isLoading}
-                required
-              />
-              {isRetroactive ? (
-                <div className="mt-2 flex items-start gap-1.5 text-xs text-info-text">
-                  <Info className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
-                  <span>
-                    This is a retroactive adjustment. Pending payments will be
-                    updated. For already settled payments, an adjustment payment
-                    will be created for the difference.
-                  </span>
-                </div>
-              ) : (
-                <p className="mt-1 text-xs text-text-muted">
-                  Pending payments from this date will be updated to the new
-                  amount.
-                </p>
-              )}
+      <form id="adjust-rent-form" onSubmit={handleSubmit} className="space-y-4">
+        {/* Effective From — first so the reference rent updates below */}
+        <div>
+          <label
+            htmlFor="effectiveFrom"
+            className="block text-sm font-medium text-text-secondary mb-1"
+          >
+            Effective From
+          </label>
+          <input
+            id="effectiveFrom"
+            type="date"
+            value={effectiveFrom}
+            onChange={(e) => setEffectiveFrom(e.target.value)}
+            className="w-full px-3 py-2 border border-border-strong rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 bg-surface-card text-text-primary"
+            disabled={isLoading}
+            required
+          />
+          {isRetroactive ? (
+            <div className="mt-2 flex items-start gap-1.5 text-xs text-info-text">
+              <Info className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+              <span>
+                This is a retroactive adjustment. Pending payments will be
+                updated. For already settled payments, an adjustment payment
+                will be created for the difference.
+              </span>
             </div>
+          ) : (
+            <p className="mt-1 text-xs text-text-muted">
+              Pending payments from this date will be updated to the new amount.
+            </p>
+          )}
+        </div>
 
-            {/* Reference Rent at selected date */}
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1">
-                {referenceRent !== currentRent
-                  ? 'Rent at Selected Date'
-                  : 'Current Rent'}
-              </label>
-              <p className="text-sm text-text-primary">
-                {formatCurrency(referenceRent, currency)}
-              </p>
-            </div>
+        {/* Reference Rent at selected date */}
+        <div>
+          <label className="block text-sm font-medium text-text-secondary mb-1">
+            {referenceRent !== currentRent
+              ? 'Rent at Selected Date'
+              : 'Current Rent'}
+          </label>
+          <p className="text-sm text-text-primary">
+            {formatCurrency(referenceRent, currency)}
+          </p>
+        </div>
 
-            {/* New Rent Amount */}
-            <div>
-              <label
-                htmlFor="rentAmount"
-                className="block text-sm font-medium text-text-secondary mb-1"
-              >
-                New Rent Amount
-              </label>
-              <div className="relative">
-                <MoneyInput
-                  id="rentAmount"
-                  value={parsedAmount ?? undefined}
-                  onChange={(val) =>
-                    setRentAmount(val !== undefined ? String(val) : '')
-                  }
-                  currency={currency}
-                  disabled={isLoading || adjustComponents}
-                  min={0.01}
-                  className="pr-24"
-                />
-                {percentageChange !== null && (
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                    {percentageChange > 0 ? (
-                      <>
-                        <TrendingUp className="h-4 w-4 text-success-text" />
-                        <span className="text-sm font-medium text-success-text">
-                          +{percentageChange.toFixed(1)}%
-                        </span>
-                      </>
-                    ) : percentageChange < 0 ? (
-                      <>
-                        <TrendingDown className="h-4 w-4 text-error-text" />
-                        <span className="text-sm font-medium text-error-text">
-                          {percentageChange.toFixed(1)}%
-                        </span>
-                      </>
-                    ) : (
-                      <span className="text-sm text-text-muted">0%</span>
-                    )}
-                  </div>
+        {/* New Rent Amount */}
+        <div>
+          <label
+            htmlFor="rentAmount"
+            className="block text-sm font-medium text-text-secondary mb-1"
+          >
+            New Rent Amount
+          </label>
+          <div className="relative">
+            <MoneyInput
+              id="rentAmount"
+              value={parsedAmount ?? undefined}
+              onChange={(val) =>
+                setRentAmount(val !== undefined ? String(val) : '')
+              }
+              currency={currency}
+              disabled={isLoading || adjustComponents}
+              min={0.01}
+              className="pr-24"
+            />
+            {percentageChange !== null && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                {percentageChange > 0 ? (
+                  <>
+                    <TrendingUp className="h-4 w-4 text-success-text" />
+                    <span className="text-sm font-medium text-success-text">
+                      +{percentageChange.toFixed(1)}%
+                    </span>
+                  </>
+                ) : percentageChange < 0 ? (
+                  <>
+                    <TrendingDown className="h-4 w-4 text-error-text" />
+                    <span className="text-sm font-medium text-error-text">
+                      {percentageChange.toFixed(1)}%
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-sm text-text-muted">0%</span>
                 )}
               </div>
-              {adjustComponents && (
-                <p className="mt-1 text-xs text-text-muted">
-                  Auto-calculated from component totals below.
-                </p>
+            )}
+          </div>
+          {adjustComponents && (
+            <p className="mt-1 text-xs text-text-muted">
+              Auto-calculated from component totals below.
+            </p>
+          )}
+        </div>
+
+        {/* Rent Components Section */}
+        {hasCurrentComponents && (
+          <div className="border border-border-default rounded-lg">
+            <button
+              type="button"
+              onClick={() => setAdjustComponents(!adjustComponents)}
+              className="w-full flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
+              disabled={isLoading}
+            >
+              {adjustComponents ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
               )}
-            </div>
+              Adjust Rent Components
+            </button>
 
-            {/* Rent Components Section */}
-            {hasCurrentComponents && (
-              <div className="border border-border-default rounded-lg">
-                <button
-                  type="button"
-                  onClick={() => setAdjustComponents(!adjustComponents)}
-                  className="w-full flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
-                  disabled={isLoading}
-                >
-                  {adjustComponents ? (
-                    <ChevronDown className="h-4 w-4" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4" />
-                  )}
-                  Adjust Rent Components
-                </button>
+            {adjustComponents && (
+              <div className="px-3 pb-3 space-y-0">
+                {/* Active component rows */}
+                {components.map((comp, index) => {
+                  const current = findCurrentComponent(
+                    comp.componentType,
+                    comp.description
+                  );
+                  const oldAmount = current?.amount ?? 0;
+                  const newAmount =
+                    typeof comp.amount === 'number' ? comp.amount : 0;
+                  const compPct = pctChange(newAmount, oldAmount);
+                  const isOther =
+                    comp.componentType === RentComponentType.OTHER;
 
-                {adjustComponents && (
-                  <div className="px-3 pb-3 space-y-0">
-                    {/* Active component rows */}
-                    {components.map((comp, index) => {
-                      const current = findCurrentComponent(
-                        comp.componentType,
-                        comp.description
-                      );
-                      const oldAmount = current?.amount ?? 0;
-                      const newAmount =
-                        typeof comp.amount === 'number' ? comp.amount : 0;
-                      const compPct = pctChange(newAmount, oldAmount);
-                      const isOther =
-                        comp.componentType === RentComponentType.OTHER;
-
-                      return (
-                        <div
-                          key={`${comp.componentType}-${index}`}
-                          className="py-1.5"
-                        >
-                          <div className="flex items-center gap-2">
-                            <div className={labelCol}>
-                              <span className="text-xs text-text-secondary truncate block">
-                                {RENT_COMPONENT_LABELS[comp.componentType]}
-                              </span>
-                              {current && (
-                                <span className="text-[10px] text-text-muted">
-                                  was {formatCurrency(oldAmount, currency)}
-                                </span>
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0 overflow-hidden relative">
-                              <MoneyInput
-                                value={
-                                  typeof comp.amount === 'number'
-                                    ? comp.amount
-                                    : undefined
-                                }
-                                onChange={(val) =>
-                                  handleComponentAmountChange(index, val)
-                                }
-                                currency={currency}
-                                disabled={isLoading}
-                                className={compPct !== null && compPct !== 0 ? 'pr-16' : ''}
-                              />
-                              {compPct !== null && compPct !== 0 && (
-                                <span
-                                  className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium whitespace-nowrap ${
-                                    compPct > 0
-                                      ? 'text-success-text'
-                                      : 'text-error-text'
-                                  }`}
-                                >
-                                  {compPct > 0 ? '+' : ''}
-                                  {compPct.toFixed(1)}%
-                                </span>
-                              )}
-                            </div>
-                            <div className={actionCol}>
-                              <button
-                                type="button"
-                                onClick={() => handleRemoveComponent(index)}
-                                className="p-1 text-text-muted hover:text-error-text transition-colors"
-                                disabled={isLoading}
-                                title="Remove component"
-                              >
-                                <Trash2 className="h-3.5 w-3.5" />
-                              </button>
-                            </div>
-                          </div>
-                          {isOther && (
-                            <div className="mt-1 pl-[148px]">
-                              <input
-                                type="text"
-                                value={comp.description ?? ''}
-                                onChange={(e) =>
-                                  handleComponentDescriptionChange(
-                                    index,
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="Custom label"
-                                className="w-full border border-border-strong rounded px-2 py-1 text-xs bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-                                disabled={isLoading}
-                              />
-                            </div>
+                  return (
+                    <div
+                      key={`${comp.componentType}-${index}`}
+                      className="py-1.5"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className={labelCol}>
+                          <span className="text-xs text-text-secondary truncate block">
+                            {RENT_COMPONENT_LABELS[comp.componentType]}
+                          </span>
+                          {current && (
+                            <span className="text-[10px] text-text-muted">
+                              was {formatCurrency(oldAmount, currency)}
+                            </span>
                           )}
                         </div>
-                      );
-                    })}
-
-                    {/* Removed (struck-through) component rows */}
-                    {removedOriginals.map((orig, index) => (
-                      <div
-                        key={`removed-${orig.componentType}-${index}`}
-                        className="py-1.5 opacity-50"
-                      >
-                        <div className="flex items-center gap-2">
-                          <div className={labelCol}>
-                            <span className="text-xs text-text-muted line-through truncate block">
-                              {RENT_COMPONENT_LABELS[orig.componentType]}
-                            </span>
-                          </div>
-                          <div className="flex-1 min-w-0 overflow-hidden relative">
-                            <div className="px-3 py-2 pr-16 text-sm text-text-muted line-through border border-border-default rounded-md bg-surface-inset">
-                              {formatCurrency(orig.amount, currency)}
-                            </div>
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-error-text whitespace-nowrap no-underline" style={{ textDecoration: 'none' }}>
-                              removed
-                            </span>
-                          </div>
-                          <div className={actionCol}>
-                            <button
-                              type="button"
-                              onClick={() => handleRestoreComponent(index)}
-                              className="p-1 text-text-muted hover:text-primary-500 transition-colors"
-                              disabled={isLoading}
-                              title="Restore component"
-                            >
-                              <RotateCcw className="h-3.5 w-3.5" />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-
-                    {/* Total row */}
-                    <div className="flex items-center gap-2 pt-2 mt-1 border-t border-border-default">
-                      <div className={labelCol}>
-                        <span className="text-xs font-semibold text-text-primary">
-                          Components Total
-                        </span>
-                      </div>
-                      <div className="flex-1 min-w-0 overflow-hidden relative">
-                        <span className="text-sm font-semibold text-text-primary pl-3">
-                          {formatCurrency(componentsTotal, currency)}
-                        </span>
-                        {componentsTotalPctChange !== null &&
-                          componentsTotalPctChange !== 0 && (
+                        <div className="flex-1 min-w-0 overflow-hidden relative">
+                          <MoneyInput
+                            value={
+                              typeof comp.amount === 'number'
+                                ? comp.amount
+                                : undefined
+                            }
+                            onChange={(val) =>
+                              handleComponentAmountChange(index, val)
+                            }
+                            currency={currency}
+                            disabled={isLoading}
+                            className={
+                              compPct !== null && compPct !== 0 ? 'pr-16' : ''
+                            }
+                          />
+                          {compPct !== null && compPct !== 0 && (
                             <span
                               className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium whitespace-nowrap ${
-                                componentsTotalPctChange > 0
+                                compPct > 0
                                   ? 'text-success-text'
                                   : 'text-error-text'
                               }`}
                             >
-                              {componentsTotalPctChange > 0 ? '+' : ''}
-                              {componentsTotalPctChange.toFixed(1)}%
+                              {compPct > 0 ? '+' : ''}
+                              {compPct.toFixed(1)}%
                             </span>
                           )}
+                        </div>
+                        <div className={actionCol}>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveComponent(index)}
+                            className="p-1 text-text-muted hover:text-error-text transition-colors"
+                            disabled={isLoading}
+                            title="Remove component"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
                       </div>
-                      <div className={actionCol} />
-                    </div>
-
-                    {/* Add component */}
-                    {availableTypes.length > 0 && (
-                      <div className="pt-2">
-                        <select
-                          onChange={(e) => {
-                            if (e.target.value) {
-                              handleAddComponent(
-                                e.target.value as RentComponentType
-                              );
-                              e.target.value = '';
+                      {isOther && (
+                        <div className="mt-1 pl-[148px]">
+                          <input
+                            type="text"
+                            value={comp.description ?? ''}
+                            onChange={(e) =>
+                              handleComponentDescriptionChange(
+                                index,
+                                e.target.value
+                              )
                             }
-                          }}
-                          className="appearance-none bg-transparent text-xs text-primary-500 hover:text-primary-600 cursor-pointer border-none focus:outline-none focus:ring-0 p-0"
-                          disabled={isLoading}
-                          value=""
-                        >
-                          <option value="" disabled>
-                            + Add component
-                          </option>
-                          {availableTypes.map((type) => (
-                            <option key={type} value={type}>
-                              {RENT_COMPONENT_LABELS[type]}
-                            </option>
-                          ))}
-                        </select>
+                            placeholder="Custom label"
+                            className="w-full border border-border-strong rounded px-2 py-1 text-xs bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                            disabled={isLoading}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+
+                {/* Removed (struck-through) component rows */}
+                {removedOriginals.map((orig, index) => (
+                  <div
+                    key={`removed-${orig.componentType}-${index}`}
+                    className="py-1.5 opacity-50"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className={labelCol}>
+                        <span className="text-xs text-text-muted line-through truncate block">
+                          {RENT_COMPONENT_LABELS[orig.componentType]}
+                        </span>
                       </div>
-                    )}
+                      <div className="flex-1 min-w-0 overflow-hidden relative">
+                        <div className="px-3 py-2 pr-16 text-sm text-text-muted line-through border border-border-default rounded-md bg-surface-inset">
+                          {formatCurrency(orig.amount, currency)}
+                        </div>
+                        <span
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-error-text whitespace-nowrap no-underline"
+                          style={{ textDecoration: 'none' }}
+                        >
+                          removed
+                        </span>
+                      </div>
+                      <div className={actionCol}>
+                        <button
+                          type="button"
+                          onClick={() => handleRestoreComponent(index)}
+                          className="p-1 text-text-muted hover:text-primary-500 transition-colors"
+                          disabled={isLoading}
+                          title="Restore component"
+                        >
+                          <RotateCcw className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {/* Total row */}
+                <div className="flex items-center gap-2 pt-2 mt-1 border-t border-border-default">
+                  <div className={labelCol}>
+                    <span className="text-xs font-semibold text-text-primary">
+                      Components Total
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0 overflow-hidden relative">
+                    <span className="text-sm font-semibold text-text-primary pl-3">
+                      {formatCurrency(componentsTotal, currency)}
+                    </span>
+                    {componentsTotalPctChange !== null &&
+                      componentsTotalPctChange !== 0 && (
+                        <span
+                          className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium whitespace-nowrap ${
+                            componentsTotalPctChange > 0
+                              ? 'text-success-text'
+                              : 'text-error-text'
+                          }`}
+                        >
+                          {componentsTotalPctChange > 0 ? '+' : ''}
+                          {componentsTotalPctChange.toFixed(1)}%
+                        </span>
+                      )}
+                  </div>
+                  <div className={actionCol} />
+                </div>
+
+                {/* Add component */}
+                {availableTypes.length > 0 && (
+                  <div className="pt-2">
+                    <select
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          handleAddComponent(
+                            e.target.value as RentComponentType
+                          );
+                          e.target.value = '';
+                        }
+                      }}
+                      className="appearance-none bg-transparent text-xs text-primary-500 hover:text-primary-600 cursor-pointer border-none focus:outline-none focus:ring-0 p-0"
+                      disabled={isLoading}
+                      value=""
+                    >
+                      <option value="" disabled>
+                        + Add component
+                      </option>
+                      {availableTypes.map((type) => (
+                        <option key={type} value={type}>
+                          {RENT_COMPONENT_LABELS[type]}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 )}
               </div>
             )}
+          </div>
+        )}
 
-            {/* Notes */}
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1">
-                Notes (Optional)
-              </label>
-              <RichTextEditor
-                value={notes}
-                onChange={setNotes}
-                placeholder="Reason for adjustment (e.g., annual CPI increase)..."
-                onSubmit={submitForm}
-              />
-            </div>
+        {/* Notes */}
+        <div>
+          <label className="block text-sm font-medium text-text-secondary mb-1">
+            Notes (Optional)
+          </label>
+          <RichTextEditor
+            value={notes}
+            onChange={setNotes}
+            placeholder="Reason for adjustment (e.g., annual CPI increase)..."
+            onSubmit={submitForm}
+          />
+        </div>
       </form>
     </ModalWrapper>
   );

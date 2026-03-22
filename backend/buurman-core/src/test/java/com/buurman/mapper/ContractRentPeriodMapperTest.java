@@ -115,7 +115,8 @@ class ContractRentPeriodMapperTest {
               Optional.empty(),
               Optional.empty());
 
-      RentPeriodResponse response = mapper.toResponse(period, Optional.of(BigDecimal.ZERO), List.of());
+      RentPeriodResponse response =
+          mapper.toResponse(period, Optional.of(BigDecimal.ZERO), List.of());
 
       assertThat(response.percentageChange()).isEmpty();
     }

@@ -88,7 +88,8 @@ const InlineContactForm = ({
   const inputClass =
     'w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary text-sm';
 
-  const { matches, dismissed, setDismissed, check, blocking } = useDuplicateCheck();
+  const { matches, dismissed, setDismissed, check, blocking } =
+    useDuplicateCheck();
 
   useEffect(() => {
     onBlockingChange?.(blocking);

@@ -117,7 +117,12 @@ export const ContactForm = ({
 
   // Trigger duplicate check on relevant field changes (skip when editing)
   const triggerDuplicateCheck = useCallback(
-    (data: Pick<CreateContactRequest, 'firstName' | 'lastName' | 'companyName' | 'email' | 'phone'>) => {
+    (
+      data: Pick<
+        CreateContactRequest,
+        'firstName' | 'lastName' | 'companyName' | 'email' | 'phone'
+      >
+    ) => {
       if (!contact) {
         checkForDuplicates(data);
       }

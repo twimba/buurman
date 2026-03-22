@@ -85,7 +85,11 @@ export const ContactListPage = () => {
     handleSizeChange,
     handleSortChange,
     resetPage,
-  } = usePagination({ defaultSize: 12, defaultSort: 'createdAt', defaultDirection: 'desc' });
+  } = usePagination({
+    defaultSize: 12,
+    defaultSort: 'createdAt',
+    defaultDirection: 'desc',
+  });
 
   const {
     data: contactsData,
@@ -107,7 +111,9 @@ export const ContactListPage = () => {
     }
   }, [quickAdd, showQuickAdd, checkQuickAddDuplicates]);
 
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined
+  );
   const handleSearch = useCallback(
     (value: string) => {
       setSearchTerm(value);
@@ -121,11 +127,14 @@ export const ContactListPage = () => {
     },
     [resetPage]
   );
-  useEffect(() => () => {
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-  }, []);
+  useEffect(
+    () => () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    },
+    []
+  );
 
   const handleContactTypeChange = (type: ContactType | undefined) => {
     setContactTypeFilter(type);

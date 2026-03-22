@@ -279,7 +279,11 @@ ALTER INDEX idx_calendar_feeds_tenant_id
 RENAME TO idx_calendar_feeds_contact_id;
 
 -- Migrate existing calendar feed type before re-creating CHECK
-UPDATE calendar_feeds SET feed_type = 'CONTACT_PAYMENTS' WHERE feed_type = 'TENANT_PAYMENTS';
+UPDATE calendar_feeds
+SET
+    feed_type = 'CONTACT_PAYMENTS'
+WHERE
+    feed_type = 'TENANT_PAYMENTS';
 
 ALTER TABLE calendar_feeds
 DROP CONSTRAINT IF EXISTS chk_calendar_feeds_entity_required;
@@ -400,9 +404,14 @@ CREATE TABLE contact_relationships (
 );
 
 -- Partial unique index: allows re-creation of soft-deleted relationships
-CREATE UNIQUE INDEX uq_contact_relationships_pair
-    ON contact_relationships (team_id, source_contact_id, target_contact_id, relationship_type)
-    WHERE deleted_at IS NULL;
+CREATE UNIQUE INDEX uq_contact_relationships_pair ON contact_relationships (
+    team_id,
+    source_contact_id,
+    target_contact_id,
+    relationship_type
+)
+WHERE
+    deleted_at IS NULL;
 
 CREATE INDEX idx_contact_relationships_source ON contact_relationships (source_contact_id)
 WHERE

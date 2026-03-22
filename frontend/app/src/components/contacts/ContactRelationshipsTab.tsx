@@ -174,21 +174,27 @@ export const ContactRelationshipsTab = ({
                     </div>
                   ) : (
                     <Avatar
-                      firstName={rel.relatedContact.firstName ?? rel.relatedContact.displayName}
+                      firstName={
+                        rel.relatedContact.firstName ??
+                        rel.relatedContact.displayName
+                      }
                       lastName={rel.relatedContact.lastName}
                       size="md"
                     />
                   )}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      {rel.relatedContact.dataRetentionStatus === 'ANONYMIZED' ? (
+                      {rel.relatedContact.dataRetentionStatus ===
+                      'ANONYMIZED' ? (
                         <span className="text-sm font-medium text-text-muted italic">
                           Erased contact
                         </span>
                       ) : (
                         <button
                           onClick={() =>
-                            navigate(`/contacts/${rel.relatedContact.identifier}`)
+                            navigate(
+                              `/contacts/${rel.relatedContact.identifier}`
+                            )
                           }
                           className="text-sm font-medium text-primary-500 hover:text-primary-600 hover:underline"
                         >

@@ -265,7 +265,8 @@ class ContractRentPeriodServiceTest {
       when(paymentRepository.findPendingByContractIdFromDate(
               eq(CONTRACT_ID), eq(TEAM_ID), any(LocalDate.class)))
           .thenReturn(List.of());
-      when(rentPeriodMapper.toResponse(any(ContractRentPeriod.class), any(), any())).thenReturn(null);
+      when(rentPeriodMapper.toResponse(any(ContractRentPeriod.class), any(), any()))
+          .thenReturn(null);
 
       CreateRentPeriodRequest request =
           new CreateRentPeriodRequest(
