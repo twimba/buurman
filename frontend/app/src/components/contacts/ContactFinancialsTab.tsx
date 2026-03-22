@@ -28,6 +28,7 @@ export const ContactFinancialsTab = ({
   const expenses = useMemo(() => expensesData?.content ?? [], [expensesData]);
   const payments = useMemo(() => paymentsData?.content ?? [], [paymentsData]);
 
+  // TODO: Totals assume single currency — group by currency when multi-currency support is added
   const expenseTotal = useMemo(() => {
     if (expenses.length === 0) {
       return null;

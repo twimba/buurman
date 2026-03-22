@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useContacts, useCreateContact } from '@/hooks/useContactHooks';
+import * as contactsApi from '@/api/contacts';
 import { ContactCard } from '@/components/contacts/ContactCard';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
@@ -13,6 +14,7 @@ import {
   ChevronDown,
   ChevronUp,
   Save,
+  Download,
 } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
@@ -180,6 +182,27 @@ export const ContactListPage = () => {
     setShowQuickAdd(false);
   };
 
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExportCsv = async () => {
+    setIsExporting(true);
+    try {
+      const blob = await contactsApi.exportContactsCsv();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'contacts.csv';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch {
+      // Download error — browser handles feedback
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   const hasActiveFilters = contactTypeFilter || tagFilters.length > 0;
 
   if (isLoading) {
@@ -217,6 +240,15 @@ export const ContactListPage = () => {
               onClick={() => refetch()}
               isRefreshing={isFetching}
             />
+            <button
+              onClick={handleExportCsv}
+              disabled={isExporting}
+              className="border border-border-strong bg-surface-card text-text-secondary px-3 py-2 rounded hover:border-primary-500 transition-colors flex items-center gap-1.5 text-sm disabled:opacity-50"
+              title="Export contacts to CSV"
+            >
+              <Download className="h-4 w-4" />
+              CSV
+            </button>
             {canEditData && (
               <button
                 onClick={() => setShowQuickAdd(!showQuickAdd)}

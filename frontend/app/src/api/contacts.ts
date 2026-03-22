@@ -337,3 +337,12 @@ export const checkContactDuplicates = async (
 export const eraseContactData = async (contactId: string): Promise<void> => {
   await client.post(`/contacts/${contactId}/erase`);
 };
+
+// --- Export ---
+
+export const exportContactsCsv = async (): Promise<Blob> => {
+  const response = await client.get('/booklets/contacts/csv', {
+    responseType: 'blob',
+  });
+  return response.data;
+};

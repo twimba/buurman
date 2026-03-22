@@ -485,7 +485,7 @@ export const AdjustRentModal = ({
                             </div>
                           </div>
                           {isOther && (
-                            <div className="mt-1" style={{ paddingLeft: 148 }}>
+                            <div className="mt-1 pl-[148px]">
                               <input
                                 type="text"
                                 value={comp.description ?? ''}

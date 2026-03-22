@@ -223,8 +223,8 @@ export const ContactForm = ({
       };
       await onSubmit(payload);
       navigate(contact ? `/contacts/${contact.identifier}` : '/contacts');
-    } catch (error) {
-      console.error('Failed to save contact:', error);
+    } catch {
+      // Mutation error handled by React Query onError
     }
   };
 

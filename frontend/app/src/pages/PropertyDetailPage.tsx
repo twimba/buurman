@@ -179,7 +179,7 @@ export const PropertyDetailPage = () => {
   );
   const deleteWwsMutation = useDeleteWwsCalculation(id);
   const {
-    data: allDocuments = [],
+    data: documents = [],
     isLoading: docsLoading,
     error: docsError,
   } = usePropertyDocuments(id);
@@ -188,8 +188,6 @@ export const PropertyDetailPage = () => {
     isLoading: photosLoading,
     error: photosError,
   } = usePropertyPhotos(id);
-
-  const documents = allDocuments;
   const {
     data: auditLog = [],
     isLoading: auditLoading,

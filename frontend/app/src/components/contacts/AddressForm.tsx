@@ -142,8 +142,8 @@ export const AddressForm = ({
 
     try {
       await onSubmit(formData);
-    } catch (error) {
-      console.error('Failed to save address:', error);
+    } catch {
+      // Mutation error handled by React Query onError
     }
   };
 

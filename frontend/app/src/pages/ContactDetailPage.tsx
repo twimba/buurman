@@ -133,7 +133,7 @@ export const ContactDetailPage = () => {
   }, [contactIdentifier]);
 
   const {
-    data: allDocuments = [],
+    data: documents = [],
     isLoading: docsLoading,
     error: docsError,
   } = useContactDocuments(id);
@@ -152,8 +152,6 @@ export const ContactDetailPage = () => {
   const { data: addresses = [] } = useContactAddresses(id);
   const { data: notes = [] } = useContactNotes(id);
 
-  const documents = allDocuments;
-
   const deleteContactMutation = useDeleteContact();
   const eraseContactMutation = useEraseContactData();
   const uploadDocumentMutation = useUploadContactDocument(id);
@@ -169,8 +167,8 @@ export const ContactDetailPage = () => {
     try {
       await deleteContactMutation.mutateAsync(id);
       navigate('/contacts');
-    } catch (err) {
-      console.error('Failed to delete contact:', err);
+    } catch {
+      // Mutation error handled by React Query onError
     }
   };
 
@@ -181,8 +179,8 @@ export const ContactDetailPage = () => {
     try {
       await eraseContactMutation.mutateAsync(id);
       navigate('/contacts');
-    } catch (err) {
-      console.error('Failed to erase contact data:', err);
+    } catch {
+      // Mutation error handled by React Query onError
     }
   };
 
@@ -419,8 +417,8 @@ export const ContactDetailPage = () => {
                     link.click();
                     document.body.removeChild(link);
                     window.URL.revokeObjectURL(url);
-                  } catch (error) {
-                    console.error('Failed to download booklet:', error);
+                  } catch {
+                    // Download error handled by browser
                   }
                 }}
               >
@@ -462,8 +460,8 @@ export const ContactDetailPage = () => {
         />
 
         {/* Tabs */}
-        <div className="border-b border-border-default mb-6">
-          <div className="flex gap-6">
+        <div className="border-b border-border-default mb-6 overflow-x-auto">
+          <div className="flex gap-6 min-w-max">
             <button
               onClick={() => setActiveTab('overview')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
