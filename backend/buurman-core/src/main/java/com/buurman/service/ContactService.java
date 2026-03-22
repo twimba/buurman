@@ -12,8 +12,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ import com.buurman.domain.ContactAddress;
 import com.buurman.domain.ContactTag;
 import com.buurman.domain.ContactType;
 import com.buurman.domain.Contract;
+import com.buurman.domain.ContractParty;
 import com.buurman.domain.DataRetentionStatus;
 import com.buurman.domain.Photo;
 import com.buurman.domain.Property;
@@ -146,6 +148,7 @@ public class ContactService {
     return toResponse(savedContact, principal.requireTeamId());
   }
 
+  @PreAuthorize("hasRole('TEAM_VIEWER')")
   public List<ContactResponse> getAllContacts(UserPrincipal principal) {
     List<Contact> contacts = contactRepository.findAllByTeamId(principal.requireTeamId());
     return contacts.stream()
@@ -153,6 +156,7 @@ public class ContactService {
         .toList();
   }
 
+  @PreAuthorize("hasRole('TEAM_VIEWER')")
   public List<ContactResponse> searchContacts(String searchTerm, UserPrincipal principal) {
     List<Contact> contacts =
         contactRepository.searchByTeamId(principal.requireTeamId(), searchTerm);
@@ -161,16 +165,21 @@ public class ContactService {
         .toList();
   }
 
+  @PreAuthorize("hasRole('TEAM_VIEWER')")
   public PageResponse<ContactListItemResponse> getContactsPaginated(
       UserPrincipal principal,
-      @Nullable String search,
-      @Nullable ContactType contactType,
-      @Nullable List<ContactTag> tags,
+      Optional<String> search,
+      Optional<ContactType> contactType,
+      Optional<List<ContactTag>> tags,
       PageRequest pageRequest) {
     UUID teamId = principal.requireTeamId();
     PaginatedResult<ContactWithCount> result =
         contactRepository.findAllByTeamIdPaginatedWithCounts(
-            teamId, search, contactType, tags, pageRequest);
+            teamId,
+            search.orElse(null),
+            contactType.orElse(null),
+            tags.orElse(null),
+            pageRequest);
 
     // Batch-load tags for all contacts on the page
     List<UUID> contactIds = result.items().stream().map(cwc -> cwc.contact().getId()).toList();
@@ -228,6 +237,7 @@ public class ContactService {
     return result;
   }
 
+  @PreAuthorize("hasRole('TEAM_VIEWER')")
   public ContactResponse getContact(ContactIdentifier identifier, UserPrincipal principal) {
     Contact contact =
         contactRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
@@ -301,6 +311,7 @@ public class ContactService {
         principal.requireTeamId(), "CONTACT", contact.getId(), principal.getUserId(), contact);
   }
 
+  @PreAuthorize("hasRole('TEAM_VIEWER')")
   public List<PropertyContactHistoryResponse> getContactHistory(
       ContactIdentifier identifier, UserPrincipal principal) {
     Contact contact =
@@ -311,6 +322,7 @@ public class ContactService {
     return history.stream().map(h -> toHistoryResponse(h, principal.requireTeamId())).toList();
   }
 
+  @PreAuthorize("hasRole('TEAM_VIEWER')")
   public List<RecentActivityResponse> getAuditLog(
       ContactIdentifier identifier, UserPrincipal principal) {
     Contact contact =
@@ -331,11 +343,12 @@ public class ContactService {
         result.items(), pageRequest.page(), pageRequest.size(), result.totalElements());
   }
 
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public DocumentResponse uploadDocument(
       ContactIdentifier identifier,
       MultipartFile file,
-      @Nullable String title,
-      @Nullable String notes,
+      Optional<String> title,
+      Optional<String> notes,
       UserPrincipal principal) {
     Contact contact =
         contactRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
@@ -344,11 +357,12 @@ public class ContactService {
         "CONTACT",
         contact.getId(),
         contact.getIdentifier().orElseThrow(),
-        title,
-        notes,
+        title.orElse(null),
+        notes.orElse(null),
         principal);
   }
 
+  @PreAuthorize("hasRole('TEAM_VIEWER')")
   public List<DocumentResponse> getDocuments(
       ContactIdentifier identifier, UserPrincipal principal) {
     Contact contact =
@@ -356,27 +370,31 @@ public class ContactService {
     return documentService.getDocuments("CONTACT", contact.getId(), principal);
   }
 
+  @PreAuthorize("hasRole('TEAM_VIEWER')")
   public Map<String, String> getDownloadUrl(
       DocumentIdentifier documentIdentifier, UserPrincipal principal) {
     URL url = documentService.getDownloadUrl(documentIdentifier, principal);
     return Map.of("url", url.toString());
   }
 
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void deleteDocument(DocumentIdentifier documentIdentifier, UserPrincipal principal) {
     documentService.deleteDocument(documentIdentifier, principal);
   }
 
+  @PreAuthorize("hasRole('TEAM_VIEWER')")
   public List<PhotoResponse> getPhotos(ContactIdentifier identifier, UserPrincipal principal) {
     Contact contact =
         contactRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return photoService.getPhotos("CONTACT", contact.getId(), principal);
   }
 
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PhotoResponse uploadPhoto(
       ContactIdentifier identifier,
       MultipartFile file,
-      @Nullable String title,
-      @Nullable String notes,
+      Optional<String> title,
+      Optional<String> notes,
       UserPrincipal principal) {
     Contact contact =
         contactRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
@@ -385,11 +403,12 @@ public class ContactService {
         "CONTACT",
         contact.getId(),
         contact.getIdentifier().orElseThrow(),
-        title,
-        notes,
+        title.orElse(null),
+        notes.orElse(null),
         principal);
   }
 
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public PhotoResponse setMainPhoto(
       ContactIdentifier identifier, PhotoIdentifier photoIdentifier, UserPrincipal principal) {
     Contact contact =
@@ -399,6 +418,7 @@ public class ContactService {
     return photoService.setMainPhoto(photo.getId(), "CONTACT", contact.getId(), principal);
   }
 
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContactAddressResponse createAddress(
       ContactIdentifier contactIdentifier,
       CreateContactAddressRequest request,
@@ -408,6 +428,7 @@ public class ContactService {
     return addressService.createAddress(contact.getId(), request, principal);
   }
 
+  @PreAuthorize("hasRole('TEAM_VIEWER')")
   public List<ContactAddressResponse> getAddresses(
       ContactIdentifier contactIdentifier, UserPrincipal principal) {
     Contact contact =
@@ -415,6 +436,7 @@ public class ContactService {
     return addressService.getAddresses(contact.getId(), principal);
   }
 
+  @PreAuthorize("hasRole('TEAM_VIEWER')")
   public ContactAddressResponse getAddress(
       ContactIdentifier contactIdentifier,
       ContactAddressIdentifier addressIdentifier,
@@ -426,6 +448,7 @@ public class ContactService {
     return addressService.getAddress(contact.getId(), address.getId(), principal);
   }
 
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContactAddressResponse updateAddress(
       ContactIdentifier contactIdentifier,
       ContactAddressIdentifier addressIdentifier,
@@ -438,6 +461,7 @@ public class ContactService {
     return addressService.updateAddress(contact.getId(), address.getId(), request, principal);
   }
 
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public void deleteAddress(
       ContactIdentifier contactIdentifier,
       ContactAddressIdentifier addressIdentifier,
@@ -530,21 +554,24 @@ public class ContactService {
                           matches.add(new DuplicateMatch(summary, "email", "exact"));
                         }));
 
-    @Nullable String firstName = request.firstName().orElse(null);
-    @Nullable String lastName = request.lastName().orElse(null);
-    @Nullable String companyName = request.companyName().orElse(null);
+    Optional<String> firstName = request.firstName();
+    Optional<String> lastName = request.lastName();
+    Optional<String> companyName = request.companyName();
 
     contactRepository
-        .findDuplicatesByName(firstName, lastName, companyName, teamId)
+        .findDuplicatesByName(
+            firstName.orElse(null), lastName.orElse(null), companyName.orElse(null), teamId)
         .forEach(
             c -> {
               ContactSummary summary = contactMapper.toSummary(c);
               String matchField =
-                  (companyName != null
-                          && !companyName.isBlank()
-                          && c.getCompanyName()
-                              .filter(cn -> cn.equalsIgnoreCase(companyName))
-                              .isPresent())
+                  (companyName
+                          .filter(cn -> !cn.isBlank())
+                          .flatMap(
+                              cn ->
+                                  c.getCompanyName()
+                                      .filter(existing -> existing.equalsIgnoreCase(cn)))
+                          .isPresent())
                       ? "companyName"
                       : "name";
               matches.add(new DuplicateMatch(summary, matchField, "exact"));
@@ -640,16 +667,30 @@ public class ContactService {
             .filter(c -> c.getStatus() == Contract.ContractStatus.ACTIVE)
             .toList();
 
-    List<ContactPropertyAssignment> activeProperties = new java.util.ArrayList<>();
-    for (Contract contract2 : activeContracts) {
-      Property property =
-          propertyRepository.findByIdAndTeamId(contract2.getPropertyId(), teamId).orElse(null);
+    // Batch-load all properties and contract parties for active contracts (avoid N+1)
+    Set<UUID> propertyIds =
+        activeContracts.stream().map(Contract::getPropertyId).collect(Collectors.toSet());
+    List<UUID> contractIds =
+        activeContracts.stream().map(Contract::getId).toList();
+
+    Map<UUID, Property> propertiesById =
+        propertyRepository.findByIdsAndTeamId(propertyIds, teamId).stream()
+            .collect(Collectors.toMap(Property::getId, Function.identity()));
+    List<ContractParty> allParties =
+        contractPartyRepository.findByContractIdsAndTeamId(contractIds, teamId);
+    Map<UUID, String> roleByContractId =
+        allParties.stream()
+            .filter(party -> party.getContactId().filter(contact.getId()::equals).isPresent())
+            .collect(
+                Collectors.toMap(
+                    ContractParty::getContractId,
+                    party -> party.getRole().name(),
+                    (a, b) -> a));
+
+    List<ContactPropertyAssignment> activeProperties = new ArrayList<>();
+    for (Contract activeContract : activeContracts) {
+      Property property = propertiesById.get(activeContract.getPropertyId());
       if (property != null) {
-        String role =
-            contractPartyRepository
-                .findByContactIdAndContractIdAndTeamId(contact.getId(), contract2.getId(), teamId)
-                .map(party -> party.getRole().name())
-                .orElse(null);
         PropertySummary summary =
             new PropertySummary(
                 property.getIdentifier().orElseThrow(),
@@ -659,7 +700,10 @@ public class ContactService {
                 property.getPropertyCategory(),
                 property.getPropertyType(),
                 property.getStatus());
-        activeProperties.add(new ContactPropertyAssignment(summary, Optional.ofNullable(role)));
+        activeProperties.add(
+            new ContactPropertyAssignment(
+                summary,
+                Optional.ofNullable(roleByContractId.get(activeContract.getId()))));
       }
     }
 
@@ -722,37 +766,31 @@ public class ContactService {
   private String computeDisplayName(ContactType contactType, Object request) {
     if (request instanceof CreateContactRequest create) {
       return computeDisplayNameFromFields(
-          contactType,
-          create.firstName().orElse(null),
-          create.lastName().orElse(null),
-          create.companyName().orElse(null));
+          contactType, create.firstName(), create.lastName(), create.companyName());
     }
     if (request instanceof UpdateContactRequest update) {
       return computeDisplayNameFromFields(
-          contactType,
-          update.firstName().orElse(null),
-          update.lastName().orElse(null),
-          update.companyName().orElse(null));
+          contactType, update.firstName(), update.lastName(), update.companyName());
     }
     return "";
   }
 
   private String computeDisplayNameFromFields(
       ContactType contactType,
-      @Nullable String firstName,
-      @Nullable String lastName,
-      @Nullable String companyName) {
+      Optional<String> firstName,
+      Optional<String> lastName,
+      Optional<String> companyName) {
     return switch (contactType) {
       case INDIVIDUAL -> {
-        String first = firstName != null ? firstName : "";
-        String last = lastName != null ? lastName : "";
+        String first = firstName.orElse("");
+        String last = lastName.orElse("");
         yield (first + " " + last).trim();
       }
       case COMPANY, SERVICE_PROVIDER -> {
-        if (companyName == null || companyName.isBlank()) {
-          throw new BadRequestException("Company name is required for " + contactType);
-        }
-        yield companyName;
+        yield companyName
+            .filter(cn -> !cn.isBlank())
+            .orElseThrow(
+                () -> new BadRequestException("Company name is required for " + contactType));
       }
     };
   }

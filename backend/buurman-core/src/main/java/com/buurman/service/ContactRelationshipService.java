@@ -4,8 +4,13 @@ import static com.buurman.util.SidGenerator.newContactRelationshipId;
 
 import java.time.Clock;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -95,6 +100,7 @@ public class ContactRelationshipService {
     return toResponse(saved, sourceContact, targetContact, true);
   }
 
+  @PreAuthorize("hasRole('TEAM_VIEWER')")
   public List<ContactRelationshipResponse> getRelationships(
       ContactIdentifier contactIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
@@ -103,20 +109,33 @@ public class ContactRelationshipService {
     List<ContactRelationship> relationships =
         relationshipRepository.findByContactIdAndTeamId(contact.getId(), teamId);
 
+    // Batch-load all related contacts to avoid N+1
+    Set<UUID> relatedContactIds =
+        relationships.stream()
+            .map(
+                r ->
+                    r.getSourceContactId().equals(contact.getId())
+                        ? r.getTargetContactId()
+                        : r.getSourceContactId())
+            .collect(Collectors.toSet());
+    Map<UUID, Contact> contactsById =
+        contactRepository.findByIdsAndTeamId(relatedContactIds, teamId).stream()
+            .collect(Collectors.toMap(Contact::getId, Function.identity()));
+
     return relationships.stream()
         .map(
             relationship -> {
               boolean isSource = relationship.getSourceContactId().equals(contact.getId());
               UUID relatedContactId =
                   isSource ? relationship.getTargetContactId() : relationship.getSourceContactId();
-              Contact relatedContact = contactRepository.getByIdAndTeamId(relatedContactId, teamId);
-
-              if (isSource) {
-                return toResponse(relationship, contact, relatedContact, true);
-              } else {
-                return toResponse(relationship, contact, relatedContact, false);
+              Contact relatedContact = contactsById.get(relatedContactId);
+              if (relatedContact == null) {
+                // Related contact was deleted — skip this relationship
+                return null;
               }
+              return toResponse(relationship, contact, relatedContact, isSource);
             })
+        .filter(Objects::nonNull)
         .toList();
   }
 

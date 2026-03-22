@@ -73,8 +73,7 @@ public class ContactController implements ContactsApi {
     PageRequest pageRequest =
         PageRequest.of(
             page.orElse(null), size.orElse(null), sort.orElse(null), direction.orElse(null));
-    return contactService.getContactsPaginated(
-        principal, search.orElse(null), contactType.orElse(null), tags.orElse(null), pageRequest);
+    return contactService.getContactsPaginated(principal, search, contactType, tags, pageRequest);
   }
 
   @Override
@@ -116,8 +115,7 @@ public class ContactController implements ContactsApi {
       Optional<String> title,
       Optional<String> notes) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return contactService.uploadDocument(
-        identifier, file, title.orElse(null), notes.orElse(null), principal);
+    return contactService.uploadDocument(identifier, file, title, notes, principal);
   }
 
   @Override
@@ -153,8 +151,7 @@ public class ContactController implements ContactsApi {
       Optional<String> title,
       Optional<String> notes) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return contactService.uploadPhoto(
-        identifier, file, title.orElse(null), notes.orElse(null), principal);
+    return contactService.uploadPhoto(identifier, file, title, notes, principal);
   }
 
   @Override

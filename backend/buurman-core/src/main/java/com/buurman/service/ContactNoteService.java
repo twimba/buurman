@@ -80,6 +80,7 @@ public class ContactNoteService {
     return toResponse(saved);
   }
 
+  @PreAuthorize("hasRole('TEAM_VIEWER')")
   public List<ContactNoteResponse> getNotes(
       ContactIdentifier contactIdentifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
