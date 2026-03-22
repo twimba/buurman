@@ -17,6 +17,7 @@ import {
   AddContactTagRequest,
   ContactType,
   ContactTag,
+  DuplicateCheckRequest,
   DuplicateCheckResponse,
 } from '../types/contact';
 import type { PageParams } from '@/types/common';
@@ -589,7 +590,7 @@ export const useContactActivity = (
 // --- Duplicate Check ---
 
 export const useCheckContactDuplicates = () => {
-  return useMutation<DuplicateCheckResponse, Error, CreateContactRequest>({
+  return useMutation<DuplicateCheckResponse, Error, DuplicateCheckRequest>({
     mutationFn: (data) => contactsApi.checkContactDuplicates(data),
   });
 };

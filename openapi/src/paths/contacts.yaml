@@ -2055,7 +2055,7 @@ check-duplicates:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/CreateContactRequest'
+            $ref: '#/components/schemas/DuplicateCheckRequest'
       required: true
     responses:
       "200":

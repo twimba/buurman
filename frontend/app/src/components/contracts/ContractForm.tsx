@@ -18,6 +18,10 @@ import { MoneyInput } from '@/components/common/MoneyInput';
 import { PropertySelector } from '@/components/common/PropertySelector';
 import { ContactSelector } from '@/components/common/ContactSelector';
 import { PhoneInput, validatePhoneE164 } from '@/components/common/PhoneInput';
+import {
+  useDuplicateCheck,
+  DuplicateContactWarning,
+} from '@/components/contacts/DuplicateContactWarning';
 import CountryMetadataForm, {
   useCountryName,
 } from '@/components/contracts/CountryMetadataForm';
@@ -82,6 +86,13 @@ const InlineContactForm = ({
   const inputClass =
     'w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary text-sm';
 
+  const { matches, dismissed, setDismissed, check } = useDuplicateCheck();
+
+  const handleChange = (updated: CreateContactRequest) => {
+    onChange(updated);
+    check(updated);
+  };
+
   return (
     <div className="rounded-lg border border-border-strong bg-surface-page p-4 space-y-3">
       <button
@@ -102,7 +113,9 @@ const InlineContactForm = ({
           <input
             type="text"
             value={value.firstName}
-            onChange={(e) => onChange({ ...value, firstName: e.target.value })}
+            onChange={(e) =>
+              handleChange({ ...value, firstName: e.target.value })
+            }
             className={inputClass}
             placeholder="John"
             disabled={disabled}
@@ -120,7 +133,9 @@ const InlineContactForm = ({
           <input
             type="text"
             value={value.lastName ?? ''}
-            onChange={(e) => onChange({ ...value, lastName: e.target.value })}
+            onChange={(e) =>
+              handleChange({ ...value, lastName: e.target.value })
+            }
             className={inputClass}
             placeholder="Doe"
             disabled={disabled}
@@ -133,7 +148,7 @@ const InlineContactForm = ({
           <input
             type="email"
             value={value.email}
-            onChange={(e) => onChange({ ...value, email: e.target.value })}
+            onChange={(e) => handleChange({ ...value, email: e.target.value })}
             className={inputClass}
             placeholder="john@example.com"
             disabled={disabled}
@@ -150,7 +165,7 @@ const InlineContactForm = ({
           </label>
           <PhoneInput
             value={value.phone ?? null}
-            onChange={(e164) => onChange({ ...value, phone: e164 ?? '' })}
+            onChange={(e164) => handleChange({ ...value, phone: e164 ?? '' })}
             error={errors[`${errorPrefix}_phone`]}
           />
         </div>
@@ -161,7 +176,9 @@ const InlineContactForm = ({
           <input
             type="text"
             value={value.taxNumber ?? ''}
-            onChange={(e) => onChange({ ...value, taxNumber: e.target.value })}
+            onChange={(e) =>
+              handleChange({ ...value, taxNumber: e.target.value })
+            }
             className={inputClass}
             placeholder="123456789"
             disabled={disabled}
@@ -174,13 +191,21 @@ const InlineContactForm = ({
           <input
             type="text"
             value={value.idNumber ?? ''}
-            onChange={(e) => onChange({ ...value, idNumber: e.target.value })}
+            onChange={(e) =>
+              handleChange({ ...value, idNumber: e.target.value })
+            }
             className={inputClass}
             placeholder="AB123456"
             disabled={disabled}
           />
         </div>
       </div>
+      <DuplicateContactWarning
+        matches={matches}
+        dismissed={dismissed}
+        onDismiss={() => setDismissed(true)}
+        compact
+      />
     </div>
   );
 };

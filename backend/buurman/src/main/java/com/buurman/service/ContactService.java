@@ -33,6 +33,7 @@ import com.buurman.domain.identifier.PhotoIdentifier;
 import com.buurman.dto.request.AddContactTagRequest;
 import com.buurman.dto.request.CreateContactAddressRequest;
 import com.buurman.dto.request.CreateContactRequest;
+import com.buurman.dto.request.DuplicateCheckRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateContactAddressRequest;
 import com.buurman.dto.request.UpdateContactRequest;
@@ -507,7 +508,7 @@ public class ContactService {
 
   @PreAuthorize("hasRole('TEAM_VIEWER')")
   public DuplicateCheckResponse checkDuplicates(
-      CreateContactRequest request, UserPrincipal principal) {
+      DuplicateCheckRequest request, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     List<DuplicateMatch> matches = new ArrayList<>();
 
@@ -564,9 +565,8 @@ public class ContactService {
     // Anonymize contact record
     contactRepository.anonymizeContact(contactId, teamId, principal.getUserId(), now);
 
-    // Delete associated data
+    // Delete associated data (relationships are preserved — the related contact shows as [ERASED])
     contactNoteRepository.anonymizeByContactId(contactId);
-    contactRelationshipRepository.softDeleteByContactId(contactId, teamId);
     contactTagRepository.deleteByContactId(contactId);
     addressRepository.hardDeleteByContactId(contactId);
 
@@ -594,6 +594,10 @@ public class ContactService {
   }
 
   private ContactResponse toResponse(Contact contact, UUID teamId) {
+    // Reload tags from DB — the mapper initializes tags to empty list
+    List<ContactTag> tags = contactTagRepository.findByContactId(contact.getId());
+    contact.setTags(tags);
+
     ContactResponse response = contactMapper.toResponse(contact);
 
     List<Photo> photos = photoRepository.findByEntityAndTeamId("CONTACT", contact.getId(), teamId);

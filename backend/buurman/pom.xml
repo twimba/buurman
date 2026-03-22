@@ -344,6 +344,7 @@
                                 <schemaMapping>ContactNoteResponse=com.buurman.dto.response.ContactNoteResponse</schemaMapping>
                                 <schemaMapping>ContactRelationshipResponse=com.buurman.dto.response.ContactRelationshipResponse</schemaMapping>
                                 <schemaMapping>ContactActivityItem=com.buurman.dto.response.ContactActivityItem</schemaMapping>
+                                <schemaMapping>DuplicateCheckRequest=com.buurman.dto.request.DuplicateCheckRequest</schemaMapping>
                                 <schemaMapping>DuplicateCheckResponse=com.buurman.dto.response.DuplicateCheckResponse</schemaMapping>
                                 <schemaMapping>DuplicateMatch=com.buurman.dto.response.DuplicateMatch</schemaMapping>
                                 <schemaMapping>ContactPropertyAssignment=com.buurman.dto.response.ContactPropertyAssignment</schemaMapping>
@@ -447,6 +448,7 @@
                                 <importMapping>ContactNoteResponse=com.buurman.dto.response.ContactNoteResponse</importMapping>
                                 <importMapping>ContactRelationshipResponse=com.buurman.dto.response.ContactRelationshipResponse</importMapping>
                                 <importMapping>ContactActivityItem=com.buurman.dto.response.ContactActivityItem</importMapping>
+                                <importMapping>DuplicateCheckRequest=com.buurman.dto.request.DuplicateCheckRequest</importMapping>
                                 <importMapping>DuplicateCheckResponse=com.buurman.dto.response.DuplicateCheckResponse</importMapping>
                                 <importMapping>DuplicateMatch=com.buurman.dto.response.DuplicateMatch</importMapping>
                                 <importMapping>TransactionResponse=com.buurman.dto.response.TransactionResponse</importMapping>

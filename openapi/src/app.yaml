@@ -2754,6 +2754,9 @@ components:
             - CANCELLED
         notes:
           type: string
+        contactIdentifier:
+          type: string
+          description: Identifier of the contact linked to this payment
     ContractSummary:
       type: object
       properties:
@@ -2925,8 +2928,13 @@ components:
           type: string
         phone:
           type: string
+        dataRetentionStatus:
+          type: string
+          enum: [ACTIVE, RETENTION_REQUESTED, ANONYMIZED]
+          description: Data retention status — ANONYMIZED means the contact has been erased
       required:
         - contactType
+        - dataRetentionStatus
         - displayName
         - identifier
     UpdatePaymentReceivalRequest:
@@ -3065,6 +3073,9 @@ components:
           minLength: 1
         notes:
           type: string
+        contactIdentifier:
+          type: string
+          description: Identifier of the contact linked to this expense
     ExpenseResponse:
       type: object
       description: Property expense record with category, amount, and supporting documents
@@ -3107,6 +3118,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/DocumentResponse"
+        contact:
+          $ref: "#/components/schemas/ContactSummary"
         createdAt:
           type: string
           format: date-time
@@ -5258,6 +5271,9 @@ components:
           format: date
         notes:
           type: string
+        contactIdentifier:
+          type: string
+          description: Identifier of the contact linked to this payment
         markAsPaid:
           type: boolean
         paymentDate:
@@ -5478,6 +5494,9 @@ components:
           minLength: 1
         notes:
           type: string
+        contactIdentifier:
+          type: string
+          description: Identifier of the contact linked to this expense
       required:
         - amount
         - category
@@ -5702,6 +5721,11 @@ components:
           format: date
         notes:
           type: string
+        components:
+          type: array
+          items:
+            $ref: "#/components/schemas/RentComponentRequest"
+          description: Optional rent components to set alongside the rent period adjustment
       required:
         - effectiveFrom
         - rentAmount
@@ -6141,6 +6165,20 @@ components:
           $ref: '#/components/schemas/ContactTag'
       required:
         - tag
+    DuplicateCheckRequest:
+      type: object
+      description: Lightweight request for duplicate checking — no validation, works with partial input
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        companyName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
     DuplicateCheckResponse:
       type: object
       properties:

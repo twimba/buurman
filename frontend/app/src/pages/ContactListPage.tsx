@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useContacts, useCreateContact } from '@/hooks/useContactHooks';
 import { ContactCard } from '@/components/contacts/ContactCard';
@@ -25,6 +25,10 @@ import {
   CONTACT_TAG_LABELS,
 } from '@/types/contact';
 import { PhoneInput, validatePhoneE164 } from '@/components/common/PhoneInput';
+import {
+  useDuplicateCheck,
+  DuplicateContactWarning,
+} from '@/components/contacts/DuplicateContactWarning';
 
 const CONTACT_TYPES: ContactType[] = [
   'INDIVIDUAL',
@@ -55,6 +59,13 @@ export const ContactListPage = () => {
   );
   const createMutation = useCreateContact();
   const {
+    matches: quickAddDuplicates,
+    dismissed: quickAddDupDismissed,
+    setDismissed: setQuickAddDupDismissed,
+    check: checkQuickAddDuplicates,
+    reset: resetQuickAddDuplicates,
+  } = useDuplicateCheck();
+  const {
     pageParams,
     page,
     size,
@@ -75,6 +86,13 @@ export const ContactListPage = () => {
     tags: tagFilters.length > 0 ? tagFilters : undefined,
     ...pageParams,
   });
+
+  // Trigger duplicate check as user types in quick-add
+  useEffect(() => {
+    if (showQuickAdd) {
+      checkQuickAddDuplicates(quickAdd);
+    }
+  }, [quickAdd, showQuickAdd, checkQuickAddDuplicates]);
 
   const handleSearch = useCallback(
     (value: string) => {
@@ -443,6 +461,14 @@ export const ContactListPage = () => {
                 </div>
               </div>
 
+              {/* Duplicate warning */}
+              <DuplicateContactWarning
+                matches={quickAddDuplicates}
+                dismissed={quickAddDupDismissed}
+                onDismiss={() => setQuickAddDupDismissed(true)}
+                compact
+              />
+
               {/* Action buttons */}
               <div className="flex items-center gap-2 justify-end">
                 <button
@@ -450,6 +476,7 @@ export const ContactListPage = () => {
                   onClick={() => {
                     setShowQuickAdd(false);
                     setQuickAddErrors({});
+                    resetQuickAddDuplicates();
                   }}
                   className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary transition-colors"
                 >

@@ -20,6 +20,7 @@ import com.buurman.dto.request.CreateContactAddressRequest;
 import com.buurman.dto.request.CreateContactNoteRequest;
 import com.buurman.dto.request.CreateContactRelationshipRequest;
 import com.buurman.dto.request.CreateContactRequest;
+import com.buurman.dto.request.DuplicateCheckRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateContactAddressRequest;
 import com.buurman.dto.request.UpdateContactNoteRequest;
@@ -298,7 +299,7 @@ public class ContactController implements ContactsApi {
   // --- Duplicates ---
 
   @Override
-  public DuplicateCheckResponse checkContactDuplicates(CreateContactRequest request) {
+  public DuplicateCheckResponse checkContactDuplicates(DuplicateCheckRequest request) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return contactService.checkDuplicates(request, principal);
   }

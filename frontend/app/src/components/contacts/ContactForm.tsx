@@ -1,19 +1,21 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, Save, AlertTriangle } from 'lucide-react';
+import { X, Save } from 'lucide-react';
 import {
   ContactResponse,
   ContactType,
   CONTACT_TYPE_LABELS,
   CreateContactRequest,
-  DuplicateCheckMatch,
 } from '@/types/contact';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
 import { PhoneInput, validatePhoneE164 } from '@/components/common/PhoneInput';
 import { ConfirmDialog } from '@buurman/ui';
 import { trackEvent } from '@/utils/analytics';
 import { AnalyticsEvent } from '@/constants/analyticsEvents';
-import { useCheckContactDuplicates } from '@/hooks/useContactHooks';
+import {
+  useDuplicateCheck,
+  DuplicateContactWarning,
+} from '@/components/contacts/DuplicateContactWarning';
 
 interface ContactFormProps {
   contact?: ContactResponse;
@@ -56,14 +58,12 @@ export const ContactForm = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showTypeChangeDialog, setShowTypeChangeDialog] = useState(false);
   const [pendingType, setPendingType] = useState<ContactType | null>(null);
-  const [duplicateMatches, setDuplicateMatches] = useState<
-    DuplicateCheckMatch[]
-  >([]);
-  const [dismissedDuplicates, setDismissedDuplicates] = useState(false);
-  const duplicateCheckMutation = useCheckContactDuplicates();
-  const duplicateTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(
-    undefined
-  );
+  const {
+    matches: duplicateMatches,
+    dismissed: dismissedDuplicates,
+    setDismissed: setDismissedDuplicates,
+    check: checkForDuplicates,
+  } = useDuplicateCheck();
 
   const originalType = (contact?.contactType as ContactType) ?? 'INDIVIDUAL';
 
@@ -114,38 +114,15 @@ export const ContactForm = ({
     }
   }, [contact, contactIdentifier]);
 
-  const duplicateCheckRef = useRef(duplicateCheckMutation);
-  useEffect(() => {
-    duplicateCheckRef.current = duplicateCheckMutation;
-  });
-
-  const checkForDuplicates = useCallback(
-    (data: CreateContactRequest) => {
-      if (contact) {
-        return; // skip duplicate check when editing
+  // Trigger duplicate check on relevant field changes (skip when editing)
+  const triggerDuplicateCheck = useCallback(
+    (data: Pick<CreateContactRequest, 'firstName' | 'lastName' | 'companyName' | 'email' | 'phone'>) => {
+      if (!contact) {
+        checkForDuplicates(data);
       }
-      const hasIdentifyingInfo =
-        data.email?.trim() || data.phone?.trim() || data.firstName?.trim();
-      if (!hasIdentifyingInfo) {
-        setDuplicateMatches([]);
-        return;
-      }
-      clearTimeout(duplicateTimerRef.current);
-      duplicateTimerRef.current = setTimeout(() => {
-        duplicateCheckRef.current.mutate(data, {
-          onSuccess: (result) => {
-            setDuplicateMatches(result.matches);
-            setDismissedDuplicates(false);
-          },
-        });
-      }, 800);
     },
-    [contact]
+    [contact, checkForDuplicates]
   );
-
-  useEffect(() => {
-    return () => clearTimeout(duplicateTimerRef.current);
-  }, []);
 
   const isIndividual = formData.contactType === 'INDIVIDUAL';
   const isCompanyLike =
@@ -268,8 +245,10 @@ export const ContactForm = ({
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: '' }));
     }
-    if (['email', 'phone', 'firstName', 'lastName'].includes(field)) {
-      checkForDuplicates(updated);
+    if (
+      ['email', 'phone', 'firstName', 'lastName', 'companyName'].includes(field)
+    ) {
+      triggerDuplicateCheck(updated);
     }
   };
 
@@ -306,60 +285,11 @@ export const ContactForm = ({
         </div>
 
         {/* Duplicate Detection Warning */}
-        {duplicateMatches.length > 0 && !dismissedDuplicates && (
-          <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-700 rounded-lg p-4">
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
-                  Potential duplicate{duplicateMatches.length > 1 ? 's' : ''}{' '}
-                  found
-                </p>
-                <div className="mt-2 space-y-2">
-                  {duplicateMatches.map((match) => (
-                    <div
-                      key={match.contact.identifier}
-                      className="flex items-center justify-between gap-2 text-sm"
-                    >
-                      <span className="text-amber-700 dark:text-amber-300">
-                        <span className="font-medium">
-                          {match.contact.firstName}
-                          {match.contact.lastName
-                            ? ` ${match.contact.lastName}`
-                            : ''}
-                        </span>
-                        {match.contact.email && (
-                          <span className="text-amber-600 dark:text-amber-400">
-                            {' '}
-                            — {match.contact.email}
-                          </span>
-                        )}
-                        <span className="text-amber-500 dark:text-amber-500 ml-2">
-                          ({match.matchType} match on {match.matchField})
-                        </span>
-                      </span>
-                      <a
-                        href={`/contacts/${match.contact.identifier}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs font-medium text-amber-700 dark:text-amber-300 hover:underline flex-shrink-0"
-                      >
-                        View
-                      </a>
-                    </div>
-                  ))}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setDismissedDuplicates(true)}
-                  className="mt-2 text-xs text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200"
-                >
-                  Dismiss — this is not a duplicate
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <DuplicateContactWarning
+          matches={duplicateMatches}
+          dismissed={dismissedDuplicates}
+          onDismiss={() => setDismissedDuplicates(true)}
+        />
 
         {/* Name Fields */}
         <div>

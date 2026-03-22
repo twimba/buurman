@@ -210,10 +210,13 @@ export interface ContactResponse {
 
 export interface ContactSummary {
   identifier: string;
-  firstName: string;
+  contactType: ContactType;
+  displayName: string;
+  firstName?: string;
   lastName?: string;
   email?: string;
   phone?: string;
+  dataRetentionStatus: 'ACTIVE' | 'RETENTION_REQUESTED' | 'ANONYMIZED';
 }
 
 export interface PropertyContactHistoryResponse {
@@ -295,6 +298,14 @@ export interface UpdateContactAddressRequest {
   latitude?: number;
   longitude?: number;
   geocodeAccuracy?: string;
+}
+
+export interface DuplicateCheckRequest {
+  firstName?: string;
+  lastName?: string;
+  companyName?: string;
+  email?: string;
+  phone?: string;
 }
 
 export interface DuplicateCheckMatch {
