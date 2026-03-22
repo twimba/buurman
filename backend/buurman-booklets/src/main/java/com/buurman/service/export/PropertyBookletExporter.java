@@ -1188,7 +1188,7 @@ public class PropertyBookletExporter {
 
     html.append("<table class='payment-table'><thead><tr>");
     html.append(
-        "<th>Contract ID</th><th>Tenant</th><th>Start Date</th><th>End"
+        "<th>Contract ID</th><th>Contact</th><th>Start Date</th><th>End"
             + " Date</th><th>Rent</th><th>Status</th>");
     html.append("</tr></thead><tbody>");
 

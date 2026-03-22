@@ -129,7 +129,7 @@ public class ContractExtensionAddendumExporter {
     html.append("<tr>");
     appendCoverCell(
         html, "Property", escapeHtml(property.getStreet()) + ", " + escapeHtml(property.getCity()));
-    appendCoverCell(html, "Primary Tenant", primaryName);
+    appendCoverCell(html, "Primary Contact", primaryName);
     html.append("</tr><tr>");
     appendCoverCell(html, "Contract", escapeHtml(contract.getIdentifier().orElseThrow().value()));
     appendCoverCell(html, "Trigger", formatEnumValue(extension.getTriggerType().name()));
@@ -160,7 +160,7 @@ public class ContractExtensionAddendumExporter {
     appendPageStart(html, "Extension Details");
 
     // Property & Tenant Info
-    appendSectionTitle(html, "Property &amp; Tenant");
+    appendSectionTitle(html, "Property &amp; Contact");
     html.append("<table class='detail-grid'>");
     html.append("<tr>");
     appendField(
@@ -171,7 +171,7 @@ public class ContractExtensionAddendumExporter {
             + escapeHtml(property.getPostalCode())
             + " "
             + escapeHtml(property.getCity()));
-    appendField(html, "Tenant(s)", contactNames);
+    appendField(html, "Contact(s)", contactNames);
     html.append("</tr>");
     html.append("</table>");
 
@@ -249,7 +249,7 @@ public class ContractExtensionAddendumExporter {
     appendSectionTitle(html, "Signatures");
     html.append("<div class='signature-container'>");
     appendSignatureBlock(html, "Landlord");
-    appendSignatureBlock(html, "Tenant");
+    appendSignatureBlock(html, "Contact");
     html.append("</div>");
 
     // Disclaimer

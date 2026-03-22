@@ -596,6 +596,8 @@ public class ContactService {
     // Soft-delete documents (S3 files retained for audit trail; DB records marked deleted)
     documentRepository.softDeleteByEntityAndTeamId("CONTACT", contactId, teamId);
 
+    metricsService.incrementCounter("contact.gdpr_erase");
+
     log.info("Contact data erased: {} for team {}", identifier, teamId);
 
     auditService.logUpdate(

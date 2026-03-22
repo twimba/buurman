@@ -148,7 +148,7 @@ public class RentIncreaseLetterExporter {
                 html.append("<div>").append(escapeHtml(addr.getCountryCode())).append("</div>");
               });
         },
-        () -> html.append("<div class='addressee-name'>Tenant</div>"));
+        () -> html.append("<div class='addressee-name'>Resident</div>"));
     html.append("</div>");
 
     // Subject line
@@ -156,7 +156,7 @@ public class RentIncreaseLetterExporter {
 
     // Salutation
     String salutation =
-        primaryContact.map(t -> "Dear " + escapeHtml(t.getDisplayName())).orElse("Dear Tenant");
+        primaryContact.map(t -> "Dear " + escapeHtml(t.getDisplayName())).orElse("Dear Resident");
     html.append("<div class='letter-body'>");
     html.append("<p>").append(salutation).append(",</p>");
 

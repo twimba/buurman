@@ -100,6 +100,10 @@ public class DemoContactNoteGenerator {
             followUpDate = occurredAt.toLocalDate().plusDays(random.nextInt(3, 30));
           }
 
+          // Mark reminder as already sent for follow-up dates in the past
+          boolean reminderSent =
+              followUpDate != null && followUpDate.isBefore(LocalDate.now(clock));
+
           dsl.insertInto(CONTACT_NOTES)
               .set(CONTACT_NOTES.ID, UUID.randomUUID())
               .set(CONTACT_NOTES.IDENTIFIER, newContactNoteId())
@@ -110,7 +114,7 @@ public class DemoContactNoteGenerator {
               .set(CONTACT_NOTES.BODY, body)
               .set(CONTACT_NOTES.OCCURRED_AT, occurredAt)
               .set(CONTACT_NOTES.FOLLOW_UP_DATE, followUpDate)
-              .set(CONTACT_NOTES.FOLLOW_UP_REMINDER_SENT, false)
+              .set(CONTACT_NOTES.FOLLOW_UP_REMINDER_SENT, reminderSent)
               .set(CONTACT_NOTES.PINNED, pinned)
               .set(CONTACT_NOTES.CREATED_AT, occurredAt)
               .set(CONTACT_NOTES.UPDATED_AT, occurredAt)

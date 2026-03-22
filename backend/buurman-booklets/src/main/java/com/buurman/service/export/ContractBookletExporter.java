@@ -237,7 +237,7 @@ public class ContractBookletExporter {
     html.append("<tr>");
     appendCoverCell(
         html, "Property", escapeHtml(property.getStreet()) + ", " + escapeHtml(property.getCity()));
-    appendCoverCell(html, "Primary Tenant", primaryName);
+    appendCoverCell(html, "Primary Contact", primaryName);
     html.append("</tr><tr>");
     appendCoverCell(
         html, "Current Rent", CurrencyUtils.formatCurrency(contract.getRentAmount().value(), ccy));

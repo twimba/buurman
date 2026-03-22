@@ -162,6 +162,7 @@ scheduling:
   notification-reminders:
     contract-expiry-cron: "0 0 0 * * ?"
     payment-reminder-cron: "0 0 0 * * ?"
+    contact-follow-up-cron: "0 0 8 * * ?"
   metrics:
     metrics-push-cron: "0 */15 * * * ?"
   thumbnail-backfill:
