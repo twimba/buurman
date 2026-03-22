@@ -1,6 +1,7 @@
 package com.buurman.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -148,33 +149,29 @@ class PaymentRecordMapperTest {
     }
 
     @Test
-    @DisplayName("null amount creates MoneyAmount with null value (record accepts nulls)")
+    @DisplayName("null amount throws NullPointerException (MoneyAmount.of requires non-null value)")
     @SuppressWarnings("NullAway")
-    void nullAmountCreatesMoneyAmountWithNullValue() {
+    void nullAmountThrowsNpe() {
       PaymentsRecord record = createCompleteRecord();
       record.setAmount(null);
 
-      // MoneyAmount is a Java record — its canonical constructor accepts nulls.
-      // The mapper does not guard against this, so the resulting MoneyAmount has a null value.
-      Optional<Payment> result = mapper.toDomain(record);
-
-      assertThat(result).isPresent();
-      assertThat(result.get().getAmount().value()).isNull();
+      // MoneyAmount.of() calls value.setScale() which requires non-null value.
+      // DB enforces amount NOT NULL, so this scenario cannot occur in practice.
+      assertThatThrownBy(() -> mapper.toDomain(record))
+          .isInstanceOf(NullPointerException.class);
     }
 
     @Test
-    @DisplayName("null currency creates MoneyAmount with null currency (record accepts nulls)")
+    @DisplayName("null currency throws NullPointerException (MoneyAmount.of requires non-null currency)")
     @SuppressWarnings("NullAway")
-    void nullCurrencyCreatesMoneyAmountWithNullCurrency() {
+    void nullCurrencyThrowsNpe() {
       PaymentsRecord record = createCompleteRecord();
       record.setCurrency(null);
 
-      // MoneyAmount is a Java record — its canonical constructor accepts nulls.
-      // The mapper does not guard against this, so the resulting MoneyAmount has a null currency.
-      Optional<Payment> result = mapper.toDomain(record);
-
-      assertThat(result).isPresent();
-      assertThat(result.get().getAmount().currency()).isNull();
+      // MoneyAmount.of() calls CurrencyUtils.getFractionalDigits() which requires non-null currency.
+      // DB defaults currency to 'EUR', so this scenario is unlikely in practice.
+      assertThatThrownBy(() -> mapper.toDomain(record))
+          .isInstanceOf(NullPointerException.class);
     }
   }
 
