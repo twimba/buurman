@@ -129,10 +129,10 @@ public class ContactNoteRepository {
             .map(mapper::toDomain));
   }
 
-  public void markFollowUpReminderSent(UUID noteId) {
+  public void markFollowUpReminderSent(UUID noteId, UUID teamId) {
     dsl.update(CONTACT_NOTES)
         .set(CONTACT_NOTES.FOLLOW_UP_REMINDER_SENT, true)
-        .where(CONTACT_NOTES.ID.eq(noteId))
+        .where(CONTACT_NOTES.ID.eq(noteId).and(CONTACT_NOTES.TEAM_ID.eq(teamId)))
         .execute();
   }
 
@@ -145,11 +145,11 @@ public class ContactNoteRepository {
         .execute();
   }
 
-  public void anonymizeByContactId(UUID contactId) {
+  public void anonymizeByContactId(UUID contactId, UUID teamId) {
     dsl.update(CONTACT_NOTES)
         .set(CONTACT_NOTES.BODY, "Content erased per GDPR request")
         .set(CONTACT_NOTES.SUBJECT, (String) null)
-        .where(CONTACT_NOTES.CONTACT_ID.eq(contactId))
+        .where(CONTACT_NOTES.CONTACT_ID.eq(contactId).and(CONTACT_NOTES.TEAM_ID.eq(teamId)))
         .execute();
   }
 }

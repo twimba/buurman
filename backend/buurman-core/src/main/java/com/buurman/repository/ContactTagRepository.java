@@ -36,28 +36,34 @@ public class ContactTagRepository {
         .execute();
   }
 
-  public void removeTag(UUID contactId, ContactTag tag) {
+  public void removeTag(UUID contactId, UUID teamId, ContactTag tag) {
     dsl.deleteFrom(CONTACT_TAGS)
-        .where(CONTACT_TAGS.CONTACT_ID.eq(contactId).and(CONTACT_TAGS.TAG.eq(tag.name())))
+        .where(
+            CONTACT_TAGS
+                .CONTACT_ID
+                .eq(contactId)
+                .and(CONTACT_TAGS.TEAM_ID.eq(teamId))
+                .and(CONTACT_TAGS.TAG.eq(tag.name())))
         .execute();
   }
 
-  public List<ContactTag> findByContactId(UUID contactId) {
+  public List<ContactTag> findByContactId(UUID contactId, UUID teamId) {
     return List.copyOf(
         dsl.select(CONTACT_TAGS.TAG)
             .from(CONTACT_TAGS)
-            .where(CONTACT_TAGS.CONTACT_ID.eq(contactId))
+            .where(CONTACT_TAGS.CONTACT_ID.eq(contactId).and(CONTACT_TAGS.TEAM_ID.eq(teamId)))
             .fetch(record -> ContactTag.valueOf(record.get(CONTACT_TAGS.TAG))));
   }
 
-  public Map<UUID, List<ContactTag>> findByContactIdsGrouped(Collection<UUID> contactIds) {
+  public Map<UUID, List<ContactTag>> findByContactIdsGrouped(
+      Collection<UUID> contactIds, UUID teamId) {
     if (contactIds.isEmpty()) {
       return Map.of();
     }
     return dsl
         .select(CONTACT_TAGS.CONTACT_ID, CONTACT_TAGS.TAG)
         .from(CONTACT_TAGS)
-        .where(CONTACT_TAGS.CONTACT_ID.in(contactIds))
+        .where(CONTACT_TAGS.CONTACT_ID.in(contactIds).and(CONTACT_TAGS.TEAM_ID.eq(teamId)))
         .fetch()
         .stream()
         .collect(
@@ -68,7 +74,9 @@ public class ContactTagRepository {
                     Collectors.toUnmodifiableList())));
   }
 
-  public void deleteByContactId(UUID contactId) {
-    dsl.deleteFrom(CONTACT_TAGS).where(CONTACT_TAGS.CONTACT_ID.eq(contactId)).execute();
+  public void deleteByContactId(UUID contactId, UUID teamId) {
+    dsl.deleteFrom(CONTACT_TAGS)
+        .where(CONTACT_TAGS.CONTACT_ID.eq(contactId).and(CONTACT_TAGS.TEAM_ID.eq(teamId)))
+        .execute();
   }
 }

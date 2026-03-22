@@ -6,9 +6,11 @@ import java.net.URL;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
@@ -100,6 +102,7 @@ public class ContactService {
   private final MetricsService metricsService;
   private final Clock clock;
 
+  @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContactResponse createContact(CreateContactRequest request, UserPrincipal principal) {
     request
@@ -172,7 +175,7 @@ public class ContactService {
     // Batch-load tags for all contacts on the page
     List<UUID> contactIds = result.items().stream().map(cwc -> cwc.contact().getId()).toList();
     Map<UUID, List<ContactTag>> tagsByContactId =
-        contactTagRepository.findByContactIdsGrouped(contactIds);
+        contactTagRepository.findByContactIdsGrouped(contactIds, teamId);
 
     // Batch-load main photo thumbnails for all contacts on the page
     Map<UUID, Optional<String>> thumbnailsByContactId =
@@ -488,7 +491,7 @@ public class ContactService {
     Contact contact =
         contactRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
-    contactTagRepository.removeTag(contact.getId(), contactTag);
+    contactTagRepository.removeTag(contact.getId(), principal.requireTeamId(), contactTag);
 
     log.info(
         "Tag {} removed from contact {} for team {}",
@@ -547,7 +550,17 @@ public class ContactService {
               matches.add(new DuplicateMatch(summary, matchField, "exact"));
             });
 
-    return new DuplicateCheckResponse(List.copyOf(matches));
+    // Dedup matches by contact identifier (a contact may match both email and name)
+    Set<String> seenIdentifiers = new LinkedHashSet<>();
+    List<DuplicateMatch> deduped =
+        matches.stream()
+            .filter(
+                m ->
+                    seenIdentifiers.add(
+                        m.contact().identifier().toString()))
+            .toList();
+
+    return new DuplicateCheckResponse(deduped);
   }
 
   @Transactional
@@ -568,9 +581,9 @@ public class ContactService {
     contactRepository.anonymizeContact(contactId, teamId, principal.getUserId(), now);
 
     // Delete associated data (relationships are preserved — the related contact shows as [ERASED])
-    contactNoteRepository.anonymizeByContactId(contactId);
-    contactTagRepository.deleteByContactId(contactId);
-    addressRepository.hardDeleteByContactId(contactId);
+    contactNoteRepository.anonymizeByContactId(contactId, teamId);
+    contactTagRepository.deleteByContactId(contactId, teamId);
+    addressRepository.hardDeleteByContactId(contactId, teamId);
 
     // Delete photos from S3 and soft-delete DB records
     List<Photo> photos = photoRepository.findByEntityAndTeamId("CONTACT", contactId, teamId);
@@ -597,7 +610,7 @@ public class ContactService {
 
   private ContactResponse toResponse(Contact contact, UUID teamId) {
     // Reload tags from DB — the mapper initializes tags to empty list
-    List<ContactTag> tags = contactTagRepository.findByContactId(contact.getId());
+    List<ContactTag> tags = contactTagRepository.findByContactId(contact.getId(), teamId);
     contact.setTags(tags);
 
     ContactResponse response = contactMapper.toResponse(contact);

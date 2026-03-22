@@ -30,7 +30,7 @@ public class ContactCsvExporter {
 
     List<UUID> contactIds = contacts.stream().map(Contact::getId).toList();
     Map<UUID, List<ContactTag>> tagsByContactId =
-        contactTagRepository.findByContactIdsGrouped(contactIds);
+        contactTagRepository.findByContactIdsGrouped(contactIds, teamId);
 
     // Build a map of active contract counts
     Map<UUID, Integer> activeCountsByContactId =

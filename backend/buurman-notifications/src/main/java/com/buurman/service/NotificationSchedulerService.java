@@ -256,7 +256,7 @@ public class NotificationSchedulerService {
                         .createdBy(SYSTEM_USER_ID)
                         .build()));
 
-        contactNoteRepository.markFollowUpReminderSent(note.getId());
+        contactNoteRepository.markFollowUpReminderSent(note.getId(), note.getTeamId());
         remindersSent++;
       } catch (Exception e) {
         log.error(

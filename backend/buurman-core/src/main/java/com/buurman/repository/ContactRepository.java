@@ -714,27 +714,4 @@ public class ContactRepository {
         .execute();
   }
 
-  public void anonymize(UUID contactId, UUID teamId) {
-    LocalDateTime now = LocalDateTime.now(clock);
-    dsl.update(CONTACTS)
-        .set(CONTACTS.DISPLAY_NAME, "[erased]")
-        .set(CONTACTS.FIRST_NAME, (String) null)
-        .set(CONTACTS.LAST_NAME, (String) null)
-        .set(CONTACTS.COMPANY_NAME, (String) null)
-        .set(CONTACTS.TRADE_NAME, (String) null)
-        .set(CONTACTS.INDUSTRY, (String) null)
-        .set(CONTACTS.EMAIL, (String) null)
-        .set(CONTACTS.INVOICE_EMAIL, (String) null)
-        .set(CONTACTS.PHONE, (String) null)
-        .set(CONTACTS.WEBSITE, (String) null)
-        .set(CONTACTS.TAX_NUMBER, (String) null)
-        .set(CONTACTS.ID_NUMBER, (String) null)
-        .set(CONTACTS.DATE_OF_BIRTH, (java.time.LocalDate) null)
-        .set(CONTACTS.ID_EXPIRY_DATE, (java.time.LocalDate) null)
-        .set(CONTACTS.NOTES, (String) null)
-        .set(CONTACTS.DATA_RETENTION_STATUS, DataRetentionStatus.ANONYMIZED.name())
-        .set(CONTACTS.UPDATED_AT, now)
-        .where(CONTACTS.ID.eq(contactId).and(CONTACTS.TEAM_ID.eq(teamId)))
-        .execute();
-  }
 }

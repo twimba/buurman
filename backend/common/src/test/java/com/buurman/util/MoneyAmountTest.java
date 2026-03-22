@@ -97,11 +97,13 @@ class MoneyAmountTest {
     }
 
     @Test
-    @DisplayName("throws ArithmeticException for excess precision")
-    void excessPrecisionThrows() {
+    @DisplayName("rounds excess precision via HALF_UP")
+    void excessPrecisionRounds() {
       MoneyAmount money = MoneyAmount.of(new BigDecimal("100.123"), "EUR");
 
-      assertThatThrownBy(money::toMinorUnits).isInstanceOf(ArithmeticException.class);
+      // 100.123 → 100.12 (HALF_UP with 2 fractional digits) → 10012 minor units
+      assertThat(money.value()).isEqualByComparingTo("100.12");
+      assertThat(money.toMinorUnits()).isEqualTo(10012L);
     }
 
     @Test
@@ -206,21 +208,17 @@ class MoneyAmountTest {
   class OfNullArguments {
 
     @Test
-    @DisplayName("null value is accepted by record constructor — NPE deferred to toMinorUnits()")
-    void nullValueAccepted() {
-      MoneyAmount money = MoneyAmount.of(null, "EUR");
-
-      assertThat(money.value()).isNull();
-      assertThatThrownBy(money::toMinorUnits).isInstanceOf(NullPointerException.class);
+    @DisplayName("null value throws NPE immediately in of()")
+    void nullValueThrows() {
+      assertThatThrownBy(() -> MoneyAmount.of(null, "EUR"))
+          .isInstanceOf(NullPointerException.class);
     }
 
     @Test
-    @DisplayName("null currency is accepted by record constructor — NPE deferred to toMinorUnits()")
-    void nullCurrencyAccepted() {
-      MoneyAmount money = MoneyAmount.of(BigDecimal.TEN, null);
-
-      assertThat(money.currency()).isNull();
-      assertThatThrownBy(money::toMinorUnits).isInstanceOf(NullPointerException.class);
+    @DisplayName("null currency throws NPE immediately in of()")
+    void nullCurrencyThrows() {
+      assertThatThrownBy(() -> MoneyAmount.of(BigDecimal.TEN, null))
+          .isInstanceOf(NullPointerException.class);
     }
   }
 }
