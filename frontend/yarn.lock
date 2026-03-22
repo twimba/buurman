@@ -2596,21 +2596,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:5.94.5":
-  version: 5.94.5
-  resolution: "@tanstack/query-core@npm:5.94.5"
-  checksum: 10c0/48e19d57b435160378dff9295d7f59fb84ae0e26fa9a087e124eb4091a89a42ae4c919f2e57515e3094d8c63a27c021ed27ddccbb53996c9759e7962d72a86c6
+"@tanstack/query-core@npm:5.95.0":
+  version: 5.95.0
+  resolution: "@tanstack/query-core@npm:5.95.0"
+  checksum: 10c0/ccd53d42748f654c2ad203efd76b4e6a654bc960096e5a10377938b8ee7600bf1d82c2062ffc75eb6320915e9943cf646183c291ff91a64716f76904d2a1fc97
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:5.94.5":
-  version: 5.94.5
-  resolution: "@tanstack/react-query@npm:5.94.5"
+"@tanstack/react-query@npm:5.95.0":
+  version: 5.95.0
+  resolution: "@tanstack/react-query@npm:5.95.0"
   dependencies:
-    "@tanstack/query-core": "npm:5.94.5"
+    "@tanstack/query-core": "npm:5.95.0"
   peerDependencies:
     react: ^18 || ^19
-  checksum: 10c0/b36e47357e9616a642f1f9da3e8f04786773b3fd7abf1d6ae42f647fd6fc28c7864da51690c87c63264b78f15540c9f5680aff60fc43ffd9b2271aa610d8d06a
+  checksum: 10c0/67025fa88de906a7b5511c6ac09f953904f0c3f72976ca2af578b63a005b27320d95fe05e1f01dcefae9bfeb3db11b190a06908c32014009c363f363cb0eb0ad
   languageName: node
   linkType: hard
 
@@ -3774,7 +3774,7 @@ __metadata:
     "@fullcalendar/react": "npm:^6.1.20"
     "@react-keycloak/web": "npm:3.4.0"
     "@tailwindcss/postcss": "npm:4.2.2"
-    "@tanstack/react-query": "npm:5.94.5"
+    "@tanstack/react-query": "npm:5.95.0"
     "@tiptap/core": "npm:3.20.4"
     "@tiptap/extension-font-family": "npm:3.20.4"
     "@tiptap/extension-highlight": "npm:3.20.4"
@@ -3827,7 +3827,7 @@ __metadata:
     "@eslint/compat": "npm:2.0.3"
     "@eslint/js": "npm:10.0.1"
     "@tailwindcss/postcss": "npm:4.2.2"
-    "@tanstack/react-query": "npm:5.94.5"
+    "@tanstack/react-query": "npm:5.95.0"
     "@tiptap/core": "npm:3.20.4"
     "@tiptap/extension-highlight": "npm:3.20.4"
     "@tiptap/extension-link": "npm:3.20.4"
