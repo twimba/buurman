@@ -5,10 +5,12 @@ import static com.buurman.domain.Payment.PaymentStatus.CANCELLED;
 import static com.buurman.domain.Payment.PaymentStatus.PENDING;
 import static com.buurman.util.SidGenerator.newContractRentPeriodId;
 import static com.buurman.util.SidGenerator.newPaymentId;
+import static com.buurman.util.SidGenerator.newRentComponentId;
 
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,18 +26,21 @@ import com.buurman.config.models.AppProperties;
 import com.buurman.domain.Contact;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
+import com.buurman.domain.ContractRentComponent;
 import com.buurman.domain.ContractRentPeriod;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.ContractRentPeriodIdentifier;
 import com.buurman.dto.request.CreateRentPeriodRequest;
+import com.buurman.dto.request.RentComponentRequest;
 import com.buurman.dto.request.UpdateRentPeriodRequest;
 import com.buurman.dto.response.AddRentPeriodResult;
 import com.buurman.dto.response.RentPeriodResponse;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.mapper.ContractRentPeriodMapper;
 import com.buurman.repository.ContractExtensionRepository;
+import com.buurman.repository.ContractRentComponentRepository;
 import com.buurman.repository.ContractRentPeriodRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentRepository;
@@ -53,6 +58,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ContractRentPeriodService {
 
   private final ContractRentPeriodRepository rentPeriodRepository;
+  private final ContractRentComponentRepository rentComponentRepository;
   private final ContractRepository contractRepository;
   private final ContractExtensionRepository contractExtensionRepository;
   private final PaymentRepository paymentRepository;
@@ -104,6 +110,13 @@ public class ContractRentPeriodService {
     period.setUpdatedAt(clock.instant());
 
     ContractRentPeriod saved = rentPeriodRepository.save(period);
+
+    // Replace rent components if provided
+    request
+        .components()
+        .ifPresent(
+            componentRequests ->
+                replaceRentComponents(contract, componentRequests, teamId, principal.getUserId()));
 
     // Sync denormalized rent_amount on contract if this is the current period
     syncContractRentAmount(contract, teamId, principal.getUserId());
@@ -332,6 +345,31 @@ public class ContractRentPeriodService {
   }
 
   // --- Private helpers ---
+
+  private void replaceRentComponents(
+      Contract contract, List<RentComponentRequest> componentRequests, UUID teamId, UUID userId) {
+    String currency = contract.getRentAmount().currency();
+    List<ContractRentComponent> domainComponents = new ArrayList<>();
+    for (int i = 0; i < componentRequests.size(); i++) {
+      RentComponentRequest req = componentRequests.get(i);
+      ContractRentComponent comp =
+          ContractRentComponent.builder()
+              .identifier(Optional.of(newRentComponentId()))
+              .teamId(teamId)
+              .contractId(contract.getId())
+              .componentType(req.componentType())
+              .amount(com.buurman.util.MoneyAmount.of(req.amount(), currency))
+              .description(req.description())
+              .sortOrder(i)
+              .createdAt(clock.instant())
+              .updatedAt(clock.instant())
+              .createdBy(userId)
+              .updatedBy(userId)
+              .build();
+      domainComponents.add(comp);
+    }
+    rentComponentRepository.replaceForContract(contract.getId(), teamId, domainComponents);
+  }
 
   private void validateEffectiveFrom(Contract contract, LocalDate effectiveFrom, UUID teamId) {
     if (effectiveFrom.isBefore(contract.getStartDate())) {

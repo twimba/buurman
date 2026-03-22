@@ -185,7 +185,8 @@ public class RentIncreaseService {
 
         // Delegate to ContractRentPeriodService.addRentPeriod
         CreateRentPeriodRequest rentPeriodRequest =
-            new CreateRentPeriodRequest(newRent, item.effectiveDate(), Optional.empty());
+            new CreateRentPeriodRequest(
+                newRent, item.effectiveDate(), Optional.empty(), Optional.empty());
         AddRentPeriodResult result =
             contractRentPeriodService.addRentPeriod(
                 item.contractIdentifier(), rentPeriodRequest, principal);

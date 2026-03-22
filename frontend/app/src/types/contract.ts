@@ -257,6 +257,7 @@ export interface CreateRentPeriodRequest {
   rentAmount: number;
   effectiveFrom: string;
   notes?: string;
+  components?: RentComponentFormItem[];
 }
 
 export interface UpdateRentPeriodRequest {

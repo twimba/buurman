@@ -414,7 +414,8 @@ public class CalendarFeedService {
       case CONTACT_PAYMENTS -> {
         UUID tId =
             feed.getContactId()
-                .orElseThrow(() -> new IllegalStateException("CONTACT_PAYMENTS feed missing contactId"));
+                .orElseThrow(
+                    () -> new IllegalStateException("CONTACT_PAYMENTS feed missing contactId"));
         Contact contact =
             contactMap.values().stream()
                 .filter(c -> c.getId().equals(tId))

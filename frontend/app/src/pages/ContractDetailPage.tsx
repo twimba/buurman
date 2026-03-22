@@ -12,6 +12,8 @@ import {
   useReopenContract,
   useDuplicateContract,
   useGenerateContractPayments,
+  useAddContractParty,
+  useRemoveContractParty,
 } from '@/hooks/useContractHooks';
 import {
   usePaymentsByContract,
@@ -60,11 +62,16 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import {
+  AddContractPartyRequest,
   ChangeContractStatusRequest,
   ContractStatus,
   PARTY_ROLE_LABELS,
   ContractPartyRole,
 } from '@/types/contract';
+import { ContractPartyResponseRole } from '@/generated/models';
+import { ContactSelector } from '@/components/common/ContactSelector';
+import { PhoneInput } from '@/components/common/PhoneInput';
+import type { CreateContactRequest } from '@/types/contact';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 import { PaymentStatus } from '@/types/payment';
 import CountryMetadataForm, {
@@ -95,6 +102,24 @@ export const ContractDetailPage = () => {
     new Set()
   );
   const [isMetadataExpanded, setIsMetadataExpanded] = useState(false);
+  const [showAddParty, setShowAddParty] = useState(false);
+  const [addPartyMode, setAddPartyMode] = useState<'select' | 'create'>(
+    'select'
+  );
+  const [addPartyRole, setAddPartyRole] = useState<ContractPartyResponseRole>(
+    ContractPartyResponseRole.EXTRA_TENANT
+  );
+  const [selectedContactId, setSelectedContactId] = useState('');
+  const [newContactData, setNewContactData] = useState<CreateContactRequest>({
+    contactType: 'INDIVIDUAL',
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+  });
+  const [removePartyTarget, setRemovePartyTarget] = useState<string | null>(
+    null
+  );
 
   // Payments table state
   const [paymentsSearchTerm, setPaymentsSearchTerm] = useState('');
@@ -148,6 +173,32 @@ export const ContractDetailPage = () => {
   const reopenContractMutation = useReopenContract(id);
   const duplicateContractMutation = useDuplicateContract();
   const generatePaymentsMutation = useGenerateContractPayments(id);
+  const addPartyMutation = useAddContractParty(id);
+  const removePartyMutation = useRemoveContractParty(id);
+
+  const handleAddParty = () => {
+    const request: AddContractPartyRequest = {
+      role: addPartyRole,
+      ...(addPartyMode === 'select'
+        ? { contactIdentifier: selectedContactId }
+        : { newContact: newContactData }),
+    };
+    addPartyMutation.mutate(request, {
+      onSuccess: () => {
+        setShowAddParty(false);
+        setSelectedContactId('');
+        setNewContactData({
+          contactType: 'INDIVIDUAL',
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+        });
+        setAddPartyMode('select');
+        setAddPartyRole(ContractPartyResponseRole.EXTRA_TENANT);
+      },
+    });
+  };
 
   // Payments filtering, sorting, and pagination
   const filteredAndSortedPayments = useMemo(() => {
@@ -474,9 +525,20 @@ export const ContractDetailPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Property and Contact */}
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-              <h2 className="text-lg font-semibold text-text-primary mb-4">
-                Contract Parties
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-text-primary">
+                  Contract Parties
+                </h2>
+                {canEditData && (
+                  <button
+                    onClick={() => setShowAddParty(!showAddParty)}
+                    className="flex items-center gap-1 text-sm text-primary-500 hover:text-primary-600 transition-colors"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Party
+                  </button>
+                )}
+              </div>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
                   <Home className="h-5 w-5 text-text-muted mt-1" />
@@ -499,7 +561,7 @@ export const ContractDetailPage = () => {
                 {contract.parties?.map((party) => (
                   <div
                     key={party.identifier}
-                    className="flex items-start gap-3"
+                    className="flex items-start gap-3 group"
                   >
                     <User className="h-5 w-5 text-text-muted mt-1" />
                     <div className="flex-1">
@@ -519,10 +581,193 @@ export const ContractDetailPage = () => {
                         #{party.contact.identifier}
                       </p>
                     </div>
+                    {canEditData && (
+                      <button
+                        onClick={() => setRemovePartyTarget(party.identifier)}
+                        className="opacity-0 group-hover:opacity-100 text-text-muted hover:text-error-text transition-all mt-1"
+                        title="Remove party"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    )}
                   </div>
                 ))}
+
+                {/* Add Party Inline Form */}
+                {showAddParty && (
+                  <div className="border border-border-strong rounded-lg p-4 space-y-3 bg-surface-page">
+                    <div>
+                      <label className="block text-xs font-medium text-text-secondary mb-1">
+                        Role
+                      </label>
+                      <select
+                        value={addPartyRole}
+                        onChange={(e) =>
+                          setAddPartyRole(
+                            e.target.value as ContractPartyResponseRole
+                          )
+                        }
+                        className="w-full border border-border-strong rounded px-3 py-2 bg-surface-card text-text-primary text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                      >
+                        {Object.entries(PARTY_ROLE_LABELS).map(
+                          ([value, label]) => (
+                            <option key={value} value={value}>
+                              {label}
+                            </option>
+                          )
+                        )}
+                      </select>
+                    </div>
+
+                    <div className="flex gap-2 text-xs">
+                      <button
+                        type="button"
+                        onClick={() => setAddPartyMode('select')}
+                        className={`px-3 py-1.5 rounded-full transition-colors ${
+                          addPartyMode === 'select'
+                            ? 'bg-primary-500 text-white'
+                            : 'bg-surface-inset text-text-secondary hover:bg-surface-card'
+                        }`}
+                      >
+                        Select existing
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setAddPartyMode('create')}
+                        className={`px-3 py-1.5 rounded-full transition-colors ${
+                          addPartyMode === 'create'
+                            ? 'bg-primary-500 text-white'
+                            : 'bg-surface-inset text-text-secondary hover:bg-surface-card'
+                        }`}
+                      >
+                        Create new
+                      </button>
+                    </div>
+
+                    {addPartyMode === 'select' ? (
+                      <div>
+                        <label className="block text-xs font-medium text-text-secondary mb-1">
+                          Contact
+                        </label>
+                        <ContactSelector
+                          value={selectedContactId}
+                          onChange={setSelectedContactId}
+                        />
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-text-secondary mb-1">
+                            First Name{' '}
+                            <span className="text-error-text">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={newContactData.firstName ?? ''}
+                            onChange={(e) =>
+                              setNewContactData({
+                                ...newContactData,
+                                firstName: e.target.value,
+                              })
+                            }
+                            className="w-full border border-border-strong rounded px-3 py-2 bg-surface-card text-text-primary text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                            placeholder="John"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-text-secondary mb-1">
+                            Last Name
+                          </label>
+                          <input
+                            type="text"
+                            value={newContactData.lastName ?? ''}
+                            onChange={(e) =>
+                              setNewContactData({
+                                ...newContactData,
+                                lastName: e.target.value,
+                              })
+                            }
+                            className="w-full border border-border-strong rounded px-3 py-2 bg-surface-card text-text-primary text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                            placeholder="Doe"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-text-secondary mb-1">
+                            Email
+                          </label>
+                          <input
+                            type="email"
+                            value={newContactData.email ?? ''}
+                            onChange={(e) =>
+                              setNewContactData({
+                                ...newContactData,
+                                email: e.target.value,
+                              })
+                            }
+                            className="w-full border border-border-strong rounded px-3 py-2 bg-surface-card text-text-primary text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                            placeholder="john@example.com"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-text-secondary mb-1">
+                            Phone
+                          </label>
+                          <PhoneInput
+                            value={newContactData.phone ?? null}
+                            onChange={(e164) =>
+                              setNewContactData({
+                                ...newContactData,
+                                phone: e164 ?? '',
+                              })
+                            }
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex justify-end gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => setShowAddParty(false)}
+                        className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary transition-colors"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleAddParty}
+                        disabled={
+                          addPartyMutation.isPending ||
+                          (addPartyMode === 'select' && !selectedContactId) ||
+                          (addPartyMode === 'create' &&
+                            !newContactData.firstName)
+                        }
+                        className="px-4 py-1.5 text-sm bg-primary-500 text-white rounded hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        {addPartyMutation.isPending ? 'Adding...' : 'Add'}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
+
+            {/* Remove Party Confirmation */}
+            {removePartyTarget && (
+              <ConfirmDialog
+                title="Remove Party"
+                message="Are you sure you want to remove this party from the contract?"
+                confirmLabel="Remove"
+                variant="danger"
+                isLoading={removePartyMutation.isPending}
+                onConfirm={() => {
+                  removePartyMutation.mutate(removePartyTarget, {
+                    onSuccess: () => setRemovePartyTarget(null),
+                  });
+                }}
+                onCancel={() => setRemovePartyTarget(null)}
+              />
+            )}
 
             {/* Contract Dates */}
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
@@ -661,6 +906,7 @@ export const ContractDetailPage = () => {
                   contractStatus={contract.status}
                   currency={contract.rentAmountCurrency}
                   currentRentAmount={contract.rentAmount}
+                  currentComponents={contract.rentComponents ?? []}
                   paymentFrequency={contract.paymentFrequency}
                 />
                 {contract.rentComponents &&
