@@ -237,9 +237,9 @@ const RegisterPage: React.FC = () => {
                 <Users className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-1">Track Tenants</h3>
+                <h3 className="font-semibold text-lg mb-1">Track Contacts</h3>
                 <p className="text-primary-200">
-                  Manage tenant information and lease agreements
+                  Manage contact information and lease agreements
                 </p>
               </div>
             </div>

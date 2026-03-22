@@ -11,7 +11,7 @@ export const ContractCreatePage = () => {
   const createContractMutation = useCreateContract();
 
   const prefilledPropertyId = searchParams.get('propertyId') ?? undefined;
-  const prefilledTenantId = searchParams.get('tenantId') ?? undefined;
+  const prefilledContactId = searchParams.get('contactId') ?? undefined;
 
   const handleSubmit = async (data: CreateContractRequest) => {
     await createContractMutation.mutateAsync(data);
@@ -47,7 +47,7 @@ export const ContractCreatePage = () => {
               onSubmit={handleSubmit}
               isLoading={createContractMutation.isPending}
               prefilledPropertyId={prefilledPropertyId}
-              prefilledTenantId={prefilledTenantId}
+              prefilledContactId={prefilledContactId}
             />
           </ImpersonationGuard>
         </div>

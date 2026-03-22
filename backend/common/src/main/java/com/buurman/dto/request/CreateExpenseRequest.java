@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.Expense;
+import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.util.Generated;
 
@@ -21,4 +22,5 @@ public record CreateExpenseRequest(
     @NotBlank(message = "Currency is required") String currency,
     @NotNull(message = "Expense date is required") LocalDate expenseDate,
     @NotNull(message = "Description is required") @Size(min = 1, max = 500, message = "Description must be between 1 and 500 characters") String description,
-    Optional<String> notes) {}
+    Optional<String> notes,
+    Optional<ContactIdentifier> contactIdentifier) {}

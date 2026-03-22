@@ -189,7 +189,7 @@ export const DataExportSection = () => {
               </h2>
               <p className="text-sm text-text-secondary mt-1">
                 Export all your team data as a downloadable archive. Exports
-                include properties, tenants, contracts, payments, expenses, and
+                include properties, contacts, contracts, payments, expenses, and
                 documents.
               </p>
             </div>

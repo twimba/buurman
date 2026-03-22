@@ -9,13 +9,13 @@ import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
 
 public record AddContractPartyRequest(
-    Optional<String> tenantIdentifier,
-    @Valid Optional<CreateTenantRequest> newTenant,
+    Optional<String> contactIdentifier,
+    @Valid Optional<CreateContactRequest> newContact,
     @NotNull(message = "Role is required") ContractPartyRole role) {
 
-  @AssertTrue(message = "Provide either tenantIdentifier or newTenant, not both") public boolean isValidPartySource() {
-    boolean hasIdentifier = tenantIdentifier.isPresent() && !tenantIdentifier.get().isBlank();
-    boolean hasNewTenant = newTenant.isPresent();
-    return hasIdentifier ^ hasNewTenant;
+  @AssertTrue(message = "Provide either contactIdentifier or newContact, not both") public boolean isValidPartySource() {
+    boolean hasIdentifier = contactIdentifier.isPresent() && !contactIdentifier.get().isBlank();
+    boolean hasNewContact = newContact.isPresent();
+    return hasIdentifier ^ hasNewContact;
   }
 }

@@ -10,7 +10,7 @@ import {
   UpdateContractRequest,
   ChangeContractStatusRequest,
   AddContractPartyRequest,
-  ChangePrimaryTenantRequest,
+  ChangePrimaryContactRequest,
 } from '../types/contract';
 import { GetContractsParams } from '../api/contracts';
 import type { PageParams } from '@/types/common';
@@ -50,10 +50,10 @@ export const useCreateContract = () => {
         queryKey: ['property', newContract.property.identifier],
       });
       queryClient.invalidateQueries({
-        queryKey: ['tenants'],
+        queryKey: ['contacts'],
       });
       queryClient.invalidateQueries({
-        queryKey: ['tenant', newContract.primaryTenant?.identifier],
+        queryKey: ['contact', newContract.primaryContact?.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
@@ -83,10 +83,10 @@ export const useUpdateContract = (id: string) => {
         queryKey: ['property', updatedContract.property.identifier],
       });
       queryClient.invalidateQueries({
-        queryKey: ['tenants'],
+        queryKey: ['contacts'],
       });
       queryClient.invalidateQueries({
-        queryKey: ['tenant', updatedContract.primaryTenant?.identifier],
+        queryKey: ['contact', updatedContract.primaryContact?.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
@@ -109,7 +109,7 @@ export const useDeleteContract = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contracts'] });
       queryClient.invalidateQueries({ queryKey: ['properties'] });
-      queryClient.invalidateQueries({ queryKey: ['tenants'] });
+      queryClient.invalidateQueries({ queryKey: ['contacts'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       showToast('Contract deleted successfully', 'success');
@@ -137,7 +137,7 @@ export const useChangeContractStatus = (id: string) => {
         queryKey: ['property', updatedContract.property.identifier],
       });
       queryClient.invalidateQueries({
-        queryKey: ['tenant', updatedContract.primaryTenant?.identifier],
+        queryKey: ['contact', updatedContract.primaryContact?.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
@@ -167,7 +167,7 @@ export const useReopenContract = (id: string) => {
         queryKey: ['property', updatedContract.property.identifier],
       });
       queryClient.invalidateQueries({
-        queryKey: ['tenant', updatedContract.primaryTenant?.identifier],
+        queryKey: ['contact', updatedContract.primaryContact?.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
@@ -193,7 +193,7 @@ export const useDuplicateContract = () => {
         queryKey: ['property', newContract.property.identifier],
       });
       queryClient.invalidateQueries({
-        queryKey: ['tenant', newContract.primaryTenant?.identifier],
+        queryKey: ['contact', newContract.primaryContact?.identifier],
       });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
@@ -340,7 +340,7 @@ export const useAddContractParty = (contractId: string) => {
       queryClient.invalidateQueries({
         queryKey: ['contractAuditLog', contractId],
       });
-      queryClient.invalidateQueries({ queryKey: ['tenants'] });
+      queryClient.invalidateQueries({ queryKey: ['contacts'] });
       showToast('Party added successfully', 'success');
     },
     onError: (error) => {
@@ -361,7 +361,7 @@ export const useRemoveContractParty = (contractId: string) => {
       queryClient.invalidateQueries({
         queryKey: ['contractAuditLog', contractId],
       });
-      queryClient.invalidateQueries({ queryKey: ['tenants'] });
+      queryClient.invalidateQueries({ queryKey: ['contacts'] });
       showToast('Party removed successfully', 'success');
     },
     onError: (error) => {
@@ -370,20 +370,20 @@ export const useRemoveContractParty = (contractId: string) => {
   });
 };
 
-export const useChangePrimaryTenant = (contractId: string) => {
+export const useChangePrimaryContact = (contractId: string) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   return useMutation({
-    mutationFn: (data: ChangePrimaryTenantRequest) =>
-      contractsApi.changePrimaryTenant(contractId, data),
+    mutationFn: (data: ChangePrimaryContactRequest) =>
+      contractsApi.changePrimaryContact(contractId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contract', contractId] });
       queryClient.invalidateQueries({ queryKey: ['contracts'] });
       queryClient.invalidateQueries({
         queryKey: ['contractAuditLog', contractId],
       });
-      queryClient.invalidateQueries({ queryKey: ['tenants'] });
-      showToast('Primary tenant changed successfully', 'success');
+      queryClient.invalidateQueries({ queryKey: ['contacts'] });
+      showToast('Primary contact changed successfully', 'success');
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');

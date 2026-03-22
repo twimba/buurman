@@ -26,7 +26,8 @@ public enum NotificationType {
   CONTRACT_RENEWAL_REMINDER("Contract Renewal Reminder", true, true),
   CONTRACT_EXTENDED("Contract Extended", true, true),
   CONTRACT_EXTENSION_PENDING("Contract Extension Pending", true, true),
-  CONTRACT_ROLLED_OVER_TO_INDEFINITE("Contract Rolled Over to Indefinite", true, true);
+  CONTRACT_ROLLED_OVER_TO_INDEFINITE("Contract Rolled Over to Indefinite", true, true),
+  CONTACT_FOLLOW_UP("Contact Follow-Up Reminder", true, true);
 
   private final String displayName;
   private final boolean configurable;

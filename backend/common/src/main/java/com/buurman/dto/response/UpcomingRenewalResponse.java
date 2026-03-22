@@ -12,7 +12,7 @@ import com.buurman.util.Generated;
 public record UpcomingRenewalResponse(
     Sid contractIdentifier,
     Optional<String> propertyName,
-    Optional<String> tenantName,
+    Optional<String> contactName,
     LocalDate effectiveEndDate,
     Contract.RenewalMode renewalMode,
     Optional<Integer> renewalTermMonths,

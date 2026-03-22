@@ -21,6 +21,7 @@ public class ContractRentComponent {
   @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private UUID teamId;
   private UUID contractId;
+  private UUID rentPeriodId;
   private RentComponentType componentType;
   private MoneyAmount amount;
   @Builder.Default private Optional<String> description = Optional.empty();

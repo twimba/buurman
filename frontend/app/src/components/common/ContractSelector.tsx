@@ -46,7 +46,7 @@ export const ContractSelector = ({
     (contract) =>
       contract.identifier.toLowerCase().includes(search.toLowerCase()) ||
       contract.property.street.toLowerCase().includes(search.toLowerCase()) ||
-      `${contract.primaryTenant.firstName} ${contract.primaryTenant.lastName ?? ''}`
+      `${contract.primaryContact.firstName} ${contract.primaryContact.lastName ?? ''}`
         .toLowerCase()
         .includes(search.toLowerCase())
   );
@@ -201,8 +201,8 @@ export const ContractSelector = ({
                       {contract.property.street}
                     </div>
                     <div className="text-xs text-text-secondary">
-                      {contract.primaryTenant.firstName}{' '}
-                      {contract.primaryTenant.lastName} &middot;{' '}
+                      {contract.primaryContact.firstName}{' '}
+                      {contract.primaryContact.lastName} &middot;{' '}
                       {getCurrencySymbol(contract.rentAmountCurrency)}{' '}
                       {contract.rentAmount.toFixed(2)}/mo
                     </div>

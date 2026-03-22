@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buurman Hub</title>
+  <link rel="icon" href="data:image/png;base64,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">
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,600,700,800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* Surfaces */
+      --surface-page: #fafaf9;
+      --surface-card: #ffffff;
+      --surface-inset: #f5f5f4;
+
+      /* Text */
+      --text-primary: #1c1917;
+      --text-secondary: #57534e;
+      --text-muted: #78716c;
+      --text-disabled: #a8a29e;
+      --text-link: #6366f1;
+
+      /* Borders */
+      --border-default: #e7e5e4;
+      --border-subtle: #f5f5f4;
+      --border-strong: #d6d3d1;
+
+      /* Primary (indigo) */
+      --primary-50: #eef2ff;
+      --primary-100: #e0e7ff;
+      --primary-500: #6366f1;
+      --primary-600: #4f46e5;
+      --primary-700: #4338ca;
+      --primary-900: #312e81;
+
+      /* Semantic */
+      --success: #059669;
+      --success-bg: #ecfdf5;
+      --success-border: #a7f3d0;
+      --warning: #d97706;
+      --warning-bg: #fffbeb;
+      --warning-border: #fde68a;
+      --info: #0284c7;
+      --info-bg: #f0f9ff;
+
+      /* Category colors */
+      --cat-app-bg: #eef2ff;
+      --cat-app-border: #c7d2fe;
+      --cat-app-text: #4338ca;
+      --cat-backend-bg: #f5f3ff;
+      --cat-backend-border: #ddd6fe;
+      --cat-backend-text: #6d28d9;
+      --cat-auth-bg: #fffbeb;
+      --cat-auth-border: #fde68a;
+      --cat-auth-text: #b45309;
+      --cat-devtools-bg: #fff1f2;
+      --cat-devtools-border: #fecdd3;
+      --cat-devtools-text: #be123c;
+      --cat-monitoring-bg: #ecfdf5;
+      --cat-monitoring-border: #a7f3d0;
+      --cat-monitoring-text: #047857;
+
+      /* Shadows (warm stone tint) */
+      --shadow-xs: 0 1px 2px rgba(28, 25, 23, 0.04);
+      --shadow-sm: 0 1px 3px rgba(28, 25, 23, 0.06), 0 1px 2px rgba(28, 25, 23, 0.04);
+      --shadow-md: 0 4px 8px -2px rgba(28, 25, 23, 0.06), 0 2px 4px -2px rgba(28, 25, 23, 0.04);
+      --shadow-lg: 0 12px 24px -4px rgba(28, 25, 23, 0.08), 0 4px 8px -4px rgba(28, 25, 23, 0.03);
+      --shadow-ring: 0 0 0 3px rgba(99, 102, 241, 0.15);
+
+      /* Typography */
+      --font-body: "Satoshi", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--surface-page);
+      color: var(--text-primary);
+      line-height: 1.55;
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .hub {
+      max-width: 880px;
+      margin: 0 auto;
+    }
+
+    /* ─── Header ─── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border-default);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      object-fit: contain;
+    }
+
+    .header-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .workspace-count {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--primary-700);
+      background: var(--primary-50);
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      border: 1px solid var(--primary-100);
+    }
+
+    .refresh-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border-strong);
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    .refresh-dot.pulse {
+      background: var(--success);
+      box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+      animation: dot-fade 1.2s ease-out forwards;
+    }
+    @keyframes dot-fade {
+      0% { box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2); }
+      100% { box-shadow: 0 0 0 0px rgba(5, 150, 105, 0); background: var(--border-strong); }
+    }
+
+    /* ─── Workspace Cards ─── */
+    .workspaces {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .ws-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-default);
+      border-radius: 8px;
+      padding: 1.15rem 1.35rem 1.1rem;
+      box-shadow: var(--shadow-sm);
+      transition: border-color 0.15s, box-shadow 0.15s;
+      opacity: 0;
+      transform: translateY(6px);
+      animation: card-in 0.3s ease forwards;
+    }
+    .ws-card:hover {
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow-md);
+    }
+    @keyframes card-in {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      margin-bottom: 0.15rem;
+      flex-wrap: wrap;
+    }
+
+    .ws-badge {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--primary-700);
+      background: var(--primary-50);
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+      border: 1px solid rgba(99, 102, 241, 0.12);
+    }
+
+    .ws-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .ws-branch {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      background: var(--surface-inset);
+      padding: 0.12rem 0.5rem;
+      border-radius: 4px;
+      border: 1px solid var(--border-subtle);
+      max-width: 340px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
+    }
+
+    .ws-path {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-disabled);
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* ─── Service Chips ─── */
+    .services {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .svc {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.28rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.73rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .svc:hover {
+      box-shadow: var(--shadow-sm);
+      filter: brightness(0.97);
+      transform: translateY(-0.5px);
+    }
+    .svc:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    /* Category-specific styling */
+    .svc[data-cat="app"] {
+      background: var(--cat-app-bg);
+      color: var(--cat-app-text);
+      border-color: var(--cat-app-border);
+    }
+    .svc[data-cat="backend"] {
+      background: var(--cat-backend-bg);
+      color: var(--cat-backend-text);
+      border-color: var(--cat-backend-border);
+    }
+    .svc[data-cat="auth"] {
+      background: var(--cat-auth-bg);
+      color: var(--cat-auth-text);
+      border-color: var(--cat-auth-border);
+    }
+    .svc[data-cat="devtools"] {
+      background: var(--cat-devtools-bg);
+      color: var(--cat-devtools-text);
+      border-color: var(--cat-devtools-border);
+    }
+    .svc[data-cat="monitoring"] {
+      background: var(--cat-monitoring-bg);
+      color: var(--cat-monitoring-text);
+      border-color: var(--cat-monitoring-border);
+    }
+
+    /* Status dots */
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot.docker {
+      background: var(--success);
+      box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15);
+    }
+    .dot.host {
+      background: var(--warning);
+      box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.12);
+    }
+    .dot.unknown {
+      background: var(--text-disabled);
+    }
+
+    /* ─── Empty / Error States ─── */
+    .state-box {
+      text-align: center;
+      padding: 4rem 2rem;
+      opacity: 0;
+      animation: card-in 0.35s ease 0.1s forwards;
+    }
+    .state-box h2 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+    .state-box p {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      max-width: 360px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    .state-box code {
+      font-family: var(--font-mono);
+      background: var(--surface-inset);
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      border: 1px solid var(--border-default);
+      color: var(--text-primary);
+    }
+
+    /* ─── Quick Links ─── */
+    .quick-links-section {
+      margin-bottom: 1.25rem;
+    }
+
+    .section-label {
+      font-size: 0.67rem;
+      font-weight: 700;
+      color: var(--text-disabled);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 0.45rem;
+    }
+
+    .quick-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+    }
+
+    .qlink {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.38rem 0.7rem 0.38rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--text-secondary);
+      background: var(--surface-card);
+      border: 1px solid var(--border-default);
+      box-shadow: var(--shadow-xs);
+      transition: all 0.15s ease;
+    }
+    .qlink:hover {
+      color: var(--text-primary);
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-1px);
+    }
+    .qlink:active {
+      transform: translateY(0);
+      box-shadow: var(--shadow-xs);
+    }
+
+    .qlink-icon {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+    }
+
+    .qlink-arrow {
+      width: 10px;
+      height: 10px;
+      opacity: 0.3;
+      flex-shrink: 0;
+      margin-left: 0.1rem;
+    }
+
+    /* ─── Footer Legend ─── */
+    .legend {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1.25rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid var(--border-default);
+      font-size: 0.68rem;
+      font-weight: 500;
+      color: var(--text-disabled);
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .legend-refresh {
+      margin-left: auto;
+      font-size: 0.65rem;
+      color: var(--text-disabled);
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 640px) {
+      body { padding: 1rem 0.75rem; }
+      .header { flex-direction: column; align-items: flex-start; gap: 0.6rem; }
+      .header-right { align-self: flex-end; margin-top: -1.6rem; }
+      .ws-card { padding: 1rem 1rem 0.9rem; }
+      .ws-branch { max-width: 200px; }
+      .card-top { gap: 0.4rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="hub" id="hub"></div>
+
+  <script>
+    const INTERVAL = 30000;
+
+    function esc(s) {
+      const el = document.createElement("span");
+      el.textContent = s;
+      return el.innerHTML;
+    }
+
+    function renderHeader(count) {
+      return `
+        <div class="header">
+          <div class="header-left">
+            <img class="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACOEfKtAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAABQZVhJZk1NACoAAAAIAAIBEgADAAAAAQABAACHaQAEAAAAAQAAACYAAAAAAAOgAQADAAAAAQABAACgAgAEAAAAAQAAAdagAwAEAAAAAQAAAdYAAAAAJC0+xwAAAAZiS0dEAP8A/wD/oL2nkwAAAAd0SU1FB+oDFhUwHwF6ukoAAAF5elRYdFJhdyBwcm9maWxlIHR5cGUgeG1wAAA4jZVUSXKEMAy86xV5gpFk2TzHAfuWqhzz/LRMwMBMTRJcs2nrVtMMfX180ptfUQPJkrKUlG1NwVaLSW3i4L9tsZrEc7Iy22RqzdiilC1+VDdmDjTGIPjuLTHrGgMHFWsJjRzEuEroL5YaCgc/oMAYblIiq5LaDX9LOoecFCdIAWZL/eKaUMS1QyRuMsnshxtJEEaA8b5uQ/ApacZY0E6ZVwfw9OByZ6RqkZKYIDD31WaoUMHwpwC6MLChhDOEEJdB55MyjaUgXcaoJ2t1TnXIje/Qz1Zkfnp8tamL2F7jnTR03vYIR6/w9iYXdYe7K7XrRcdCJQYolS3aEmf1EfCJg2zKSRXcA4myjIXOPfS86TnqGOAew7IwQRQYeTIBI2BNV5zHMq96PZwuK+X/r7T30F9WOu5UUXf03HvcrnqATeRIvxfePc3t7Go3NV1dfX4kR7E/lGqe69GHfwvP0Dc7ZQDxAs+ywgAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyNi0wMy0yMFQyMzoxNDo1MSswMDowMHNR+BUAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjYtMDMtMjBUMjM6MTQ6NTErMDA6MDACDECpAAAAKHRFWHRkYXRlOnRpbWVzdGFtcAAyMDI2LTAzLTIyVDIxOjQ4OjMxKzAwOjAwH+G0FQAAABF0RVh0ZXhpZjpDb2xvclNwYWNlADEPmwJJAAAAEnRFWHRleGlmOkV4aWZPZmZzZXQAMzituL4jAAAAGHRFWHRleGlmOlBpeGVsWERpbWVuc2lvbgA0NzAPuBRBAAAAGHRFWHRleGlmOlBpeGVsWURpbWVuc2lvbgA0NzCSt/U3AAAAEnRFWHR0aWZmOk9yaWVudGF0aW9uADG3q/w7AAAAEHRFWHR4bXA6Q29sb3JTcGFjZQAxBQ7I0QAAABd0RVh0eG1wOlBpeGVsWERpbWVuc2lvbgA3NzVnmxMaAAAAF3RFWHR4bXA6UGl4ZWxZRGltZW5zaW9uADc3NfqU8mwAAAABb3JOVAHPoneaAAANa0lEQVR42u2ceXxV5ZnHv+977pqNhCyERWUR2VMUQdAWC1KgVkcHqTAo1TJoqUVmUD5jgWrTWChjRxQcpOJMpQjDMjiIn3FBFGvBIkFZRFlVCEEiCYRA1ruc950/7porJBfIzT1O+eVzcnNP3nPOc37v877P8j7nCK215jIuGjLZAnzbYXECrT84LE1gg8/HW1u2U1JWHtxjPUItSGCApDM1tcxbspb7Zz/Pz4teYPehI4DAaiQKKxqR4ydPUfTvq1j55jY8pkYIKLi6A7+bfg/DBxU0avtl6XEOlpQhhAjdEgId4BpNv+6daZ+b/bdAoAYEew8fY/YzL7Phr5+R6nIw6sZ+7Pm8lANHK+icn0nh1Lv58cibMGRg8Dy3/DUKF69FCAMdOAUAUoCUmhee+Bl33jIkYVLbkk1bNDbv2MvM+S/z0d6j5GWm8MvJd3D/mBHs3n+YX85fTvFnJcx4ahknKqp48O5RuJ0OTAUenyLV5SCvbTpCCpTSfF15hgafiV8lVj8sQKBGacX6TcU8vnAVn5eepFvHthQ9fDdjfnATQkiG9O/FkqKHmDn/ZTZs/YwnX1hHWcVpHnvgLoQApTTX9+nMglmTcTttVJ6tZfLji9h/uCykkIQ0/P8dgV6/ydJ1G/ntklcpr6zhup6dmPfIvQy9vm+jG+7RuSOLnniQokWrWfnWNhav2cSJU1VkZaQihMDtsHNFfg5Ouw23y4HDZsRcqeXJSzqB1XX1PPOn9Sxa+TbVdR5GDe7J3OkT6XN153O2b5/Tln+dcR/tcjJZvPod1m78iLQUB0IaaCEITOcarXXQVouEG+2kEVheWUXR4lUsf30rylRMGD2I3zw8gY7tcps8LiM1hZkPjqVjXhZzlqyjvKoeIWXAgCTBxWllAgPz0MGjx3n82eW8vvkT3E4bU8aN4NFJd5GZnkY8c5XTbmfy2FHkZWfyq4WrOHSsMuS1BCHC50g0pa1MoODDT/Yzc/5ytn16mJw2bmb+4x1MGjsKp8MRdfNxnEkI7hg+mNysDGb8fhlKmVGH6lCjRE19rU+g0orX//IRv1qwkgMl5XRtn8mTD49jzMjvIsTFB0Q3XtubJb+ZwntbdwTnwIj2NdbKbzGBXr+fZes3MffFdZSdrGZAj47MnX4vNw8saIE71PTtfhXXdO6AzbCF9yFEq8yICSewuq6OZ5e9xqKVGwOWdlAP5j7yE3pffVWwxaWOscDxDrsjvEdrwpa4rr4hofeXUALLTlYy5w+rWfHGhygFE0YPonDqPwQtbWIcWwCbIXE77fhNzQv/vZHOnfIYOqBvQq5lFBYWFrbsKQPE7DtcyqNPvcQr7+7EYbMxddxwfj11AnltsxJKHoDT4SAvO4Nde79kzxfH+WDHXnKy0unVtSNSRObIlkACkgmaLTs/Y9b8FWzfd4ycNm5m3HcrU8bfGmVpWwfb9hzgsacDMXR2hosZ993Kg+NG43a6rEmgqRTr3t3Kr59bzeGy03TtmE3hz8cyZuRNwZ5vfXxxtIzZC1bw5pZPcNoNfvr3Q/mXyXeR3SajRc7fYglVj8/H4pVv8Mi8pRw+XsUVeZk8ev/t9O/djfJTVSQja3a2phYhBQ/f+yOGDeyJx6dYsvZ9ps/7Y1SW+9LQIhp4pqaGp5eu5w+r36HOo5BSkOK0k5XhxjRNfjCkH8/MnIzD1rp++9oNm3l84SqEYcPj83Oyqg4QaGUy9LpuzJ0+kYJrunApc/Ila2BF5WkKF77Mi2veAQSpLjtuhw2tNSdOVXOs/Awnq2rj1EAd5wbx+I81DV5KK87wVXkV1TUNuB0GbodBistB8Z4j/POcF9m2e+8l+YuXqBIa01TcPuwGbh8+JJBWD851hpSsfGMzy9ZvRgo4fw+HSJFcmBaE1kdEEy0EaE33K3Mp/MU40t0ulNYEfkArRVqKC6U0hrw4DbxEAgX5udnkn2fNYeuu/YHeFU0vBimtOXSklIrT1eEOaERTKNMS+p/WOGwGvbtfSZrb3aSEGshIS+HmgX1JT3E30erikNBJyVQqSjjRZLunX3qVV9/biWEYaK0RwVDs3EcJctqksPqZR+jd9crzCxA8WGnwm4pmG1qNQIjuW91kqwavj5p6H5npNtJTYv20SHLA6/dTebaeOpcfFaf9EwnMFbaCWYyndwPRgdIm40YOYuq9t6GUIpYfQ0p27/+Sh+b8MaidTZ9b6NhrtDwST2AcoVNojhNosjPT6HZF/nnbnj5zBiE0ED09nPfiROxXYjQw4ZUJ8fV75OaaG5ZhJ0bHS4lAR3s/LYyEEhiv3CKqffy0xNc5iY5/EquBFyB9xFbHSUtcqh3qwsTF4Ykl8ELljkutdNxDMtoDSJQmJpTA+LQp1Dbyu3lW4tXA2PO3PFrHiDQnvQh9CGhmgckilVBhJH4Ii+ZGpkAgApGwUohmrLCI23y0DhLqBxoyQE5dvTcY1p0bUkh+cucwbry2J9f17hb3+ZubIhq8PrQGKUVU/WDLIqEEdu2Uj8tp59PPS3l/+6eMGFKADA3R6LEtYPjg7zB8cP84mQscp4LWJOw76kiq6+tTVbz9wS60hk7tsnC77N8+Ar93fR8G9unCll1f8E/zljKwdxdSXM6oERjJ0ggBWmluu3kAf9dkQaRGIDhb66Ho+TVkZaRG5sWQx6IVh0pOsPPgV2SlpzBmxA047Q4S4dIklMD87CyKpo5n1rMr+HhfCa9s2hFOrGoRiVU1IKVEK8UV+TlNEqi1Rpl+aur9rH9/F9HhmtaR8l5DSvKz0pl2z0h+OPT6qA5rWSQ8Fh7U7xqW/W4a7xXv4WBJGV6fGbgVIcIuid9UbPxwDweOlCHOmdiMaE67nCx+9uNbaPApZLDMt1F9tNAIIDszje9e24sBfbphGIm7zVZZpOiQl809t33/vP/3m37KZi9k35dfnZO8QH4w8O2qjvkUTZv4DWLPj7+BEl+tVdgACKDB62HpK2/z9cmzjB11I/6cOv5csR0pBWYlnP4IUu1u7h9zC+1ymqvAT6zLYwECoxEwEB6vn+Vv/JVdB0op6NEFj6uSJaVrMQwwS2yU/JeLdilZ3H7LDXEQmFhYhsDGpXwCKW0Yhg0hJEIEfEppCDAMbDY70mZvNmppDSRfghg0TmkFq0zD9iawsCRE4hzjC4WFCGycFQx9jcyMGqEknhIHyicRUYYlmbDMEIZoskSjnQIQyqBhdwoV7xoIn2LE4J50zGubbJGtRWBjixlVqivAW+Kg/C071BuMH30dRdMmkJGammyBrTSEG2dJGw1oIfCeEjRUS7pe2Y7ZD40jJysz2QIDViJQx05okUgFVCAE1ODzm3j9ZrKlDcM6BEat9EbnGkRwVc2Z68eZaXLk2El+/x/rOFNTm2yBAcsQGEnRB1wW3YhFocF5pY/80R5Eisnqt4qZ/6f1NHi9yRbcKgRGPdOmQ99jyxJMnO0VjhSB16cp3nWA6tq6ZAtuFSsczV6UMYl64IizLiredtNwUtKzc1ue+MV4crMySfSyZXOwCIHRCMyC0UuSQhmc/ouL6n123E6Dxx64kyH9e0W1Tx6sM4S/sSeyTwkT91UmtjSN16fY8vG+KCOS3HU6ixAYikFEbBAS+BQaV5968kbVg8tk+f9u5an//B/qPR4ua2AMYukIuIICJU1c3Xw42ig8Xs2Wj/dTVV2TbHGtNwfGDkgRStPX2anc5KLua4MOuWnMfGAM7ZOcCwRLaWAw4xJadCLqUxmc+cBN1Q4nNimZNnEUo793bfC4y3NgEOcp+AtWmdszFMKhMJVm3xfHqKq+HIl8E7FPnAdJ1VKRNqCBdiO9CKfJyjeL+beX1lPv8XLZiADhAppwJCwiEQmBP/2Gn9Qbasn7vg8/ijUbiiktq0i24FYhEBpVIgW/6pjUvrL5ceb7kTbwmxqfmfysjDUIFAQf0RfU1HvR6JiBqRFS4D/mpGKTHbMBOuVm0CbNfXHXa0FYwI0RSBF4OFEIWLuxmNzsdLx+MxyNSEOijjupWOek7oiNvl1ymTd9Ap2aecdMa8ACBIIhbUwZfyvHTlTx5x2HmLPkNYQwAmVpUlB7VFH+ipO6ow6+060dC2b9lEEFvS79wi0AC73+Do6XV/Lk4jWs2lCMzwS7TTDl7mF8sHM/2/ccpaB7Ps/NnsSgfj2TLWoYliIQoKaunudXvsnCFRuoqvWQ4rRTW++hoGs+C2ZPYlCBdcgDCxIIYJomr276kKLn13LwaAX9r+nAwlmTGGghzQvBkgSGULznAMvXv8fEO4cxsG+PZItzTliaQAg8Cht63acVYQECY1PyTaXom3/2uLXRqm6M1oH13dCrmdCBAnEdvQUaNv6Moiz0WgER/FtIgRASGVN01FoFSIl/4FprlFIopTBNs9HmN03M0H4V2Ke1RisVJjaavgApEikFhpQYhsSQBtIwsAU3I2qTUiKlTCiZrUpgLJF+04/fjHxXygy3CWtpiMJguCeExJASLSUQeD2ADK7kxWppCIZhXIjIF4RWmQOjh2iEoBhig5oX3TZ8PISHLEKEh2tIw6SUCCmQQjbaHyIzkUM56UakMVmaeKWJJSZZBZf/B/sri/ndY/wNAAAAAElFTkSuQmCC" alt="Buurman">
+            <span class="header-title">Buurman Hub</span>
+          </div>
+          <div class="header-right">
+            <span class="workspace-count">${count} workspace${count !== 1 ? "s" : ""}</span>
+            <div class="refresh-dot" id="rdot" title="Auto-refreshes every 30s"></div>
+          </div>
+        </div>`;
+    }
+
+    const QUICK_LINKS = [
+      {
+        label: "Pull Requests",
+        url: "https://github.com/twimba/buurman/pulls",
+        icon: `<svg class="qlink-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>`,
+      },
+      {
+        label: "Dokploy",
+        url: "https://dokploy.buurman.io/dashboard/projects",
+        icon: `<svg class="qlink-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1L3 5v6l5 4 5-4V5L8 1z"/><path d="M8 5v6"/><path d="M5.5 3.5L8 5l2.5-1.5"/></svg>`,
+      },
+      {
+        label: "Cloudflare",
+        url: "https://dash.cloudflare.com/6b06701192aa2b311ac0afd98d2e2721/buurman.io",
+        icon: `<svg class="qlink-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 11.5a3.5 3.5 0 010-7 3.5 3.5 0 016.3-1.5A4.5 4.5 0 0114 7.5a2.5 2.5 0 010 5H2.5"/></svg>`,
+      },
+      {
+        label: "Linear",
+        url: "https://linear.app/buurman/team/BUUR/active",
+        icon: `<svg class="qlink-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 8h6"/><path d="M5 5.5h6"/><path d="M5 10.5h4"/></svg>`,
+      },
+    ];
+
+    const ARROW_SVG = `<svg class="qlink-arrow" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5L8.5 3.5M8.5 3.5H4.5M8.5 3.5v4"/></svg>`;
+
+    function renderQuickLinks() {
+      const links = QUICK_LINKS.map(l =>
+        `<a class="qlink" href="${l.url}" target="_blank" rel="noopener">${l.icon}${l.label}${ARROW_SVG}</a>`
+      ).join("");
+      return `
+        <div class="quick-links-section">
+          <div class="section-label">Quick Links</div>
+          <div class="quick-links">${links}</div>
+        </div>`;
+    }
+
+    function renderCard(ws, idx) {
+      const branch = ws.branch
+        ? `<span class="ws-branch" title="${esc(ws.branch)}">${esc(ws.branch)}</span>`
+        : "";
+
+      const chips = ws.services.map(s => {
+        const tip = s.status === "docker" ? "Running in Docker"
+                  : s.status === "host" ? "Running on host"
+                  : "Status unknown";
+        return `<a class="svc" href="${s.url}" target="_blank" rel="noopener"
+                   data-cat="${s.category}" title="${tip}">
+                  <span class="dot ${s.status}"></span>${s.label}</a>`;
+      }).join("");
+
+      return `
+        <div class="ws-card" style="animation-delay:${idx * 0.05}s">
+          <div class="card-top">
+            <span class="ws-badge">W${ws.number}</span>
+            <span class="ws-name">${esc(ws.name)}</span>
+            ${branch}
+          </div>
+          <div class="ws-path">${esc(ws.path)}</div>
+          <div class="services">${chips}</div>
+        </div>`;
+    }
+
+    function render(workspaces) {
+      const hub = document.getElementById("hub");
+
+      if (workspaces === null) {
+        hub.innerHTML = renderHeader(0) + renderQuickLinks() + `
+          <div class="state-box">
+            <h2>Unable to fetch workspace data</h2>
+            <p>Check that the hub server is running.</p>
+          </div>`;
+        return;
+      }
+
+      const n = workspaces.length;
+      let html = renderHeader(n) + renderQuickLinks();
+
+      if (n === 0) {
+        html += `
+          <div class="state-box">
+            <h2>No active workspaces</h2>
+            <p>Set up a workspace to get started:<br><code>make workspace-setup WS=1</code></p>
+          </div>`;
+      } else {
+        html += '<div class="workspaces">';
+        workspaces.forEach((ws, i) => { html += renderCard(ws, i); });
+        html += "</div>";
+        html += `
+          <div class="legend">
+            <span class="legend-item"><span class="dot docker"></span> Docker</span>
+            <span class="legend-item"><span class="dot host"></span> Host</span>
+            <span class="legend-item"><span class="dot unknown"></span> Unknown</span>
+            <span class="legend-refresh">Refreshes every 30s</span>
+          </div>`;
+      }
+
+      hub.innerHTML = html;
+    }
+
+    async function refresh() {
+      try {
+        const res = await fetch("/api/workspaces");
+        render(await res.json());
+      } catch {
+        render(null);
+      }
+      const dot = document.getElementById("rdot");
+      if (dot) {
+        dot.classList.remove("pulse");
+        void dot.offsetWidth;
+        dot.classList.add("pulse");
+      }
+    }
+
+    refresh();
+    setInterval(refresh, INTERVAL);
+  </script>
+</body>
+</html>

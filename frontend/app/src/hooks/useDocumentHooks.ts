@@ -78,9 +78,9 @@ export const useUpdateDocument = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['documents'] });
       queryClient.invalidateQueries({ queryKey: ['propertyDocuments'] });
-      queryClient.invalidateQueries({ queryKey: ['tenantDocuments'] });
+      queryClient.invalidateQueries({ queryKey: ['contactDocuments'] });
       queryClient.invalidateQueries({ queryKey: ['propertyAuditLog'] });
-      queryClient.invalidateQueries({ queryKey: ['tenantAuditLog'] });
+      queryClient.invalidateQueries({ queryKey: ['contactAuditLog'] });
       showToast('Document updated successfully', 'success');
     },
     onError: (error) => {

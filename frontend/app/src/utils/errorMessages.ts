@@ -32,7 +32,7 @@ const FIELD_LABELS: Record<string, string> = {
 };
 
 function formatFieldName(field: string): string {
-  // Handle nested paths like "parties[0].newTenant.phone" → "Phone"
+  // Handle nested paths like "parties[0].newContact.phone" → "Phone"
   const lastPart = field.includes('.')
     ? (field.split('.').pop() ?? field)
     : field;

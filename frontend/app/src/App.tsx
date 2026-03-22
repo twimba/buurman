@@ -54,21 +54,25 @@ const PropertyEditPage = lazy(() =>
     default: m.PropertyEditPage,
   }))
 );
-const TenantListPage = lazy(() =>
-  import('./pages/TenantListPage').then((m) => ({ default: m.TenantListPage }))
-);
-const TenantDetailPage = lazy(() =>
-  import('./pages/TenantDetailPage').then((m) => ({
-    default: m.TenantDetailPage,
+const ContactListPage = lazy(() =>
+  import('./pages/ContactListPage').then((m) => ({
+    default: m.ContactListPage,
   }))
 );
-const TenantCreatePage = lazy(() =>
-  import('./pages/TenantCreatePage').then((m) => ({
-    default: m.TenantCreatePage,
+const ContactDetailPage = lazy(() =>
+  import('./pages/ContactDetailPage').then((m) => ({
+    default: m.ContactDetailPage,
   }))
 );
-const TenantEditPage = lazy(() =>
-  import('./pages/TenantEditPage').then((m) => ({ default: m.TenantEditPage }))
+const ContactCreatePage = lazy(() =>
+  import('./pages/ContactCreatePage').then((m) => ({
+    default: m.ContactCreatePage,
+  }))
+);
+const ContactEditPage = lazy(() =>
+  import('./pages/ContactEditPage').then((m) => ({
+    default: m.ContactEditPage,
+  }))
 );
 const ContractsPage = lazy(() =>
   import('./pages/ContractsPage').then((m) => ({ default: m.ContractsPage }))
@@ -278,44 +282,49 @@ function App() {
                           }
                         />
                         <Route
-                          path="/tenants"
+                          path="/contacts"
                           element={
                             <ProtectedRoute>
                               <Layout>
-                                <TenantListPage />
+                                <ContactListPage />
                               </Layout>
                             </ProtectedRoute>
                           }
                         />
                         <Route
-                          path="/tenants/new"
+                          path="/contacts/new"
                           element={
                             <ProtectedRoute>
                               <Layout>
-                                <TenantCreatePage />
+                                <ContactCreatePage />
                               </Layout>
                             </ProtectedRoute>
                           }
                         />
                         <Route
-                          path="/tenants/:id"
+                          path="/contacts/:id"
                           element={
                             <ProtectedRoute>
                               <Layout>
-                                <TenantDetailPage />
+                                <ContactDetailPage />
                               </Layout>
                             </ProtectedRoute>
                           }
                         />
                         <Route
-                          path="/tenants/:id/edit"
+                          path="/contacts/:id/edit"
                           element={
                             <ProtectedRoute>
                               <Layout>
-                                <TenantEditPage />
+                                <ContactEditPage />
                               </Layout>
                             </ProtectedRoute>
                           }
+                        />
+                        {/* Backwards-compat redirect for old tenant URLs */}
+                        <Route
+                          path="/tenants/*"
+                          element={<Navigate to="/contacts" replace />}
                         />
                         <Route
                           path="/contracts"

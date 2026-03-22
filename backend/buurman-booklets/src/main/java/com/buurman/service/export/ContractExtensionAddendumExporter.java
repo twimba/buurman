@@ -29,17 +29,17 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
+import com.buurman.domain.Contact;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Property;
-import com.buurman.domain.Tenant;
 import com.buurman.domain.identifier.ContractExtensionIdentifier;
+import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyRepository;
-import com.buurman.repository.TenantRepository;
 import com.buurman.service.ContractPartyService;
 import com.buurman.util.CurrencyUtils;
 
@@ -52,7 +52,7 @@ public class ContractExtensionAddendumExporter {
   private final ContractExtensionRepository extensionRepository;
   private final ContractRepository contractRepository;
   private final PropertyRepository propertyRepository;
-  private final TenantRepository tenantRepository;
+  private final ContactRepository contactRepository;
   private final ContractPartyService contractPartyService;
   private final PdfRenderer pdfRenderer;
   private final Clock clock;
@@ -65,15 +65,15 @@ public class ContractExtensionAddendumExporter {
 
     List<ContractParty> parties =
         contractPartyService.getPartiesForContract(contract.getId(), teamId);
-    Set<UUID> tenantIds = new HashSet<>();
+    Set<UUID> contactIds = new HashSet<>();
     for (ContractParty party : parties) {
-      party.getTenantId().ifPresent(tenantIds::add);
+      party.getContactId().ifPresent(contactIds::add);
     }
-    Map<UUID, Tenant> tenantMap =
-        tenantRepository.findByIdsAndTeamId(tenantIds, teamId).stream()
-            .collect(toMap(Tenant::getId, t -> t));
+    Map<UUID, Contact> contactMap =
+        contactRepository.findByIdsAndTeamId(contactIds, teamId).stream()
+            .collect(toMap(Contact::getId, t -> t));
 
-    String html = buildHtml(extension, contract, property, parties, tenantMap);
+    String html = buildHtml(extension, contract, property, parties, contactMap);
     return pdfRenderer.renderHtml(html);
   }
 
@@ -84,13 +84,13 @@ public class ContractExtensionAddendumExporter {
       Contract contract,
       Property property,
       List<ContractParty> parties,
-      Map<UUID, Tenant> tenantMap) {
+      Map<UUID, Contact> contactMap) {
     DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH);
     String generatedDate = LocalDate.now(clock).format(dateFmt);
     String ccy = extension.getNewRentAmount().currency();
 
-    String primaryName = findPrimaryTenantName(parties, tenantMap);
-    String tenantNames = buildTenantNamesList(parties, tenantMap);
+    String primaryName = findPrimaryContactName(parties, contactMap);
+    String contactNames = buildContactNamesList(parties, contactMap);
 
     String css = BookletCss.base() + BookletCss.contractStatusBadges() + signatureBlockCss();
 
@@ -100,7 +100,7 @@ public class ContractExtensionAddendumExporter {
 
     appendCoverPage(html, extension, contract, property, primaryName, ccy, dateFmt, generatedDate);
     appendDetailsPage(
-        html, extension, contract, property, tenantNames, ccy, dateFmt, generatedDate);
+        html, extension, contract, property, contactNames, ccy, dateFmt, generatedDate);
 
     appendDocumentEnd(html);
     return html.toString();
@@ -129,7 +129,7 @@ public class ContractExtensionAddendumExporter {
     html.append("<tr>");
     appendCoverCell(
         html, "Property", escapeHtml(property.getStreet()) + ", " + escapeHtml(property.getCity()));
-    appendCoverCell(html, "Primary Tenant", primaryName);
+    appendCoverCell(html, "Primary Contact", primaryName);
     html.append("</tr><tr>");
     appendCoverCell(html, "Contract", escapeHtml(contract.getIdentifier().orElseThrow().value()));
     appendCoverCell(html, "Trigger", formatEnumValue(extension.getTriggerType().name()));
@@ -153,14 +153,14 @@ public class ContractExtensionAddendumExporter {
       ContractExtension extension,
       Contract contract,
       Property property,
-      String tenantNames,
+      String contactNames,
       String ccy,
       DateTimeFormatter dateFmt,
       String generatedDate) {
     appendPageStart(html, "Extension Details");
 
     // Property & Tenant Info
-    appendSectionTitle(html, "Property &amp; Tenant");
+    appendSectionTitle(html, "Property &amp; Contact");
     html.append("<table class='detail-grid'>");
     html.append("<tr>");
     appendField(
@@ -171,7 +171,7 @@ public class ContractExtensionAddendumExporter {
             + escapeHtml(property.getPostalCode())
             + " "
             + escapeHtml(property.getCity()));
-    appendField(html, "Tenant(s)", tenantNames);
+    appendField(html, "Contact(s)", contactNames);
     html.append("</tr>");
     html.append("</table>");
 
@@ -249,7 +249,7 @@ public class ContractExtensionAddendumExporter {
     appendSectionTitle(html, "Signatures");
     html.append("<div class='signature-container'>");
     appendSignatureBlock(html, "Landlord");
-    appendSignatureBlock(html, "Tenant");
+    appendSignatureBlock(html, "Contact");
     html.append("</div>");
 
     // Disclaimer
@@ -270,28 +270,23 @@ public class ContractExtensionAddendumExporter {
 
   // ── Helpers ─────────────────────────────────────────────────────
 
-  private String findPrimaryTenantName(List<ContractParty> parties, Map<UUID, Tenant> tenantMap) {
+  private String findPrimaryContactName(
+      List<ContractParty> parties, Map<UUID, Contact> contactMap) {
     return parties.stream()
         .filter(p -> p.getRole() == ContractPartyRole.PRIMARY_TENANT)
         .findFirst()
-        .flatMap(p -> p.getTenantId().map(tenantMap::get))
-        .map(
-            t ->
-                escapeHtml(t.getFirstName())
-                    + t.getLastName().map(n -> " " + escapeHtml(n)).orElse(""))
+        .flatMap(p -> p.getContactId().map(contactMap::get))
+        .map(t -> escapeHtml(t.getDisplayName()))
         .orElse("—");
   }
 
-  private String buildTenantNamesList(List<ContractParty> parties, Map<UUID, Tenant> tenantMap) {
+  private String buildContactNamesList(List<ContractParty> parties, Map<UUID, Contact> contactMap) {
     List<String> names =
         parties.stream()
-            .filter(p -> p.getTenantId().isPresent())
-            .map(p -> p.getTenantId().map(tenantMap::get))
+            .filter(p -> p.getContactId().isPresent())
+            .map(p -> p.getContactId().map(contactMap::get))
             .flatMap(Optional::stream)
-            .map(
-                t ->
-                    escapeHtml(t.getFirstName())
-                        + t.getLastName().map(n -> " " + escapeHtml(n)).orElse(""))
+            .map(t -> escapeHtml(t.getDisplayName()))
             .toList();
     if (names.isEmpty()) {
       return "—";

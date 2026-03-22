@@ -25,7 +25,7 @@ import { RefreshButton } from '@buurman/ui';
 const entityTypeFilters = [
   { value: undefined, label: 'All Types' },
   { value: 'PROPERTY', label: 'Properties' },
-  { value: 'TENANT', label: 'Tenants' },
+  { value: 'CONTACT', label: 'Contacts' },
   { value: 'CONTRACT', label: 'Contracts' },
   { value: 'PAYMENT', label: 'Payments' },
   { value: 'EXPENSE', label: 'Expenses' },
@@ -58,7 +58,7 @@ const getEntityTypeColor = (entityType: string) => {
   switch (entityType) {
     case 'PROPERTY':
       return 'bg-info-bg text-info-text';
-    case 'TENANT':
+    case 'CONTACT':
       return 'bg-info-bg text-info-text';
     case 'CONTRACT':
       return 'bg-warning-bg text-warning-text';
@@ -139,8 +139,8 @@ export const AuditLogPage = () => {
     const entityType = activity.entityType.toLowerCase();
     if (entityType === 'property') {
       navigate(`/properties/${activity.entityIdentifier}`);
-    } else if (entityType === 'tenant') {
-      navigate(`/tenants/${activity.entityIdentifier}`);
+    } else if (entityType === 'contact') {
+      navigate(`/contacts/${activity.entityIdentifier}`);
     } else if (entityType === 'contract') {
       navigate(`/contracts/${activity.entityIdentifier}`);
     } else if (entityType === 'payment') {
@@ -193,7 +193,7 @@ export const AuditLogPage = () => {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by user, property address, tenant name/email, identifier..."
+              placeholder="Search by user, property address, contact name/email, identifier..."
               className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-lg bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
             />
           </div>

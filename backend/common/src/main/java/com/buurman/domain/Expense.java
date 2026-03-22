@@ -39,6 +39,7 @@ public class Expense {
   @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private UUID teamId;
   private UUID propertyId;
+  @Builder.Default private Optional<UUID> contactId = Optional.empty();
   private ExpenseCategory category;
   private MoneyAmount amount;
   private LocalDate expenseDate;

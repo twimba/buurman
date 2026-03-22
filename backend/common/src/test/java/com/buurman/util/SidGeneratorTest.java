@@ -17,6 +17,10 @@ import com.buurman.domain.Sid;
 import com.buurman.domain.identifier.AmenityIdentifier;
 import com.buurman.domain.identifier.BroadcastMessageIdentifier;
 import com.buurman.domain.identifier.CalendarFeedIdentifier;
+import com.buurman.domain.identifier.ContactAddressIdentifier;
+import com.buurman.domain.identifier.ContactIdentifier;
+import com.buurman.domain.identifier.ContactNoteIdentifier;
+import com.buurman.domain.identifier.ContactRelationshipIdentifier;
 import com.buurman.domain.identifier.ContractExtensionIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.ContractPartyIdentifier;
@@ -49,8 +53,6 @@ import com.buurman.domain.identifier.RentRegulationCountryIdentifier;
 import com.buurman.domain.identifier.RentRegulationRegionIdentifier;
 import com.buurman.domain.identifier.RentRegulationRuleIdentifier;
 import com.buurman.domain.identifier.TeamIdentifier;
-import com.buurman.domain.identifier.TenantAddressIdentifier;
-import com.buurman.domain.identifier.TenantIdentifier;
 import com.buurman.domain.identifier.UserIdentifier;
 import com.buurman.domain.identifier.WwsCalculationIdentifier;
 
@@ -114,8 +116,11 @@ class SidGeneratorTest {
               SidGenerator.newRegistrationInvitationId(),
               RegistrationInvitationIdentifier.class),
           Arguments.of("TEA", SidGenerator.newTeamId(), TeamIdentifier.class),
-          Arguments.of("TEN", SidGenerator.newTenantId(), TenantIdentifier.class),
-          Arguments.of("TAD", SidGenerator.newTenantAddressId(), TenantAddressIdentifier.class),
+          Arguments.of("CTC", SidGenerator.newContactId(), ContactIdentifier.class),
+          Arguments.of("CAD", SidGenerator.newContactAddressId(), ContactAddressIdentifier.class),
+          Arguments.of("CNT", SidGenerator.newContactNoteId(), ContactNoteIdentifier.class),
+          Arguments.of(
+              "CRL", SidGenerator.newContactRelationshipId(), ContactRelationshipIdentifier.class),
           Arguments.of("USR", SidGenerator.newUserId(), UserIdentifier.class),
           Arguments.of("ACQ", SidGenerator.newAcquisitionId(), PropertyAcquisitionIdentifier.class),
           Arguments.of("VAL", SidGenerator.newValuationId(), PropertyValuationIdentifier.class),

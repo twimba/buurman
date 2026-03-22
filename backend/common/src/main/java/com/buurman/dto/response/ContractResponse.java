@@ -17,7 +17,7 @@ public record ContractResponse(
     Sid identifier,
     Optional<PropertySummary> property,
     List<ContractPartyResponse> parties,
-    Optional<TenantSummary> primaryTenant,
+    Optional<ContactSummary> primaryContact,
     Contract.ContractType contractType,
     LocalDate startDate,
     Optional<LocalDate> endDate,

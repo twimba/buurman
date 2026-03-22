@@ -4,6 +4,7 @@ import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.util.SidGenerator.newContractId;
 import static com.buurman.util.SidGenerator.newContractPartyId;
+import static com.buurman.util.SidGenerator.newContractRentPeriodId;
 import static com.buurman.util.SidGenerator.newRentComponentId;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
@@ -80,19 +81,19 @@ public class DemoContractGenerator {
       UUID createdBy = ctx.getAdminUserForTeam(teamKey).orElse(null);
       String currency = ctx.getCurrencyForTeam(teamKey);
       List<UUID> propertyIds = ctx.getPropertyIdsByTeam().get(teamId);
-      List<UUID> tenantIds = ctx.getTenantIdsByTeam().get(teamId);
+      List<UUID> contactIds = ctx.getContactIdsByTeam().get(teamId);
       List<UUID> contractIds = new ArrayList<>();
 
-      if (propertyIds == null || tenantIds == null) {
+      if (propertyIds == null || contactIds == null) {
         continue;
       }
 
-      // Sort tenants: individuals first, business last
-      List<UUID> sortedTenants = new ArrayList<>(tenantIds);
-      sortedTenants.sort(
+      // Sort contacts: individuals first, business last
+      List<UUID> sortedContacts = new ArrayList<>(contactIds);
+      sortedContacts.sort(
           (a, b) -> {
-            boolean aBiz = ctx.isBusinessTenant(a);
-            boolean bBiz = ctx.isBusinessTenant(b);
+            boolean aBiz = ctx.isBusinessContact(a);
+            boolean bBiz = ctx.isBusinessContact(b);
             return Boolean.compare(aBiz, bBiz);
           });
 
@@ -105,8 +106,8 @@ public class DemoContractGenerator {
             return Boolean.compare(!aRes, !bRes);
           });
 
-      // Global tenant index across all properties in this team
-      int tenantIndex = 0;
+      // Global contact index across all properties in this team
+      int contactIndex = 0;
       int totalContracts = 0;
 
       for (int propIdx = 0; propIdx < sortedProperties.size(); propIdx++) {
@@ -133,9 +134,9 @@ public class DemoContractGenerator {
         for (int c = 0; c < chainLength; c++) {
           boolean isLastContract = (c == chainLength - 1);
 
-          // Determine tenant (wrap around if we exceed the pool)
-          UUID tenantId = sortedTenants.get(tenantIndex % sortedTenants.size());
-          tenantIndex++;
+          // Determine contact (wrap around if we exceed the pool)
+          UUID contactId = sortedContacts.get(contactIndex % sortedContacts.size());
+          contactIndex++;
 
           // Compute start date
           LocalDate startDate;
@@ -250,7 +251,7 @@ public class DemoContractGenerator {
 
           // Country metadata
           ContractCountryMetadata metadata =
-              countryCode != null ? buildDemoMetadata(countryCode) : null;
+              countryCode != null ? buildDemoMetadata(countryCode, currency) : null;
 
           // Compute realistic created_at based on contract start
           LocalDateTime createdAt;
@@ -315,15 +316,31 @@ public class DemoContractGenerator {
               .set(CONTRACTS.UPDATED_BY, createdBy)
               .execute();
 
-          // Insert primary tenant into contract_parties
+          // Insert primary contact into contract_parties
           dsl.insertInto(table("contract_parties"))
               .set(field("id", UUID.class), UUID.randomUUID())
               .set(field("identifier", String.class), newContractPartyId().value())
               .set(field("team_id", UUID.class), teamId)
               .set(field("contract_id", UUID.class), contractId)
-              .set(field("tenant_id", UUID.class), tenantId)
+              .set(field("contact_id", UUID.class), contactId)
               .set(field("role", String.class), "PRIMARY_TENANT")
               .set(field("created_at", LocalDateTime.class), now)
+              .set(field("updated_at", LocalDateTime.class), now)
+              .set(field("created_by", UUID.class), createdBy)
+              .set(field("updated_by", UUID.class), createdBy)
+              .execute();
+
+          // Insert initial rent period
+          UUID rentPeriodId = UUID.randomUUID();
+          dsl.insertInto(table("contract_rent_periods"))
+              .set(field("id", UUID.class), rentPeriodId)
+              .set(field("identifier", String.class), newContractRentPeriodId().value())
+              .set(field("team_id", UUID.class), teamId)
+              .set(field("contract_id", UUID.class), contractId)
+              .set(field("rent_amount", Long.class), rent.movePointRight(2).longValueExact())
+              .set(field("currency", String.class), currency)
+              .set(field("effective_from", java.sql.Date.class), java.sql.Date.valueOf(startDate))
+              .set(field("created_at", LocalDateTime.class), createdAt)
               .set(field("updated_at", LocalDateTime.class), now)
               .set(field("created_by", UUID.class), createdBy)
               .set(field("updated_by", UUID.class), createdBy)
@@ -332,7 +349,7 @@ public class DemoContractGenerator {
           // Insert rent components (~70% of contracts get a breakdown)
           if (totalContracts % 3 != 2) {
             insertRentComponents(
-                contractId, teamId, createdBy, rent, currency, propertyCategory, now);
+                contractId, rentPeriodId, teamId, createdBy, rent, currency, propertyCategory, now);
           }
 
           contractIds.add(contractId);
@@ -455,6 +472,7 @@ public class DemoContractGenerator {
   @SuppressWarnings("NullAway")
   private void insertRentComponents(
       UUID contractId,
+      UUID rentPeriodId,
       UUID teamId,
       @org.jspecify.annotations.Nullable UUID createdBy,
       BigDecimal rentAmount,
@@ -472,9 +490,19 @@ public class DemoContractGenerator {
 
     int sortOrder = 0;
     insertComponent(
-        contractId, teamId, createdBy, "BASE_RENT", baseRent, currency, null, sortOrder++, now);
+        contractId,
+        rentPeriodId,
+        teamId,
+        createdBy,
+        "BASE_RENT",
+        baseRent,
+        currency,
+        null,
+        sortOrder++,
+        now);
     insertComponent(
         contractId,
+        rentPeriodId,
         teamId,
         createdBy,
         "UTILITIES_ADVANCE",
@@ -485,6 +513,7 @@ public class DemoContractGenerator {
         now);
     insertComponent(
         contractId,
+        rentPeriodId,
         teamId,
         createdBy,
         "SERVICE_COSTS",
@@ -500,13 +529,23 @@ public class DemoContractGenerator {
         || random.nextInt(10) == 0) {
       BigDecimal parking = BigDecimal.valueOf(random.nextInt(50, 200));
       insertComponent(
-          contractId, teamId, createdBy, "PARKING", parking, currency, null, sortOrder++, now);
+          contractId,
+          rentPeriodId,
+          teamId,
+          createdBy,
+          "PARKING",
+          parking,
+          currency,
+          null,
+          sortOrder++,
+          now);
     }
   }
 
   @SuppressWarnings("NullAway")
   private void insertComponent(
       UUID contractId,
+      UUID rentPeriodId,
       UUID teamId,
       UUID createdBy,
       String componentType,
@@ -522,6 +561,7 @@ public class DemoContractGenerator {
         .set(field("identifier", String.class), newRentComponentId().value())
         .set(field("team_id", UUID.class), teamId)
         .set(field("contract_id", UUID.class), contractId)
+        .set(field("rent_period_id", UUID.class), rentPeriodId)
         .set(field("component_type", String.class), componentType)
         .set(field("amount", Long.class), minorUnits)
         .set(field("currency", String.class), currency)
@@ -542,7 +582,7 @@ public class DemoContractGenerator {
     };
   }
 
-  private ContractCountryMetadata buildDemoMetadata(String countryCode) {
+  private ContractCountryMetadata buildDemoMetadata(String countryCode, String currency) {
     return switch (countryCode) {
       case "NL" ->
           new NlContractMetadata(
@@ -555,9 +595,9 @@ public class DemoContractGenerator {
               false,
               false,
               false,
-              MoneyAmount.of(BigDecimal.valueOf(150), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(150), currency),
               false,
-              MoneyAmount.of(BigDecimal.valueOf(879), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(879), currency),
               "C");
       case "DE" ->
           new DeContractMetadata(
@@ -565,16 +605,16 @@ public class DemoContractGenerator {
               true,
               "STANDARD",
               false,
-              MoneyAmount.of(BigDecimal.valueOf(200), "EUR"),
-              MoneyAmount.of(BigDecimal.valueOf(2100), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(200), currency),
+              MoneyAmount.of(BigDecimal.valueOf(2100), currency),
               3,
               "VERBRAUCH",
               "C",
               BigDecimal.valueOf(125));
       case "FR" ->
           new FrContractMetadata(
-              MoneyAmount.of(BigDecimal.valueOf(25, 1), "EUR"),
-              MoneyAmount.of(BigDecimal.valueOf(30), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(25, 1), currency),
+              MoneyAmount.of(BigDecimal.valueOf(30), currency),
               true,
               true,
               "C",
@@ -584,7 +624,7 @@ public class DemoContractGenerator {
               true,
               true,
               true,
-              MoneyAmount.of(BigDecimal.valueOf(900), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(900), currency),
               1);
       case "BE" ->
           new BeContractMetadata(
@@ -598,7 +638,13 @@ public class DemoContractGenerator {
               "2024-01");
       case "GB" ->
           new UkContractMetadata(
-              "AST", "DPS", "C", true, true, true, MoneyAmount.of(BigDecimal.valueOf(1500), "GBP"));
+              "AST",
+              "DPS",
+              "C",
+              true,
+              true,
+              true,
+              MoneyAmount.of(BigDecimal.valueOf(1500), currency));
       case "US" ->
           new UsContractMetadata(
               "NY",
@@ -606,17 +652,17 @@ public class DemoContractGenerator {
               "New York City",
               false,
               true,
-              MoneyAmount.of(BigDecimal.valueOf(5000), "USD"),
+              MoneyAmount.of(BigDecimal.valueOf(5000), currency),
               2);
       case "ES" ->
           new EsContractMetadata(
               true,
               false,
               BigDecimal.valueOf(1200),
-              MoneyAmount.of(BigDecimal.valueOf(800), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(800), currency),
               1,
               "D",
-              MoneyAmount.of(BigDecimal.valueOf(1600), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(1600), currency),
               2);
       case "PT" ->
           new PtContractMetadata("NRAU", false, BigDecimal.valueOf(1.0154), "IMI-2024-98765", "B");
@@ -627,60 +673,65 @@ public class DemoContractGenerator {
               BigDecimal.valueOf(21),
               "REG-2024-MI-12345",
               "B",
-              MoneyAmount.of(BigDecimal.valueOf(2400), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(2400), currency),
               3);
       case "AT" ->
           new AtContractMetadata(
               "MRG",
               "B",
-              MoneyAmount.of(BigDecimal.valueOf(180), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(180), currency),
               3,
-              MoneyAmount.of(BigDecimal.valueOf(2400), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(2400), currency),
               true,
-              MoneyAmount.of(BigDecimal.valueOf(6.5), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(6.5), currency),
               "EA-2024-AT-001");
       case "CH" ->
           new ChContractMetadata(
               "ZH",
               "Zurich",
-              MoneyAmount.of(BigDecimal.valueOf(250), "CHF"),
+              MoneyAmount.of(BigDecimal.valueOf(250), currency),
               3,
-              MoneyAmount.of(BigDecimal.valueOf(4500), "CHF"),
+              MoneyAmount.of(BigDecimal.valueOf(4500), currency),
               true,
               BigDecimal.valueOf(1.5));
       case "DK" ->
           new DkContractMetadata(
               "PRIVATE",
               "C",
-              MoneyAmount.of(BigDecimal.valueOf(30000), "DKK"),
+              MoneyAmount.of(BigDecimal.valueOf(30000), currency),
               3,
-              MoneyAmount.of(BigDecimal.valueOf(30000), "DKK"),
+              MoneyAmount.of(BigDecimal.valueOf(30000), currency),
               3,
               true);
       case "SE" ->
           new SeContractMetadata(
-              "PRIVATE", true, "C", MoneyAmount.of(BigDecimal.valueOf(25000), "SEK"), 3, true);
+              "PRIVATE", true, "C", MoneyAmount.of(BigDecimal.valueOf(25000), currency), 3, true);
       case "FI" ->
           new FiContractMetadata(
-              "INDEFINITE", "C", MoneyAmount.of(BigDecimal.valueOf(1500), "EUR"), 2, false);
+              "INDEFINITE", "C", MoneyAmount.of(BigDecimal.valueOf(1500), currency), 2, false);
       case "NO" ->
           new NoContractMetadata(
-              "RESIDENTIAL", "C", MoneyAmount.of(BigDecimal.valueOf(30000), "NOK"), 3, true, false);
+              "RESIDENTIAL",
+              "C",
+              MoneyAmount.of(BigDecimal.valueOf(30000), currency),
+              3,
+              true,
+              false);
       case "IE" ->
           new IeContractMetadata(
               "PART4",
               "B2",
-              MoneyAmount.of(BigDecimal.valueOf(2000), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(2000), currency),
               1,
               true,
               true,
-              MoneyAmount.of(BigDecimal.valueOf(1800), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(1800), currency),
               "BER-2024-IE-001");
       case "PL" ->
           new PlContractMetadata(
               "ZWYKLY",
               "C",
-              MoneyAmount.of(BigDecimal.valueOf(4000), "PLN"),
+              MoneyAmount.of(BigDecimal.valueOf(4000), currency),
               2,
               true,
               "EC-2024-PL-001",
@@ -689,55 +740,55 @@ public class DemoContractGenerator {
           new CzContractMetadata(
               "INDEFINITE",
               "C",
-              MoneyAmount.of(BigDecimal.valueOf(30000), "CZK"),
+              MoneyAmount.of(BigDecimal.valueOf(30000), currency),
               3,
-              MoneyAmount.of(BigDecimal.valueOf(5000), "CZK"),
+              MoneyAmount.of(BigDecimal.valueOf(5000), currency),
               false);
       case "HU" ->
           new HuContractMetadata(
               "DEFINITE",
               "CC",
-              MoneyAmount.of(BigDecimal.valueOf(300000), "HUF"),
+              MoneyAmount.of(BigDecimal.valueOf(300000), currency),
               2,
-              MoneyAmount.of(BigDecimal.valueOf(25000), "HUF"),
+              MoneyAmount.of(BigDecimal.valueOf(25000), currency),
               false);
       case "RO" ->
           new RoContractMetadata(
               "DEFINITE",
               "C",
-              MoneyAmount.of(BigDecimal.valueOf(3000), "RON"),
+              MoneyAmount.of(BigDecimal.valueOf(3000), currency),
               2,
               true,
-              MoneyAmount.of(BigDecimal.valueOf(500), "RON"));
+              MoneyAmount.of(BigDecimal.valueOf(500), currency));
       case "GR" ->
           new GrContractMetadata(
               "RESIDENTIAL",
               "C",
-              MoneyAmount.of(BigDecimal.valueOf(1500), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(1500), currency),
               2,
               false,
-              MoneyAmount.of(BigDecimal.valueOf(80), "EUR"),
+              MoneyAmount.of(BigDecimal.valueOf(80), currency),
               "TAX-2024-GR-001");
       case "BR" ->
           new BrContractMetadata(
               "RESIDENCIAL",
-              MoneyAmount.of(BigDecimal.valueOf(5000), "BRL"),
+              MoneyAmount.of(BigDecimal.valueOf(5000), currency),
               3,
               false,
-              MoneyAmount.of(BigDecimal.valueOf(800), "BRL"),
+              MoneyAmount.of(BigDecimal.valueOf(800), currency),
               "MAT-2024-BR-001",
               false);
       case "CA" ->
           new CaContractMetadata(
-              "ON", true, MoneyAmount.of(BigDecimal.valueOf(2000), "CAD"), 2, true, null);
+              "ON", true, MoneyAmount.of(BigDecimal.valueOf(2000), currency), 2, true, null);
       case "MX" ->
           new MxContractMetadata(
               "CDMX",
               "DEFINITE",
-              MoneyAmount.of(BigDecimal.valueOf(15000), "MXN"),
+              MoneyAmount.of(BigDecimal.valueOf(15000), currency),
               1,
               false,
-              MoneyAmount.of(BigDecimal.valueOf(2000), "MXN"));
+              MoneyAmount.of(BigDecimal.valueOf(2000), currency));
       default -> new GenericContractMetadata(null, null, null, null, null, "Demo generic metadata");
     };
   }

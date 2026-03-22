@@ -84,11 +84,11 @@ public class LocalSmsSender implements NotificationChannelSender {
           "Buurman: Contract for {propertyName} expires in {daysUntilExpiry} days ({expiryDate}).";
       case "property-created" -> "Buurman: Property {propertyName} has been created.";
       case "contract-created" ->
-          "Buurman: New contract created for {propertyName} with {tenantName}.";
+          "Buurman: New contract created for {propertyName} with {contactName}.";
       case "contract-status-changed" ->
           "Buurman: Contract for {propertyName} changed from {oldStatus} to {newStatus}.";
       case "contract-reopened" ->
-          "Buurman: Contract for {propertyName} ({tenantName}) has been reopened for editing.";
+          "Buurman: Contract for {propertyName} ({contactName}) has been reopened for editing.";
       case "payment-paid" ->
           "Buurman: Payment of {amount} for {propertyName} has been marked as paid.";
       case "payment-receival" ->

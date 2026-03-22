@@ -231,10 +231,20 @@ Copy `.env.example` to `.env`. All defaults work for local development. Key vari
 
 Run multiple isolated Buurman instances simultaneously for parallel development with [Conductor](https://www.conductor.build/):
 
-Configure the work space with the setup instructions as
+Configure the workspace with the setup instructions as
 ```
 cat .conductor/setup-workspace.prompt | claude -p --dangerously-skip-permissions --verbose
 ```
+
+### Buurman Hub
+
+When running multiple workspaces, use the **Buurman Hub** to see all active workspaces and their services at a glance:
+
+```bash
+make hub    # opens http://localhost:3333
+```
+
+The hub auto-detects active workspaces from lock files, shows service links for each workspace, and indicates whether services are running in Docker or on the host. It auto-refreshes every 10 seconds.
 
 ## Documentation
 

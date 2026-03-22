@@ -1,6 +1,6 @@
 import { ExpenseResponse } from '@/types/expense';
 import { ExpenseCategoryBadge } from './ExpenseCategoryBadge';
-import { Receipt, Calendar, DollarSign, MapPin } from 'lucide-react';
+import { Receipt, Calendar, DollarSign, MapPin, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useFormatDate } from '@/hooks/useFormatDate';
 
@@ -45,6 +45,21 @@ export const ExpenseCard = ({ expense }: ExpenseCardProps) => {
                 <p className="text-xs text-text-secondary">Property</p>
                 <p className="text-sm font-medium text-text-primary">
                   {expense.property.street}, {expense.property.city}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Contact */}
+        {expense.contact && (
+          <div className="mb-3">
+            <div className="flex items-start gap-2">
+              <User className="h-4 w-4 text-text-muted mt-0.5" />
+              <div>
+                <p className="text-xs text-text-secondary">Contact</p>
+                <p className="text-sm font-medium text-text-primary">
+                  {expense.contact.firstName} {expense.contact.lastName}
                 </p>
               </div>
             </div>

@@ -7,7 +7,7 @@ public record DemoDataResponse(
     int teamsCreated,
     int usersCreated,
     int propertiesCreated,
-    int tenantsCreated,
+    int contactsCreated,
     int contractsCreated,
     int paymentsCreated,
     int expensesCreated,

@@ -20,7 +20,7 @@ public class CalendarFeed {
     ALL_PAYMENTS,
     CONTRACT,
     PROPERTY_PAYMENTS,
-    TENANT_PAYMENTS
+    CONTACT_PAYMENTS
   }
 
   private UUID id;
@@ -31,7 +31,7 @@ public class CalendarFeed {
   private FeedType feedType;
   @Builder.Default private Optional<UUID> contractId = Optional.empty();
   @Builder.Default private Optional<UUID> propertyId = Optional.empty();
-  @Builder.Default private Optional<UUID> tenantId = Optional.empty();
+  @Builder.Default private Optional<UUID> contactId = Optional.empty();
   @Builder.Default private Boolean enabled = true;
   private Instant createdAt;
   private Instant updatedAt;

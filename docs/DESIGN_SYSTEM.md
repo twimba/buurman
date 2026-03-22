@@ -912,7 +912,7 @@ The design system applies consistently across **all** user-facing surfaces — n
 
 ### Email Templates (17 Thymeleaf templates)
 
-**Location**: `backend/app/src/main/resources/templates/email/`
+**Location**: `backend/buurman-app/src/main/resources/templates/email/`
 
 **Current state**: All 17 templates use inline styles with generic system fonts and hardcoded blue (#2563eb) CTAs.
 
@@ -986,7 +986,7 @@ The backoffice login page must be **immediately recognizable** as a different en
 | Financial figures | `font-variant-numeric: tabular-nums`, right-aligned |
 
 **Implementation notes**:
-- Bundle Satoshi font files in `backend/app/src/main/resources/fonts/`
+- Bundle Satoshi font files in `backend/buurman-app/src/main/resources/fonts/`
 - Register font with iText7's `FontProvider` before conversion
 - Create a shared HTML template/fragment for consistent PDF header, footer, and styling
 - A4 page size (already configured)

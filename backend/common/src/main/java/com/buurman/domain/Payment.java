@@ -32,6 +32,7 @@ public class Payment {
   @Builder.Default private Optional<Sid> identifier = Optional.empty();
   private UUID teamId;
   private UUID contractId;
+  @Builder.Default private Optional<UUID> contactId = Optional.empty();
   private MoneyAmount amount;
   @Builder.Default private Optional<LocalDate> paymentDate = Optional.empty();
   private LocalDate dueDate;

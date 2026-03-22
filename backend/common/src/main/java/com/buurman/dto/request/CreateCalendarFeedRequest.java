@@ -12,4 +12,4 @@ public record CreateCalendarFeedRequest(
     @NotNull CalendarFeed.FeedType feedType,
     Optional<String> contractIdentifier,
     Optional<String> propertyIdentifier,
-    Optional<String> tenantIdentifier) {}
+    Optional<String> contactIdentifier) {}

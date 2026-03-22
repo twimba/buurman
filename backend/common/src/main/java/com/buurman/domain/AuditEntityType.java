@@ -2,7 +2,10 @@ package com.buurman.domain;
 
 public enum AuditEntityType {
   PROPERTY,
-  TENANT,
+  CONTACT,
+  CONTACT_ADDRESS,
+  CONTACT_NOTE,
+  CONTACT_RELATIONSHIP,
   CONTRACT,
   CONTRACT_PARTY,
   EXPENSE,

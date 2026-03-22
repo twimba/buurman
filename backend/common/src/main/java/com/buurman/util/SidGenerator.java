@@ -4,6 +4,10 @@ import com.buurman.domain.Sid;
 import com.buurman.domain.identifier.AmenityIdentifier;
 import com.buurman.domain.identifier.BroadcastMessageIdentifier;
 import com.buurman.domain.identifier.CalendarFeedIdentifier;
+import com.buurman.domain.identifier.ContactAddressIdentifier;
+import com.buurman.domain.identifier.ContactIdentifier;
+import com.buurman.domain.identifier.ContactNoteIdentifier;
+import com.buurman.domain.identifier.ContactRelationshipIdentifier;
 import com.buurman.domain.identifier.ContractExtensionIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.ContractPartyIdentifier;
@@ -36,8 +40,6 @@ import com.buurman.domain.identifier.RentRegulationCountryIdentifier;
 import com.buurman.domain.identifier.RentRegulationRegionIdentifier;
 import com.buurman.domain.identifier.RentRegulationRuleIdentifier;
 import com.buurman.domain.identifier.TeamIdentifier;
-import com.buurman.domain.identifier.TenantAddressIdentifier;
-import com.buurman.domain.identifier.TenantIdentifier;
 import com.buurman.domain.identifier.UserIdentifier;
 import com.buurman.domain.identifier.WwsCalculationIdentifier;
 
@@ -141,12 +143,20 @@ public class SidGenerator {
     return TeamIdentifier.of(generateRaw(EntityPrefix.TEA));
   }
 
-  public static TenantIdentifier newTenantId() {
-    return TenantIdentifier.of(generateRaw(EntityPrefix.TEN));
+  public static ContactIdentifier newContactId() {
+    return ContactIdentifier.of(generateRaw(EntityPrefix.CTC));
   }
 
-  public static TenantAddressIdentifier newTenantAddressId() {
-    return TenantAddressIdentifier.of(generateRaw(EntityPrefix.TAD));
+  public static ContactAddressIdentifier newContactAddressId() {
+    return ContactAddressIdentifier.of(generateRaw(EntityPrefix.CAD));
+  }
+
+  public static ContactNoteIdentifier newContactNoteId() {
+    return ContactNoteIdentifier.of(generateRaw(EntityPrefix.CNT));
+  }
+
+  public static ContactRelationshipIdentifier newContactRelationshipId() {
+    return ContactRelationshipIdentifier.of(generateRaw(EntityPrefix.CRL));
   }
 
   public static UserIdentifier newUserId() {

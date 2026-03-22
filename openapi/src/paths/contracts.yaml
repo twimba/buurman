@@ -467,9 +467,9 @@ collection:
         required: false
         schema:
           type: string
-      - name: tenantIdentifier
+      - name: contactIdentifier
         in: query
-        description: Tenant identifier
+        description: Contact identifier
         required: false
         schema:
           type: string
@@ -743,9 +743,9 @@ parties-change-primary:
   post:
     tags:
       - Contracts
-    summary: Change primary tenant
-    description: Change the primary tenant of a contract (Admin/Editor)
-    operationId: changePrimaryTenant
+    summary: Change primary contact
+    description: Change the primary contact of a contract (Admin/Editor)
+    operationId: changePrimaryContact
     parameters:
       - name: identifier
         in: path
@@ -757,7 +757,7 @@ parties-change-primary:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ChangePrimaryTenantRequest'
+            $ref: '#/components/schemas/ChangePrimaryContactRequest'
       required: true
     responses:
       "200":

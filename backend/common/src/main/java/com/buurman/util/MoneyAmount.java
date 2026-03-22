@@ -1,6 +1,7 @@
 package com.buurman.util;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
@@ -9,7 +10,8 @@ import org.jspecify.annotations.Nullable;
 public record MoneyAmount(BigDecimal value, String currency) {
 
   public static MoneyAmount of(BigDecimal value, String currency) {
-    return new MoneyAmount(value, currency);
+    int digits = CurrencyUtils.getFractionalDigits(currency);
+    return new MoneyAmount(value.setScale(digits, RoundingMode.HALF_UP), currency);
   }
 
   public static Optional<MoneyAmount> ofNullable(
@@ -17,7 +19,7 @@ public record MoneyAmount(BigDecimal value, String currency) {
     if (value == null || currency == null) {
       return Optional.empty();
     }
-    return Optional.of(new MoneyAmount(value, currency));
+    return Optional.of(MoneyAmount.of(value, currency));
   }
 
   public long toMinorUnits() {

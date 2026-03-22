@@ -888,20 +888,56 @@ documents-download:
             schema:
               $ref: '#/components/schemas/ProblemDetail'
 
-booklets-tenant-item:
+booklets-contacts-csv:
   get:
     tags:
       - Booklets
-    summary: Export tenant booklet to PDF
-    description: Download detailed tenant booklet as PDF
-    operationId: exportTenantBooklet
+    summary: Export contacts list to CSV
+    description: Download all contacts for the team as a CSV file
+    operationId: exportContactsCsv
+    responses:
+      "200":
+        description: OK
+        content:
+          "text/csv":
+            schema:
+              type: string
+              format: byte
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+booklets-contact-item:
+  get:
+    tags:
+      - Booklets
+    summary: Export contact booklet to PDF
+    description: Download detailed contact booklet as PDF
+    operationId: exportContactBooklet
     parameters:
-      - name: tenantIdentifier
+      - name: contactIdentifier
         in: path
-        description: Tenant identifier
+        description: Contact identifier
         required: true
         schema:
-          $ref: '#/components/schemas/TenantIdentifier'
+          $ref: '#/components/schemas/ContactIdentifier'
     responses:
       "200":
         description: OK

@@ -7,8 +7,8 @@ interface ContractCellProps {
   contractStatus: ContractStatus;
   propertyStreet: string;
   propertyCity: string;
-  tenantFirstName: string;
-  tenantLastName?: string;
+  contactFirstName: string;
+  contactLastName?: string;
   onClick?: (e: React.MouseEvent) => void;
 }
 
@@ -33,8 +33,8 @@ export const ContractCell = ({
   contractStatus,
   propertyStreet,
   propertyCity,
-  tenantFirstName,
-  tenantLastName,
+  contactFirstName,
+  contactLastName,
   onClick,
 }: ContractCellProps) => {
   const navigate = useNavigate();
@@ -82,12 +82,12 @@ export const ContractCell = ({
             <span className="truncate">{propertyStreet}</span>
           </div>
 
-          {/* Tenant & City */}
+          {/* Contact & City */}
           <div className="flex items-center gap-3 mt-0.5">
             <div className="flex items-center gap-1 text-xs text-text-secondary">
               <User className="h-3 w-3 flex-shrink-0" />
               <span className="truncate">
-                {tenantFirstName} {tenantLastName}
+                {contactFirstName} {contactLastName}
               </span>
             </div>
             <span className="text-xs text-text-muted truncate hidden sm:inline">

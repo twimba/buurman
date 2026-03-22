@@ -80,10 +80,10 @@ class EntityPrefixTest {
     }
 
     @Test
-    @DisplayName("TEN maps to Tenants")
-    void ten() {
-      assertThat(EntityPrefix.TEN.getCode()).isEqualTo("TEN");
-      assertThat(EntityPrefix.TEN.getEntityName()).isEqualTo("Tenants");
+    @DisplayName("CTC maps to Contacts")
+    void ctc() {
+      assertThat(EntityPrefix.CTC.getCode()).isEqualTo("CTC");
+      assertThat(EntityPrefix.CTC.getEntityName()).isEqualTo("Contacts");
     }
 
     @Test

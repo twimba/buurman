@@ -14,6 +14,7 @@ import com.buurman.util.Generated;
 public record ExpenseResponse(
     Sid identifier,
     Optional<PropertySummary> property,
+    Optional<ContactSummary> contact,
     Expense.ExpenseCategory category,
     BigDecimal amount,
     String currency,

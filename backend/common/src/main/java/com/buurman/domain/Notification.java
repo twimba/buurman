@@ -26,7 +26,7 @@ public class Notification {
   @Builder.Default private Optional<String> recipientEmail = Optional.empty();
   @Builder.Default private Optional<String> recipientPhone = Optional.empty();
   @Builder.Default private Optional<UUID> recipientUserId = Optional.empty();
-  @Builder.Default private Optional<UUID> recipientTenantId = Optional.empty();
+  @Builder.Default private Optional<UUID> recipientContactId = Optional.empty();
   private NotificationChannel channel;
   @Builder.Default private Optional<String> contentTemplate = Optional.empty();
   @Builder.Default private Optional<Map<String, Object>> contentVariables = Optional.empty();

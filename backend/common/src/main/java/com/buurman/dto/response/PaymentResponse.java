@@ -14,7 +14,7 @@ import com.buurman.util.Generated;
 public record PaymentResponse(
     Sid identifier,
     Optional<ContractSummary> contract,
-    Optional<TenantSummary> tenant,
+    Optional<ContactSummary> contact,
     Optional<PropertySummary> property,
     BigDecimal amount,
     String currency,

@@ -12,7 +12,7 @@ import com.buurman.util.Generated;
 public record ContractSummary(
     Sid identifier,
     PropertySummary property,
-    Optional<TenantSummary> primaryTenant,
+    Optional<ContactSummary> primaryContact,
     LocalDate startDate,
     Optional<LocalDate> endDate,
     BigDecimal rentAmount,

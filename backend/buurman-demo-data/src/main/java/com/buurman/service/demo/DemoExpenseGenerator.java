@@ -52,6 +52,7 @@ public class DemoExpenseGenerator {
         String propCategory = ctx.getPropertyCategory(propertyId);
         LocalDate acquisitionDate = ctx.getPropertyAcquisitionDate(propertyId);
         int startYear = acquisitionDate.getYear();
+        double countryMultiplier = ctx.getPropertyCountryRentMultiplier(propertyId);
         double categoryMultiplier =
             ("COMMERCIAL".equals(propCategory) || "INDUSTRIAL".equals(propCategory)) ? 2.0 : 1.0;
 
@@ -63,7 +64,7 @@ public class DemoExpenseGenerator {
           boolean isPartialYear = (year == currentYear);
           int propertyAge = year - startYear;
           double inflationFactor = Math.pow(1.025, currentYear - year);
-          double baseMultiplier = categoryMultiplier / inflationFactor;
+          double baseMultiplier = categoryMultiplier * countryMultiplier / inflationFactor;
 
           // === RECURRING ANNUAL EXPENSES ===
 

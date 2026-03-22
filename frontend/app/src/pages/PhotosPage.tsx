@@ -120,7 +120,7 @@ export const PhotosPage = () => {
             >
               <option value="">All Types</option>
               <option value="PROPERTY">Properties</option>
-              <option value="TENANT">Tenants</option>
+              <option value="CONTACT">Contacts</option>
               <option value="CONTRACT">Contracts</option>
               <option value="PAYMENT">Payments</option>
               <option value="EXPENSE">Expenses</option>

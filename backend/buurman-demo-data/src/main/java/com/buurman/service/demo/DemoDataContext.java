@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.buurman.domain.ContactType;
+
 import lombok.Getter;
 
 /** Mutable context passed between demo data generators to share generated IDs. */
@@ -31,8 +33,8 @@ public class DemoDataContext {
   // Team UUID -> list of property UUIDs
   @Getter private final Map<UUID, List<UUID>> propertyIdsByTeam = new LinkedHashMap<>();
 
-  // Team UUID -> list of tenant UUIDs
-  @Getter private final Map<UUID, List<UUID>> tenantIdsByTeam = new LinkedHashMap<>();
+  // Team UUID -> list of contact UUIDs
+  @Getter private final Map<UUID, List<UUID>> contactIdsByTeam = new LinkedHashMap<>();
 
   // Team UUID -> list of contract UUIDs
   @Getter private final Map<UUID, List<UUID>> contractIdsByTeam = new LinkedHashMap<>();
@@ -50,8 +52,11 @@ public class DemoDataContext {
   // MIXED_USE)
   private final Map<UUID, String> propertyCategoriesByProperty = new LinkedHashMap<>();
 
-  // Tenant UUID -> whether the tenant is a business entity
-  private final Map<UUID, Boolean> businessTenantFlags = new LinkedHashMap<>();
+  // Contact UUID -> whether the contact is a business entity
+  private final Map<UUID, Boolean> businessContactFlags = new LinkedHashMap<>();
+
+  // Contact UUID -> ContactType
+  private final Map<UUID, ContactType> contactTypes = new LinkedHashMap<>();
 
   // Property UUID -> acquisition date (when the property was purchased)
   private final Map<UUID, LocalDate> propertyAcquisitionDates = new LinkedHashMap<>();
@@ -65,11 +70,14 @@ public class DemoDataContext {
   // Property UUID -> property type (e.g., "APARTMENT", "HOUSE", "OFFICE")
   private final Map<UUID, String> propertyTypes = new LinkedHashMap<>();
 
+  // Property UUID -> country rent multiplier (reflects cost-of-living for expense scaling)
+  private final Map<UUID, Double> propertyCountryRentMultipliers = new LinkedHashMap<>();
+
   // Counters
   @Getter private int teamsCreated;
   @Getter private int usersCreated;
   @Getter private int propertiesCreated;
-  @Getter private int tenantsCreated;
+  @Getter private int contactsCreated;
   @Getter private int contractsCreated;
   @Getter private int paymentsCreated;
   @Getter private int expensesCreated;
@@ -108,12 +116,20 @@ public class DemoDataContext {
     return propertyCategoriesByProperty.getOrDefault(propertyId, "RESIDENTIAL");
   }
 
-  public void putBusinessTenantFlag(UUID tenantId, boolean isBusiness) {
-    businessTenantFlags.put(tenantId, isBusiness);
+  public void putBusinessContactFlag(UUID contactId, boolean isBusiness) {
+    businessContactFlags.put(contactId, isBusiness);
   }
 
-  public boolean isBusinessTenant(UUID tenantId) {
-    return businessTenantFlags.getOrDefault(tenantId, false);
+  public boolean isBusinessContact(UUID contactId) {
+    return businessContactFlags.getOrDefault(contactId, false);
+  }
+
+  public void putContactType(UUID contactId, ContactType type) {
+    contactTypes.put(contactId, type);
+  }
+
+  public ContactType getContactType(UUID contactId) {
+    return contactTypes.getOrDefault(contactId, ContactType.INDIVIDUAL);
   }
 
   public void putPropertyAcquisitionDate(UUID propertyId, LocalDate date) {
@@ -148,6 +164,14 @@ public class DemoDataContext {
     return propertyTypes.getOrDefault(propertyId, "APARTMENT");
   }
 
+  public void putPropertyCountryRentMultiplier(UUID propertyId, double multiplier) {
+    propertyCountryRentMultipliers.put(propertyId, multiplier);
+  }
+
+  public double getPropertyCountryRentMultiplier(UUID propertyId) {
+    return propertyCountryRentMultipliers.getOrDefault(propertyId, 1.0);
+  }
+
   public void incrementTeams() {
     teamsCreated++;
   }
@@ -160,8 +184,8 @@ public class DemoDataContext {
     propertiesCreated++;
   }
 
-  public void incrementTenants() {
-    tenantsCreated++;
+  public void incrementContacts() {
+    contactsCreated++;
   }
 
   public void incrementContracts() {

@@ -590,6 +590,12 @@ payments:
         required: false
         schema:
           type: string
+      - name: contactIdentifier
+        in: query
+        description: Filter by contact identifier
+        required: false
+        schema:
+          type: string
       - name: dateFrom
         in: query
         description: Start date filter (inclusive)

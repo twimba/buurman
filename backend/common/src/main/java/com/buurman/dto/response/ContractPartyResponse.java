@@ -8,4 +8,4 @@ import com.buurman.util.Generated;
 
 @Generated
 public record ContractPartyResponse(
-    Sid identifier, Optional<TenantSummary> tenant, ContractPartyRole role) {}
+    Sid identifier, Optional<ContactSummary> contact, ContractPartyRole role) {}

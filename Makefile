@@ -1,4 +1,4 @@
-.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend frontend-app frontend-backoffice workspace-setup workspace-teardown test test-coverage
+.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend frontend-app frontend-backoffice workspace-setup workspace-teardown test test-coverage hub
 
 ## Start everything in Docker (including backend + app containers)
 up:
@@ -42,16 +42,16 @@ stats:
 
 ## Run backend unit tests
 test:
-	cd backend && mvn test -pl common,buurman,buurman-notifications,buurman-booklets -Pquick -Dmaven.build.cache.enabled=false
+	cd backend && mvn test -pl common,buurman-core,buurman-notifications,buurman-booklets -Pquick -Dmaven.build.cache.enabled=false
 
 ## Run backend unit tests with JaCoCo coverage report (per-module + aggregated)
 test-coverage:
-	cd backend && mvn verify -pl common,buurman,buurman-notifications,buurman-booklets,coverage-report -Pquick,coverage -Dmaven.build.cache.enabled=false
+	cd backend && mvn verify -pl common,buurman-core,buurman-notifications,buurman-booklets,coverage-report -Pquick,coverage -Dmaven.build.cache.enabled=false
 	@echo ""
 	@echo "Coverage reports:"
 	@echo "  Aggregated:          backend/coverage-report/target/site/jacoco-aggregate/index.html"
 	@echo "  common:              backend/common/target/site/jacoco/index.html"
-	@echo "  buurman:             backend/buurman/target/site/jacoco/index.html"
+	@echo "  buurman-core:        backend/buurman-core/target/site/jacoco/index.html"
 	@echo "  buurman-notifications: backend/buurman-notifications/target/site/jacoco/index.html"
 	@echo "  buurman-booklets:    backend/buurman-booklets/target/site/jacoco/index.html"
 
@@ -60,26 +60,33 @@ test-coverage:
 ## spring-boot:run forks a lifecycle that bypasses the build cache, so we compile
 ## separately to avoid re-running JOOQ/OpenAPI codegen on every restart.
 backend:
-	@if [ -f .env.backend ]; then \
+	@set -a; [ -f .env ] && . ./.env; set +a; \
+	if [ -f .env.backend ]; then \
 		echo "Sourcing workspace backend config from .env.backend"; \
-		. ./.env.backend && cd backend && mvn install -pl app -am -DskipTests -Pquick && mvn spring-boot:run -pl app; \
+		. ./.env.backend && cd backend && mvn install -pl buurman-app -am -DskipTests -Pquick && mvn spring-boot:run -pl buurman-app; \
 	else \
-		cd backend && mvn install -pl app -am -DskipTests -Pquick && mvn spring-boot:run -pl app; \
+		cd backend && mvn install -pl buurman-app -am -DskipTests -Pquick && mvn spring-boot:run -pl buurman-app; \
 	fi
 
-## Run frontend app locally (reads ports from .env if present)
+## Run frontend app locally (loads .env for VITE_* variables)
 frontend-app:
-	@VITE_DEV_PORT=$$(grep '^LOCAL_APP_PORT=' .env 2>/dev/null | cut -d= -f2 || echo 5173); \
-	VITE_HMR_PORT=$$(grep '^HTTPS_PORT=' .env 2>/dev/null | cut -d= -f2 || echo 443); \
+	@set -a; [ -f .env ] && . ./.env; set +a; \
+	VITE_DEV_PORT=$${LOCAL_APP_PORT:-5173}; \
+	VITE_HMR_PORT=$${HTTPS_PORT:-443}; \
 	echo "Starting app on port $$VITE_DEV_PORT (HMR via $$VITE_HMR_PORT)"; \
 	cd frontend && VITE_DEV_PORT=$$VITE_DEV_PORT VITE_HMR_PORT=$$VITE_HMR_PORT yarn dev:app
 
-## Run frontend backoffice locally (reads ports from .env if present)
+## Run frontend backoffice locally (loads .env for VITE_* variables)
 frontend-backoffice:
-	@VITE_DEV_PORT=$$(grep '^LOCAL_BACKOFFICE_PORT=' .env 2>/dev/null | cut -d= -f2 || echo 5174); \
-	VITE_HMR_PORT=$$(grep '^HTTPS_PORT=' .env 2>/dev/null | cut -d= -f2 || echo 443); \
+	@set -a; [ -f .env ] && . ./.env; set +a; \
+	VITE_DEV_PORT=$${LOCAL_BACKOFFICE_PORT:-5174}; \
+	VITE_HMR_PORT=$${HTTPS_PORT:-443}; \
 	echo "Starting backoffice on port $$VITE_DEV_PORT (HMR via $$VITE_HMR_PORT)"; \
 	cd frontend && VITE_DEV_PORT=$$VITE_DEV_PORT VITE_HMR_PORT=$$VITE_HMR_PORT yarn dev:backoffice
+
+## Buurman Hub — workspace directory & service status dashboard (http://localhost:3333)
+hub:
+	python3 scripts/hub/server.py
 
 backend-upgradable-dependencies:
 	mvn versions:display-dependency-updates -DallowMajorUpdates=false -Dversions.outputLineWidth=145 -Dmaven.version.ignore='(?i).*-(alpha|beta|rc|m)([-.]?\d+)?' -DprocessDependencyManagementTransitive=false
@@ -124,7 +131,7 @@ local:
 		-e '      set backendPane to (split horizontally with default profile)' \
 		-e '    end tell' \
 		-e '    tell backendPane' \
-		-e '      write text "cd /Users/luis.santos/projects/buurman/backend && sleep 10 && mvn install -pl app -am -DskipTests -Pquick && mvn spring-boot:run -pl app"' \
+		-e '      write text "cd /Users/luis.santos/projects/buurman/backend && sleep 10 && mvn install -pl buurman-app -am -DskipTests -Pquick && mvn spring-boot:run -pl buurman-app"' \
 		-e '      set frontendPane to (split horizontally with default profile)' \
 		-e '    end tell' \
 		-e '    tell frontendPane' \

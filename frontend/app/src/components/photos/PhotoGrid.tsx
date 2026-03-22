@@ -51,7 +51,7 @@ interface PhotoGridProps {
 
 const ENTITY_PATHS: Record<string, string> = {
   property: '/properties',
-  tenant: '/tenants',
+  contact: '/contacts',
   contract: '/contracts',
   payment: '/payments',
   expense: '/expenses',

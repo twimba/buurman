@@ -1,11 +1,11 @@
 package com.buurman.service.demo;
 
 import static com.buurman.jooq.generated.Tables.AUDIT_LOG;
+import static com.buurman.jooq.generated.Tables.CONTACTS;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.EXPENSES;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
-import static com.buurman.jooq.generated.Tables.TENANTS;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -40,7 +40,7 @@ public class DemoAuditLogGenerator {
       String currency = ctx.getCurrencyForTeam(teamKey);
 
       total += generatePropertyAuditLogs(teamId);
-      total += generateTenantAuditLogs(teamId);
+      total += generateContactAuditLogs(teamId);
       total += generateContractAuditLogs(teamId, currency);
       total += generatePaymentAuditLogs(teamId, currency);
       total += generateExpenseAuditLogs(teamId, currency);
@@ -98,33 +98,33 @@ public class DemoAuditLogGenerator {
     return records.size();
   }
 
-  private int generateTenantAuditLogs(UUID teamId) {
+  private int generateContactAuditLogs(UUID teamId) {
     var records =
         dsl.select(
-                TENANTS.ID,
-                TENANTS.FIRST_NAME,
-                TENANTS.LAST_NAME,
-                TENANTS.EMAIL,
-                TENANTS.PHONE,
-                TENANTS.CREATED_AT,
-                TENANTS.CREATED_BY)
-            .from(TENANTS)
-            .where(TENANTS.TEAM_ID.eq(teamId))
+                CONTACTS.ID,
+                CONTACTS.FIRST_NAME,
+                CONTACTS.LAST_NAME,
+                CONTACTS.EMAIL,
+                CONTACTS.PHONE,
+                CONTACTS.CREATED_AT,
+                CONTACTS.CREATED_BY)
+            .from(CONTACTS)
+            .where(CONTACTS.TEAM_ID.eq(teamId))
             .fetch();
 
     for (var r : records) {
       Map<String, Object> values = new LinkedHashMap<>();
-      values.put("firstName", r.get(TENANTS.FIRST_NAME));
-      values.put("lastName", r.get(TENANTS.LAST_NAME));
-      values.put("email", r.get(TENANTS.EMAIL));
-      values.put("phone", r.get(TENANTS.PHONE));
+      values.put("firstName", r.get(CONTACTS.FIRST_NAME));
+      values.put("lastName", r.get(CONTACTS.LAST_NAME));
+      values.put("email", r.get(CONTACTS.EMAIL));
+      values.put("phone", r.get(CONTACTS.PHONE));
 
       insertAuditLog(
           teamId,
-          "TENANT",
-          r.get(TENANTS.ID),
-          r.get(TENANTS.CREATED_BY),
-          r.get(TENANTS.CREATED_AT),
+          "CONTACT",
+          r.get(CONTACTS.ID),
+          r.get(CONTACTS.CREATED_BY),
+          r.get(CONTACTS.CREATED_AT),
           values);
     }
 

@@ -36,8 +36,8 @@ tags:
     description: Rent timeline management for contracts
   - name: Property Insurances
     description: Property insurance policies
-  - name: Tenants
-    description: Tenant management
+  - name: Contacts
+    description: Contact management
   - name: Users
     description: User team management
   - name: Property Financings
@@ -389,33 +389,33 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
-  /tenants/{tenantIdentifier}/addresses/{addressIdentifier}:
+  /contacts/{contactIdentifier}/addresses/{addressIdentifier}:
     get:
       tags:
-        - Tenants
+        - Contacts
       summary: Get address
       description: Get a specific address by identifier
-      operationId: getAddress
+      operationId: getContactAddress
       parameters:
-        - name: tenantIdentifier
+        - name: contactIdentifier
           in: path
-          description: Tenant identifier
+          description: Contact identifier
           required: true
           schema:
-            $ref: '#/components/schemas/TenantIdentifier'
+            $ref: '#/components/schemas/ContactIdentifier'
         - name: addressIdentifier
           in: path
           description: Address identifier
           required: true
           schema:
-            $ref: '#/components/schemas/TenantAddressIdentifier'
+            $ref: '#/components/schemas/ContactAddressIdentifier'
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TenantAddressResponse'
+                $ref: '#/components/schemas/ContactAddressResponse'
         "400":
           description: Bad request - validation error or malformed input
           content:
@@ -456,28 +456,28 @@ paths:
         - bearer-jwt: []
     put:
       tags:
-        - Tenants
+        - Contacts
       summary: Update address
       description: Update an existing address (Admin/Editor)
-      operationId: updateAddress
+      operationId: updateContactAddress
       parameters:
-        - name: tenantIdentifier
+        - name: contactIdentifier
           in: path
-          description: Tenant identifier
+          description: Contact identifier
           required: true
           schema:
-            $ref: '#/components/schemas/TenantIdentifier'
+            $ref: '#/components/schemas/ContactIdentifier'
         - name: addressIdentifier
           in: path
           description: Address identifier
           required: true
           schema:
-            $ref: '#/components/schemas/TenantAddressIdentifier'
+            $ref: '#/components/schemas/ContactAddressIdentifier'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateTenantAddressRequest'
+              $ref: '#/components/schemas/UpdateContactAddressRequest'
         required: true
       responses:
         "200":
@@ -485,7 +485,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TenantAddressResponse'
+                $ref: '#/components/schemas/ContactAddressResponse'
         "400":
           description: Bad request - validation error or malformed input
           content:
@@ -526,23 +526,23 @@ paths:
         - bearer-jwt: []
     delete:
       tags:
-        - Tenants
+        - Contacts
       summary: Delete address
       description: Soft delete an address (Admin/Editor)
-      operationId: deleteAddress
+      operationId: deleteContactAddress
       parameters:
-        - name: tenantIdentifier
+        - name: contactIdentifier
           in: path
-          description: Tenant identifier
+          description: Contact identifier
           required: true
           schema:
-            $ref: '#/components/schemas/TenantIdentifier'
+            $ref: '#/components/schemas/ContactIdentifier'
         - name: addressIdentifier
           in: path
           description: Address identifier
           required: true
           schema:
-            $ref: '#/components/schemas/TenantAddressIdentifier'
+            $ref: '#/components/schemas/ContactAddressIdentifier'
       responses:
         "204":
           description: No Content
@@ -584,27 +584,27 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
-  /tenants/{identifier}:
+  /contacts/{identifier}:
     get:
       tags:
-        - Tenants
-      summary: Get tenant details
-      description: Get details of a specific tenant
-      operationId: getTenant
+        - Contacts
+      summary: Get contact details
+      description: Get details of a specific contact
+      operationId: getContact
       parameters:
         - name: identifier
           in: path
-          description: Tenant identifier
+          description: Contact identifier
           required: true
           schema:
-            $ref: '#/components/schemas/TenantIdentifier'
+            $ref: '#/components/schemas/ContactIdentifier'
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TenantResponse'
+                $ref: '#/components/schemas/ContactResponse'
         "400":
           description: Bad request - validation error or malformed input
           content:
@@ -645,22 +645,22 @@ paths:
         - bearer-jwt: []
     put:
       tags:
-        - Tenants
-      summary: Update tenant
-      description: Update tenant information (Admin/Editor)
-      operationId: updateTenant
+        - Contacts
+      summary: Update contact
+      description: Update contact information (Admin/Editor)
+      operationId: updateContact
       parameters:
         - name: identifier
           in: path
-          description: Tenant identifier
+          description: Contact identifier
           required: true
           schema:
-            $ref: '#/components/schemas/TenantIdentifier'
+            $ref: '#/components/schemas/ContactIdentifier'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateTenantRequest'
+              $ref: '#/components/schemas/UpdateContactRequest'
         required: true
       responses:
         "200":
@@ -668,7 +668,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TenantResponse'
+                $ref: '#/components/schemas/ContactResponse'
         "400":
           description: Bad request - validation error or malformed input
           content:
@@ -709,17 +709,17 @@ paths:
         - bearer-jwt: []
     delete:
       tags:
-        - Tenants
-      summary: Delete tenant
-      description: Soft delete a tenant (Admin only)
-      operationId: deleteTenant
+        - Contacts
+      summary: Delete contact
+      description: Soft delete a contact (Admin only)
+      operationId: deleteContact
       parameters:
         - name: identifier
           in: path
-          description: Tenant identifier
+          description: Contact identifier
           required: true
           schema:
-            $ref: '#/components/schemas/TenantIdentifier'
+            $ref: '#/components/schemas/ContactIdentifier'
       responses:
         "204":
           description: No Content
@@ -761,20 +761,20 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
-  /tenants/{identifier}/photos/{photoIdentifier}/set-main:
+  /contacts/{identifier}/photos/{photoIdentifier}/set-main:
     put:
       tags:
-        - Tenants
+        - Contacts
       summary: Set main photo
-      description: Set a photo as the main photo for a tenant (Admin/Editor)
-      operationId: setMainPhoto
+      description: Set a photo as the main photo for a contact (Admin/Editor)
+      operationId: setContactMainPhoto
       parameters:
         - name: identifier
           in: path
-          description: Tenant identifier
+          description: Contact identifier
           required: true
           schema:
-            $ref: '#/components/schemas/TenantIdentifier'
+            $ref: '#/components/schemas/ContactIdentifier'
         - name: photoIdentifier
           in: path
           description: Photo identifier
@@ -4825,13 +4825,13 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
-  /tenants:
+  /contacts:
     get:
       tags:
-        - Tenants
-      summary: List tenants
-      description: Get all tenants with optional search and pagination
-      operationId: getTenants
+        - Contacts
+      summary: List contacts
+      description: Get all contacts with optional search and pagination
+      operationId: getContacts
       parameters:
         - name: search
           in: query
@@ -4839,6 +4839,22 @@ paths:
           required: false
           schema:
             type: string
+        - name: contactType
+          in: query
+          description: Filter by contact type
+          required: false
+          schema:
+            $ref: '#/components/schemas/ContactType'
+        - name: tags
+          in: query
+          description: Filter by tags (comma-separated, contacts must have ALL specified tags)
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/ContactTag'
+          style: form
+          explode: false
         - name: page
           in: query
           description: Page number (0-based)
@@ -4882,7 +4898,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PageResponseTenantResponse'
+                $ref: '#/components/schemas/PageResponseContactListItemResponse'
         "400":
           description: Bad request - validation error or malformed input
           content:
@@ -4923,15 +4939,15 @@ paths:
         - bearer-jwt: []
     post:
       tags:
-        - Tenants
-      summary: Create tenant
-      description: Create a new tenant (Admin/Editor)
-      operationId: createTenant
+        - Contacts
+      summary: Create contact
+      description: Create a new contact (Admin/Editor)
+      operationId: createContact
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateTenantRequest'
+              $ref: '#/components/schemas/CreateContactRequest'
         required: true
       responses:
         "201":
@@ -4939,7 +4955,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TenantResponse'
+                $ref: '#/components/schemas/ContactResponse'
         "400":
           description: Bad request - validation error or malformed input
           content:
@@ -4978,20 +4994,20 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
-  /tenants/{tenantIdentifier}/addresses:
+  /contacts/{contactIdentifier}/addresses:
     get:
       tags:
-        - Tenants
+        - Contacts
       summary: List addresses
-      description: Get all addresses for a tenant
-      operationId: getAddresses
+      description: Get all addresses for a contact
+      operationId: getContactAddresses
       parameters:
-        - name: tenantIdentifier
+        - name: contactIdentifier
           in: path
-          description: Tenant identifier
+          description: Contact identifier
           required: true
           schema:
-            $ref: '#/components/schemas/TenantIdentifier'
+            $ref: '#/components/schemas/ContactIdentifier'
       responses:
         "200":
           description: OK
@@ -5000,7 +5016,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/TenantAddressResponse'
+                  $ref: '#/components/schemas/ContactAddressResponse'
         "400":
           description: Bad request - validation error or malformed input
           content:
@@ -5041,22 +5057,22 @@ paths:
         - bearer-jwt: []
     post:
       tags:
-        - Tenants
+        - Contacts
       summary: Create address
-      description: Create a new address for a tenant (Admin/Editor)
-      operationId: createAddress
+      description: Create a new address for a contact (Admin/Editor)
+      operationId: createContactAddress
       parameters:
-        - name: tenantIdentifier
+        - name: contactIdentifier
           in: path
-          description: Tenant identifier
+          description: Contact identifier
           required: true
           schema:
-            $ref: '#/components/schemas/TenantIdentifier'
+            $ref: '#/components/schemas/ContactIdentifier'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateTenantAddressRequest'
+              $ref: '#/components/schemas/CreateContactAddressRequest'
         required: true
       responses:
         "201":
@@ -5064,7 +5080,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TenantAddressResponse'
+                $ref: '#/components/schemas/ContactAddressResponse'
         "400":
           description: Bad request - validation error or malformed input
           content:
@@ -5103,79 +5119,20 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
-  /tenants/{identifier}/unlink-property:
-    post:
-      tags:
-        - Tenants
-      summary: Unlink tenant from property
-      description: Remove tenant from current property (Admin/Editor)
-      operationId: unlinkTenantFromProperty
-      parameters:
-        - name: identifier
-          in: path
-          description: Tenant identifier
-          required: true
-          schema:
-            $ref: '#/components/schemas/TenantIdentifier'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TenantResponse'
-        "400":
-          description: Bad request - validation error or malformed input
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        "401":
-          description: Unauthorized - missing or invalid JWT token
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        "403":
-          description: Forbidden - insufficient permissions
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        "404":
-          description: Resource not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        "409":
-          description: Conflict - business rule violation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-      security:
-        - bearer-jwt: []
-  /tenants/{identifier}/photos:
+  /contacts/{identifier}/photos:
     get:
       tags:
-        - Tenants
+        - Contacts
       summary: List photos
-      description: Get all photos for a tenant
-      operationId: getPhotos
+      description: Get all photos for a contact
+      operationId: getContactPhotos
       parameters:
         - name: identifier
           in: path
-          description: Tenant identifier
+          description: Contact identifier
           required: true
           schema:
-            $ref: '#/components/schemas/TenantIdentifier'
+            $ref: '#/components/schemas/ContactIdentifier'
       responses:
         "200":
           description: OK
@@ -5225,17 +5182,17 @@ paths:
         - bearer-jwt: []
     post:
       tags:
-        - Tenants
+        - Contacts
       summary: Upload photo
-      description: Upload a photo for a tenant (Admin/Editor)
-      operationId: uploadPhoto
+      description: Upload a photo for a contact (Admin/Editor)
+      operationId: uploadContactPhoto
       parameters:
         - name: identifier
           in: path
-          description: Tenant identifier
+          description: Contact identifier
           required: true
           schema:
-            $ref: '#/components/schemas/TenantIdentifier'
+            $ref: '#/components/schemas/ContactIdentifier'
         - name: title
           in: query
           description: Document title
@@ -5305,85 +5262,20 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
-  /tenants/{identifier}/link-property:
-    post:
-      tags:
-        - Tenants
-      summary: Link tenant to property
-      description: Assign tenant to a property (Admin/Editor)
-      operationId: linkTenantToProperty
-      parameters:
-        - name: identifier
-          in: path
-          description: Tenant identifier
-          required: true
-          schema:
-            $ref: '#/components/schemas/TenantIdentifier'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LinkTenantToPropertyRequest'
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TenantResponse'
-        "400":
-          description: Bad request - validation error or malformed input
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        "401":
-          description: Unauthorized - missing or invalid JWT token
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        "403":
-          description: Forbidden - insufficient permissions
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        "404":
-          description: Resource not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        "409":
-          description: Conflict - business rule violation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-      security:
-        - bearer-jwt: []
-  /tenants/{identifier}/documents:
+  /contacts/{identifier}/documents:
     get:
       tags:
-        - Tenants
+        - Contacts
       summary: List documents
-      description: Get all documents for a tenant
-      operationId: getDocuments
+      description: Get all documents for a contact
+      operationId: getContactDocuments
       parameters:
         - name: identifier
           in: path
-          description: Tenant identifier
+          description: Contact identifier
           required: true
           schema:
-            $ref: '#/components/schemas/TenantIdentifier'
+            $ref: '#/components/schemas/ContactIdentifier'
       responses:
         "200":
           description: OK
@@ -5433,17 +5325,17 @@ paths:
         - bearer-jwt: []
     post:
       tags:
-        - Tenants
+        - Contacts
       summary: Upload document
-      description: Upload a document for a tenant (Admin/Editor)
-      operationId: uploadDocument
+      description: Upload a document for a contact (Admin/Editor)
+      operationId: uploadContactDocument
       parameters:
         - name: identifier
           in: path
-          description: Tenant identifier
+          description: Contact identifier
           required: true
           schema:
-            $ref: '#/components/schemas/TenantIdentifier'
+            $ref: '#/components/schemas/ContactIdentifier'
         - name: title
           in: query
           description: Document title
@@ -7760,6 +7652,12 @@ paths:
           required: false
           schema:
             type: string
+        - name: contactIdentifier
+          in: query
+          description: Filter by contact identifier
+          required: false
+          schema:
+            type: string
         - name: dateFrom
           in: query
           description: Start date filter (inclusive)
@@ -8668,6 +8566,12 @@ paths:
           required: false
           schema:
             type: string
+        - name: contactIdentifier
+          in: query
+          description: Filter by contact identifier
+          required: false
+          schema:
+            type: string
         - name: dateFrom
           in: query
           description: Start date filter (inclusive)
@@ -9110,9 +9014,9 @@ paths:
           required: false
           schema:
             type: string
-        - name: tenantIdentifier
+        - name: contactIdentifier
           in: query
-          description: Tenant identifier
+          description: Contact identifier
           required: false
           schema:
             type: string
@@ -9383,9 +9287,9 @@ paths:
     post:
       tags:
         - Contracts
-      summary: Change primary tenant
-      description: Change the primary tenant of a contract (Admin/Editor)
-      operationId: changePrimaryTenant
+      summary: Change primary contact
+      description: Change the primary contact of a contract (Admin/Editor)
+      operationId: changePrimaryContact
       parameters:
         - name: identifier
           in: path
@@ -9397,7 +9301,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ChangePrimaryTenantRequest'
+              $ref: '#/components/schemas/ChangePrimaryContactRequest'
         required: true
       responses:
         "200":
@@ -11161,20 +11065,20 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
-  /tenants/{identifier}/history:
+  /contacts/{identifier}/history:
     get:
       tags:
-        - Tenants
-      summary: Get tenant history
-      description: Get property assignment history for a tenant
-      operationId: getTenantHistory
+        - Contacts
+      summary: Get contact history
+      description: Get property assignment history for a contact
+      operationId: getContactHistory
       parameters:
         - name: identifier
           in: path
-          description: Tenant identifier
+          description: Contact identifier
           required: true
           schema:
-            $ref: '#/components/schemas/TenantIdentifier'
+            $ref: '#/components/schemas/ContactIdentifier'
       responses:
         "200":
           description: OK
@@ -11183,7 +11087,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/PropertyTenantHistoryResponse'
+                  $ref: '#/components/schemas/PropertyContactHistoryResponse'
         "400":
           description: Bad request - validation error or malformed input
           content:
@@ -11222,20 +11126,20 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
-  /tenants/{identifier}/audit-log:
+  /contacts/{identifier}/audit-log:
     get:
       tags:
-        - Tenants
+        - Contacts
       summary: Get audit log
-      description: Get audit history for a tenant
-      operationId: getTenantAuditLog
+      description: Get audit history for a contact
+      operationId: getContactAuditLog
       parameters:
         - name: identifier
           in: path
-          description: Tenant identifier
+          description: Contact identifier
           required: true
           schema:
-            $ref: '#/components/schemas/TenantIdentifier'
+            $ref: '#/components/schemas/ContactIdentifier'
       responses:
         "200":
           description: OK
@@ -11283,13 +11187,13 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
-  /tenants/documents/{documentIdentifier}/download:
+  /contacts/documents/{documentIdentifier}/download:
     get:
       tags:
-        - Tenants
+        - Contacts
       summary: Get download URL
       description: Get presigned download URL for a document
-      operationId: getDownloadUrl
+      operationId: getContactDownloadUrl
       parameters:
         - name: documentIdentifier
           in: path
@@ -15137,20 +15041,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
-  /booklets/tenant/{tenantIdentifier}:
+  /booklets/contact/{contactIdentifier}:
     get:
       tags:
         - Booklets
-      summary: Export tenant booklet to PDF
-      description: Download detailed tenant booklet as PDF
-      operationId: exportTenantBooklet
+      summary: Export contact booklet to PDF
+      description: Download detailed contact booklet as PDF
+      operationId: exportContactBooklet
       parameters:
-        - name: tenantIdentifier
+        - name: contactIdentifier
           in: path
-          description: Tenant identifier
+          description: Contact identifier
           required: true
           schema:
-            $ref: '#/components/schemas/TenantIdentifier'
+            $ref: '#/components/schemas/ContactIdentifier'
       responses:
         "200":
           description: OK
@@ -15185,6 +15089,41 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
         "409":
           description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /booklets/contacts/csv:
+    get:
+      tags:
+        - Booklets
+      summary: Export contacts list to CSV
+      description: Download all contacts for the team as a CSV file
+      operationId: exportContactsCsv
+      responses:
+        "200":
+          description: OK
+          content:
+            "text/csv":
+              schema:
+                type: string
+                format: byte
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
           content:
             application/json:
               schema:
@@ -15575,13 +15514,13 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
-  /tenants/documents/{documentIdentifier}:
+  /contacts/documents/{documentIdentifier}:
     delete:
       tags:
-        - Tenants
+        - Contacts
       summary: Delete document
       description: Delete a document (Admin/Editor)
-      operationId: deleteTenantDocument
+      operationId: deleteContactDocument
       parameters:
         - name: documentIdentifier
           in: path
@@ -15589,6 +15528,987 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/DocumentIdentifier'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /contacts/{contactIdentifier}/notes:
+    get:
+      tags:
+        - Contacts
+      summary: List notes
+      description: Get all notes for a contact
+      operationId: getContactNotes
+      parameters:
+        - name: contactIdentifier
+          in: path
+          description: Contact identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactIdentifier'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContactNoteResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+    post:
+      tags:
+        - Contacts
+      summary: Create note
+      description: Create a new note for a contact (Admin/Editor)
+      operationId: createContactNote
+      parameters:
+        - name: contactIdentifier
+          in: path
+          description: Contact identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateContactNoteRequest'
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactNoteResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /contacts/{contactIdentifier}/notes/{noteIdentifier}:
+    put:
+      tags:
+        - Contacts
+      summary: Update note
+      description: Update an existing note (Admin/Editor)
+      operationId: updateContactNote
+      parameters:
+        - name: contactIdentifier
+          in: path
+          description: Contact identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactIdentifier'
+        - name: noteIdentifier
+          in: path
+          description: Note identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactNoteIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateContactNoteRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactNoteResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+    delete:
+      tags:
+        - Contacts
+      summary: Delete note
+      description: Soft delete a note (Admin/Editor)
+      operationId: deleteContactNote
+      parameters:
+        - name: contactIdentifier
+          in: path
+          description: Contact identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactIdentifier'
+        - name: noteIdentifier
+          in: path
+          description: Note identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactNoteIdentifier'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /contacts/{contactIdentifier}/notes/{noteIdentifier}/pin:
+    put:
+      tags:
+        - Contacts
+      summary: Pin note
+      description: Pin a note to the top of the list (Admin/Editor)
+      operationId: pinContactNote
+      parameters:
+        - name: contactIdentifier
+          in: path
+          description: Contact identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactIdentifier'
+        - name: noteIdentifier
+          in: path
+          description: Note identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactNoteIdentifier'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactNoteResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /contacts/{contactIdentifier}/notes/{noteIdentifier}/unpin:
+    put:
+      tags:
+        - Contacts
+      summary: Unpin note
+      description: Unpin a note from the top of the list (Admin/Editor)
+      operationId: unpinContactNote
+      parameters:
+        - name: contactIdentifier
+          in: path
+          description: Contact identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactIdentifier'
+        - name: noteIdentifier
+          in: path
+          description: Note identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactNoteIdentifier'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactNoteResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /contacts/{contactIdentifier}/relationships:
+    get:
+      tags:
+        - Contacts
+      summary: List relationships
+      description: Get all relationships for a contact
+      operationId: getContactRelationships
+      parameters:
+        - name: contactIdentifier
+          in: path
+          description: Contact identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactIdentifier'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContactRelationshipResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+    post:
+      tags:
+        - Contacts
+      summary: Create relationship
+      description: Create a new relationship for a contact (Admin/Editor)
+      operationId: createContactRelationship
+      parameters:
+        - name: contactIdentifier
+          in: path
+          description: Contact identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateContactRelationshipRequest'
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactRelationshipResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /contacts/{contactIdentifier}/relationships/{relationshipIdentifier}:
+    put:
+      tags:
+        - Contacts
+      summary: Update relationship
+      description: Update an existing relationship (Admin/Editor)
+      operationId: updateContactRelationship
+      parameters:
+        - name: contactIdentifier
+          in: path
+          description: Contact identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactIdentifier'
+        - name: relationshipIdentifier
+          in: path
+          description: Relationship identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactRelationshipIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateContactRelationshipRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactRelationshipResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+    delete:
+      tags:
+        - Contacts
+      summary: Delete relationship
+      description: Soft delete a relationship (Admin/Editor)
+      operationId: deleteContactRelationship
+      parameters:
+        - name: contactIdentifier
+          in: path
+          description: Contact identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactIdentifier'
+        - name: relationshipIdentifier
+          in: path
+          description: Relationship identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactRelationshipIdentifier'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /contacts/{contactIdentifier}/tags:
+    post:
+      tags:
+        - Contacts
+      summary: Add tag
+      description: Add a tag to a contact (Admin/Editor)
+      operationId: addContactTag
+      parameters:
+        - name: contactIdentifier
+          in: path
+          description: Contact identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddContactTagRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /contacts/{contactIdentifier}/tags/{tag}:
+    delete:
+      tags:
+        - Contacts
+      summary: Remove tag
+      description: Remove a tag from a contact (Admin/Editor)
+      operationId: removeContactTag
+      parameters:
+        - name: contactIdentifier
+          in: path
+          description: Contact identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactIdentifier'
+        - name: tag
+          in: path
+          description: Tag value
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /contacts/check-duplicates:
+    post:
+      tags:
+        - Contacts
+      summary: Check duplicates
+      description: Check for potential duplicate contacts before creation
+      operationId: checkContactDuplicates
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DuplicateCheckRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DuplicateCheckResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /contacts/{contactIdentifier}/activity:
+    get:
+      tags:
+        - Contacts
+      summary: Get activity feed
+      description: Get activity feed for a contact with pagination
+      operationId: getContactActivity
+      parameters:
+        - name: contactIdentifier
+          in: path
+          description: Contact identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactIdentifier'
+        - name: page
+          in: query
+          description: Page number (0-based)
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+          example: 0
+        - name: size
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 25
+          example: 25
+        - name: sort
+          in: query
+          description: Sort field name
+          required: false
+          schema:
+            type: string
+          example: createdAt
+        - name: direction
+          in: query
+          description: Sort direction
+          required: false
+          schema:
+            type: string
+            default: DESC
+            description: Sort order direction for paginated queries
+            enum:
+              - ASC
+              - DESC
+          example: DESC
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageResponseContactActivityItem'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /contacts/{contactIdentifier}/erase:
+    post:
+      tags:
+        - Contacts
+      summary: Erase contact data
+      description: Permanently erase all personal data for GDPR compliance (Admin only)
+      operationId: eraseContactData
+      parameters:
+        - name: contactIdentifier
+          in: path
+          description: Contact identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContactIdentifier'
       responses:
         "204":
           description: No Content
@@ -17211,12 +18131,18 @@ components:
     TeamIdentifier:
       type: string
       description: Team identifier
-    TenantAddressIdentifier:
+    ContactAddressIdentifier:
       type: string
-      description: Tenant address identifier
-    TenantIdentifier:
+      description: Contact address identifier
+    ContactIdentifier:
       type: string
-      description: Tenant identifier
+      description: Contact identifier
+    ContactNoteIdentifier:
+      type: string
+      description: Contact note identifier
+    ContactRelationshipIdentifier:
+      type: string
+      description: Contact relationship identifier
     UserIdentifier:
       type: string
       description: User identifier
@@ -17345,7 +18271,7 @@ components:
         - memberCount
         - role
         - teamName
-    UpdateTenantAddressRequest:
+    UpdateContactAddressRequest:
       type: object
       properties:
         street:
@@ -17356,12 +18282,12 @@ components:
           minLength: 1
         postalCode:
           type: string
-        country:
+        countryCode:
           type: string
           minLength: 1
         addressType:
           type: string
-          description: Purpose or classification of the tenant address
+          description: Purpose or classification of the contact address
           enum:
             - CURRENT
             - MAILING
@@ -17385,10 +18311,10 @@ components:
       required:
         - addressType
         - city
-        - country
+        - countryCode
         - status
         - street
-    TenantAddressResponse:
+    ContactAddressResponse:
       type: object
       properties:
         identifier:
@@ -17399,11 +18325,11 @@ components:
           type: string
         postalCode:
           type: string
-        country:
+        countryCode:
           type: string
         addressType:
           type: string
-          description: Purpose or classification of the tenant address
+          description: Purpose or classification of the contact address
           enum:
             - CURRENT
             - MAILING
@@ -17433,15 +18359,19 @@ components:
       required:
         - addressType
         - city
-        - country
+        - countryCode
         - createdAt
         - identifier
         - postalCode
         - status
         - street
-    UpdateTenantRequest:
+    UpdateContactRequest:
       type: object
+      required:
+        - contactType
       properties:
+        contactType:
+          $ref: '#/components/schemas/ContactType'
         firstName:
           type: string
           minLength: 1
@@ -17459,8 +18389,28 @@ components:
           type: string
         additionalInfo:
           type: string
-      required:
-        - firstName
+        companyName:
+          type: string
+        tradeName:
+          type: string
+        industry:
+          type: string
+        invoiceEmail:
+          type: string
+        website:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        idExpiryDate:
+          type: string
+          format: date
+        notes:
+          type: string
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactTag'
     PropertySummary:
       type: object
       properties:
@@ -17539,7 +18489,7 @@ components:
         - propertyType
         - status
         - street
-    TenantPropertyAssignment:
+    ContactPropertyAssignment:
       type: object
       properties:
         property:
@@ -17548,14 +18498,64 @@ components:
           type: string
       required:
         - property
-    TenantResponse:
+    ContactListItemResponse:
       type: object
-      description: Tenant details including contact information and active property assignments
+      description: Lightweight contact summary for list views with active contract count
       properties:
         identifier:
           type: string
-          description: Unique tenant identifier
-          example: tnt_01HZQX7V8B3K5M2N4P6R9T0W
+          description: Unique contact identifier
+          example: cnt_01HZQX7V8B3K5M2N4P6R9T0W
+        contactType:
+          $ref: '#/components/schemas/ContactType'
+        displayName:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        companyName:
+          type: string
+        mainPhotoThumbnailUrl:
+          type: string
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactTag'
+        activeContractCount:
+          type: integer
+          format: int32
+          description: Number of active contracts this contact is party to
+        dataRetentionStatus:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - activeContractCount
+        - contactType
+        - createdAt
+        - displayName
+        - identifier
+    ContactResponse:
+      type: object
+      description: Contact details including contact information and active property assignments
+      properties:
+        identifier:
+          type: string
+          description: Unique contact identifier
+          example: cnt_01HZQX7V8B3K5M2N4P6R9T0W
+        contactType:
+          $ref: '#/components/schemas/ContactType'
+        displayName:
+          type: string
         firstName:
           type: string
         lastName:
@@ -17570,6 +18570,31 @@ components:
           type: string
         additionalInfo:
           type: string
+        companyName:
+          type: string
+        tradeName:
+          type: string
+        industry:
+          type: string
+        invoiceEmail:
+          type: string
+          format: email
+        website:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        idExpiryDate:
+          type: string
+          format: date
+        notes:
+          type: string
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactTag'
+        dataRetentionStatus:
+          $ref: '#/components/schemas/DataRetentionStatus'
         mainPhotoUrl:
           type: string
         mainPhotoThumbnailUrl:
@@ -17577,7 +18602,7 @@ components:
         activeProperties:
           type: array
           items:
-            $ref: "#/components/schemas/TenantPropertyAssignment"
+            $ref: "#/components/schemas/ContactPropertyAssignment"
         createdAt:
           type: string
           format: date-time
@@ -17586,10 +18611,11 @@ components:
           format: date-time
       required:
         - activeProperties
+        - contactType
         - createdAt
-        - firstName
+        - dataRetentionStatus
+        - displayName
         - identifier
-        - lastName
     PhotoResponse:
       type: object
       properties:
@@ -19237,6 +20263,9 @@ components:
             - CANCELLED
         notes:
           type: string
+        contactIdentifier:
+          type: string
+          description: Identifier of the contact linked to this payment
     ContractSummary:
       type: object
       properties:
@@ -19244,8 +20273,8 @@ components:
           type: string
         property:
           $ref: "#/components/schemas/PropertySummary"
-        primaryTenant:
-          $ref: "#/components/schemas/TenantSummary"
+        primaryContact:
+          $ref: "#/components/schemas/ContactSummary"
         startDate:
           type: string
           format: date
@@ -19339,8 +20368,8 @@ components:
           example: pay_01HZQX7V8B3K5M2N4P6R9T0W
         contract:
           $ref: "#/components/schemas/ContractSummary"
-        tenant:
-          $ref: "#/components/schemas/TenantSummary"
+        contact:
+          $ref: "#/components/schemas/ContactSummary"
         property:
           $ref: "#/components/schemas/PropertySummary"
         amount:
@@ -19391,10 +20420,14 @@ components:
         - identifier
         - receivals
         - status
-    TenantSummary:
+    ContactSummary:
       type: object
       properties:
         identifier:
+          type: string
+        contactType:
+          $ref: '#/components/schemas/ContactType'
+        displayName:
           type: string
         firstName:
           type: string
@@ -19404,10 +20437,15 @@ components:
           type: string
         phone:
           type: string
+        dataRetentionStatus:
+          type: string
+          enum: [ACTIVE, RETENTION_REQUESTED, ANONYMIZED]
+          description: Data retention status — ANONYMIZED means the contact has been erased
       required:
-        - firstName
+        - contactType
+        - dataRetentionStatus
+        - displayName
         - identifier
-        - lastName
     UpdatePaymentReceivalRequest:
       type: object
       properties:
@@ -19544,6 +20582,9 @@ components:
           minLength: 1
         notes:
           type: string
+        contactIdentifier:
+          type: string
+          description: Identifier of the contact linked to this expense
     ExpenseResponse:
       type: object
       description: Property expense record with category, amount, and supporting documents
@@ -19586,6 +20627,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/DocumentResponse"
+        contact:
+          $ref: "#/components/schemas/ContactSummary"
         createdAt:
           type: string
           format: date-time
@@ -19924,8 +20967,8 @@ components:
       properties:
         identifier:
           type: string
-        tenant:
-          $ref: "#/components/schemas/TenantSummary"
+        contact:
+          $ref: "#/components/schemas/ContactSummary"
         role:
           type: string
           description: Role of a party within a rental contract
@@ -19951,8 +20994,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ContractPartyResponse"
-        primaryTenant:
-          $ref: "#/components/schemas/TenantSummary"
+        primaryContact:
+          $ref: "#/components/schemas/ContactSummary"
         contractType:
           type: string
           description: Type of rental contract
@@ -20815,6 +21858,10 @@ components:
           format: date
         notes:
           type: string
+        components:
+          type: array
+          items:
+            $ref: '#/components/schemas/RentComponentRequest'
       required:
         - effectiveFrom
         - rentAmount
@@ -20837,10 +21884,16 @@ components:
           type: string
         percentageChange:
           type: number
+        components:
+          type: array
+          items:
+            $ref: '#/components/schemas/RentComponentResponse'
+          description: Rent breakdown into components for this period
         createdAt:
           type: string
           format: date-time
       required:
+        - components
         - createdAt
         - currency
         - effectiveFrom
@@ -20992,10 +22045,14 @@ components:
           minLength: 6
       required:
         - code
-    CreateTenantRequest:
+    CreateContactRequest:
       type: object
-      description: Request to create a new tenant
+      description: Request to create a new contact
+      required:
+        - contactType
       properties:
+        contactType:
+          $ref: '#/components/schemas/ContactType'
         firstName:
           type: string
           minLength: 1
@@ -21013,9 +22070,29 @@ components:
           type: string
         additionalInfo:
           type: string
-      required:
-        - firstName
-    CreateTenantAddressRequest:
+        companyName:
+          type: string
+        tradeName:
+          type: string
+        industry:
+          type: string
+        invoiceEmail:
+          type: string
+        website:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        idExpiryDate:
+          type: string
+          format: date
+        notes:
+          type: string
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactTag'
+    CreateContactAddressRequest:
       type: object
       properties:
         street:
@@ -21026,12 +22103,12 @@ components:
           minLength: 1
         postalCode:
           type: string
-        country:
+        countryCode:
           type: string
           minLength: 1
         addressType:
           type: string
-          description: Purpose or classification of the tenant address
+          description: Purpose or classification of the contact address
           enum:
             - CURRENT
             - MAILING
@@ -21055,18 +22132,8 @@ components:
       required:
         - addressType
         - city
-        - country
+        - countryCode
         - street
-    LinkTenantToPropertyRequest:
-      type: object
-      properties:
-        propertyIdentifier:
-          type: string
-        movedInAt:
-          type: string
-          format: date-time
-      required:
-        - propertyIdentifier
     TransferOwnershipRequest:
       type: object
       properties:
@@ -21723,6 +22790,9 @@ components:
           format: date
         notes:
           type: string
+        contactIdentifier:
+          type: string
+          description: Identifier of the contact linked to this payment
         markAsPaid:
           type: boolean
         paymentDate:
@@ -21943,6 +23013,9 @@ components:
           minLength: 1
         notes:
           type: string
+        contactIdentifier:
+          type: string
+          description: Identifier of the contact linked to this expense
       required:
         - amount
         - category
@@ -21976,10 +23049,10 @@ components:
     ContractPartyRequest:
       type: object
       properties:
-        tenantIdentifier:
+        contactIdentifier:
           type: string
-        newTenant:
-          $ref: "#/components/schemas/CreateTenantRequest"
+        newContact:
+          $ref: "#/components/schemas/CreateContactRequest"
         role:
           type: string
           description: Role of a party within a rental contract
@@ -22100,10 +23173,10 @@ components:
     AddContractPartyRequest:
       type: object
       properties:
-        tenantIdentifier:
+        contactIdentifier:
           type: string
-        newTenant:
-          $ref: "#/components/schemas/CreateTenantRequest"
+        newContact:
+          $ref: "#/components/schemas/CreateContactRequest"
         role:
           type: string
           description: Role of a party within a rental contract
@@ -22116,13 +23189,13 @@ components:
           type: boolean
       required:
         - role
-    ChangePrimaryTenantRequest:
+    ChangePrimaryContactRequest:
       type: object
       properties:
-        tenantIdentifier:
+        contactIdentifier:
           type: string
-        newTenant:
-          $ref: "#/components/schemas/CreateTenantRequest"
+        newContact:
+          $ref: "#/components/schemas/CreateContactRequest"
         validPartySource:
           type: boolean
     GeneratePaymentsRequest:
@@ -22167,6 +23240,11 @@ components:
           format: date
         notes:
           type: string
+        components:
+          type: array
+          items:
+            $ref: "#/components/schemas/RentComponentRequest"
+          description: Optional rent components to set alongside the rent period adjustment
       required:
         - effectiveFrom
         - rentAmount
@@ -22218,12 +23296,12 @@ components:
             - ALL_PAYMENTS
             - CONTRACT
             - PROPERTY_PAYMENTS
-            - TENANT_PAYMENTS
+            - CONTACT_PAYMENTS
         contractIdentifier:
           type: string
         propertyIdentifier:
           type: string
-        tenantIdentifier:
+        contactIdentifier:
           type: string
       required:
         - feedType
@@ -22239,12 +23317,12 @@ components:
             - ALL_PAYMENTS
             - CONTRACT
             - PROPERTY_PAYMENTS
-            - TENANT_PAYMENTS
+            - CONTACT_PAYMENTS
         contractIdentifier:
           type: string
         propertyIdentifier:
           type: string
-        tenantIdentifier:
+        contactIdentifier:
           type: string
         entityLabel:
           type: string
@@ -22350,14 +23428,14 @@ components:
               type: string
       required:
         - policyMatrix
-    PageResponseTenantResponse:
+    PageResponseContactListItemResponse:
       type: object
       description: Paginated response wrapper with content and pagination metadata
       properties:
         content:
           type: array
           items:
-            $ref: "#/components/schemas/TenantResponse"
+            $ref: "#/components/schemas/ContactListItemResponse"
         page:
           type: integer
           format: int32
@@ -22379,7 +23457,36 @@ components:
           type: boolean
         empty:
           type: boolean
-    PropertyTenantHistoryResponse:
+    PageResponseContactResponse:
+      type: object
+      description: Paginated response wrapper with content and pagination metadata
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/ContactResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    PropertyContactHistoryResponse:
       type: object
       properties:
         property:
@@ -22392,7 +23499,7 @@ components:
           format: date-time
         actionType:
           type: string
-          description: Type of tenant-property link action
+          description: Type of contact-property link action
           enum:
             - LINKED
             - UNLINKED
@@ -22405,6 +23512,269 @@ components:
         - actionType
         - performedAt
         - property
+    ContactType:
+      type: string
+      enum:
+        - INDIVIDUAL
+        - COMPANY
+        - SERVICE_PROVIDER
+    InteractionType:
+      type: string
+      enum:
+        - PHONE_CALL
+        - MEETING
+        - VIEWING
+        - KEY_HANDOVER
+        - INSPECTION
+        - NOTE
+        - OTHER
+    RelationshipType:
+      type: string
+      enum:
+        - GUARANTOR_FOR
+        - FAMILY_OF
+        - PARTNER_OF
+        - WORKS_FOR
+        - CONTACT_PERSON_FOR
+        - OTHER
+    ContactTag:
+      type: string
+      enum:
+        - VIP
+        - PROSPECT
+        - LATE_PAYER
+        - LONG_TERM
+        - KEY_HOLDER
+        - DO_NOT_CONTACT
+        - FORMER_TENANT
+        - REFERRED
+    DataRetentionStatus:
+      type: string
+      enum:
+        - ACTIVE
+        - RETENTION_REQUESTED
+        - ANONYMIZED
+    ContactNoteResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        interactionType:
+          $ref: '#/components/schemas/InteractionType'
+        subject:
+          type: string
+        body:
+          type: string
+        occurredAt:
+          type: string
+          format: date-time
+        followUpDate:
+          type: string
+          format: date
+        followUpReminderSent:
+          type: boolean
+        pinned:
+          type: boolean
+        createdByName:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - interactionType
+        - body
+        - occurredAt
+        - followUpReminderSent
+        - pinned
+        - createdAt
+    CreateContactNoteRequest:
+      type: object
+      properties:
+        interactionType:
+          $ref: '#/components/schemas/InteractionType'
+        subject:
+          type: string
+        body:
+          type: string
+          minLength: 1
+        occurredAt:
+          type: string
+          format: date-time
+        followUpDate:
+          type: string
+          format: date
+      required:
+        - interactionType
+        - body
+        - occurredAt
+    UpdateContactNoteRequest:
+      type: object
+      properties:
+        interactionType:
+          $ref: '#/components/schemas/InteractionType'
+        subject:
+          type: string
+        body:
+          type: string
+          minLength: 1
+        occurredAt:
+          type: string
+          format: date-time
+        followUpDate:
+          type: string
+          format: date
+      required:
+        - interactionType
+        - body
+        - occurredAt
+    ContactRelationshipResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        relatedContact:
+          $ref: '#/components/schemas/ContactSummary'
+        relationshipType:
+          $ref: '#/components/schemas/RelationshipType'
+        displayLabel:
+          type: string
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - relatedContact
+        - relationshipType
+        - displayLabel
+        - createdAt
+    CreateContactRelationshipRequest:
+      type: object
+      properties:
+        targetContactIdentifier:
+          type: string
+        relationshipType:
+          $ref: '#/components/schemas/RelationshipType'
+        notes:
+          type: string
+      required:
+        - targetContactIdentifier
+        - relationshipType
+    UpdateContactRelationshipRequest:
+      type: object
+      properties:
+        relationshipType:
+          $ref: '#/components/schemas/RelationshipType'
+        notes:
+          type: string
+      required:
+        - relationshipType
+    AddContactTagRequest:
+      type: object
+      properties:
+        tag:
+          $ref: '#/components/schemas/ContactTag'
+      required:
+        - tag
+    DuplicateCheckRequest:
+      type: object
+      description: Lightweight request for duplicate checking — no validation, works with partial input
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        companyName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+    DuplicateCheckResponse:
+      type: object
+      properties:
+        matches:
+          type: array
+          items:
+            $ref: '#/components/schemas/DuplicateMatch'
+      required:
+        - matches
+    DuplicateMatch:
+      type: object
+      properties:
+        contact:
+          $ref: '#/components/schemas/ContactSummary'
+        matchField:
+          type: string
+        matchType:
+          type: string
+      required:
+        - contact
+        - matchField
+        - matchType
+    ContactActivityItem:
+      type: object
+      properties:
+        eventType:
+          type: string
+        occurredAt:
+          type: string
+          format: date-time
+        description:
+          type: string
+        relatedEntityIdentifier:
+          type: string
+        relatedEntityType:
+          type: string
+        noteIdentifier:
+          type: string
+        interactionType:
+          $ref: '#/components/schemas/InteractionType'
+        noteBody:
+          type: string
+        noteSubject:
+          type: string
+        pinned:
+          type: boolean
+        createdByName:
+          type: string
+      required:
+        - eventType
+        - occurredAt
+        - description
+    PageResponseContactActivityItem:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactActivityItem'
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+      required:
+        - content
+        - page
+        - size
+        - totalElements
+        - totalPages
     RecentActivityResponse:
       type: object
       properties:
@@ -24541,7 +25911,7 @@ components:
           type: string
         propertyName:
           type: string
-        tenantName:
+        contactName:
           type: string
         effectiveEndDate:
           type: string

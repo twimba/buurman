@@ -404,6 +404,7 @@ export const PaymentDetailPage = () => {
 
   const handleUpdate = async (data: CreatePaymentRequest) => {
     const updateData: UpdatePaymentRequest = {
+      contactIdentifier: data.contactIdentifier,
       amount: data.amount,
       currency: data.currency,
       dueDate: data.dueDate,
@@ -710,14 +711,14 @@ export const PaymentDetailPage = () => {
                   <div className="flex items-start gap-3">
                     <User className="h-5 w-5 text-text-muted mt-1" />
                     <div className="flex-1">
-                      <p className="text-sm text-text-secondary">Tenant</p>
+                      <p className="text-sm text-text-secondary">Contact</p>
                       <button
                         onClick={() =>
-                          navigate(`/tenants/${payment.tenant.identifier}`)
+                          navigate(`/contacts/${payment.contact.identifier}`)
                         }
                         className="font-medium text-primary-500 dark:text-primary-300 hover:underline text-left"
                       >
-                        {payment.tenant.firstName} {payment.tenant.lastName}
+                        {payment.contact.firstName} {payment.contact.lastName}
                       </button>
                     </div>
                   </div>

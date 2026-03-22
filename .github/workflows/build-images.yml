@@ -106,7 +106,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add backend/pom.xml backend/common/pom.xml backend/jooq/pom.xml backend/buurman/pom.xml backend/buurman-notifications/pom.xml backend/buurman-backoffice/pom.xml backend/buurman-demo-data/pom.xml backend/buurman-takeout/pom.xml backend/buurman-booklets/pom.xml backend/app/pom.xml frontend/app/package.json frontend/backoffice/package.json
+          git add backend/pom.xml backend/common/pom.xml backend/jooq/pom.xml backend/buurman-core/pom.xml backend/buurman-notifications/pom.xml backend/buurman-backoffice/pom.xml backend/buurman-demo-data/pom.xml backend/buurman-takeout/pom.xml backend/buurman-booklets/pom.xml backend/buurman-app/pom.xml frontend/app/package.json frontend/backoffice/package.json
           git commit -m "chore: bump version to ${VERSION}"
           git tag "${TAG}"
           git push origin main --tags
@@ -160,7 +160,7 @@ jobs:
         working-directory: backend
         run: |
           mvn clean package -DskipTests -B -Dmaven.build.cache.enabled=false
-          JAR=$(ls app/target/buurman-app-*.jar)
+          JAR=$(ls buurman-app/target/buurman-app-*.jar)
           echo "size=$(du -h "$JAR" | cut -f1)" >> "$GITHUB_OUTPUT"
           echo "name=$(basename "$JAR")" >> "$GITHUB_OUTPUT"
 

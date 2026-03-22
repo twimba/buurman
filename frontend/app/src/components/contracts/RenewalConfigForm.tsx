@@ -21,7 +21,7 @@ const ADJUSTMENT_TYPE_LABELS: Record<RentAdjustmentType, string> = {
 const RENEWAL_MODE_DESCRIPTIONS: Record<RenewalMode, string> = {
   NONE: '',
   AUTOMATIC:
-    'The contract will be automatically extended when the notice window passes. If tenant confirmation is required, the extension stays pending until confirmed.',
+    'The contract will be automatically extended when the notice window passes. If contact confirmation is required, the extension stays pending until confirmed.',
   MANUAL:
     'You will receive a reminder when the notice window approaches. Extensions must be created and activated manually.',
 };
@@ -31,8 +31,8 @@ interface RenewalConfigFormProps {
   renewalTermMonths?: number;
   maxRenewals?: number;
   landlordNoticeDays?: number;
-  tenantNoticeDays?: number;
-  requiresTenantConfirmation?: boolean;
+  contactNoticeDays?: number;
+  requiresContactConfirmation?: boolean;
   rentAdjustmentType: RentAdjustmentType;
   rentAdjustmentValue?: number;
   regionCode?: string;
@@ -46,8 +46,8 @@ export const RenewalConfigForm = ({
   renewalTermMonths,
   maxRenewals,
   landlordNoticeDays,
-  tenantNoticeDays,
-  requiresTenantConfirmation,
+  contactNoticeDays,
+  requiresContactConfirmation,
   rentAdjustmentType,
   rentAdjustmentValue,
   regionCode,
@@ -77,16 +77,16 @@ export const RenewalConfigForm = ({
     if (d.landlordNoticeDays) {
       onChange('landlordNoticeDays', parseInt(d.landlordNoticeDays, 10));
     }
-    if (d.tenantNoticeDays) {
-      onChange('tenantNoticeDays', parseInt(d.tenantNoticeDays, 10));
+    if (d.contactNoticeDays) {
+      onChange('contactNoticeDays', parseInt(d.contactNoticeDays, 10));
     }
     if (d.rentAdjustmentType) {
       onChange('rentAdjustmentType', d.rentAdjustmentType);
     }
-    if (d.requiresTenantConfirmation) {
+    if (d.requiresContactConfirmation) {
       onChange(
-        'requiresTenantConfirmation',
-        d.requiresTenantConfirmation === 'true'
+        'requiresContactConfirmation',
+        d.requiresContactConfirmation === 'true'
       );
     }
   };
@@ -226,19 +226,19 @@ export const RenewalConfigForm = ({
             </div>
             <div>
               <label
-                htmlFor="tenantNoticeDays"
+                htmlFor="contactNoticeDays"
                 className="block text-sm font-medium text-text-secondary mb-1"
               >
-                Tenant Notice (days)
+                Contact Notice (days)
               </label>
               <input
-                id="tenantNoticeDays"
+                id="contactNoticeDays"
                 type="number"
                 min={0}
-                value={tenantNoticeDays ?? ''}
+                value={contactNoticeDays ?? ''}
                 onChange={(e) =>
                   onChange(
-                    'tenantNoticeDays',
+                    'contactNoticeDays',
                     e.target.value ? parseInt(e.target.value, 10) : undefined
                   )
                 }
@@ -249,35 +249,37 @@ export const RenewalConfigForm = ({
             </div>
           </div>
 
-          {/* Tenant Confirmation Toggle */}
+          {/* Contact Confirmation Toggle */}
           <div className="flex items-center justify-between">
             <label
-              htmlFor="requiresTenantConfirmation"
+              htmlFor="requiresContactConfirmation"
               className="text-sm font-medium text-text-secondary"
             >
-              Requires Tenant Confirmation
+              Requires Contact Confirmation
             </label>
             <button
               type="button"
-              id="requiresTenantConfirmation"
+              id="requiresContactConfirmation"
               role="switch"
-              aria-checked={requiresTenantConfirmation ?? false}
+              aria-checked={requiresContactConfirmation ?? false}
               onClick={() =>
                 onChange(
-                  'requiresTenantConfirmation',
-                  !(requiresTenantConfirmation ?? false)
+                  'requiresContactConfirmation',
+                  !(requiresContactConfirmation ?? false)
                 )
               }
               disabled={disabled}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${
-                requiresTenantConfirmation
+                requiresContactConfirmation
                   ? 'bg-primary-500'
                   : 'bg-surface-inset'
               } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
             >
               <span
                 className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  requiresTenantConfirmation ? 'translate-x-6' : 'translate-x-1'
+                  requiresContactConfirmation
+                    ? 'translate-x-6'
+                    : 'translate-x-1'
                 }`}
               />
             </button>

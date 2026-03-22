@@ -8,7 +8,12 @@ import {
   Plus,
   Trash2,
 } from 'lucide-react';
-import { RentPeriodResponse, ContractStatus } from '@/types/contract';
+import {
+  RentPeriodResponse,
+  RentComponentResponseItem,
+  RentComponentFormItem,
+  ContractStatus,
+} from '@/types/contract';
 import {
   useRentPeriods,
   useDeleteRentPeriod,
@@ -24,6 +29,7 @@ interface RentTimelineProps {
   contractStatus: ContractStatus;
   currency: string;
   currentRentAmount: number;
+  currentComponents: RentComponentResponseItem[];
   paymentFrequency: string;
 }
 
@@ -36,6 +42,7 @@ export const RentTimeline = ({
   contractStatus,
   currency,
   currentRentAmount,
+  currentComponents,
   paymentFrequency,
 }: RentTimelineProps) => {
   const { canEditData } = useTeam();
@@ -50,10 +57,11 @@ export const RentTimeline = ({
   const handleAddRentPeriod = (
     rentAmount: number,
     effectiveFrom: string,
-    notes?: string
+    notes?: string,
+    components?: RentComponentFormItem[]
   ) => {
     addRentPeriod.mutate(
-      { rentAmount, effectiveFrom, notes },
+      { rentAmount, effectiveFrom, notes, components },
       { onSuccess: () => setShowAdjustModal(false) }
     );
   };
@@ -135,6 +143,8 @@ export const RentTimeline = ({
         <AdjustRentModal
           currentRent={currentRentAmount}
           currency={currency}
+          currentComponents={currentComponents}
+          rentPeriods={periods}
           onClose={() => setShowAdjustModal(false)}
           onConfirm={handleAddRentPeriod}
           isLoading={addRentPeriod.isPending}

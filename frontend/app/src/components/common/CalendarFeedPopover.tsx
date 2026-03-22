@@ -39,8 +39,8 @@ export const CalendarFeedButton = ({
         return f.contractIdentifier === entityIdentifier;
       case CalendarFeedType.PROPERTY_PAYMENTS:
         return f.propertyIdentifier === entityIdentifier;
-      case CalendarFeedType.TENANT_PAYMENTS:
-        return f.tenantIdentifier === entityIdentifier;
+      case CalendarFeedType.CONTACT_PAYMENTS:
+        return f.contactIdentifier === entityIdentifier;
       default:
         return false;
     }
@@ -58,8 +58,8 @@ export const CalendarFeedButton = ({
         case CalendarFeedType.PROPERTY_PAYMENTS:
           request.propertyIdentifier = entityIdentifier;
           break;
-        case CalendarFeedType.TENANT_PAYMENTS:
-          request.tenantIdentifier = entityIdentifier;
+        case CalendarFeedType.CONTACT_PAYMENTS:
+          request.contactIdentifier = entityIdentifier;
           break;
       }
       createMutation.mutate(request, {

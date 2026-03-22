@@ -213,7 +213,7 @@ export const PaymentInstructionsSection = () => {
                   onChange={(val) =>
                     setFormData({ ...formData, description: val })
                   }
-                  placeholder="Instructions for the tenant..."
+                  placeholder="Instructions for the contact..."
                   onSubmit={submitForm}
                 />
               </div>
@@ -575,7 +575,7 @@ const PaymentInstructionEditForm = ({
         <RichTextEditor
           value={formData.description ?? ''}
           onChange={(val) => setFormData({ ...formData, description: val })}
-          placeholder="Instructions for the tenant..."
+          placeholder="Instructions for the contact..."
           onSubmit={submitForm}
         />
       </div>

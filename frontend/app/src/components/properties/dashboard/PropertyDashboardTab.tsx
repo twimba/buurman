@@ -805,16 +805,16 @@ function OccupancyAndTrendChart({
           </p>
           <div className="flex h-6 rounded overflow-hidden">
             {occupancy.months.map((m) => {
-              const tenantPct = Number(m.tenantOccupancyPercent);
+              const contactPct = Number(m.contactOccupancyPercent);
               const selfPct = Number(m.selfOccupancyPercent);
-              const totalPct = tenantPct + selfPct;
-              const tenantShare = totalPct > 0 ? tenantPct / totalPct : 0;
+              const totalPct = contactPct + selfPct;
+              const contactShare = totalPct > 0 ? contactPct / totalPct : 0;
               const selfShare = totalPct > 0 ? selfPct / totalPct : 0;
               const tooltipLabel =
-                tenantPct > 0 && selfPct > 0
-                  ? `${formatMonthTick(m.month)}: Tenant ${tenantPct.toFixed(0)}% · Self ${selfPct.toFixed(0)}%`
-                  : tenantPct > 0
-                    ? `${formatMonthTick(m.month)}: Tenant occupied ${tenantPct.toFixed(0)}%`
+                contactPct > 0 && selfPct > 0
+                  ? `${formatMonthTick(m.month)}: Contact ${contactPct.toFixed(0)}% · Self ${selfPct.toFixed(0)}%`
+                  : contactPct > 0
+                    ? `${formatMonthTick(m.month)}: Contact occupied ${contactPct.toFixed(0)}%`
                     : selfPct > 0
                       ? `${formatMonthTick(m.month)}: Self-occupied ${selfPct.toFixed(0)}%`
                       : `${formatMonthTick(m.month)}: Vacant`;
@@ -825,10 +825,10 @@ function OccupancyAndTrendChart({
                   title={tooltipLabel}
                   style={{ backgroundColor: vacantColor }}
                 >
-                  {tenantPct > 0 && (
+                  {contactPct > 0 && (
                     <div
                       style={{
-                        width: `${tenantShare * 100}%`,
+                        width: `${contactShare * 100}%`,
                         backgroundColor: COLORS.income,
                       }}
                     />
@@ -885,7 +885,7 @@ function OccupancyAndTrendChart({
                 className="inline-block w-2.5 h-2.5 rounded-sm"
                 style={{ backgroundColor: COLORS.income }}
               />
-              Tenant
+              Contact
             </span>
             <span className="inline-flex items-center gap-1 text-[10px] text-text-secondary">
               <span

@@ -1,0 +1,240 @@
+package com.buurman.repository;
+
+import static com.buurman.jooq.generated.Tables.PHOTOS;
+import static com.buurman.util.SidGenerator.newPhotoId;
+import static java.time.ZoneOffset.UTC;
+import static org.jooq.impl.DSL.lower;
+
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.jooq.Condition;
+import org.jooq.DSLContext;
+import org.jooq.Field;
+import org.jspecify.annotations.Nullable;
+import org.springframework.stereotype.Repository;
+
+import com.buurman.domain.Photo;
+import com.buurman.domain.Sid;
+import com.buurman.dto.request.PageRequest;
+import com.buurman.exception.NotFoundException;
+import com.buurman.mapper.PhotoRecordMapper;
+import com.buurman.util.PaginationHelper;
+import com.buurman.util.PaginationHelper.PaginatedResult;
+
+import lombok.RequiredArgsConstructor;
+
+@Repository
+@RequiredArgsConstructor
+public class PhotoRepository {
+
+  private final DSLContext dsl;
+  private final PhotoRecordMapper mapper;
+  private final Clock clock;
+
+  public Optional<Photo> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
+    return dsl.selectFrom(PHOTOS)
+        .where(
+            PHOTOS
+                .IDENTIFIER
+                .eq(identifier)
+                .and(PHOTOS.TEAM_ID.eq(teamId))
+                .and(PHOTOS.DELETED_AT.isNull()))
+        .fetchOptional()
+        .map(mapper::toDomain);
+  }
+
+  public Photo getByIdentifierAndTeamId(Sid identifier, UUID teamId) {
+    return findByIdentifierAndTeamId(identifier, teamId)
+        .orElseThrow(() -> new NotFoundException("Photo not found"));
+  }
+
+  public List<Photo> findByIdentifiersAndTeamId(List<Sid> identifiers, UUID teamId) {
+    if (identifiers == null || identifiers.isEmpty()) {
+      return List.of();
+    }
+    return List.copyOf(
+        dsl.selectFrom(PHOTOS)
+            .where(
+                PHOTOS
+                    .IDENTIFIER
+                    .in(identifiers.stream().map(Sid::value).toList())
+                    .and(PHOTOS.TEAM_ID.eq(teamId))
+                    .and(PHOTOS.DELETED_AT.isNull()))
+            .fetch()
+            .map(mapper::toDomain));
+  }
+
+  public Optional<Photo> findByIdAndTeamId(UUID id, UUID teamId) {
+    return dsl.selectFrom(PHOTOS)
+        .where(PHOTOS.ID.eq(id).and(PHOTOS.TEAM_ID.eq(teamId)).and(PHOTOS.DELETED_AT.isNull()))
+        .fetchOptional()
+        .map(mapper::toDomain);
+  }
+
+  public Photo getByIdAndTeamId(UUID id, UUID teamId) {
+    return findByIdAndTeamId(id, teamId)
+        .orElseThrow(() -> new NotFoundException("Photo not found"));
+  }
+
+  public List<Photo> findByEntityAndTeamId(String entityType, UUID entityId, UUID teamId) {
+    return List.copyOf(
+        dsl.selectFrom(PHOTOS)
+            .where(
+                PHOTOS
+                    .ENTITY_TYPE
+                    .eq(entityType)
+                    .and(PHOTOS.ENTITY_ID.eq(entityId))
+                    .and(PHOTOS.TEAM_ID.eq(teamId))
+                    .and(PHOTOS.DELETED_AT.isNull()))
+            .orderBy(PHOTOS.IS_MAIN_PHOTO.desc(), PHOTOS.UPLOADED_AT.desc())
+            .fetch()
+            .map(mapper::toDomain));
+  }
+
+  public Photo save(Photo photo) {
+    LocalDateTime now = LocalDateTime.now(clock);
+
+    if (photo.getId() == null) {
+      // INSERT
+      UUID newId = UUID.randomUUID();
+      Sid identifier = newPhotoId();
+      LocalDateTime uploadedAt =
+          photo.getUploadedAt() != null ? LocalDateTime.ofInstant(photo.getUploadedAt(), UTC) : now;
+
+      dsl.insertInto(PHOTOS)
+          .set(PHOTOS.ID, newId)
+          .set(PHOTOS.IDENTIFIER, identifier)
+          .set(PHOTOS.TEAM_ID, photo.getTeamId())
+          .set(PHOTOS.ENTITY_TYPE, photo.getEntityType())
+          .set(PHOTOS.ENTITY_ID, photo.getEntityId())
+          .set(PHOTOS.FILE_KEY, photo.getFileKey())
+          .set(PHOTOS.FILE_NAME, photo.getFileName())
+          .set(PHOTOS.FILE_SIZE, photo.getFileSize())
+          .set(PHOTOS.MIME_TYPE, photo.getMimeType())
+          .set(PHOTOS.TITLE, photo.getTitle().orElse(null))
+          .set(PHOTOS.NOTES, photo.getNotes().orElse(null))
+          .set(PHOTOS.IS_MAIN_PHOTO, photo.getIsMainPhoto())
+          .set(PHOTOS.UPLOADED_BY, photo.getUploadedBy())
+          .set(PHOTOS.UPLOADED_AT, uploadedAt)
+          .set(PHOTOS.THUMBNAIL_FILE_KEY, photo.getThumbnailFileKey().orElse(null))
+          .execute();
+
+      photo.setId(newId);
+      photo.setIdentifier(java.util.Optional.of(identifier));
+      photo.setUploadedAt(uploadedAt.toInstant(UTC));
+    } else {
+      // UPDATE (title, notes, and isMainPhoto are updatable)
+      dsl.update(PHOTOS)
+          .set(PHOTOS.TITLE, photo.getTitle().orElse(null))
+          .set(PHOTOS.NOTES, photo.getNotes().orElse(null))
+          .set(PHOTOS.IS_MAIN_PHOTO, photo.getIsMainPhoto())
+          .set(PHOTOS.THUMBNAIL_FILE_KEY, photo.getThumbnailFileKey().orElse(null))
+          .where(PHOTOS.ID.eq(photo.getId()).and(PHOTOS.TEAM_ID.eq(photo.getTeamId())))
+          .execute();
+    }
+
+    return photo;
+  }
+
+  public void softDeleteByIdAndTeamId(UUID id, UUID teamId) {
+    LocalDateTime now = LocalDateTime.now(clock);
+    dsl.update(PHOTOS)
+        .set(PHOTOS.DELETED_AT, now)
+        .where(PHOTOS.ID.eq(id).and(PHOTOS.TEAM_ID.eq(teamId)))
+        .execute();
+  }
+
+  public void softDeleteByEntityAndTeamId(String entityType, UUID entityId, UUID teamId) {
+    LocalDateTime now = LocalDateTime.now(clock);
+    dsl.update(PHOTOS)
+        .set(PHOTOS.DELETED_AT, now)
+        .where(
+            PHOTOS
+                .ENTITY_TYPE
+                .eq(entityType)
+                .and(PHOTOS.ENTITY_ID.eq(entityId))
+                .and(PHOTOS.TEAM_ID.eq(teamId))
+                .and(PHOTOS.DELETED_AT.isNull()))
+        .execute();
+  }
+
+  public void unsetMainPhotoForEntity(String entityType, UUID entityId, UUID teamId) {
+    dsl.update(PHOTOS)
+        .set(PHOTOS.IS_MAIN_PHOTO, false)
+        .where(
+            PHOTOS
+                .ENTITY_TYPE
+                .eq(entityType)
+                .and(PHOTOS.ENTITY_ID.eq(entityId))
+                .and(PHOTOS.TEAM_ID.eq(teamId))
+                .and(PHOTOS.IS_MAIN_PHOTO.eq(true))
+                .and(PHOTOS.DELETED_AT.isNull()))
+        .execute();
+  }
+
+  public PaginatedResult<Photo> findAllByTeamIdPaginated(
+      UUID teamId, @Nullable String search, @Nullable String entityType, PageRequest pageRequest) {
+    Condition condition = PHOTOS.TEAM_ID.eq(teamId).and(PHOTOS.DELETED_AT.isNull());
+    if (search != null && !search.trim().isEmpty()) {
+      String searchPattern = "%" + search.toLowerCase(Locale.ROOT) + "%";
+      condition =
+          condition.and(
+              lower(PHOTOS.TITLE)
+                  .like(searchPattern)
+                  .or(lower(PHOTOS.FILE_NAME).like(searchPattern))
+                  .or(lower(PHOTOS.NOTES).like(searchPattern)));
+    }
+    if (entityType != null && !entityType.trim().isEmpty()) {
+      condition = condition.and(PHOTOS.ENTITY_TYPE.eq(entityType));
+    }
+    Map<String, Field<?>> sortableFields =
+        Map.of(
+            "uploadedAt", PHOTOS.UPLOADED_AT,
+            "title", PHOTOS.TITLE,
+            "fileSize", PHOTOS.FILE_SIZE,
+            "entityType", PHOTOS.ENTITY_TYPE);
+    return PaginationHelper.paginate(
+        dsl, PHOTOS, condition, sortableFields, PHOTOS.UPLOADED_AT, pageRequest, mapper::toDomain);
+  }
+
+  public List<Photo> findWithoutThumbnail(int limit) {
+    return List.copyOf(
+        dsl.selectFrom(PHOTOS)
+            .where(
+                PHOTOS
+                    .THUMBNAIL_FILE_KEY
+                    .isNull()
+                    .and(PHOTOS.DELETED_AT.isNull())
+                    .and(PHOTOS.MIME_TYPE.startsWith("image/")))
+            .orderBy(PHOTOS.UPLOADED_AT.asc())
+            .limit(limit)
+            .fetch()
+            .map(mapper::toDomain));
+  }
+
+  public List<Photo> findByEntityTypeAndEntityIdsAndTeamId(
+      String entityType, Collection<UUID> entityIds, UUID teamId) {
+    if (entityIds == null || entityIds.isEmpty()) {
+      return List.of();
+    }
+    return List.copyOf(
+        dsl.selectFrom(PHOTOS)
+            .where(
+                PHOTOS
+                    .ENTITY_TYPE
+                    .eq(entityType)
+                    .and(PHOTOS.ENTITY_ID.in(entityIds))
+                    .and(PHOTOS.TEAM_ID.eq(teamId))
+                    .and(PHOTOS.DELETED_AT.isNull()))
+            .orderBy(PHOTOS.UPLOADED_AT.desc())
+            .fetch()
+            .map(mapper::toDomain));
+  }
+}

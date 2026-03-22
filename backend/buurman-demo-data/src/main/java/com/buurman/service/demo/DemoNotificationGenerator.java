@@ -1,11 +1,11 @@
 package com.buurman.service.demo;
 
+import static com.buurman.jooq.generated.Tables.CONTACTS;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.NOTIFICATIONS;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
-import static com.buurman.jooq.generated.Tables.TENANTS;
 import static com.buurman.jooq.generated.Tables.USERS;
 import static com.buurman.util.SidGenerator.newNotificationId;
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -72,7 +72,7 @@ public class DemoNotificationGenerator {
 
       List<UUID> contractIds = ctx.getContractIdsByTeam().getOrDefault(teamId, List.of());
       List<UUID> propertyIds = ctx.getPropertyIdsByTeam().getOrDefault(teamId, List.of());
-      List<UUID> tenantIds = ctx.getTenantIdsByTeam().getOrDefault(teamId, List.of());
+      List<UUID> contactIds = ctx.getContactIdsByTeam().getOrDefault(teamId, List.of());
 
       int teamNotifications = 0;
 
@@ -164,20 +164,21 @@ public class DemoNotificationGenerator {
           continue;
         }
 
-        Optional<UUID> tenantIdOpt = findPrimaryTenantId(contractId);
+        Optional<UUID> contactIdOpt = findPrimaryContactId(contractId);
         UUID propertyId = contract.get(CONTRACTS.PROPERTY_ID);
         String status = contract.get(CONTRACTS.STATUS);
-        if (tenantIdOpt.isEmpty()) {
+        if (contactIdOpt.isEmpty()) {
           continue;
         }
-        UUID tenantId = tenantIdOpt.get();
-        Record tenant = dsl.selectFrom(TENANTS).where(TENANTS.ID.eq(tenantId)).fetchOne();
+        UUID contactId = contactIdOpt.get();
+        Record contact = dsl.selectFrom(CONTACTS).where(CONTACTS.ID.eq(contactId)).fetchOne();
         Record property = dsl.selectFrom(PROPERTIES).where(PROPERTIES.ID.eq(propertyId)).fetchOne();
-        if (tenant == null || property == null) {
+        if (contact == null || property == null) {
           continue;
         }
 
-        String tenantName = tenant.get(TENANTS.FIRST_NAME) + " " + tenant.get(TENANTS.LAST_NAME);
+        String contactName =
+            contact.get(CONTACTS.FIRST_NAME) + " " + contact.get(CONTACTS.LAST_NAME);
         String street = property.get(PROPERTIES.STREET);
         String city = property.get(PROPERTIES.CITY);
         String propertyName = street + ", " + city;
@@ -196,7 +197,7 @@ public class DemoNotificationGenerator {
 
         Map<String, Object> contractVars = new HashMap<>();
         contractVars.put("propertyName", propertyName);
-        contractVars.put("tenantName", tenantName);
+        contractVars.put("contactName", contactName);
         contractVars.put("rentAmount", currency + " " + rentAmount);
         contractVars.put("startDate", startDate != null ? startDate.toString() : "N/A");
         contractVars.put("endDate", endDate != null ? endDate.toString() : "");
@@ -224,7 +225,7 @@ public class DemoNotificationGenerator {
           Map<String, Object> statusVars =
               Map.of(
                   "propertyName", propertyName,
-                  "tenantName", tenantName,
+                  "contactName", contactName,
                   "oldStatus", "ACTIVE",
                   "newStatus", status,
                   "baseUrl", baseUrl);
@@ -256,21 +257,22 @@ public class DemoNotificationGenerator {
           continue;
         }
 
-        Optional<UUID> tenantIdOpt = findPrimaryTenantId(contractId);
+        Optional<UUID> contactIdOpt = findPrimaryContactId(contractId);
         UUID propertyId = contract.get(CONTRACTS.PROPERTY_ID);
-        if (tenantIdOpt.isEmpty()) {
+        if (contactIdOpt.isEmpty()) {
           continue;
         }
-        UUID tenantId = tenantIdOpt.get();
-        Record tenant = dsl.selectFrom(TENANTS).where(TENANTS.ID.eq(tenantId)).fetchOne();
+        UUID contactId = contactIdOpt.get();
+        Record contact = dsl.selectFrom(CONTACTS).where(CONTACTS.ID.eq(contactId)).fetchOne();
         Record property = dsl.selectFrom(PROPERTIES).where(PROPERTIES.ID.eq(propertyId)).fetchOne();
-        if (tenant == null || property == null) {
+        if (contact == null || property == null) {
           continue;
         }
 
-        String tenantName = tenant.get(TENANTS.FIRST_NAME) + " " + tenant.get(TENANTS.LAST_NAME);
-        String tenantEmail = tenant.get(TENANTS.EMAIL);
-        String tenantPhone = tenant.get(TENANTS.PHONE);
+        String contactName =
+            contact.get(CONTACTS.FIRST_NAME) + " " + contact.get(CONTACTS.LAST_NAME);
+        String contactEmail = contact.get(CONTACTS.EMAIL);
+        String contactPhone = contact.get(CONTACTS.PHONE);
         String propertyName =
             property.get(PROPERTIES.STREET) + ", " + property.get(PROPERTIES.CITY);
 
@@ -295,7 +297,7 @@ public class DemoNotificationGenerator {
 
             Map<String, Object> vars =
                 Map.of(
-                    "userName", tenantName,
+                    "userName", contactName,
                     "propertyName", propertyName,
                     "amount", amount,
                     "dueDate", dueDate,
@@ -310,17 +312,17 @@ public class DemoNotificationGenerator {
                 "EMAIL",
                 "payment-reminder",
                 vars,
-                tenantEmail,
+                contactEmail,
                 null,
                 null,
-                tenantId,
+                contactId,
                 "DELIVERED",
                 "delivered",
                 null);
             teamNotifications++;
 
             // SMS reminder for overdue
-            if ("OVERDUE".equals(paymentStatus) && tenantPhone != null) {
+            if ("OVERDUE".equals(paymentStatus) && contactPhone != null) {
               insertSmsNotification(
                   teamId,
                   createdBy,
@@ -328,9 +330,9 @@ public class DemoNotificationGenerator {
                   "PAYMENT_REMINDER",
                   "payment-reminder",
                   vars,
-                  tenantPhone,
+                  contactPhone,
                   null,
-                  tenantId,
+                  contactId,
                   "SENT",
                   "sent",
                   null);
@@ -354,19 +356,20 @@ public class DemoNotificationGenerator {
           continue;
         }
 
-        Optional<UUID> tenantIdOpt = findPrimaryTenantId(contractId);
+        Optional<UUID> contactIdOpt = findPrimaryContactId(contractId);
         UUID propertyId = contract.get(CONTRACTS.PROPERTY_ID);
-        if (tenantIdOpt.isEmpty()) {
+        if (contactIdOpt.isEmpty()) {
           continue;
         }
-        UUID tenantId = tenantIdOpt.get();
-        Record tenant = dsl.selectFrom(TENANTS).where(TENANTS.ID.eq(tenantId)).fetchOne();
+        UUID contactId = contactIdOpt.get();
+        Record contact = dsl.selectFrom(CONTACTS).where(CONTACTS.ID.eq(contactId)).fetchOne();
         Record property = dsl.selectFrom(PROPERTIES).where(PROPERTIES.ID.eq(propertyId)).fetchOne();
-        if (tenant == null || property == null) {
+        if (contact == null || property == null) {
           continue;
         }
 
-        String tenantName = tenant.get(TENANTS.FIRST_NAME) + " " + tenant.get(TENANTS.LAST_NAME);
+        String contactName =
+            contact.get(CONTACTS.FIRST_NAME) + " " + contact.get(CONTACTS.LAST_NAME);
         String propertyName =
             property.get(PROPERTIES.STREET) + ", " + property.get(PROPERTIES.CITY);
 
@@ -391,7 +394,7 @@ public class DemoNotificationGenerator {
           Map<String, Object> vars =
               Map.of(
                   "propertyName", propertyName,
-                  "tenantName", tenantName,
+                  "contactName", contactName,
                   "amount", amount,
                   "paymentDate", paymentDate != null ? paymentDate.toString() : "N/A",
                   "baseUrl", baseUrl);
@@ -428,15 +431,15 @@ public class DemoNotificationGenerator {
           continue;
         }
 
-        Optional<UUID> tenantIdOpt = findPrimaryTenantId(contractId);
+        Optional<UUID> contactIdOpt = findPrimaryContactId(contractId);
         UUID propertyId = contract.get(CONTRACTS.PROPERTY_ID);
-        if (tenantIdOpt.isEmpty()) {
+        if (contactIdOpt.isEmpty()) {
           continue;
         }
-        UUID tenantId = tenantIdOpt.get();
-        Record tenant = dsl.selectFrom(TENANTS).where(TENANTS.ID.eq(tenantId)).fetchOne();
+        UUID contactId = contactIdOpt.get();
+        Record contact = dsl.selectFrom(CONTACTS).where(CONTACTS.ID.eq(contactId)).fetchOne();
         Record property = dsl.selectFrom(PROPERTIES).where(PROPERTIES.ID.eq(propertyId)).fetchOne();
-        if (tenant == null || property == null) {
+        if (contact == null || property == null) {
           continue;
         }
 
@@ -474,33 +477,35 @@ public class DemoNotificationGenerator {
       }
 
       // --- A couple of failed notifications for realism ---
-      if (!tenantIds.isEmpty()) {
-        UUID tenantId = tenantIds.get(random.nextInt(tenantIds.size()));
-        Record tenant = dsl.selectFrom(TENANTS).where(TENANTS.ID.eq(tenantId)).fetchOne();
-        if (tenant != null) {
-          String tenantEmail = tenant.get(TENANTS.EMAIL);
-          String tenantName = tenant.get(TENANTS.FIRST_NAME) + " " + tenant.get(TENANTS.LAST_NAME);
+      if (!contactIds.isEmpty()) {
+        UUID failedContactId = contactIds.get(random.nextInt(contactIds.size()));
+        Record failedContact =
+            dsl.selectFrom(CONTACTS).where(CONTACTS.ID.eq(failedContactId)).fetchOne();
+        if (failedContact != null) {
+          String contactEmail = failedContact.get(CONTACTS.EMAIL);
+          String contactName =
+              failedContact.get(CONTACTS.FIRST_NAME) + " " + failedContact.get(CONTACTS.LAST_NAME);
 
-          // Find a property for this tenant via contract_parties
+          // Find a property for this contact via contract_parties
           String propertyName = "your property";
-          var tenantContractId =
+          var contactContractId =
               dsl.select(field("contract_id", UUID.class))
                   .from(table("contract_parties"))
-                  .where(field("tenant_id", UUID.class).eq(tenantId))
+                  .where(field("contact_id", UUID.class).eq(failedContactId))
                   .and(field("deleted_at").isNull())
                   .limit(1)
                   .fetchOptional(field("contract_id", UUID.class))
                   .orElse(null);
-          var tenantContract =
-              tenantContractId != null
+          var contactContract =
+              contactContractId != null
                   ? dsl.selectFrom(CONTRACTS)
-                      .where(CONTRACTS.ID.eq(tenantContractId).and(CONTRACTS.TEAM_ID.eq(teamId)))
+                      .where(CONTRACTS.ID.eq(contactContractId).and(CONTRACTS.TEAM_ID.eq(teamId)))
                       .fetchOne()
                   : null;
-          if (tenantContract != null) {
+          if (contactContract != null) {
             Record prop =
                 dsl.selectFrom(PROPERTIES)
-                    .where(PROPERTIES.ID.eq(tenantContract.get(CONTRACTS.PROPERTY_ID)))
+                    .where(PROPERTIES.ID.eq(contactContract.get(CONTRACTS.PROPERTY_ID)))
                     .fetchOne();
             if (prop != null) {
               propertyName = prop.get(PROPERTIES.STREET) + ", " + prop.get(PROPERTIES.CITY);
@@ -509,7 +514,7 @@ public class DemoNotificationGenerator {
 
           Map<String, Object> vars =
               Map.of(
-                  "userName", tenantName,
+                  "userName", contactName,
                   "propertyName", propertyName,
                   "amount", teamCurrency + " 1200.00",
                   "dueDate", LocalDate.now(clock).minusDays(15).toString(),
@@ -524,10 +529,10 @@ public class DemoNotificationGenerator {
               "EMAIL",
               "payment-reminder",
               vars,
-              tenantEmail,
+              contactEmail,
               null,
               null,
-              tenantId,
+              failedContactId,
               "BOUNCED",
               null,
               "550 5.1.1 The email account does not exist");
@@ -543,7 +548,7 @@ public class DemoNotificationGenerator {
               vars,
               "+31600000000",
               null,
-              tenantId,
+              failedContactId,
               "FAILED",
               null,
               "Invalid phone number");
@@ -568,7 +573,7 @@ public class DemoNotificationGenerator {
       @Nullable String recipientEmail,
       @Nullable String recipientPhone,
       @Nullable UUID recipientUserId,
-      @Nullable UUID recipientTenantId,
+      @Nullable UUID recipientContactId,
       String status,
       @Nullable String providerStatus,
       @Nullable String providerError) {
@@ -588,7 +593,7 @@ public class DemoNotificationGenerator {
         recipientEmail,
         recipientPhone,
         recipientUserId,
-        recipientTenantId,
+        recipientContactId,
         varsJson,
         status,
         providerStatus,
@@ -605,7 +610,7 @@ public class DemoNotificationGenerator {
       Map<String, Object> templateVars,
       String recipientPhone,
       @Nullable UUID recipientUserId,
-      @Nullable UUID recipientTenantId,
+      @Nullable UUID recipientContactId,
       String status,
       @Nullable String providerStatus,
       @Nullable String providerError) {
@@ -624,7 +629,7 @@ public class DemoNotificationGenerator {
         null,
         recipientPhone,
         recipientUserId,
-        recipientTenantId,
+        recipientContactId,
         varsJson,
         status,
         providerStatus,
@@ -687,13 +692,13 @@ public class DemoNotificationGenerator {
     }
   }
 
-  private Optional<UUID> findPrimaryTenantId(UUID contractId) {
-    return dsl.select(field("tenant_id", UUID.class))
+  private Optional<UUID> findPrimaryContactId(UUID contractId) {
+    return dsl.select(field("contact_id", UUID.class))
         .from(table("contract_parties"))
         .where(field("contract_id", UUID.class).eq(contractId))
         .and(field("role", String.class).eq("PRIMARY_TENANT"))
         .and(field("deleted_at").isNull())
-        .fetchOptional(field("tenant_id", UUID.class));
+        .fetchOptional(field("contact_id", UUID.class));
   }
 
   private void insertNotification(
@@ -708,7 +713,7 @@ public class DemoNotificationGenerator {
       @Nullable String recipientEmail,
       @Nullable String recipientPhone,
       @Nullable UUID recipientUserId,
-      @Nullable UUID recipientTenantId,
+      @Nullable UUID recipientContactId,
       @Nullable String contentVariablesJson,
       String status,
       @Nullable String providerStatus,
@@ -727,7 +732,7 @@ public class DemoNotificationGenerator {
         .set(NOTIFICATIONS.RECIPIENT_EMAIL, recipientEmail)
         .set(NOTIFICATIONS.RECIPIENT_PHONE, recipientPhone)
         .set(NOTIFICATIONS.RECIPIENT_USER_ID, recipientUserId)
-        .set(NOTIFICATIONS.RECIPIENT_TENANT_ID, recipientTenantId)
+        .set(NOTIFICATIONS.RECIPIENT_CONTACT_ID, recipientContactId)
         .set(
             NOTIFICATIONS.CONTENT_VARIABLES,
             contentVariablesJson != null ? JSONB.jsonb(contentVariablesJson) : null)

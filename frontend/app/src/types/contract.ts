@@ -1,5 +1,5 @@
 import { PropertySummary } from './property';
-import { TenantSummary, CreateTenantRequest } from './tenant';
+import { ContactSummary, CreateContactRequest } from './contact';
 import type {
   RenewalMode,
   RentAdjustmentType,
@@ -45,10 +45,10 @@ import { ContractPartyResponseRole } from '../generated/models';
 import { RentComponentType } from '../generated/models';
 
 export const PARTY_ROLE_LABELS: Record<ContractPartyResponseRole, string> = {
-  [ContractPartyResponseRole.PRIMARY_TENANT]: 'Primary Tenant',
+  [ContractPartyResponseRole.PRIMARY_TENANT]: 'Primary Contact',
   [ContractPartyResponseRole.GUARANTOR]: 'Guarantor',
   [ContractPartyResponseRole.COSIGNER]: 'Co-signer',
-  [ContractPartyResponseRole.EXTRA_TENANT]: 'Additional Tenant',
+  [ContractPartyResponseRole.EXTRA_TENANT]: 'Additional Contact',
 };
 
 export const RENT_COMPONENT_LABELS: Record<RentComponentType, string> = {
@@ -81,13 +81,13 @@ export interface RentComponentResponseItem {
 
 export interface ContractPartyResponse {
   identifier: string;
-  tenant: TenantSummary;
+  contact: ContactSummary;
   role: ContractPartyResponseRole;
 }
 
 export interface ContractPartyRequest {
-  tenantIdentifier?: string;
-  newTenant?: CreateTenantRequest;
+  contactIdentifier?: string;
+  newContact?: CreateContactRequest;
   role: ContractPartyResponseRole;
 }
 
@@ -95,7 +95,7 @@ export interface ContractResponse {
   identifier: string;
   property: PropertySummary;
   parties: ContractPartyResponse[];
-  primaryTenant: TenantSummary;
+  primaryContact: ContactSummary;
   contractType: ContractResponseContractType;
   startDate: string;
   endDate?: string;
@@ -120,8 +120,8 @@ export interface ContractResponse {
   renewalTermMonths?: number;
   maxRenewals?: number;
   landlordNoticeDays?: number;
-  tenantNoticeDays?: number;
-  requiresTenantConfirmation?: boolean;
+  contactNoticeDays?: number;
+  requiresContactConfirmation?: boolean;
   rentAdjustmentType?: RentAdjustmentType;
   rentAdjustmentValue?: number;
   landlordType?: LandlordType;
@@ -136,7 +136,7 @@ export interface ContractResponse {
 export interface ContractSummary {
   identifier: string;
   property: PropertySummary;
-  primaryTenant: TenantSummary;
+  primaryContact: ContactSummary;
   startDate: string;
   endDate?: string;
   rentAmount: number;
@@ -167,8 +167,8 @@ export interface CreateContractRequest {
   renewalTermMonths?: number;
   maxRenewals?: number;
   landlordNoticeDays?: number;
-  tenantNoticeDays?: number;
-  requiresTenantConfirmation?: boolean;
+  contactNoticeDays?: number;
+  requiresContactConfirmation?: boolean;
   rentAdjustmentType?: RentAdjustmentType;
   rentAdjustmentValue?: number;
   landlordType?: LandlordType;
@@ -199,8 +199,8 @@ export interface UpdateContractRequest {
   renewalTermMonths?: number;
   maxRenewals?: number;
   landlordNoticeDays?: number;
-  tenantNoticeDays?: number;
-  requiresTenantConfirmation?: boolean;
+  contactNoticeDays?: number;
+  requiresContactConfirmation?: boolean;
   rentAdjustmentType?: RentAdjustmentType;
   rentAdjustmentValue?: number;
   landlordType?: LandlordType;
@@ -215,6 +215,7 @@ export interface RentPeriodResponse {
   effectiveTo?: string;
   notes?: string;
   percentageChange?: number;
+  components: RentComponentResponseItem[];
   createdAt: string;
 }
 
@@ -238,14 +239,14 @@ export interface MetadataGroupSchema {
 // Request interfaces — manual (generated adds to all optional fields)
 
 export interface AddContractPartyRequest {
-  tenantIdentifier?: string;
-  newTenant?: CreateTenantRequest;
+  contactIdentifier?: string;
+  newContact?: CreateContactRequest;
   role: ContractPartyResponseRole;
 }
 
-export interface ChangePrimaryTenantRequest {
-  tenantIdentifier?: string;
-  newTenant?: CreateTenantRequest;
+export interface ChangePrimaryContactRequest {
+  contactIdentifier?: string;
+  newContact?: CreateContactRequest;
 }
 
 export interface ChangeContractStatusRequest {
@@ -257,6 +258,7 @@ export interface CreateRentPeriodRequest {
   rentAmount: number;
   effectiveFrom: string;
   notes?: string;
+  components?: RentComponentFormItem[];
 }
 
 export interface UpdateRentPeriodRequest {

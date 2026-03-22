@@ -1,0 +1,21 @@
+package com.buurman.dto.request;
+
+import java.util.Optional;
+
+import com.buurman.domain.ContactAddress;
+import com.buurman.util.Generated;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+@Generated
+public record UpdateContactAddressRequest(
+    @NotBlank(message = "Street is required") String street,
+    @NotBlank(message = "City is required") String city,
+    Optional<String> postalCode,
+    @NotBlank(message = "Country code is required") String countryCode,
+    @NotNull(message = "Address type is required") ContactAddress.AddressType addressType,
+    @NotNull(message = "Status is required") ContactAddress.AddressStatus status,
+    Optional<Double> latitude,
+    Optional<Double> longitude,
+    Optional<String> geocodeAccuracy) {}
