@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.buurman.job.ContactFollowUpReminderJob;
 import com.buurman.job.ContractExpiryCheckJob;
 import com.buurman.job.NotificationOutboxJob;
 import com.buurman.job.PaymentReminderCheckJob;
@@ -79,6 +80,28 @@ public class NotificationQuartzConfig {
     return TriggerBuilder.newTrigger()
         .forJob(renewalReminderJobDetail)
         .withIdentity("renewalReminderTrigger", "scheduling")
+        .withSchedule(CronScheduleBuilder.cronSchedule(cron))
+        .build();
+  }
+
+  // ── Contact Follow-Up Reminder ─────────────────────────────────────────
+
+  @Bean
+  public JobDetail contactFollowUpReminderJobDetail() {
+    return JobBuilder.newJob(ContactFollowUpReminderJob.class)
+        .withIdentity("contactFollowUpReminderJob", "scheduling")
+        .storeDurably()
+        .build();
+  }
+
+  @Bean
+  public Trigger contactFollowUpReminderTrigger(
+      JobDetail contactFollowUpReminderJobDetail,
+      @Value("${scheduling.notification-reminders.contact-follow-up-cron:0 0 8 * * ?}")
+          String cron) {
+    return TriggerBuilder.newTrigger()
+        .forJob(contactFollowUpReminderJobDetail)
+        .withIdentity("contactFollowUpReminderTrigger", "scheduling")
         .withSchedule(CronScheduleBuilder.cronSchedule(cron))
         .build();
   }

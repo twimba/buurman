@@ -17,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.domain.Contact;
 import com.buurman.domain.ContactAddress;
+import com.buurman.domain.ContactTag;
+import com.buurman.exception.BadRequestException;
 import com.buurman.domain.ContactType;
 import com.buurman.domain.Contract;
 import com.buurman.domain.Photo;
@@ -26,6 +28,7 @@ import com.buurman.domain.identifier.ContactAddressIdentifier;
 import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.PhotoIdentifier;
+import com.buurman.dto.request.AddContactTagRequest;
 import com.buurman.dto.request.CreateContactAddressRequest;
 import com.buurman.dto.request.CreateContactRequest;
 import com.buurman.dto.request.PageRequest;
@@ -43,6 +46,7 @@ import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.mapper.ContactMapper;
 import com.buurman.repository.ContactAddressRepository;
 import com.buurman.repository.ContactRepository;
+import com.buurman.repository.ContactTagRepository;
 import com.buurman.repository.ContractPartyRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PhotoRepository;
@@ -74,6 +78,7 @@ public class ContactService {
   private final ContractPartyRepository contractPartyRepository;
   private final ContactAddressService addressService;
   private final ContactAddressRepository addressRepository;
+  private final ContactTagRepository contactTagRepository;
   private final MetricsService metricsService;
   private final Clock clock;
 
@@ -337,6 +342,68 @@ public class ContactService {
     ContactAddress address =
         addressRepository.getByIdentifierAndTeamId(addressIdentifier, principal.requireTeamId());
     addressService.deleteAddress(contact.getId(), address.getId(), principal);
+  }
+
+  @Transactional
+  @PreAuthorize("hasRole('TEAM_EDITOR')")
+  public ContactResponse addTag(
+      ContactIdentifier identifier, AddContactTagRequest request, UserPrincipal principal) {
+    Contact contact =
+        contactRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
+
+    contactTagRepository.addTag(
+        contact.getId(), principal.requireTeamId(), request.tag(), principal.getUserId());
+
+    log.info(
+        "Tag {} added to contact {} for team {}",
+        request.tag(),
+        identifier,
+        principal.requireTeamId());
+
+    auditService.logUpdate(
+        principal.requireTeamId(),
+        "CONTACT",
+        contact.getId(),
+        principal.getUserId(),
+        null,
+        Map.of("action", "ADD_TAG", "tag", request.tag().name()),
+        Map.of("tags", request.tag().name()));
+
+    return toResponse(contact, principal.requireTeamId());
+  }
+
+  @Transactional
+  @PreAuthorize("hasRole('TEAM_EDITOR')")
+  public ContactResponse removeTag(
+      ContactIdentifier identifier, String tag, UserPrincipal principal) {
+    ContactTag contactTag;
+    try {
+      contactTag = ContactTag.valueOf(tag);
+    } catch (IllegalArgumentException e) {
+      throw new BadRequestException("Invalid tag: " + tag);
+    }
+
+    Contact contact =
+        contactRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
+
+    contactTagRepository.removeTag(contact.getId(), contactTag);
+
+    log.info(
+        "Tag {} removed from contact {} for team {}",
+        contactTag,
+        identifier,
+        principal.requireTeamId());
+
+    auditService.logUpdate(
+        principal.requireTeamId(),
+        "CONTACT",
+        contact.getId(),
+        principal.getUserId(),
+        null,
+        Map.of("action", "REMOVE_TAG", "tag", contactTag.name()),
+        Map.of("tags", contactTag.name()));
+
+    return toResponse(contact, principal.requireTeamId());
   }
 
   private ContactResponse toResponse(Contact contact, UUID teamId) {

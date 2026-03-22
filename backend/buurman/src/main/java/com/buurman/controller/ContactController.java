@@ -278,17 +278,19 @@ public class ContactController implements ContactsApi {
         contactIdentifier, relationshipIdentifier, principal);
   }
 
-  // --- Tags (stub) ---
+  // --- Tags ---
 
   @Override
   public ContactResponse addContactTag(
       ContactIdentifier contactIdentifier, AddContactTagRequest request) {
-    throw new UnsupportedOperationException("Not yet implemented");
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return contactService.addTag(contactIdentifier, request, principal);
   }
 
   @Override
   public ContactResponse removeContactTag(ContactIdentifier contactIdentifier, String tag) {
-    throw new UnsupportedOperationException("Not yet implemented");
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return contactService.removeTag(contactIdentifier, tag, principal);
   }
 
   // --- Duplicates (stub) ---

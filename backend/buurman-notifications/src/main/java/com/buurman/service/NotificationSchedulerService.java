@@ -1,5 +1,6 @@
 package com.buurman.service;
 
+import static com.buurman.domain.NotificationType.CONTACT_FOLLOW_UP;
 import static com.buurman.domain.NotificationType.CONTRACT_EXPIRY;
 import static com.buurman.domain.NotificationType.PAYMENT_REMINDER;
 import static com.buurman.domain.TeamRole.TEAM_EDITOR;
@@ -20,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.config.models.AppProperties;
+import com.buurman.domain.Contact;
+import com.buurman.domain.ContactNote;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
 import com.buurman.domain.NotificationUrgency;
@@ -28,6 +31,8 @@ import com.buurman.domain.Team;
 import com.buurman.domain.TeamMember;
 import com.buurman.domain.TeamRole;
 import com.buurman.domain.User;
+import com.buurman.repository.ContactNoteRepository;
+import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentRepository;
@@ -47,6 +52,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class NotificationSchedulerService {
 
+  private final ContactNoteRepository contactNoteRepository;
+  private final ContactRepository contactRepository;
   private final ContractRepository contractRepository;
   private final ContractExtensionRepository contractExtensionRepository;
   private final PaymentRepository paymentRepository;
@@ -210,6 +217,59 @@ public class NotificationSchedulerService {
         });
 
     log.info("Payment reminder check completed");
+  }
+
+  @Transactional
+  public void checkContactFollowUpReminders() {
+    log.info("Running contact follow-up reminder check...");
+
+    LocalDate today = LocalDate.now(clock);
+    List<ContactNote> pendingNotes = contactNoteRepository.findPendingFollowUps(today);
+    int remindersSent = 0;
+
+    for (ContactNote note : pendingNotes) {
+      try {
+        Optional<Contact> contact =
+            contactRepository.findByIdAndTeamId(note.getContactId(), note.getTeamId());
+        String contactDisplayName = contact.map(Contact::getDisplayName).orElse("Unknown Contact");
+        String followUpDateFormatted =
+            note.getFollowUpDate().map(d -> formatDate(d)).orElse("");
+
+        notifyTeamMembers(
+            note.getTeamId(),
+            user ->
+                notificationService.send(
+                    SendNotificationRequest.builder()
+                        .teamId(Optional.of(note.getTeamId()))
+                        .notificationType(CONTACT_FOLLOW_UP)
+                        .recipientUserId(Optional.of(user.getId()))
+                        .recipientEmail(Optional.of(user.getEmail()))
+                        .recipientPhone(user.getPhone())
+                        .templateName("contact-follow-up-reminder")
+                        .templateVariables(
+                            Map.of(
+                                "userName", user.getFirstName(),
+                                "contactName", contactDisplayName,
+                                "followUpDate", followUpDateFormatted,
+                                "noteSubject",
+                                    note.getSubject().orElse(""),
+                                "baseUrl", appProperties.email().baseUrl()))
+                        .urgency(NotificationUrgency.NORMAL)
+                        .createdBy(SYSTEM_USER_ID)
+                        .build()));
+
+        contactNoteRepository.markFollowUpReminderSent(note.getId());
+        remindersSent++;
+      } catch (Exception e) {
+        log.error(
+            "Failed to send follow-up reminder for note {}: {}",
+            note.getIdentifier().map(Object::toString).orElse("unknown"),
+            e.getMessage(),
+            e);
+      }
+    }
+
+    log.info("Contact follow-up reminder check completed — {} reminder(s) sent", remindersSent);
   }
 
   private String getPropertyName(UUID propertyId, UUID teamId) {
