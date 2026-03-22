@@ -196,7 +196,7 @@ public class DemoNotificationGenerator {
 
         Map<String, Object> contractVars = new HashMap<>();
         contractVars.put("propertyName", propertyName);
-        contractVars.put("tenantName", contactName);
+        contractVars.put("contactName", contactName);
         contractVars.put("rentAmount", currency + " " + rentAmount);
         contractVars.put("startDate", startDate != null ? startDate.toString() : "N/A");
         contractVars.put("endDate", endDate != null ? endDate.toString() : "");
@@ -224,7 +224,7 @@ public class DemoNotificationGenerator {
           Map<String, Object> statusVars =
               Map.of(
                   "propertyName", propertyName,
-                  "tenantName", contactName,
+                  "contactName", contactName,
                   "oldStatus", "ACTIVE",
                   "newStatus", status,
                   "baseUrl", baseUrl);
@@ -391,7 +391,7 @@ public class DemoNotificationGenerator {
           Map<String, Object> vars =
               Map.of(
                   "propertyName", propertyName,
-                  "tenantName", contactName,
+                  "contactName", contactName,
                   "amount", amount,
                   "paymentDate", paymentDate != null ? paymentDate.toString() : "N/A",
                   "baseUrl", baseUrl);

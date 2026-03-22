@@ -229,11 +229,11 @@ public class GlobalExceptionHandler {
     }
 
     String lowerCause = cause.toLowerCase(Locale.ROOT);
-    if (lowerCause.contains("uq_contract_parties_contract_tenant")) {
-      return "This tenant is already a party to this contract";
+    if (lowerCause.contains("uq_contract_parties_contract_contact")) {
+      return "This contact is already a party to this contract";
     }
-    if (lowerCause.contains("uq_tenants_team_email")) {
-      return "A tenant with this email address already exists";
+    if (lowerCause.contains("uq_contacts_team_email")) {
+      return "A contact with this email address already exists";
     }
     if (lowerCause.contains("duplicate key") || lowerCause.contains("unique constraint")) {
       return "A record with this information already exists";

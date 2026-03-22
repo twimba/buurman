@@ -247,9 +247,9 @@ public class ContractExtensionService {
     validateExtensionBelongsToContract(extension, contract);
     validateStatus(extension, DRAFT, "activate");
 
-    // Check tenant confirmation if required
+    // Check contact confirmation if required
     if (contract.getRequiresTenantConfirmation() && extension.getConfirmedAt().isEmpty()) {
-      throw new BusinessRuleException("Tenant confirmation required before activation");
+      throw new BusinessRuleException("Contact confirmation required before activation");
     }
 
     return doActivate(extension, contract, teamId, userId);
@@ -472,7 +472,7 @@ public class ContractExtensionService {
 
     extension = extensionRepository.save(extension);
 
-    // BR-31: If !requires_tenant_confirmation, immediately activate
+    // BR-31: If !requires_tenant_confirmation, immediately activate (no contact confirmation needed)
     if (!contract.getRequiresTenantConfirmation()) {
       doActivate(extension, contract, teamId, SYSTEM_USER_ID);
     } else {
@@ -775,7 +775,7 @@ public class ContractExtensionService {
       vars.put("daysRemaining", daysRemaining);
       vars.put("renewalMode", contract.getRenewalMode().name());
       vars.put("renewalTermMonths", contract.getRenewalTermMonths().orElse(12));
-      vars.put("tenantName", "");
+      vars.put("contactName", "");
       vars.put(
           "contractUrl",
           appProperties.email().baseUrl()

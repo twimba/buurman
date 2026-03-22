@@ -890,7 +890,7 @@ public class PaymentService {
                 Map.of(
                     "propertyName",
                     propertyName,
-                    "tenantName",
+                    "contactName",
                     contactName,
                     "amount",
                     payment.getAmount().currency() + " " + payment.getAmount().value(),
@@ -923,7 +923,7 @@ public class PaymentService {
 
     Map<String, Object> vars = new HashMap<>();
     vars.put("propertyName", propertyName);
-    vars.put("tenantName", contactName);
+    vars.put("contactName", contactName);
     vars.put("receivalAmount", currency + " " + receivalAmount);
     vars.put("amount", currency + " " + payment.getAmount().value());
     vars.put("remainingBalance", currency + " " + remainingBalance);

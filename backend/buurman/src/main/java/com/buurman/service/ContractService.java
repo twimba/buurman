@@ -233,7 +233,7 @@ public class ContractService {
     String contactName = primaryContact.getDisplayName();
     Map<String, Object> contractVars = new HashMap<>();
     contractVars.put("propertyName", propertyName);
-    contractVars.put("tenantName", contactName);
+    contractVars.put("contactName", contactName);
     contractVars.put(
         "rentAmount",
         savedContract.getRentAmount().currency() + " " + savedContract.getRentAmount().value());
@@ -690,7 +690,7 @@ public class ContractService {
             .templateVariables(
                 Map.of(
                     "propertyName", scPropertyName,
-                    "tenantName", scContactName,
+                    "contactName", scContactName,
                     "oldStatus", oldStatus.name(),
                     "newStatus", newStatus.name(),
                     "baseUrl", appProperties.email().baseUrl()))
@@ -799,7 +799,7 @@ public class ContractService {
                 Map.of(
                     "propertyName",
                     reopenPropertyName,
-                    "tenantName",
+                    "contactName",
                     reopenContactName,
                     "oldStatus",
                     oldStatus.name(),

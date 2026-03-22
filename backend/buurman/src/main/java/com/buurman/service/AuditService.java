@@ -297,22 +297,22 @@ public class AuditService {
 
     // Check for contract party operations
     if (changedFields.containsKey("partyAdded")) {
-      String tenantName = (String) changedFields.get("partyAdded");
+      String contactName = (String) changedFields.get("partyAdded");
       String role = (String) changedFields.get("role");
-      return String.format("%s added %s as %s", userName, tenantName, formatRole(role));
+      return String.format("%s added %s as %s", userName, contactName, formatRole(role));
     }
 
     if (changedFields.containsKey("partyRemoved")) {
-      String tenantName = (String) changedFields.get("partyRemoved");
+      String contactName = (String) changedFields.get("partyRemoved");
       String role = (String) changedFields.get("role");
-      return String.format("%s removed %s (%s)", userName, tenantName, formatRole(role));
+      return String.format("%s removed %s (%s)", userName, contactName, formatRole(role));
     }
 
-    if (changedFields.containsKey("primaryTenantChanged")) {
-      String newTenant = (String) changedFields.get("primaryTenantChanged");
-      String oldTenant = (String) changedFields.get("previousPrimaryTenant");
+    if (changedFields.containsKey("primaryContactChanged")) {
+      String newContact = (String) changedFields.get("primaryContactChanged");
+      String oldContact = (String) changedFields.get("previousPrimaryContact");
       return String.format(
-          "%s changed primary tenant from %s to %s", userName, oldTenant, newTenant);
+          "%s changed primary contact from %s to %s", userName, oldContact, newContact);
     }
 
     // Check for receival operations

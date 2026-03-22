@@ -243,7 +243,7 @@ public class DashboardService {
               // Find primary contact name
               List<ContractParty> parties =
                   partiesByContract.getOrDefault(contract.getId(), List.of());
-              String tenantName =
+              String contactName =
                   parties.stream()
                       .filter(p -> p.getRole() == ContractPartyRole.PRIMARY_TENANT)
                       .findFirst()
@@ -265,7 +265,7 @@ public class DashboardService {
                       contract.getRentAmount().currency(),
                       daysUntilExpiry);
               response.setPropertyName(propertyName);
-              response.setTenantName(tenantName);
+              response.setContactName(contactName);
               response.setRenewalTermMonths(contract.getRenewalTermMonths().orElse(null));
 
               return Optional.of(response);

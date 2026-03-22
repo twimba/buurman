@@ -2711,7 +2711,7 @@ components:
           type: string
         property:
           $ref: "#/components/schemas/PropertySummary"
-        primaryTenant:
+        primaryContact:
           $ref: "#/components/schemas/ContactSummary"
         startDate:
           type: string
@@ -2806,7 +2806,7 @@ components:
           example: pay_01HZQX7V8B3K5M2N4P6R9T0W
         contract:
           $ref: "#/components/schemas/ContractSummary"
-        tenant:
+        contact:
           $ref: "#/components/schemas/ContactSummary"
         property:
           $ref: "#/components/schemas/PropertySummary"
@@ -3395,7 +3395,7 @@ components:
       properties:
         identifier:
           type: string
-        tenant:
+        contact:
           $ref: "#/components/schemas/ContactSummary"
         role:
           type: string
@@ -3422,7 +3422,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ContractPartyResponse"
-        primaryTenant:
+        primaryContact:
           $ref: "#/components/schemas/ContactSummary"
         contractType:
           type: string
@@ -8273,7 +8273,7 @@ components:
           type: string
         propertyName:
           type: string
-        tenantName:
+        contactName:
           type: string
         effectiveEndDate:
           type: string

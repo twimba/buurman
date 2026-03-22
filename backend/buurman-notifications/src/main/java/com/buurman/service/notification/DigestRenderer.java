@@ -157,7 +157,7 @@ public class DigestRenderer {
       case CONTRACT_CREATED ->
           new DigestItem(
               getVar(contentVariables, "propertyName", "Property"),
-              "New contract with " + getVar(contentVariables, "tenantName", "tenant"),
+              "New contract with " + getVar(contentVariables, "contactName", "contact"),
               baseUrl + "/contracts",
               contentVariables);
       case CONTRACT_STATUS_CHANGED ->

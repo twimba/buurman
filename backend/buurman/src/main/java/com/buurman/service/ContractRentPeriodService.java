@@ -508,7 +508,7 @@ public class ContractRentPeriodService {
 
       Map<String, Object> vars = new HashMap<>();
       vars.put("propertyName", propertyName);
-      vars.put("tenantName", contactName);
+      vars.put("contactName", contactName);
       vars.put(
           "oldRentAmount",
           oldRentAmount != null
