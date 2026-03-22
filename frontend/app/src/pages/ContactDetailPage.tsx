@@ -37,7 +37,7 @@ import {
   ContractPartyRole,
   PARTY_ROLE_LABELS,
 } from '@/types/contract';
-import { Button, PageHeader, StatusBadge } from '@buurman/ui';
+import { Button, PageHeader } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import {
   Edit,
@@ -79,11 +79,6 @@ const CONTACT_TYPE_LABELS: Record<string, string> = {
   SERVICE_PROVIDER: 'Service Provider',
 };
 
-const CONTACT_TYPE_COLORS: Record<string, 'info' | 'warning' | 'success'> = {
-  INDIVIDUAL: 'info',
-  COMPANY: 'warning',
-  SERVICE_PROVIDER: 'success',
-};
 
 const RoleBadge = ({ role }: { role: ContractPartyRole }) => (
   <span
@@ -93,7 +88,14 @@ const RoleBadge = ({ role }: { role: ContractPartyRole }) => (
   </span>
 );
 
-const TAB_IDS = ['overview', 'activity', 'relationships', 'files', 'addresses'] as const;
+const TAB_IDS = [
+  'overview',
+  'notes',
+  'activity',
+  'relationships',
+  'files',
+  'addresses',
+] as const;
 
 export const ContactDetailPage = () => {
   const { id = '' } = useParams<{ id: string }>();
@@ -237,7 +239,9 @@ export const ContactDetailPage = () => {
   // Expiring contracts (within 30 days)
   const expiringContracts = useMemo(() => {
     const now = new Date();
-    const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+    const thirtyDaysFromNow = new Date(
+      now.getTime() + 30 * 24 * 60 * 60 * 1000
+    );
     return contracts.filter((c) => {
       if (c.status !== ContractStatus.ACTIVE) {
         return false;
@@ -254,9 +258,7 @@ export const ContactDetailPage = () => {
   // Upcoming follow-ups from notes
   const overdueFollowUps = useMemo(() => {
     const today = new Date().toISOString().split('T')[0];
-    return notes.filter(
-      (n) => n.followUpDate && n.followUpDate < today
-    );
+    return notes.filter((n) => n.followUpDate && n.followUpDate < today);
   }, [notes]);
 
   const upcomingFollowUps = useMemo(() => {
@@ -368,7 +370,9 @@ export const ContactDetailPage = () => {
     );
   }
 
-  const displayName = contact.displayName ?? `${contact.firstName} ${contact.lastName ?? ''}`.trim();
+  const displayName =
+    contact.displayName ??
+    `${contact.firstName} ${contact.lastName ?? ''}`.trim();
 
   return (
     <div className="min-h-screen bg-background">
@@ -376,19 +380,11 @@ export const ContactDetailPage = () => {
         {/* Header */}
         <PageHeader
           title={displayName}
-          subtitle={
-            <div className="flex items-center gap-2">
-              <span>#{contact.identifier}</span>
-              {contact.contactType && (
-                <StatusBadge
-                  variant={CONTACT_TYPE_COLORS[contact.contactType] ?? 'neutral'}
-                  size="sm"
-                >
-                  {CONTACT_TYPE_LABELS[contact.contactType] ?? contact.contactType}
-                </StatusBadge>
-              )}
-            </div>
-          }
+          subtitle={`#${contact.identifier} · ${
+            contact.contactType
+              ? CONTACT_TYPE_LABELS[contact.contactType] ?? contact.contactType
+              : ''
+          }`}
           backTo="/contacts"
           avatar={
             <Avatar
@@ -477,6 +473,17 @@ export const ContactDetailPage = () => {
               Overview
             </button>
             <button
+              onClick={() => setActiveTab('notes')}
+              className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
+                activeTab === 'notes'
+                  ? 'border-b-2 border-primary-500 text-primary-500 dark:text-primary-300'
+                  : 'text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              <FileText className="h-4 w-4" />
+              Notes {notes.length > 0 && `(${notes.length})`}
+            </button>
+            <button
               onClick={() => setActiveTab('activity')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'activity'
@@ -507,7 +514,9 @@ export const ContactDetailPage = () => {
               }`}
             >
               <FolderOpen className="h-4 w-4" />
-              Files {(documents.length + photos.length) > 0 && `(${documents.length + photos.length})`}
+              Files{' '}
+              {documents.length + photos.length > 0 &&
+                `(${documents.length + photos.length})`}
             </button>
             <button
               onClick={() => setActiveTab('addresses')}
@@ -527,13 +536,16 @@ export const ContactDetailPage = () => {
         {activeTab === 'overview' && (
           <div className="space-y-6">
             {/* Contextual Alerts */}
-            {(overdueFollowUps.length > 0 || expiringContracts.length > 0 || missingFields.length > 0) && (
+            {(overdueFollowUps.length > 0 ||
+              expiringContracts.length > 0 ||
+              missingFields.length > 0) && (
               <div className="space-y-2">
                 {overdueFollowUps.length > 0 && (
                   <div className="flex items-center gap-2 bg-error-bg text-error-text px-4 py-3 rounded-lg">
                     <AlertCircle className="h-4 w-4 flex-shrink-0" />
                     <span className="text-sm font-medium">
-                      {overdueFollowUps.length} overdue follow-up{overdueFollowUps.length > 1 ? 's' : ''}
+                      {overdueFollowUps.length} overdue follow-up
+                      {overdueFollowUps.length > 1 ? 's' : ''}
                     </span>
                   </div>
                 )}
@@ -541,7 +553,9 @@ export const ContactDetailPage = () => {
                   <div className="flex items-center gap-2 bg-warning-bg text-warning-text px-4 py-3 rounded-lg">
                     <AlertCircle className="h-4 w-4 flex-shrink-0" />
                     <span className="text-sm font-medium">
-                      {expiringContracts.length} contract{expiringContracts.length > 1 ? 's' : ''} expiring within 30 days
+                      {expiringContracts.length} contract
+                      {expiringContracts.length > 1 ? 's' : ''} expiring within
+                      30 days
                     </span>
                   </div>
                 )}
@@ -580,7 +594,9 @@ export const ContactDetailPage = () => {
                         <p className="font-medium text-text-primary">
                           {contact.companyName}
                           {contact.tradeName && (
-                            <span className="text-text-secondary ml-1">({contact.tradeName})</span>
+                            <span className="text-text-secondary ml-1">
+                              ({contact.tradeName})
+                            </span>
                           )}
                         </p>
                       </div>
@@ -592,11 +608,16 @@ export const ContactDetailPage = () => {
                       <p className="text-sm text-text-secondary">Email</p>
                       <p className="font-medium text-text-primary">
                         {contact.email ? (
-                          <a href={`mailto:${contact.email}`} className="hover:text-primary-500">
+                          <a
+                            href={`mailto:${contact.email}`}
+                            className="hover:text-primary-500"
+                          >
                             {contact.email}
                           </a>
                         ) : (
-                          <span className="text-text-muted italic">Not set</span>
+                          <span className="text-text-muted italic">
+                            Not set
+                          </span>
                         )}
                       </p>
                     </div>
@@ -607,7 +628,10 @@ export const ContactDetailPage = () => {
                       <div>
                         <p className="text-sm text-text-secondary">Phone</p>
                         <p className="font-medium text-text-primary">
-                          <a href={`tel:${contact.phone}`} className="hover:text-primary-500">
+                          <a
+                            href={`tel:${contact.phone}`}
+                            className="hover:text-primary-500"
+                          >
                             {contact.phone}
                           </a>
                         </p>
@@ -618,7 +642,9 @@ export const ContactDetailPage = () => {
                     <div className="flex items-center gap-3">
                       <FileText className="h-5 w-5 text-text-muted" />
                       <div>
-                        <p className="text-sm text-text-secondary">Tax Number</p>
+                        <p className="text-sm text-text-secondary">
+                          Tax Number
+                        </p>
                         <p className="font-medium text-text-primary">
                           {contact.taxNumber}
                         </p>
@@ -642,7 +668,9 @@ export const ContactDetailPage = () => {
                     <div className="flex items-center gap-3">
                       <Calendar className="h-5 w-5 text-text-muted" />
                       <div>
-                        <p className="text-sm text-text-secondary">Date of Birth</p>
+                        <p className="text-sm text-text-secondary">
+                          Date of Birth
+                        </p>
                         <p className="font-medium text-text-primary">
                           {formatDate(contact.dateOfBirth)}
                         </p>
@@ -671,7 +699,7 @@ export const ContactDetailPage = () => {
 
                 {/* Tags inline */}
                 <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-                  <ContactTagsTab contactId={id} />
+                  <ContactTagsTab contactId={id} contact={contact} />
                 </div>
               </div>
             </div>
@@ -820,7 +848,8 @@ export const ContactDetailPage = () => {
                                 {' — '}
                                 {(contract.effectiveEndDate ?? contract.endDate)
                                   ? formatDate(
-                                      (contract.effectiveEndDate ?? contract.endDate) as string
+                                      (contract.effectiveEndDate ??
+                                        contract.endDate) as string
                                     )
                                   : 'Ongoing'}
                               </td>
@@ -844,15 +873,21 @@ export const ContactDetailPage = () => {
                       </span>
                       <div className="flex gap-2">
                         <button
-                          onClick={() => setContractsCurrentPage(contractsCurrentPage - 1)}
+                          onClick={() =>
+                            setContractsCurrentPage(contractsCurrentPage - 1)
+                          }
                           disabled={contractsCurrentPage === 1}
                           className="px-2 py-1 border border-border-strong rounded text-xs disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
                         >
                           Previous
                         </button>
                         <button
-                          onClick={() => setContractsCurrentPage(contractsCurrentPage + 1)}
-                          disabled={contractsCurrentPage === contractsTotalPages}
+                          onClick={() =>
+                            setContractsCurrentPage(contractsCurrentPage + 1)
+                          }
+                          disabled={
+                            contractsCurrentPage === contractsTotalPages
+                          }
                           className="px-2 py-1 border border-border-strong rounded text-xs disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
                         >
                           Next
@@ -877,8 +912,12 @@ export const ContactDetailPage = () => {
                       className="flex items-center gap-3 px-3 py-2 bg-error-bg rounded text-sm"
                     >
                       <AlertCircle className="h-4 w-4 text-error-text flex-shrink-0" />
-                      <span className="text-error-text font-medium">Overdue: {formatDate(note.followUpDate!)}</span>
-                      <span className="text-text-secondary truncate">{note.subject ?? note.body.substring(0, 60)}</span>
+                      <span className="text-error-text font-medium">
+                        Overdue: {formatDate(note.followUpDate!)}
+                      </span>
+                      <span className="text-text-secondary truncate">
+                        {note.subject ?? note.body.substring(0, 60)}
+                      </span>
                     </div>
                   ))}
                   {upcomingFollowUps.map((note) => (
@@ -887,8 +926,12 @@ export const ContactDetailPage = () => {
                       className="flex items-center gap-3 px-3 py-2 bg-surface-inset rounded text-sm"
                     >
                       <Calendar className="h-4 w-4 text-text-muted flex-shrink-0" />
-                      <span className="font-medium">{formatDate(note.followUpDate!)}</span>
-                      <span className="text-text-secondary truncate">{note.subject ?? note.body.substring(0, 60)}</span>
+                      <span className="font-medium">
+                        {formatDate(note.followUpDate!)}
+                      </span>
+                      <span className="text-text-secondary truncate">
+                        {note.subject ?? note.body.substring(0, 60)}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -938,7 +981,12 @@ export const ContactDetailPage = () => {
           </div>
         )}
 
-        {/* ===== Tab 2: Activity ===== */}
+        {/* ===== Tab 2: Notes ===== */}
+        {activeTab === 'notes' && (
+          <ContactNotesTab contactId={id} />
+        )}
+
+        {/* ===== Tab 3: Activity ===== */}
         {activeTab === 'activity' && (
           <div className="space-y-6">
             <ContactNotesTab contactId={id} />

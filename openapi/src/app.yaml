@@ -858,6 +858,8 @@ components:
         - street
     UpdateContactRequest:
       type: object
+      required:
+        - contactType
       properties:
         contactType:
           $ref: '#/components/schemas/ContactType'
@@ -4514,6 +4516,8 @@ components:
     CreateContactRequest:
       type: object
       description: Request to create a new contact
+      required:
+        - contactType
       properties:
         contactType:
           $ref: '#/components/schemas/ContactType'

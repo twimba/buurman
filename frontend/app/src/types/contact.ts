@@ -163,6 +163,23 @@ export interface ContactPropertyAssignment {
   role?: ContractPartyRole;
 }
 
+export interface ContactListItemResponse {
+  identifier: string;
+  contactType: ContactType;
+  displayName: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  companyName?: string;
+  mainPhotoThumbnailUrl?: string;
+  tags: ContactTag[];
+  activeContractCount: number;
+  dataRetentionStatus?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
 export interface ContactResponse {
   identifier: string;
   contactType?: string;

@@ -1,44 +1,37 @@
-import { ContactResponse, ContactTag, CONTACT_TAG_LABELS } from '@/types/contact';
-import { ContractPartyRole, PARTY_ROLE_LABELS } from '@/types/contract';
-import { Mail, Phone, Home } from 'lucide-react';
+import {
+  ContactListItemResponse,
+  ContactTag,
+  CONTACT_TAG_LABELS,
+  ContactType,
+  CONTACT_TYPE_LABELS,
+} from '@/types/contact';
+import { Mail, Phone, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar } from '@/components/common/Avatar';
 import { StatusBadge } from '@buurman/ui';
+import type { BadgeColorVariant } from '@buurman/ui';
 
-const ROLE_COLORS: Record<ContractPartyRole, string> = {
-  [ContractPartyRole.PRIMARY_TENANT]: 'bg-info-bg text-info-text',
-  [ContractPartyRole.GUARANTOR]: 'bg-warning-bg text-warning-text',
-  [ContractPartyRole.COSIGNER]: 'bg-info-bg text-info-text',
-  [ContractPartyRole.EXTRA_TENANT]: 'bg-success-bg text-success-text',
+const CONTACT_TYPE_COLORS: Record<ContactType, BadgeColorVariant> = {
+  INDIVIDUAL: 'blue',
+  COMPANY: 'amber',
+  SERVICE_PROVIDER: 'green',
 };
 
-const CONTACT_TYPE_LABELS: Record<string, string> = {
-  INDIVIDUAL: 'Individual',
-  COMPANY: 'Company',
-  SERVICE_PROVIDER: 'Service Provider',
-};
-
-const CONTACT_TYPE_COLORS: Record<string, 'info' | 'warning' | 'success'> = {
-  INDIVIDUAL: 'info',
-  COMPANY: 'warning',
-  SERVICE_PROVIDER: 'success',
-};
-
-const TAG_COLORS: Record<ContactTag, 'info' | 'warning' | 'error' | 'success' | 'neutral'> = {
-  [ContactTag.VIP]: 'warning',
-  [ContactTag.PROSPECT]: 'info',
-  [ContactTag.LATE_PAYER]: 'error',
-  [ContactTag.LONG_TERM]: 'success',
-  [ContactTag.KEY_HOLDER]: 'info',
-  [ContactTag.DO_NOT_CONTACT]: 'error',
-  [ContactTag.FORMER_TENANT]: 'neutral',
-  [ContactTag.REFERRED]: 'success',
+const TAG_COLORS: Record<ContactTag, BadgeColorVariant> = {
+  [ContactTag.VIP]: 'amber',
+  [ContactTag.PROSPECT]: 'blue',
+  [ContactTag.LATE_PAYER]: 'red',
+  [ContactTag.LONG_TERM]: 'green',
+  [ContactTag.KEY_HOLDER]: 'cyan',
+  [ContactTag.DO_NOT_CONTACT]: 'red',
+  [ContactTag.FORMER_TENANT]: 'gray',
+  [ContactTag.REFERRED]: 'teal',
 };
 
 const MAX_VISIBLE_TAGS = 3;
 
 interface ContactCardProps {
-  contact: ContactResponse;
+  contact: ContactListItemResponse;
 }
 
 export const ContactCard = ({ contact }: ContactCardProps) => {
@@ -55,25 +48,21 @@ export const ContactCard = ({ contact }: ContactCardProps) => {
       {/* Header: Avatar + Name + Type badge */}
       <div className="flex items-center gap-3 mb-3">
         <Avatar
-          firstName={contact.firstName}
+          firstName={contact.firstName ?? contact.displayName}
           lastName={contact.lastName}
-          photoUrl={contact.mainPhotoThumbnailUrl ?? contact.mainPhotoUrl}
+          photoUrl={contact.mainPhotoThumbnailUrl}
           size="md"
         />
         <div className="min-w-0 flex-1">
           <h3 className="text-lg font-semibold text-text-primary truncate">
-            {contact.displayName ?? `${contact.firstName} ${contact.lastName ?? ''}`.trim()}
+            {contact.displayName}
           </h3>
           <div className="flex items-center gap-2 mt-0.5">
-            {contact.contactType && (
-              <StatusBadge
-                variant={CONTACT_TYPE_COLORS[contact.contactType] ?? 'neutral'}
-                size="sm"
-              >
-                {CONTACT_TYPE_LABELS[contact.contactType] ?? contact.contactType}
-              </StatusBadge>
-            )}
-            <span className="text-xs text-text-muted">#{contact.identifier}</span>
+            <StatusBadge
+              label={CONTACT_TYPE_LABELS[contact.contactType] ?? contact.contactType}
+              color={CONTACT_TYPE_COLORS[contact.contactType] ?? 'gray'}
+              size="sm"
+            />
           </div>
         </div>
       </div>
@@ -84,11 +73,10 @@ export const ContactCard = ({ contact }: ContactCardProps) => {
           {visibleTags.map((tag) => (
             <StatusBadge
               key={tag}
-              variant={TAG_COLORS[tag] ?? 'neutral'}
+              label={CONTACT_TAG_LABELS[tag] ?? tag}
+              color={TAG_COLORS[tag] ?? 'gray'}
               size="sm"
-            >
-              {CONTACT_TAG_LABELS[tag] ?? tag}
-            </StatusBadge>
+            />
           ))}
           {overflowCount > 0 && (
             <span className="text-xs text-text-muted px-1.5 py-0.5">
@@ -98,7 +86,7 @@ export const ContactCard = ({ contact }: ContactCardProps) => {
         </div>
       )}
 
-      {/* Contact Info — clickable icon buttons */}
+      {/* Contact Info */}
       <div className="flex items-center gap-3 mb-4">
         {contact.email && (
           <a
@@ -124,34 +112,14 @@ export const ContactCard = ({ contact }: ContactCardProps) => {
         )}
       </div>
 
-      {/* Properties & Roles */}
-      <div className="space-y-2">
-        {contact.activeProperties && contact.activeProperties.length > 0 ? (
-          contact.activeProperties.map((assignment) => (
-            <div
-              key={assignment.property.identifier}
-              className="flex items-center gap-2 bg-success-bg text-success-text px-3 py-2 rounded"
-            >
-              <Home className="h-4 w-4 flex-shrink-0" />
-              <span className="text-sm font-medium truncate">
-                {assignment.property.street}, {assignment.property.city}
-              </span>
-              {assignment.role && (
-                <span
-                  className={`ml-auto flex-shrink-0 text-xs font-medium px-2 py-0.5 rounded-full ${ROLE_COLORS[assignment.role as ContractPartyRole] ?? 'bg-surface-inset text-text-secondary'}`}
-                >
-                  {PARTY_ROLE_LABELS[assignment.role as ContractPartyRole] ??
-                    assignment.role}
-                </span>
-              )}
-            </div>
-          ))
-        ) : (
-          <div className="flex items-center gap-2 text-text-secondary px-3 py-2">
-            <Home className="h-4 w-4" />
-            <span className="text-sm">No property assigned</span>
-          </div>
-        )}
+      {/* Active Contracts Count */}
+      <div className="flex items-center gap-2 text-text-secondary px-3 py-2 bg-surface-inset rounded">
+        <FileText className="h-4 w-4" />
+        <span className="text-sm">
+          {contact.activeContractCount > 0
+            ? `${contact.activeContractCount} active contract${contact.activeContractCount !== 1 ? 's' : ''}`
+            : 'No active contracts'}
+        </span>
       </div>
     </div>
   );

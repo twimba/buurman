@@ -452,6 +452,22 @@ collection:
         required: false
         schema:
           type: string
+      - name: contactType
+        in: query
+        description: Filter by contact type
+        required: false
+        schema:
+          $ref: '#/components/schemas/ContactType'
+      - name: tags
+        in: query
+        description: Filter by tags (comma-separated, contacts must have ALL specified tags)
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactTag'
+        style: form
+        explode: false
       - name: page
         in: query
         description: Page number (0-based)

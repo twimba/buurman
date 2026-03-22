@@ -3,8 +3,9 @@ package com.buurman.repository;
 import static com.buurman.jooq.generated.Tables.AUDIT_LOG;
 import static com.buurman.jooq.generated.Tables.CONTACTS;
 import static com.buurman.jooq.generated.Tables.CONTACT_NOTES;
-import static com.buurman.jooq.generated.Tables.CONTRACT_PARTIES;
+import static com.buurman.jooq.generated.Tables.CONTACT_TAGS;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
+import static com.buurman.jooq.generated.Tables.CONTRACT_PARTIES;
 import static com.buurman.jooq.generated.Tables.DOCUMENTS;
 import static com.buurman.jooq.generated.Tables.NOTIFICATIONS;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
@@ -33,17 +34,16 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record;
-import org.jooq.Select;
 import org.jooq.SortField;
 import org.jooq.impl.SQLDataType;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
-import com.buurman.domain.InteractionType;
-
 import com.buurman.domain.Contact;
+import com.buurman.domain.ContactTag;
 import com.buurman.domain.ContactType;
 import com.buurman.domain.DataRetentionStatus;
+import com.buurman.domain.InteractionType;
 import com.buurman.domain.Sid;
 import com.buurman.domain.SortDirection;
 import com.buurman.dto.request.PageRequest;
@@ -77,7 +77,8 @@ public class ContactRepository {
 
   public Optional<Contact> findByIdAndTeamId(UUID id, UUID teamId) {
     return dsl.selectFrom(CONTACTS)
-        .where(CONTACTS.ID.eq(id).and(CONTACTS.TEAM_ID.eq(teamId)).and(CONTACTS.DELETED_AT.isNull()))
+        .where(
+            CONTACTS.ID.eq(id).and(CONTACTS.TEAM_ID.eq(teamId)).and(CONTACTS.DELETED_AT.isNull()))
         .fetchOptional()
         .map(mapper::toDomain);
   }
@@ -142,9 +143,13 @@ public class ContactRepository {
       // INSERT
       UUID newId = UUID.randomUUID();
       LocalDateTime createdAt =
-          contact.getCreatedAt() != null ? LocalDateTime.ofInstant(contact.getCreatedAt(), UTC) : now;
+          contact.getCreatedAt() != null
+              ? LocalDateTime.ofInstant(contact.getCreatedAt(), UTC)
+              : now;
       LocalDateTime updatedAt =
-          contact.getUpdatedAt() != null ? LocalDateTime.ofInstant(contact.getUpdatedAt(), UTC) : now;
+          contact.getUpdatedAt() != null
+              ? LocalDateTime.ofInstant(contact.getUpdatedAt(), UTC)
+              : now;
 
       dsl.insertInto(CONTACTS)
           .set(CONTACTS.ID, newId)
@@ -179,7 +184,9 @@ public class ContactRepository {
     } else {
       // UPDATE
       LocalDateTime updatedAt =
-          contact.getUpdatedAt() != null ? LocalDateTime.ofInstant(contact.getUpdatedAt(), UTC) : now;
+          contact.getUpdatedAt() != null
+              ? LocalDateTime.ofInstant(contact.getUpdatedAt(), UTC)
+              : now;
 
       dsl.update(CONTACTS)
           .set(CONTACTS.CONTACT_TYPE, contact.getContactType().name())
@@ -234,16 +241,26 @@ public class ContactRepository {
             "companyName", CONTACTS.COMPANY_NAME,
             "email", CONTACTS.EMAIL);
     return PaginationHelper.paginate(
-        dsl, CONTACTS, condition, sortableFields, CONTACTS.CREATED_AT, pageRequest, mapper::toDomain);
+        dsl,
+        CONTACTS,
+        condition,
+        sortableFields,
+        CONTACTS.CREATED_AT,
+        pageRequest,
+        mapper::toDomain);
   }
 
   /**
-   * Returns contacts with their active contract count, computed via a correlated subquery
-   * that joins contract_parties and contracts. Each result is a {@link ContactWithCount}
-   * containing the domain Contact and an int count.
+   * Returns contacts with their active contract count, computed via a correlated subquery that
+   * joins contract_parties and contracts. Each result is a {@link ContactWithCount} containing the
+   * domain Contact and an int count.
    */
   public PaginatedResult<ContactWithCount> findAllByTeamIdPaginatedWithCounts(
-      UUID teamId, @Nullable String search, PageRequest pageRequest) {
+      UUID teamId,
+      @Nullable String search,
+      @Nullable ContactType contactType,
+      @Nullable List<ContactTag> tags,
+      PageRequest pageRequest) {
 
     Condition condition = CONTACTS.TEAM_ID.eq(teamId).and(CONTACTS.DELETED_AT.isNull());
     if (search != null && !search.isBlank()) {
@@ -257,6 +274,20 @@ public class ContactRepository {
                   .or(lower(CONTACTS.COMPANY_NAME).like(pattern))
                   .or(lower(CONTACTS.EMAIL).like(pattern))
                   .or(CONTACTS.PHONE.like(pattern)));
+    }
+    if (contactType != null) {
+      condition = condition.and(CONTACTS.CONTACT_TYPE.eq(contactType.name()));
+    }
+    if (tags != null && !tags.isEmpty()) {
+      // Contacts must have ALL specified tags (AND semantics)
+      for (ContactTag tag : tags) {
+        condition =
+            condition.and(
+                CONTACTS.ID.in(
+                    dsl.select(CONTACT_TAGS.CONTACT_ID)
+                        .from(CONTACT_TAGS)
+                        .where(CONTACT_TAGS.TAG.eq(tag.name()))));
+      }
     }
 
     Map<String, Field<?>> sortableFields =
@@ -307,11 +338,12 @@ public class ContactRepository {
             .orderBy(orderBy)
             .limit(pageRequest.size())
             .offset(pageRequest.offset())
-            .fetch(record -> {
-              Contact contact = mapper.toDomain(record.into(CONTACTS));
-              int activeCount = record.get("active_contract_count", Integer.class);
-              return new ContactWithCount(contact, activeCount);
-            });
+            .fetch(
+                record -> {
+                  Contact contact = mapper.toDomain(record.into(CONTACTS));
+                  int activeCount = record.get("active_contract_count", Integer.class);
+                  return new ContactWithCount(contact, activeCount);
+                });
 
     return new PaginatedResult<>(items, totalElements);
   }
@@ -325,7 +357,11 @@ public class ContactRepository {
     return List.copyOf(
         dsl.selectFrom(CONTACTS)
             .where(
-                CONTACTS.ID.in(ids).and(CONTACTS.TEAM_ID.eq(teamId)).and(CONTACTS.DELETED_AT.isNull()))
+                CONTACTS
+                    .ID
+                    .in(ids)
+                    .and(CONTACTS.TEAM_ID.eq(teamId))
+                    .and(CONTACTS.DELETED_AT.isNull()))
             .fetch()
             .map(mapper::toDomain));
   }
@@ -367,8 +403,7 @@ public class ContactRepository {
     }
     if (companyName != null && !companyName.isBlank()) {
       nameCondition =
-          nameCondition.or(
-              lower(CONTACTS.COMPANY_NAME).eq(companyName.toLowerCase(Locale.ROOT)));
+          nameCondition.or(lower(CONTACTS.COMPANY_NAME).eq(companyName.toLowerCase(Locale.ROOT)));
       anyClause = true;
     }
     if (!anyClause) {
@@ -376,10 +411,7 @@ public class ContactRepository {
     }
     return List.copyOf(
         dsl.selectFrom(CONTACTS)
-            .where(
-                nameCondition
-                    .and(CONTACTS.TEAM_ID.eq(teamId))
-                    .and(CONTACTS.DELETED_AT.isNull()))
+            .where(nameCondition.and(CONTACTS.TEAM_ID.eq(teamId)).and(CONTACTS.DELETED_AT.isNull()))
             .fetch()
             .map(mapper::toDomain));
   }
@@ -417,146 +449,179 @@ public class ContactRepository {
     var u6 = USERS.as("u6");
 
     // 1. Notes
-    var noteQuery = dsl.select(
-            inline("NOTE").as(fEventType),
-            CONTACT_NOTES.OCCURRED_AT.as(fOccurredAt),
-            coalesce(
-                CONTACT_NOTES.SUBJECT,
-                concat(CONTACT_NOTES.INTERACTION_TYPE, inline(" note"))).as(fDescription),
-            nullVarchar.as(fRelatedIdent),
-            nullVarchar.as(fRelatedType),
-            CONTACT_NOTES.IDENTIFIER.cast(SQLDataType.VARCHAR(29)).as(fNoteIdent),
-            CONTACT_NOTES.INTERACTION_TYPE.cast(SQLDataType.VARCHAR).as(fInteractionType),
-            CONTACT_NOTES.BODY.as(fNoteBody),
-            CONTACT_NOTES.SUBJECT.as(fNoteSubject),
-            CONTACT_NOTES.PINNED.as(fPinned),
-            concat(u1.FIRST_NAME, inline(" "), u1.LAST_NAME).as(fCreatedByName))
-        .from(CONTACT_NOTES)
-        .leftJoin(u1).on(CONTACT_NOTES.CREATED_BY.eq(u1.ID))
-        .where(CONTACT_NOTES.CONTACT_ID.eq(contactId)
-            .and(CONTACT_NOTES.TEAM_ID.eq(teamId))
-            .and(CONTACT_NOTES.DELETED_AT.isNull()));
+    var noteQuery =
+        dsl.select(
+                inline("NOTE").as(fEventType),
+                CONTACT_NOTES.OCCURRED_AT.as(fOccurredAt),
+                coalesce(
+                        CONTACT_NOTES.SUBJECT,
+                        concat(CONTACT_NOTES.INTERACTION_TYPE, inline(" note")))
+                    .as(fDescription),
+                nullVarchar.as(fRelatedIdent),
+                nullVarchar.as(fRelatedType),
+                CONTACT_NOTES.IDENTIFIER.cast(SQLDataType.VARCHAR(29)).as(fNoteIdent),
+                CONTACT_NOTES.INTERACTION_TYPE.cast(SQLDataType.VARCHAR).as(fInteractionType),
+                CONTACT_NOTES.BODY.as(fNoteBody),
+                CONTACT_NOTES.SUBJECT.as(fNoteSubject),
+                CONTACT_NOTES.PINNED.as(fPinned),
+                concat(u1.FIRST_NAME, inline(" "), u1.LAST_NAME).as(fCreatedByName))
+            .from(CONTACT_NOTES)
+            .leftJoin(u1)
+            .on(CONTACT_NOTES.CREATED_BY.eq(u1.ID))
+            .where(
+                CONTACT_NOTES
+                    .CONTACT_ID
+                    .eq(contactId)
+                    .and(CONTACT_NOTES.TEAM_ID.eq(teamId))
+                    .and(CONTACT_NOTES.DELETED_AT.isNull()));
 
     // 2. Audit log
-    var auditQuery = dsl.select(
-            inline("AUDIT").as(fEventType),
-            AUDIT_LOG.TIMESTAMP.as(fOccurredAt),
-            AUDIT_LOG.ACTION.as(fDescription),
-            nullVarchar.as(fRelatedIdent),
-            AUDIT_LOG.ENTITY_TYPE.as(fRelatedType),
-            nullVarchar.as(fNoteIdent),
-            nullVarchar.as(fInteractionType),
-            nullVarchar.as(fNoteBody),
-            nullVarchar.as(fNoteSubject),
-            nullBoolean.as(fPinned),
-            concat(u2.FIRST_NAME, inline(" "), u2.LAST_NAME).as(fCreatedByName))
-        .from(AUDIT_LOG)
-        .leftJoin(u2).on(AUDIT_LOG.USER_ID.eq(u2.ID))
-        .where(AUDIT_LOG.ENTITY_TYPE.eq("CONTACT")
-            .and(AUDIT_LOG.ENTITY_ID.eq(contactId))
-            .and(AUDIT_LOG.TEAM_ID.eq(teamId)));
+    var auditQuery =
+        dsl.select(
+                inline("AUDIT").as(fEventType),
+                AUDIT_LOG.TIMESTAMP.as(fOccurredAt),
+                AUDIT_LOG.ACTION.as(fDescription),
+                nullVarchar.as(fRelatedIdent),
+                AUDIT_LOG.ENTITY_TYPE.as(fRelatedType),
+                nullVarchar.as(fNoteIdent),
+                nullVarchar.as(fInteractionType),
+                nullVarchar.as(fNoteBody),
+                nullVarchar.as(fNoteSubject),
+                nullBoolean.as(fPinned),
+                concat(u2.FIRST_NAME, inline(" "), u2.LAST_NAME).as(fCreatedByName))
+            .from(AUDIT_LOG)
+            .leftJoin(u2)
+            .on(AUDIT_LOG.USER_ID.eq(u2.ID))
+            .where(
+                AUDIT_LOG
+                    .ENTITY_TYPE
+                    .eq("CONTACT")
+                    .and(AUDIT_LOG.ENTITY_ID.eq(contactId))
+                    .and(AUDIT_LOG.TEAM_ID.eq(teamId)));
 
     // 3. Contract parties (contact added to contract)
-    var contractQuery = dsl.select(
-            inline("CONTRACT").as(fEventType),
-            CONTRACT_PARTIES.CREATED_AT.as(fOccurredAt),
-            concat(inline("Added as "), CONTRACT_PARTIES.ROLE).as(fDescription),
-            CONTRACTS.IDENTIFIER.cast(SQLDataType.VARCHAR(29)).as(fRelatedIdent),
-            inline("CONTRACT").as(fRelatedType),
-            nullVarchar.as(fNoteIdent),
-            nullVarchar.as(fInteractionType),
-            nullVarchar.as(fNoteBody),
-            nullVarchar.as(fNoteSubject),
-            nullBoolean.as(fPinned),
-            concat(u3.FIRST_NAME, inline(" "), u3.LAST_NAME).as(fCreatedByName))
-        .from(CONTRACT_PARTIES)
-        .join(CONTRACTS).on(CONTRACT_PARTIES.CONTRACT_ID.eq(CONTRACTS.ID))
-        .leftJoin(u3).on(CONTRACT_PARTIES.CREATED_BY.eq(u3.ID))
-        .where(CONTRACT_PARTIES.CONTACT_ID.eq(contactId)
-            .and(CONTRACT_PARTIES.TEAM_ID.eq(teamId))
-            .and(CONTRACT_PARTIES.DELETED_AT.isNull()));
+    var contractQuery =
+        dsl.select(
+                inline("CONTRACT").as(fEventType),
+                CONTRACT_PARTIES.CREATED_AT.as(fOccurredAt),
+                concat(inline("Added as "), CONTRACT_PARTIES.ROLE).as(fDescription),
+                CONTRACTS.IDENTIFIER.cast(SQLDataType.VARCHAR(29)).as(fRelatedIdent),
+                inline("CONTRACT").as(fRelatedType),
+                nullVarchar.as(fNoteIdent),
+                nullVarchar.as(fInteractionType),
+                nullVarchar.as(fNoteBody),
+                nullVarchar.as(fNoteSubject),
+                nullBoolean.as(fPinned),
+                concat(u3.FIRST_NAME, inline(" "), u3.LAST_NAME).as(fCreatedByName))
+            .from(CONTRACT_PARTIES)
+            .join(CONTRACTS)
+            .on(CONTRACT_PARTIES.CONTRACT_ID.eq(CONTRACTS.ID))
+            .leftJoin(u3)
+            .on(CONTRACT_PARTIES.CREATED_BY.eq(u3.ID))
+            .where(
+                CONTRACT_PARTIES
+                    .CONTACT_ID
+                    .eq(contactId)
+                    .and(CONTRACT_PARTIES.TEAM_ID.eq(teamId))
+                    .and(CONTRACT_PARTIES.DELETED_AT.isNull()));
 
     // 4. Payments (via contract_parties)
-    var paymentQuery = dsl.select(
-            inline("PAYMENT").as(fEventType),
-            PAYMENTS.CREATED_AT.as(fOccurredAt),
-            concat(inline("Payment "), PAYMENTS.STATUS).as(fDescription),
-            PAYMENTS.IDENTIFIER.cast(SQLDataType.VARCHAR(29)).as(fRelatedIdent),
-            inline("PAYMENT").as(fRelatedType),
-            nullVarchar.as(fNoteIdent),
-            nullVarchar.as(fInteractionType),
-            nullVarchar.as(fNoteBody),
-            nullVarchar.as(fNoteSubject),
-            nullBoolean.as(fPinned),
-            concat(u4.FIRST_NAME, inline(" "), u4.LAST_NAME).as(fCreatedByName))
-        .from(PAYMENTS)
-        .join(CONTRACT_PARTIES)
-        .on(PAYMENTS.CONTRACT_ID.eq(CONTRACT_PARTIES.CONTRACT_ID)
-            .and(CONTRACT_PARTIES.CONTACT_ID.eq(contactId))
-            .and(CONTRACT_PARTIES.TEAM_ID.eq(teamId))
-            .and(CONTRACT_PARTIES.DELETED_AT.isNull()))
-        .leftJoin(u4).on(PAYMENTS.CREATED_BY.eq(u4.ID))
-        .where(PAYMENTS.TEAM_ID.eq(teamId)
-            .and(PAYMENTS.DELETED_AT.isNull()));
+    var paymentQuery =
+        dsl.select(
+                inline("PAYMENT").as(fEventType),
+                PAYMENTS.CREATED_AT.as(fOccurredAt),
+                concat(inline("Payment "), PAYMENTS.STATUS).as(fDescription),
+                PAYMENTS.IDENTIFIER.cast(SQLDataType.VARCHAR(29)).as(fRelatedIdent),
+                inline("PAYMENT").as(fRelatedType),
+                nullVarchar.as(fNoteIdent),
+                nullVarchar.as(fInteractionType),
+                nullVarchar.as(fNoteBody),
+                nullVarchar.as(fNoteSubject),
+                nullBoolean.as(fPinned),
+                concat(u4.FIRST_NAME, inline(" "), u4.LAST_NAME).as(fCreatedByName))
+            .from(PAYMENTS)
+            .join(CONTRACT_PARTIES)
+            .on(
+                PAYMENTS
+                    .CONTRACT_ID
+                    .eq(CONTRACT_PARTIES.CONTRACT_ID)
+                    .and(CONTRACT_PARTIES.CONTACT_ID.eq(contactId))
+                    .and(CONTRACT_PARTIES.TEAM_ID.eq(teamId))
+                    .and(CONTRACT_PARTIES.DELETED_AT.isNull()))
+            .leftJoin(u4)
+            .on(PAYMENTS.CREATED_BY.eq(u4.ID))
+            .where(PAYMENTS.TEAM_ID.eq(teamId).and(PAYMENTS.DELETED_AT.isNull()));
 
     // 5. Documents
-    var documentQuery = dsl.select(
-            inline("DOCUMENT").as(fEventType),
-            DOCUMENTS.UPLOADED_AT.as(fOccurredAt),
-            concat(inline("Document: "), coalesce(DOCUMENTS.TITLE, DOCUMENTS.FILE_NAME))
-                .as(fDescription),
-            DOCUMENTS.IDENTIFIER.cast(SQLDataType.VARCHAR(29)).as(fRelatedIdent),
-            inline("DOCUMENT").as(fRelatedType),
-            nullVarchar.as(fNoteIdent),
-            nullVarchar.as(fInteractionType),
-            nullVarchar.as(fNoteBody),
-            nullVarchar.as(fNoteSubject),
-            nullBoolean.as(fPinned),
-            concat(u5.FIRST_NAME, inline(" "), u5.LAST_NAME).as(fCreatedByName))
-        .from(DOCUMENTS)
-        .leftJoin(u5).on(DOCUMENTS.UPLOADED_BY.eq(u5.ID))
-        .where(DOCUMENTS.ENTITY_TYPE.eq("CONTACT")
-            .and(DOCUMENTS.ENTITY_ID.eq(contactId))
-            .and(DOCUMENTS.TEAM_ID.eq(teamId))
-            .and(DOCUMENTS.DELETED_AT.isNull()));
+    var documentQuery =
+        dsl.select(
+                inline("DOCUMENT").as(fEventType),
+                DOCUMENTS.UPLOADED_AT.as(fOccurredAt),
+                concat(inline("Document: "), coalesce(DOCUMENTS.TITLE, DOCUMENTS.FILE_NAME))
+                    .as(fDescription),
+                DOCUMENTS.IDENTIFIER.cast(SQLDataType.VARCHAR(29)).as(fRelatedIdent),
+                inline("DOCUMENT").as(fRelatedType),
+                nullVarchar.as(fNoteIdent),
+                nullVarchar.as(fInteractionType),
+                nullVarchar.as(fNoteBody),
+                nullVarchar.as(fNoteSubject),
+                nullBoolean.as(fPinned),
+                concat(u5.FIRST_NAME, inline(" "), u5.LAST_NAME).as(fCreatedByName))
+            .from(DOCUMENTS)
+            .leftJoin(u5)
+            .on(DOCUMENTS.UPLOADED_BY.eq(u5.ID))
+            .where(
+                DOCUMENTS
+                    .ENTITY_TYPE
+                    .eq("CONTACT")
+                    .and(DOCUMENTS.ENTITY_ID.eq(contactId))
+                    .and(DOCUMENTS.TEAM_ID.eq(teamId))
+                    .and(DOCUMENTS.DELETED_AT.isNull()));
 
     // 6. Notifications
-    var notificationQuery = dsl.select(
-            inline("NOTIFICATION").as(fEventType),
-            NOTIFICATIONS.CREATED_AT.as(fOccurredAt),
-            concat(inline("Notification: "), NOTIFICATIONS.NOTIFICATION_TYPE).as(fDescription),
-            NOTIFICATIONS.IDENTIFIER.cast(SQLDataType.VARCHAR(29)).as(fRelatedIdent),
-            inline("NOTIFICATION").as(fRelatedType),
-            nullVarchar.as(fNoteIdent),
-            nullVarchar.as(fInteractionType),
-            nullVarchar.as(fNoteBody),
-            nullVarchar.as(fNoteSubject),
-            nullBoolean.as(fPinned),
-            concat(u6.FIRST_NAME, inline(" "), u6.LAST_NAME).as(fCreatedByName))
-        .from(NOTIFICATIONS)
-        .leftJoin(u6).on(NOTIFICATIONS.CREATED_BY.eq(u6.ID))
-        .where(NOTIFICATIONS.RECIPIENT_CONTACT_ID.eq(contactId)
-            .and(NOTIFICATIONS.TEAM_ID.eq(teamId)));
+    var notificationQuery =
+        dsl.select(
+                inline("NOTIFICATION").as(fEventType),
+                NOTIFICATIONS.CREATED_AT.as(fOccurredAt),
+                concat(inline("Notification: "), NOTIFICATIONS.NOTIFICATION_TYPE).as(fDescription),
+                NOTIFICATIONS.IDENTIFIER.cast(SQLDataType.VARCHAR(29)).as(fRelatedIdent),
+                inline("NOTIFICATION").as(fRelatedType),
+                nullVarchar.as(fNoteIdent),
+                nullVarchar.as(fInteractionType),
+                nullVarchar.as(fNoteBody),
+                nullVarchar.as(fNoteSubject),
+                nullBoolean.as(fPinned),
+                concat(u6.FIRST_NAME, inline(" "), u6.LAST_NAME).as(fCreatedByName))
+            .from(NOTIFICATIONS)
+            .leftJoin(u6)
+            .on(NOTIFICATIONS.CREATED_BY.eq(u6.ID))
+            .where(
+                NOTIFICATIONS
+                    .RECIPIENT_CONTACT_ID
+                    .eq(contactId)
+                    .and(NOTIFICATIONS.TEAM_ID.eq(teamId)));
 
     // Combine all 6 queries with UNION ALL
-    var unionQuery = noteQuery
-        .unionAll(auditQuery)
-        .unionAll(contractQuery)
-        .unionAll(paymentQuery)
-        .unionAll(documentQuery)
-        .unionAll(notificationQuery);
+    var unionQuery =
+        noteQuery
+            .unionAll(auditQuery)
+            .unionAll(contractQuery)
+            .unionAll(paymentQuery)
+            .unionAll(documentQuery)
+            .unionAll(notificationQuery);
 
     // Count total across all sources
     long totalElements = dsl.fetchCount(unionQuery);
 
     // Fetch paginated results
     Field<Object> occurredAtField = org.jooq.impl.DSL.field("occurred_at");
-    List<ContactActivityItem> items = dsl.select()
-        .from(unionQuery.asTable("activity"))
-        .orderBy(occurredAtField.desc())
-        .limit(pageRequest.size())
-        .offset(pageRequest.offset())
-        .fetch(record -> mapToActivityItem(record));
+    List<ContactActivityItem> items =
+        dsl.select()
+            .from(unionQuery.asTable("activity"))
+            .orderBy(occurredAtField.desc())
+            .limit(pageRequest.size())
+            .offset(pageRequest.offset())
+            .fetch(record -> mapToActivityItem(record));
 
     return new PaginatedResult<>(items, totalElements);
   }
@@ -581,20 +646,23 @@ public class ContactRepository {
         Optional.ofNullable(relatedIdent).map(Sid::of),
         Optional.ofNullable(relatedType),
         Optional.ofNullable(noteIdent).map(Sid::of),
-        Optional.ofNullable(interactionTypeStr).flatMap(s -> {
-          try {
-            return Optional.of(InteractionType.valueOf(s));
-          } catch (IllegalArgumentException e) {
-            return Optional.empty();
-          }
-        }),
+        Optional.ofNullable(interactionTypeStr)
+            .flatMap(
+                s -> {
+                  try {
+                    return Optional.of(InteractionType.valueOf(s));
+                  } catch (IllegalArgumentException e) {
+                    return Optional.empty();
+                  }
+                }),
         Optional.ofNullable(noteBody),
         Optional.ofNullable(noteSubject),
         Optional.ofNullable(pinned),
         Optional.ofNullable(createdByName));
   }
 
-  public Map<UUID, Integer> countActiveContractsByContactIds(Collection<UUID> contactIds, UUID teamId) {
+  public Map<UUID, Integer> countActiveContractsByContactIds(
+      Collection<UUID> contactIds, UUID teamId) {
     if (contactIds == null || contactIds.isEmpty()) {
       return Map.of();
     }

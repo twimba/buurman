@@ -151,6 +151,20 @@ public class PhotoRepository {
         .execute();
   }
 
+  public void softDeleteByEntityAndTeamId(String entityType, UUID entityId, UUID teamId) {
+    LocalDateTime now = LocalDateTime.now(clock);
+    dsl.update(PHOTOS)
+        .set(PHOTOS.DELETED_AT, now)
+        .where(
+            PHOTOS
+                .ENTITY_TYPE
+                .eq(entityType)
+                .and(PHOTOS.ENTITY_ID.eq(entityId))
+                .and(PHOTOS.TEAM_ID.eq(teamId))
+                .and(PHOTOS.DELETED_AT.isNull()))
+        .execute();
+  }
+
   public void unsetMainPhotoForEntity(String entityType, UUID entityId, UUID teamId) {
     dsl.update(PHOTOS)
         .set(PHOTOS.IS_MAIN_PHOTO, false)

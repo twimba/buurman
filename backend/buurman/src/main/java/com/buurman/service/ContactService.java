@@ -21,8 +21,8 @@ import com.buurman.domain.Contact;
 import com.buurman.domain.ContactAddress;
 import com.buurman.domain.ContactTag;
 import com.buurman.domain.ContactType;
-import com.buurman.exception.BadRequestException;
 import com.buurman.domain.Contract;
+import com.buurman.domain.DataRetentionStatus;
 import com.buurman.domain.Photo;
 import com.buurman.domain.Property;
 import com.buurman.domain.User;
@@ -33,23 +33,24 @@ import com.buurman.domain.identifier.PhotoIdentifier;
 import com.buurman.dto.request.AddContactTagRequest;
 import com.buurman.dto.request.CreateContactAddressRequest;
 import com.buurman.dto.request.CreateContactRequest;
-import com.buurman.dto.response.ContactSummary;
-import com.buurman.dto.response.DuplicateCheckResponse;
-import com.buurman.dto.response.DuplicateMatch;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateContactAddressRequest;
 import com.buurman.dto.request.UpdateContactRequest;
-import com.buurman.dto.response.ContactAddressResponse;
 import com.buurman.dto.response.ContactActivityItem;
+import com.buurman.dto.response.ContactAddressResponse;
 import com.buurman.dto.response.ContactListItemResponse;
 import com.buurman.dto.response.ContactPropertyAssignment;
 import com.buurman.dto.response.ContactResponse;
+import com.buurman.dto.response.ContactSummary;
 import com.buurman.dto.response.DocumentResponse;
+import com.buurman.dto.response.DuplicateCheckResponse;
+import com.buurman.dto.response.DuplicateMatch;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.PhotoResponse;
 import com.buurman.dto.response.PropertyContactHistoryResponse;
 import com.buurman.dto.response.PropertySummary;
 import com.buurman.dto.response.RecentActivityResponse;
+import com.buurman.exception.BadRequestException;
 import com.buurman.mapper.ContactMapper;
 import com.buurman.repository.ContactAddressRepository;
 import com.buurman.repository.ContactNoteRepository;
@@ -59,6 +60,7 @@ import com.buurman.repository.ContactRepository.ContactWithCount;
 import com.buurman.repository.ContactTagRepository;
 import com.buurman.repository.ContractPartyRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PhotoRepository;
 import com.buurman.repository.PropertyContactHistoryRepository;
 import com.buurman.repository.PropertyRepository;
@@ -88,6 +90,7 @@ public class ContactService {
   private final ContractPartyRepository contractPartyRepository;
   private final ContactAddressService addressService;
   private final ContactAddressRepository addressRepository;
+  private final DocumentRepository documentRepository;
   private final ContactTagRepository contactTagRepository;
   private final ContactNoteRepository contactNoteRepository;
   private final ContactRelationshipRepository contactRelationshipRepository;
@@ -139,23 +142,32 @@ public class ContactService {
 
   public List<ContactResponse> getAllContacts(UserPrincipal principal) {
     List<Contact> contacts = contactRepository.findAllByTeamId(principal.requireTeamId());
-    return contacts.stream().map(contact -> toResponse(contact, principal.requireTeamId())).toList();
+    return contacts.stream()
+        .map(contact -> toResponse(contact, principal.requireTeamId()))
+        .toList();
   }
 
   public List<ContactResponse> searchContacts(String searchTerm, UserPrincipal principal) {
-    List<Contact> contacts = contactRepository.searchByTeamId(principal.requireTeamId(), searchTerm);
-    return contacts.stream().map(contact -> toResponse(contact, principal.requireTeamId())).toList();
+    List<Contact> contacts =
+        contactRepository.searchByTeamId(principal.requireTeamId(), searchTerm);
+    return contacts.stream()
+        .map(contact -> toResponse(contact, principal.requireTeamId()))
+        .toList();
   }
 
   public PageResponse<ContactListItemResponse> getContactsPaginated(
-      UserPrincipal principal, @Nullable String search, PageRequest pageRequest) {
+      UserPrincipal principal,
+      @Nullable String search,
+      @Nullable ContactType contactType,
+      @Nullable List<ContactTag> tags,
+      PageRequest pageRequest) {
     UUID teamId = principal.requireTeamId();
     PaginatedResult<ContactWithCount> result =
-        contactRepository.findAllByTeamIdPaginatedWithCounts(teamId, search, pageRequest);
+        contactRepository.findAllByTeamIdPaginatedWithCounts(
+            teamId, search, contactType, tags, pageRequest);
 
     // Batch-load tags for all contacts on the page
-    List<UUID> contactIds =
-        result.items().stream().map(cwc -> cwc.contact().getId()).toList();
+    List<UUID> contactIds = result.items().stream().map(cwc -> cwc.contact().getId()).toList();
     Map<UUID, List<ContactTag>> tagsByContactId =
         contactTagRepository.findByContactIdsGrouped(contactIds);
 
@@ -165,15 +177,16 @@ public class ContactService {
 
     List<ContactListItemResponse> responses =
         result.items().stream()
-            .map(cwc -> {
-              Contact contact = cwc.contact();
-              List<ContactTag> tags =
-                  tagsByContactId.getOrDefault(contact.getId(), List.of());
-              Optional<String> thumbnailUrl =
-                  thumbnailsByContactId.getOrDefault(contact.getId(), Optional.empty());
-              return contactMapper.toListItem(
-                  contact, cwc.activeContractCount(), tags, thumbnailUrl);
-            })
+            .map(
+                cwc -> {
+                  Contact contact = cwc.contact();
+                  List<ContactTag> contactTags =
+                      tagsByContactId.getOrDefault(contact.getId(), List.of());
+                  Optional<String> thumbnailUrl =
+                      thumbnailsByContactId.getOrDefault(contact.getId(), Optional.empty());
+                  return contactMapper.toListItem(
+                      contact, cwc.activeContractCount(), contactTags, thumbnailUrl);
+                })
             .toList();
     return PageResponse.of(
         responses, pageRequest.page(), pageRequest.size(), result.totalElements());
@@ -184,18 +197,26 @@ public class ContactService {
     if (contactIds.isEmpty()) {
       return Map.of();
     }
+    List<Photo> allPhotos =
+        photoRepository.findByEntityTypeAndEntityIdsAndTeamId("CONTACT", contactIds, teamId);
+
+    // Group by entity, pick main photo per contact, resolve presigned URL
     Map<UUID, Optional<String>> result = new java.util.HashMap<>();
+    Map<UUID, List<Photo>> photosByEntity = new java.util.HashMap<>();
+    for (Photo photo : allPhotos) {
+      photosByEntity.computeIfAbsent(photo.getEntityId(), k -> new ArrayList<>()).add(photo);
+    }
     for (UUID contactId : contactIds) {
-      List<Photo> photos =
-          photoRepository.findByEntityAndTeamId("CONTACT", contactId, teamId);
+      List<Photo> photos = photosByEntity.getOrDefault(contactId, List.of());
       Optional<String> thumbnailUrl =
           photos.stream()
               .filter(Photo::getIsMainPhoto)
               .findFirst()
-              .map(photo -> {
-                String key = photo.getThumbnailFileKey().orElse(photo.getFileKey());
-                return s3StorageService.generatePresignedUrl(key).toString();
-              });
+              .map(
+                  photo -> {
+                    String key = photo.getThumbnailFileKey().orElse(photo.getFileKey());
+                    return s3StorageService.generatePresignedUrl(key).toString();
+                  });
       result.put(contactId, thumbnailUrl);
     }
     return result;
@@ -322,7 +343,8 @@ public class ContactService {
         principal);
   }
 
-  public List<DocumentResponse> getDocuments(ContactIdentifier identifier, UserPrincipal principal) {
+  public List<DocumentResponse> getDocuments(
+      ContactIdentifier identifier, UserPrincipal principal) {
     Contact contact =
         contactRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return documentService.getDocuments("CONTACT", contact.getId(), principal);
@@ -515,9 +537,7 @@ public class ContactService {
                   (companyName != null
                           && !companyName.isBlank()
                           && c.getCompanyName()
-                              .filter(
-                                  cn ->
-                                      cn.equalsIgnoreCase(companyName))
+                              .filter(cn -> cn.equalsIgnoreCase(companyName))
                               .isPresent())
                       ? "companyName"
                       : "name";
@@ -533,19 +553,40 @@ public class ContactService {
     UUID teamId = principal.requireTeamId();
     Contact contact = contactRepository.getByIdentifierAndTeamId(identifier, teamId);
 
-    Instant now = clock.instant();
-    contactRepository.anonymizeContact(contact.getId(), teamId, principal.getUserId(), now);
+    // Guard: skip if already anonymized
+    if (contact.getDataRetentionStatus() == DataRetentionStatus.ANONYMIZED) {
+      throw new BadRequestException("Contact data has already been erased");
+    }
 
-    contactNoteRepository.anonymizeByContactId(contact.getId());
-    contactRelationshipRepository.softDeleteByContactId(contact.getId(), teamId);
-    contactTagRepository.deleteByContactId(contact.getId());
+    Instant now = clock.instant();
+    UUID contactId = contact.getId();
+
+    // Anonymize contact record
+    contactRepository.anonymizeContact(contactId, teamId, principal.getUserId(), now);
+
+    // Delete associated data
+    contactNoteRepository.anonymizeByContactId(contactId);
+    contactRelationshipRepository.softDeleteByContactId(contactId, teamId);
+    contactTagRepository.deleteByContactId(contactId);
+    addressRepository.hardDeleteByContactId(contactId);
+
+    // Delete photos from S3 and soft-delete DB records
+    List<Photo> photos = photoRepository.findByEntityAndTeamId("CONTACT", contactId, teamId);
+    for (Photo photo : photos) {
+      s3StorageService.deleteFile(photo.getFileKey());
+      photo.getThumbnailFileKey().ifPresent(s3StorageService::deleteFile);
+    }
+    photoRepository.softDeleteByEntityAndTeamId("CONTACT", contactId, teamId);
+
+    // Soft-delete documents (S3 files retained for audit trail; DB records marked deleted)
+    documentRepository.softDeleteByEntityAndTeamId("CONTACT", contactId, teamId);
 
     log.info("Contact data erased: {} for team {}", identifier, teamId);
 
     auditService.logUpdate(
         teamId,
         "CONTACT",
-        contact.getId(),
+        contactId,
         principal.getUserId(),
         null,
         Map.of("action", "GDPR_ERASE"),
@@ -697,28 +738,51 @@ public class ContactService {
 
   private UpdateContactRequest clearFieldsForTypeChange(UpdateContactRequest request) {
     return switch (request.contactType()) {
-      case INDIVIDUAL -> new UpdateContactRequest(
-          request.contactType(), request.firstName(), request.lastName(),
-          Optional.empty(), Optional.empty(), Optional.empty(),
-          request.email(), Optional.empty(), request.phone(),
-          Optional.empty(), request.taxNumber(), request.idNumber(),
-          request.dateOfBirth(), request.idExpiryDate(), request.notes(), request.tags());
-      case COMPANY, SERVICE_PROVIDER -> new UpdateContactRequest(
-          request.contactType(), request.firstName(), request.lastName(),
-          request.companyName(), request.tradeName(), request.industry(),
-          request.email(), request.invoiceEmail(), request.phone(),
-          request.website(), request.taxNumber(), Optional.empty(),
-          Optional.empty(), Optional.empty(), request.notes(), request.tags());
+      case INDIVIDUAL ->
+          new UpdateContactRequest(
+              request.contactType(),
+              request.firstName(),
+              request.lastName(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              request.email(),
+              Optional.empty(),
+              request.phone(),
+              Optional.empty(),
+              request.taxNumber(),
+              request.idNumber(),
+              request.dateOfBirth(),
+              request.idExpiryDate(),
+              request.notes(),
+              request.tags());
+      case COMPANY, SERVICE_PROVIDER ->
+          new UpdateContactRequest(
+              request.contactType(),
+              request.firstName(),
+              request.lastName(),
+              request.companyName(),
+              request.tradeName(),
+              request.industry(),
+              request.email(),
+              request.invoiceEmail(),
+              request.phone(),
+              request.website(),
+              request.taxNumber(),
+              Optional.empty(),
+              Optional.empty(),
+              Optional.empty(),
+              request.notes(),
+              request.tags());
     };
   }
 
-  private void validateContactRequest(ContactType contactType,
-      Optional<String> firstName, Optional<String> companyName) {
+  private void validateContactRequest(
+      ContactType contactType, Optional<String> firstName, Optional<String> companyName) {
     switch (contactType) {
       case INDIVIDUAL -> {
         if (firstName.isEmpty() || firstName.get().isBlank()) {
-          throw new BadRequestException(
-              "firstName is required for INDIVIDUAL contacts");
+          throw new BadRequestException("firstName is required for INDIVIDUAL contacts");
         }
       }
       case COMPANY, SERVICE_PROVIDER -> {

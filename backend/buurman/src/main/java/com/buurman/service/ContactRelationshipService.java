@@ -58,7 +58,7 @@ public class ContactRelationshipService {
 
     // Check for duplicate relationship
     if (relationshipRepository.existsByPairAndType(
-        sourceContact.getId(), targetContact.getId(), teamId, request.relationshipType())) {
+        teamId, sourceContact.getId(), targetContact.getId(), request.relationshipType())) {
       throw new IllegalArgumentException(
           "A relationship of type "
               + request.relationshipType().getDisplayName()
@@ -108,11 +108,8 @@ public class ContactRelationshipService {
             relationship -> {
               boolean isSource = relationship.getSourceContactId().equals(contact.getId());
               UUID relatedContactId =
-                  isSource
-                      ? relationship.getTargetContactId()
-                      : relationship.getSourceContactId();
-              Contact relatedContact =
-                  contactRepository.getByIdAndTeamId(relatedContactId, teamId);
+                  isSource ? relationship.getTargetContactId() : relationship.getSourceContactId();
+              Contact relatedContact = contactRepository.getByIdAndTeamId(relatedContactId, teamId);
 
               if (isSource) {
                 return toResponse(relationship, contact, relatedContact, true);
@@ -159,8 +156,7 @@ public class ContactRelationshipService {
         auditService.getChangedFields(oldRelationship, updated));
 
     boolean isSource = updated.getSourceContactId().equals(contact.getId());
-    UUID relatedContactId =
-        isSource ? updated.getTargetContactId() : updated.getSourceContactId();
+    UUID relatedContactId = isSource ? updated.getTargetContactId() : updated.getSourceContactId();
     Contact relatedContact = contactRepository.getByIdAndTeamId(relatedContactId, teamId);
 
     return toResponse(updated, contact, relatedContact, isSource);

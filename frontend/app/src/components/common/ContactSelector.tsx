@@ -169,9 +169,9 @@ export const ContactSelector = ({
                 }`}
               >
                 <Avatar
-                  firstName={contact.firstName}
+                  firstName={contact.firstName ?? ''}
                   lastName={contact.lastName}
-                  photoUrl={contact.mainPhotoThumbnailUrl ?? contact.mainPhotoUrl}
+                  photoUrl={contact.mainPhotoThumbnailUrl}
                   size="md"
                 />
                 <div className="min-w-0 flex-1">

@@ -15,6 +15,8 @@ import {
   CreateContactRelationshipRequest,
   UpdateContactRelationshipRequest,
   AddContactTagRequest,
+  ContactType,
+  ContactTag,
 } from '../types/contact';
 import type { PageParams } from '@/types/common';
 import { useToast } from '../context/ToastContext';
@@ -22,7 +24,13 @@ import { getErrorMessage } from '../utils/errorMessages';
 import { trackEvent } from '../utils/analytics';
 import { AnalyticsEvent } from '../constants/analyticsEvents';
 
-export const useContacts = (params?: { search?: string } & PageParams) => {
+export const useContacts = (
+  params?: {
+    search?: string;
+    contactType?: ContactType;
+    tags?: ContactTag[];
+  } & PageParams
+) => {
   return useQuery({
     queryKey: ['contacts', params],
     queryFn: () => contactsApi.getContacts(params),
@@ -42,8 +50,7 @@ export const useCreateContact = () => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   return useMutation({
-    mutationFn: (data: CreateContactRequest) =>
-      contactsApi.createContact(data),
+    mutationFn: (data: CreateContactRequest) => contactsApi.createContact(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contacts'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
@@ -323,7 +330,7 @@ export const useCreateContactNote = (contactId: string) => {
   return useMutation({
     mutationFn: (data: CreateContactNoteRequest) =>
       contactsApi.createContactNote(contactId, data),
-    onSuccess: () => {
+    onSuccess: (_result, variables) => {
       queryClient.invalidateQueries({
         queryKey: ['contactNotes', contactId],
       });
@@ -335,8 +342,8 @@ export const useCreateContactNote = (contactId: string) => {
       });
       showToast('Note created successfully', 'success');
       trackEvent(AnalyticsEvent.CONTACT_NOTE_CREATED, {
-        interactionType: data.interactionType,
-        hasFollowUp: !!data.followUpDate,
+        interactionType: variables.interactionType,
+        hasFollowUp: !!variables.followUpDate,
       });
     },
     onError: (error) => {
@@ -345,10 +352,7 @@ export const useCreateContactNote = (contactId: string) => {
   });
 };
 
-export const useUpdateContactNote = (
-  contactId: string,
-  noteId: string
-) => {
+export const useUpdateContactNote = (contactId: string, noteId: string) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   return useMutation({
@@ -446,7 +450,7 @@ export const useCreateContactRelationship = (contactId: string) => {
   return useMutation({
     mutationFn: (data: CreateContactRelationshipRequest) =>
       contactsApi.createContactRelationship(contactId, data),
-    onSuccess: () => {
+    onSuccess: (_result, variables) => {
       queryClient.invalidateQueries({
         queryKey: ['contactRelationships', contactId],
       });
@@ -458,7 +462,7 @@ export const useCreateContactRelationship = (contactId: string) => {
       });
       showToast('Relationship created successfully', 'success');
       trackEvent(AnalyticsEvent.CONTACT_RELATIONSHIP_CREATED, {
-        relationshipType: data.relationshipType,
+        relationshipType: variables.relationshipType,
       });
     },
     onError: (error) => {
@@ -475,11 +479,7 @@ export const useUpdateContactRelationship = (
   const { showToast } = useToast();
   return useMutation({
     mutationFn: (data: UpdateContactRelationshipRequest) =>
-      contactsApi.updateContactRelationship(
-        contactId,
-        relationshipId,
-        data
-      ),
+      contactsApi.updateContactRelationship(contactId, relationshipId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['contactRelationships', contactId],
@@ -530,7 +530,7 @@ export const useAddContactTag = (contactId: string) => {
   return useMutation({
     mutationFn: (data: AddContactTagRequest) =>
       contactsApi.addContactTag(contactId, data),
-    onSuccess: () => {
+    onSuccess: (_result, variables) => {
       queryClient.invalidateQueries({ queryKey: ['contact', contactId] });
       queryClient.invalidateQueries({ queryKey: ['contacts'] });
       queryClient.invalidateQueries({
@@ -540,7 +540,7 @@ export const useAddContactTag = (contactId: string) => {
         queryKey: ['contactAuditLog', contactId],
       });
       showToast('Tag added successfully', 'success');
-      trackEvent(AnalyticsEvent.CONTACT_TAG_ADDED, { tag: data.tag });
+      trackEvent(AnalyticsEvent.CONTACT_TAG_ADDED, { tag: variables.tag });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -552,9 +552,8 @@ export const useRemoveContactTag = (contactId: string) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   return useMutation({
-    mutationFn: (tag: string) =>
-      contactsApi.removeContactTag(contactId, tag),
-    onSuccess: () => {
+    mutationFn: (tag: string) => contactsApi.removeContactTag(contactId, tag),
+    onSuccess: (_result, removedTag) => {
       queryClient.invalidateQueries({ queryKey: ['contact', contactId] });
       queryClient.invalidateQueries({ queryKey: ['contacts'] });
       queryClient.invalidateQueries({
@@ -564,7 +563,7 @@ export const useRemoveContactTag = (contactId: string) => {
         queryKey: ['contactAuditLog', contactId],
       });
       showToast('Tag removed successfully', 'success');
-      trackEvent(AnalyticsEvent.CONTACT_TAG_REMOVED, { tag });
+      trackEvent(AnalyticsEvent.CONTACT_TAG_REMOVED, { tag: removedTag });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -592,8 +591,7 @@ export const useEraseContactData = () => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   return useMutation({
-    mutationFn: (contactId: string) =>
-      contactsApi.eraseContactData(contactId),
+    mutationFn: (contactId: string) => contactsApi.eraseContactData(contactId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contacts'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });

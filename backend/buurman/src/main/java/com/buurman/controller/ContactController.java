@@ -7,6 +7,8 @@ import java.util.Optional;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.buurman.domain.ContactTag;
+import com.buurman.domain.ContactType;
 import com.buurman.domain.identifier.ContactAddressIdentifier;
 import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContactNoteIdentifier;
@@ -26,7 +28,6 @@ import com.buurman.dto.request.UpdateContactRequest;
 import com.buurman.dto.response.ContactAddressResponse;
 import com.buurman.dto.response.ContactNoteResponse;
 import com.buurman.dto.response.ContactRelationshipResponse;
-import com.buurman.dto.response.ContactListItemResponse;
 import com.buurman.dto.response.ContactResponse;
 import com.buurman.dto.response.DocumentResponse;
 import com.buurman.dto.response.DuplicateCheckResponse;
@@ -61,6 +62,8 @@ public class ContactController implements ContactsApi {
   @SuppressWarnings("rawtypes")
   public PageResponse getContacts(
       Optional<String> search,
+      Optional<ContactType> contactType,
+      Optional<List<ContactTag>> tags,
       Optional<Integer> page,
       Optional<Integer> size,
       Optional<String> sort,
@@ -69,7 +72,8 @@ public class ContactController implements ContactsApi {
     PageRequest pageRequest =
         PageRequest.of(
             page.orElse(null), size.orElse(null), sort.orElse(null), direction.orElse(null));
-    return contactService.getContactsPaginated(principal, search.orElse(null), pageRequest);
+    return contactService.getContactsPaginated(
+        principal, search.orElse(null), contactType.orElse(null), tags.orElse(null), pageRequest);
   }
 
   @Override
@@ -79,8 +83,7 @@ public class ContactController implements ContactsApi {
   }
 
   @Override
-  public ContactResponse updateContact(
-      ContactIdentifier identifier, UpdateContactRequest request) {
+  public ContactResponse updateContact(ContactIdentifier identifier, UpdateContactRequest request) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return contactService.updateContact(identifier, request, principal);
   }
@@ -188,8 +191,7 @@ public class ContactController implements ContactsApi {
       ContactAddressIdentifier addressIdentifier,
       UpdateContactAddressRequest request) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return contactService.updateAddress(
-        contactIdentifier, addressIdentifier, request, principal);
+    return contactService.updateAddress(contactIdentifier, addressIdentifier, request, principal);
   }
 
   @Override
@@ -272,8 +274,7 @@ public class ContactController implements ContactsApi {
 
   @Override
   public void deleteContactRelationship(
-      ContactIdentifier contactIdentifier,
-      ContactRelationshipIdentifier relationshipIdentifier) {
+      ContactIdentifier contactIdentifier, ContactRelationshipIdentifier relationshipIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     contactRelationshipService.deleteRelationship(
         contactIdentifier, relationshipIdentifier, principal);

@@ -1,6 +1,7 @@
 import client from './client';
 import {
   ContactResponse,
+  ContactListItemResponse,
   CreateContactRequest,
   UpdateContactRequest,
   PropertyContactHistoryResponse,
@@ -15,15 +16,27 @@ import {
   UpdateContactRelationshipRequest,
   AddContactTagRequest,
   ContactActivityItem,
+  ContactType,
+  ContactTag,
 } from '../types/contact';
 import { DocumentResponse, PhotoResponse } from '../types/property';
 import { RecentActivity } from './dashboard';
 import { PageResponse, PageParams } from '@/types/common';
 
 export const getContacts = async (
-  params?: { search?: string } & PageParams
-): Promise<PageResponse<ContactResponse>> => {
-  const response = await client.get('/contacts', { params });
+  params?: {
+    search?: string;
+    contactType?: ContactType;
+    tags?: ContactTag[];
+  } & PageParams
+): Promise<PageResponse<ContactListItemResponse>> => {
+  const { tags, ...rest } = params ?? {};
+  const response = await client.get('/contacts', {
+    params: {
+      ...rest,
+      ...(tags && tags.length > 0 ? { tags: tags.join(',') } : {}),
+    },
+  });
   return response.data;
 };
 
@@ -160,10 +173,7 @@ export const createContactAddress = async (
   contactId: string,
   data: CreateContactAddressRequest
 ): Promise<ContactAddressResponse> => {
-  const response = await client.post(
-    `/contacts/${contactId}/addresses`,
-    data
-  );
+  const response = await client.post(`/contacts/${contactId}/addresses`, data);
   return response.data;
 };
 
@@ -226,7 +236,7 @@ export const pinContactNote = async (
   contactId: string,
   noteId: string
 ): Promise<ContactNoteResponse> => {
-  const response = await client.post(
+  const response = await client.put(
     `/contacts/${contactId}/notes/${noteId}/pin`
   );
   return response.data;
@@ -236,7 +246,7 @@ export const unpinContactNote = async (
   contactId: string,
   noteId: string
 ): Promise<ContactNoteResponse> => {
-  const response = await client.post(
+  const response = await client.put(
     `/contacts/${contactId}/notes/${noteId}/unpin`
   );
   return response.data;
@@ -278,9 +288,7 @@ export const deleteContactRelationship = async (
   contactId: string,
   relationshipId: string
 ): Promise<void> => {
-  await client.delete(
-    `/contacts/${contactId}/relationships/${relationshipId}`
-  );
+  await client.delete(`/contacts/${contactId}/relationships/${relationshipId}`);
 };
 
 // --- Contact Tags ---
@@ -317,15 +325,25 @@ export const getContactActivity = async (
 
 export const checkContactDuplicates = async (
   data: CreateContactRequest
-): Promise<{ matches: Array<{ contact: { identifier: string; firstName: string; lastName?: string; email?: string; phone?: string }; matchField: string; matchType: string }> }> => {
+): Promise<{
+  matches: Array<{
+    contact: {
+      identifier: string;
+      firstName: string;
+      lastName?: string;
+      email?: string;
+      phone?: string;
+    };
+    matchField: string;
+    matchType: string;
+  }>;
+}> => {
   const response = await client.post('/contacts/check-duplicates', data);
   return response.data;
 };
 
 // --- GDPR Erase ---
 
-export const eraseContactData = async (
-  contactId: string
-): Promise<void> => {
+export const eraseContactData = async (contactId: string): Promise<void> => {
   await client.post(`/contacts/${contactId}/erase`);
 };

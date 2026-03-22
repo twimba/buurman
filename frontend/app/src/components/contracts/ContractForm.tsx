@@ -46,6 +46,7 @@ const ADDITIONAL_ROLES = [
 ];
 
 const EMPTY_NEW_CONTACT: CreateContactRequest = {
+  contactType: 'INDIVIDUAL',
   firstName: '',
   lastName: '',
   email: '',
@@ -199,7 +200,7 @@ function validateInlineContact(
   prefix: string
 ): Record<string, string> {
   const errs: Record<string, string> = {};
-  if (!data.firstName.trim()) {
+  if (!data.firstName?.trim()) {
     errs[`${prefix}_firstName`] = 'Required';
   }
   if (
@@ -234,9 +235,8 @@ export const ContractForm = ({
   const [primaryContactId, setPrimaryContactId] = useState(
     prefilledContactId ?? ''
   );
-  const [newPrimaryContact, setNewPrimaryContact] = useState<CreateContactRequest>(
-    { ...EMPTY_NEW_CONTACT }
-  );
+  const [newPrimaryContact, setNewPrimaryContact] =
+    useState<CreateContactRequest>({ ...EMPTY_NEW_CONTACT });
 
   // Additional parties state (create mode)
   const [additionalParties, setAdditionalParties] = useState<PartyEntry[]>([]);
@@ -1249,12 +1249,12 @@ const ContractPartiesEditor = ({
     ContractPartyRole.GUARANTOR
   );
   const [newPrimaryContactId, setNewPrimaryContactId] = useState('');
-  const [inlineNewContact, setInlineNewContact] = useState<CreateContactRequest>({
-    ...EMPTY_NEW_CONTACT,
-  });
-  const [inlineNewPrimary, setInlineNewPrimary] = useState<CreateContactRequest>(
-    { ...EMPTY_NEW_CONTACT }
-  );
+  const [inlineNewContact, setInlineNewContact] =
+    useState<CreateContactRequest>({
+      ...EMPTY_NEW_CONTACT,
+    });
+  const [inlineNewPrimary, setInlineNewPrimary] =
+    useState<CreateContactRequest>({ ...EMPTY_NEW_CONTACT });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const addPartyMutation = useAddContractParty(contract.identifier);
