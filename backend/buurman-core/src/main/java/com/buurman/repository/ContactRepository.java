@@ -291,29 +291,6 @@ public class ContactRepository {
       }
     }
 
-    Map<String, Field<?>> sortableFields =
-        Map.of(
-            "createdAt", CONTACTS.CREATED_AT,
-            "displayName", CONTACTS.DISPLAY_NAME,
-            "firstName", CONTACTS.FIRST_NAME,
-            "lastName", CONTACTS.LAST_NAME,
-            "companyName", CONTACTS.COMPANY_NAME,
-            "email", CONTACTS.EMAIL);
-
-    Field<?> sortField =
-        pageRequest
-            .sort()
-            .filter(sortableFields::containsKey)
-            .map(sortableFields::get)
-            .orElse(CONTACTS.CREATED_AT);
-
-    SortField<?> orderBy =
-        pageRequest.direction().orElse(SortDirection.DESC) == SortDirection.ASC
-            ? sortField.asc()
-            : sortField.desc();
-
-    long totalElements = dsl.fetchCount(CONTACTS, condition);
-
     Field<Integer> activeContractCountField =
         selectCount()
             .from(CONTRACT_PARTIES)
@@ -331,6 +308,30 @@ public class ContactRepository {
                     .and(CONTRACT_PARTIES.TEAM_ID.eq(teamId))
                     .and(CONTRACT_PARTIES.DELETED_AT.isNull()))
             .asField("active_contract_count");
+
+    Map<String, Field<?>> sortableFields =
+        Map.of(
+            "createdAt", CONTACTS.CREATED_AT,
+            "displayName", CONTACTS.DISPLAY_NAME,
+            "firstName", CONTACTS.FIRST_NAME,
+            "lastName", CONTACTS.LAST_NAME,
+            "companyName", CONTACTS.COMPANY_NAME,
+            "email", CONTACTS.EMAIL,
+            "activeContractCount", activeContractCountField);
+
+    Field<?> sortField =
+        pageRequest
+            .sort()
+            .filter(sortableFields::containsKey)
+            .map(sortableFields::get)
+            .orElse(CONTACTS.CREATED_AT);
+
+    SortField<?> orderBy =
+        pageRequest.direction().orElse(SortDirection.DESC) == SortDirection.ASC
+            ? sortField.asc()
+            : sortField.desc();
+
+    long totalElements = dsl.fetchCount(CONTACTS, condition);
 
     List<ContactWithCount> items =
         dsl.select(CONTACTS.asterisk(), activeContractCountField)

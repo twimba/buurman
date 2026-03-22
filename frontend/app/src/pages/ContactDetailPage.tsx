@@ -32,7 +32,7 @@ import { ContactActivityTab } from '@/components/contacts/ContactActivityTab';
 import { ContactRelationshipsTab } from '@/components/contacts/ContactRelationshipsTab';
 import { ContactTagsTab } from '@/components/contacts/ContactTagsTab';
 import { ContactFinancialsTab } from '@/components/contacts/ContactFinancialsTab';
-import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
+import { ContactContractsTable } from '@/components/contacts/ContactContractsTable';
 import {
   ContractStatus,
   ContractPartyRole,
@@ -51,7 +51,6 @@ import {
   FileText,
   MapPin,
   Plus,
-  Search,
   ChevronUp,
   ChevronDown,
   Download,
@@ -66,7 +65,6 @@ import {
 } from 'lucide-react';
 import client from '@/api/client';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { getCurrencySymbol } from '@/utils/currencies';
 
 const ROLE_COLORS: Record<ContractPartyRole, string> = {
   [ContractPartyRole.PRIMARY_TENANT]: 'bg-info-bg text-info-text',
@@ -111,17 +109,6 @@ export const ContactDetailPage = () => {
   const [isMetadataExpanded, setIsMetadataExpanded] = useState(false);
 
   const { formatDate } = useFormatDate();
-
-  // Contracts table state
-  const [contractsSearchTerm, setContractsSearchTerm] = useState('');
-  const [contractsSortField, setContractsSortField] = useState<
-    'startDate' | 'rentAmount' | 'status' | 'property' | 'contractType'
-  >('startDate');
-  const [contractsSortOrder, setContractsSortOrder] = useState<'asc' | 'desc'>(
-    'desc'
-  );
-  const [contractsCurrentPage, setContractsCurrentPage] = useState(1);
-  const contractsPerPage = 10;
 
   const { data: contact, isLoading, error } = useContact(id);
   const contactIdentifier = contact?.identifier;
@@ -280,79 +267,6 @@ export const ContactDetailPage = () => {
     }
     return missing;
   }, [contact]);
-
-  // Contracts filtering, sorting, and pagination
-  const filteredAndSortedContracts = useMemo(() => {
-    if (!contracts) {
-      return [];
-    }
-    let filtered = [...contracts];
-    if (contractsSearchTerm) {
-      const search = contractsSearchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (contract) =>
-          contract.identifier.toLowerCase().includes(search) ||
-          contract.property.street.toLowerCase().includes(search) ||
-          contract.contractType.toLowerCase().includes(search)
-      );
-    }
-    filtered.sort((a, b) => {
-      let aVal: string | number, bVal: string | number;
-      switch (contractsSortField) {
-        case 'startDate':
-          aVal = new Date(a.startDate).getTime();
-          bVal = new Date(b.startDate).getTime();
-          break;
-        case 'rentAmount':
-          aVal = a.rentAmount;
-          bVal = b.rentAmount;
-          break;
-        case 'status':
-          aVal = a.status;
-          bVal = b.status;
-          break;
-        case 'property':
-          aVal = a.property.street;
-          bVal = b.property.street;
-          break;
-        case 'contractType':
-          aVal = a.contractType;
-          bVal = b.contractType;
-          break;
-        default:
-          return 0;
-      }
-      if (aVal < bVal) {
-        return contractsSortOrder === 'asc' ? -1 : 1;
-      }
-      if (aVal > bVal) {
-        return contractsSortOrder === 'asc' ? 1 : -1;
-      }
-      return 0;
-    });
-    return filtered;
-  }, [contracts, contractsSearchTerm, contractsSortField, contractsSortOrder]);
-
-  const paginatedContracts = useMemo(() => {
-    const startIndex = (contractsCurrentPage - 1) * contractsPerPage;
-    return filteredAndSortedContracts.slice(
-      startIndex,
-      startIndex + contractsPerPage
-    );
-  }, [filteredAndSortedContracts, contractsCurrentPage]);
-
-  const contractsTotalPages = Math.ceil(
-    filteredAndSortedContracts.length / contractsPerPage
-  );
-
-  const handleContractsSort = (field: typeof contractsSortField) => {
-    if (contractsSortField === field) {
-      setContractsSortOrder(contractsSortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setContractsSortField(field);
-      setContractsSortOrder('asc');
-    }
-  };
 
   if (isLoading) {
     return (
@@ -786,146 +700,10 @@ export const ContactDetailPage = () => {
               )}
 
               {/* All contracts mini-table */}
-              {contracts.length > 0 && (
-                <div className="mt-6 pt-4 border-t border-border-default">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-sm font-semibold text-text-secondary uppercase">
-                      All Contracts ({contracts.length})
-                    </h3>
-                    {contracts.length > 5 && (
-                      <div className="relative">
-                        <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
-                        <input
-                          type="text"
-                          placeholder="Search..."
-                          value={contractsSearchTerm}
-                          onChange={(e) => {
-                            setContractsSearchTerm(e.target.value);
-                            setContractsCurrentPage(1);
-                          }}
-                          className="pl-8 pr-3 py-1.5 text-sm border border-border-strong rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                      </div>
-                    )}
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-border-default text-sm">
-                      <thead className="bg-surface-page">
-                        <tr>
-                          <th
-                            className="px-4 py-2 text-left text-xs font-medium text-text-secondary uppercase cursor-pointer hover:bg-surface-inset"
-                            onClick={() => handleContractsSort('property')}
-                          >
-                            Property
-                          </th>
-                          <th className="px-4 py-2 text-left text-xs font-medium text-text-secondary uppercase">
-                            Role
-                          </th>
-                          <th
-                            className="px-4 py-2 text-left text-xs font-medium text-text-secondary uppercase cursor-pointer hover:bg-surface-inset"
-                            onClick={() => handleContractsSort('startDate')}
-                          >
-                            <div className="flex items-center gap-1">
-                              Period
-                              {contractsSortField === 'startDate' &&
-                                (contractsSortOrder === 'asc' ? (
-                                  <ChevronUp className="h-3 w-3" />
-                                ) : (
-                                  <ChevronDown className="h-3 w-3" />
-                                ))}
-                            </div>
-                          </th>
-                          <th
-                            className="px-4 py-2 text-left text-xs font-medium text-text-secondary uppercase cursor-pointer hover:bg-surface-inset"
-                            onClick={() => handleContractsSort('rentAmount')}
-                          >
-                            Rent
-                          </th>
-                          <th
-                            className="px-4 py-2 text-left text-xs font-medium text-text-secondary uppercase cursor-pointer hover:bg-surface-inset"
-                            onClick={() => handleContractsSort('status')}
-                          >
-                            Status
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-border-default">
-                        {paginatedContracts.map((contract) => {
-                          const party = contract.parties?.find(
-                            (p) => p.contact.identifier === id
-                          );
-                          return (
-                            <tr
-                              key={contract.identifier}
-                              onClick={() =>
-                                navigate(`/contracts/${contract.identifier}`)
-                              }
-                              className="hover:bg-primary-50 dark:hover:bg-primary-950 cursor-pointer transition-colors"
-                            >
-                              <td className="px-4 py-3">
-                                {contract.property.street}
-                              </td>
-                              <td className="px-4 py-3">
-                                {party?.role ? (
-                                  <RoleBadge role={party.role} />
-                                ) : (
-                                  <span className="text-text-muted">-</span>
-                                )}
-                              </td>
-                              <td className="px-4 py-3 text-text-secondary">
-                                {formatDate(contract.startDate)}
-                                {' — '}
-                                {(contract.effectiveEndDate ?? contract.endDate)
-                                  ? formatDate(
-                                      (contract.effectiveEndDate ??
-                                        contract.endDate) as string
-                                    )
-                                  : 'Ongoing'}
-                              </td>
-                              <td className="px-4 py-3 font-medium">
-                                {getCurrencySymbol(contract.rentAmountCurrency)}{' '}
-                                {contract.rentAmount.toFixed(2)}
-                              </td>
-                              <td className="px-4 py-3">
-                                <ContractStatusBadge status={contract.status} />
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                  {contractsTotalPages > 1 && (
-                    <div className="flex items-center justify-between mt-3 text-sm">
-                      <span className="text-text-secondary">
-                        Page {contractsCurrentPage} of {contractsTotalPages}
-                      </span>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() =>
-                            setContractsCurrentPage(contractsCurrentPage - 1)
-                          }
-                          disabled={contractsCurrentPage === 1}
-                          className="px-2 py-1 border border-border-strong rounded text-xs disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
-                        >
-                          Previous
-                        </button>
-                        <button
-                          onClick={() =>
-                            setContractsCurrentPage(contractsCurrentPage + 1)
-                          }
-                          disabled={
-                            contractsCurrentPage === contractsTotalPages
-                          }
-                          className="px-2 py-1 border border-border-strong rounded text-xs disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
-                        >
-                          Next
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
+              <ContactContractsTable
+                contracts={contracts}
+                contactIdentifier={id}
+              />
             </div>
 
             {/* Follow-ups */}

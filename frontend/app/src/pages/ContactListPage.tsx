@@ -15,6 +15,7 @@ import {
   ChevronUp,
   Save,
   Download,
+  ArrowUpDown,
 } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
@@ -37,6 +38,12 @@ const CONTACT_TYPES: ContactType[] = [
   'COMPANY',
   'SERVICE_PROVIDER',
 ];
+
+const SORT_OPTIONS = [
+  { value: 'createdAt', label: 'Date Created' },
+  { value: 'displayName', label: 'Name' },
+  { value: 'activeContractCount', label: 'Active Contracts' },
+] as const;
 
 export const ContactListPage = () => {
   const navigate = useNavigate();
@@ -72,10 +79,13 @@ export const ContactListPage = () => {
     pageParams,
     page,
     size,
+    sort,
+    direction,
     handlePageChange,
     handleSizeChange,
+    handleSortChange,
     resetPage,
-  } = usePagination({ defaultSize: 12 });
+  } = usePagination({ defaultSize: 12, defaultSort: 'createdAt', defaultDirection: 'desc' });
 
   const {
     data: contactsData,
@@ -290,6 +300,28 @@ export const ContactListPage = () => {
               aria-label="Search contacts"
               className="w-full pl-10 pr-4 py-2 border border-border-strong rounded focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary"
             />
+          </div>
+          <div className="flex items-center gap-1.5">
+            <ArrowUpDown className="h-4 w-4 text-text-muted" />
+            <select
+              value={sort ?? 'createdAt'}
+              onChange={(e) => handleSortChange(e.target.value)}
+              aria-label="Sort contacts by"
+              className="border border-border-strong rounded px-2 py-2 text-sm bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+            >
+              {SORT_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={() => handleSortChange(sort ?? 'createdAt')}
+              className="px-2 py-2 border border-border-strong rounded bg-surface-card text-text-secondary hover:border-primary-500 text-sm"
+              title={`Sort ${direction === 'asc' ? 'ascending' : 'descending'}`}
+            >
+              {direction === 'asc' ? '↑' : '↓'}
+            </button>
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}

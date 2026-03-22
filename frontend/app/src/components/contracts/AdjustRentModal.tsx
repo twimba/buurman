@@ -1,6 +1,5 @@
 import { useState, useMemo, useRef } from 'react';
 import {
-  X,
   TrendingUp,
   TrendingDown,
   Info,
@@ -9,6 +8,7 @@ import {
   Trash2,
   RotateCcw,
 } from 'lucide-react';
+import { ModalWrapper } from '@buurman/ui';
 import { MoneyInput } from '@/components/common/MoneyInput';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
 import {
@@ -256,13 +256,6 @@ export const AdjustRentModal = ({
     submitForm();
   };
 
-  const handleCmdEnter = (e: React.KeyboardEvent) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
-      e.preventDefault();
-      submitForm();
-    }
-  };
-
   const findCurrentComponent = (
     type: RentComponentType,
     description?: string
@@ -279,29 +272,39 @@ export const AdjustRentModal = ({
   const actionCol = 'w-[28px] shrink-0';
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-surface-card rounded-lg shadow-xl dark:shadow-black/20 max-w-lg w-full mx-4 max-h-[90vh] flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border-default shrink-0">
-          <h2 className="text-lg font-semibold text-text-primary">
-            Adjust Rent
-          </h2>
+    <ModalWrapper
+      open
+      onClose={onClose}
+      title="Adjust Rent"
+      size="lg"
+      preventClose={isLoading}
+      onSubmit={submitForm}
+      footer={
+        <>
           <button
+            type="button"
             onClick={onClose}
-            className="text-text-muted hover:text-text-secondary"
+            className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset"
             disabled={isLoading}
           >
-            <X className="h-5 w-5" />
+            Cancel
           </button>
-        </div>
-
-        {/* Body */}
-        <form
-          onSubmit={handleSubmit}
-          onKeyDown={handleCmdEnter}
-          className="flex flex-col min-h-0"
-        >
-          <div className="p-4 space-y-4 overflow-y-auto">
+          <button
+            type="submit"
+            form="adjust-rent-form"
+            className="px-4 py-2 text-sm font-medium text-white bg-primary-500 rounded-md hover:bg-primary-600 disabled:opacity-50"
+            disabled={isLoading || parsedAmount === null || parsedAmount <= 0}
+          >
+            {isLoading ? 'Saving...' : 'Adjust Rent'}
+          </button>
+        </>
+      }
+    >
+      <form
+        id="adjust-rent-form"
+        onSubmit={handleSubmit}
+        className="space-y-4"
+      >
             {/* Effective From — first so the reference rent updates below */}
             <div>
               <label
@@ -612,28 +615,7 @@ export const AdjustRentModal = ({
                 onSubmit={submitForm}
               />
             </div>
-          </div>
-
-          {/* Footer */}
-          <div className="flex items-center justify-end gap-3 p-4 border-t border-border-default shrink-0">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset"
-              disabled={isLoading}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 text-sm font-medium text-white bg-primary-500 rounded-md hover:bg-primary-600 disabled:opacity-50"
-              disabled={isLoading || parsedAmount === null || parsedAmount <= 0}
-            >
-              {isLoading ? 'Saving...' : 'Adjust Rent'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+      </form>
+    </ModalWrapper>
   );
 };
