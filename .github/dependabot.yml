@@ -7,6 +7,11 @@ registries:
     url: https://ghcr.io
     username: ${{ secrets.GHCR_USERNAME }}
     password: ${{ secrets.GHCR_TOKEN }}
+  dockerhub:
+    type: docker-registry
+    url: https://index.docker.io
+    username: ${{ secrets.DOCKERHUB_USERNAME }}
+    password: ${{ secrets.DOCKERHUB_PASSWORD }}
 updates:
   - package-ecosystem: "maven"
     directories:
@@ -109,6 +114,7 @@ updates:
       - "/keycloak"
     registries:
       - ghcr
+      - dockerhub
     schedule:
       interval: "daily"
     open-pull-requests-limit: 50
@@ -118,6 +124,7 @@ updates:
       - "/"
     registries:
       - ghcr
+      - dockerhub
     schedule:
       interval: "daily"
     open-pull-requests-limit: 50

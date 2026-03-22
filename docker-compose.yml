@@ -135,7 +135,7 @@ services:
       - buurman-network
 
   seaweedfs-init:
-    image: amazon/aws-cli:2.34.13
+    image: amazon/aws-cli:2.34.14
     depends_on:
       seaweedfs:
         condition: service_healthy
@@ -218,7 +218,7 @@ services:
       - buurman-network
 
   mailpit:
-    image: axllent/mailpit:v1.29.3
+    image: axllent/mailpit:v1.29.4
     ports:
       - "${SMTP_HOST_PORT:-1025}:1025"  # SMTP — direct port mapping (no Traefik)
     labels:
