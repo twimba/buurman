@@ -1,10 +1,10 @@
 import { WorkInProgress } from '@/components/WorkInProgress';
 
-export const TenantsPage = () => {
+export const ContactsPage = () => {
   return (
     <WorkInProgress
-      pageName="Tenants"
-      message="Good tenants are hard to find... and so is this page right now!"
+      pageName="Contacts"
+      message="Good contacts are hard to find... and so is this page right now!"
     />
   );
 };

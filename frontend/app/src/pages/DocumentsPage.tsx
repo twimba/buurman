@@ -187,7 +187,7 @@ export const DocumentsPage = () => {
             >
               <option value="">All Types</option>
               <option value="PROPERTY">Properties</option>
-              <option value="TENANT">Tenants</option>
+              <option value="CONTACT">Contacts</option>
               <option value="CONTRACT">Contracts</option>
               <option value="PAYMENT">Payments</option>
               <option value="EXPENSE">Expenses</option>
@@ -366,8 +366,8 @@ export const DocumentsPage = () => {
                             const entityPath =
                               doc.entityType.toLowerCase() === 'property'
                                 ? `/properties/${doc.entityIdentifier}`
-                                : doc.entityType.toLowerCase() === 'tenant'
-                                  ? `/tenants/${doc.entityIdentifier}`
+                                : doc.entityType.toLowerCase() === 'contact'
+                                  ? `/contacts/${doc.entityIdentifier}`
                                   : doc.entityType.toLowerCase() === 'contract'
                                     ? `/contracts/${doc.entityIdentifier}`
                                     : doc.entityType.toLowerCase() === 'payment'

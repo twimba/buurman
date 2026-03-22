@@ -1,4 +1,4 @@
-import { TenantResponse } from '@/types/tenant';
+import { ContactResponse } from '@/types/contact';
 import { ContractPartyRole, PARTY_ROLE_LABELS } from '@/types/contract';
 import { Mail, Phone, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -11,31 +11,31 @@ const ROLE_COLORS: Record<ContractPartyRole, string> = {
   [ContractPartyRole.EXTRA_TENANT]: 'bg-success-bg text-success-text',
 };
 
-interface TenantCardProps {
-  tenant: TenantResponse;
+interface ContactCardProps {
+  contact: ContactResponse;
 }
 
-export const TenantCard = ({ tenant }: TenantCardProps) => {
+export const ContactCard = ({ contact }: ContactCardProps) => {
   const navigate = useNavigate();
 
   return (
     <div
       className="bg-surface-card rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer p-6"
-      onClick={() => navigate(`/tenants/${tenant.identifier}`)}
+      onClick={() => navigate(`/contacts/${contact.identifier}`)}
     >
-      {/* Tenant Name with Avatar */}
+      {/* Contact Name with Avatar */}
       <div className="flex items-center gap-3 mb-4">
         <Avatar
-          firstName={tenant.firstName}
-          lastName={tenant.lastName}
-          photoUrl={tenant.mainPhotoThumbnailUrl ?? tenant.mainPhotoUrl}
+          firstName={contact.firstName}
+          lastName={contact.lastName}
+          photoUrl={contact.mainPhotoThumbnailUrl ?? contact.mainPhotoUrl}
           size="md"
         />
         <div>
           <h3 className="text-lg font-semibold text-text-primary">
-            {tenant.firstName} {tenant.lastName}
+            {contact.firstName} {contact.lastName}
           </h3>
-          <p className="text-sm text-text-secondary">#{tenant.identifier}</p>
+          <p className="text-sm text-text-secondary">#{contact.identifier}</p>
         </div>
       </div>
 
@@ -43,20 +43,20 @@ export const TenantCard = ({ tenant }: TenantCardProps) => {
       <div className="space-y-2 mb-4">
         <div className="flex items-center gap-2 text-text-secondary">
           <Mail className="h-4 w-4" />
-          <span className="text-sm">{tenant.email}</span>
+          <span className="text-sm">{contact.email}</span>
         </div>
-        {tenant.phone && (
+        {contact.phone && (
           <div className="flex items-center gap-2 text-text-secondary">
             <Phone className="h-4 w-4" />
-            <span className="text-sm">{tenant.phone}</span>
+            <span className="text-sm">{contact.phone}</span>
           </div>
         )}
       </div>
 
       {/* Properties & Roles */}
       <div className="space-y-2">
-        {tenant.activeProperties && tenant.activeProperties.length > 0 ? (
-          tenant.activeProperties.map((assignment) => (
+        {contact.activeProperties && contact.activeProperties.length > 0 ? (
+          contact.activeProperties.map((assignment) => (
             <div
               key={assignment.property.identifier}
               className="flex items-center gap-2 bg-success-bg text-success-text px-3 py-2 rounded"

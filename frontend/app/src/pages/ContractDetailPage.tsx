@@ -472,7 +472,7 @@ export const ContractDetailPage = () => {
         {/* Tab Content */}
         {activeTab === 'overview' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Property and Tenant */}
+            {/* Property and Contact */}
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <h2 className="text-lg font-semibold text-text-primary mb-4">
                 Contract Parties
@@ -509,14 +509,14 @@ export const ContractDetailPage = () => {
                       </p>
                       <button
                         onClick={() =>
-                          navigate(`/tenants/${party.tenant.identifier}`)
+                          navigate(`/contacts/${party.contact.identifier}`)
                         }
                         className="font-medium text-primary-500 hover:underline text-left"
                       >
-                        {party.tenant.firstName} {party.tenant.lastName}
+                        {party.contact.firstName} {party.contact.lastName}
                       </button>
                       <p className="text-xs text-text-secondary">
-                        #{party.tenant.identifier}
+                        #{party.contact.identifier}
                       </p>
                     </div>
                   </div>
@@ -823,7 +823,7 @@ export const ContractDetailPage = () => {
                       </div>
                     )}
                   {(contract.landlordNoticeDays != null ||
-                    contract.tenantNoticeDays != null) && (
+                    contract.contactNoticeDays != null) && (
                     <div className="pt-2 border-t border-border-default">
                       <p className="text-[11px] font-medium uppercase tracking-wider text-text-muted mb-2">
                         Notice Periods
@@ -839,23 +839,23 @@ export const ContractDetailPage = () => {
                             </p>
                           </div>
                         )}
-                        {contract.tenantNoticeDays != null && (
+                        {contract.contactNoticeDays != null && (
                           <div className="flex items-center justify-between">
                             <p className="text-sm text-text-secondary">
-                              Tenant
+                              Contact
                             </p>
                             <p className="text-sm font-medium text-text-primary">
-                              {contract.tenantNoticeDays} days
+                              {contract.contactNoticeDays} days
                             </p>
                           </div>
                         )}
                       </div>
                     </div>
                   )}
-                  {contract.requiresTenantConfirmation && (
+                  {contract.requiresContactConfirmation && (
                     <div className="flex items-center justify-between pt-2 border-t border-border-default">
                       <p className="text-sm text-text-secondary">
-                        Tenant Confirmation
+                        Contact Confirmation
                       </p>
                       <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-warning-bg text-warning-text">
                         Required

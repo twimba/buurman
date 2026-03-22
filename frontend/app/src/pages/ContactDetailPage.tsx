@@ -2,17 +2,17 @@ import { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTabState } from '@/hooks/useTabState';
 import {
-  useTenant,
-  useDeleteTenant,
-  useTenantAuditLog,
-  useTenantDocuments,
-  useTenantPhotos,
-  useTenantAddresses,
-  useUploadTenantDocument,
-  useUploadTenantPhoto,
-  useSetTenantMainPhoto,
-  useDeleteTenantDocument,
-} from '@/hooks/useTenantHooks';
+  useContact,
+  useDeleteContact,
+  useContactAuditLog,
+  useContactDocuments,
+  useContactPhotos,
+  useContactAddresses,
+  useUploadContactDocument,
+  useUploadContactPhoto,
+  useSetContactMainPhoto,
+  useDeleteContactDocument,
+} from '@/hooks/useContactHooks';
 import { useDeletePhoto } from '@/hooks/usePhotoHooks';
 import { useContracts } from '@/hooks/useContractHooks';
 import { CalendarFeedResponseFeedType as CalendarFeedType } from '@/generated/models';
@@ -26,7 +26,7 @@ import { AnalyticsEvent } from '@/constants/analyticsEvents';
 import { DocumentList } from '@/components/properties/DocumentList';
 import { PhotoGallery } from '@/components/properties/PhotoGallery';
 import { Avatar } from '@/components/common/Avatar';
-import { TenantAddressList } from '@/components/tenants/TenantAddressList';
+import { ContactAddressList } from '@/components/contacts/ContactAddressList';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
 import {
   ContractStatus,
@@ -74,7 +74,7 @@ const RoleBadge = ({ role }: { role: ContractPartyRole }) => (
   </span>
 );
 
-export const TenantDetailPage = () => {
+export const ContactDetailPage = () => {
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData } = useTeam();
@@ -105,48 +105,48 @@ export const TenantDetailPage = () => {
   const [contractsCurrentPage, setContractsCurrentPage] = useState(1);
   const contractsPerPage = 10;
 
-  const { data: tenant, isLoading, error } = useTenant(id);
-  const tenantIdentifier = tenant?.identifier;
+  const { data: contact, isLoading, error } = useContact(id);
+  const contactIdentifier = contact?.identifier;
 
   useEffect(() => {
-    if (tenantIdentifier) {
-      trackEvent(AnalyticsEvent.TENANT_VIEWED);
+    if (contactIdentifier) {
+      trackEvent(AnalyticsEvent.CONTACT_VIEWED);
     }
-  }, [tenantIdentifier]);
+  }, [contactIdentifier]);
 
   const {
     data: auditLog = [],
     isLoading: auditLoading,
     error: auditError,
-  } = useTenantAuditLog(id);
+  } = useContactAuditLog(id);
   const {
     data: allDocuments = [],
     isLoading: docsLoading,
     error: docsError,
-  } = useTenantDocuments(id);
+  } = useContactDocuments(id);
   const {
     data: photos = [],
     isLoading: photosLoading,
     error: photosError,
-  } = useTenantPhotos(id);
+  } = useContactPhotos(id);
   const {
     data: contractsData,
     isLoading: contractsLoading,
     error: contractsError,
-  } = useContracts(id ? { tenantIdentifier: id } : undefined);
+  } = useContracts(id ? { contactIdentifier: id } : undefined);
   const contracts = useMemo(
     () => contractsData?.content ?? [],
     [contractsData]
   );
-  const { data: addresses = [] } = useTenantAddresses(id);
+  const { data: addresses = [] } = useContactAddresses(id);
 
   const documents = allDocuments;
 
-  const deleteTenantMutation = useDeleteTenant();
-  const uploadDocumentMutation = useUploadTenantDocument(id);
-  const uploadPhotoMutation = useUploadTenantPhoto(id);
-  const setMainPhotoMutation = useSetTenantMainPhoto(id);
-  const deleteDocumentMutation = useDeleteTenantDocument(id);
+  const deleteContactMutation = useDeleteContact();
+  const uploadDocumentMutation = useUploadContactDocument(id);
+  const uploadPhotoMutation = useUploadContactPhoto(id);
+  const setMainPhotoMutation = useSetContactMainPhoto(id);
+  const deleteDocumentMutation = useDeleteContactDocument(id);
   const deletePhotoMutation = useDeletePhoto();
 
   const handleDelete = async () => {
@@ -154,10 +154,10 @@ export const TenantDetailPage = () => {
       return;
     }
     try {
-      await deleteTenantMutation.mutateAsync(id);
-      navigate('/tenants');
+      await deleteContactMutation.mutateAsync(id);
+      navigate('/contacts');
     } catch (err) {
-      console.error('Failed to delete tenant:', err);
+      console.error('Failed to delete contact:', err);
     }
   };
 
@@ -189,13 +189,13 @@ export const TenantDetailPage = () => {
     await setMainPhotoMutation.mutateAsync(photoId);
   };
 
-  // Get properties from active contracts with the tenant's role
+  // Get properties from active contracts with the contact's role
   const activeContractProperties = contracts
     ? contracts
         .filter((contract) => contract.status === ContractStatus.ACTIVE)
         .map((contract) => {
           const party = contract.parties?.find(
-            (p) => p.tenant.identifier === id
+            (p) => p.contact.identifier === id
           );
           return {
             property: contract.property,
@@ -292,10 +292,10 @@ export const TenantDetailPage = () => {
     );
   }
 
-  if (error || !tenant) {
+  if (error || !contact) {
     return (
       <div className="min-h-screen bg-background p-8">
-        <ErrorMessage message="Failed to load tenant" />
+        <ErrorMessage message="Failed to load contact" />
       </div>
     );
   }
@@ -305,14 +305,14 @@ export const TenantDetailPage = () => {
       <div className="px-4 py-8">
         {/* Header */}
         <PageHeader
-          title={`${tenant.firstName} ${tenant.lastName}`}
-          subtitle={`#${tenant.identifier}`}
-          backTo="/tenants"
+          title={`${contact.firstName} ${contact.lastName}`}
+          subtitle={`#${contact.identifier}`}
+          backTo="/contacts"
           avatar={
             <Avatar
-              firstName={tenant.firstName}
-              lastName={tenant.lastName}
-              photoUrl={tenant.mainPhotoThumbnailUrl ?? tenant.mainPhotoUrl}
+              firstName={contact.firstName}
+              lastName={contact.lastName}
+              photoUrl={contact.mainPhotoThumbnailUrl ?? contact.mainPhotoUrl}
               size="xl"
             />
           }
@@ -324,7 +324,7 @@ export const TenantDetailPage = () => {
                 onClick={async () => {
                   try {
                     const response = await client.get(
-                      `/booklets/tenant/${id}`,
+                      `/booklets/contact/${id}`,
                       { responseType: 'blob' }
                     );
                     const blob = new Blob([response.data], {
@@ -333,7 +333,7 @@ export const TenantDetailPage = () => {
                     const url = window.URL.createObjectURL(blob);
                     const link = document.createElement('a');
                     link.href = url;
-                    link.download = 'tenant-booklet.pdf';
+                    link.download = 'contact-booklet.pdf';
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
@@ -347,14 +347,14 @@ export const TenantDetailPage = () => {
               </Button>
               {id && (
                 <CalendarFeedButton
-                  feedType={CalendarFeedType.TENANT_PAYMENTS}
+                  feedType={CalendarFeedType.CONTACT_PAYMENTS}
                   entityIdentifier={id}
                 />
               )}
               <Button
                 variant="secondary"
                 leftIcon={<Edit />}
-                onClick={() => navigate(`/tenants/${id}/edit`)}
+                onClick={() => navigate(`/contacts/${id}/edit`)}
                 disabled={!canEditData}
               >
                 Edit
@@ -455,7 +455,7 @@ export const TenantDetailPage = () => {
                   <div>
                     <p className="text-sm text-text-secondary">Name</p>
                     <p className="font-medium text-text-primary">
-                      {tenant.firstName} {tenant.lastName}
+                      {contact.firstName} {contact.lastName}
                     </p>
                   </div>
                 </div>
@@ -464,33 +464,33 @@ export const TenantDetailPage = () => {
                   <div>
                     <p className="text-sm text-text-secondary">Email</p>
                     <p className="font-medium text-text-primary">
-                      {tenant.email}
+                      {contact.email}
                     </p>
                   </div>
                 </div>
-                {tenant.phone && (
+                {contact.phone && (
                   <div className="flex items-center gap-3">
                     <Phone className="h-5 w-5 text-text-muted " />
                     <div>
                       <p className="text-sm text-text-secondary">Phone</p>
                       <p className="font-medium text-text-primary">
-                        {tenant.phone}
+                        {contact.phone}
                       </p>
                     </div>
                   </div>
                 )}
-                {tenant.taxNumber && (
+                {contact.taxNumber && (
                   <div className="flex items-center gap-3">
                     <FileText className="h-5 w-5 text-text-muted " />
                     <div>
                       <p className="text-sm text-text-secondary">Tax Number</p>
                       <p className="font-medium text-text-primary">
-                        {tenant.taxNumber}
+                        {contact.taxNumber}
                       </p>
                     </div>
                   </div>
                 )}
-                {tenant.idNumber && (
+                {contact.idNumber && (
                   <div className="flex items-center gap-3">
                     <FileText className="h-5 w-5 text-text-muted " />
                     <div>
@@ -498,7 +498,7 @@ export const TenantDetailPage = () => {
                         Government ID Number
                       </p>
                       <p className="font-medium text-text-primary">
-                        {tenant.idNumber}
+                        {contact.idNumber}
                       </p>
                     </div>
                   </div>
@@ -511,8 +511,8 @@ export const TenantDetailPage = () => {
               <h2 className="text-lg font-semibold text-text-primary mb-4">
                 Additional Information
               </h2>
-              {tenant.additionalInfo ? (
-                <RichTextDisplay content={tenant.additionalInfo} />
+              {contact.additionalInfo ? (
+                <RichTextDisplay content={contact.additionalInfo} />
               ) : (
                 <p className="text-sm text-text-muted italic">
                   No additional information available
@@ -558,7 +558,7 @@ export const TenantDetailPage = () => {
                 </div>
               ) : (
                 <p className="text-sm text-text-muted italic">
-                  No active contracts for this tenant
+                  No active contracts for this contact
                 </p>
               )}
             </div>
@@ -583,17 +583,17 @@ export const TenantDetailPage = () => {
                   <div>
                     <span className="text-text-secondary">Created:</span>{' '}
                     <span className="text-text-primary">
-                      {formatDate(tenant.createdAt)} at{' '}
-                      {new Date(tenant.createdAt).toLocaleTimeString()}
+                      {formatDate(contact.createdAt)} at{' '}
+                      {new Date(contact.createdAt).toLocaleTimeString()}
                     </span>
                   </div>
                   <div>
                     <span className="text-text-secondary">Last Updated:</span>{' '}
                     <span className="text-text-primary">
-                      {tenant.updatedAt ? (
+                      {contact.updatedAt ? (
                         <>
-                          {formatDate(tenant.updatedAt)} at{' '}
-                          {new Date(tenant.updatedAt).toLocaleTimeString()}
+                          {formatDate(contact.updatedAt)} at{' '}
+                          {new Date(contact.updatedAt).toLocaleTimeString()}
                         </>
                       ) : (
                         '—'
@@ -637,7 +637,7 @@ export const TenantDetailPage = () => {
 
         {activeTab === 'addresses' && (
           <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-            <TenantAddressList tenantId={id} />
+            <ContactAddressList contactId={id} />
           </div>
         )}
 
@@ -648,7 +648,7 @@ export const TenantDetailPage = () => {
                 Contracts ({filteredAndSortedContracts.length})
               </h2>
               <button
-                onClick={() => navigate(`/contracts/new?tenantId=${id}`)}
+                onClick={() => navigate(`/contracts/new?contactId=${id}`)}
                 disabled={!canEditData}
                 className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
               >
@@ -664,10 +664,10 @@ export const TenantDetailPage = () => {
               <div className="text-center py-12">
                 <FileText className="h-12 w-12 text-text-disabled mx-auto mb-3" />
                 <p className="text-text-secondary mb-4">
-                  No contracts for this tenant
+                  No contracts for this contact
                 </p>
                 <button
-                  onClick={() => navigate(`/contracts/new?tenantId=${id}`)}
+                  onClick={() => navigate(`/contracts/new?contactId=${id}`)}
                   disabled={!canEditData}
                   className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
                 >
@@ -823,7 +823,7 @@ export const TenantDetailPage = () => {
                             <td className="px-6 py-4 whitespace-nowrap">
                               {(() => {
                                 const party = contract.parties?.find(
-                                  (p) => p.tenant.identifier === id
+                                  (p) => p.contact.identifier === id
                                 );
                                 return party?.role ? (
                                   <RoleBadge role={party.role} />
@@ -915,7 +915,7 @@ export const TenantDetailPage = () => {
         {activeTab === 'history' && (
           <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
             <h2 className="text-xl font-semibold text-text-primary mb-4">
-              Tenant History
+              Contact History
             </h2>
             {auditLoading ? (
               <div className="flex items-center justify-center py-8">
@@ -1163,7 +1163,7 @@ export const TenantDetailPage = () => {
                 <History className="h-12 w-12 text-text-disabled mx-auto mb-3" />
                 <p className="text-text-secondary">No history available</p>
                 <p className="text-sm text-text-muted mt-1">
-                  Changes to this tenant will appear here
+                  Changes to this contact will appear here
                 </p>
               </div>
             )}
@@ -1176,7 +1176,7 @@ export const TenantDetailPage = () => {
             <div className="bg-surface-card rounded-lg p-6 max-w-md w-full mx-4">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-text-primary">
-                  Delete Tenant
+                  Delete Contact
                 </h3>
                 <button
                   onClick={() => setShowDeleteModal(false)}
@@ -1186,7 +1186,7 @@ export const TenantDetailPage = () => {
                 </button>
               </div>
               <p className="text-text-secondary mb-6">
-                Are you sure you want to delete this tenant? This action cannot
+                Are you sure you want to delete this contact? This action cannot
                 be undone.
               </p>
               <div className="flex gap-3 justify-end">
@@ -1200,7 +1200,7 @@ export const TenantDetailPage = () => {
                   variant="danger"
                   leftIcon={<Trash2 />}
                   onClick={handleDelete}
-                  isLoading={deleteTenantMutation.isPending}
+                  isLoading={deleteContactMutation.isPending}
                 >
                   Delete
                 </Button>

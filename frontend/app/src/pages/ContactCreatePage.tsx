@@ -1,16 +1,16 @@
 import { useNavigate } from 'react-router-dom';
-import { useCreateTenant } from '@/hooks/useTenantHooks';
-import { TenantForm } from '@/components/tenants/TenantForm';
-import { CreateTenantRequest } from '@/types/tenant';
+import { useCreateContact } from '@/hooks/useContactHooks';
+import { ContactForm } from '@/components/contacts/ContactForm';
+import { CreateContactRequest } from '@/types/contact';
 import { ArrowLeft } from 'lucide-react';
 import { ImpersonationGuard } from '@/components/ImpersonationGuard';
 
-export const TenantCreatePage = () => {
+export const ContactCreatePage = () => {
   const navigate = useNavigate();
-  const createTenantMutation = useCreateTenant();
+  const createContactMutation = useCreateContact();
 
-  const handleSubmit = async (data: CreateTenantRequest) => {
-    await createTenantMutation.mutateAsync(data);
+  const handleSubmit = async (data: CreateContactRequest) => {
+    await createContactMutation.mutateAsync(data);
   };
 
   return (
@@ -19,13 +19,13 @@ export const TenantCreatePage = () => {
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
           <button
-            onClick={() => navigate('/tenants')}
+            onClick={() => navigate('/contacts')}
             className="p-2 hover:bg-neutral-100 rounded transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
           <h1 className="text-2xl font-bold text-text-primary">
-            Add New Tenant
+            Add New Contact
           </h1>
         </div>
 
@@ -35,13 +35,13 @@ export const TenantCreatePage = () => {
             blockInReadOnly
             fallback={
               <div className="text-center py-8 text-text-secondary">
-                Creating tenants is not available in read-only mode.
+                Creating contacts is not available in read-only mode.
               </div>
             }
           >
-            <TenantForm
+            <ContactForm
               onSubmit={handleSubmit}
-              isLoading={createTenantMutation.isPending}
+              isLoading={createContactMutation.isPending}
             />
           </ImpersonationGuard>
         </div>

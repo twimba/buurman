@@ -63,7 +63,7 @@ export const TeamSettingsSection = () => {
 
   const roleDescriptions: Record<Role, string> = {
     TEAM_ADMIN: 'Full access to all features and settings',
-    TEAM_EDITOR: 'Can create and edit properties, tenants, and contracts',
+    TEAM_EDITOR: 'Can create and edit properties, contacts, and contracts',
     TEAM_VIEWER: 'Read-only access to all data',
   };
 

@@ -53,7 +53,7 @@ interface NavChild {
 const navigation: NavItem[] = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Properties', href: '/properties', icon: Home },
-  { name: 'Tenants', href: '/tenants', icon: Users },
+  { name: 'Contacts', href: '/contacts', icon: Users },
   {
     name: 'Contracts',
     href: '/contracts',

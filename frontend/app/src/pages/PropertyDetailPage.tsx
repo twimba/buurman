@@ -142,7 +142,7 @@ export const PropertyDetailPage = () => {
   // Contracts table state
   const [contractsSearchTerm, setContractsSearchTerm] = useState('');
   const [contractsSortField, setContractsSortField] = useState<
-    'startDate' | 'rentAmount' | 'status' | 'tenant' | 'contractType'
+    'startDate' | 'rentAmount' | 'status' | 'contact' | 'contractType'
   >('startDate');
   const [contractsSortOrder, setContractsSortOrder] = useState<'asc' | 'desc'>(
     'desc'
@@ -236,7 +236,7 @@ export const PropertyDetailPage = () => {
       filtered = filtered.filter(
         (contract) =>
           contract.identifier.toLowerCase().includes(search) ||
-          `${contract.primaryTenant.firstName} ${contract.primaryTenant.lastName}`
+          `${contract.primaryContact.firstName} ${contract.primaryContact.lastName}`
             .toLowerCase()
             .includes(search) ||
           contract.contractType.toLowerCase().includes(search)
@@ -260,9 +260,9 @@ export const PropertyDetailPage = () => {
           aVal = a.status;
           bVal = b.status;
           break;
-        case 'tenant':
-          aVal = `${a.primaryTenant.firstName} ${a.primaryTenant.lastName}`;
-          bVal = `${b.primaryTenant.firstName} ${b.primaryTenant.lastName}`;
+        case 'contact':
+          aVal = `${a.primaryContact.firstName} ${a.primaryContact.lastName}`;
+          bVal = `${b.primaryContact.firstName} ${b.primaryContact.lastName}`;
           break;
         case 'contractType':
           aVal = a.contractType;
@@ -1718,7 +1718,7 @@ export const PropertyDetailPage = () => {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-text-muted " />
                     <input
                       type="text"
-                      placeholder="Search by contract #, tenant, type..."
+                      placeholder="Search by contract #, contact, type..."
                       value={contractsSearchTerm}
                       onChange={(e) => {
                         setContractsSearchTerm(e.target.value);
@@ -1750,11 +1750,11 @@ export const PropertyDetailPage = () => {
                         </th>
                         <th
                           className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                          onClick={() => handleContractsSort('tenant')}
+                          onClick={() => handleContractsSort('contact')}
                         >
                           <div className="flex items-center gap-1">
-                            Tenant
-                            {contractsSortField === 'tenant' &&
+                            Contact
+                            {contractsSortField === 'contact' &&
                               (contractsSortOrder === 'asc' ? (
                                 <ChevronUp className="h-4 w-4" />
                               ) : (
@@ -1849,8 +1849,8 @@ export const PropertyDetailPage = () => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm text-text-primary">
-                                {contract.primaryTenant.firstName}{' '}
-                                {contract.primaryTenant.lastName}
+                                {contract.primaryContact.firstName}{' '}
+                                {contract.primaryContact.lastName}
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">

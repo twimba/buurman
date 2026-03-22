@@ -67,7 +67,7 @@ export const PortfolioOccupancyChart = ({
     <ResponsiveContainer width="100%" height={320}>
       <AreaChart data={data}>
         <defs>
-          <linearGradient id="portfolioTenantGrad" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id="portfolioContactGrad" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="#06B6D4" stopOpacity={0.3} />
             <stop offset="95%" stopColor="#06B6D4" stopOpacity={0} />
           </linearGradient>
@@ -95,7 +95,7 @@ export const PortfolioOccupancyChart = ({
           labelFormatter={(label) => formatMonthTick(String(label))}
           formatter={(value, name) => {
             const labels: Record<string, string> = {
-              tenantOccupancyPercent: 'Tenant Occupancy',
+              contactOccupancyPercent: 'Contact Occupancy',
               selfOccupancyPercent: 'Self Occupancy',
             };
             return [
@@ -107,7 +107,7 @@ export const PortfolioOccupancyChart = ({
         <Legend
           formatter={(value) => {
             const labels: Record<string, string> = {
-              tenantOccupancyPercent: 'Tenant Occupancy',
+              contactOccupancyPercent: 'Contact Occupancy',
               selfOccupancyPercent: 'Self Occupancy',
             };
             return labels[value] ?? value;
@@ -115,10 +115,10 @@ export const PortfolioOccupancyChart = ({
         />
         <Area
           type="monotone"
-          dataKey="tenantOccupancyPercent"
+          dataKey="contactOccupancyPercent"
           stackId="occ"
           stroke="#06B6D4"
-          fill="url(#portfolioTenantGrad)"
+          fill="url(#portfolioContactGrad)"
           strokeWidth={2}
         />
         <Area

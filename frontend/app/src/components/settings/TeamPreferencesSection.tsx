@@ -223,7 +223,7 @@ export const TeamPreferencesSection = () => {
               />
               <p className="text-xs text-text-secondary mt-1">
                 This will be the pre-selected country for new properties and
-                tenant addresses
+                contact addresses
               </p>
             </div>
           </div>

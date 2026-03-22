@@ -432,8 +432,8 @@ export const PaymentsPage = () => {
                           contractStatus={payment.contract.status}
                           propertyStreet={payment.property.street}
                           propertyCity={payment.property.city}
-                          tenantFirstName={payment.tenant.firstName}
-                          tenantLastName={payment.tenant.lastName}
+                          contactFirstName={payment.contact.firstName}
+                          contactLastName={payment.contact.lastName}
                         />
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right">

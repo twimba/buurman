@@ -1,20 +1,20 @@
 import { useState, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getTenants } from '@/api/tenants';
+import { getContacts } from '@/api/contacts';
 import { ChevronDown } from 'lucide-react';
 import { Avatar } from './Avatar';
 
-interface TenantSelectorProps {
+interface ContactSelectorProps {
   value?: string;
   onChange: (value: string) => void;
   disabled?: boolean;
 }
 
-export const TenantSelector = ({
+export const ContactSelector = ({
   value,
   onChange,
   disabled = false,
-}: TenantSelectorProps) => {
+}: ContactSelectorProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -30,15 +30,15 @@ export const TenantSelector = ({
     return () => clearTimeout(timer);
   }, [search]);
 
-  const { data: tenantsData, isLoading } = useQuery({
-    queryKey: ['tenants', debouncedSearch],
-    queryFn: () => getTenants({ search: debouncedSearch || undefined }),
+  const { data: contactsData, isLoading } = useQuery({
+    queryKey: ['contacts', debouncedSearch],
+    queryFn: () => getContacts({ search: debouncedSearch || undefined }),
   });
-  const tenants = tenantsData?.content ?? [];
+  const contacts = contactsData?.content ?? [];
 
-  const selectedTenant = tenants.find((t) => t.identifier === value);
-  const displayValue = selectedTenant
-    ? `${selectedTenant.firstName} ${selectedTenant.lastName}`
+  const selectedContact = contacts.find((t) => t.identifier === value);
+  const displayValue = selectedContact
+    ? `${selectedContact.firstName} ${selectedContact.lastName}`
     : '';
 
   useEffect(() => {
@@ -62,8 +62,8 @@ export const TenantSelector = ({
     }
   }, [highlightedIndex]);
 
-  const handleSelect = (tenantId: string) => {
-    onChange(tenantId);
+  const handleSelect = (contactId: string) => {
+    onChange(contactId);
     setIsOpen(false);
     setSearch('');
   };
@@ -82,7 +82,7 @@ export const TenantSelector = ({
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        setHighlightedIndex((i) => Math.min(i + 1, tenants.length - 1));
+        setHighlightedIndex((i) => Math.min(i + 1, contacts.length - 1));
         break;
       case 'ArrowUp':
         e.preventDefault();
@@ -90,8 +90,8 @@ export const TenantSelector = ({
         break;
       case 'Enter':
         e.preventDefault();
-        if (highlightedIndex >= 0 && highlightedIndex < tenants.length) {
-          handleSelect(tenants[highlightedIndex].identifier);
+        if (highlightedIndex >= 0 && highlightedIndex < contacts.length) {
+          handleSelect(contacts[highlightedIndex].identifier);
         }
         break;
       case 'Escape':
@@ -129,7 +129,7 @@ export const TenantSelector = ({
           }}
           onKeyDown={handleKeyDown}
           disabled={disabled}
-          placeholder={isOpen ? 'Type to search...' : 'Select a tenant'}
+          placeholder={isOpen ? 'Type to search...' : 'Select a contact'}
           autoComplete="off"
           className="w-full border border-border-strong rounded px-3 py-2 pr-8 bg-surface-card hover:border-primary-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 disabled:bg-surface-inset disabled:cursor-not-allowed text-left text-sm text-text-primary"
         />
@@ -145,49 +145,49 @@ export const TenantSelector = ({
         >
           {isLoading ? (
             <div className="px-3 py-8 text-center text-sm text-text-secondary">
-              Searching tenants...
+              Searching contacts...
             </div>
-          ) : tenants.length === 0 ? (
+          ) : contacts.length === 0 ? (
             <div className="px-3 py-8 text-center text-sm text-text-secondary">
-              No tenants found
+              No contacts found
             </div>
           ) : (
-            tenants.map((tenant, index) => (
+            contacts.map((contact, index) => (
               <button
-                key={tenant.identifier}
+                key={contact.identifier}
                 type="button"
                 data-option
                 onMouseDown={(e) => e.preventDefault()}
-                onClick={() => handleSelect(tenant.identifier)}
+                onClick={() => handleSelect(contact.identifier)}
                 onMouseEnter={() => setHighlightedIndex(index)}
                 className={`w-full text-left px-3 py-3 flex items-center gap-3 ${
                   highlightedIndex === index
                     ? 'bg-primary-50'
-                    : tenant.identifier === value
+                    : contact.identifier === value
                       ? 'bg-primary-100'
                       : ''
                 }`}
               >
                 <Avatar
-                  firstName={tenant.firstName}
-                  lastName={tenant.lastName}
-                  photoUrl={tenant.mainPhotoThumbnailUrl ?? tenant.mainPhotoUrl}
+                  firstName={contact.firstName}
+                  lastName={contact.lastName}
+                  photoUrl={contact.mainPhotoThumbnailUrl ?? contact.mainPhotoUrl}
                   size="md"
                 />
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-medium text-text-primary">
-                    {tenant.firstName} {tenant.lastName}
+                    {contact.firstName} {contact.lastName}
                   </div>
                   <div className="text-xs text-text-secondary truncate">
-                    {tenant.email}
+                    {contact.email}
                   </div>
-                  {tenant.phone && (
+                  {contact.phone && (
                     <div className="text-xs text-text-muted">
-                      {tenant.phone}
+                      {contact.phone}
                     </div>
                   )}
                   <div className="text-xs text-text-muted">
-                    #{tenant.identifier}
+                    #{contact.identifier}
                   </div>
                 </div>
               </button>

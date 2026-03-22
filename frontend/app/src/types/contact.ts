@@ -3,32 +3,32 @@ import { PropertySummary } from './property';
 
 // Enums — re-exported from generated
 export {
-  PropertyTenantHistoryResponseActionType as PropertyTenantActionType,
-  type PropertyTenantHistoryResponseActionType,
+  PropertyContactHistoryResponseActionType as PropertyContactActionType,
+  type PropertyContactHistoryResponseActionType,
 } from '../generated/models';
 
 export {
-  TenantAddressResponseAddressType as AddressType,
-  type TenantAddressResponseAddressType,
+  ContactAddressResponseAddressType as AddressType,
+  type ContactAddressResponseAddressType,
 } from '../generated/models';
 
 export {
-  TenantAddressResponseStatus as AddressStatus,
-  type TenantAddressResponseStatus,
+  ContactAddressResponseStatus as AddressStatus,
+  type ContactAddressResponseStatus,
 } from '../generated/models';
 
 // Interfaces — kept manual (generated adds to optional fields)
 
-import type { TenantAddressResponseAddressType } from '../generated/models';
-import type { TenantAddressResponseStatus } from '../generated/models';
-import type { PropertyTenantHistoryResponseActionType } from '../generated/models';
+import type { ContactAddressResponseAddressType } from '../generated/models';
+import type { ContactAddressResponseStatus } from '../generated/models';
+import type { PropertyContactHistoryResponseActionType } from '../generated/models';
 
-export interface TenantPropertyAssignment {
+export interface ContactPropertyAssignment {
   property: PropertySummary;
   role?: ContractPartyRole;
 }
 
-export interface TenantResponse {
+export interface ContactResponse {
   identifier: string;
   firstName: string;
   lastName?: string;
@@ -39,12 +39,12 @@ export interface TenantResponse {
   additionalInfo?: string;
   mainPhotoUrl?: string;
   mainPhotoThumbnailUrl?: string;
-  activeProperties?: TenantPropertyAssignment[];
+  activeProperties?: ContactPropertyAssignment[];
   createdAt: string;
   updatedAt?: string;
 }
 
-export interface TenantSummary {
+export interface ContactSummary {
   identifier: string;
   firstName: string;
   lastName?: string;
@@ -52,18 +52,18 @@ export interface TenantSummary {
   phone?: string;
 }
 
-export interface PropertyTenantHistoryResponse {
+export interface PropertyContactHistoryResponse {
   property: PropertySummary;
   movedInAt?: string;
   movedOutAt?: string;
-  actionType: PropertyTenantHistoryResponseActionType;
+  actionType: PropertyContactHistoryResponseActionType;
   performedBy: string;
   performedAt: string;
 }
 
 // Request interfaces — manual (generated adds to all optional fields)
 
-export interface CreateTenantRequest {
+export interface CreateContactRequest {
   firstName: string;
   lastName?: string;
   email?: string;
@@ -73,7 +73,7 @@ export interface CreateTenantRequest {
   additionalInfo?: string;
 }
 
-export interface UpdateTenantRequest {
+export interface UpdateContactRequest {
   firstName: string;
   lastName?: string;
   email?: string;
@@ -83,43 +83,43 @@ export interface UpdateTenantRequest {
   additionalInfo?: string;
 }
 
-export interface LinkTenantToPropertyRequest {
+export interface LinkContactToPropertyRequest {
   propertyIdentifier: string;
   movedInAt?: string;
 }
 
-export interface CreateTenantAddressRequest {
+export interface CreateContactAddressRequest {
   street: string;
   city: string;
   postalCode?: string;
   countryCode: string;
-  addressType: TenantAddressResponseAddressType;
-  status?: TenantAddressResponseStatus;
+  addressType: ContactAddressResponseAddressType;
+  status?: ContactAddressResponseStatus;
   latitude?: number;
   longitude?: number;
   geocodeAccuracy?: string;
 }
 
-export interface UpdateTenantAddressRequest {
+export interface UpdateContactAddressRequest {
   street: string;
   city: string;
   postalCode?: string;
   countryCode: string;
-  addressType: TenantAddressResponseAddressType;
-  status: TenantAddressResponseStatus;
+  addressType: ContactAddressResponseAddressType;
+  status: ContactAddressResponseStatus;
   latitude?: number;
   longitude?: number;
   geocodeAccuracy?: string;
 }
 
-export interface TenantAddressResponse {
+export interface ContactAddressResponse {
   identifier: string;
   street: string;
   city: string;
   postalCode?: string;
   countryCode: string;
-  addressType: TenantAddressResponseAddressType;
-  status: TenantAddressResponseStatus;
+  addressType: ContactAddressResponseAddressType;
+  status: ContactAddressResponseStatus;
   latitude?: number;
   longitude?: number;
   geocodeAccuracy?: string;

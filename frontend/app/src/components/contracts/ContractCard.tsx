@@ -33,7 +33,7 @@ export const ContractCard = ({ contract }: ContractCardProps) => {
           </div>
         </div>
 
-        {/* Property and Tenant */}
+        {/* Property and Contact */}
         <div className="mb-3 space-y-2">
           <div className="flex items-center gap-2 text-text-secondary">
             <Home className="h-4 w-4 flex-shrink-0" />
@@ -42,8 +42,8 @@ export const ContractCard = ({ contract }: ContractCardProps) => {
           <div className="flex items-center gap-2 text-text-secondary">
             <User className="h-4 w-4 flex-shrink-0" />
             <span className="text-sm">
-              {contract.primaryTenant.firstName}{' '}
-              {contract.primaryTenant.lastName}
+              {contract.primaryContact.firstName}{' '}
+              {contract.primaryContact.lastName}
             </span>
           </div>
         </div>

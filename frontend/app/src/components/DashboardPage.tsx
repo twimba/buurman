@@ -414,7 +414,7 @@ export const DashboardPage = () => {
                           className="text-sm font-medium text-text-primary hover:text-primary-500 truncate"
                         >
                           {payment.property?.street || 'Payment'} &mdash;{' '}
-                          {payment.tenant?.firstName} {payment.tenant?.lastName}
+                          {payment.contact?.firstName} {payment.contact?.lastName}
                         </button>
                         <span
                           className={`flex-shrink-0 px-2 py-0.5 rounded text-xs font-medium ${isOverdue ? 'bg-error-bg text-error-text' : 'bg-warning-bg text-warning-text'}`}

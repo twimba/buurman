@@ -6,7 +6,7 @@ import {
   UpdateContractRequest,
   ChangeContractStatusRequest,
   AddContractPartyRequest,
-  ChangePrimaryTenantRequest,
+  ChangePrimaryContactRequest,
   CountryMetadataSchema,
 } from '../types/contract';
 import { DocumentResponse } from '../types/property';
@@ -16,7 +16,7 @@ import { PageResponse, PageParams } from '@/types/common';
 export interface GetContractsParams {
   status?: string;
   propertyIdentifier?: string;
-  tenantIdentifier?: string;
+  contactIdentifier?: string;
 }
 
 export const getContracts = async (
@@ -147,9 +147,9 @@ export const removeContractParty = async (
   await client.delete(`/contracts/${contractId}/parties/${partyIdentifier}`);
 };
 
-export const changePrimaryTenant = async (
+export const changePrimaryContact = async (
   contractId: string,
-  data: ChangePrimaryTenantRequest
+  data: ChangePrimaryContactRequest
 ): Promise<ContractPartyResponse> => {
   const response = await client.post(
     `/contracts/${contractId}/parties/change-primary`,

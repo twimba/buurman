@@ -1,6 +1,6 @@
 import { ContractSummary } from './contract';
 import { PropertySummary, DocumentResponse } from './property';
-import { TenantSummary } from './tenant';
+import { ContactSummary } from './contact';
 
 // Enum — re-exported from generated
 export {
@@ -64,7 +64,7 @@ export interface PaymentReceivalResponse {
 export interface PaymentResponse {
   identifier: string;
   contract: ContractSummary;
-  tenant: TenantSummary;
+  contact: ContactSummary;
   property: PropertySummary;
   amount: number;
   currency: string;

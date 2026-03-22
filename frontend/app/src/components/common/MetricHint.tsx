@@ -27,7 +27,7 @@ const HINTS: Record<string, string> = {
     'Weighted Capitalization Rate — NOI divided by property value, weighted by portfolio value across all properties',
   'Wtd Cash-on-Cash':
     'Weighted Cash-on-Cash Return — annual pre-tax cash flow divided by total cash invested, weighted by equity across all properties',
-  Occupancy: 'Percentage of units currently occupied by tenants',
+  Occupancy: 'Percentage of units currently occupied by contacts',
   // Dashboard / reports
   'Occupancy Rate': 'Percentage of units currently rented out',
   'Net Profit': 'Total income minus total expenses for the period',

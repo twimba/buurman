@@ -34,7 +34,7 @@ export const useDeletePhoto = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['photos'] });
       queryClient.invalidateQueries({ queryKey: ['propertyPhotos'] });
-      queryClient.invalidateQueries({ queryKey: ['tenantPhotos'] });
+      queryClient.invalidateQueries({ queryKey: ['contactPhotos'] });
       queryClient.invalidateQueries({ queryKey: ['properties'] });
       showToast('Photo deleted successfully', 'success');
     },
@@ -79,10 +79,10 @@ export const useUpdatePhoto = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['photos'] });
       queryClient.invalidateQueries({ queryKey: ['propertyPhotos'] });
-      queryClient.invalidateQueries({ queryKey: ['tenantPhotos'] });
+      queryClient.invalidateQueries({ queryKey: ['contactPhotos'] });
       queryClient.invalidateQueries({ queryKey: ['properties'] });
       queryClient.invalidateQueries({ queryKey: ['propertyAuditLog'] });
-      queryClient.invalidateQueries({ queryKey: ['tenantAuditLog'] });
+      queryClient.invalidateQueries({ queryKey: ['contactAuditLog'] });
       showToast('Photo updated successfully', 'success');
     },
     onError: (error) => {

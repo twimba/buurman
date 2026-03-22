@@ -4,47 +4,48 @@ import {
   useQueryClient,
   keepPreviousData,
 } from '@tanstack/react-query';
-import * as tenantsApi from '../api/tenants';
+import * as contactsApi from '../api/contacts';
 import {
-  CreateTenantRequest,
-  UpdateTenantRequest,
-  LinkTenantToPropertyRequest,
-  CreateTenantAddressRequest,
-  UpdateTenantAddressRequest,
-} from '../types/tenant';
+  CreateContactRequest,
+  UpdateContactRequest,
+  LinkContactToPropertyRequest,
+  CreateContactAddressRequest,
+  UpdateContactAddressRequest,
+} from '../types/contact';
 import type { PageParams } from '@/types/common';
 import { useToast } from '../context/ToastContext';
 import { getErrorMessage } from '../utils/errorMessages';
 import { trackEvent } from '../utils/analytics';
 import { AnalyticsEvent } from '../constants/analyticsEvents';
 
-export const useTenants = (params?: { search?: string } & PageParams) => {
+export const useContacts = (params?: { search?: string } & PageParams) => {
   return useQuery({
-    queryKey: ['tenants', params],
-    queryFn: () => tenantsApi.getTenants(params),
+    queryKey: ['contacts', params],
+    queryFn: () => contactsApi.getContacts(params),
     placeholderData: keepPreviousData,
   });
 };
 
-export const useTenant = (id: string | undefined) => {
+export const useContact = (id: string | undefined) => {
   return useQuery({
-    queryKey: ['tenant', id],
-    queryFn: () => tenantsApi.getTenant(id ?? ''),
+    queryKey: ['contact', id],
+    queryFn: () => contactsApi.getContact(id ?? ''),
     enabled: !!id,
   });
 };
 
-export const useCreateTenant = () => {
+export const useCreateContact = () => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   return useMutation({
-    mutationFn: (data: CreateTenantRequest) => tenantsApi.createTenant(data),
+    mutationFn: (data: CreateContactRequest) =>
+      contactsApi.createContact(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tenants'] });
+      queryClient.invalidateQueries({ queryKey: ['contacts'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
-      showToast('Tenant created successfully', 'success');
-      trackEvent(AnalyticsEvent.TENANT_CREATED);
+      showToast('Contact created successfully', 'success');
+      trackEvent(AnalyticsEvent.CONTACT_CREATED);
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -52,19 +53,19 @@ export const useCreateTenant = () => {
   });
 };
 
-export const useUpdateTenant = (id: string) => {
+export const useUpdateContact = (id: string) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   return useMutation({
-    mutationFn: (data: UpdateTenantRequest) =>
-      tenantsApi.updateTenant(id, data),
+    mutationFn: (data: UpdateContactRequest) =>
+      contactsApi.updateContact(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tenants'] });
-      queryClient.invalidateQueries({ queryKey: ['tenant', id] });
-      queryClient.invalidateQueries({ queryKey: ['tenantAuditLog', id] });
+      queryClient.invalidateQueries({ queryKey: ['contacts'] });
+      queryClient.invalidateQueries({ queryKey: ['contact', id] });
+      queryClient.invalidateQueries({ queryKey: ['contactAuditLog', id] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
-      showToast('Tenant updated successfully', 'success');
+      showToast('Contact updated successfully', 'success');
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -72,17 +73,17 @@ export const useUpdateTenant = (id: string) => {
   });
 };
 
-export const useDeleteTenant = () => {
+export const useDeleteContact = () => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   return useMutation({
-    mutationFn: (id: string) => tenantsApi.deleteTenant(id),
+    mutationFn: (id: string) => contactsApi.deleteContact(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tenants'] });
+      queryClient.invalidateQueries({ queryKey: ['contacts'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
-      showToast('Tenant deleted successfully', 'success');
-      trackEvent(AnalyticsEvent.TENANT_DELETED);
+      showToast('Contact deleted successfully', 'success');
+      trackEvent(AnalyticsEvent.CONTACT_DELETED);
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -90,16 +91,18 @@ export const useDeleteTenant = () => {
   });
 };
 
-export const useLinkTenantToProperty = (tenantId: string) => {
+export const useLinkContactToProperty = (contactId: string) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   return useMutation({
-    mutationFn: (data: LinkTenantToPropertyRequest) =>
-      tenantsApi.linkTenantToProperty(tenantId, data),
+    mutationFn: (data: LinkContactToPropertyRequest) =>
+      contactsApi.linkContactToProperty(contactId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tenants'] });
-      queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
-      queryClient.invalidateQueries({ queryKey: ['tenantAuditLog', tenantId] });
+      queryClient.invalidateQueries({ queryKey: ['contacts'] });
+      queryClient.invalidateQueries({ queryKey: ['contact', contactId] });
+      queryClient.invalidateQueries({
+        queryKey: ['contactAuditLog', contactId],
+      });
       queryClient.invalidateQueries({ queryKey: ['properties'] });
     },
     onError: (error) => {
@@ -108,15 +111,17 @@ export const useLinkTenantToProperty = (tenantId: string) => {
   });
 };
 
-export const useUnlinkTenantFromProperty = (tenantId: string) => {
+export const useUnlinkContactFromProperty = (contactId: string) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   return useMutation({
-    mutationFn: () => tenantsApi.unlinkTenantFromProperty(tenantId),
+    mutationFn: () => contactsApi.unlinkContactFromProperty(contactId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tenants'] });
-      queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
-      queryClient.invalidateQueries({ queryKey: ['tenantAuditLog', tenantId] });
+      queryClient.invalidateQueries({ queryKey: ['contacts'] });
+      queryClient.invalidateQueries({ queryKey: ['contact', contactId] });
+      queryClient.invalidateQueries({
+        queryKey: ['contactAuditLog', contactId],
+      });
       queryClient.invalidateQueries({ queryKey: ['properties'] });
     },
     onError: (error) => {
@@ -125,39 +130,39 @@ export const useUnlinkTenantFromProperty = (tenantId: string) => {
   });
 };
 
-export const useTenantHistory = (tenantId: string | undefined) => {
+export const useContactHistory = (contactId: string | undefined) => {
   return useQuery({
-    queryKey: ['tenantHistory', tenantId],
-    queryFn: () => tenantsApi.getTenantHistory(tenantId ?? ''),
-    enabled: !!tenantId,
+    queryKey: ['contactHistory', contactId],
+    queryFn: () => contactsApi.getContactHistory(contactId ?? ''),
+    enabled: !!contactId,
   });
 };
 
-export const useTenantAuditLog = (tenantId: string | undefined) => {
+export const useContactAuditLog = (contactId: string | undefined) => {
   return useQuery({
-    queryKey: ['tenantAuditLog', tenantId],
-    queryFn: () => tenantsApi.getTenantAuditLog(tenantId ?? ''),
-    enabled: !!tenantId,
+    queryKey: ['contactAuditLog', contactId],
+    queryFn: () => contactsApi.getContactAuditLog(contactId ?? ''),
+    enabled: !!contactId,
   });
 };
 
-export const useTenantDocuments = (tenantId: string | undefined) => {
+export const useContactDocuments = (contactId: string | undefined) => {
   return useQuery({
-    queryKey: ['tenantDocuments', tenantId],
-    queryFn: () => tenantsApi.getTenantDocuments(tenantId ?? ''),
-    enabled: !!tenantId,
+    queryKey: ['contactDocuments', contactId],
+    queryFn: () => contactsApi.getContactDocuments(contactId ?? ''),
+    enabled: !!contactId,
   });
 };
 
-export const useTenantPhotos = (tenantId: string | undefined) => {
+export const useContactPhotos = (contactId: string | undefined) => {
   return useQuery({
-    queryKey: ['tenantPhotos', tenantId],
-    queryFn: () => tenantsApi.getTenantPhotos(tenantId ?? ''),
-    enabled: !!tenantId,
+    queryKey: ['contactPhotos', contactId],
+    queryFn: () => contactsApi.getContactPhotos(contactId ?? ''),
+    enabled: !!contactId,
   });
 };
 
-export const useUploadTenantDocument = (tenantId: string) => {
+export const useUploadContactDocument = (contactId: string) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   return useMutation({
@@ -169,13 +174,13 @@ export const useUploadTenantDocument = (tenantId: string) => {
       file: File;
       title?: string;
       notes?: string;
-    }) => tenantsApi.uploadTenantDocument(tenantId, file, title, notes),
+    }) => contactsApi.uploadContactDocument(contactId, file, title, notes),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['tenantDocuments', tenantId],
+        queryKey: ['contactDocuments', contactId],
       });
       queryClient.invalidateQueries({
-        queryKey: ['tenantAuditLog', tenantId],
+        queryKey: ['contactAuditLog', contactId],
       });
       queryClient.invalidateQueries({
         queryKey: ['documents'],
@@ -187,7 +192,7 @@ export const useUploadTenantDocument = (tenantId: string) => {
   });
 };
 
-export const useUploadTenantPhoto = (tenantId: string) => {
+export const useUploadContactPhoto = (contactId: string) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   return useMutation({
@@ -199,13 +204,15 @@ export const useUploadTenantPhoto = (tenantId: string) => {
       file: File;
       title?: string;
       notes?: string;
-    }) => tenantsApi.uploadTenantPhoto(tenantId, file, title, notes),
+    }) => contactsApi.uploadContactPhoto(contactId, file, title, notes),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tenantPhotos', tenantId] });
       queryClient.invalidateQueries({
-        queryKey: ['tenantAuditLog', tenantId],
+        queryKey: ['contactPhotos', contactId],
       });
-      queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
+      queryClient.invalidateQueries({
+        queryKey: ['contactAuditLog', contactId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['contact', contactId] });
       queryClient.invalidateQueries({ queryKey: ['photos'] });
     },
     onError: (error) => {
@@ -214,17 +221,21 @@ export const useUploadTenantPhoto = (tenantId: string) => {
   });
 };
 
-export const useSetTenantMainPhoto = (tenantId: string) => {
+export const useSetContactMainPhoto = (contactId: string) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   return useMutation({
     mutationFn: (photoId: string) =>
-      tenantsApi.setTenantMainPhoto(tenantId, photoId),
+      contactsApi.setContactMainPhoto(contactId, photoId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tenantPhotos', tenantId] });
-      queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
-      queryClient.invalidateQueries({ queryKey: ['tenantAuditLog', tenantId] });
-      queryClient.invalidateQueries({ queryKey: ['tenants'] });
+      queryClient.invalidateQueries({
+        queryKey: ['contactPhotos', contactId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['contact', contactId] });
+      queryClient.invalidateQueries({
+        queryKey: ['contactAuditLog', contactId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['contacts'] });
       queryClient.invalidateQueries({ queryKey: ['photos'] });
     },
     onError: (error) => {
@@ -233,19 +244,19 @@ export const useSetTenantMainPhoto = (tenantId: string) => {
   });
 };
 
-export const useDeleteTenantDocument = (tenantId: string) => {
+export const useDeleteContactDocument = (contactId: string) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   return useMutation({
     mutationFn: (documentId: string) =>
-      tenantsApi.deleteTenantDocument(documentId),
+      contactsApi.deleteContactDocument(documentId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['tenantDocuments', tenantId],
+        queryKey: ['contactDocuments', contactId],
       });
-      queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
+      queryClient.invalidateQueries({ queryKey: ['contact', contactId] });
       queryClient.invalidateQueries({
-        queryKey: ['tenantAuditLog', tenantId],
+        queryKey: ['contactAuditLog', contactId],
       });
       queryClient.invalidateQueries({
         queryKey: ['documents'],
@@ -257,26 +268,28 @@ export const useDeleteTenantDocument = (tenantId: string) => {
   });
 };
 
-export const useTenantAddresses = (tenantId: string | undefined) => {
+export const useContactAddresses = (contactId: string | undefined) => {
   return useQuery({
-    queryKey: ['tenantAddresses', tenantId],
-    queryFn: () => tenantsApi.getTenantAddresses(tenantId ?? ''),
-    enabled: !!tenantId,
+    queryKey: ['contactAddresses', contactId],
+    queryFn: () => contactsApi.getContactAddresses(contactId ?? ''),
+    enabled: !!contactId,
   });
 };
 
-export const useCreateTenantAddress = (tenantId: string) => {
+export const useCreateContactAddress = (contactId: string) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   return useMutation({
-    mutationFn: (data: CreateTenantAddressRequest) =>
-      tenantsApi.createTenantAddress(tenantId, data),
+    mutationFn: (data: CreateContactAddressRequest) =>
+      contactsApi.createContactAddress(contactId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['tenantAddresses', tenantId],
+        queryKey: ['contactAddresses', contactId],
       });
-      queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
-      queryClient.invalidateQueries({ queryKey: ['tenantAuditLog', tenantId] });
+      queryClient.invalidateQueries({ queryKey: ['contact', contactId] });
+      queryClient.invalidateQueries({
+        queryKey: ['contactAuditLog', contactId],
+      });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -284,18 +297,23 @@ export const useCreateTenantAddress = (tenantId: string) => {
   });
 };
 
-export const useUpdateTenantAddress = (tenantId: string, addressId: string) => {
+export const useUpdateContactAddress = (
+  contactId: string,
+  addressId: string
+) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   return useMutation({
-    mutationFn: (data: UpdateTenantAddressRequest) =>
-      tenantsApi.updateTenantAddress(tenantId, addressId, data),
+    mutationFn: (data: UpdateContactAddressRequest) =>
+      contactsApi.updateContactAddress(contactId, addressId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['tenantAddresses', tenantId],
+        queryKey: ['contactAddresses', contactId],
       });
-      queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
-      queryClient.invalidateQueries({ queryKey: ['tenantAuditLog', tenantId] });
+      queryClient.invalidateQueries({ queryKey: ['contact', contactId] });
+      queryClient.invalidateQueries({
+        queryKey: ['contactAuditLog', contactId],
+      });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -303,18 +321,20 @@ export const useUpdateTenantAddress = (tenantId: string, addressId: string) => {
   });
 };
 
-export const useDeleteTenantAddress = (tenantId: string) => {
+export const useDeleteContactAddress = (contactId: string) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   return useMutation({
     mutationFn: (addressId: string) =>
-      tenantsApi.deleteTenantAddress(tenantId, addressId),
+      contactsApi.deleteContactAddress(contactId, addressId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['tenantAddresses', tenantId],
+        queryKey: ['contactAddresses', contactId],
       });
-      queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
-      queryClient.invalidateQueries({ queryKey: ['tenantAuditLog', tenantId] });
+      queryClient.invalidateQueries({ queryKey: ['contact', contactId] });
+      queryClient.invalidateQueries({
+        queryKey: ['contactAuditLog', contactId],
+      });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');

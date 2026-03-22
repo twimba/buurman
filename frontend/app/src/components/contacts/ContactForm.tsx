@@ -1,52 +1,54 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Save } from 'lucide-react';
-import { TenantResponse, CreateTenantRequest } from '@/types/tenant';
+import { ContactResponse, CreateContactRequest } from '@/types/contact';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
 import { PhoneInput, validatePhoneE164 } from '@/components/common/PhoneInput';
 
-interface TenantFormProps {
-  tenant?: TenantResponse;
-  onSubmit: (data: CreateTenantRequest) => Promise<void>;
+interface ContactFormProps {
+  contact?: ContactResponse;
+  onSubmit: (data: CreateContactRequest) => Promise<void>;
   isLoading: boolean;
 }
 
-export const TenantForm = ({
-  tenant,
+export const ContactForm = ({
+  contact,
   onSubmit,
   isLoading,
-}: TenantFormProps) => {
+}: ContactFormProps) => {
   const navigate = useNavigate();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const [formData, setFormData] = useState<CreateTenantRequest>({
-    firstName: tenant?.firstName ?? '',
-    lastName: tenant?.lastName ?? '',
-    email: tenant?.email ?? '',
-    phone: tenant?.phone ?? '',
-    taxNumber: tenant?.taxNumber ?? '',
-    idNumber: tenant?.idNumber ?? '',
-    additionalInfo: tenant?.additionalInfo ?? '',
+  const [formData, setFormData] = useState<CreateContactRequest>({
+    firstName: contact?.firstName ?? '',
+    lastName: contact?.lastName ?? '',
+    email: contact?.email ?? '',
+    phone: contact?.phone ?? '',
+    taxNumber: contact?.taxNumber ?? '',
+    idNumber: contact?.idNumber ?? '',
+    additionalInfo: contact?.additionalInfo ?? '',
   });
-  const [tenantIdentifier, setTenantIdentifier] = useState(tenant?.identifier);
+  const [contactIdentifier, setContactIdentifier] = useState(
+    contact?.identifier
+  );
 
   useEffect(() => {
-    // Only update if tenant identifier changed (editing a different tenant)
+    // Only update if contact identifier changed (editing a different contact)
     /* eslint-disable react-hooks/set-state-in-effect */
-    if (tenant && tenant.identifier !== tenantIdentifier) {
-      setTenantIdentifier(tenant.identifier);
+    if (contact && contact.identifier !== contactIdentifier) {
+      setContactIdentifier(contact.identifier);
       setFormData({
-        firstName: tenant.firstName,
-        lastName: tenant.lastName ?? '',
-        email: tenant.email,
-        phone: tenant.phone ?? '',
-        taxNumber: tenant?.taxNumber ?? '',
-        idNumber: tenant?.idNumber ?? '',
-        additionalInfo: tenant.additionalInfo ?? '',
+        firstName: contact.firstName,
+        lastName: contact.lastName ?? '',
+        email: contact.email,
+        phone: contact.phone ?? '',
+        taxNumber: contact?.taxNumber ?? '',
+        idNumber: contact?.idNumber ?? '',
+        additionalInfo: contact.additionalInfo ?? '',
       });
     }
     /* eslint-enable react-hooks/set-state-in-effect */
-  }, [tenant, tenantIdentifier]);
+  }, [contact, contactIdentifier]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -82,9 +84,11 @@ export const TenantForm = ({
         email: formData.email?.trim() || undefined,
         phone: formData.phone?.trim() || undefined,
       });
-      navigate(tenant ? `/tenants/${tenant.identifier}` : '/tenants');
+      navigate(
+        contact ? `/contacts/${contact.identifier}` : '/contacts'
+      );
     } catch (error) {
-      console.error('Failed to save tenant:', error);
+      console.error('Failed to save contact:', error);
     }
   };
 
@@ -100,7 +104,7 @@ export const TenantForm = ({
     }
   };
 
-  const handleChange = (field: keyof CreateTenantRequest, value: string) => {
+  const handleChange = (field: keyof CreateContactRequest, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: '' }));
@@ -212,7 +216,7 @@ export const TenantForm = ({
           <RichTextEditor
             value={formData.additionalInfo ?? ''}
             onChange={(value) => handleChange('additionalInfo', value)}
-            placeholder="Add any additional information about the tenant"
+            placeholder="Add any additional information about the contact"
             onSubmit={submitForm}
           />
         </div>
@@ -222,7 +226,7 @@ export const TenantForm = ({
       <div className="flex gap-2 justify-end mt-6 pt-6 border-t border-border-default">
         <button
           type="button"
-          onClick={() => navigate('/tenants')}
+          onClick={() => navigate('/contacts')}
           className="border border-border-strong px-4 py-2 rounded hover:bg-surface-inset transition-colors flex items-center gap-2 text-text-secondary"
           disabled={isLoading}
         >
@@ -235,7 +239,11 @@ export const TenantForm = ({
           disabled={isLoading}
         >
           <Save className="h-4 w-4" />
-          {isLoading ? 'Saving...' : tenant ? 'Update Tenant' : 'Create Tenant'}
+          {isLoading
+            ? 'Saving...'
+            : contact
+              ? 'Update Contact'
+              : 'Create Contact'}
         </button>
       </div>
     </form>

@@ -12,11 +12,11 @@ import {
   RentComponentFormItem,
   RentComponentType,
 } from '@/types/contract';
-import { CreateTenantRequest } from '@/types/tenant';
+import { CreateContactRequest } from '@/types/contact';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
 import { MoneyInput } from '@/components/common/MoneyInput';
 import { PropertySelector } from '@/components/common/PropertySelector';
-import { TenantSelector } from '@/components/common/TenantSelector';
+import { ContactSelector } from '@/components/common/ContactSelector';
 import { PhoneInput, validatePhoneE164 } from '@/components/common/PhoneInput';
 import CountryMetadataForm, {
   useCountryName,
@@ -28,7 +28,7 @@ import { useProperties } from '@/hooks/usePropertyHooks';
 import {
   useAddContractParty,
   useRemoveContractParty,
-  useChangePrimaryTenant,
+  useChangePrimaryContact,
 } from '@/hooks/useContractHooks';
 
 interface ContractFormProps {
@@ -36,7 +36,7 @@ interface ContractFormProps {
   onSubmit: (data: CreateContractRequest) => Promise<void>;
   isLoading: boolean;
   prefilledPropertyId?: string;
-  prefilledTenantId?: string;
+  prefilledContactId?: string;
 }
 
 const ADDITIONAL_ROLES = [
@@ -45,7 +45,7 @@ const ADDITIONAL_ROLES = [
   ContractPartyRole.EXTRA_TENANT,
 ];
 
-const EMPTY_NEW_TENANT: CreateTenantRequest = {
+const EMPTY_NEW_CONTACT: CreateContactRequest = {
   firstName: '',
   lastName: '',
   email: '',
@@ -57,13 +57,13 @@ const EMPTY_NEW_TENANT: CreateTenantRequest = {
 interface PartyEntry {
   id: string;
   mode: 'select' | 'create';
-  tenantIdentifier: string;
-  newTenant: CreateTenantRequest;
+  contactIdentifier: string;
+  newContact: CreateContactRequest;
   role: ContractPartyRole;
 }
 
-// --- Inline tenant form for creating a new tenant within a party slot ---
-const InlineTenantForm = ({
+// --- Inline contact form for creating a new contact within a party slot ---
+const InlineContactForm = ({
   value,
   onChange,
   onSwitchToSelect,
@@ -71,8 +71,8 @@ const InlineTenantForm = ({
   errorPrefix,
   disabled,
 }: {
-  value: CreateTenantRequest;
-  onChange: (data: CreateTenantRequest) => void;
+  value: CreateContactRequest;
+  onChange: (data: CreateContactRequest) => void;
   onSwitchToSelect: () => void;
   errors: Record<string, string>;
   errorPrefix: string;
@@ -90,7 +90,7 @@ const InlineTenantForm = ({
         disabled={disabled}
       >
         <ArrowLeft className="h-3 w-3" />
-        Select existing tenant
+        Select existing contact
       </button>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -185,7 +185,7 @@ const InlineTenantForm = ({
 };
 
 // Convert empty optional strings to null before submission
-function sanitizeTenant(data: CreateTenantRequest): CreateTenantRequest {
+function sanitizeContact(data: CreateContactRequest): CreateContactRequest {
   return {
     ...data,
     email: data.email?.trim() || undefined,
@@ -193,9 +193,9 @@ function sanitizeTenant(data: CreateTenantRequest): CreateTenantRequest {
   };
 }
 
-// Validate inline tenant data, return errors keyed by prefix
-function validateInlineTenant(
-  data: CreateTenantRequest,
+// Validate inline contact data, return errors keyed by prefix
+function validateInlineContact(
+  data: CreateContactRequest,
   prefix: string
 ): Record<string, string> {
   const errs: Record<string, string> = {};
@@ -222,20 +222,20 @@ export const ContractForm = ({
   onSubmit,
   isLoading,
   prefilledPropertyId,
-  prefilledTenantId,
+  prefilledContactId,
 }: ContractFormProps) => {
   const navigate = useNavigate();
   const { defaultCurrency } = useTeamDefaults();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const isEditing = !!contract;
 
-  // Primary tenant state (create mode)
+  // Primary contact state (create mode)
   const [primaryMode, setPrimaryMode] = useState<'select' | 'create'>('select');
-  const [primaryTenantId, setPrimaryTenantId] = useState(
-    prefilledTenantId ?? ''
+  const [primaryContactId, setPrimaryContactId] = useState(
+    prefilledContactId ?? ''
   );
-  const [newPrimaryTenant, setNewPrimaryTenant] = useState<CreateTenantRequest>(
-    { ...EMPTY_NEW_TENANT }
+  const [newPrimaryContact, setNewPrimaryContact] = useState<CreateContactRequest>(
+    { ...EMPTY_NEW_CONTACT }
   );
 
   // Additional parties state (create mode)
@@ -272,8 +272,8 @@ export const ContractForm = ({
     renewalTermMonths: contract?.renewalTermMonths ?? undefined,
     maxRenewals: contract?.maxRenewals ?? undefined,
     landlordNoticeDays: contract?.landlordNoticeDays ?? 30,
-    tenantNoticeDays: contract?.tenantNoticeDays ?? 30,
-    requiresTenantConfirmation: contract?.requiresTenantConfirmation ?? false,
+    contactNoticeDays: contract?.contactNoticeDays ?? 30,
+    requiresContactConfirmation: contract?.requiresContactConfirmation ?? false,
     rentAdjustmentType: contract?.rentAdjustmentType ?? 'NONE',
     rentAdjustmentValue: contract?.rentAdjustmentValue ?? undefined,
     landlordType: contract?.landlordType ?? undefined,
@@ -376,14 +376,14 @@ export const ContractForm = ({
       newErrors.propertyIdentifier = 'Property is required';
     }
 
-    // Validate primary tenant
+    // Validate primary contact
     if (!isEditing) {
-      if (primaryMode === 'select' && !primaryTenantId) {
-        newErrors.primaryTenant = 'Primary tenant is required';
+      if (primaryMode === 'select' && !primaryContactId) {
+        newErrors.primaryContact = 'Primary contact is required';
       } else if (primaryMode === 'create') {
         Object.assign(
           newErrors,
-          validateInlineTenant(newPrimaryTenant, 'primary')
+          validateInlineContact(newPrimaryContact, 'primary')
         );
       }
     }
@@ -470,12 +470,12 @@ export const ContractForm = ({
     if (!isEditing) {
       for (let i = 0; i < additionalParties.length; i++) {
         const p = additionalParties[i];
-        if (p.mode === 'select' && !p.tenantIdentifier) {
-          newErrors[`party_${i}`] = 'Tenant is required';
+        if (p.mode === 'select' && !p.contactIdentifier) {
+          newErrors[`party_${i}`] = 'Contact is required';
         } else if (p.mode === 'create') {
           Object.assign(
             newErrors,
-            validateInlineTenant(p.newTenant, `party_${i}`)
+            validateInlineContact(p.newContact, `party_${i}`)
           );
         }
       }
@@ -497,23 +497,23 @@ export const ContractForm = ({
         : [
             primaryMode === 'select'
               ? {
-                  tenantIdentifier: primaryTenantId,
+                  contactIdentifier: primaryContactId,
                   role: ContractPartyRole.PRIMARY_TENANT,
                 }
               : {
-                  newTenant: sanitizeTenant(newPrimaryTenant),
+                  newContact: sanitizeContact(newPrimaryContact),
                   role: ContractPartyRole.PRIMARY_TENANT,
                 },
             ...additionalParties
               .filter(
                 (p) =>
-                  (p.mode === 'select' && p.tenantIdentifier) ||
+                  (p.mode === 'select' && p.contactIdentifier) ||
                   p.mode === 'create'
               )
               .map((p) =>
                 p.mode === 'select'
-                  ? { tenantIdentifier: p.tenantIdentifier, role: p.role }
-                  : { newTenant: sanitizeTenant(p.newTenant), role: p.role }
+                  ? { contactIdentifier: p.contactIdentifier, role: p.role }
+                  : { newContact: sanitizeContact(p.newContact), role: p.role }
               ),
           ];
 
@@ -571,8 +571,8 @@ export const ContractForm = ({
       {
         id: crypto.randomUUID(),
         mode: 'select',
-        tenantIdentifier: '',
-        newTenant: { ...EMPTY_NEW_TENANT },
+        contactIdentifier: '',
+        newContact: { ...EMPTY_NEW_CONTACT },
         role,
       },
     ]);
@@ -632,38 +632,38 @@ export const ContractForm = ({
             <>
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">
-                  Primary Tenant <span className="text-error-text">*</span>
+                  Primary Contact <span className="text-error-text">*</span>
                 </label>
 
                 {primaryMode === 'select' ? (
                   <>
-                    <TenantSelector
-                      value={primaryTenantId}
+                    <ContactSelector
+                      value={primaryContactId}
                       onChange={(value) => {
-                        setPrimaryTenantId(value);
-                        if (errors.primaryTenant) {
+                        setPrimaryContactId(value);
+                        if (errors.primaryContact) {
                           setErrors((prev) => {
                             const next = { ...prev };
-                            delete next.primaryTenant;
+                            delete next.primaryContact;
                             return next;
                           });
                         }
                       }}
                       disabled={isLoading}
                     />
-                    {errors.primaryTenant && (
+                    {errors.primaryContact && (
                       <p className="text-error-text text-sm mt-1">
-                        {errors.primaryTenant}
+                        {errors.primaryContact}
                       </p>
                     )}
                     <button
                       type="button"
                       onClick={() => {
                         setPrimaryMode('create');
-                        setPrimaryTenantId('');
+                        setPrimaryContactId('');
                         setErrors((prev) => {
                           const next = { ...prev };
-                          delete next.primaryTenant;
+                          delete next.primaryContact;
                           return next;
                         });
                       }}
@@ -671,14 +671,14 @@ export const ContractForm = ({
                       disabled={isLoading}
                     >
                       <UserPlus className="h-3 w-3" />
-                      Create new tenant
+                      Create new contact
                     </button>
                   </>
                 ) : (
-                  <InlineTenantForm
-                    value={newPrimaryTenant}
+                  <InlineContactForm
+                    value={newPrimaryContact}
                     onChange={(data) => {
-                      setNewPrimaryTenant(data);
+                      setNewPrimaryContact(data);
                       // Clear related errors on change
                       const keysToRemove = Object.keys(errors).filter((k) =>
                         k.startsWith('primary_')
@@ -693,7 +693,7 @@ export const ContractForm = ({
                     }}
                     onSwitchToSelect={() => {
                       setPrimaryMode('select');
-                      setNewPrimaryTenant({ ...EMPTY_NEW_TENANT });
+                      setNewPrimaryContact({ ...EMPTY_NEW_CONTACT });
                     }}
                     errors={errors}
                     errorPrefix="primary"
@@ -709,11 +709,11 @@ export const ContractForm = ({
                     <div>
                       <div className="flex gap-2 items-center">
                         <div className="flex-1">
-                          <TenantSelector
-                            value={party.tenantIdentifier}
+                          <ContactSelector
+                            value={party.contactIdentifier}
                             onChange={(value) =>
                               updatePartyField(index, {
-                                tenantIdentifier: value,
+                                contactIdentifier: value,
                               })
                             }
                             disabled={isLoading}
@@ -754,14 +754,14 @@ export const ContractForm = ({
                         onClick={() =>
                           updatePartyField(index, {
                             mode: 'create',
-                            tenantIdentifier: '',
+                            contactIdentifier: '',
                           })
                         }
                         className="mt-1 flex items-center gap-1 text-xs text-primary-500 hover:text-primary-600 transition-colors"
                         disabled={isLoading}
                       >
                         <UserPlus className="h-3 w-3" />
-                        Create new tenant
+                        Create new contact
                       </button>
                     </div>
                   ) : (
@@ -793,15 +793,15 @@ export const ContractForm = ({
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
-                      <InlineTenantForm
-                        value={party.newTenant}
+                      <InlineContactForm
+                        value={party.newContact}
                         onChange={(data) =>
-                          updatePartyField(index, { newTenant: data })
+                          updatePartyField(index, { newContact: data })
                         }
                         onSwitchToSelect={() =>
                           updatePartyField(index, {
                             mode: 'select',
-                            newTenant: { ...EMPTY_NEW_TENANT },
+                            newContact: { ...EMPTY_NEW_CONTACT },
                           })
                         }
                         errors={errors}
@@ -1025,8 +1025,8 @@ export const ContractForm = ({
             renewalTermMonths={formData.renewalTermMonths}
             maxRenewals={formData.maxRenewals}
             landlordNoticeDays={formData.landlordNoticeDays}
-            tenantNoticeDays={formData.tenantNoticeDays}
-            requiresTenantConfirmation={formData.requiresTenantConfirmation}
+            contactNoticeDays={formData.contactNoticeDays}
+            requiresContactConfirmation={formData.requiresContactConfirmation}
             rentAdjustmentType={formData.rentAdjustmentType ?? 'NONE'}
             rentAdjustmentValue={formData.rentAdjustmentValue}
             countryCode={propertyCountryCode}
@@ -1244,36 +1244,36 @@ const ContractPartiesEditor = ({
   const [changePrimaryMode, setChangePrimaryMode] = useState<
     'select' | 'create'
   >('select');
-  const [newTenantId, setNewTenantId] = useState('');
+  const [newContactId, setNewContactId] = useState('');
   const [newRole, setNewRole] = useState<ContractPartyRole>(
     ContractPartyRole.GUARANTOR
   );
-  const [newPrimaryTenantId, setNewPrimaryTenantId] = useState('');
-  const [inlineNewTenant, setInlineNewTenant] = useState<CreateTenantRequest>({
-    ...EMPTY_NEW_TENANT,
+  const [newPrimaryContactId, setNewPrimaryContactId] = useState('');
+  const [inlineNewContact, setInlineNewContact] = useState<CreateContactRequest>({
+    ...EMPTY_NEW_CONTACT,
   });
-  const [inlineNewPrimary, setInlineNewPrimary] = useState<CreateTenantRequest>(
-    { ...EMPTY_NEW_TENANT }
+  const [inlineNewPrimary, setInlineNewPrimary] = useState<CreateContactRequest>(
+    { ...EMPTY_NEW_CONTACT }
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const addPartyMutation = useAddContractParty(contract.identifier);
   const removePartyMutation = useRemoveContractParty(contract.identifier);
-  const changePrimaryMutation = useChangePrimaryTenant(contract.identifier);
+  const changePrimaryMutation = useChangePrimaryContact(contract.identifier);
 
   const handleAddParty = async () => {
     try {
       if (addMode === 'select') {
-        if (!newTenantId) {
+        if (!newContactId) {
           return;
         }
         await addPartyMutation.mutateAsync({
-          tenantIdentifier: newTenantId,
+          contactIdentifier: newContactId,
           role: newRole,
         });
       } else {
-        const validationErrors = validateInlineTenant(
-          inlineNewTenant,
+        const validationErrors = validateInlineContact(
+          inlineNewContact,
           'add_party'
         );
         if (Object.keys(validationErrors).length > 0) {
@@ -1281,7 +1281,7 @@ const ContractPartiesEditor = ({
           return;
         }
         await addPartyMutation.mutateAsync({
-          newTenant: sanitizeTenant(inlineNewTenant),
+          newContact: sanitizeContact(inlineNewContact),
           role: newRole,
         });
       }
@@ -1292,10 +1292,10 @@ const ContractPartiesEditor = ({
   };
 
   const resetAddForm = () => {
-    setNewTenantId('');
+    setNewContactId('');
     setNewRole(ContractPartyRole.GUARANTOR);
     setAddMode('select');
-    setInlineNewTenant({ ...EMPTY_NEW_TENANT });
+    setInlineNewContact({ ...EMPTY_NEW_CONTACT });
     setShowAddForm(false);
     setErrors({});
   };
@@ -1311,14 +1311,14 @@ const ContractPartiesEditor = ({
   const handleChangePrimary = async () => {
     try {
       if (changePrimaryMode === 'select') {
-        if (!newPrimaryTenantId) {
+        if (!newPrimaryContactId) {
           return;
         }
         await changePrimaryMutation.mutateAsync({
-          tenantIdentifier: newPrimaryTenantId,
+          contactIdentifier: newPrimaryContactId,
         });
       } else {
-        const validationErrors = validateInlineTenant(
+        const validationErrors = validateInlineContact(
           inlineNewPrimary,
           'change_primary'
         );
@@ -1327,7 +1327,7 @@ const ContractPartiesEditor = ({
           return;
         }
         await changePrimaryMutation.mutateAsync({
-          newTenant: sanitizeTenant(inlineNewPrimary),
+          newContact: sanitizeContact(inlineNewPrimary),
         });
       }
       resetChangePrimaryForm();
@@ -1337,9 +1337,9 @@ const ContractPartiesEditor = ({
   };
 
   const resetChangePrimaryForm = () => {
-    setNewPrimaryTenantId('');
+    setNewPrimaryContactId('');
     setChangePrimaryMode('select');
-    setInlineNewPrimary({ ...EMPTY_NEW_TENANT });
+    setInlineNewPrimary({ ...EMPTY_NEW_CONTACT });
     setChangingPrimary(false);
     setErrors({});
   };
@@ -1361,7 +1361,7 @@ const ContractPartiesEditor = ({
         >
           <div className="flex-1 min-w-0">
             <span className="font-medium text-text-primary">
-              {party.tenant.firstName} {party.tenant.lastName}
+              {party.contact.firstName} {party.contact.lastName}
             </span>
             <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-neutral-100 text-text-secondary">
               {PARTY_ROLE_LABELS[party.role]}
@@ -1389,35 +1389,35 @@ const ContractPartiesEditor = ({
         </div>
       ))}
 
-      {/* Change primary tenant form */}
+      {/* Change primary contact form */}
       {changingPrimary && (
         <div className="space-y-2">
           {changePrimaryMode === 'select' ? (
             <div className="flex gap-2 items-center">
               <div className="flex-1">
-                <TenantSelector
-                  value={newPrimaryTenantId}
-                  onChange={setNewPrimaryTenantId}
+                <ContactSelector
+                  value={newPrimaryContactId}
+                  onChange={setNewPrimaryContactId}
                   disabled={isBusy}
                 />
                 <button
                   type="button"
                   onClick={() => {
                     setChangePrimaryMode('create');
-                    setNewPrimaryTenantId('');
+                    setNewPrimaryContactId('');
                   }}
                   className="mt-1 flex items-center gap-1 text-xs text-primary-500 hover:text-primary-600 transition-colors"
                   disabled={isBusy}
                 >
                   <UserPlus className="h-3 w-3" />
-                  Create new tenant
+                  Create new contact
                 </button>
               </div>
               <button
                 type="button"
                 onClick={handleChangePrimary}
                 className="px-3 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors text-sm whitespace-nowrap"
-                disabled={isBusy || !newPrimaryTenantId}
+                disabled={isBusy || !newPrimaryContactId}
               >
                 Confirm
               </button>
@@ -1432,7 +1432,7 @@ const ContractPartiesEditor = ({
             </div>
           ) : (
             <div className="space-y-2">
-              <InlineTenantForm
+              <InlineContactForm
                 value={inlineNewPrimary}
                 onChange={(data) => {
                   setInlineNewPrimary(data);
@@ -1440,7 +1440,7 @@ const ContractPartiesEditor = ({
                 }}
                 onSwitchToSelect={() => {
                   setChangePrimaryMode('select');
-                  setInlineNewPrimary({ ...EMPTY_NEW_TENANT });
+                  setInlineNewPrimary({ ...EMPTY_NEW_CONTACT });
                   setErrors({});
                 }}
                 errors={errors}
@@ -1477,9 +1477,9 @@ const ContractPartiesEditor = ({
             <div>
               <div className="flex gap-2 items-center">
                 <div className="flex-1">
-                  <TenantSelector
-                    value={newTenantId}
-                    onChange={setNewTenantId}
+                  <ContactSelector
+                    value={newContactId}
+                    onChange={setNewContactId}
                     disabled={isBusy}
                   />
                 </div>
@@ -1501,7 +1501,7 @@ const ContractPartiesEditor = ({
                   type="button"
                   onClick={handleAddParty}
                   className="px-3 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors text-sm whitespace-nowrap"
-                  disabled={isBusy || !newTenantId}
+                  disabled={isBusy || !newContactId}
                 >
                   Add
                 </button>
@@ -1518,13 +1518,13 @@ const ContractPartiesEditor = ({
                 type="button"
                 onClick={() => {
                   setAddMode('create');
-                  setNewTenantId('');
+                  setNewContactId('');
                 }}
                 className="mt-1 flex items-center gap-1 text-xs text-primary-500 hover:text-primary-600 transition-colors"
                 disabled={isBusy}
               >
                 <UserPlus className="h-3 w-3" />
-                Create new tenant
+                Create new contact
               </button>
             </div>
           ) : (
@@ -1554,15 +1554,15 @@ const ContractPartiesEditor = ({
                   <X className="h-4 w-4" />
                 </button>
               </div>
-              <InlineTenantForm
-                value={inlineNewTenant}
+              <InlineContactForm
+                value={inlineNewContact}
                 onChange={(data) => {
-                  setInlineNewTenant(data);
+                  setInlineNewContact(data);
                   setErrors({});
                 }}
                 onSwitchToSelect={() => {
                   setAddMode('select');
-                  setInlineNewTenant({ ...EMPTY_NEW_TENANT });
+                  setInlineNewContact({ ...EMPTY_NEW_CONTACT });
                   setErrors({});
                 }}
                 errors={errors}

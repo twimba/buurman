@@ -50,7 +50,7 @@ export interface DeclineContractExtensionRequest {
 export interface UpcomingRenewalResponse {
   contractIdentifier: string;
   propertyName?: string;
-  tenantName?: string;
+  contactName?: string;
   effectiveEndDate: string;
   renewalMode: RenewalMode;
   renewalTermMonths?: number;

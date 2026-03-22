@@ -1,21 +1,21 @@
 import { useState, useEffect } from 'react';
 import { X, Save } from 'lucide-react';
 import {
-  TenantAddressResponse,
-  CreateTenantAddressRequest,
-  UpdateTenantAddressRequest,
+  ContactAddressResponse,
+  CreateContactAddressRequest,
+  UpdateContactAddressRequest,
   AddressType,
   AddressStatus,
-} from '@/types/tenant';
+} from '@/types/contact';
 import { InteractiveMap } from '../common/InteractiveMap';
 import { CountrySelector } from '../common/CountrySelector';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 import { useGeocode } from '@/hooks/useGeocodingHooks';
 
 interface AddressFormProps {
-  address?: TenantAddressResponse;
+  address?: ContactAddressResponse;
   onSubmit: (
-    data: CreateTenantAddressRequest | UpdateTenantAddressRequest
+    data: CreateContactAddressRequest | UpdateContactAddressRequest
   ) => Promise<void>;
   onCancel: () => void;
   isLoading: boolean;

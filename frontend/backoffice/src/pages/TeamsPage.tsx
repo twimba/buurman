@@ -198,7 +198,7 @@ export const TeamsPage = () => {
       {deleteIdentifier && (
         <ConfirmDialog
           title="Delete Team"
-          message="Are you sure you want to delete this team? This action cannot be undone. All team data including properties, tenants, contracts, and financial records will be permanently removed."
+          message="Are you sure you want to delete this team? This action cannot be undone. All team data including properties, contacts, contracts, and financial records will be permanently removed."
           confirmLabel="Delete"
           cancelLabel="Cancel"
           variant="danger"

@@ -97,19 +97,19 @@ export const CalendarFeedsSection = () => {
     const order: CalendarFeedType[] = [
       CalendarFeedType.ALL_PAYMENTS,
       CalendarFeedType.PROPERTY_PAYMENTS,
-      CalendarFeedType.TENANT_PAYMENTS,
+      CalendarFeedType.CONTACT_PAYMENTS,
       CalendarFeedType.CONTRACT,
     ];
     const labels: Record<CalendarFeedType, string> = {
       [CalendarFeedType.ALL_PAYMENTS]: 'All Payments',
       [CalendarFeedType.PROPERTY_PAYMENTS]: 'Property Payments',
-      [CalendarFeedType.TENANT_PAYMENTS]: 'Tenant Payments',
+      [CalendarFeedType.CONTACT_PAYMENTS]: 'Contact Payments',
       [CalendarFeedType.CONTRACT]: 'Contract',
     };
     const icons: Record<CalendarFeedType, typeof Calendar> = {
       [CalendarFeedType.ALL_PAYMENTS]: Calendar,
       [CalendarFeedType.PROPERTY_PAYMENTS]: Home,
-      [CalendarFeedType.TENANT_PAYMENTS]: User,
+      [CalendarFeedType.CONTACT_PAYMENTS]: User,
       [CalendarFeedType.CONTRACT]: Link,
     };
     const grouped = new Map<CalendarFeedType, CalendarFeedResponse[]>();

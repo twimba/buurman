@@ -37,7 +37,7 @@ export const PaymentCard = ({ payment }: PaymentCardProps) => {
           </div>
         </div>
 
-        {/* Property and Tenant */}
+        {/* Property and Contact */}
         <div className="mb-3 space-y-2">
           {payment.property && (
             <div>
@@ -47,11 +47,11 @@ export const PaymentCard = ({ payment }: PaymentCardProps) => {
               </p>
             </div>
           )}
-          {payment.tenant && (
+          {payment.contact && (
             <div>
-              <p className="text-xs text-text-secondary">Tenant</p>
+              <p className="text-xs text-text-secondary">Contact</p>
               <p className="text-sm font-medium text-text-primary">
-                {payment.tenant.firstName} {payment.tenant.lastName}
+                {payment.contact.firstName} {payment.contact.lastName}
               </p>
             </div>
           )}

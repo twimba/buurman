@@ -1,19 +1,19 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { useTenant, useUpdateTenant } from '@/hooks/useTenantHooks';
-import { TenantForm } from '@/components/tenants/TenantForm';
-import { UpdateTenantRequest } from '@/types/tenant';
+import { useContact, useUpdateContact } from '@/hooks/useContactHooks';
+import { ContactForm } from '@/components/contacts/ContactForm';
+import { UpdateContactRequest } from '@/types/contact';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { ArrowLeft } from 'lucide-react';
 
-export const TenantEditPage = () => {
+export const ContactEditPage = () => {
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { data: tenant, isLoading, error } = useTenant(id);
-  const updateTenantMutation = useUpdateTenant(id);
+  const { data: contact, isLoading, error } = useContact(id);
+  const updateContactMutation = useUpdateContact(id);
 
-  const handleSubmit = async (data: UpdateTenantRequest) => {
-    await updateTenantMutation.mutateAsync(data);
+  const handleSubmit = async (data: UpdateContactRequest) => {
+    await updateContactMutation.mutateAsync(data);
   };
 
   if (isLoading) {
@@ -24,10 +24,10 @@ export const TenantEditPage = () => {
     );
   }
 
-  if (error || !tenant) {
+  if (error || !contact) {
     return (
       <div className="min-h-screen bg-surface-page p-8">
-        <ErrorMessage message="Failed to load tenant" />
+        <ErrorMessage message="Failed to load contact" />
       </div>
     );
   }
@@ -38,20 +38,22 @@ export const TenantEditPage = () => {
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
           <button
-            onClick={() => navigate(`/tenants/${id}`)}
+            onClick={() => navigate(`/contacts/${id}`)}
             className="p-2 hover:bg-neutral-100 rounded transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <h1 className="text-2xl font-bold text-text-primary">Edit Tenant</h1>
+          <h1 className="text-2xl font-bold text-text-primary">
+            Edit Contact
+          </h1>
         </div>
 
         {/* Form */}
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-          <TenantForm
-            tenant={tenant}
+          <ContactForm
+            contact={contact}
             onSubmit={handleSubmit}
-            isLoading={updateTenantMutation.isPending}
+            isLoading={updateContactMutation.isPending}
           />
         </div>
       </div>

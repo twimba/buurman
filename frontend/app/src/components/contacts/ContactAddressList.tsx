@@ -10,47 +10,47 @@ import {
 } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
-  useTenantAddresses,
-  useCreateTenantAddress,
-  useDeleteTenantAddress,
-} from '@/hooks/useTenantHooks';
-import * as tenantsApi from '@/api/tenants';
+  useContactAddresses,
+  useCreateContactAddress,
+  useDeleteContactAddress,
+} from '@/hooks/useContactHooks';
+import * as contactsApi from '@/api/contacts';
 import {
   AddressType,
   AddressStatus,
-  CreateTenantAddressRequest,
-  UpdateTenantAddressRequest,
-} from '@/types/tenant';
+  CreateContactAddressRequest,
+  UpdateContactAddressRequest,
+} from '@/types/contact';
 import { AddressForm } from './AddressForm';
 import { InteractiveMap } from '../common/InteractiveMap';
 import { useTeam } from '@/context/TeamContext';
 import { useToast } from '@/context/ToastContext';
 import { getErrorMessage } from '@/utils/errorMessages';
 
-interface TenantAddressListProps {
-  tenantId: string;
+interface ContactAddressListProps {
+  contactId: string;
 }
 
-export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
+export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
   const { canEditData } = useTeam();
   const { showToast } = useToast();
   const queryClient = useQueryClient();
-  const { data: addresses, isLoading } = useTenantAddresses(tenantId);
-  const createMutation = useCreateTenantAddress(tenantId);
-  const deleteMutation = useDeleteTenantAddress(tenantId);
+  const { data: addresses, isLoading } = useContactAddresses(contactId);
+  const createMutation = useCreateContactAddress(contactId);
+  const deleteMutation = useDeleteContactAddress(contactId);
   const updateMutation = useMutation({
     mutationFn: ({
       addressId,
       data,
     }: {
       addressId: string;
-      data: UpdateTenantAddressRequest;
-    }) => tenantsApi.updateTenantAddress(tenantId, addressId, data),
+      data: UpdateContactAddressRequest;
+    }) => contactsApi.updateContactAddress(contactId, addressId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['tenantAddresses', tenantId],
+        queryKey: ['contactAddresses', contactId],
       });
-      queryClient.invalidateQueries({ queryKey: ['tenant', tenantId] });
+      queryClient.invalidateQueries({ queryKey: ['contact', contactId] });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -69,14 +69,14 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const perPage = 10;
 
-  const handleCreateAddress = async (data: CreateTenantAddressRequest) => {
+  const handleCreateAddress = async (data: CreateContactAddressRequest) => {
     await createMutation.mutateAsync(data);
     setIsAddingNew(false);
   };
 
   const handleUpdateAddress = async (
     addressId: string,
-    data: UpdateTenantAddressRequest
+    data: UpdateContactAddressRequest
   ) => {
     await updateMutation.mutateAsync({ addressId, data });
     setEditingAddressId(null);
@@ -259,7 +259,7 @@ export const TenantAddressList = ({ tenantId }: TenantAddressListProps) => {
             onSubmit={(data) =>
               handleUpdateAddress(
                 editingAddressId,
-                data as UpdateTenantAddressRequest
+                data as UpdateContactAddressRequest
               )
             }
             onCancel={() => setEditingAddressId(null)}

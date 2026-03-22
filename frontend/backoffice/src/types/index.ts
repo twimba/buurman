@@ -45,7 +45,7 @@ export interface BackofficeUserDetail extends BackofficeUser {
 
 export interface DataCounts {
   properties: number;
-  tenants: number;
+  contacts: number;
   contracts: number;
   expenses: number;
   payments: number;
