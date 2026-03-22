@@ -38,6 +38,8 @@ import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Contact;
 import com.buurman.domain.ContactAddress;
+import com.buurman.domain.ContactTag;
+import com.buurman.domain.ContactType;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractPartyRole;
@@ -202,14 +204,17 @@ public class ContactBookletExporter {
 
     html.append("<table class='cover-summary'>");
     html.append("<tr>");
+    appendCoverCell(html, "Type", contact.getContactType().getDisplayName());
     appendCoverCell(html, "Email", contact.getEmail().map(BookletHelper::escapeHtml).orElse("—"));
+    html.append("</tr><tr>");
     appendCoverCell(html, "Phone", contact.getPhone().map(BookletHelper::escapeHtml).orElse("—"));
-    html.append("</tr><tr>");
     appendCoverCell(html, "Active Contracts", String.valueOf(activeContracts));
-    appendCoverCell(html, "Total Contracts", String.valueOf(totalContracts));
     html.append("</tr><tr>");
+    appendCoverCell(html, "Total Contracts", String.valueOf(totalContracts));
     appendCoverCell(html, "Current Property", currentPropertyName);
+    html.append("</tr><tr>");
     appendCoverCell(html, "Reference", contact.getIdentifier().orElseThrow().value());
+    appendCoverCell(html, "", "");
     html.append("</tr>");
     html.append("</table>");
 
@@ -229,15 +234,69 @@ public class ContactBookletExporter {
       int totalContracts) {
     appendPageStart(html, "Contact Profile");
 
-    appendSectionTitle(html, "Personal Information");
+    // Tags row (if any)
+    if (!contact.getTags().isEmpty()) {
+      html.append("<div style='margin-bottom:16px;'>");
+      for (ContactTag tag : contact.getTags()) {
+        html.append(
+                "<span style='display:inline-block;font-size:10px;font-weight:600;"
+                    + "letter-spacing:0.6px;text-transform:uppercase;padding:3px 10px;"
+                    + "border-radius:12px;margin-right:6px;margin-bottom:4px;"
+                    + "color:#0c4a6e;background-color:#e0f2fe;border:1px solid #bae6fd;'>")
+            .append(escapeHtml(tag.getDisplayName()))
+            .append("</span>");
+      }
+      html.append("</div>");
+    }
+
+    boolean isIndividual = contact.getContactType() == ContactType.INDIVIDUAL;
+    String sectionTitle = isIndividual ? "Personal Information" : "Organisation Information";
+    appendSectionTitle(html, sectionTitle);
     html.append("<table class='detail-grid'>");
     html.append("<tr>");
-    appendField(html, "Full Name", fullName);
-    appendField(html, "Email", contact.getEmail().orElse(null));
+    appendField(html, "Display Name", fullName);
+    appendField(html, "Contact Type", contact.getContactType().getDisplayName());
     html.append("</tr><tr>");
+    appendField(html, "Email", contact.getEmail().orElse(null));
     appendField(html, "Phone", contact.getPhone().orElse(null));
-    appendField(html, "Reference", "#" + contact.getIdentifier().orElseThrow().value());
     html.append("</tr>");
+
+    if (isIndividual) {
+      // Individual-specific fields
+      if (contact.getDateOfBirth().isPresent() || contact.getIdExpiryDate().isPresent()) {
+        html.append("<tr>");
+        appendField(
+            html,
+            "Date of Birth",
+            contact.getDateOfBirth().map(Object::toString).orElse(null));
+        appendField(
+            html,
+            "ID Expiry Date",
+            contact.getIdExpiryDate().map(Object::toString).orElse(null));
+        html.append("</tr>");
+      }
+    } else {
+      // Company / Service Provider fields
+      if (contact.getCompanyName().isPresent() || contact.getTradeName().isPresent()) {
+        html.append("<tr>");
+        appendField(html, "Company Name", contact.getCompanyName().orElse(null));
+        appendField(html, "Trade Name", contact.getTradeName().orElse(null));
+        html.append("</tr>");
+      }
+      if (contact.getIndustry().isPresent() || contact.getWebsite().isPresent()) {
+        html.append("<tr>");
+        appendField(html, "Industry", contact.getIndustry().orElse(null));
+        appendField(html, "Website", contact.getWebsite().orElse(null));
+        html.append("</tr>");
+      }
+      if (contact.getInvoiceEmail().isPresent()) {
+        html.append("<tr>");
+        appendField(html, "Invoice Email", contact.getInvoiceEmail().orElse(null));
+        appendField(html, "", null);
+        html.append("</tr>");
+      }
+    }
+
     if (contact.getTaxNumber().isPresent() || contact.getIdNumber().isPresent()) {
       html.append("<tr>");
       appendField(html, "Tax Number", contact.getTaxNumber().orElse(null));
@@ -245,8 +304,8 @@ public class ContactBookletExporter {
       html.append("</tr>");
     }
     html.append("<tr>");
+    appendField(html, "Reference", "#" + contact.getIdentifier().orElseThrow().value());
     appendField(html, "Current Property", currentPropertyName);
-    appendField(html, "", null);
     html.append("</tr>");
     html.append("</table>");
 
@@ -255,7 +314,7 @@ public class ContactBookletExporter {
         .filter(s -> !s.isBlank())
         .ifPresent(
             notes ->
-                html.append("<div class='text-block'><strong>Additional Information</strong><br/>")
+                html.append("<div class='text-block'><strong>Notes</strong><br/>")
                     .append(sanitizeRichText(notes))
                     .append("</div>"));
 
