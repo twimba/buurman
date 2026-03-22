@@ -7,6 +7,7 @@ import static com.buurman.util.SidGenerator.newContactId;
 
 import java.math.BigDecimal;
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.UUID;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Component;
 
+import com.buurman.domain.ContactType;
 import com.buurman.domain.Sid;
 
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,39 @@ public class DemoContactGenerator {
   private final Random random = new Random(42);
 
   public static final int CONTACTS_PER_TEAM = 55;
+
+  // Distribution: 60% INDIVIDUAL, 25% COMPANY, 15% SERVICE_PROVIDER
+  private static final int INDIVIDUAL_COUNT = 33;
+  private static final int COMPANY_COUNT = 14;
+  // remaining 8 are SERVICE_PROVIDER
+
+  private static final String[] SERVICE_PROVIDER_INDUSTRIES = {
+    "Plumbing",
+    "Electrical",
+    "Painting & Decorating",
+    "Cleaning Services",
+    "Locksmith",
+    "HVAC",
+    "Landscaping",
+    "Property Management",
+    "Security",
+    "Pest Control",
+    "Roofing",
+    "Carpentry"
+  };
+
+  private static final String[] COMPANY_INDUSTRIES = {
+    "Technology",
+    "Logistics",
+    "Consulting",
+    "Retail",
+    "Food & Beverage",
+    "Manufacturing",
+    "Finance",
+    "Healthcare",
+    "Education",
+    "Real Estate"
+  };
 
   private static final String[] COUNTRY_CODES = {
     "NL", "DE", "GB", "FR", "ES", "PT", "BE", "IT", "AT", "CH", "US", "IE"
@@ -280,42 +315,34 @@ public class DemoContactGenerator {
       UUID createdBy = ctx.getAdminUserForTeam(teamKey).orElse(null);
       List<UUID> contactIds = new ArrayList<>();
 
-      int businessStart = (int) (CONTACTS_PER_TEAM * 0.6); // first 60% individual, rest business
-
       for (int i = 0; i < CONTACTS_PER_TEAM; i++) {
         UUID contactId = UUID.randomUUID();
-        boolean isBusiness = i >= businessStart;
         String country = COUNTRY_CODES[i % COUNTRY_CODES.length];
         Faker countryFaker = Objects.requireNonNull(COUNTRY_FAKERS.get(country));
+        int countryIdx = indexOf(country);
 
-        String firstName;
-        String lastName;
+        ContactType contactType = resolveContactType(i);
+        boolean isBusiness =
+            contactType == ContactType.COMPANY || contactType == ContactType.SERVICE_PROVIDER;
+
+        String firstName = null;
+        String lastName = null;
+        String companyName = null;
+        String tradeName = null;
+        String industry = null;
+        String website = null;
+        String displayName;
         String email;
         String phone;
         String taxNumber;
-        String additionalInfo = null;
+        String notes = null;
+        LocalDate dateOfBirth = null;
+        LocalDate idExpiryDate = null;
 
-        if (isBusiness) {
-          int countryIdx = indexOf(country);
-          String[] names = BUSINESS_NAMES[countryIdx];
-          String companyName = names[random.nextInt(names.length)];
-          String domain = BUSINESS_DOMAINS[countryIdx];
-
-          firstName = countryFaker.name().firstName(); // contact person
-          lastName = companyName;
-          String slug =
-              companyName
-                  .toLowerCase(Locale.ROOT)
-                  .replaceAll("[^a-z0-9]+", "")
-                  .substring(0, Math.min(15, companyName.replaceAll("[^a-z0-9]+", "").length()));
-          String teamSlug = teamKey.replace("-", "");
-          email = "info." + teamSlug + "." + i + "@" + slug + domain;
-          phone = phoneForCountry(country, random);
-          taxNumber = taxIdForCountry(country, random);
-          additionalInfo = "Business contact - " + companyName;
-        } else {
+        if (contactType == ContactType.INDIVIDUAL) {
           firstName = countryFaker.name().firstName();
           lastName = countryFaker.name().lastName();
+          displayName = firstName + " " + lastName;
           email =
               (firstName.toLowerCase(Locale.ROOT)
                       + "."
@@ -327,6 +354,57 @@ public class DemoContactGenerator {
                   .replaceAll("[^a-z0-9.@]", "");
           phone = phoneForCountry(country, random);
           taxNumber = taxIdForCountry(country, random);
+          // ~60% of individuals have DOB
+          if (random.nextInt(10) < 6) {
+            int age = random.nextInt(20, 65);
+            dateOfBirth =
+                LocalDate.now(clock).minusYears(age).minusDays(random.nextInt(365));
+          }
+          // ~40% have ID expiry date
+          if (random.nextInt(10) < 4) {
+            idExpiryDate = LocalDate.now(clock).plusYears(random.nextInt(1, 8));
+          }
+        } else if (contactType == ContactType.COMPANY) {
+          String[] names = BUSINESS_NAMES[countryIdx];
+          companyName = names[random.nextInt(names.length)];
+          industry = COMPANY_INDUSTRIES[random.nextInt(COMPANY_INDUSTRIES.length)];
+          displayName = companyName;
+          String domain = BUSINESS_DOMAINS[countryIdx];
+          String slug =
+              companyName
+                  .toLowerCase(Locale.ROOT)
+                  .replaceAll("[^a-z0-9]+", "")
+                  .substring(0, Math.min(15, companyName.replaceAll("[^a-z0-9]+", "").length()));
+          String teamSlug = teamKey.replace("-", "");
+          email = "info." + teamSlug + "." + i + "@" + slug + domain;
+          phone = phoneForCountry(country, random);
+          taxNumber = taxIdForCountry(country, random);
+          website = "https://www." + slug + domain;
+          notes = "Company contact — " + industry + " sector";
+          // Contact person for company
+          firstName = countryFaker.name().firstName();
+        } else {
+          // SERVICE_PROVIDER
+          String serviceIndustry =
+              SERVICE_PROVIDER_INDUSTRIES[random.nextInt(SERVICE_PROVIDER_INDUSTRIES.length)];
+          String[] names = BUSINESS_NAMES[countryIdx];
+          companyName = names[random.nextInt(names.length)];
+          industry = serviceIndustry;
+          displayName = companyName;
+          String domain = BUSINESS_DOMAINS[countryIdx];
+          String slug =
+              companyName
+                  .toLowerCase(Locale.ROOT)
+                  .replaceAll("[^a-z0-9]+", "")
+                  .substring(0, Math.min(15, companyName.replaceAll("[^a-z0-9]+", "").length()));
+          String teamSlug = teamKey.replace("-", "");
+          email = "contact." + teamSlug + "." + i + "@" + slug + domain;
+          phone = phoneForCountry(country, random);
+          taxNumber = taxIdForCountry(country, random);
+          website = "https://www." + slug + domain;
+          notes = "Service provider — " + serviceIndustry;
+          // Contact person for service provider
+          firstName = countryFaker.name().firstName();
         }
 
         Sid contactIdentifier = newContactId();
@@ -334,13 +412,22 @@ public class DemoContactGenerator {
             .set(CONTACTS.ID, contactId)
             .set(CONTACTS.IDENTIFIER, contactIdentifier)
             .set(CONTACTS.TEAM_ID, teamId)
+            .set(CONTACTS.CONTACT_TYPE, contactType.name())
+            .set(CONTACTS.DISPLAY_NAME, displayName)
             .set(CONTACTS.FIRST_NAME, firstName)
             .set(CONTACTS.LAST_NAME, lastName)
+            .set(CONTACTS.COMPANY_NAME, companyName)
+            .set(CONTACTS.TRADE_NAME, tradeName)
+            .set(CONTACTS.INDUSTRY, industry)
+            .set(CONTACTS.WEBSITE, website)
             .set(CONTACTS.EMAIL, email)
             .set(CONTACTS.PHONE, phone)
             .set(CONTACTS.TAX_NUMBER, taxNumber)
             .set(CONTACTS.ID_NUMBER, String.format("%09d", random.nextInt(100000000, 999999999)))
-            .set(CONTACTS.NOTES, additionalInfo)
+            .set(CONTACTS.DATE_OF_BIRTH, dateOfBirth)
+            .set(CONTACTS.ID_EXPIRY_DATE, idExpiryDate)
+            .set(CONTACTS.NOTES, notes)
+            .set(CONTACTS.DATA_RETENTION_STATUS, "ACTIVE")
             .set(CONTACTS.CREATED_AT, now.minusDays(random.nextInt(30, 3650)))
             .set(CONTACTS.UPDATED_AT, now)
             .set(CONTACTS.CREATED_BY, createdBy)
@@ -376,11 +463,22 @@ public class DemoContactGenerator {
         contactIds.add(contactId);
         ctx.putIdentifier(contactId, contactIdentifier);
         ctx.putBusinessContactFlag(contactId, isBusiness);
+        ctx.putContactType(contactId, contactType);
         ctx.incrementContacts();
       }
 
       ctx.getContactIdsByTeam().put(teamId, contactIds);
       log.info("Created {} contacts for team {}", CONTACTS_PER_TEAM, teamKey);
+    }
+  }
+
+  private static ContactType resolveContactType(int index) {
+    if (index < INDIVIDUAL_COUNT) {
+      return ContactType.INDIVIDUAL;
+    } else if (index < INDIVIDUAL_COUNT + COMPANY_COUNT) {
+      return ContactType.COMPANY;
+    } else {
+      return ContactType.SERVICE_PROVIDER;
     }
   }
 

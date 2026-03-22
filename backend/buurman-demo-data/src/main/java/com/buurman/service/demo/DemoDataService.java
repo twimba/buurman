@@ -36,6 +36,9 @@ import static com.buurman.jooq.generated.Tables.TEAM_INVITATIONS;
 import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
 import static com.buurman.jooq.generated.Tables.CONTACTS;
 import static com.buurman.jooq.generated.Tables.CONTACT_ADDRESSES;
+import static com.buurman.jooq.generated.Tables.CONTACT_NOTES;
+import static com.buurman.jooq.generated.Tables.CONTACT_RELATIONSHIPS;
+import static com.buurman.jooq.generated.Tables.CONTACT_TAGS;
 import static com.buurman.jooq.generated.Tables.USERS;
 import static com.buurman.jooq.generated.Tables.USER_PREFERENCES;
 import static com.buurman.jooq.generated.Tables.USER_TEAM_NOTIFICATION_PREFERENCES;
@@ -69,6 +72,9 @@ public class DemoDataService {
   private final DemoTeamMemberGenerator teamMemberGenerator;
   private final DemoPropertyGenerator propertyGenerator;
   private final DemoContactGenerator contactGenerator;
+  private final DemoContactNoteGenerator contactNoteGenerator;
+  private final DemoContactRelationshipGenerator contactRelationshipGenerator;
+  private final DemoContactTagGenerator contactTagGenerator;
   private final DemoContractGenerator contractGenerator;
   private final ContractExtensionDemoDataGenerator contractExtensionGenerator;
   private final DemoPaymentGenerator paymentGenerator;
@@ -138,6 +144,9 @@ public class DemoDataService {
     propertyGenerator.generate(ctx);
     financingPaymentGenerator.generate(ctx);
     contactGenerator.generate(ctx);
+    contactTagGenerator.generate(ctx);
+    contactNoteGenerator.generate(ctx);
+    contactRelationshipGenerator.generate(ctx);
     contractGenerator.generate(ctx);
     contractExtensionGenerator.generate(ctx);
     paymentInstructionGenerator.generate(ctx);
@@ -298,7 +307,24 @@ public class DemoDataService {
             .execute();
     log.debug("Deleted {} property contact history entries", deleted);
 
-    // 10. Contact addresses (FK -> contacts)
+    // 10. Contact tags (FK -> contacts, no deleted_at, ON DELETE CASCADE in schema)
+    deleted =
+        dsl.deleteFrom(CONTACT_TAGS).where(CONTACT_TAGS.TEAM_ID.in(demoTeamIds)).execute();
+    log.debug("Deleted {} contact tags", deleted);
+
+    // 10b. Contact notes (FK -> contacts)
+    deleted =
+        dsl.deleteFrom(CONTACT_NOTES).where(CONTACT_NOTES.TEAM_ID.in(demoTeamIds)).execute();
+    log.debug("Deleted {} contact notes", deleted);
+
+    // 10c. Contact relationships (FK -> contacts)
+    deleted =
+        dsl.deleteFrom(CONTACT_RELATIONSHIPS)
+            .where(CONTACT_RELATIONSHIPS.TEAM_ID.in(demoTeamIds))
+            .execute();
+    log.debug("Deleted {} contact relationships", deleted);
+
+    // 10d. Contact addresses (FK -> contacts)
     deleted =
         dsl.deleteFrom(CONTACT_ADDRESSES).where(CONTACT_ADDRESSES.TEAM_ID.in(demoTeamIds)).execute();
     log.debug("Deleted {} contact addresses", deleted);

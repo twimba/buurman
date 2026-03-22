@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.buurman.domain.ContactType;
+
 import lombok.Getter;
 
 /** Mutable context passed between demo data generators to share generated IDs. */
@@ -52,6 +54,9 @@ public class DemoDataContext {
 
   // Contact UUID -> whether the contact is a business entity
   private final Map<UUID, Boolean> businessContactFlags = new LinkedHashMap<>();
+
+  // Contact UUID -> ContactType
+  private final Map<UUID, ContactType> contactTypes = new LinkedHashMap<>();
 
   // Property UUID -> acquisition date (when the property was purchased)
   private final Map<UUID, LocalDate> propertyAcquisitionDates = new LinkedHashMap<>();
@@ -114,6 +119,14 @@ public class DemoDataContext {
 
   public boolean isBusinessContact(UUID contactId) {
     return businessContactFlags.getOrDefault(contactId, false);
+  }
+
+  public void putContactType(UUID contactId, ContactType type) {
+    contactTypes.put(contactId, type);
+  }
+
+  public ContactType getContactType(UUID contactId) {
+    return contactTypes.getOrDefault(contactId, ContactType.INDIVIDUAL);
   }
 
   public void putPropertyAcquisitionDate(UUID propertyId, LocalDate date) {
