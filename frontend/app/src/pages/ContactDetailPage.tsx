@@ -38,7 +38,7 @@ import {
   ContractPartyRole,
   PARTY_ROLE_LABELS,
 } from '@/types/contract';
-import { Button, PageHeader } from '@buurman/ui';
+import { Button, ConfirmDialog, ModalWrapper, PageHeader } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import {
   Edit,
@@ -47,7 +47,6 @@ import {
   Phone,
   User,
   Home,
-  X,
   FileText,
   MapPin,
   Plus,
@@ -375,11 +374,16 @@ export const ContactDetailPage = () => {
 
         {/* Tabs */}
         <div className="border-b border-border-default mb-6 overflow-x-auto">
-          <div className="flex gap-6 min-w-max" role="tablist" aria-label="Contact detail tabs">
+          <div
+            className="flex gap-6 min-w-max"
+            role="tablist"
+            aria-label="Contact detail tabs"
+          >
             <button
               role="tab"
               aria-selected={activeTab === 'overview'}
               aria-controls="tabpanel-overview"
+              tabIndex={activeTab === 'overview' ? 0 : -1}
               onClick={() => setActiveTab('overview')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'overview'
@@ -394,6 +398,7 @@ export const ContactDetailPage = () => {
               role="tab"
               aria-selected={activeTab === 'notes'}
               aria-controls="tabpanel-notes"
+              tabIndex={activeTab === 'notes' ? 0 : -1}
               onClick={() => setActiveTab('notes')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'notes'
@@ -408,6 +413,7 @@ export const ContactDetailPage = () => {
               role="tab"
               aria-selected={activeTab === 'activity'}
               aria-controls="tabpanel-activity"
+              tabIndex={activeTab === 'activity' ? 0 : -1}
               onClick={() => setActiveTab('activity')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'activity'
@@ -422,6 +428,7 @@ export const ContactDetailPage = () => {
               role="tab"
               aria-selected={activeTab === 'financials'}
               aria-controls="tabpanel-financials"
+              tabIndex={activeTab === 'financials' ? 0 : -1}
               onClick={() => setActiveTab('financials')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'financials'
@@ -436,6 +443,7 @@ export const ContactDetailPage = () => {
               role="tab"
               aria-selected={activeTab === 'relationships'}
               aria-controls="tabpanel-relationships"
+              tabIndex={activeTab === 'relationships' ? 0 : -1}
               onClick={() => setActiveTab('relationships')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'relationships'
@@ -450,6 +458,7 @@ export const ContactDetailPage = () => {
               role="tab"
               aria-selected={activeTab === 'files'}
               aria-controls="tabpanel-files"
+              tabIndex={activeTab === 'files' ? 0 : -1}
               onClick={() => setActiveTab('files')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'files'
@@ -466,6 +475,7 @@ export const ContactDetailPage = () => {
               role="tab"
               aria-selected={activeTab === 'addresses'}
               aria-controls="tabpanel-addresses"
+              tabIndex={activeTab === 'addresses' ? 0 : -1}
               onClick={() => setActiveTab('addresses')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'addresses'
@@ -855,87 +865,41 @@ export const ContactDetailPage = () => {
 
         {/* ===== Tab 5: Addresses ===== */}
         {activeTab === 'addresses' && (
-          <div id="tabpanel-addresses" role="tabpanel" className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
+          <div
+            id="tabpanel-addresses"
+            role="tabpanel"
+            className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6"
+          >
             <ContactAddressList contactId={id} />
           </div>
         )}
 
         {/* Delete Confirmation Modal */}
         {showDeleteModal && (
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-surface-card rounded-lg p-6 max-w-md w-full mx-4">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-text-primary">
-                  Delete Contact
-                </h3>
-                <button
-                  onClick={() => setShowDeleteModal(false)}
-                  className="text-text-muted hover:text-text-secondary"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-              <p className="text-text-secondary mb-6">
-                Are you sure you want to delete this contact? This action cannot
-                be undone.
-              </p>
-              <div className="flex gap-3 justify-end">
-                <Button
-                  variant="secondary"
-                  onClick={() => setShowDeleteModal(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="danger"
-                  leftIcon={<Trash2 />}
-                  onClick={handleDelete}
-                  isLoading={deleteContactMutation.isPending}
-                >
-                  Delete
-                </Button>
-              </div>
-            </div>
-          </div>
+          <ConfirmDialog
+            title="Delete Contact"
+            message="Are you sure you want to delete this contact? This action cannot be undone."
+            confirmLabel="Delete"
+            variant="danger"
+            isLoading={deleteContactMutation.isPending}
+            onConfirm={handleDelete}
+            onCancel={() => setShowDeleteModal(false)}
+          />
         )}
 
         {/* GDPR Erase Confirmation Modal */}
         {showEraseModal && (
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-surface-card rounded-lg p-6 max-w-md w-full mx-4">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-error-text">
-                  Permanently erase all personal data?
-                </h3>
-                <button
-                  onClick={() => {
-                    setShowEraseModal(false);
-                    setEraseConfirmText('');
-                  }}
-                  className="text-text-muted hover:text-text-secondary"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-              <p className="text-text-secondary mb-4">
-                This will permanently erase all personal data for this contact.
-                Financial records linked via contracts are retained for legal
-                compliance. This action cannot be undone.
-              </p>
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-text-primary mb-1">
-                  Type <span className="font-mono font-bold">ERASE</span> to
-                  confirm
-                </label>
-                <input
-                  type="text"
-                  value={eraseConfirmText}
-                  onChange={(e) => setEraseConfirmText(e.target.value)}
-                  placeholder="ERASE"
-                  className="w-full px-3 py-2 border border-border-strong rounded focus:border-error-text focus:ring-1 focus:ring-error-text bg-surface-card text-text-primary"
-                />
-              </div>
-              <div className="flex gap-3 justify-end">
+          <ModalWrapper
+            open
+            onClose={() => {
+              setShowEraseModal(false);
+              setEraseConfirmText('');
+            }}
+            title="Permanently erase all personal data?"
+            size="sm"
+            preventClose={eraseContactMutation.isPending}
+            footer={
+              <>
                 <Button
                   variant="secondary"
                   onClick={() => {
@@ -954,9 +918,30 @@ export const ContactDetailPage = () => {
                 >
                   Erase Data
                 </Button>
+              </>
+            }
+          >
+            <div className="space-y-4">
+              <p className="text-text-secondary">
+                This will permanently erase all personal data for this contact.
+                Financial records linked via contracts are retained for legal
+                compliance. This action cannot be undone.
+              </p>
+              <div>
+                <label className="block text-sm font-medium text-text-primary mb-1">
+                  Type <span className="font-mono font-bold">ERASE</span> to
+                  confirm
+                </label>
+                <input
+                  type="text"
+                  value={eraseConfirmText}
+                  onChange={(e) => setEraseConfirmText(e.target.value)}
+                  placeholder="ERASE"
+                  className="w-full px-3 py-2 border border-border-strong rounded focus:border-error-text focus:ring-1 focus:ring-error-text bg-surface-card text-text-primary"
+                />
               </div>
             </div>
-          </div>
+          </ModalWrapper>
         )}
       </div>
     </div>

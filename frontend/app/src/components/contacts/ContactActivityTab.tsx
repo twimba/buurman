@@ -40,7 +40,7 @@ const INTERACTION_ICONS: Record<InteractionType, React.ReactNode> = {
 
 const EVENT_TYPE_COLORS: Record<string, string> = {
   AUDIT: 'bg-info-bg text-info-text',
-  NOTE: 'bg-primary-50 text-primary-700',
+  NOTE: 'bg-primary-50 text-primary-700 dark:bg-primary-950 dark:text-primary-300',
 };
 
 interface ContactActivityTabProps {
@@ -131,7 +131,7 @@ export const ContactActivityTab = ({ contactId }: ContactActivityTabProps) => {
                             </span>
                           )}
                           {item.pinned && (
-                            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-100 text-primary-700">
+                            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300">
                               <Pin className="h-3 w-3 inline mr-1" />
                               Pinned
                             </span>

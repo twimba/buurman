@@ -287,7 +287,8 @@ public class ContactRepository {
                 CONTACTS.ID.in(
                     dsl.select(CONTACT_TAGS.CONTACT_ID)
                         .from(CONTACT_TAGS)
-                        .where(CONTACT_TAGS.TAG.eq(tag.name()))));
+                        .where(
+                            CONTACT_TAGS.TAG.eq(tag.name()).and(CONTACT_TAGS.TEAM_ID.eq(teamId)))));
       }
     }
 
@@ -422,8 +423,8 @@ public class ContactRepository {
    * Returns contact activity items from 6 sources via UNION ALL, paginated at the database level.
    * Sources: contact_notes, audit_log, contract_parties, payments, documents, notifications.
    *
-   * <p>TODO: The UNION ALL count + data queries execute the same sub-selects twice.
-   * Consider wrapping in a CTE or caching the count to avoid double execution.
+   * <p>TODO: The UNION ALL count + data queries execute the same sub-selects twice. Consider
+   * wrapping in a CTE or caching the count to avoid double execution.
    */
   public PaginatedResult<ContactActivityItem> findActivityByContactIdPaginated(
       UUID contactId, UUID teamId, PageRequest pageRequest) {
@@ -714,5 +715,4 @@ public class ContactRepository {
         .where(CONTACTS.ID.eq(contactId).and(CONTACTS.TEAM_ID.eq(teamId)))
         .execute();
   }
-
 }

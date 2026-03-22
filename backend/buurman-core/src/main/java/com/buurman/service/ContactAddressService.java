@@ -110,6 +110,7 @@ public class ContactAddressService {
     return addressMapper.toResponse(savedAddress);
   }
 
+  @PreAuthorize("hasRole('TEAM_VIEWER')")
   public List<ContactAddressResponse> getAddresses(UUID contactId, UserPrincipal principal) {
     // Verify contact exists and belongs to user's team
     contactRepository.getByIdAndTeamId(contactId, principal.requireTeamId());
@@ -119,6 +120,7 @@ public class ContactAddressService {
     return addresses.stream().map(addressMapper::toResponse).toList();
   }
 
+  @PreAuthorize("hasRole('TEAM_VIEWER')")
   public ContactAddressResponse getAddress(
       UUID contactId, UUID addressId, UserPrincipal principal) {
     ContactAddress address =

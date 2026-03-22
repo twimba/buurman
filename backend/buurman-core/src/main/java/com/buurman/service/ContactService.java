@@ -56,6 +56,7 @@ import com.buurman.dto.response.PropertyContactHistoryResponse;
 import com.buurman.dto.response.PropertySummary;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.exception.BadRequestException;
+import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.ContactMapper;
 import com.buurman.repository.ContactAddressRepository;
 import com.buurman.repository.ContactNoteRepository;
@@ -175,11 +176,7 @@ public class ContactService {
     UUID teamId = principal.requireTeamId();
     PaginatedResult<ContactWithCount> result =
         contactRepository.findAllByTeamIdPaginatedWithCounts(
-            teamId,
-            search.orElse(null),
-            contactType.orElse(null),
-            tags.orElse(null),
-            pageRequest);
+            teamId, search.orElse(null), contactType.orElse(null), tags.orElse(null), pageRequest);
 
     // Batch-load tags for all contacts on the page
     List<UUID> contactIds = result.items().stream().map(cwc -> cwc.contact().getId()).toList();
@@ -317,9 +314,28 @@ public class ContactService {
     Contact contact =
         contactRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
 
+    UUID teamId = principal.requireTeamId();
     List<com.buurman.domain.PropertyContactHistory> history =
-        historyRepository.findByContactId(contact.getId(), principal.requireTeamId());
-    return history.stream().map(h -> toHistoryResponse(h, principal.requireTeamId())).toList();
+        historyRepository.findByContactId(contact.getId(), teamId);
+
+    // Batch-load properties and users to avoid N+1
+    Set<UUID> propertyIds =
+        history.stream()
+            .map(com.buurman.domain.PropertyContactHistory::getPropertyId)
+            .collect(Collectors.toSet());
+    Set<UUID> userIds =
+        history.stream()
+            .map(com.buurman.domain.PropertyContactHistory::getPerformedBy)
+            .collect(Collectors.toSet());
+
+    Map<UUID, Property> propertiesById =
+        propertyRepository.findByIdsAndTeamId(propertyIds, teamId).stream()
+            .collect(Collectors.toMap(Property::getId, Function.identity()));
+    Map<UUID, User> usersById =
+        userRepository.findByIds(userIds).stream()
+            .collect(Collectors.toMap(User::getId, Function.identity()));
+
+    return history.stream().map(h -> toHistoryResponse(h, propertiesById, usersById)).toList();
   }
 
   @PreAuthorize("hasRole('TEAM_VIEWER')")
@@ -581,10 +597,7 @@ public class ContactService {
     Set<String> seenIdentifiers = new LinkedHashSet<>();
     List<DuplicateMatch> deduped =
         matches.stream()
-            .filter(
-                m ->
-                    seenIdentifiers.add(
-                        m.contact().identifier().toString()))
+            .filter(m -> seenIdentifiers.add(m.contact().identifier().toString()))
             .toList();
 
     return new DuplicateCheckResponse(deduped);
@@ -670,8 +683,7 @@ public class ContactService {
     // Batch-load all properties and contract parties for active contracts (avoid N+1)
     Set<UUID> propertyIds =
         activeContracts.stream().map(Contract::getPropertyId).collect(Collectors.toSet());
-    List<UUID> contractIds =
-        activeContracts.stream().map(Contract::getId).toList();
+    List<UUID> contractIds = activeContracts.stream().map(Contract::getId).toList();
 
     Map<UUID, Property> propertiesById =
         propertyRepository.findByIdsAndTeamId(propertyIds, teamId).stream()
@@ -683,9 +695,7 @@ public class ContactService {
             .filter(party -> party.getContactId().filter(contact.getId()::equals).isPresent())
             .collect(
                 Collectors.toMap(
-                    ContractParty::getContractId,
-                    party -> party.getRole().name(),
-                    (a, b) -> a));
+                    ContractParty::getContractId, party -> party.getRole().name(), (a, b) -> a));
 
     List<ContactPropertyAssignment> activeProperties = new ArrayList<>();
     for (Contract activeContract : activeContracts) {
@@ -702,8 +712,7 @@ public class ContactService {
                 property.getStatus());
         activeProperties.add(
             new ContactPropertyAssignment(
-                summary,
-                Optional.ofNullable(roleByContractId.get(activeContract.getId()))));
+                summary, Optional.ofNullable(roleByContractId.get(activeContract.getId()))));
       }
     }
 
@@ -735,8 +744,12 @@ public class ContactService {
   }
 
   private PropertyContactHistoryResponse toHistoryResponse(
-      com.buurman.domain.PropertyContactHistory history, UUID teamId) {
-    Property property = propertyRepository.getByIdAndTeamId(history.getPropertyId(), teamId);
+      com.buurman.domain.PropertyContactHistory history,
+      Map<UUID, Property> propertiesById,
+      Map<UUID, User> usersById) {
+    Property property =
+        Optional.ofNullable(propertiesById.get(history.getPropertyId()))
+            .orElseThrow(() -> new NotFoundException("Property not found: " + history.getPropertyId()));
 
     PropertySummary propertySummary =
         new PropertySummary(
@@ -749,8 +762,7 @@ public class ContactService {
             property.getStatus());
 
     String userName =
-        userRepository
-            .findById(history.getPerformedBy())
+        Optional.ofNullable(usersById.get(history.getPerformedBy()))
             .map(User::getFullName)
             .orElse("Unknown User");
 

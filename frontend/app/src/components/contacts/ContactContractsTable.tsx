@@ -132,7 +132,7 @@ export const ContactContractsTable = ({
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
-              className="pl-8 pr-3 py-1.5 text-sm border border-border-strong rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="pl-8 pr-3 py-1.5 text-sm border border-border-strong rounded focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             />
           </div>
         )}
@@ -186,14 +186,10 @@ export const ContactContractsTable = ({
               return (
                 <tr
                   key={contract.identifier}
-                  onClick={() =>
-                    navigate(`/contracts/${contract.identifier}`)
-                  }
+                  onClick={() => navigate(`/contracts/${contract.identifier}`)}
                   className="hover:bg-primary-50 dark:hover:bg-primary-950 cursor-pointer transition-colors"
                 >
-                  <td className="px-4 py-3">
-                    {contract.property.street}
-                  </td>
+                  <td className="px-4 py-3">{contract.property.street}</td>
                   <td className="px-4 py-3">
                     {party?.role ? (
                       <RoleBadge role={party.role} />

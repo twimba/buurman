@@ -773,7 +773,7 @@ components:
           minLength: 1
         postalCode:
           type: string
-        country:
+        countryCode:
           type: string
           minLength: 1
         addressType:
@@ -802,7 +802,7 @@ components:
       required:
         - addressType
         - city
-        - country
+        - countryCode
         - status
         - street
     ContactAddressResponse:
@@ -816,7 +816,7 @@ components:
           type: string
         postalCode:
           type: string
-        country:
+        countryCode:
           type: string
         addressType:
           type: string
@@ -850,7 +850,7 @@ components:
       required:
         - addressType
         - city
-        - country
+        - countryCode
         - createdAt
         - identifier
         - postalCode
@@ -4594,7 +4594,7 @@ components:
           minLength: 1
         postalCode:
           type: string
-        country:
+        countryCode:
           type: string
           minLength: 1
         addressType:
@@ -4623,7 +4623,7 @@ components:
       required:
         - addressType
         - city
-        - country
+        - countryCode
         - street
     TransferOwnershipRequest:
       type: object

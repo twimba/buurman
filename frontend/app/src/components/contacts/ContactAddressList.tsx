@@ -398,7 +398,7 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
                                         : address.identifier
                                     )
                                   }
-                                  className="p-2 text-text-secondary hover:text-primary-500 hover:bg-primary-50 rounded"
+                                  className="p-2 text-text-secondary hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-950 rounded"
                                   title="Show map"
                                 >
                                   <MapPin className="h-4 w-4" />
@@ -408,7 +408,7 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
                                 onClick={() =>
                                   setEditingAddressId(address.identifier)
                                 }
-                                className="p-2 text-text-secondary hover:text-primary-500 hover:bg-primary-50 rounded"
+                                className="p-2 text-text-secondary hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-950 rounded"
                                 title="Edit address"
                               >
                                 <Edit className="h-4 w-4" />

@@ -217,7 +217,7 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
               key={note.identifier}
               className={`border rounded-lg p-4 ${
                 note.pinned
-                  ? 'border-primary-300 bg-primary-50/50'
+                  ? 'border-primary-300 bg-primary-50/50 dark:border-primary-700 dark:bg-primary-950/50'
                   : 'border-border-default'
               }`}
             >
@@ -232,7 +232,7 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
                         {INTERACTION_TYPE_LABELS[note.interactionType]}
                       </span>
                       {note.pinned && (
-                        <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-100 text-primary-700">
+                        <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300">
                           <Pin className="h-3 w-3 inline mr-1" />
                           Pinned
                         </span>

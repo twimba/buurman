@@ -4,8 +4,12 @@ import static com.buurman.util.SidGenerator.newContactNoteId;
 
 import java.time.Clock;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -86,9 +90,15 @@ public class ContactNoteService {
     UUID teamId = principal.requireTeamId();
     Contact contact = contactRepository.getByIdentifierAndTeamId(contactIdentifier, teamId);
 
-    return noteRepository.findByContactIdAndTeamId(contact.getId(), teamId).stream()
-        .map(this::toResponse)
-        .toList();
+    List<ContactNote> notes = noteRepository.findByContactIdAndTeamId(contact.getId(), teamId);
+
+    // Batch-load users to avoid N+1
+    Set<UUID> userIds = notes.stream().map(ContactNote::getCreatedBy).collect(Collectors.toSet());
+    Map<UUID, User> usersById =
+        userRepository.findByIds(userIds).stream()
+            .collect(Collectors.toMap(User::getId, Function.identity()));
+
+    return notes.stream().map(note -> toResponse(note, usersById)).toList();
   }
 
   @Transactional
@@ -188,7 +198,18 @@ public class ContactNoteService {
   private ContactNoteResponse toResponse(ContactNote note) {
     String createdByName =
         userRepository.findById(note.getCreatedBy()).map(User::getFullName).orElse("Unknown User");
+    return toResponse(note, createdByName);
+  }
 
+  private ContactNoteResponse toResponse(ContactNote note, Map<UUID, User> usersById) {
+    String createdByName =
+        Optional.ofNullable(usersById.get(note.getCreatedBy()))
+            .map(User::getFullName)
+            .orElse("Unknown User");
+    return toResponse(note, createdByName);
+  }
+
+  private ContactNoteResponse toResponse(ContactNote note, String createdByName) {
     return new ContactNoteResponse(
         note.getIdentifier().orElseThrow(),
         note.getInteractionType(),
