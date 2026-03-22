@@ -871,7 +871,7 @@ public class ContractBookletExporter {
           agg.totalPending = agg.totalPending.add(p.getAmount().value());
           agg.countPending++;
         }
-        case OVERDUE -> {
+        case OVERDUE, LATE -> {
           agg.totalOverdue = agg.totalOverdue.add(p.getAmount().value());
           agg.countOverdue++;
         }

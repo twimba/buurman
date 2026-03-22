@@ -52,6 +52,7 @@ public class DemoPhotoGenerator {
   private final S3StorageService s3StorageService;
   private final Random random = new Random(42);
 
+  @SuppressWarnings("ArrayRecordComponent") // Private data holder, never compared
   private record PhotoFile(byte[] data, String mimeType) {}
 
   /** Photo pool loaded once from classpath, keyed by room category. */
