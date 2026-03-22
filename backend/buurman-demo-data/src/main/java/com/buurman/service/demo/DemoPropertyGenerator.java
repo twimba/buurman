@@ -719,6 +719,7 @@ public class DemoPropertyGenerator {
             i,
             yearBuilt,
             acquisitionDate,
+            rentBaseline,
             now,
             ctx);
 
@@ -729,6 +730,7 @@ public class DemoPropertyGenerator {
         ctx.putPropertyCountryCode(propertyId, country.name());
         ctx.putPropertyRentBaseline(propertyId, rentBaseline);
         ctx.putPropertyType(propertyId, propertyType);
+        ctx.putPropertyCountryRentMultiplier(propertyId, countryRentMultiplier(country.name()));
         ctx.incrementProperties();
 
         // Add outdoor areas for RESIDENTIAL properties only
@@ -915,22 +917,19 @@ public class DemoPropertyGenerator {
   // --- Category-specific financial (era-aware) ---
 
   /**
-   * Returns the 2024-baseline purchase price in minor units (cents) for the category, then deflates
-   * by ~3% per year for the acquisition year.
+   * Derives purchase price from the property's monthly rent baseline and a target gross yield.
+   * This ensures all properties have realistic price-to-rent ratios regardless of country or type,
+   * preventing perpetually cash-flow-negative properties. Target yield: 5.0-7.5%.
    */
-  private long acquisitionPriceForCategory(String category, int i, int acquisitionYear) {
-    // 2024 baseline in EUR (major units)
-    long baseline2024 =
-        switch (category) {
-          case "COMMERCIAL" -> 400_000 + (i % 6) * 100_000L;
-          case "INDUSTRIAL" -> 500_000 + (i % 3) * 150_000L;
-          case "AGRICULTURAL" -> 150_000 + (i % 3) * 50_000L;
-          default -> 200_000 + (i % 18) * 30_000L;
-        };
+  private long acquisitionPriceFromRent(BigDecimal monthlyRent, int i, int acquisitionYear) {
+    // Target gross yield varies by property index (5.0%-7.25%) for realistic diversity
+    double targetYield = 0.050 + (i % 10) * 0.0025;
+    long annualRent = monthlyRent.longValue() * 12;
+    long baseline2024 = Math.round(annualRent / targetYield);
     // Deflate by 3% per year from 2024
     int yearsBack = 2024 - acquisitionYear;
     double deflator = Math.pow(1.0 / 1.03, yearsBack);
-    return Math.round(baseline2024 * deflator); // major units (EUR) — JOOQ converter handles cents
+    return Math.round(baseline2024 * deflator);
   }
 
   /**
@@ -1196,11 +1195,12 @@ public class DemoPropertyGenerator {
       int i,
       int yearBuilt,
       LocalDate acquisitionDate,
+      BigDecimal rentBaseline,
       LocalDateTime now,
       DemoDataContext ctx) {
 
     int acquisitionYear = acquisitionDate.getYear();
-    long purchasePrice = acquisitionPriceForCategory(propertyCategory, i, acquisitionYear);
+    long purchasePrice = acquisitionPriceFromRent(rentBaseline, i, acquisitionYear);
     long marketValue = currentMarketValue(purchasePrice, acquisitionYear);
 
     // === ACQUISITION (all 30 properties) ===
@@ -1565,14 +1565,15 @@ public class DemoPropertyGenerator {
       taxFrequency = "ANNUALLY";
       dueMonths = String.valueOf(1 + (i % 12));
     }
-    long taxAmount =
+    // Tax proportional to market value (0.3-1.2% of assessed value)
+    double taxRatePct =
         switch (propertyCategory) {
-          case "COMMERCIAL" -> random.nextInt(2000, 5000);
-          case "INDUSTRIAL" -> random.nextInt(3000, 8000);
-          case "AGRICULTURAL" -> random.nextInt(500, 2000);
-          case "MIXED_USE" -> random.nextInt(2500, 6000);
-          default -> random.nextInt(1200, 3000);
+          case "COMMERCIAL" -> 0.006 + random.nextDouble() * 0.006;
+          case "INDUSTRIAL" -> 0.008 + random.nextDouble() * 0.007;
+          case "AGRICULTURAL" -> 0.002 + random.nextDouble() * 0.003;
+          default -> 0.004 + random.nextDouble() * 0.006;
         };
+    long taxAmount = Math.max(300, Math.round(marketValue * taxRatePct));
 
     dsl.insertInto(PROPERTY_TAXES)
         .set(PROPERTY_TAXES.ID, UUID.randomUUID())
@@ -1607,7 +1608,9 @@ public class DemoPropertyGenerator {
           .set(PROPERTY_TAXES.TEAM_ID, teamId)
           .set(PROPERTY_TAXES.TAX_TYPE, "LAND")
           .set(PROPERTY_TAXES.AUTHORITY, authority)
-          .set(PROPERTY_TAXES.ANNUAL_AMOUNT, BigDecimal.valueOf(random.nextInt(300, 1000)))
+          .set(
+              PROPERTY_TAXES.ANNUAL_AMOUNT,
+              BigDecimal.valueOf(Math.max(200, Math.round(marketValue * 0.002))))
           .set(PROPERTY_TAXES.CURRENCY, currency)
           .set(PROPERTY_TAXES.PAYMENT_FREQUENCY, "ANNUALLY")
           .set(PROPERTY_TAXES.DUE_MONTHS, "3")
@@ -1628,7 +1631,9 @@ public class DemoPropertyGenerator {
           .set(PROPERTY_TAXES.TEAM_ID, teamId)
           .set(PROPERTY_TAXES.TAX_TYPE, "MUNICIPAL")
           .set(PROPERTY_TAXES.AUTHORITY, authority)
-          .set(PROPERTY_TAXES.ANNUAL_AMOUNT, BigDecimal.valueOf(random.nextInt(200, 800)))
+          .set(
+              PROPERTY_TAXES.ANNUAL_AMOUNT,
+              BigDecimal.valueOf(Math.max(100, Math.round(marketValue * 0.001))))
           .set(PROPERTY_TAXES.CURRENCY, currency)
           .set(PROPERTY_TAXES.PAYMENT_FREQUENCY, "ANNUALLY")
           .set(PROPERTY_TAXES.DUE_MONTHS, "9")
@@ -1643,7 +1648,8 @@ public class DemoPropertyGenerator {
           .execute();
     }
 
-    // === FEES (all 12, category-appropriate, 2-4 each) ===
+    // === FEES (category-appropriate, proportional to annual rent for realistic cash flow) ===
+    long annualRent = rentBaseline.longValue() * 12;
     switch (propertyCategory) {
       case "RESIDENTIAL" -> {
         if (random.nextInt(3) < 2) {
@@ -1654,7 +1660,7 @@ public class DemoPropertyGenerator {
               currency,
               "HOA",
               "Monthly HOA Dues",
-              random.nextInt(600, 1800),
+              Math.round(annualRent * (0.04 + random.nextDouble() * 0.06)),
               "MONTHLY",
               "1,2,3,4,5,6,7,8,9,10,11,12",
               acquisitionDate,
@@ -1667,7 +1673,7 @@ public class DemoPropertyGenerator {
             currency,
             "WASTE_MANAGEMENT",
             "Waste Collection Service",
-            random.nextInt(200, 500),
+            Math.round(annualRent * (0.015 + random.nextDouble() * 0.015)),
             "QUARTERLY",
             "3,6,9,12",
             acquisitionDate,
@@ -1679,7 +1685,7 @@ public class DemoPropertyGenerator {
             currency,
             "WATER",
             "Water & Sewage",
-            random.nextInt(300, 800),
+            Math.round(annualRent * (0.02 + random.nextDouble() * 0.02)),
             "QUARTERLY",
             "3,6,9,12",
             acquisitionDate,
@@ -1693,7 +1699,7 @@ public class DemoPropertyGenerator {
             currency,
             "MANAGEMENT",
             "Commercial Property Management",
-            random.nextInt(2400, 6000),
+            Math.round(annualRent * (0.06 + random.nextDouble() * 0.04)),
             "MONTHLY",
             "1,2,3,4,5,6,7,8,9,10,11,12",
             acquisitionDate,
@@ -1705,7 +1711,7 @@ public class DemoPropertyGenerator {
             currency,
             "SECURITY",
             "Security Service",
-            random.nextInt(1200, 3600),
+            Math.round(annualRent * (0.03 + random.nextDouble() * 0.03)),
             "MONTHLY",
             "1,2,3,4,5,6,7,8,9,10,11,12",
             acquisitionDate,
@@ -1717,7 +1723,7 @@ public class DemoPropertyGenerator {
             currency,
             "CLEANING",
             "Professional Cleaning",
-            random.nextInt(1800, 4200),
+            Math.round(annualRent * (0.04 + random.nextDouble() * 0.04)),
             "MONTHLY",
             "1,2,3,4,5,6,7,8,9,10,11,12",
             acquisitionDate,
@@ -1729,7 +1735,7 @@ public class DemoPropertyGenerator {
             currency,
             "WASTE_MANAGEMENT",
             "Commercial Waste Disposal",
-            random.nextInt(600, 1500),
+            Math.round(annualRent * (0.02 + random.nextDouble() * 0.02)),
             "QUARTERLY",
             "3,6,9,12",
             acquisitionDate,
@@ -1743,7 +1749,7 @@ public class DemoPropertyGenerator {
             currency,
             "MANAGEMENT",
             "Industrial Site Management",
-            random.nextInt(3600, 9000),
+            Math.round(annualRent * (0.06 + random.nextDouble() * 0.04)),
             "MONTHLY",
             "1,2,3,4,5,6,7,8,9,10,11,12",
             acquisitionDate,
@@ -1755,7 +1761,7 @@ public class DemoPropertyGenerator {
             currency,
             "SECURITY",
             "24/7 Security Service",
-            random.nextInt(2400, 6000),
+            Math.round(annualRent * (0.04 + random.nextDouble() * 0.04)),
             "MONTHLY",
             "1,2,3,4,5,6,7,8,9,10,11,12",
             acquisitionDate,
@@ -1767,7 +1773,7 @@ public class DemoPropertyGenerator {
             currency,
             "WASTE_MANAGEMENT",
             "Industrial Waste Removal",
-            random.nextInt(1200, 3000),
+            Math.round(annualRent * (0.02 + random.nextDouble() * 0.02)),
             "MONTHLY",
             "1,2,3,4,5,6,7,8,9,10,11,12",
             acquisitionDate,
@@ -1779,7 +1785,7 @@ public class DemoPropertyGenerator {
             currency,
             "UTILITIES",
             "Common Area Utilities",
-            random.nextInt(1800, 4800),
+            Math.round(annualRent * (0.03 + random.nextDouble() * 0.04)),
             "QUARTERLY",
             "3,6,9,12",
             acquisitionDate,
@@ -1793,7 +1799,7 @@ public class DemoPropertyGenerator {
             currency,
             "WATER",
             "Irrigation Water Supply",
-            random.nextInt(400, 1200),
+            Math.round(annualRent * (0.03 + random.nextDouble() * 0.04)),
             "SEMI_ANNUALLY",
             "4,10",
             acquisitionDate,
@@ -1805,7 +1811,7 @@ public class DemoPropertyGenerator {
             currency,
             "MAINTENANCE_RESERVE",
             "Farm Maintenance Reserve",
-            random.nextInt(500, 1500),
+            Math.round(annualRent * (0.03 + random.nextDouble() * 0.05)),
             "ANNUALLY",
             "9",
             acquisitionDate,
@@ -1820,7 +1826,7 @@ public class DemoPropertyGenerator {
               currency,
               "HOA",
               "Building Association Fees",
-              random.nextInt(800, 2400),
+              Math.round(annualRent * (0.04 + random.nextDouble() * 0.06)),
               "MONTHLY",
               "1,2,3,4,5,6,7,8,9,10,11,12",
               acquisitionDate,
@@ -1833,7 +1839,7 @@ public class DemoPropertyGenerator {
             currency,
             "MANAGEMENT",
             "Mixed-Use Property Management",
-            random.nextInt(2000, 5000),
+            Math.round(annualRent * (0.06 + random.nextDouble() * 0.04)),
             "MONTHLY",
             "1,2,3,4,5,6,7,8,9,10,11,12",
             acquisitionDate,
@@ -1845,7 +1851,7 @@ public class DemoPropertyGenerator {
             currency,
             "WASTE_MANAGEMENT",
             "Waste Collection Service",
-            random.nextInt(400, 1000),
+            Math.round(annualRent * (0.02 + random.nextDouble() * 0.02)),
             "QUARTERLY",
             "3,6,9,12",
             acquisitionDate,
@@ -1859,7 +1865,7 @@ public class DemoPropertyGenerator {
               currency,
               "MAINTENANCE_RESERVE",
               "Maintenance Reserve",
-              random.nextInt(500, 1000),
+              Math.round(annualRent * (0.03 + random.nextDouble() * 0.04)),
               "ANNUALLY",
               "9",
               acquisitionDate,

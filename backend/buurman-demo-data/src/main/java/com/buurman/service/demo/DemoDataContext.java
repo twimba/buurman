@@ -70,6 +70,9 @@ public class DemoDataContext {
   // Property UUID -> property type (e.g., "APARTMENT", "HOUSE", "OFFICE")
   private final Map<UUID, String> propertyTypes = new LinkedHashMap<>();
 
+  // Property UUID -> country rent multiplier (reflects cost-of-living for expense scaling)
+  private final Map<UUID, Double> propertyCountryRentMultipliers = new LinkedHashMap<>();
+
   // Counters
   @Getter private int teamsCreated;
   @Getter private int usersCreated;
@@ -159,6 +162,14 @@ public class DemoDataContext {
 
   public String getPropertyType(UUID propertyId) {
     return propertyTypes.getOrDefault(propertyId, "APARTMENT");
+  }
+
+  public void putPropertyCountryRentMultiplier(UUID propertyId, double multiplier) {
+    propertyCountryRentMultipliers.put(propertyId, multiplier);
+  }
+
+  public double getPropertyCountryRentMultiplier(UUID propertyId) {
+    return propertyCountryRentMultipliers.getOrDefault(propertyId, 1.0);
   }
 
   public void incrementTeams() {
