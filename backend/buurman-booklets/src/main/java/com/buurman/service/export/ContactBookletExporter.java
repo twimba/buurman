@@ -47,7 +47,6 @@ import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
-import com.buurman.domain.User;
 import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.repository.ContactAddressRepository;
 import com.buurman.repository.ContactNoteRepository;
@@ -294,13 +293,9 @@ public class ContactBookletExporter {
       if (contact.getDateOfBirth().isPresent() || contact.getIdExpiryDate().isPresent()) {
         html.append("<tr>");
         appendField(
-            html,
-            "Date of Birth",
-            contact.getDateOfBirth().map(Object::toString).orElse(null));
+            html, "Date of Birth", contact.getDateOfBirth().map(Object::toString).orElse(null));
         appendField(
-            html,
-            "ID Expiry Date",
-            contact.getIdExpiryDate().map(Object::toString).orElse(null));
+            html, "ID Expiry Date", contact.getIdExpiryDate().map(Object::toString).orElse(null));
         html.append("</tr>");
       }
     } else {
@@ -654,10 +649,7 @@ public class ContactBookletExporter {
   // -- Page: Notes ---
 
   private void appendNotesPage(
-      StringBuilder html,
-      List<ContactNote> notes,
-      Contact contact,
-      DateTimeFormatter dateFmt) {
+      StringBuilder html, List<ContactNote> notes, Contact contact, DateTimeFormatter dateFmt) {
     if (notes.isEmpty()) {
       return;
     }
@@ -668,12 +660,13 @@ public class ContactBookletExporter {
     List<UUID> creatorIds = notes.stream().map(ContactNote::getCreatedBy).distinct().toList();
     Map<UUID, String> userNames = new HashMap<>();
     for (UUID userId : creatorIds) {
-      userRepository.findById(userId)
-          .ifPresent(user -> userNames.put(userId, user.getFullName()));
+      userRepository.findById(userId).ifPresent(user -> userNames.put(userId, user.getFullName()));
     }
 
     for (ContactNote note : notes) {
-      html.append("<div style='margin-bottom:12px;padding:10px;border:1px solid #e5e7eb;border-radius:6px;'>");
+      html.append(
+          "<div style='margin-bottom:12px;padding:10px;border:1px solid"
+              + " #e5e7eb;border-radius:6px;'>");
       html.append("<div style='display:flex;justify-content:space-between;margin-bottom:4px;'>");
       html.append("<span style='font-size:11px;color:#6b7280;'>");
       html.append(escapeHtml(note.getInteractionType().getDisplayName()));
@@ -682,17 +675,24 @@ public class ContactBookletExporter {
       }
       html.append("</span>");
       html.append("<span style='font-size:11px;color:#6b7280;'>");
-      html.append(note.getOccurredAt().atZone(java.time.ZoneId.systemDefault()).toLocalDate().format(dateFmt));
+      html.append(
+          note.getOccurredAt()
+              .atZone(java.time.ZoneId.systemDefault())
+              .toLocalDate()
+              .format(dateFmt));
       String authorName = userNames.getOrDefault(note.getCreatedBy(), "Unknown");
       html.append(" &bull; ").append(escapeHtml(authorName));
       html.append("</span>");
       html.append("</div>");
 
-      note.getSubject().filter(s -> !s.isBlank()).ifPresent(subject -> {
-        html.append("<div style='font-weight:600;font-size:12px;margin-bottom:4px;'>");
-        html.append(escapeHtml(subject));
-        html.append("</div>");
-      });
+      note.getSubject()
+          .filter(s -> !s.isBlank())
+          .ifPresent(
+              subject -> {
+                html.append("<div style='font-weight:600;font-size:12px;margin-bottom:4px;'>");
+                html.append(escapeHtml(subject));
+                html.append("</div>");
+              });
 
       String body = sanitizeRichText(note.getBody());
       if (body.length() > 500) {
@@ -708,10 +708,7 @@ public class ContactBookletExporter {
   // -- Page: Relationships ---
 
   private void appendRelationshipsPage(
-      StringBuilder html,
-      List<ContactRelationship> relationships,
-      Contact contact,
-      UUID teamId) {
+      StringBuilder html, List<ContactRelationship> relationships, Contact contact, UUID teamId) {
     if (relationships.isEmpty()) {
       return;
     }
@@ -719,15 +716,19 @@ public class ContactBookletExporter {
     appendPageStart(html, "Relationships");
 
     // Bulk-load related contacts
-    List<UUID> relatedIds = relationships.stream()
-        .map(rel -> rel.getSourceContactId().equals(contact.getId())
-            ? rel.getTargetContactId()
-            : rel.getSourceContactId())
-        .distinct()
-        .toList();
+    List<UUID> relatedIds =
+        relationships.stream()
+            .map(
+                rel ->
+                    rel.getSourceContactId().equals(contact.getId())
+                        ? rel.getTargetContactId()
+                        : rel.getSourceContactId())
+            .distinct()
+            .toList();
     Map<UUID, String> contactNames = new HashMap<>();
     for (UUID id : relatedIds) {
-      contactRepository.findByIdAndTeamId(id, teamId)
+      contactRepository
+          .findByIdAndTeamId(id, teamId)
           .ifPresent(c -> contactNames.put(id, c.getDisplayName()));
     }
 
@@ -752,7 +753,9 @@ public class ContactBookletExporter {
       html.append("<tr>");
       html.append("<td>").append(relatedName).append("</td>");
       html.append("<td>").append(escapeHtml(displayLabel)).append("</td>");
-      html.append("<td>").append(rel.getNotes().map(BookletHelper::escapeHtml).orElse("—")).append("</td>");
+      html.append("<td>")
+          .append(rel.getNotes().map(BookletHelper::escapeHtml).orElse("—"))
+          .append("</td>");
       html.append("</tr>");
     }
 

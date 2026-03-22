@@ -54,7 +54,8 @@ public class ContactTagRepository {
     if (contactIds.isEmpty()) {
       return Map.of();
     }
-    return dsl.select(CONTACT_TAGS.CONTACT_ID, CONTACT_TAGS.TAG)
+    return dsl
+        .select(CONTACT_TAGS.CONTACT_ID, CONTACT_TAGS.TAG)
         .from(CONTACT_TAGS)
         .where(CONTACT_TAGS.CONTACT_ID.in(contactIds))
         .fetch()

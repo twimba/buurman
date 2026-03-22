@@ -109,8 +109,8 @@ class ContactAddressRepositoryIntegrationTest extends AbstractRepositoryIntegrat
     @Test
     @DisplayName("findByIdentifierAndTeamId returns address")
     void findByIdentifierReturnsAddress() {
-      ContactAddress saved = repo.save(
-          TestDataHelper.buildContactAddress(contactIdA, TEAM_A_ID, USER_ID));
+      ContactAddress saved =
+          repo.save(TestDataHelper.buildContactAddress(contactIdA, TEAM_A_ID, USER_ID));
 
       Optional<ContactAddress> found =
           repo.findByIdentifierAndTeamId(saved.getIdentifier().orElseThrow(), TEAM_A_ID);
@@ -122,8 +122,8 @@ class ContactAddressRepositoryIntegrationTest extends AbstractRepositoryIntegrat
     @Test
     @DisplayName("findByIdentifierAndTeamId with wrong team returns empty")
     void findByIdentifierWrongTeamReturnsEmpty() {
-      ContactAddress saved = repo.save(
-          TestDataHelper.buildContactAddress(contactIdA, TEAM_A_ID, USER_ID));
+      ContactAddress saved =
+          repo.save(TestDataHelper.buildContactAddress(contactIdA, TEAM_A_ID, USER_ID));
 
       Optional<ContactAddress> found =
           repo.findByIdentifierAndTeamId(saved.getIdentifier().orElseThrow(), TEAM_B_ID);
@@ -146,8 +146,8 @@ class ContactAddressRepositoryIntegrationTest extends AbstractRepositoryIntegrat
     @Test
     @DisplayName("soft delete hides address from find queries")
     void softDeleteHidesAddress() {
-      ContactAddress saved = repo.save(
-          TestDataHelper.buildContactAddress(contactIdA, TEAM_A_ID, USER_ID));
+      ContactAddress saved =
+          repo.save(TestDataHelper.buildContactAddress(contactIdA, TEAM_A_ID, USER_ID));
 
       repo.softDeleteByIdAndTeamId(saved.getId(), TEAM_A_ID);
 
@@ -158,8 +158,8 @@ class ContactAddressRepositoryIntegrationTest extends AbstractRepositoryIntegrat
     @Test
     @DisplayName("soft delete with wrong team does nothing")
     void softDeleteWrongTeamDoesNothing() {
-      ContactAddress saved = repo.save(
-          TestDataHelper.buildContactAddress(contactIdA, TEAM_A_ID, USER_ID));
+      ContactAddress saved =
+          repo.save(TestDataHelper.buildContactAddress(contactIdA, TEAM_A_ID, USER_ID));
 
       repo.softDeleteByIdAndTeamId(saved.getId(), TEAM_B_ID);
 
@@ -169,8 +169,8 @@ class ContactAddressRepositoryIntegrationTest extends AbstractRepositoryIntegrat
     @Test
     @DisplayName("findByContactId excludes soft-deleted addresses")
     void findByContactIdExcludesSoftDeleted() {
-      ContactAddress addr1 = repo.save(
-          TestDataHelper.buildContactAddress(contactIdA, TEAM_A_ID, USER_ID));
+      ContactAddress addr1 =
+          repo.save(TestDataHelper.buildContactAddress(contactIdA, TEAM_A_ID, USER_ID));
 
       repo.softDeleteByIdAndTeamId(addr1.getId(), TEAM_A_ID);
 

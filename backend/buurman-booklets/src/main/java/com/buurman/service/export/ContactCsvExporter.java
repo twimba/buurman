@@ -13,7 +13,6 @@ import com.buurman.domain.Contact;
 import com.buurman.domain.ContactTag;
 import com.buurman.exception.ExternalServiceException;
 import com.buurman.repository.ContactRepository;
-import com.buurman.repository.ContactRepository.ContactWithCount;
 import com.buurman.repository.ContactTagRepository;
 import com.opencsv.CSVWriter;
 
@@ -40,44 +39,60 @@ public class ContactCsvExporter {
     try (StringWriter sw = new StringWriter();
         CSVWriter writer = new CSVWriter(sw)) {
 
-      writer.writeNext(new String[] {
-          "Identifier", "Contact Type", "Display Name", "First Name", "Last Name",
-          "Company Name", "Trade Name", "Industry", "Email", "Phone",
-          "Tax Number", "ID Number", "ID Expiry Date", "Date of Birth",
-          "Website", "Invoice Email", "Tags", "Active Contract Count",
-          "Data Retention Status", "Created At", "Updated At"
-      });
+      writer.writeNext(
+          new String[] {
+            "Identifier",
+            "Contact Type",
+            "Display Name",
+            "First Name",
+            "Last Name",
+            "Company Name",
+            "Trade Name",
+            "Industry",
+            "Email",
+            "Phone",
+            "Tax Number",
+            "ID Number",
+            "ID Expiry Date",
+            "Date of Birth",
+            "Website",
+            "Invoice Email",
+            "Tags",
+            "Active Contract Count",
+            "Data Retention Status",
+            "Created At",
+            "Updated At"
+          });
 
       for (Contact contact : contacts) {
         List<ContactTag> tags = tagsByContactId.getOrDefault(contact.getId(), List.of());
-        String tagsStr = tags.stream()
-            .map(ContactTag::name)
-            .collect(Collectors.joining(","));
+        String tagsStr = tags.stream().map(ContactTag::name).collect(Collectors.joining(","));
         int activeCount = activeCountsByContactId.getOrDefault(contact.getId(), 0);
 
-        writer.writeNext(new String[] {
-            contact.getIdentifier().map(Object::toString).orElse(""),
-            contact.getContactType().name(),
-            contact.getDisplayName(),
-            contact.getFirstName().orElse(""),
-            contact.getLastName().orElse(""),
-            contact.getCompanyName().orElse(""),
-            contact.getTradeName().orElse(""),
-            contact.getIndustry().orElse(""),
-            contact.getEmail().orElse(""),
-            contact.getPhone().orElse(""),
-            contact.getTaxNumber().orElse(""),
-            contact.getIdNumber().orElse(""),
-            contact.getIdExpiryDate().map(Object::toString).orElse(""),
-            contact.getDateOfBirth().map(Object::toString).orElse(""),
-            contact.getWebsite().orElse(""),
-            contact.getInvoiceEmail().orElse(""),
-            tagsStr,
-            String.valueOf(activeCount),
-            contact.getDataRetentionStatus().name(),
-            contact.getCreatedAt() != null ? contact.getCreatedAt().toString() : "",
-            contact.getUpdatedAt() != null ? contact.getUpdatedAt().toString() : ""
-        });
+        writer.writeNext(
+            new String[] {
+              contact.getIdentifier().map(Object::toString).orElse(""),
+              contact.getContactType().name(),
+              contact.getDisplayName(),
+              contact.getFirstName().orElse(""),
+              contact.getLastName().orElse(""),
+              contact.getCompanyName().orElse(""),
+              contact.getTradeName().orElse(""),
+              contact.getIndustry().orElse(""),
+              contact.getEmail().orElse(""),
+              contact.getPhone().orElse(""),
+              contact.getTaxNumber().orElse(""),
+              contact.getIdNumber().orElse(""),
+              contact.getIdExpiryDate().map(Object::toString).orElse(""),
+              contact.getDateOfBirth().map(Object::toString).orElse(""),
+              contact.getWebsite().orElse(""),
+              contact.getInvoiceEmail().orElse(""),
+              tagsStr,
+              String.valueOf(activeCount),
+              contact.getDataRetentionStatus().name(),
+              contact.getCreatedAt() != null ? contact.getCreatedAt().toString() : "",
+              contact.getUpdatedAt() != null ? contact.getUpdatedAt().toString() : ""
+            });
       }
 
       // UTF-8 BOM for Excel compatibility

@@ -232,8 +232,7 @@ public class NotificationSchedulerService {
         Optional<Contact> contact =
             contactRepository.findByIdAndTeamId(note.getContactId(), note.getTeamId());
         String contactDisplayName = contact.map(Contact::getDisplayName).orElse("Unknown Contact");
-        String followUpDateFormatted =
-            note.getFollowUpDate().map(d -> formatDate(d)).orElse("");
+        String followUpDateFormatted = note.getFollowUpDate().map(d -> formatDate(d)).orElse("");
 
         notifyTeamMembers(
             note.getTeamId(),
@@ -251,8 +250,7 @@ public class NotificationSchedulerService {
                                 "userName", user.getFirstName(),
                                 "contactName", contactDisplayName,
                                 "followUpDate", followUpDateFormatted,
-                                "noteSubject",
-                                    note.getSubject().orElse(""),
+                                "noteSubject", note.getSubject().orElse(""),
                                 "baseUrl", appProperties.email().baseUrl()))
                         .urgency(NotificationUrgency.NORMAL)
                         .createdBy(SYSTEM_USER_ID)

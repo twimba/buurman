@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.config.models.AppProperties;
+import com.buurman.domain.Contact;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractParty;
@@ -41,7 +42,6 @@ import com.buurman.domain.ContractRentComponent;
 import com.buurman.domain.Document;
 import com.buurman.domain.Property;
 import com.buurman.domain.RentComponentType;
-import com.buurman.domain.Contact;
 import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
@@ -55,6 +55,7 @@ import com.buurman.dto.request.GeneratePaymentsRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.RentComponentRequest;
 import com.buurman.dto.request.UpdateContractRequest;
+import com.buurman.dto.response.ContactSummary;
 import com.buurman.dto.response.ContractPartyResponse;
 import com.buurman.dto.response.ContractResponse;
 import com.buurman.dto.response.DocumentResponse;
@@ -62,12 +63,11 @@ import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.PropertySummary;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.dto.response.RentComponentResponse;
-import com.buurman.dto.response.ContactSummary;
 import com.buurman.exception.BadRequestException;
+import com.buurman.mapper.ContactMapper;
 import com.buurman.mapper.ContractMapper;
 import com.buurman.mapper.ContractRentComponentMapper;
 import com.buurman.mapper.PropertyMapper;
-import com.buurman.mapper.ContactMapper;
 import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRentComponentRepository;
@@ -283,7 +283,8 @@ public class ContractService {
 
     Contact contact = contactRepository.getByIdentifierAndTeamId(contactIdentifier, teamId);
 
-    List<Contract> contracts = contractRepository.findByContactIdViaParties(contact.getId(), teamId);
+    List<Contract> contracts =
+        contractRepository.findByContactIdViaParties(contact.getId(), teamId);
     return toResponses(contracts, teamId);
   }
 
@@ -1086,7 +1087,8 @@ public class ContractService {
                   parties.stream()
                       .map(
                           party -> {
-                            Contact contact = party.getContactId().map(contactMap::get).orElse(null);
+                            Contact contact =
+                                party.getContactId().map(contactMap::get).orElse(null);
                             Optional<ContactSummary> summary =
                                 Optional.ofNullable(contact).map(contactMapper::toSummary);
                             return new ContractPartyResponse(

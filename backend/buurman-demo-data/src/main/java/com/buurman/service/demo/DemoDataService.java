@@ -2,6 +2,11 @@ package com.buurman.service.demo;
 
 import static com.buurman.jooq.generated.Tables.AUDIT_LOG;
 import static com.buurman.jooq.generated.Tables.CALENDAR_FEEDS;
+import static com.buurman.jooq.generated.Tables.CONTACTS;
+import static com.buurman.jooq.generated.Tables.CONTACT_ADDRESSES;
+import static com.buurman.jooq.generated.Tables.CONTACT_NOTES;
+import static com.buurman.jooq.generated.Tables.CONTACT_RELATIONSHIPS;
+import static com.buurman.jooq.generated.Tables.CONTACT_TAGS;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.CONTRACT_PAYMENT_INSTRUCTIONS;
 import static com.buurman.jooq.generated.Tables.DATA_TAKEOUTS;
@@ -22,6 +27,7 @@ import static com.buurman.jooq.generated.Tables.PROPERTY_ACQUISITIONS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_AGRICULTURAL_DETAILS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_AMENITIES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_COMMERCIAL_DETAILS;
+import static com.buurman.jooq.generated.Tables.PROPERTY_CONTACT_HISTORY;
 import static com.buurman.jooq.generated.Tables.PROPERTY_FEES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_FINANCINGS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_INDUSTRIAL_DETAILS;
@@ -29,16 +35,10 @@ import static com.buurman.jooq.generated.Tables.PROPERTY_INSURANCES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_OUTDOOR_AREAS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_RESIDENTIAL_DETAILS;
 import static com.buurman.jooq.generated.Tables.PROPERTY_TAXES;
-import static com.buurman.jooq.generated.Tables.PROPERTY_CONTACT_HISTORY;
 import static com.buurman.jooq.generated.Tables.PROPERTY_VALUATIONS;
 import static com.buurman.jooq.generated.Tables.TEAMS;
 import static com.buurman.jooq.generated.Tables.TEAM_INVITATIONS;
 import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
-import static com.buurman.jooq.generated.Tables.CONTACTS;
-import static com.buurman.jooq.generated.Tables.CONTACT_ADDRESSES;
-import static com.buurman.jooq.generated.Tables.CONTACT_NOTES;
-import static com.buurman.jooq.generated.Tables.CONTACT_RELATIONSHIPS;
-import static com.buurman.jooq.generated.Tables.CONTACT_TAGS;
 import static com.buurman.jooq.generated.Tables.USERS;
 import static com.buurman.jooq.generated.Tables.USER_PREFERENCES;
 import static com.buurman.jooq.generated.Tables.USER_TEAM_NOTIFICATION_PREFERENCES;
@@ -308,13 +308,11 @@ public class DemoDataService {
     log.debug("Deleted {} property contact history entries", deleted);
 
     // 10. Contact tags (FK -> contacts, no deleted_at, ON DELETE CASCADE in schema)
-    deleted =
-        dsl.deleteFrom(CONTACT_TAGS).where(CONTACT_TAGS.TEAM_ID.in(demoTeamIds)).execute();
+    deleted = dsl.deleteFrom(CONTACT_TAGS).where(CONTACT_TAGS.TEAM_ID.in(demoTeamIds)).execute();
     log.debug("Deleted {} contact tags", deleted);
 
     // 10b. Contact notes (FK -> contacts)
-    deleted =
-        dsl.deleteFrom(CONTACT_NOTES).where(CONTACT_NOTES.TEAM_ID.in(demoTeamIds)).execute();
+    deleted = dsl.deleteFrom(CONTACT_NOTES).where(CONTACT_NOTES.TEAM_ID.in(demoTeamIds)).execute();
     log.debug("Deleted {} contact notes", deleted);
 
     // 10c. Contact relationships (FK -> contacts)
@@ -326,7 +324,9 @@ public class DemoDataService {
 
     // 10d. Contact addresses (FK -> contacts)
     deleted =
-        dsl.deleteFrom(CONTACT_ADDRESSES).where(CONTACT_ADDRESSES.TEAM_ID.in(demoTeamIds)).execute();
+        dsl.deleteFrom(CONTACT_ADDRESSES)
+            .where(CONTACT_ADDRESSES.TEAM_ID.in(demoTeamIds))
+            .execute();
     log.debug("Deleted {} contact addresses", deleted);
 
     // 11. Contacts

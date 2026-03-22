@@ -324,9 +324,7 @@ function App() {
                         {/* Backwards-compat redirect for old tenant URLs */}
                         <Route
                           path="/tenants/*"
-                          element={
-                            <Navigate to="/contacts" replace />
-                          }
+                          element={<Navigate to="/contacts" replace />}
                         />
                         <Route
                           path="/contracts"

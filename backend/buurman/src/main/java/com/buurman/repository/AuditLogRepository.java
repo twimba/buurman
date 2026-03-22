@@ -1,12 +1,12 @@
 package com.buurman.repository;
 
 import static com.buurman.jooq.generated.Tables.AUDIT_LOG;
+import static com.buurman.jooq.generated.Tables.CONTACTS;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.EXPENSES;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.jooq.generated.Tables.TEAMS;
-import static com.buurman.jooq.generated.Tables.CONTACTS;
 import static com.buurman.jooq.generated.Tables.USERS;
 import static org.jooq.impl.DSL.lower;
 

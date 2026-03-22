@@ -79,7 +79,6 @@ const CONTACT_TYPE_LABELS: Record<string, string> = {
   SERVICE_PROVIDER: 'Service Provider',
 };
 
-
 const RoleBadge = ({ role }: { role: ContractPartyRole }) => (
   <span
     className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full ${ROLE_COLORS[role] ?? 'bg-surface-inset text-text-primary'}`}
@@ -140,11 +139,9 @@ export const ContactDetailPage = () => {
     isLoading: photosLoading,
     error: photosError,
   } = useContactPhotos(id);
-  const {
-    data: contractsData,
-    isLoading: contractsLoading,
-    error: contractsError,
-  } = useContracts(id ? { contactIdentifier: id } : undefined);
+  const { data: contractsData, isLoading: contractsLoading } = useContracts(
+    id ? { contactIdentifier: id } : undefined
+  );
   const contracts = useMemo(
     () => contractsData?.content ?? [],
     [contractsData]
@@ -265,7 +262,9 @@ export const ContactDetailPage = () => {
     const today = new Date().toISOString().split('T')[0];
     return notes
       .filter((n) => n.followUpDate && n.followUpDate >= today)
-      .sort((a, b) => (a.followUpDate! < b.followUpDate! ? -1 : 1))
+      .sort((a, b) =>
+        (a.followUpDate ?? '') < (b.followUpDate ?? '') ? -1 : 1
+      )
       .slice(0, 5);
   }, [notes]);
 
@@ -382,7 +381,8 @@ export const ContactDetailPage = () => {
           title={displayName}
           subtitle={`#${contact.identifier} · ${
             contact.contactType
-              ? CONTACT_TYPE_LABELS[contact.contactType] ?? contact.contactType
+              ? (CONTACT_TYPE_LABELS[contact.contactType] ??
+                contact.contactType)
               : ''
           }`}
           backTo="/contacts"
@@ -913,7 +913,7 @@ export const ContactDetailPage = () => {
                     >
                       <AlertCircle className="h-4 w-4 text-error-text flex-shrink-0" />
                       <span className="text-error-text font-medium">
-                        Overdue: {formatDate(note.followUpDate!)}
+                        Overdue: {formatDate(note.followUpDate ?? '')}
                       </span>
                       <span className="text-text-secondary truncate">
                         {note.subject ?? note.body.substring(0, 60)}
@@ -927,7 +927,7 @@ export const ContactDetailPage = () => {
                     >
                       <Calendar className="h-4 w-4 text-text-muted flex-shrink-0" />
                       <span className="font-medium">
-                        {formatDate(note.followUpDate!)}
+                        {formatDate(note.followUpDate ?? '')}
                       </span>
                       <span className="text-text-secondary truncate">
                         {note.subject ?? note.body.substring(0, 60)}
@@ -982,9 +982,7 @@ export const ContactDetailPage = () => {
         )}
 
         {/* ===== Tab 2: Notes ===== */}
-        {activeTab === 'notes' && (
-          <ContactNotesTab contactId={id} />
-        )}
+        {activeTab === 'notes' && <ContactNotesTab contactId={id} />}
 
         {/* ===== Tab 3: Activity ===== */}
         {activeTab === 'activity' && (

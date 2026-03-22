@@ -201,7 +201,8 @@ class ContactRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
       repo.save(c2);
 
       PaginatedResult<Contact> result =
-          repo.findAllByTeamIdPaginated(TEAM_A_ID, null, PageRequest.of(null, null, null, (SortDirection) null));
+          repo.findAllByTeamIdPaginated(
+              TEAM_A_ID, null, PageRequest.of(null, null, null, (SortDirection) null));
 
       assertThat(result.items()).hasSize(2);
       assertThat(result.totalElements()).isEqualTo(2);
@@ -218,7 +219,8 @@ class ContactRepositoryIntegrationTest extends AbstractRepositoryIntegrationTest
       repo.save(c2);
 
       PaginatedResult<Contact> result =
-          repo.findAllByTeamIdPaginated(TEAM_A_ID, "Piet", PageRequest.of(null, null, null, (SortDirection) null));
+          repo.findAllByTeamIdPaginated(
+              TEAM_A_ID, "Piet", PageRequest.of(null, null, null, (SortDirection) null));
 
       assertThat(result.items()).hasSize(1);
       assertThat(result.items().getFirst().getFirstName()).isEqualTo("Piet");

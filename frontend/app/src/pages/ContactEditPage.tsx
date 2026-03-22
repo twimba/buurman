@@ -43,9 +43,7 @@ export const ContactEditPage = () => {
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <h1 className="text-2xl font-bold text-text-primary">
-            Edit Contact
-          </h1>
+          <h1 className="text-2xl font-bold text-text-primary">Edit Contact</h1>
         </div>
 
         {/* Form */}

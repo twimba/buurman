@@ -45,27 +45,19 @@ public class DemoContactRelationshipGenerator {
   };
 
   private static final String[] PARTNER_NOTES = {
-    "Registered partners — co-tenants.",
-    "Married couple on the same lease.",
-    null,
+    "Registered partners — co-tenants.", "Married couple on the same lease.", null,
   };
 
   private static final String[] WORKS_FOR_NOTES = {
-    "Employee listed as emergency contact.",
-    "Employed by the company contact.",
-    null,
+    "Employee listed as emergency contact.", "Employed by the company contact.", null,
   };
 
   private static final String[] CONTACT_PERSON_NOTES = {
-    "Primary contact person for the company.",
-    "Emergency contact and day-to-day liaison.",
-    null,
+    "Primary contact person for the company.", "Emergency contact and day-to-day liaison.", null,
   };
 
   private static final String[] OTHER_NOTES = {
-    "Known associate.",
-    "Referred by this contact.",
-    null,
+    "Known associate.", "Referred by this contact.", null,
   };
 
   public void generate(DemoDataContext ctx) {

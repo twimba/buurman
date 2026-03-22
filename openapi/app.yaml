@@ -23008,9 +23008,9 @@ components:
     ContractPartyRequest:
       type: object
       properties:
-        tenantIdentifier:
+        contactIdentifier:
           type: string
-        newTenant:
+        newContact:
           $ref: "#/components/schemas/CreateContactRequest"
         role:
           type: string
@@ -23132,9 +23132,9 @@ components:
     AddContractPartyRequest:
       type: object
       properties:
-        tenantIdentifier:
+        contactIdentifier:
           type: string
-        newTenant:
+        newContact:
           $ref: "#/components/schemas/CreateContactRequest"
         role:
           type: string
@@ -23151,9 +23151,9 @@ components:
     ChangePrimaryContactRequest:
       type: object
       properties:
-        tenantIdentifier:
+        contactIdentifier:
           type: string
-        newTenant:
+        newContact:
           $ref: "#/components/schemas/CreateContactRequest"
         validPartySource:
           type: boolean
@@ -23250,12 +23250,12 @@ components:
             - ALL_PAYMENTS
             - CONTRACT
             - PROPERTY_PAYMENTS
-            - TENANT_PAYMENTS
+            - CONTACT_PAYMENTS
         contractIdentifier:
           type: string
         propertyIdentifier:
           type: string
-        tenantIdentifier:
+        contactIdentifier:
           type: string
       required:
         - feedType
@@ -23271,12 +23271,12 @@ components:
             - ALL_PAYMENTS
             - CONTRACT
             - PROPERTY_PAYMENTS
-            - TENANT_PAYMENTS
+            - CONTACT_PAYMENTS
         contractIdentifier:
           type: string
         propertyIdentifier:
           type: string
-        tenantIdentifier:
+        contactIdentifier:
           type: string
         entityLabel:
           type: string

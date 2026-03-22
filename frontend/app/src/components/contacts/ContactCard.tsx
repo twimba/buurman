@@ -5,7 +5,8 @@ import {
   ContactType,
   CONTACT_TYPE_LABELS,
 } from '@/types/contact';
-import { Mail, Phone, FileText } from 'lucide-react';
+import { Mail, Phone, FileText, Calendar } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { Avatar } from '@/components/common/Avatar';
 import { StatusBadge } from '@buurman/ui';
@@ -59,7 +60,9 @@ export const ContactCard = ({ contact }: ContactCardProps) => {
           </h3>
           <div className="flex items-center gap-2 mt-0.5">
             <StatusBadge
-              label={CONTACT_TYPE_LABELS[contact.contactType] ?? contact.contactType}
+              label={
+                CONTACT_TYPE_LABELS[contact.contactType] ?? contact.contactType
+              }
               color={CONTACT_TYPE_COLORS[contact.contactType] ?? 'gray'}
               size="sm"
             />
@@ -112,14 +115,27 @@ export const ContactCard = ({ contact }: ContactCardProps) => {
         )}
       </div>
 
-      {/* Active Contracts Count */}
-      <div className="flex items-center gap-2 text-text-secondary px-3 py-2 bg-surface-inset rounded">
-        <FileText className="h-4 w-4" />
-        <span className="text-sm">
-          {contact.activeContractCount > 0
-            ? `${contact.activeContractCount} active contract${contact.activeContractCount !== 1 ? 's' : ''}`
-            : 'No active contracts'}
-        </span>
+      {/* Footer: Active Contracts + Created Date */}
+      <div className="flex items-center justify-between gap-2 text-text-secondary px-3 py-2 bg-surface-inset rounded">
+        <div className="flex items-center gap-2">
+          <FileText className="h-4 w-4" />
+          <span className="text-sm">
+            {contact.activeContractCount > 0
+              ? `${contact.activeContractCount} active contract${contact.activeContractCount !== 1 ? 's' : ''}`
+              : 'No active contracts'}
+          </span>
+        </div>
+        <div
+          className="flex items-center gap-1.5 text-text-muted"
+          title={new Date(contact.createdAt).toLocaleDateString()}
+        >
+          <Calendar className="h-3.5 w-3.5" />
+          <span className="text-xs">
+            {formatDistanceToNow(new Date(contact.createdAt), {
+              addSuffix: true,
+            })}
+          </span>
+        </div>
       </div>
     </div>
   );

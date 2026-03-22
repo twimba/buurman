@@ -12,8 +12,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import com.buurman.domain.Contact;
-import com.buurman.domain.ContactType;
-import com.buurman.domain.DataRetentionStatus;
 import com.buurman.jooq.generated.tables.records.ContactsRecord;
 
 @Mapper(componentModel = "spring")
@@ -60,9 +58,7 @@ public interface ContactRecordMapper {
   @Mapping(
       target = "idExpiryDate",
       expression = "java(java.util.Optional.ofNullable(record.getIdExpiryDate()))")
-  @Mapping(
-      target = "notes",
-      expression = "java(java.util.Optional.ofNullable(record.getNotes()))")
+  @Mapping(target = "notes", expression = "java(java.util.Optional.ofNullable(record.getNotes()))")
   @Mapping(
       target = "dataRetentionStatus",
       expression =

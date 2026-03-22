@@ -23,21 +23,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.config.models.AppProperties;
 import com.buurman.domain.CalendarFeed;
+import com.buurman.domain.Contact;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
 import com.buurman.domain.Sid;
-import com.buurman.domain.Contact;
 import com.buurman.domain.identifier.CalendarFeedIdentifier;
 import com.buurman.dto.request.CreateCalendarFeedRequest;
 import com.buurman.dto.response.CalendarFeedResponse;
 import com.buurman.repository.CalendarFeedRepository;
+import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
-import com.buurman.repository.ContactRepository;
 import com.buurman.security.UserPrincipal;
 
 import lombok.RequiredArgsConstructor;
@@ -102,7 +102,7 @@ public class CalendarFeedService {
             propertyRepository.getByIdentifierAndTeamId(propertySid, principal.requireTeamId());
         propertyId = Optional.of(property.getId());
       }
-      case TENANT_PAYMENTS -> {
+      case CONTACT_PAYMENTS -> {
         Sid contactSid =
             request
                 .contactIdentifier()
@@ -111,7 +111,7 @@ public class CalendarFeedService {
                 .orElseThrow(
                     () ->
                         new IllegalArgumentException(
-                            "contactIdentifier is required for TENANT_PAYMENTS feed type"));
+                            "contactIdentifier is required for CONTACT_PAYMENTS feed type"));
         Contact contact =
             contactRepository.getByIdentifierAndTeamId(contactSid, principal.requireTeamId());
         contactId = Optional.of(contact.getId());
@@ -217,14 +217,14 @@ public class CalendarFeedService {
                     milestoneContracts.addAll(propContracts);
                     propContracts.forEach(c -> contractIds.add(c.getId()));
                   });
-      case TENANT_PAYMENTS ->
+      case CONTACT_PAYMENTS ->
           feed.getContactId()
               .ifPresent(
                   tId -> {
-                    List<Contract> tenContracts =
+                    List<Contract> contactContracts =
                         contractRepository.findByContactIdViaParties(tId, teamId);
-                    milestoneContracts.addAll(tenContracts);
-                    tenContracts.forEach(c -> contractIds.add(c.getId()));
+                    milestoneContracts.addAll(contactContracts);
+                    contactContracts.forEach(c -> contractIds.add(c.getId()));
                   });
       case ALL_PAYMENTS -> {
         /* no milestones */
@@ -372,11 +372,12 @@ public class CalendarFeedService {
         }
         yield result;
       }
-      case TENANT_PAYMENTS -> {
+      case CONTACT_PAYMENTS -> {
         List<Contract> contracts =
             contractRepository.findByContactIdViaParties(
                 feed.getContactId()
-                    .orElseThrow(() -> new IllegalStateException("TENANT_PAYMENTS feed missing contactId")),
+                    .orElseThrow(
+                        () -> new IllegalStateException("CONTACT_PAYMENTS feed missing contactId")),
                 teamId);
         List<Payment> result = new ArrayList<>();
         for (Contract c : contracts) {
@@ -410,10 +411,10 @@ public class CalendarFeedService {
         String name = p != null ? p.getStreet() : "Property";
         yield "Buurman - " + name + " Payments";
       }
-      case TENANT_PAYMENTS -> {
+      case CONTACT_PAYMENTS -> {
         UUID tId =
             feed.getContactId()
-                .orElseThrow(() -> new IllegalStateException("TENANT feed missing contactId"));
+                .orElseThrow(() -> new IllegalStateException("CONTACT_PAYMENTS feed missing contactId"));
         Contact contact =
             contactMap.values().stream()
                 .filter(c -> c.getId().equals(tId))

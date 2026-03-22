@@ -45,10 +45,7 @@ public class DemoContactTagGenerator {
 
   // Tags more likely for COMPANY / SERVICE_PROVIDER contacts
   private static final ContactTag[] BUSINESS_WEIGHTED_TAGS = {
-    ContactTag.VIP,
-    ContactTag.PROSPECT,
-    ContactTag.KEY_HOLDER,
-    ContactTag.REFERRED,
+    ContactTag.VIP, ContactTag.PROSPECT, ContactTag.KEY_HOLDER, ContactTag.REFERRED,
   };
 
   public void generate(DemoDataContext ctx) {

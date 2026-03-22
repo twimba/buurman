@@ -20,7 +20,7 @@ public class CalendarFeed {
     ALL_PAYMENTS,
     CONTRACT,
     PROPERTY_PAYMENTS,
-    TENANT_PAYMENTS
+    CONTACT_PAYMENTS
   }
 
   private UUID id;

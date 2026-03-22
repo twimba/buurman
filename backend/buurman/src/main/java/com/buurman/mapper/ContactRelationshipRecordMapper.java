@@ -23,9 +23,7 @@ public interface ContactRelationshipRecordMapper {
   @Mapping(
       target = "identifier",
       expression = "java(java.util.Optional.of(record.getIdentifier()))")
-  @Mapping(
-      target = "notes",
-      expression = "java(java.util.Optional.ofNullable(record.getNotes()))")
+  @Mapping(target = "notes", expression = "java(java.util.Optional.ofNullable(record.getNotes()))")
   @Mapping(target = "createdAt", expression = "java(toInstant(record.getCreatedAt()))")
   @Mapping(target = "updatedAt", expression = "java(toInstant(record.getUpdatedAt()))")
   @Mapping(target = "deletedAt", expression = "java(toOptionalInstant(record.getDeletedAt()))")

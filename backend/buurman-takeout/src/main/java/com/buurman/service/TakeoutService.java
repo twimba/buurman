@@ -1,6 +1,8 @@
 package com.buurman.service;
 
 import static com.buurman.jooq.generated.Tables.AMENITIES;
+import static com.buurman.jooq.generated.Tables.CONTACTS;
+import static com.buurman.jooq.generated.Tables.CONTACT_ADDRESSES;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.CONTRACT_PARTIES;
 import static com.buurman.jooq.generated.Tables.CONTRACT_PAYMENT_INSTRUCTIONS;
@@ -21,8 +23,6 @@ import static com.buurman.jooq.generated.Tables.PROPERTY_TAXES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_VALUATIONS;
 import static com.buurman.jooq.generated.Tables.TEAMS;
 import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
-import static com.buurman.jooq.generated.Tables.CONTACTS;
-import static com.buurman.jooq.generated.Tables.CONTACT_ADDRESSES;
 import static com.buurman.util.FeatureFlags.TAKEOUT_MAX_EXPORTS;
 
 import java.io.ByteArrayOutputStream;
@@ -52,10 +52,10 @@ import org.springframework.stereotype.Service;
 import com.buurman.domain.DataTakeout;
 import com.buurman.domain.DataTakeout.TakeoutStatus;
 import com.buurman.domain.Sid;
+import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.DataTakeoutIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
-import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.TakeoutResponse;

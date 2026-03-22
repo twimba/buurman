@@ -34,7 +34,6 @@ public class DemoContactNoteGenerator {
 
   private static final InteractionType[] INTERACTION_TYPES = InteractionType.values();
 
-
   private static final String[] NOTE_BODIES = {
     "Contact called to ask about the status of the repair request. Informed them it will be handled"
         + " within 3 working days.",
@@ -43,7 +42,8 @@ public class DemoContactNoteGenerator {
         + " noted.",
     "Discussed upcoming lease renewal. Contact is interested in a 12-month extension at current"
         + " rent.",
-    "Reminder sent for outstanding payment. Contact acknowledged and promised to pay by end of week.",
+    "Reminder sent for outstanding payment. Contact acknowledged and promised to pay by end of"
+        + " week.",
     "Contact called to report a leak under the kitchen sink. Plumber scheduled for Thursday.",
     "Initial viewing went well. Contact is interested but wants to think it over.",
     "Move-out inspection completed. Small cleaning fee applies. Deposit to be refunded within 14"
@@ -78,8 +78,7 @@ public class DemoContactNoteGenerator {
       List<UUID> contactIds = ctx.getContactIdsByTeam().getOrDefault(teamId, List.of());
 
       for (UUID contactId : contactIds) {
-        int noteCount =
-            random.nextInt(MIN_NOTES_PER_CONTACT, MAX_NOTES_PER_CONTACT + 1);
+        int noteCount = random.nextInt(MIN_NOTES_PER_CONTACT, MAX_NOTES_PER_CONTACT + 1);
 
         for (int n = 0; n < noteCount; n++) {
           InteractionType interactionType =
@@ -140,7 +139,8 @@ public class DemoContactNoteGenerator {
               new String[] {
                 "Lease signing", "Property viewing", "Onboarding meeting", "Dispute resolution"
               };
-          case VIEWING -> new String[] {"Initial viewing", "Second viewing", "Pre-move-in inspection"};
+          case VIEWING ->
+              new String[] {"Initial viewing", "Second viewing", "Pre-move-in inspection"};
           case KEY_HANDOVER -> new String[] {"Keys handed over", "Spare key collected"};
           case INSPECTION ->
               new String[] {"Annual inspection", "Move-out inspection", "Damage assessment"};

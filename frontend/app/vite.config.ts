@@ -37,6 +37,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
+    chunkSizeWarningLimit: 1300,
     rollupOptions: {
       output: {
         manualChunks(id) {
@@ -52,6 +53,9 @@ export default defineConfig({
           if (id.includes('node_modules/@tiptap/')) {
             return 'vendor-tiptap';
           }
+          if (id.includes('node_modules/@fullcalendar/')) {
+            return 'vendor-fullcalendar';
+          }
           if (id.includes('node_modules/@vis.gl/react-google-maps/')) {
             return 'vendor-maps';
           }
@@ -65,9 +69,15 @@ export default defineConfig({
       },
     },
   },
+  optimizeDeps: {
+    include: ['ical.js'],
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      // ical.js v2 only exports a default — point to the CJS build so
+      // esbuild can synthesise named exports and suppress IMPORT_IS_UNDEFINED warnings
+      'ical.js': path.resolve(__dirname, '../node_modules/ical.js/dist/ical.es5.cjs'),
     },
   },
 })

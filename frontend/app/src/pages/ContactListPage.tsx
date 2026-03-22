@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useContacts } from '@/hooks/useContactHooks';
+import { useContacts, useCreateContact } from '@/hooks/useContactHooks';
 import { ContactCard } from '@/components/contacts/ContactCard';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
@@ -10,6 +10,9 @@ import {
   Search,
   Filter,
   X,
+  ChevronDown,
+  ChevronUp,
+  Save,
 } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
@@ -17,11 +20,17 @@ import { Pagination, RefreshButton, EmptyState } from '@buurman/ui';
 import {
   ContactType,
   ContactTag,
+  CreateContactRequest,
   CONTACT_TYPE_LABELS,
   CONTACT_TAG_LABELS,
 } from '@/types/contact';
+import { PhoneInput, validatePhoneE164 } from '@/components/common/PhoneInput';
 
-const CONTACT_TYPES: ContactType[] = ['INDIVIDUAL', 'COMPANY', 'SERVICE_PROVIDER'];
+const CONTACT_TYPES: ContactType[] = [
+  'INDIVIDUAL',
+  'COMPANY',
+  'SERVICE_PROVIDER',
+];
 
 export const ContactListPage = () => {
   const navigate = useNavigate();
@@ -33,6 +42,18 @@ export const ContactListPage = () => {
   >();
   const [tagFilters, setTagFilters] = useState<ContactTag[]>([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [showQuickAdd, setShowQuickAdd] = useState(false);
+  const [quickAdd, setQuickAdd] = useState<CreateContactRequest>({
+    contactType: 'INDIVIDUAL',
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+  });
+  const [quickAddErrors, setQuickAddErrors] = useState<Record<string, string>>(
+    {}
+  );
+  const createMutation = useCreateContact();
   const {
     pageParams,
     page,
@@ -84,6 +105,53 @@ export const ContactListPage = () => {
     resetPage();
   };
 
+  const handleQuickAddSubmit = async () => {
+    const errs: Record<string, string> = {};
+    if (quickAdd.contactType === 'INDIVIDUAL') {
+      if (!quickAdd.firstName?.trim()) {
+        errs.firstName = 'Required';
+      }
+    } else {
+      if (!quickAdd.companyName?.trim()) {
+        errs.companyName = 'Required';
+      }
+    }
+    if (
+      quickAdd.email?.trim() &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(quickAdd.email)
+    ) {
+      errs.email = 'Invalid email';
+    }
+    if (quickAdd.phone) {
+      const phoneErr = validatePhoneE164(quickAdd.phone);
+      if (phoneErr) {
+        errs.phone = phoneErr;
+      }
+    }
+    setQuickAddErrors(errs);
+    if (Object.keys(errs).length > 0) {
+      return;
+    }
+    const payload: CreateContactRequest = {
+      ...quickAdd,
+      firstName: quickAdd.firstName?.trim() || undefined,
+      lastName: quickAdd.lastName?.trim() || undefined,
+      email: quickAdd.email?.trim() || undefined,
+      phone: quickAdd.phone?.trim() || undefined,
+      companyName: quickAdd.companyName?.trim() || undefined,
+    };
+    await createMutation.mutateAsync(payload);
+    setQuickAdd({
+      contactType: 'INDIVIDUAL',
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+    });
+    setQuickAddErrors({});
+    setShowQuickAdd(false);
+  };
+
   const hasActiveFilters = contactTypeFilter || tagFilters.length > 0;
 
   if (isLoading) {
@@ -121,6 +189,24 @@ export const ContactListPage = () => {
               onClick={() => refetch()}
               isRefreshing={isFetching}
             />
+            {canEditData && (
+              <button
+                onClick={() => setShowQuickAdd(!showQuickAdd)}
+                className={`border px-3 py-2 rounded transition-colors flex items-center gap-1.5 text-sm ${
+                  showQuickAdd
+                    ? 'border-primary-500 bg-primary-50 text-primary-600 dark:bg-primary-950 dark:text-primary-300'
+                    : 'border-border-strong bg-surface-card text-text-secondary hover:border-primary-500'
+                }`}
+                title="Quick add contact"
+              >
+                {showQuickAdd ? (
+                  <ChevronUp className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
+                )}
+                Quick Add
+              </button>
+            )}
             <button
               onClick={() => navigate('/contacts/new')}
               disabled={!canEditData}
@@ -226,6 +312,163 @@ export const ContactListPage = () => {
           </div>
         )}
 
+        {/* Quick Add Panel */}
+        {showQuickAdd && canEditData && (
+          <div className="bg-surface-card border border-border-default rounded-lg p-4 mb-4">
+            <div className="space-y-3">
+              {/* Type selector row */}
+              <div className="flex gap-2">
+                {(
+                  ['INDIVIDUAL', 'COMPANY', 'SERVICE_PROVIDER'] as ContactType[]
+                ).map((type) => (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() =>
+                      setQuickAdd((prev) => ({ ...prev, contactType: type }))
+                    }
+                    className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
+                      quickAdd.contactType === type
+                        ? 'border-primary-500 bg-primary-50 text-primary-600 dark:bg-primary-950 dark:text-primary-300'
+                        : 'border-border-strong text-text-secondary hover:border-primary-400'
+                    }`}
+                  >
+                    {CONTACT_TYPE_LABELS[type]}
+                  </button>
+                ))}
+              </div>
+
+              {/* Fields row */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                {quickAdd.contactType !== 'INDIVIDUAL' && (
+                  <div>
+                    <input
+                      type="text"
+                      value={quickAdd.companyName ?? ''}
+                      onChange={(e) => {
+                        setQuickAdd((prev) => ({
+                          ...prev,
+                          companyName: e.target.value,
+                        }));
+                        if (quickAddErrors.companyName) {
+                          setQuickAddErrors((prev) => ({
+                            ...prev,
+                            companyName: '',
+                          }));
+                        }
+                      }}
+                      placeholder={
+                        quickAdd.contactType === 'SERVICE_PROVIDER'
+                          ? 'Business name *'
+                          : 'Company name *'
+                      }
+                      className={`w-full border rounded px-3 py-2 text-sm bg-surface-card text-text-primary ${
+                        quickAddErrors.companyName
+                          ? 'border-error-text'
+                          : 'border-border-strong'
+                      } focus:border-primary-500 focus:ring-1 focus:ring-primary-500`}
+                    />
+                  </div>
+                )}
+                <div>
+                  <input
+                    type="text"
+                    value={quickAdd.firstName ?? ''}
+                    onChange={(e) => {
+                      setQuickAdd((prev) => ({
+                        ...prev,
+                        firstName: e.target.value,
+                      }));
+                      if (quickAddErrors.firstName) {
+                        setQuickAddErrors((prev) => ({
+                          ...prev,
+                          firstName: '',
+                        }));
+                      }
+                    }}
+                    placeholder={`First name${quickAdd.contactType === 'INDIVIDUAL' ? ' *' : ''}`}
+                    className={`w-full border rounded px-3 py-2 text-sm bg-surface-card text-text-primary ${
+                      quickAddErrors.firstName
+                        ? 'border-error-text'
+                        : 'border-border-strong'
+                    } focus:border-primary-500 focus:ring-1 focus:ring-primary-500`}
+                  />
+                </div>
+                <div>
+                  <input
+                    type="text"
+                    value={quickAdd.lastName ?? ''}
+                    onChange={(e) =>
+                      setQuickAdd((prev) => ({
+                        ...prev,
+                        lastName: e.target.value,
+                      }))
+                    }
+                    placeholder="Last name"
+                    className="w-full border border-border-strong rounded px-3 py-2 text-sm bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                  />
+                </div>
+                <div>
+                  <input
+                    type="email"
+                    value={quickAdd.email ?? ''}
+                    onChange={(e) => {
+                      setQuickAdd((prev) => ({
+                        ...prev,
+                        email: e.target.value,
+                      }));
+                      if (quickAddErrors.email) {
+                        setQuickAddErrors((prev) => ({ ...prev, email: '' }));
+                      }
+                    }}
+                    placeholder="Email"
+                    className={`w-full border rounded px-3 py-2 text-sm bg-surface-card text-text-primary ${
+                      quickAddErrors.email
+                        ? 'border-error-text'
+                        : 'border-border-strong'
+                    } focus:border-primary-500 focus:ring-1 focus:ring-primary-500`}
+                  />
+                </div>
+                <div>
+                  <PhoneInput
+                    value={quickAdd.phone ?? null}
+                    onChange={(e164) => {
+                      setQuickAdd((prev) => ({ ...prev, phone: e164 ?? '' }));
+                      if (quickAddErrors.phone) {
+                        setQuickAddErrors((prev) => ({ ...prev, phone: '' }));
+                      }
+                    }}
+                    error={quickAddErrors.phone}
+                  />
+                </div>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex items-center gap-2 justify-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowQuickAdd(false);
+                    setQuickAddErrors({});
+                  }}
+                  className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleQuickAddSubmit}
+                  disabled={createMutation.isPending}
+                  className="bg-primary-500 text-white px-4 py-1.5 text-sm rounded hover:bg-primary-600 transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                >
+                  <Save className="h-3.5 w-3.5" />
+                  {createMutation.isPending ? 'Creating...' : 'Create'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Active Filter Chips */}
         {hasActiveFilters && !showFilters && (
           <div className="flex flex-wrap gap-2 mb-4">
@@ -294,11 +537,15 @@ export const ContactListPage = () => {
           <div className="bg-surface-card rounded-lg">
             <EmptyState
               icon={<Users className="h-12 w-12" />}
-              title={hasActiveFilters ? 'No contacts match your filters' : 'No contacts yet'}
+              title={
+                hasActiveFilters
+                  ? 'No contacts match your filters'
+                  : 'No contacts yet'
+              }
               description={
                 hasActiveFilters
                   ? 'Try adjusting your filters or search term.'
-                  : 'Add your tenants, companies, and service providers to keep everything organized.'
+                  : 'Add your contacts — individuals, companies, and service providers — to keep everything organized.'
               }
               variant="page"
               actions={

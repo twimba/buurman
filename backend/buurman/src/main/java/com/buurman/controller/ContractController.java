@@ -8,11 +8,11 @@ import java.util.Optional;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.ContractPartyIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
-import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.dto.request.AddContractPartyRequest;
 import com.buurman.dto.request.ChangeContractStatusRequest;
 import com.buurman.dto.request.ChangePrimaryContactRequest;

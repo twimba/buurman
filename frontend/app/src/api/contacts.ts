@@ -18,6 +18,7 @@ import {
   ContactActivityItem,
   ContactType,
   ContactTag,
+  DuplicateCheckResponse,
 } from '../types/contact';
 import { DocumentResponse, PhotoResponse } from '../types/property';
 import { RecentActivity } from './dashboard';
@@ -325,19 +326,7 @@ export const getContactActivity = async (
 
 export const checkContactDuplicates = async (
   data: CreateContactRequest
-): Promise<{
-  matches: Array<{
-    contact: {
-      identifier: string;
-      firstName: string;
-      lastName?: string;
-      email?: string;
-      phone?: string;
-    };
-    matchField: string;
-    matchType: string;
-  }>;
-}> => {
+): Promise<DuplicateCheckResponse> => {
   const response = await client.post('/contacts/check-duplicates', data);
   return response.data;
 };

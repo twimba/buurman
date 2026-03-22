@@ -17,6 +17,7 @@ import {
   AddContactTagRequest,
   ContactType,
   ContactTag,
+  DuplicateCheckResponse,
 } from '../types/contact';
 import type { PageParams } from '@/types/common';
 import { useToast } from '../context/ToastContext';
@@ -582,6 +583,14 @@ export const useContactActivity = (
     queryFn: () => contactsApi.getContactActivity(contactId ?? '', params),
     enabled: !!contactId,
     placeholderData: keepPreviousData,
+  });
+};
+
+// --- Duplicate Check ---
+
+export const useCheckContactDuplicates = () => {
+  return useMutation<DuplicateCheckResponse, Error, CreateContactRequest>({
+    mutationFn: (data) => contactsApi.checkContactDuplicates(data),
   });
 };
 

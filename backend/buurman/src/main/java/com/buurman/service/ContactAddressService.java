@@ -119,7 +119,8 @@ public class ContactAddressService {
     return addresses.stream().map(addressMapper::toResponse).toList();
   }
 
-  public ContactAddressResponse getAddress(UUID contactId, UUID addressId, UserPrincipal principal) {
+  public ContactAddressResponse getAddress(
+      UUID contactId, UUID addressId, UserPrincipal principal) {
     ContactAddress address =
         addressRepository.getByIdAndTeamId(addressId, principal.requireTeamId());
     if (!address.getContactId().equals(contactId)) {
@@ -131,7 +132,10 @@ public class ContactAddressService {
   @Transactional
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
   public ContactAddressResponse updateAddress(
-      UUID contactId, UUID addressId, UpdateContactAddressRequest request, UserPrincipal principal) {
+      UUID contactId,
+      UUID addressId,
+      UpdateContactAddressRequest request,
+      UserPrincipal principal) {
     ContactAddress address =
         addressRepository.getByIdAndTeamId(addressId, principal.requireTeamId());
     if (!address.getContactId().equals(contactId)) {

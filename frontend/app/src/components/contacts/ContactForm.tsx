@@ -1,17 +1,19 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, Save } from 'lucide-react';
+import { X, Save, AlertTriangle } from 'lucide-react';
 import {
   ContactResponse,
   ContactType,
   CONTACT_TYPE_LABELS,
   CreateContactRequest,
+  DuplicateCheckMatch,
 } from '@/types/contact';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
 import { PhoneInput, validatePhoneE164 } from '@/components/common/PhoneInput';
 import { ConfirmDialog } from '@buurman/ui';
 import { trackEvent } from '@/utils/analytics';
 import { AnalyticsEvent } from '@/constants/analyticsEvents';
+import { useCheckContactDuplicates } from '@/hooks/useContactHooks';
 
 interface ContactFormProps {
   contact?: ContactResponse;
@@ -54,6 +56,14 @@ export const ContactForm = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showTypeChangeDialog, setShowTypeChangeDialog] = useState(false);
   const [pendingType, setPendingType] = useState<ContactType | null>(null);
+  const [duplicateMatches, setDuplicateMatches] = useState<
+    DuplicateCheckMatch[]
+  >([]);
+  const [dismissedDuplicates, setDismissedDuplicates] = useState(false);
+  const duplicateCheckMutation = useCheckContactDuplicates();
+  const duplicateTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined
+  );
 
   const originalType = (contact?.contactType as ContactType) ?? 'INDIVIDUAL';
 
@@ -79,8 +89,9 @@ export const ContactForm = ({
   );
 
   useEffect(() => {
-    /* eslint-disable react-hooks/set-state-in-effect */
     if (contact && contact.identifier !== contactIdentifier) {
+      // Sync external contact prop to local form state
+      /* eslint-disable react-hooks/set-state-in-effect */
       setContactIdentifier(contact.identifier);
       setFormData({
         contactType: (contact.contactType as ContactType) ?? 'INDIVIDUAL',
@@ -99,9 +110,42 @@ export const ContactForm = ({
         invoiceEmail: contact.invoiceEmail ?? '',
         notes: contact.notes ?? '',
       });
+      /* eslint-enable react-hooks/set-state-in-effect */
     }
-    /* eslint-enable react-hooks/set-state-in-effect */
   }, [contact, contactIdentifier]);
+
+  const duplicateCheckRef = useRef(duplicateCheckMutation);
+  useEffect(() => {
+    duplicateCheckRef.current = duplicateCheckMutation;
+  });
+
+  const checkForDuplicates = useCallback(
+    (data: CreateContactRequest) => {
+      if (contact) {
+        return; // skip duplicate check when editing
+      }
+      const hasIdentifyingInfo =
+        data.email?.trim() || data.phone?.trim() || data.firstName?.trim();
+      if (!hasIdentifyingInfo) {
+        setDuplicateMatches([]);
+        return;
+      }
+      clearTimeout(duplicateTimerRef.current);
+      duplicateTimerRef.current = setTimeout(() => {
+        duplicateCheckRef.current.mutate(data, {
+          onSuccess: (result) => {
+            setDuplicateMatches(result.matches);
+            setDismissedDuplicates(false);
+          },
+        });
+      }, 800);
+    },
+    [contact]
+  );
+
+  useEffect(() => {
+    return () => clearTimeout(duplicateTimerRef.current);
+  }, []);
 
   const isIndividual = formData.contactType === 'INDIVIDUAL';
   const isCompanyLike =
@@ -219,9 +263,13 @@ export const ContactForm = ({
   };
 
   const handleChange = (field: keyof CreateContactRequest, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    const updated = { ...formData, [field]: value };
+    setFormData(updated);
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: '' }));
+    }
+    if (['email', 'phone', 'firstName', 'lastName'].includes(field)) {
+      checkForDuplicates(updated);
     }
   };
 
@@ -256,6 +304,62 @@ export const ContactForm = ({
             ))}
           </div>
         </div>
+
+        {/* Duplicate Detection Warning */}
+        {duplicateMatches.length > 0 && !dismissedDuplicates && (
+          <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-700 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
+                  Potential duplicate{duplicateMatches.length > 1 ? 's' : ''}{' '}
+                  found
+                </p>
+                <div className="mt-2 space-y-2">
+                  {duplicateMatches.map((match) => (
+                    <div
+                      key={match.contact.identifier}
+                      className="flex items-center justify-between gap-2 text-sm"
+                    >
+                      <span className="text-amber-700 dark:text-amber-300">
+                        <span className="font-medium">
+                          {match.contact.firstName}
+                          {match.contact.lastName
+                            ? ` ${match.contact.lastName}`
+                            : ''}
+                        </span>
+                        {match.contact.email && (
+                          <span className="text-amber-600 dark:text-amber-400">
+                            {' '}
+                            — {match.contact.email}
+                          </span>
+                        )}
+                        <span className="text-amber-500 dark:text-amber-500 ml-2">
+                          ({match.matchType} match on {match.matchField})
+                        </span>
+                      </span>
+                      <a
+                        href={`/contacts/${match.contact.identifier}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-medium text-amber-700 dark:text-amber-300 hover:underline flex-shrink-0"
+                      >
+                        View
+                      </a>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setDismissedDuplicates(true)}
+                  className="mt-2 text-xs text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200"
+                >
+                  Dismiss — this is not a duplicate
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Name Fields */}
         <div>
@@ -322,9 +426,7 @@ export const ContactForm = ({
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
                 {isCompanyLike ? 'Contact Person First Name' : 'First Name'}
-                {isIndividual && (
-                  <span className="text-error-text"> *</span>
-                )}
+                {isIndividual && <span className="text-error-text"> *</span>}
               </label>
               <input
                 type="text"
@@ -538,7 +640,7 @@ export const ContactForm = ({
               ? `Changing from ${CONTACT_TYPE_LABELS[originalType]} to ${CONTACT_TYPE_LABELS[pendingType]} will clear the following fields:\n\n${fieldsCleared.map((f) => `- ${f}`).join('\n')}\n\nThis cannot be undone after saving.`
               : `Change contact type from ${CONTACT_TYPE_LABELS[originalType]} to ${CONTACT_TYPE_LABELS[pendingType]}?`
           }
-          variant="warning"
+          variant="default"
           confirmLabel="Change Type"
           onConfirm={confirmTypeChange}
           onCancel={() => {

@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContractExtensionIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
-import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.generated.api.BookletsApi;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
@@ -43,7 +43,8 @@ public class BookletController implements BookletsApi {
   @Override
   public byte[] exportContactBooklet(ContactIdentifier contactIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    httpServletResponse.setHeader("Content-Disposition", "attachment; filename=contact-booklet.pdf");
+    httpServletResponse.setHeader(
+        "Content-Disposition", "attachment; filename=contact-booklet.pdf");
     httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
     return exportService.generateContactReportPDF(contactIdentifier, principal.requireTeamId());
   }

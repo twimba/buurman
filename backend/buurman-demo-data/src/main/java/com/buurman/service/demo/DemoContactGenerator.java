@@ -357,8 +357,7 @@ public class DemoContactGenerator {
           // ~60% of individuals have DOB
           if (random.nextInt(10) < 6) {
             int age = random.nextInt(20, 65);
-            dateOfBirth =
-                LocalDate.now(clock).minusYears(age).minusDays(random.nextInt(365));
+            dateOfBirth = LocalDate.now(clock).minusYears(age).minusDays(random.nextInt(365));
           }
           // ~40% have ID expiry date
           if (random.nextInt(10) < 4) {

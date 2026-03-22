@@ -297,6 +297,22 @@ export interface UpdateContactAddressRequest {
   geocodeAccuracy?: string;
 }
 
+export interface DuplicateCheckMatch {
+  contact: {
+    identifier: string;
+    firstName: string;
+    lastName?: string;
+    email?: string;
+    phone?: string;
+  };
+  matchField: string;
+  matchType: string;
+}
+
+export interface DuplicateCheckResponse {
+  matches: DuplicateCheckMatch[];
+}
+
 export interface ContactAddressResponse {
   identifier: string;
   street: string;

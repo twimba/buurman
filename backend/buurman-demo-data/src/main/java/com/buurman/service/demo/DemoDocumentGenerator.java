@@ -1,10 +1,10 @@
 package com.buurman.service.demo;
 
+import static com.buurman.jooq.generated.Tables.CONTACTS;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.EXPENSES;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.jooq.generated.Tables.PROPERTY_ACQUISITIONS;
-import static com.buurman.jooq.generated.Tables.CONTACTS;
 
 import java.io.IOException;
 import java.time.Clock;

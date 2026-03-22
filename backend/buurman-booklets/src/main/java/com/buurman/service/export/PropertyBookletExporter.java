@@ -45,6 +45,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Amenity;
+import com.buurman.domain.Contact;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
 import com.buurman.domain.Expense;
@@ -58,7 +59,6 @@ import com.buurman.domain.PropertyCommercialDetails;
 import com.buurman.domain.PropertyIndustrialDetails;
 import com.buurman.domain.PropertyOutdoorArea;
 import com.buurman.domain.PropertyResidentialDetails;
-import com.buurman.domain.Contact;
 import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.response.PropertyDashboardResponse;
 import com.buurman.dto.response.PropertyDashboardResponse.CategorySlice;

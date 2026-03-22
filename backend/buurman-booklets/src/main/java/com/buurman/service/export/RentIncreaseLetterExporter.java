@@ -20,19 +20,19 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
+import com.buurman.domain.Contact;
+import com.buurman.domain.ContactAddress;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Property;
-import com.buurman.domain.Contact;
-import com.buurman.domain.ContactAddress;
 import com.buurman.domain.identifier.ContractExtensionIdentifier;
+import com.buurman.repository.ContactAddressRepository;
+import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyRepository;
-import com.buurman.repository.ContactAddressRepository;
-import com.buurman.repository.ContactRepository;
 import com.buurman.service.ContractPartyService;
 import com.buurman.util.CurrencyUtils;
 
@@ -156,11 +156,7 @@ public class RentIncreaseLetterExporter {
 
     // Salutation
     String salutation =
-        primaryContact
-            .map(
-                t ->
-                    "Dear " + escapeHtml(t.getDisplayName()))
-            .orElse("Dear Tenant");
+        primaryContact.map(t -> "Dear " + escapeHtml(t.getDisplayName())).orElse("Dear Tenant");
     html.append("<div class='letter-body'>");
     html.append("<p>").append(salutation).append(",</p>");
 

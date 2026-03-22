@@ -4,9 +4,9 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
-import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.dto.response.PortfolioDashboardResponse;
 import com.buurman.dto.response.PropertyDashboardResponse;
 

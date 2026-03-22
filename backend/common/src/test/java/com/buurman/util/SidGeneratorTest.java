@@ -120,9 +120,7 @@ class SidGeneratorTest {
           Arguments.of("CAD", SidGenerator.newContactAddressId(), ContactAddressIdentifier.class),
           Arguments.of("CNT", SidGenerator.newContactNoteId(), ContactNoteIdentifier.class),
           Arguments.of(
-              "CRL",
-              SidGenerator.newContactRelationshipId(),
-              ContactRelationshipIdentifier.class),
+              "CRL", SidGenerator.newContactRelationshipId(), ContactRelationshipIdentifier.class),
           Arguments.of("USR", SidGenerator.newUserId(), UserIdentifier.class),
           Arguments.of("ACQ", SidGenerator.newAcquisitionId(), PropertyAcquisitionIdentifier.class),
           Arguments.of("VAL", SidGenerator.newValuationId(), PropertyValuationIdentifier.class),

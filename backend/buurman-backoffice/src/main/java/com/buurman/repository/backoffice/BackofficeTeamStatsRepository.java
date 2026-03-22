@@ -1,11 +1,11 @@
 package com.buurman.repository.backoffice;
 
+import static com.buurman.jooq.generated.Tables.CONTACTS;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.DOCUMENTS;
 import static com.buurman.jooq.generated.Tables.EXPENSES;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
-import static com.buurman.jooq.generated.Tables.CONTACTS;
 import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.sum;
 

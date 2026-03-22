@@ -10,12 +10,12 @@ import java.util.UUID;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 
-import com.buurman.domain.Payment;
-import com.buurman.domain.Property;
-import com.buurman.domain.Team;
 import com.buurman.domain.Contact;
 import com.buurman.domain.ContactAddress;
 import com.buurman.domain.ContactType;
+import com.buurman.domain.Payment;
+import com.buurman.domain.Property;
+import com.buurman.domain.Team;
 import com.buurman.mapper.OptionalMappingConfig;
 import com.buurman.util.MoneyAmount;
 import com.buurman.util.SidGenerator;

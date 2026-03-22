@@ -40,6 +40,7 @@ import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
+import com.buurman.domain.Contact;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractParty;
@@ -50,8 +51,8 @@ import com.buurman.domain.Payment;
 import com.buurman.domain.PaymentInstruction;
 import com.buurman.domain.PaymentReceival;
 import com.buurman.domain.Property;
-import com.buurman.domain.Contact;
 import com.buurman.domain.identifier.ContractIdentifier;
+import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractPaymentInstructionRepository;
 import com.buurman.repository.ContractRentPeriodRepository;
@@ -60,7 +61,6 @@ import com.buurman.repository.PaymentInstructionRepository;
 import com.buurman.repository.PaymentReceivalRepository;
 import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PropertyRepository;
-import com.buurman.repository.ContactRepository;
 import com.buurman.service.ContractPartyService;
 import com.buurman.service.EffectiveEndDateHelper;
 import com.buurman.util.CurrencyUtils;
@@ -425,7 +425,7 @@ public class ContractBookletExporter {
         });
 
     for (ContractParty party : sortedParties) {
-      Contact t =party.getContactId().map(contactMap::get).orElse(null);
+      Contact t = party.getContactId().map(contactMap::get).orElse(null);
       if (t == null) {
         continue;
       }

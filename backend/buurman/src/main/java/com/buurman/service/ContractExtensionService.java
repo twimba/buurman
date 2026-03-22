@@ -472,7 +472,8 @@ public class ContractExtensionService {
 
     extension = extensionRepository.save(extension);
 
-    // BR-31: If !requires_tenant_confirmation, immediately activate (no contact confirmation needed)
+    // BR-31: If !requires_tenant_confirmation, immediately activate (no contact confirmation
+    // needed)
     if (!contract.getRequiresTenantConfirmation()) {
       doActivate(extension, contract, teamId, SYSTEM_USER_ID);
     } else {

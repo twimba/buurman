@@ -5,10 +5,10 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.InteractionType;
+import com.buurman.util.Generated;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import com.buurman.util.Generated;
 
 @Generated
 public record CreateContactNoteRequest(

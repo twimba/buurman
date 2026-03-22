@@ -109,8 +109,7 @@ public class ContactNoteService {
     note.setOccurredAt(request.occurredAt());
 
     // Reset followUpReminderSent if followUpDate changed
-    boolean followUpDateChanged =
-        !note.getFollowUpDate().equals(request.followUpDate());
+    boolean followUpDateChanged = !note.getFollowUpDate().equals(request.followUpDate());
     note.setFollowUpDate(request.followUpDate());
     if (followUpDateChanged) {
       note.setFollowUpReminderSent(false);
@@ -121,10 +120,7 @@ public class ContactNoteService {
 
     ContactNote updated = noteRepository.save(note);
 
-    log.info(
-        "Contact note updated: {} in team {}",
-        updated.getIdentifier().orElseThrow(),
-        teamId);
+    log.info("Contact note updated: {} in team {}", updated.getIdentifier().orElseThrow(), teamId);
 
     auditService.logUpdate(
         teamId,
@@ -190,10 +186,7 @@ public class ContactNoteService {
 
   private ContactNoteResponse toResponse(ContactNote note) {
     String createdByName =
-        userRepository
-            .findById(note.getCreatedBy())
-            .map(User::getFullName)
-            .orElse("Unknown User");
+        userRepository.findById(note.getCreatedBy()).map(User::getFullName).orElse("Unknown User");
 
     return new ContactNoteResponse(
         note.getIdentifier().orElseThrow(),

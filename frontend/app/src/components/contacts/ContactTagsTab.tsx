@@ -26,10 +26,7 @@ interface ContactTagsTabProps {
   contact: ContactResponse;
 }
 
-export const ContactTagsTab = ({
-  contactId,
-  contact,
-}: ContactTagsTabProps) => {
+export const ContactTagsTab = ({ contactId, contact }: ContactTagsTabProps) => {
   const { canEditData } = useTeam();
   const addTagMutation = useAddContactTag(contactId);
   const removeTagMutation = useRemoveContactTag(contactId);
@@ -103,10 +100,7 @@ export const ContactTagsTab = ({
       ) : (
         <div className="flex flex-wrap gap-2">
           {currentTags.map((tag) => (
-            <div
-              key={tag}
-              className="inline-flex items-center gap-1.5"
-            >
+            <div key={tag} className="inline-flex items-center gap-1.5">
               <StatusBadge
                 label={CONTACT_TAG_LABELS[tag]}
                 color={TAG_COLORS[tag]}

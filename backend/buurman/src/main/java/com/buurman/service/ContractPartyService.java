@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.domain.Contact;
-import com.buurman.domain.ContactType;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
@@ -328,7 +327,8 @@ public class ContractPartyService {
     UUID contactId =
         primary
             .getContactId()
-            .orElseThrow(() -> new IllegalStateException("Primary contact party has no contact ID"));
+            .orElseThrow(
+                () -> new IllegalStateException("Primary contact party has no contact ID"));
     return contactRepository.getByIdAndTeamId(contactId, teamId);
   }
 
@@ -358,13 +358,18 @@ public class ContractPartyService {
             .distinct()
             .toList();
     List<Contact> contacts = contactRepository.findByIdsAndTeamId(contactIds, teamId);
-    Map<UUID, Contact> contactMap = contacts.stream().collect(Collectors.toMap(Contact::getId, c -> c));
+    Map<UUID, Contact> contactMap =
+        contacts.stream().collect(Collectors.toMap(Contact::getId, c -> c));
 
     return parties.stream()
         .map(
             party -> {
               ContactSummary summary =
-                  party.getContactId().map(contactMap::get).map(contactMapper::toSummary).orElse(null);
+                  party
+                      .getContactId()
+                      .map(contactMap::get)
+                      .map(contactMapper::toSummary)
+                      .orElse(null);
               return contractPartyMapper.toResponse(party, summary);
             })
         .toList();
@@ -425,7 +430,8 @@ public class ContractPartyService {
       @Nullable CreateContactRequest newContact,
       UserPrincipal principal) {
     if (contactIdentifier != null) {
-      return contactRepository.getByIdentifierAndTeamId(contactIdentifier, principal.requireTeamId());
+      return contactRepository.getByIdentifierAndTeamId(
+          contactIdentifier, principal.requireTeamId());
     }
     if (newContact != null) {
       ContactResponse created = contactService.createContact(newContact, principal);
@@ -437,8 +443,9 @@ public class ContractPartyService {
 
   private void validateContactTypeForRole(Contact contact, ContractPartyRole role) {
     switch (contact.getContactType()) {
-      case SERVICE_PROVIDER -> throw new IllegalArgumentException(
-          "Service providers cannot be added as contract parties");
+      case SERVICE_PROVIDER ->
+          throw new IllegalArgumentException(
+              "Service providers cannot be added as contract parties");
       case INDIVIDUAL -> {
         if (role == ContractPartyRole.CORPORATE_TENANT
             || role == ContractPartyRole.AUTHORIZED_REPRESENTATIVE) {
@@ -447,11 +454,11 @@ public class ContractPartyService {
         }
       }
       case COMPANY -> {
-        if (role == ContractPartyRole.PRIMARY_TENANT
-            || role == ContractPartyRole.EXTRA_TENANT) {
+        if (role == ContractPartyRole.PRIMARY_TENANT || role == ContractPartyRole.EXTRA_TENANT) {
           throw new IllegalArgumentException(
-              "Company contacts cannot have role: " + role.getDisplayName()
-              + ". Use CORPORATE_TENANT instead.");
+              "Company contacts cannot have role: "
+                  + role.getDisplayName()
+                  + ". Use CORPORATE_TENANT instead.");
         }
       }
     }

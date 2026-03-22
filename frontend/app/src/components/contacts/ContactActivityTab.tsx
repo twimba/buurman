@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useContactActivity } from '@/hooks/useContactHooks';
 import {
   InteractionType,
@@ -8,7 +7,8 @@ import {
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { Button, Pagination } from '@buurman/ui';
+import { Pagination } from '@buurman/ui';
+import { usePagination } from '@/hooks/usePagination';
 import {
   Activity,
   StickyNote,
@@ -47,17 +47,12 @@ interface ContactActivityTabProps {
   contactId: string;
 }
 
-export const ContactActivityTab = ({
-  contactId,
-}: ContactActivityTabProps) => {
+export const ContactActivityTab = ({ contactId }: ContactActivityTabProps) => {
   const { formatDate } = useFormatDate();
-  const [page, setPage] = useState(0);
-  const pageSize = 25;
+  const { pageParams, page, size, handlePageChange, handleSizeChange } =
+    usePagination({ defaultSize: 25 });
 
-  const { data, isLoading } = useContactActivity(contactId, {
-    page,
-    size: pageSize,
-  });
+  const { data, isLoading } = useContactActivity(contactId, pageParams);
 
   const items = data?.content ?? [];
   const totalPages = data?.totalPages ?? 0;
@@ -71,7 +66,10 @@ export const ContactActivityTab = ({
   };
 
   const getColorClass = (item: ContactActivityItem) => {
-    return EVENT_TYPE_COLORS[item.eventType] ?? 'bg-surface-inset text-text-secondary';
+    return (
+      EVENT_TYPE_COLORS[item.eventType] ??
+      'bg-surface-inset text-text-secondary'
+    );
   };
 
   if (isLoading && items.length === 0) {
@@ -173,33 +171,15 @@ export const ContactActivityTab = ({
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-4 pt-4 border-t border-border-default">
-              <div className="text-sm text-text-secondary">
-                Showing {page * pageSize + 1} to{' '}
-                {Math.min((page + 1) * pageSize, totalElements)} of{' '}
-                {totalElements} activities
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setPage((p) => Math.max(0, p - 1))}
-                  disabled={page === 0}
-                  className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
-                >
-                  Previous
-                </button>
-                <span className="px-3 py-1 text-sm text-text-secondary">
-                  Page {page + 1} of {totalPages}
-                </span>
-                <button
-                  onClick={() =>
-                    setPage((p) => Math.min(totalPages - 1, p + 1))
-                  }
-                  disabled={page >= totalPages - 1}
-                  className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
-                >
-                  Next
-                </button>
-              </div>
+            <div className="mt-4 pt-4 border-t border-border-default">
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                totalElements={totalElements}
+                size={size}
+                onPageChange={handlePageChange}
+                onSizeChange={handleSizeChange}
+              />
             </div>
           )}
         </>

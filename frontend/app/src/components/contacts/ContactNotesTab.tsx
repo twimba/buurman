@@ -337,13 +337,11 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
                 }))
               }
             >
-              {Object.entries(INTERACTION_TYPE_LABELS).map(
-                ([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                )
-              )}
+              {Object.entries(INTERACTION_TYPE_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
             </Select>
           </FormField>
           <FormField label="Subject">

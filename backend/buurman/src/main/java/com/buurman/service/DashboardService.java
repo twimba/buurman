@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.buurman.domain.Contact;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractIncomeEntry;
@@ -33,17 +34,16 @@ import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Property;
 import com.buurman.domain.Sid;
-import com.buurman.domain.Contact;
 import com.buurman.dto.response.ContractExtensionResponse;
 import com.buurman.dto.response.DashboardStatsResponse;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.generated.model.RenewalMode;
 import com.buurman.generated.model.UpcomingRenewalResponse;
 import com.buurman.repository.AuditLogRepository;
+import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyRepository;
-import com.buurman.repository.ContactRepository;
 
 import lombok.RequiredArgsConstructor;
 

@@ -29,17 +29,17 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
+import com.buurman.domain.Contact;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Property;
-import com.buurman.domain.Contact;
 import com.buurman.domain.identifier.ContractExtensionIdentifier;
+import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyRepository;
-import com.buurman.repository.ContactRepository;
 import com.buurman.service.ContractPartyService;
 import com.buurman.util.CurrencyUtils;
 
@@ -270,14 +270,13 @@ public class ContractExtensionAddendumExporter {
 
   // ── Helpers ─────────────────────────────────────────────────────
 
-  private String findPrimaryContactName(List<ContractParty> parties, Map<UUID, Contact> contactMap) {
+  private String findPrimaryContactName(
+      List<ContractParty> parties, Map<UUID, Contact> contactMap) {
     return parties.stream()
         .filter(p -> p.getRole() == ContractPartyRole.PRIMARY_TENANT)
         .findFirst()
         .flatMap(p -> p.getContactId().map(contactMap::get))
-        .map(
-            t ->
-                escapeHtml(t.getDisplayName()))
+        .map(t -> escapeHtml(t.getDisplayName()))
         .orElse("—");
   }
 

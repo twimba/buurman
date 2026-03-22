@@ -22,8 +22,8 @@ import {
   ConfirmDialog,
   FormField,
   Select,
-  Textarea,
 } from '@buurman/ui';
+import { RichTextEditor } from '@/components/common/RichTextEditor';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { Avatar } from '@/components/common/Avatar';
 import { Plus, Edit, Trash2, Users } from 'lucide-react';
@@ -176,9 +176,7 @@ export const ContactRelationshipsTab = ({
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() =>
-                          navigate(
-                            `/contacts/${rel.relatedContact.identifier}`
-                          )
+                          navigate(`/contacts/${rel.relatedContact.identifier}`)
                         }
                         className="text-sm font-medium text-primary-500 hover:text-primary-600 hover:underline"
                       >
@@ -190,9 +188,10 @@ export const ContactRelationshipsTab = ({
                       </span>
                     </div>
                     {rel.notes && (
-                      <p className="text-sm text-text-secondary mt-1 truncate">
-                        {rel.notes}
-                      </p>
+                      <div
+                        className="text-sm text-text-secondary mt-1 line-clamp-2 [&_p]:m-0 [&_ul]:m-0 [&_ol]:m-0"
+                        dangerouslySetInnerHTML={{ __html: rel.notes }}
+                      />
                     )}
                     <p className="text-xs text-text-muted mt-1">
                       Added{' '}
@@ -212,9 +211,7 @@ export const ContactRelationshipsTab = ({
                       <Edit className="h-4 w-4" />
                     </button>
                     <button
-                      onClick={() =>
-                        setDeleteRelationshipId(rel.identifier)
-                      }
+                      onClick={() => setDeleteRelationshipId(rel.identifier)}
                       className="p-1.5 rounded hover:bg-error-bg text-text-muted hover:text-error-text transition-colors"
                       title="Delete"
                     >
@@ -232,9 +229,7 @@ export const ContactRelationshipsTab = ({
       <ModalWrapper
         open={showFormModal}
         onClose={handleCloseForm}
-        title={
-          editingRelationship ? 'Edit Relationship' : 'Add Relationship'
-        }
+        title={editingRelationship ? 'Edit Relationship' : 'Add Relationship'}
         size="md"
         footer={
           <div className="flex gap-3 justify-end">
@@ -244,12 +239,8 @@ export const ContactRelationshipsTab = ({
             <Button
               variant="primary"
               onClick={handleSubmit}
-              isLoading={
-                createMutation.isPending || updateMutation.isPending
-              }
-              disabled={
-                !editingRelationship && !form.targetContactIdentifier
-              }
+              isLoading={createMutation.isPending || updateMutation.isPending}
+              disabled={!editingRelationship && !form.targetContactIdentifier}
             >
               {editingRelationship ? 'Save Changes' : 'Create'}
             </Button>
@@ -290,13 +281,10 @@ export const ContactRelationshipsTab = ({
             </Select>
           </FormField>
           <FormField label="Notes">
-            <Textarea
+            <RichTextEditor
               value={form.notes}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, notes: e.target.value }))
-              }
+              onChange={(value) => setForm((f) => ({ ...f, notes: value }))}
               placeholder="Additional notes about this relationship..."
-              rows={3}
             />
           </FormField>
         </div>

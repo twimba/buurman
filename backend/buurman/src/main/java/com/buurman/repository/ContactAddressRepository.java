@@ -150,9 +150,7 @@ public class ContactAddressRepository {
   }
 
   public void hardDeleteByContactId(UUID contactId) {
-    dsl.deleteFrom(CONTACT_ADDRESSES)
-        .where(CONTACT_ADDRESSES.CONTACT_ID.eq(contactId))
-        .execute();
+    dsl.deleteFrom(CONTACT_ADDRESSES).where(CONTACT_ADDRESSES.CONTACT_ID.eq(contactId)).execute();
   }
 
   private ContactAddress toDomain(Record record) {
@@ -168,7 +166,8 @@ public class ContactAddressRepository {
         .addressType(AddressType.valueOf(record.get(CONTACT_ADDRESSES.ADDRESS_TYPE)))
         .status(AddressStatus.valueOf(record.get(CONTACT_ADDRESSES.STATUS)))
         .latitude(
-            Optional.ofNullable(record.get(CONTACT_ADDRESSES.LATITUDE)).map(BigDecimal::doubleValue))
+            Optional.ofNullable(record.get(CONTACT_ADDRESSES.LATITUDE))
+                .map(BigDecimal::doubleValue))
         .longitude(
             Optional.ofNullable(record.get(CONTACT_ADDRESSES.LONGITUDE))
                 .map(BigDecimal::doubleValue))

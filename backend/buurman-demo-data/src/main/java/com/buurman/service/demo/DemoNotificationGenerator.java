@@ -1,11 +1,11 @@
 package com.buurman.service.demo;
 
+import static com.buurman.jooq.generated.Tables.CONTACTS;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.NOTIFICATIONS;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
-import static com.buurman.jooq.generated.Tables.CONTACTS;
 import static com.buurman.jooq.generated.Tables.USERS;
 import static com.buurman.util.SidGenerator.newNotificationId;
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -177,7 +177,8 @@ public class DemoNotificationGenerator {
           continue;
         }
 
-        String contactName = contact.get(CONTACTS.FIRST_NAME) + " " + contact.get(CONTACTS.LAST_NAME);
+        String contactName =
+            contact.get(CONTACTS.FIRST_NAME) + " " + contact.get(CONTACTS.LAST_NAME);
         String street = property.get(PROPERTIES.STREET);
         String city = property.get(PROPERTIES.CITY);
         String propertyName = street + ", " + city;
@@ -268,7 +269,8 @@ public class DemoNotificationGenerator {
           continue;
         }
 
-        String contactName = contact.get(CONTACTS.FIRST_NAME) + " " + contact.get(CONTACTS.LAST_NAME);
+        String contactName =
+            contact.get(CONTACTS.FIRST_NAME) + " " + contact.get(CONTACTS.LAST_NAME);
         String contactEmail = contact.get(CONTACTS.EMAIL);
         String contactPhone = contact.get(CONTACTS.PHONE);
         String propertyName =
@@ -366,7 +368,8 @@ public class DemoNotificationGenerator {
           continue;
         }
 
-        String contactName = contact.get(CONTACTS.FIRST_NAME) + " " + contact.get(CONTACTS.LAST_NAME);
+        String contactName =
+            contact.get(CONTACTS.FIRST_NAME) + " " + contact.get(CONTACTS.LAST_NAME);
         String propertyName =
             property.get(PROPERTIES.STREET) + ", " + property.get(PROPERTIES.CITY);
 
@@ -476,10 +479,12 @@ public class DemoNotificationGenerator {
       // --- A couple of failed notifications for realism ---
       if (!contactIds.isEmpty()) {
         UUID failedContactId = contactIds.get(random.nextInt(contactIds.size()));
-        Record failedContact = dsl.selectFrom(CONTACTS).where(CONTACTS.ID.eq(failedContactId)).fetchOne();
+        Record failedContact =
+            dsl.selectFrom(CONTACTS).where(CONTACTS.ID.eq(failedContactId)).fetchOne();
         if (failedContact != null) {
           String contactEmail = failedContact.get(CONTACTS.EMAIL);
-          String contactName = failedContact.get(CONTACTS.FIRST_NAME) + " " + failedContact.get(CONTACTS.LAST_NAME);
+          String contactName =
+              failedContact.get(CONTACTS.FIRST_NAME) + " " + failedContact.get(CONTACTS.LAST_NAME);
 
           // Find a property for this contact via contract_parties
           String propertyName = "your property";

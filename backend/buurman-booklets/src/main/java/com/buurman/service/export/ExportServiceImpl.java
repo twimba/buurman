@@ -10,9 +10,9 @@ import java.util.function.Supplier;
 
 import org.springframework.stereotype.Service;
 
+import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
-import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.dto.response.PortfolioDashboardResponse;
 import com.buurman.dto.response.PropertyDashboardResponse;
 import com.buurman.service.ExportService;

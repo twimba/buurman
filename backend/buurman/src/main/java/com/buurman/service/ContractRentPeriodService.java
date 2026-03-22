@@ -21,12 +21,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.buurman.config.models.AppProperties;
+import com.buurman.domain.Contact;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractRentPeriod;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
-import com.buurman.domain.Contact;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.ContractRentPeriodIdentifier;
 import com.buurman.dto.request.CreateRentPeriodRequest;

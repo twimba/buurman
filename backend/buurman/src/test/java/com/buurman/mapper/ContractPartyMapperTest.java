@@ -35,10 +35,15 @@ class ContractPartyMapperTest {
     @DisplayName("maps party with contact summary")
     void mapsWithContactSummary() {
       ContractParty party = createParty(ContractPartyRole.PRIMARY_TENANT);
-      ContactSummary contact = new ContactSummary(
-          CONTACT_ID, ContactType.INDIVIDUAL, "John Doe",
-          Optional.of("John"), Optional.of("Doe"),
-          Optional.of("john@example.com"), Optional.empty());
+      ContactSummary contact =
+          new ContactSummary(
+              CONTACT_ID,
+              ContactType.INDIVIDUAL,
+              "John Doe",
+              Optional.of("John"),
+              Optional.of("Doe"),
+              Optional.of("john@example.com"),
+              Optional.empty());
 
       ContractPartyResponse response = mapper.toResponse(party, contact);
 
@@ -75,16 +80,17 @@ class ContractPartyMapperTest {
     @Test
     @DisplayName("throws when party has no identifier")
     void throwsWhenIdentifierMissing() {
-      ContractParty party = ContractParty.builder()
-          .id(UUID.randomUUID())
-          .teamId(UUID.randomUUID())
-          .contractId(UUID.randomUUID())
-          .role(ContractPartyRole.PRIMARY_TENANT)
-          .createdAt(Instant.now())
-          .updatedAt(Instant.now())
-          .createdBy(UUID.randomUUID())
-          .updatedBy(UUID.randomUUID())
-          .build();
+      ContractParty party =
+          ContractParty.builder()
+              .id(UUID.randomUUID())
+              .teamId(UUID.randomUUID())
+              .contractId(UUID.randomUUID())
+              .role(ContractPartyRole.PRIMARY_TENANT)
+              .createdAt(Instant.now())
+              .updatedAt(Instant.now())
+              .createdBy(UUID.randomUUID())
+              .updatedBy(UUID.randomUUID())
+              .build();
 
       assertThatThrownBy(() -> mapper.toResponse(party, null))
           .isInstanceOf(NoSuchElementException.class);
