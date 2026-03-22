@@ -4,20 +4,27 @@ set -euo pipefail
 echo "Starting workspace setup..."
 
 # ---------------------------------------------------------------------------
-# Step 1: Pick an available workspace number (1-9)
+# Step 1: Pick an available workspace number (1-9) via lock files
 # ---------------------------------------------------------------------------
-USED_WORKSPACES=$(docker ps --format '{{.Names}}' 2>/dev/null | sed -n 's/^buurman-w\([0-9]\).*/\1/p' | sort -u || true)
+LOCK_DIR="$HOME/.buurman/workspaces"
+mkdir -p "$LOCK_DIR"
 
 WS=""
 for n in $(seq 1 9); do
-  if ! echo "$USED_WORKSPACES" | grep -qx "$n"; then
+  if [ ! -f "$LOCK_DIR/w${n}.lock" ]; then
     WS=$n
     break
   fi
 done
 
 if [ -z "$WS" ]; then
-  echo "ERROR: All workspace numbers (1-9) are in use."
+  echo "ERROR: All workspace numbers (1-9) are reserved."
+  echo "Active reservations:"
+  for n in $(seq 1 9); do
+    if [ -f "$LOCK_DIR/w${n}.lock" ]; then
+      echo "  w${n}: $(cat "$LOCK_DIR/w${n}.lock")"
+    fi
+  done
   exit 1
 fi
 

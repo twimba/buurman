@@ -93,6 +93,17 @@ for f in "${TRACKED_FILES[@]}"; do
 done
 
 # =============================================================================
+# 5. Release workspace lock
+# =============================================================================
+LOCK_DIR="$HOME/.buurman/workspaces"
+LOCK_FILE="$LOCK_DIR/w${WS}.lock"
+
+if [ -f "$LOCK_FILE" ]; then
+  rm "$LOCK_FILE"
+  echo "  Workspace ${WS} lock released"
+fi
+
+# =============================================================================
 # 6. Clean up backup file
 # =============================================================================
 if [ -f "$PROJECT_DIR/.env.bak" ]; then

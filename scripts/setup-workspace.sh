@@ -28,6 +28,26 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
+# --- Reserve workspace via lock file (~/.buurman/workspaces/w{N}.lock) ---
+LOCK_DIR="$HOME/.buurman/workspaces"
+mkdir -p "$LOCK_DIR"
+LOCK_FILE="$LOCK_DIR/w${WS}.lock"
+
+if [ -f "$LOCK_FILE" ]; then
+  echo "ERROR: Workspace ${WS} is already reserved ($(cat "$LOCK_FILE"))"
+  echo ""
+  echo "Available workspaces:"
+  for n in $(seq 1 9); do
+    if [ ! -f "$LOCK_DIR/w${n}.lock" ]; then
+      echo "  $n"
+    fi
+  done
+  exit 1
+fi
+
+echo "$PROJECT_DIR" > "$LOCK_FILE"
+echo "Reserved workspace ${WS} (lock: $LOCK_FILE)"
+
 # --- Port Calculations ---
 HTTPS_PORT=$((443 + WS * 1000))
 HTTP_PORT=$((80 + WS * 1000))
