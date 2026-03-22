@@ -29,6 +29,11 @@ const GRAFANA_DASHBOARDS: GrafanaDashboard[] = [
     url: "/d/buurman-integrations",
   },
   {
+    uid: "buurman-operations",
+    title: "Operations",
+    url: "/d/buurman-operations",
+  },
+  {
     uid: "hetzner-servers",
     title: "Hetzner Servers",
     url: "/d/hetzner-servers",
