@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 
 import com.buurman.repository.TeamRepository;
@@ -18,21 +19,22 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class FeatureFlagService {
 
-  private final Optional<FlagsmithClient> flagsmithClient;
+  private final ObjectProvider<FlagsmithClient> flagsmithClientProvider;
   private final TeamRepository teamRepository;
 
   public FeatureFlagService(
-      Optional<FlagsmithClient> flagsmithClient, TeamRepository teamRepository) {
-    this.flagsmithClient = flagsmithClient;
+      ObjectProvider<FlagsmithClient> flagsmithClientProvider, TeamRepository teamRepository) {
+    this.flagsmithClientProvider = flagsmithClientProvider;
     this.teamRepository = teamRepository;
-    if (flagsmithClient.isEmpty()) {
-      log.warn("Flagsmith client not configured — all feature flags will default to OFF");
-    }
+  }
+
+  private Optional<FlagsmithClient> client() {
+    return Optional.ofNullable(flagsmithClientProvider.getIfAvailable());
   }
 
   /** Global flag evaluation (no identity context). */
   public boolean isEnabled(String flagKey) {
-    return flagsmithClient
+    return client()
         .map(
             client -> {
               try {
@@ -60,7 +62,7 @@ public class FeatureFlagService {
             team -> {
               String identity = "team:" + team.getIdentifier().orElseThrow();
               Map<String, Object> traits = Map.of("demo", team.isDemo());
-              return flagsmithClient
+              return client()
                   .map(
                       client -> {
                         try {
@@ -83,7 +85,7 @@ public class FeatureFlagService {
 
   /** Identity-aware flag evaluation with user/team traits. */
   public boolean isEnabled(String flagKey, UserPrincipal principal) {
-    return flagsmithClient
+    return client()
         .map(
             client -> {
               try {
@@ -105,7 +107,7 @@ public class FeatureFlagService {
 
   /** Get remote config value for a flag (identity-aware). */
   public Optional<Object> getValue(String flagKey, UserPrincipal principal) {
-    return flagsmithClient.flatMap(
+    return client().flatMap(
         client -> {
           try {
             String identity = buildIdentity(principal);
@@ -122,7 +124,7 @@ public class FeatureFlagService {
   /** Get all evaluated flags for the current user (for the frontend endpoint). */
   public Map<String, Object> getAllFlags(UserPrincipal principal) {
     Map<String, Object> result = new HashMap<>();
-    flagsmithClient.ifPresent(
+    client().ifPresent(
         client -> {
           try {
             Flags flags = client.getIdentityFlags(buildIdentity(principal), buildTraits(principal));
@@ -145,7 +147,7 @@ public class FeatureFlagService {
   /** Get all environment-level flags (no identity context). */
   public Map<String, Object> getAllEnvironmentFlags() {
     Map<String, Object> result = new HashMap<>();
-    flagsmithClient.ifPresent(
+    client().ifPresent(
         client -> {
           try {
             Flags flags = client.getEnvironmentFlags();
@@ -168,7 +170,7 @@ public class FeatureFlagService {
   /** Get all flags for an arbitrary identity (for backoffice user inspection). */
   public Map<String, Object> getAllFlagsForIdentity(String identity, Map<String, Object> traits) {
     Map<String, Object> result = new HashMap<>();
-    flagsmithClient.ifPresent(
+    client().ifPresent(
         client -> {
           try {
             Flags flags = client.getIdentityFlags(identity, traits);

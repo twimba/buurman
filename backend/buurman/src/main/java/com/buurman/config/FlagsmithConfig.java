@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 import com.buurman.config.models.FlagsmithProperties;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -47,6 +48,7 @@ public class FlagsmithConfig {
     }
   }
 
+  @Lazy
   @Bean
   public @Nullable FlagsmithClient flagsmithClient() {
     return resolveServerKey().map(this::buildClient).orElse(null);

@@ -56,12 +56,15 @@ test-coverage:
 	@echo "  buurman-booklets:    backend/buurman-booklets/target/site/jacoco/index.html"
 
 ## Run backend locally (sources workspace env overrides if present)
+## Two-phase: install all modules with build cache, then run app module only.
+## spring-boot:run forks a lifecycle that bypasses the build cache, so we compile
+## separately to avoid re-running JOOQ/OpenAPI codegen on every restart.
 backend:
 	@if [ -f .env.backend ]; then \
 		echo "Sourcing workspace backend config from .env.backend"; \
-		. ./.env.backend && cd backend && mvn spring-boot:run -pl app -am; \
+		. ./.env.backend && cd backend && mvn install -pl app -am -DskipTests -Pquick && mvn spring-boot:run -pl app; \
 	else \
-		cd backend && mvn spring-boot:run -pl app -am; \
+		cd backend && mvn install -pl app -am -DskipTests -Pquick && mvn spring-boot:run -pl app; \
 	fi
 
 ## Run frontend app locally (reads ports from .env if present)
@@ -121,7 +124,7 @@ local:
 		-e '      set backendPane to (split horizontally with default profile)' \
 		-e '    end tell' \
 		-e '    tell backendPane' \
-		-e '      write text "cd /Users/luis.santos/projects/buurman/backend && sleep 10 && mvn -pl app -am spring-boot:run"' \
+		-e '      write text "cd /Users/luis.santos/projects/buurman/backend && sleep 10 && mvn install -pl app -am -DskipTests -Pquick && mvn spring-boot:run -pl app"' \
 		-e '      set frontendPane to (split horizontally with default profile)' \
 		-e '    end tell' \
 		-e '    tell frontendPane' \
