@@ -90,7 +90,9 @@
         "https://w1-backoffice.local.buurman.io:1443/*",
         "http://localhost:5184/*",
         "https://w2-backoffice.local.buurman.io:2443/*",
-        "http://localhost:5194/*"
+        "http://localhost:5194/*",
+        "https://w3-backoffice.local.buurman.io:3443/*",
+        "http://localhost:5204/*"
       ],
       "webOrigins": [
         "https://backoffice.local.buurman.io",
@@ -99,7 +101,9 @@
         "https://w1-backoffice.local.buurman.io:1443",
         "http://localhost:5184",
         "https://w2-backoffice.local.buurman.io:2443",
-        "http://localhost:5194"
+        "http://localhost:5194",
+        "https://w3-backoffice.local.buurman.io:3443",
+        "http://localhost:5204"
       ],
       "defaultClientScopes": [
         "web-origins",
