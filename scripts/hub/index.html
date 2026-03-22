@@ -346,6 +346,66 @@
       color: var(--text-primary);
     }
 
+    /* ─── Quick Links ─── */
+    .quick-links-section {
+      margin-bottom: 1.25rem;
+    }
+
+    .section-label {
+      font-size: 0.67rem;
+      font-weight: 700;
+      color: var(--text-disabled);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 0.45rem;
+    }
+
+    .quick-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+    }
+
+    .qlink {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.38rem 0.7rem 0.38rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--text-secondary);
+      background: var(--surface-card);
+      border: 1px solid var(--border-default);
+      box-shadow: var(--shadow-xs);
+      transition: all 0.15s ease;
+    }
+    .qlink:hover {
+      color: var(--text-primary);
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-1px);
+    }
+    .qlink:active {
+      transform: translateY(0);
+      box-shadow: var(--shadow-xs);
+    }
+
+    .qlink-icon {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+    }
+
+    .qlink-arrow {
+      width: 10px;
+      height: 10px;
+      opacity: 0.3;
+      flex-shrink: 0;
+      margin-left: 0.1rem;
+    }
+
     /* ─── Footer Legend ─── */
     .legend {
       display: flex;
@@ -406,6 +466,42 @@
         </div>`;
     }
 
+    const QUICK_LINKS = [
+      {
+        label: "Pull Requests",
+        url: "https://github.com/twimba/buurman/pulls",
+        icon: `<svg class="qlink-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>`,
+      },
+      {
+        label: "Dokploy",
+        url: "https://dokploy.buurman.io/dashboard/projects",
+        icon: `<svg class="qlink-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1L3 5v6l5 4 5-4V5L8 1z"/><path d="M8 5v6"/><path d="M5.5 3.5L8 5l2.5-1.5"/></svg>`,
+      },
+      {
+        label: "Cloudflare",
+        url: "https://dash.cloudflare.com/6b06701192aa2b311ac0afd98d2e2721/buurman.io",
+        icon: `<svg class="qlink-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 11.5a3.5 3.5 0 010-7 3.5 3.5 0 016.3-1.5A4.5 4.5 0 0114 7.5a2.5 2.5 0 010 5H2.5"/></svg>`,
+      },
+      {
+        label: "Linear",
+        url: "https://linear.app/",
+        icon: `<svg class="qlink-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 8h6"/><path d="M5 5.5h6"/><path d="M5 10.5h4"/></svg>`,
+      },
+    ];
+
+    const ARROW_SVG = `<svg class="qlink-arrow" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5L8.5 3.5M8.5 3.5H4.5M8.5 3.5v4"/></svg>`;
+
+    function renderQuickLinks() {
+      const links = QUICK_LINKS.map(l =>
+        `<a class="qlink" href="${l.url}" target="_blank" rel="noopener">${l.icon}${l.label}${ARROW_SVG}</a>`
+      ).join("");
+      return `
+        <div class="quick-links-section">
+          <div class="section-label">Quick Links</div>
+          <div class="quick-links">${links}</div>
+        </div>`;
+    }
+
     function renderCard(ws, idx) {
       const branch = ws.branch
         ? `<span class="ws-branch" title="${esc(ws.branch)}">${esc(ws.branch)}</span>`
@@ -436,7 +532,7 @@
       const hub = document.getElementById("hub");
 
       if (workspaces === null) {
-        hub.innerHTML = renderHeader(0) + `
+        hub.innerHTML = renderHeader(0) + renderQuickLinks() + `
           <div class="state-box">
             <h2>Unable to fetch workspace data</h2>
             <p>Check that the hub server is running.</p>
@@ -445,7 +541,7 @@
       }
 
       const n = workspaces.length;
-      let html = renderHeader(n);
+      let html = renderHeader(n) + renderQuickLinks();
 
       if (n === 0) {
         html += `
