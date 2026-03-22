@@ -47,18 +47,15 @@ PROJECT_NAME="buurman-w${WS}"
 
 echo "=== Workspace ${WS} Setup ==="
 echo ""
-echo "  Project name:    ${PROJECT_NAME}"
-echo "  HTTPS port:      ${HTTPS_PORT}"
+echo "  Project name:     ${PROJECT_NAME}"
+echo "  HTTPS port:       ${HTTPS_PORT}"
 echo "  PostgreSQL port:  ${PG_HOST_PORT}"
-echo "  Backend port:    ${BACKEND_HOST_PORT}"
-echo "  App port:        ${LOCAL_APP_PORT}"
-echo "  Backoffice port: ${LOCAL_BACKOFFICE_PORT}"
-echo "  Mailpit SMTP:    ${SMTP_HOST_PORT}"
+echo "  Backend port:     ${BACKEND_HOST_PORT}"
+echo "  App port:         ${LOCAL_APP_PORT}"
+echo "  Backoffice port:  ${LOCAL_BACKOFFICE_PORT}"
+echo "  Mailpit SMTP:     ${SMTP_HOST_PORT}"
 echo ""
-echo "  App URL:         https://${HP}app.local.buurman.io${PORT_SUFFIX}"
-echo "  API URL:         https://${HP}api.local.buurman.io${PORT_SUFFIX}"
-echo "  Keycloak URL:    https://${HP}keycloak.local.buurman.io${PORT_SUFFIX}"
-echo "  Mailpit URL:     https://${HP}mailpit.local.buurman.io${PORT_SUFFIX}"
+echo "  Base URL:         https://${HP}<service>.local.buurman.io${PORT_SUFFIX}"
 echo ""
 
 # =============================================================================
@@ -306,32 +303,34 @@ if [ ! -f "$CERT_FILE" ]; then
   bash "$SCRIPT_DIR/setup-local-certs.sh"
 fi
 
+DNS_HOSTS="${HP}app.local.buurman.io ${HP}api.local.buurman.io ${HP}keycloak.local.buurman.io ${HP}seaweedfs.local.buurman.io ${HP}seaweedfs-ui.local.buurman.io ${HP}mailpit.local.buurman.io ${HP}flagsmith.local.buurman.io ${HP}traefik.local.buurman.io ${HP}prometheus.local.buurman.io ${HP}grafana.local.buurman.io"
+UNRESOLVED_HOSTS=""
+for h in $DNS_HOSTS; do
+  if ! dscacheutil -q host -a name "$h" | grep -q 'ip_address'; then
+    UNRESOLVED_HOSTS="${UNRESOLVED_HOSTS} ${h}"
+  fi
+done
+
 # =============================================================================
 # 6. Summary
 # =============================================================================
 echo ""
 echo "=== Setup Complete ==="
 echo ""
-echo "DNS: Add these to /etc/hosts (if not using wildcard DNS):"
-echo "  127.0.0.1 ${HP}app.local.buurman.io ${HP}api.local.buurman.io ${HP}keycloak.local.buurman.io ${HP}seaweedfs.local.buurman.io ${HP}seaweedfs-ui.local.buurman.io ${HP}mailpit.local.buurman.io ${HP}flagsmith.local.buurman.io ${HP}traefik.local.buurman.io ${HP}prometheus.local.buurman.io ${HP}grafana.local.buurman.io"
-echo ""
+if [ -n "$UNRESOLVED_HOSTS" ]; then
+  echo "DNS: Add these to /etc/hosts:"
+  echo "  127.0.0.1${UNRESOLVED_HOSTS}"
+  echo ""
+fi
 echo "Start infrastructure:"
 echo "  make dev"
-echo ""
 echo "Start backend (in another terminal):"
 echo "  make backend"
-echo ""
-echo "Start frontend app (in another terminal):"
+echo "Start frontends app (in other terminals):"
 echo "  make frontend-app"
-echo ""
-echo "Start frontend backoffice (optional, in another terminal):"
 echo "  make frontend-backoffice"
 echo ""
-echo "Access:"
-echo "  App:      https://${HP}app.local.buurman.io${PORT_SUFFIX}"
-echo "  API:      https://${HP}api.local.buurman.io${PORT_SUFFIX}"
-echo "  Keycloak: https://${HP}keycloak.local.buurman.io${PORT_SUFFIX}"
-echo "  Mailpit:  https://${HP}mailpit.local.buurman.io${PORT_SUFFIX}"
+echo "Base URLs:"
+echo "  https://${HP}<application>.local.buurman.io${PORT_SUFFIX}"
 echo ""
-echo "NOTE: Keycloak realm changes only take effect on first start."
-echo "      If Keycloak was already initialized, run: make down-v && make dev"
+echo "NOTE: Keycloak realm changes only take effect on first start. If Keycloak was already initialized, run: make down-v && make dev"

@@ -68,6 +68,27 @@ Port reference for each workspace number:
 
 URLs follow the pattern: `https://w<N>-app.local.buurman.io:<HTTPS_PORT>`
 
+## Teardown
+
+When done with a workspace, tear it down to free the workspace number:
+
+```bash
+make workspace-teardown
+```
+
+This:
+- Stops Docker containers and removes volumes
+- Resets `.env` to defaults (from `.env.example`)
+- Removes `.env.backend`
+- Restores `local-dev.yml` to default routing
+- Cleans workspace-specific URIs from Keycloak realm configs
+
+To keep database volumes (faster restart later):
+
+```bash
+make workspace-teardown KEEP_VOLUMES=1
+```
+
 ## Important Notes
 
 - **First start**: Keycloak imports realms from JSON on first start only. If you need to re-run setup after Keycloak has already initialized, run `make down-v` first to reset volumes.

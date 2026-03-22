@@ -1,4 +1,4 @@
-.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend frontend-app frontend-backoffice workspace-setup test test-coverage
+.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend frontend-app frontend-backoffice workspace-setup workspace-teardown test test-coverage
 
 ## Start everything in Docker (including backend + app containers)
 up:
@@ -99,6 +99,15 @@ deploy-prod:
 workspace-setup:
 	@if [ -z "$(WS)" ]; then echo "Usage: make workspace-setup WS=<1-9>"; exit 1; fi
 	bash scripts/setup-workspace.sh $(WS)
+
+## Tear down the current workspace (stop containers, reset config to defaults)
+## Usage: make workspace-teardown [KEEP_VOLUMES=1]
+workspace-teardown:
+	@if [ -n "$(KEEP_VOLUMES)" ]; then \
+		bash scripts/teardown-workspace.sh --keep-volumes; \
+	else \
+		bash scripts/teardown-workspace.sh; \
+	fi
 
 ## Open iTerm2 tab with 3 panes: infrastructure (top), backend (middle), frontend (bottom)
 local:
