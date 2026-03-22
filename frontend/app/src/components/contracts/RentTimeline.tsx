@@ -144,6 +144,7 @@ export const RentTimeline = ({
           currentRent={currentRentAmount}
           currency={currency}
           currentComponents={currentComponents}
+          rentPeriods={periods}
           onClose={() => setShowAdjustModal(false)}
           onConfirm={handleAddRentPeriod}
           isLoading={addRentPeriod.isPending}

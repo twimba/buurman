@@ -40,6 +40,7 @@ public class ContractRentComponentRepository {
   private static final Field<String> IDENTIFIER = field("identifier", String.class);
   private static final Field<UUID> TEAM_ID = field("team_id", UUID.class);
   private static final Field<UUID> CONTRACT_ID = field("contract_id", UUID.class);
+  private static final Field<UUID> RENT_PERIOD_ID = field("rent_period_id", UUID.class);
   private static final Field<String> COMPONENT_TYPE = field("component_type", String.class);
   private static final Field<Long> AMOUNT = field("amount", Long.class);
   private static final Field<String> CURRENCY = field("currency", String.class);
@@ -50,6 +51,30 @@ public class ContractRentComponentRepository {
   private static final Field<UUID> CREATED_BY = field("created_by", UUID.class);
   private static final Field<UUID> UPDATED_BY = field("updated_by", UUID.class);
   private static final Field<Timestamp> DELETED_AT = field("deleted_at", Timestamp.class);
+
+  public List<ContractRentComponent> findByRentPeriodIdAndTeamId(UUID rentPeriodId, UUID teamId) {
+    return List.copyOf(
+        dsl.select()
+            .from(TABLE)
+            .where(RENT_PERIOD_ID.eq(rentPeriodId).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
+            .orderBy(SORT_ORDER.asc())
+            .fetch(this::toDomain));
+  }
+
+  public Map<UUID, List<ContractRentComponent>> findByRentPeriodIdsAndTeamId(
+      Collection<UUID> rentPeriodIds, UUID teamId) {
+    if (rentPeriodIds.isEmpty()) {
+      return Map.of();
+    }
+    List<ContractRentComponent> all =
+        dsl.select()
+            .from(TABLE)
+            .where(
+                RENT_PERIOD_ID.in(rentPeriodIds).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
+            .orderBy(SORT_ORDER.asc())
+            .fetch(this::toDomain);
+    return all.stream().collect(Collectors.groupingBy(ContractRentComponent::getRentPeriodId));
+  }
 
   public List<ContractRentComponent> findByContractIdAndTeamId(UUID contractId, UUID teamId) {
     return List.copyOf(
@@ -74,10 +99,10 @@ public class ContractRentComponentRepository {
     return all.stream().collect(Collectors.groupingBy(ContractRentComponent::getContractId));
   }
 
-  public void replaceForContract(
-      UUID contractId, UUID teamId, List<ContractRentComponent> components) {
-    // Soft-delete all existing active components
-    softDeleteByContractIdAndTeamId(contractId, teamId);
+  public void replaceForRentPeriod(
+      UUID rentPeriodId, UUID contractId, UUID teamId, List<ContractRentComponent> components) {
+    // Soft-delete all existing active components for this rent period
+    softDeleteByRentPeriodIdAndTeamId(rentPeriodId, teamId);
 
     // Insert new components
     for (ContractRentComponent component : components) {
@@ -90,6 +115,7 @@ public class ContractRentComponentRepository {
           .set(IDENTIFIER, component.getIdentifier().orElseThrow().value())
           .set(TEAM_ID, component.getTeamId())
           .set(CONTRACT_ID, component.getContractId())
+          .set(RENT_PERIOD_ID, component.getRentPeriodId())
           .set(COMPONENT_TYPE, component.getComponentType().name())
           .set(AMOUNT, component.getAmount().toMinorUnits())
           .set(CURRENCY, component.getAmount().currency())
@@ -103,6 +129,14 @@ public class ContractRentComponentRepository {
 
       component.setId(id);
     }
+  }
+
+  public void softDeleteByRentPeriodIdAndTeamId(UUID rentPeriodId, UUID teamId) {
+    Timestamp now = Timestamp.valueOf(LocalDateTime.now(clock));
+    dsl.update(TABLE)
+        .set(DELETED_AT, now)
+        .where(RENT_PERIOD_ID.eq(rentPeriodId).and(TEAM_ID.eq(teamId)).and(DELETED_AT.isNull()))
+        .execute();
   }
 
   public void softDeleteByContractIdAndTeamId(UUID contractId, UUID teamId) {
@@ -125,6 +159,7 @@ public class ContractRentComponentRepository {
     component.setIdentifier(Optional.of(Sid.of(record.get(IDENTIFIER))));
     component.setTeamId(record.get(TEAM_ID));
     component.setContractId(record.get(CONTRACT_ID));
+    component.setRentPeriodId(record.get(RENT_PERIOD_ID));
     component.setComponentType(RentComponentType.valueOf(record.get(COMPONENT_TYPE)));
     component.setAmount(MoneyAmount.of(majorUnits, currency));
     component.setDescription(Optional.ofNullable(record.get(DESCRIPTION)));

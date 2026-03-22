@@ -9,7 +9,10 @@ import java.sql.Timestamp;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -145,6 +148,37 @@ public class ContractRentPeriodRepository {
         .orderBy(EFFECTIVE_FROM.desc())
         .limit(1)
         .fetchOptional(this::toDomain);
+  }
+
+  /**
+   * Finds the current (active today) rent period for each of the given contracts. Returns a map
+   * from contractId to its current period.
+   */
+  public Map<UUID, ContractRentPeriod> findCurrentByContractIdsAndTeamId(
+      Collection<UUID> contractIds, UUID teamId) {
+    if (contractIds.isEmpty()) {
+      return Map.of();
+    }
+    LocalDate today = LocalDate.now(clock);
+    // Get ALL matching periods, then pick the latest effectiveFrom per contract
+    List<ContractRentPeriod> periods =
+        dsl.select()
+            .from(TABLE)
+            .where(
+                CONTRACT_ID
+                    .in(contractIds)
+                    .and(TEAM_ID.eq(teamId))
+                    .and(EFFECTIVE_FROM.le(Date.valueOf(today)))
+                    .and(EFFECTIVE_TO.isNull().or(EFFECTIVE_TO.ge(Date.valueOf(today))))
+                    .and(DELETED_AT.isNull()))
+            .orderBy(EFFECTIVE_FROM.desc())
+            .fetch(this::toDomain);
+    // Keep only the latest period per contract
+    Map<UUID, ContractRentPeriod> result = new HashMap<>();
+    for (ContractRentPeriod period : periods) {
+      result.putIfAbsent(period.getContractId(), period);
+    }
+    return result;
   }
 
   public Optional<ContractRentPeriod> findPreviousPeriod(

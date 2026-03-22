@@ -27,6 +27,7 @@ import com.buurman.domain.Team;
 import com.buurman.domain.TeamPreferences;
 import com.buurman.exception.BusinessRuleException;
 import com.buurman.repository.ContractExtensionRepository;
+import com.buurman.repository.ContractPartyRepository;
 import com.buurman.repository.ContractRentPeriodRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentReceivalRepository;
@@ -44,6 +45,7 @@ public class PaymentSchedulingService {
 
   private final ContractRepository contractRepository;
   private final ContractExtensionRepository contractExtensionRepository;
+  private final ContractPartyRepository contractPartyRepository;
   private final ContractRentPeriodRepository rentPeriodRepository;
   private final PaymentRepository paymentRepository;
   private final PaymentReceivalRepository paymentReceivalRepository;
@@ -158,6 +160,12 @@ public class PaymentSchedulingService {
     Optional<LocalDate> effectiveEndDate =
         EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), extensions);
 
+    // Resolve primary tenant contact for auto-linking payments
+    Optional<UUID> primaryContactId =
+        contractPartyRepository
+            .findPrimaryContactByContractIdAndTeamId(contractId, teamId)
+            .flatMap(party -> party.getContactId());
+
     for (int i = 0; i < count; i++) {
       LocalDate nextDueDate = calculateNextDueDate(currentDate, i, contract);
 
@@ -192,6 +200,7 @@ public class PaymentSchedulingService {
         payment.setIdentifier(Optional.of(newPaymentId()));
         payment.setTeamId(teamId);
         payment.setContractId(contractId);
+        payment.setContactId(primaryContactId);
         payment.setAmount(com.buurman.util.MoneyAmount.of(paymentAmount, currency));
         payment.setDueDate(nextDueDate);
         payment.setStatus(markAsPaid ? PAID : PENDING);

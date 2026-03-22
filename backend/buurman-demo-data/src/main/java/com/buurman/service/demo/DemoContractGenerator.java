@@ -4,6 +4,7 @@ import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 import static com.buurman.util.SidGenerator.newContractId;
 import static com.buurman.util.SidGenerator.newContractPartyId;
+import static com.buurman.util.SidGenerator.newContractRentPeriodId;
 import static com.buurman.util.SidGenerator.newRentComponentId;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
@@ -329,10 +330,26 @@ public class DemoContractGenerator {
               .set(field("updated_by", UUID.class), createdBy)
               .execute();
 
+          // Insert initial rent period
+          UUID rentPeriodId = UUID.randomUUID();
+          dsl.insertInto(table("contract_rent_periods"))
+              .set(field("id", UUID.class), rentPeriodId)
+              .set(field("identifier", String.class), newContractRentPeriodId().value())
+              .set(field("team_id", UUID.class), teamId)
+              .set(field("contract_id", UUID.class), contractId)
+              .set(field("rent_amount", Long.class), rent.movePointRight(2).longValueExact())
+              .set(field("currency", String.class), currency)
+              .set(field("effective_from", java.sql.Date.class), java.sql.Date.valueOf(startDate))
+              .set(field("created_at", LocalDateTime.class), createdAt)
+              .set(field("updated_at", LocalDateTime.class), now)
+              .set(field("created_by", UUID.class), createdBy)
+              .set(field("updated_by", UUID.class), createdBy)
+              .execute();
+
           // Insert rent components (~70% of contracts get a breakdown)
           if (totalContracts % 3 != 2) {
             insertRentComponents(
-                contractId, teamId, createdBy, rent, currency, propertyCategory, now);
+                contractId, rentPeriodId, teamId, createdBy, rent, currency, propertyCategory, now);
           }
 
           contractIds.add(contractId);
@@ -455,6 +472,7 @@ public class DemoContractGenerator {
   @SuppressWarnings("NullAway")
   private void insertRentComponents(
       UUID contractId,
+      UUID rentPeriodId,
       UUID teamId,
       @org.jspecify.annotations.Nullable UUID createdBy,
       BigDecimal rentAmount,
@@ -472,9 +490,19 @@ public class DemoContractGenerator {
 
     int sortOrder = 0;
     insertComponent(
-        contractId, teamId, createdBy, "BASE_RENT", baseRent, currency, null, sortOrder++, now);
+        contractId,
+        rentPeriodId,
+        teamId,
+        createdBy,
+        "BASE_RENT",
+        baseRent,
+        currency,
+        null,
+        sortOrder++,
+        now);
     insertComponent(
         contractId,
+        rentPeriodId,
         teamId,
         createdBy,
         "UTILITIES_ADVANCE",
@@ -485,6 +513,7 @@ public class DemoContractGenerator {
         now);
     insertComponent(
         contractId,
+        rentPeriodId,
         teamId,
         createdBy,
         "SERVICE_COSTS",
@@ -500,13 +529,23 @@ public class DemoContractGenerator {
         || random.nextInt(10) == 0) {
       BigDecimal parking = BigDecimal.valueOf(random.nextInt(50, 200));
       insertComponent(
-          contractId, teamId, createdBy, "PARKING", parking, currency, null, sortOrder++, now);
+          contractId,
+          rentPeriodId,
+          teamId,
+          createdBy,
+          "PARKING",
+          parking,
+          currency,
+          null,
+          sortOrder++,
+          now);
     }
   }
 
   @SuppressWarnings("NullAway")
   private void insertComponent(
       UUID contractId,
+      UUID rentPeriodId,
       UUID teamId,
       UUID createdBy,
       String componentType,
@@ -522,6 +561,7 @@ public class DemoContractGenerator {
         .set(field("identifier", String.class), newRentComponentId().value())
         .set(field("team_id", UUID.class), teamId)
         .set(field("contract_id", UUID.class), contractId)
+        .set(field("rent_period_id", UUID.class), rentPeriodId)
         .set(field("component_type", String.class), componentType)
         .set(field("amount", Long.class), minorUnits)
         .set(field("currency", String.class), currency)

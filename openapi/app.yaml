@@ -21858,6 +21858,10 @@ components:
           format: date
         notes:
           type: string
+        components:
+          type: array
+          items:
+            $ref: '#/components/schemas/RentComponentRequest'
       required:
         - effectiveFrom
         - rentAmount
@@ -21880,10 +21884,16 @@ components:
           type: string
         percentageChange:
           type: number
+        components:
+          type: array
+          items:
+            $ref: '#/components/schemas/RentComponentResponse'
+          description: Rent breakdown into components for this period
         createdAt:
           type: string
           format: date-time
       required:
+        - components
         - createdAt
         - currency
         - effectiveFrom

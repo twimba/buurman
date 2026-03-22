@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,12 +112,31 @@ public class ContractRentPeriodService {
 
     ContractRentPeriod saved = rentPeriodRepository.save(period);
 
-    // Replace rent components if provided
-    request
-        .components()
-        .ifPresent(
-            componentRequests ->
-                replaceRentComponents(contract, componentRequests, teamId, principal.getUserId()));
+    // Replace rent components if provided, otherwise copy from previous period
+    List<ContractRentComponent> periodComponents;
+    if (request.components().isPresent()) {
+      periodComponents =
+          replaceRentComponents(
+              saved.getId(),
+              contract.getId(),
+              request.components().get(),
+              contract.getRentAmount().currency(),
+              teamId,
+              principal.getUserId());
+    } else if (previousPeriod.isPresent()) {
+      // Copy components from previous period
+      List<ContractRentComponent> prevComponents =
+          rentComponentRepository.findByRentPeriodIdAndTeamId(previousPeriod.get().getId(), teamId);
+      if (!prevComponents.isEmpty()) {
+        periodComponents =
+            copyComponentsToRentPeriod(
+                prevComponents, saved.getId(), contract.getId(), teamId, principal.getUserId());
+      } else {
+        periodComponents = List.of();
+      }
+    } else {
+      periodComponents = List.of();
+    }
 
     // Sync denormalized rent_amount on contract if this is the current period
     syncContractRentAmount(contract, teamId, principal.getUserId());
@@ -171,7 +191,8 @@ public class ContractRentPeriodService {
         adjustmentPaymentsCreated);
 
     RentPeriodResponse response =
-        rentPeriodMapper.toResponse(saved, Optional.ofNullable(previousRentAmount));
+        rentPeriodMapper.toResponse(
+            saved, Optional.ofNullable(previousRentAmount), periodComponents);
     return new AddRentPeriodResult(response, adjustmentPaymentsCreated);
   }
 
@@ -181,7 +202,13 @@ public class ContractRentPeriodService {
     Contract contract = contractRepository.getByIdentifierAndTeamId(contractIdentifier, teamId);
     List<ContractRentPeriod> periods =
         rentPeriodRepository.findByContractIdAndTeamId(contract.getId(), teamId);
-    return rentPeriodMapper.toResponses(periods);
+
+    // Batch-load components for all periods
+    List<UUID> periodIds = periods.stream().map(ContractRentPeriod::getId).toList();
+    Map<UUID, List<ContractRentComponent>> componentsByPeriodId =
+        rentComponentRepository.findByRentPeriodIdsAndTeamId(periodIds, teamId);
+
+    return rentPeriodMapper.toResponses(periods, componentsByPeriodId);
   }
 
   public Optional<ContractRentPeriod> getCurrentRent(UUID contractId, UUID teamId) {
@@ -190,6 +217,33 @@ public class ContractRentPeriodService {
 
   public Optional<ContractRentPeriod> getRentAtDate(UUID contractId, UUID teamId, LocalDate date) {
     return rentPeriodRepository.findAtDateByContractIdAndTeamId(contractId, teamId, date);
+  }
+
+  /** Returns the components for the current active rent period of a contract. */
+  public List<ContractRentComponent> getCurrentRentComponents(UUID contractId, UUID teamId) {
+    return getCurrentRent(contractId, teamId)
+        .map(period -> rentComponentRepository.findByRentPeriodIdAndTeamId(period.getId(), teamId))
+        .orElse(List.of());
+  }
+
+  /** Batch-loads current rent components for multiple contracts. */
+  public Map<UUID, List<ContractRentComponent>> getCurrentRentComponentsBatch(
+      Collection<UUID> contractIds, UUID teamId) {
+    if (contractIds.isEmpty()) {
+      return Map.of();
+    }
+    Map<UUID, ContractRentPeriod> currentPeriodByContractId =
+        rentPeriodRepository.findCurrentByContractIdsAndTeamId(contractIds, teamId);
+    List<UUID> periodIds =
+        currentPeriodByContractId.values().stream().map(ContractRentPeriod::getId).toList();
+    Map<UUID, List<ContractRentComponent>> componentsByPeriodId =
+        rentComponentRepository.findByRentPeriodIdsAndTeamId(periodIds, teamId);
+
+    Map<UUID, List<ContractRentComponent>> result = new HashMap<>();
+    currentPeriodByContractId.forEach(
+        (contractId, period) ->
+            result.put(contractId, componentsByPeriodId.getOrDefault(period.getId(), List.of())));
+    return result;
   }
 
   @Transactional
@@ -224,6 +278,22 @@ public class ContractRentPeriodService {
     period.setUpdatedAt(clock.instant());
 
     rentPeriodRepository.save(period);
+
+    // Replace rent components if provided
+    List<ContractRentComponent> periodComponents;
+    if (request.components().isPresent()) {
+      periodComponents =
+          replaceRentComponents(
+              period.getId(),
+              contract.getId(),
+              request.components().get(),
+              period.getRentAmount().currency(),
+              teamId,
+              principal.getUserId());
+    } else {
+      periodComponents =
+          rentComponentRepository.findByRentPeriodIdAndTeamId(period.getId(), teamId);
+    }
 
     // Recalculate previous period's effective_to
     var previousPeriod =
@@ -260,7 +330,7 @@ public class ContractRentPeriodService {
     log.info("Rent period updated: {} in contract {}", periodIdentifier, contractIdentifier);
 
     Optional<BigDecimal> prevAmount = previousPeriod.map(p -> p.getRentAmount().value());
-    return rentPeriodMapper.toResponse(period, prevAmount);
+    return rentPeriodMapper.toResponse(period, prevAmount, periodComponents);
   }
 
   @Transactional
@@ -289,6 +359,9 @@ public class ContractRentPeriodService {
         contractRentPeriod ->
             rentPeriodRepository.setEffectiveTo(contractRentPeriod.getId(), teamId, null));
 
+    // Soft-delete components for this period
+    rentComponentRepository.softDeleteByRentPeriodIdAndTeamId(period.getId(), teamId);
+
     rentPeriodRepository.softDeleteByIdAndTeamId(period.getId(), teamId);
 
     syncContractRentAmount(contract, teamId, principal.getUserId());
@@ -309,9 +382,9 @@ public class ContractRentPeriodService {
     log.info("Rent period deleted: {} in contract {}", periodIdentifier, contractIdentifier);
   }
 
-  /** Creates the initial rent period when a contract is created. */
+  /** Creates the initial rent period when a contract is created. Returns the saved period. */
   @Transactional
-  public void createInitialRentPeriod(Contract contract, UserPrincipal principal) {
+  public ContractRentPeriod createInitialRentPeriod(Contract contract, UserPrincipal principal) {
     ContractRentPeriod period = new ContractRentPeriod();
     period.setIdentifier(Optional.of(newContractRentPeriodId()));
     period.setTeamId(contract.getTeamId());
@@ -324,9 +397,10 @@ public class ContractRentPeriodService {
     period.setCreatedAt(clock.instant());
     period.setUpdatedAt(clock.instant());
 
-    rentPeriodRepository.save(period);
+    ContractRentPeriod saved = rentPeriodRepository.save(period);
     log.debug(
         "Initial rent period created for contract {}", contract.getIdentifier().orElseThrow());
+    return saved;
   }
 
   /** Updates the initial rent period when a DRAFT contract's rent is edited. */
@@ -346,9 +420,13 @@ public class ContractRentPeriodService {
 
   // --- Private helpers ---
 
-  private void replaceRentComponents(
-      Contract contract, List<RentComponentRequest> componentRequests, UUID teamId, UUID userId) {
-    String currency = contract.getRentAmount().currency();
+  private List<ContractRentComponent> replaceRentComponents(
+      UUID rentPeriodId,
+      UUID contractId,
+      List<RentComponentRequest> componentRequests,
+      String currency,
+      UUID teamId,
+      UUID userId) {
     List<ContractRentComponent> domainComponents = new ArrayList<>();
     for (int i = 0; i < componentRequests.size(); i++) {
       RentComponentRequest req = componentRequests.get(i);
@@ -356,7 +434,8 @@ public class ContractRentPeriodService {
           ContractRentComponent.builder()
               .identifier(Optional.of(newRentComponentId()))
               .teamId(teamId)
-              .contractId(contract.getId())
+              .contractId(contractId)
+              .rentPeriodId(rentPeriodId)
               .componentType(req.componentType())
               .amount(com.buurman.util.MoneyAmount.of(req.amount(), currency))
               .description(req.description())
@@ -368,7 +447,39 @@ public class ContractRentPeriodService {
               .build();
       domainComponents.add(comp);
     }
-    rentComponentRepository.replaceForContract(contract.getId(), teamId, domainComponents);
+    rentComponentRepository.replaceForRentPeriod(
+        rentPeriodId, contractId, teamId, domainComponents);
+    return domainComponents;
+  }
+
+  private List<ContractRentComponent> copyComponentsToRentPeriod(
+      List<ContractRentComponent> sourceComponents,
+      UUID targetRentPeriodId,
+      UUID contractId,
+      UUID teamId,
+      UUID userId) {
+    List<ContractRentComponent> copies = new ArrayList<>();
+    for (int i = 0; i < sourceComponents.size(); i++) {
+      ContractRentComponent src = sourceComponents.get(i);
+      ContractRentComponent copy =
+          ContractRentComponent.builder()
+              .identifier(Optional.of(newRentComponentId()))
+              .teamId(teamId)
+              .contractId(contractId)
+              .rentPeriodId(targetRentPeriodId)
+              .componentType(src.getComponentType())
+              .amount(src.getAmount())
+              .description(src.getDescription())
+              .sortOrder(i)
+              .createdAt(clock.instant())
+              .updatedAt(clock.instant())
+              .createdBy(userId)
+              .updatedBy(userId)
+              .build();
+      copies.add(copy);
+    }
+    rentComponentRepository.replaceForRentPeriod(targetRentPeriodId, contractId, teamId, copies);
+    return copies;
   }
 
   private void validateEffectiveFrom(Contract contract, LocalDate effectiveFrom, UUID teamId) {

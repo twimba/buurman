@@ -3,18 +3,28 @@ package com.buurman.mapper;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
+import com.buurman.domain.ContractRentComponent;
 import com.buurman.domain.ContractRentPeriod;
 import com.buurman.dto.response.RentPeriodResponse;
 
+import lombok.RequiredArgsConstructor;
+
 @Component
+@RequiredArgsConstructor
 public class ContractRentPeriodMapper {
 
+  private final ContractRentComponentMapper componentMapper;
+
   public RentPeriodResponse toResponse(
-      ContractRentPeriod period, Optional<BigDecimal> previousRentAmount) {
+      ContractRentPeriod period,
+      Optional<BigDecimal> previousRentAmount,
+      List<ContractRentComponent> components) {
     BigDecimal rentValue = period.getRentAmount().value();
     Optional<BigDecimal> percentageChange =
         previousRentAmount
@@ -35,10 +45,13 @@ public class ContractRentPeriodMapper {
         period.getEffectiveTo(),
         period.getNotes(),
         percentageChange,
+        componentMapper.toResponses(components),
         period.getCreatedAt());
   }
 
-  public List<RentPeriodResponse> toResponses(List<ContractRentPeriod> periods) {
+  public List<RentPeriodResponse> toResponses(
+      List<ContractRentPeriod> periods,
+      Map<UUID, List<ContractRentComponent>> componentsByPeriodId) {
     // periods are ordered by effective_from DESC
     // percentageChange is vs the immediately preceding period (the one with earlier effective_from)
     return java.util.stream.IntStream.range(0, periods.size())
@@ -50,7 +63,9 @@ public class ContractRentPeriodMapper {
                   (i + 1 < periods.size())
                       ? Optional.of(periods.get(i + 1).getRentAmount().value())
                       : Optional.empty();
-              return toResponse(current, previousAmount);
+              List<ContractRentComponent> components =
+                  componentsByPeriodId.getOrDefault(current.getId(), List.of());
+              return toResponse(current, previousAmount, components);
             })
         .toList();
   }

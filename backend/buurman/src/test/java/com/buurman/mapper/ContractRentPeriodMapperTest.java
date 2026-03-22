@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,7 +22,8 @@ import com.buurman.util.MoneyAmount;
 @DisplayName("ContractRentPeriodMapper")
 class ContractRentPeriodMapperTest {
 
-  private final ContractRentPeriodMapper mapper = new ContractRentPeriodMapper();
+  private final ContractRentPeriodMapper mapper =
+      new ContractRentPeriodMapper(new ContractRentComponentMapper());
 
   private static final Sid PERIOD_ID = Sid.of("CRP01HQJK4B2X5M3N7P8Q9R0S1T2");
 
@@ -40,7 +42,7 @@ class ContractRentPeriodMapperTest {
               Optional.of(LocalDate.of(2026, 12, 31)),
               Optional.of("Initial period"));
 
-      RentPeriodResponse response = mapper.toResponse(period, Optional.empty());
+      RentPeriodResponse response = mapper.toResponse(period, Optional.empty(), List.of());
 
       assertThat(response.identifier()).isEqualTo(PERIOD_ID);
       assertThat(response.rentAmount()).isEqualByComparingTo(new BigDecimal("1200.00"));
@@ -62,7 +64,7 @@ class ContractRentPeriodMapperTest {
               Optional.empty());
 
       RentPeriodResponse response =
-          mapper.toResponse(period, Optional.of(new BigDecimal("1000.00")));
+          mapper.toResponse(period, Optional.of(new BigDecimal("1000.00")), List.of());
 
       assertThat(response.percentageChange()).isPresent();
       assertThat(response.percentageChange().get()).isEqualByComparingTo(new BigDecimal("10.00"));
@@ -80,7 +82,7 @@ class ContractRentPeriodMapperTest {
               Optional.empty());
 
       RentPeriodResponse response =
-          mapper.toResponse(period, Optional.of(new BigDecimal("1000.00")));
+          mapper.toResponse(period, Optional.of(new BigDecimal("1000.00")), List.of());
 
       assertThat(response.percentageChange()).isPresent();
       assertThat(response.percentageChange().get()).isEqualByComparingTo(new BigDecimal("-10.00"));
@@ -97,7 +99,7 @@ class ContractRentPeriodMapperTest {
               Optional.empty(),
               Optional.empty());
 
-      RentPeriodResponse response = mapper.toResponse(period, Optional.empty());
+      RentPeriodResponse response = mapper.toResponse(period, Optional.empty(), List.of());
 
       assertThat(response.percentageChange()).isEmpty();
     }
@@ -113,7 +115,7 @@ class ContractRentPeriodMapperTest {
               Optional.empty(),
               Optional.empty());
 
-      RentPeriodResponse response = mapper.toResponse(period, Optional.of(BigDecimal.ZERO));
+      RentPeriodResponse response = mapper.toResponse(period, Optional.of(BigDecimal.ZERO), List.of());
 
       assertThat(response.percentageChange()).isEmpty();
     }
@@ -148,7 +150,7 @@ class ContractRentPeriodMapperTest {
                   Optional.empty(),
                   Optional.empty()));
 
-      List<RentPeriodResponse> responses = mapper.toResponses(periods);
+      List<RentPeriodResponse> responses = mapper.toResponses(periods, Map.of());
 
       assertThat(responses).hasSize(3);
       // First (newest): 1210 vs 1100 = +10%
@@ -164,7 +166,7 @@ class ContractRentPeriodMapperTest {
     @Test
     @DisplayName("empty list returns empty list")
     void emptyListReturnsEmpty() {
-      List<RentPeriodResponse> responses = mapper.toResponses(List.of());
+      List<RentPeriodResponse> responses = mapper.toResponses(List.of(), Map.of());
 
       assertThat(responses).isEmpty();
     }
@@ -181,7 +183,7 @@ class ContractRentPeriodMapperTest {
                   Optional.empty(),
                   Optional.empty()));
 
-      List<RentPeriodResponse> responses = mapper.toResponses(periods);
+      List<RentPeriodResponse> responses = mapper.toResponses(periods, Map.of());
 
       assertThat(responses).hasSize(1);
       assertThat(responses.get(0).percentageChange()).isEmpty();

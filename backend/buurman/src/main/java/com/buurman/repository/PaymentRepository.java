@@ -10,6 +10,7 @@ import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.min;
 import static org.jooq.impl.DSL.sum;
+import static org.jooq.impl.DSL.table;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -87,9 +88,7 @@ public class PaymentRepository {
     return dsl
         .selectFrom(PAYMENTS)
         .where(
-            PAYMENTS
-                .CONTACT_ID
-                .eq(contactId)
+            contactLinkedCondition(contactId, teamId)
                 .and(PAYMENTS.TEAM_ID.eq(teamId))
                 .and(PAYMENTS.DELETED_AT.isNull()))
         .orderBy(PAYMENTS.DUE_DATE.desc())
@@ -316,7 +315,7 @@ public class PaymentRepository {
       condition = condition.and(PAYMENTS.CONTRACT_ID.eq(contractId));
     }
     if (contactId != null) {
-      condition = condition.and(PAYMENTS.CONTACT_ID.eq(contactId));
+      condition = condition.and(contactLinkedCondition(contactId, teamId));
     }
     if (propertyId != null) {
       condition =
@@ -438,5 +437,25 @@ public class PaymentRepository {
         .set(PAYMENTS.DELETED_AT, now)
         .where(PAYMENTS.ID.eq(id).and(PAYMENTS.TEAM_ID.eq(teamId)))
         .execute();
+  }
+
+  /**
+   * Matches payments explicitly linked to a contact OR payments from contracts where the contact is
+   * a party (e.g. primary tenant). This ensures the contact financials tab shows all relevant
+   * payments, not just those with an explicit contact_id.
+   */
+  private Condition contactLinkedCondition(UUID contactId, UUID teamId) {
+    return PAYMENTS
+        .CONTACT_ID
+        .eq(contactId)
+        .or(
+            PAYMENTS.CONTRACT_ID.in(
+                dsl.select(field("contract_id", UUID.class))
+                    .from(table("contract_parties"))
+                    .where(
+                        field("contact_id", UUID.class)
+                            .eq(contactId)
+                            .and(field("team_id", UUID.class).eq(teamId))
+                            .and(field("deleted_at").isNull()))));
   }
 }

@@ -215,6 +215,7 @@ export interface RentPeriodResponse {
   effectiveTo?: string;
   notes?: string;
   percentageChange?: number;
+  components: RentComponentResponseItem[];
   createdAt: string;
 }
 

@@ -37,6 +37,7 @@ import com.buurman.domain.Payment;
 import com.buurman.domain.Sid;
 import com.buurman.domain.TeamPreferences;
 import com.buurman.repository.ContractExtensionRepository;
+import com.buurman.repository.ContractPartyRepository;
 import com.buurman.repository.ContractRentPeriodRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PaymentReceivalRepository;
@@ -52,6 +53,7 @@ class PaymentSchedulingServiceTest {
   @Mock private ContractRepository contractRepository;
   @Mock private ContractExtensionRepository contractExtensionRepository;
   @Mock private ContractRentPeriodRepository rentPeriodRepository;
+  @Mock private ContractPartyRepository contractPartyRepository;
   @Mock private PaymentRepository paymentRepository;
   @Mock private PaymentReceivalRepository paymentReceivalRepository;
   @Mock private TeamRepository teamRepository;
@@ -72,6 +74,7 @@ class PaymentSchedulingServiceTest {
         new PaymentSchedulingService(
             contractRepository,
             contractExtensionRepository,
+            contractPartyRepository,
             rentPeriodRepository,
             paymentRepository,
             paymentReceivalRepository,

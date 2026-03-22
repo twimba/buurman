@@ -39,6 +39,7 @@ import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.ContractRentComponent;
+import com.buurman.domain.ContractRentPeriod;
 import com.buurman.domain.Document;
 import com.buurman.domain.Property;
 import com.buurman.domain.RentComponentType;
@@ -199,14 +200,15 @@ public class ContractService {
     contractPartyService.createPartiesForContract(
         savedContract.getId(), request.parties(), principal);
 
-    // Create initial rent period
-    contractRentPeriodService.createInitialRentPeriod(savedContract, principal);
-
-    // Save rent components
+    // Create initial rent period and save rent components linked to it
+    ContractRentPeriod initialPeriod =
+        contractRentPeriodService.createInitialRentPeriod(savedContract, principal);
     request
         .rentComponents()
         .filter(list -> !list.isEmpty())
-        .ifPresent(components -> saveRentComponents(savedContract, components, principal));
+        .ifPresent(
+            components ->
+                saveRentComponents(savedContract, initialPeriod.getId(), components, principal));
 
     metricsService.incrementCounter("contract.total");
     metricsService.recordHistogram(
@@ -436,17 +438,22 @@ public class ContractService {
       contractRentPeriodService.updateInitialRentPeriod(updatedContract, principal);
     }
 
-    // Handle rent components
+    // Handle rent components — link to current rent period
     request
         .rentComponents()
         .ifPresent(
             components -> {
-              if (components.isEmpty()) {
-                rentComponentRepository.softDeleteByContractIdAndTeamId(
-                    updatedContract.getId(), teamId);
-              } else {
-                saveRentComponents(updatedContract, components, principal);
-              }
+              var currentPeriod =
+                  contractRentPeriodService.getCurrentRent(updatedContract.getId(), teamId);
+              currentPeriod.ifPresent(
+                  period -> {
+                    if (components.isEmpty()) {
+                      rentComponentRepository.softDeleteByRentPeriodIdAndTeamId(
+                          period.getId(), teamId);
+                    } else {
+                      saveRentComponents(updatedContract, period.getId(), components, principal);
+                    }
+                  });
             });
 
     log.info("Contract updated: {} in team {}", identifier, teamId);
@@ -992,7 +999,7 @@ public class ContractService {
 
     List<RentComponentResponse> componentResponses =
         rentComponentMapper.toResponses(
-            rentComponentRepository.findByContractIdAndTeamId(contract.getId(), teamId));
+            contractRentPeriodService.getCurrentRentComponents(contract.getId(), teamId));
 
     return new ContractResponse(
         contract.getIdentifier().orElseThrow(),
@@ -1070,9 +1077,9 @@ public class ContractService {
     Map<UUID, List<ContractExtension>> extensionsByContract =
         allExtensions.stream().collect(Collectors.groupingBy(ContractExtension::getContractId));
 
-    // Batch load rent components
+    // Batch load current rent period components
     Map<UUID, List<ContractRentComponent>> componentsByContract =
-        rentComponentRepository.findByContractIdsAndTeamId(contractIds, teamId);
+        contractRentPeriodService.getCurrentRentComponentsBatch(contractIds, teamId);
 
     return contracts.stream()
         .map(
@@ -1170,7 +1177,10 @@ public class ContractService {
   }
 
   private void saveRentComponents(
-      Contract contract, List<RentComponentRequest> components, UserPrincipal principal) {
+      Contract contract,
+      UUID rentPeriodId,
+      List<RentComponentRequest> components,
+      UserPrincipal principal) {
     String currency = contract.getRentAmount().currency();
     UUID teamId = contract.getTeamId();
     UUID userId = principal.getUserId();
@@ -1183,6 +1193,7 @@ public class ContractService {
               .identifier(Optional.of(newRentComponentId()))
               .teamId(teamId)
               .contractId(contract.getId())
+              .rentPeriodId(rentPeriodId)
               .componentType(req.componentType())
               .amount(com.buurman.util.MoneyAmount.of(req.amount(), currency))
               .description(req.description())
@@ -1195,7 +1206,8 @@ public class ContractService {
       domainComponents.add(comp);
     }
 
-    rentComponentRepository.replaceForContract(contract.getId(), teamId, domainComponents);
+    rentComponentRepository.replaceForRentPeriod(
+        rentPeriodId, contract.getId(), teamId, domainComponents);
   }
 
   private void validateRentComponents(List<RentComponentRequest> components) {
