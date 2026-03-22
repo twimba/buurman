@@ -41,11 +41,11 @@ public class BookletController implements BookletsApi {
   }
 
   @Override
-  public byte[] exportTenantBooklet(ContactIdentifier tenantIdentifier) {
+  public byte[] exportContactBooklet(ContactIdentifier contactIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     httpServletResponse.setHeader("Content-Disposition", "attachment; filename=contact-booklet.pdf");
     httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
-    return exportService.generateContactReportPDF(tenantIdentifier, principal.requireTeamId());
+    return exportService.generateContactReportPDF(contactIdentifier, principal.requireTeamId());
   }
 
   @Override

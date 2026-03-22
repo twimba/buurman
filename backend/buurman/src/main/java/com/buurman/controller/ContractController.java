@@ -151,7 +151,7 @@ public class ContractController implements ContractsApi {
   }
 
   @Override
-  public ContractPartyResponse changePrimaryTenant(
+  public ContractPartyResponse changePrimaryContact(
       ContractIdentifier identifier, ChangePrimaryContactRequest changePrimaryContactRequest) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return contractPartyService.changePrimaryContact(

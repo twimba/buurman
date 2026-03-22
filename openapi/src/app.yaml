@@ -36,8 +36,8 @@ tags:
     description: Rent timeline management for contracts
   - name: Property Insurances
     description: Property insurance policies
-  - name: Tenants
-    description: Tenant management
+  - name: Contacts
+    description: Contact management
   - name: Users
     description: User team management
   - name: Property Financings
@@ -119,12 +119,12 @@ paths:
     $ref: 'paths/users.yaml#/users-me'
   /users/default-team:
     $ref: 'paths/users.yaml#/users-default-team'
-  /tenants/{tenantIdentifier}/addresses/{addressIdentifier}:
-    $ref: 'paths/tenants.yaml#/addresses-item'
-  /tenants/{identifier}:
-    $ref: 'paths/tenants.yaml#/item'
-  /tenants/{identifier}/photos/{photoIdentifier}/set-main:
-    $ref: 'paths/tenants.yaml#/photos-set-main'
+  /contacts/{contactIdentifier}/addresses/{addressIdentifier}:
+    $ref: 'paths/contacts.yaml#/addresses-item'
+  /contacts/{identifier}:
+    $ref: 'paths/contacts.yaml#/item'
+  /contacts/{identifier}/photos/{photoIdentifier}/set-main:
+    $ref: 'paths/contacts.yaml#/photos-set-main'
   /teams/{teamIdentifier}:
     $ref: 'paths/teams.yaml#/teams-item'
   /teams/{teamIdentifier}/settings:
@@ -189,18 +189,14 @@ paths:
     $ref: 'paths/users.yaml#/users-me-phone-resend-verification'
   /users/me/phone/cancel-verification:
     $ref: 'paths/users.yaml#/users-me-phone-cancel-verification'
-  /tenants:
-    $ref: 'paths/tenants.yaml#/collection'
-  /tenants/{tenantIdentifier}/addresses:
-    $ref: 'paths/tenants.yaml#/addresses'
-  /tenants/{identifier}/unlink-property:
-    $ref: 'paths/tenants.yaml#/unlink-property'
-  /tenants/{identifier}/photos:
-    $ref: 'paths/tenants.yaml#/photos'
-  /tenants/{identifier}/link-property:
-    $ref: 'paths/tenants.yaml#/link-property'
-  /tenants/{identifier}/documents:
-    $ref: 'paths/tenants.yaml#/documents'
+  /contacts:
+    $ref: 'paths/contacts.yaml#/collection'
+  /contacts/{contactIdentifier}/addresses:
+    $ref: 'paths/contacts.yaml#/addresses'
+  /contacts/{identifier}/photos:
+    $ref: 'paths/contacts.yaml#/photos'
+  /contacts/{identifier}/documents:
+    $ref: 'paths/contacts.yaml#/documents'
   /teams/{teamIdentifier}/transfer-ownership:
     $ref: 'paths/teams.yaml#/teams-transfer-ownership'
   /teams/{teamIdentifier}/invitations:
@@ -321,12 +317,12 @@ paths:
     $ref: 'paths/users.yaml#/users-phone-policy'
   /users/me/teams:
     $ref: 'paths/users.yaml#/users-me-teams'
-  /tenants/{identifier}/history:
-    $ref: 'paths/tenants.yaml#/history'
-  /tenants/{identifier}/audit-log:
-    $ref: 'paths/tenants.yaml#/audit-log'
-  /tenants/documents/{documentIdentifier}/download:
-    $ref: 'paths/tenants.yaml#/documents-download'
+  /contacts/{identifier}/history:
+    $ref: 'paths/contacts.yaml#/history'
+  /contacts/{identifier}/audit-log:
+    $ref: 'paths/contacts.yaml#/audit-log'
+  /contacts/documents/{documentIdentifier}/download:
+    $ref: 'paths/contacts.yaml#/documents-download'
   /teams/{teamIdentifier}/members:
     $ref: 'paths/teams.yaml#/teams-members'
   /teams/{teamIdentifier}/invitations/pending:
@@ -457,8 +453,8 @@ paths:
     $ref: 'paths/contracts.yaml#/documents-download'
   /calendar/ical/{feedToken}:
     $ref: 'paths/calendar-feeds.yaml#/ical-item'
-  /booklets/tenant/{tenantIdentifier}:
-    $ref: 'paths/documents.yaml#/booklets-tenant-item'
+  /booklets/contact/{contactIdentifier}:
+    $ref: 'paths/documents.yaml#/booklets-contact-item'
   /booklets/property/{propertyIdentifier}:
     $ref: 'paths/documents.yaml#/booklets-property-item'
   /booklets/contract/{contractIdentifier}:
@@ -469,8 +465,30 @@ paths:
     $ref: 'paths/audit-logs.yaml#/collection'
   /amenities:
     $ref: 'paths/reference.yaml#/amenities'
-  /tenants/documents/{documentIdentifier}:
-    $ref: 'paths/tenants.yaml#/documents-item'
+  /contacts/documents/{documentIdentifier}:
+    $ref: 'paths/contacts.yaml#/documents-item'
+  /contacts/{contactIdentifier}/notes:
+    $ref: 'paths/contacts.yaml#/notes'
+  /contacts/{contactIdentifier}/notes/{noteIdentifier}:
+    $ref: 'paths/contacts.yaml#/notes-item'
+  /contacts/{contactIdentifier}/notes/{noteIdentifier}/pin:
+    $ref: 'paths/contacts.yaml#/notes-pin'
+  /contacts/{contactIdentifier}/notes/{noteIdentifier}/unpin:
+    $ref: 'paths/contacts.yaml#/notes-unpin'
+  /contacts/{contactIdentifier}/relationships:
+    $ref: 'paths/contacts.yaml#/relationships'
+  /contacts/{contactIdentifier}/relationships/{relationshipIdentifier}:
+    $ref: 'paths/contacts.yaml#/relationships-item'
+  /contacts/{contactIdentifier}/tags:
+    $ref: 'paths/contacts.yaml#/tags'
+  /contacts/{contactIdentifier}/tags/{tag}:
+    $ref: 'paths/contacts.yaml#/tags-item'
+  /contacts/check-duplicates:
+    $ref: 'paths/contacts.yaml#/check-duplicates'
+  /contacts/{contactIdentifier}/activity:
+    $ref: 'paths/contacts.yaml#/activity'
+  /contacts/{contactIdentifier}/erase:
+    $ref: 'paths/contacts.yaml#/erase'
   /teams/{teamIdentifier}/members/{userIdentifier}:
     $ref: 'paths/teams.yaml#/teams-members-item'
   /properties/{propertyIdentifier}/financials/financings/{financingIdentifier}/payments/documents/{documentIdentifier}:
@@ -602,12 +620,18 @@ components:
     TeamIdentifier:
       type: string
       description: Team identifier
-    TenantAddressIdentifier:
+    ContactAddressIdentifier:
       type: string
-      description: Tenant address identifier
-    TenantIdentifier:
+      description: Contact address identifier
+    ContactIdentifier:
       type: string
-      description: Tenant identifier
+      description: Contact identifier
+    ContactNoteIdentifier:
+      type: string
+      description: Contact note identifier
+    ContactRelationshipIdentifier:
+      type: string
+      description: Contact relationship identifier
     UserIdentifier:
       type: string
       description: User identifier
@@ -736,7 +760,7 @@ components:
         - memberCount
         - role
         - teamName
-    UpdateTenantAddressRequest:
+    UpdateContactAddressRequest:
       type: object
       properties:
         street:
@@ -752,7 +776,7 @@ components:
           minLength: 1
         addressType:
           type: string
-          description: Purpose or classification of the tenant address
+          description: Purpose or classification of the contact address
           enum:
             - CURRENT
             - MAILING
@@ -779,7 +803,7 @@ components:
         - country
         - status
         - street
-    TenantAddressResponse:
+    ContactAddressResponse:
       type: object
       properties:
         identifier:
@@ -794,7 +818,7 @@ components:
           type: string
         addressType:
           type: string
-          description: Purpose or classification of the tenant address
+          description: Purpose or classification of the contact address
           enum:
             - CURRENT
             - MAILING
@@ -830,9 +854,11 @@ components:
         - postalCode
         - status
         - street
-    UpdateTenantRequest:
+    UpdateContactRequest:
       type: object
       properties:
+        contactType:
+          $ref: '#/components/schemas/ContactType'
         firstName:
           type: string
           minLength: 1
@@ -850,8 +876,28 @@ components:
           type: string
         additionalInfo:
           type: string
-      required:
-        - firstName
+        companyName:
+          type: string
+        tradeName:
+          type: string
+        industry:
+          type: string
+        invoiceEmail:
+          type: string
+        website:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        idExpiryDate:
+          type: string
+          format: date
+        notes:
+          type: string
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactTag'
     PropertySummary:
       type: object
       properties:
@@ -930,7 +976,7 @@ components:
         - propertyType
         - status
         - street
-    TenantPropertyAssignment:
+    ContactPropertyAssignment:
       type: object
       properties:
         property:
@@ -939,14 +985,18 @@ components:
           type: string
       required:
         - property
-    TenantResponse:
+    ContactResponse:
       type: object
-      description: Tenant details including contact information and active property assignments
+      description: Contact details including contact information and active property assignments
       properties:
         identifier:
           type: string
-          description: Unique tenant identifier
-          example: tnt_01HZQX7V8B3K5M2N4P6R9T0W
+          description: Unique contact identifier
+          example: cnt_01HZQX7V8B3K5M2N4P6R9T0W
+        contactType:
+          $ref: '#/components/schemas/ContactType'
+        displayName:
+          type: string
         firstName:
           type: string
         lastName:
@@ -961,6 +1011,31 @@ components:
           type: string
         additionalInfo:
           type: string
+        companyName:
+          type: string
+        tradeName:
+          type: string
+        industry:
+          type: string
+        invoiceEmail:
+          type: string
+          format: email
+        website:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        idExpiryDate:
+          type: string
+          format: date
+        notes:
+          type: string
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactTag'
+        dataRetentionStatus:
+          $ref: '#/components/schemas/DataRetentionStatus'
         mainPhotoUrl:
           type: string
         mainPhotoThumbnailUrl:
@@ -968,7 +1043,7 @@ components:
         activeProperties:
           type: array
           items:
-            $ref: "#/components/schemas/TenantPropertyAssignment"
+            $ref: "#/components/schemas/ContactPropertyAssignment"
         createdAt:
           type: string
           format: date-time
@@ -977,10 +1052,11 @@ components:
           format: date-time
       required:
         - activeProperties
+        - contactType
         - createdAt
-        - firstName
+        - dataRetentionStatus
+        - displayName
         - identifier
-        - lastName
     PhotoResponse:
       type: object
       properties:
@@ -2636,7 +2712,7 @@ components:
         property:
           $ref: "#/components/schemas/PropertySummary"
         primaryTenant:
-          $ref: "#/components/schemas/TenantSummary"
+          $ref: "#/components/schemas/ContactSummary"
         startDate:
           type: string
           format: date
@@ -2731,7 +2807,7 @@ components:
         contract:
           $ref: "#/components/schemas/ContractSummary"
         tenant:
-          $ref: "#/components/schemas/TenantSummary"
+          $ref: "#/components/schemas/ContactSummary"
         property:
           $ref: "#/components/schemas/PropertySummary"
         amount:
@@ -2782,10 +2858,14 @@ components:
         - identifier
         - receivals
         - status
-    TenantSummary:
+    ContactSummary:
       type: object
       properties:
         identifier:
+          type: string
+        contactType:
+          $ref: '#/components/schemas/ContactType'
+        displayName:
           type: string
         firstName:
           type: string
@@ -2796,9 +2876,9 @@ components:
         phone:
           type: string
       required:
-        - firstName
+        - contactType
+        - displayName
         - identifier
-        - lastName
     UpdatePaymentReceivalRequest:
       type: object
       properties:
@@ -3316,7 +3396,7 @@ components:
         identifier:
           type: string
         tenant:
-          $ref: "#/components/schemas/TenantSummary"
+          $ref: "#/components/schemas/ContactSummary"
         role:
           type: string
           description: Role of a party within a rental contract
@@ -3343,7 +3423,7 @@ components:
           items:
             $ref: "#/components/schemas/ContractPartyResponse"
         primaryTenant:
-          $ref: "#/components/schemas/TenantSummary"
+          $ref: "#/components/schemas/ContactSummary"
         contractType:
           type: string
           description: Type of rental contract
@@ -4383,10 +4463,12 @@ components:
           minLength: 6
       required:
         - code
-    CreateTenantRequest:
+    CreateContactRequest:
       type: object
-      description: Request to create a new tenant
+      description: Request to create a new contact
       properties:
+        contactType:
+          $ref: '#/components/schemas/ContactType'
         firstName:
           type: string
           minLength: 1
@@ -4404,9 +4486,29 @@ components:
           type: string
         additionalInfo:
           type: string
-      required:
-        - firstName
-    CreateTenantAddressRequest:
+        companyName:
+          type: string
+        tradeName:
+          type: string
+        industry:
+          type: string
+        invoiceEmail:
+          type: string
+        website:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        idExpiryDate:
+          type: string
+          format: date
+        notes:
+          type: string
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactTag'
+    CreateContactAddressRequest:
       type: object
       properties:
         street:
@@ -4422,7 +4524,7 @@ components:
           minLength: 1
         addressType:
           type: string
-          description: Purpose or classification of the tenant address
+          description: Purpose or classification of the contact address
           enum:
             - CURRENT
             - MAILING
@@ -4448,16 +4550,6 @@ components:
         - city
         - country
         - street
-    LinkTenantToPropertyRequest:
-      type: object
-      properties:
-        propertyIdentifier:
-          type: string
-        movedInAt:
-          type: string
-          format: date-time
-      required:
-        - propertyIdentifier
     TransferOwnershipRequest:
       type: object
       properties:
@@ -5370,7 +5462,7 @@ components:
         tenantIdentifier:
           type: string
         newTenant:
-          $ref: "#/components/schemas/CreateTenantRequest"
+          $ref: "#/components/schemas/CreateContactRequest"
         role:
           type: string
           description: Role of a party within a rental contract
@@ -5494,7 +5586,7 @@ components:
         tenantIdentifier:
           type: string
         newTenant:
-          $ref: "#/components/schemas/CreateTenantRequest"
+          $ref: "#/components/schemas/CreateContactRequest"
         role:
           type: string
           description: Role of a party within a rental contract
@@ -5507,13 +5599,13 @@ components:
           type: boolean
       required:
         - role
-    ChangePrimaryTenantRequest:
+    ChangePrimaryContactRequest:
       type: object
       properties:
         tenantIdentifier:
           type: string
         newTenant:
-          $ref: "#/components/schemas/CreateTenantRequest"
+          $ref: "#/components/schemas/CreateContactRequest"
         validPartySource:
           type: boolean
     GeneratePaymentsRequest:
@@ -5741,14 +5833,14 @@ components:
               type: string
       required:
         - policyMatrix
-    PageResponseTenantResponse:
+    PageResponseContactResponse:
       type: object
       description: Paginated response wrapper with content and pagination metadata
       properties:
         content:
           type: array
           items:
-            $ref: "#/components/schemas/TenantResponse"
+            $ref: "#/components/schemas/ContactResponse"
         page:
           type: integer
           format: int32
@@ -5770,7 +5862,7 @@ components:
           type: boolean
         empty:
           type: boolean
-    PropertyTenantHistoryResponse:
+    PropertyContactHistoryResponse:
       type: object
       properties:
         property:
@@ -5783,7 +5875,7 @@ components:
           format: date-time
         actionType:
           type: string
-          description: Type of tenant-property link action
+          description: Type of contact-property link action
           enum:
             - LINKED
             - UNLINKED
@@ -5796,6 +5888,255 @@ components:
         - actionType
         - performedAt
         - property
+    ContactType:
+      type: string
+      enum:
+        - INDIVIDUAL
+        - COMPANY
+        - SERVICE_PROVIDER
+    InteractionType:
+      type: string
+      enum:
+        - PHONE_CALL
+        - MEETING
+        - VIEWING
+        - KEY_HANDOVER
+        - INSPECTION
+        - NOTE
+        - OTHER
+    RelationshipType:
+      type: string
+      enum:
+        - GUARANTOR_FOR
+        - FAMILY_OF
+        - PARTNER_OF
+        - WORKS_FOR
+        - CONTACT_PERSON_FOR
+        - OTHER
+    ContactTag:
+      type: string
+      enum:
+        - VIP
+        - PROSPECT
+        - LATE_PAYER
+        - LONG_TERM
+        - KEY_HOLDER
+        - DO_NOT_CONTACT
+        - FORMER_TENANT
+        - REFERRED
+    DataRetentionStatus:
+      type: string
+      enum:
+        - ACTIVE
+        - RETENTION_REQUESTED
+        - ANONYMIZED
+    ContactNoteResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        interactionType:
+          $ref: '#/components/schemas/InteractionType'
+        subject:
+          type: string
+        body:
+          type: string
+        occurredAt:
+          type: string
+          format: date-time
+        followUpDate:
+          type: string
+          format: date
+        followUpReminderSent:
+          type: boolean
+        pinned:
+          type: boolean
+        createdByName:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - interactionType
+        - body
+        - occurredAt
+        - followUpReminderSent
+        - pinned
+        - createdAt
+    CreateContactNoteRequest:
+      type: object
+      properties:
+        interactionType:
+          $ref: '#/components/schemas/InteractionType'
+        subject:
+          type: string
+        body:
+          type: string
+          minLength: 1
+        occurredAt:
+          type: string
+          format: date-time
+        followUpDate:
+          type: string
+          format: date
+      required:
+        - interactionType
+        - body
+        - occurredAt
+    UpdateContactNoteRequest:
+      type: object
+      properties:
+        interactionType:
+          $ref: '#/components/schemas/InteractionType'
+        subject:
+          type: string
+        body:
+          type: string
+          minLength: 1
+        occurredAt:
+          type: string
+          format: date-time
+        followUpDate:
+          type: string
+          format: date
+      required:
+        - interactionType
+        - body
+        - occurredAt
+    ContactRelationshipResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        relatedContact:
+          $ref: '#/components/schemas/ContactSummary'
+        relationshipType:
+          $ref: '#/components/schemas/RelationshipType'
+        displayLabel:
+          type: string
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - relatedContact
+        - relationshipType
+        - displayLabel
+        - createdAt
+    CreateContactRelationshipRequest:
+      type: object
+      properties:
+        targetContactIdentifier:
+          type: string
+        relationshipType:
+          $ref: '#/components/schemas/RelationshipType'
+        notes:
+          type: string
+      required:
+        - targetContactIdentifier
+        - relationshipType
+    UpdateContactRelationshipRequest:
+      type: object
+      properties:
+        relationshipType:
+          $ref: '#/components/schemas/RelationshipType'
+        notes:
+          type: string
+      required:
+        - relationshipType
+    AddContactTagRequest:
+      type: object
+      properties:
+        tag:
+          $ref: '#/components/schemas/ContactTag'
+      required:
+        - tag
+    DuplicateCheckResponse:
+      type: object
+      properties:
+        matches:
+          type: array
+          items:
+            $ref: '#/components/schemas/DuplicateMatch'
+      required:
+        - matches
+    DuplicateMatch:
+      type: object
+      properties:
+        contact:
+          $ref: '#/components/schemas/ContactSummary'
+        matchField:
+          type: string
+        matchType:
+          type: string
+      required:
+        - contact
+        - matchField
+        - matchType
+    ContactActivityItem:
+      type: object
+      properties:
+        eventType:
+          type: string
+        occurredAt:
+          type: string
+          format: date-time
+        description:
+          type: string
+        relatedEntityIdentifier:
+          type: string
+        relatedEntityType:
+          type: string
+        noteIdentifier:
+          type: string
+        interactionType:
+          $ref: '#/components/schemas/InteractionType'
+        noteBody:
+          type: string
+        noteSubject:
+          type: string
+        pinned:
+          type: boolean
+        createdByName:
+          type: string
+      required:
+        - eventType
+        - occurredAt
+        - description
+    PageResponseContactActivityItem:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactActivityItem'
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+      required:
+        - content
+        - page
+        - size
+        - totalElements
+        - totalPages
     RecentActivityResponse:
       type: object
       properties:

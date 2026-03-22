@@ -9,43 +9,56 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.domain.identifier.ContactAddressIdentifier;
 import com.buurman.domain.identifier.ContactIdentifier;
+import com.buurman.domain.identifier.ContactNoteIdentifier;
+import com.buurman.domain.identifier.ContactRelationshipIdentifier;
 import com.buurman.domain.identifier.DocumentIdentifier;
 import com.buurman.domain.identifier.PhotoIdentifier;
+import com.buurman.dto.request.AddContactTagRequest;
 import com.buurman.dto.request.CreateContactAddressRequest;
+import com.buurman.dto.request.CreateContactNoteRequest;
+import com.buurman.dto.request.CreateContactRelationshipRequest;
 import com.buurman.dto.request.CreateContactRequest;
-import com.buurman.dto.request.LinkContactToPropertyRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateContactAddressRequest;
+import com.buurman.dto.request.UpdateContactNoteRequest;
+import com.buurman.dto.request.UpdateContactRelationshipRequest;
 import com.buurman.dto.request.UpdateContactRequest;
 import com.buurman.dto.response.ContactAddressResponse;
+import com.buurman.dto.response.ContactNoteResponse;
+import com.buurman.dto.response.ContactRelationshipResponse;
 import com.buurman.dto.response.ContactResponse;
 import com.buurman.dto.response.DocumentResponse;
+import com.buurman.dto.response.DuplicateCheckResponse;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.dto.response.PhotoResponse;
 import com.buurman.dto.response.PropertyContactHistoryResponse;
 import com.buurman.dto.response.RecentActivityResponse;
-import com.buurman.generated.api.TenantsApi;
+import com.buurman.generated.api.ContactsApi;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
+import com.buurman.service.ContactNoteService;
+import com.buurman.service.ContactRelationshipService;
 import com.buurman.service.ContactService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-public class ContactController implements TenantsApi {
+public class ContactController implements ContactsApi {
 
   private final ContactService contactService;
+  private final ContactNoteService contactNoteService;
+  private final ContactRelationshipService contactRelationshipService;
 
   @Override
-  public ContactResponse createTenant(CreateContactRequest request) {
+  public ContactResponse createContact(CreateContactRequest request) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return contactService.createContact(request, principal);
   }
 
   @Override
   @SuppressWarnings("rawtypes")
-  public PageResponse getTenants(
+  public PageResponse getContacts(
       Optional<String> search,
       Optional<Integer> page,
       Optional<Integer> size,
@@ -59,38 +72,40 @@ public class ContactController implements TenantsApi {
   }
 
   @Override
-  public ContactResponse getTenant(ContactIdentifier identifier) {
+  public ContactResponse getContact(ContactIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return contactService.getContact(identifier, principal);
   }
 
   @Override
-  public ContactResponse updateTenant(
+  public ContactResponse updateContact(
       ContactIdentifier identifier, UpdateContactRequest request) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return contactService.updateContact(identifier, request, principal);
   }
 
   @Override
-  public void deleteTenant(ContactIdentifier identifier) {
+  public void deleteContact(ContactIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     contactService.deleteContact(identifier, principal);
   }
 
   @Override
-  public List<PropertyContactHistoryResponse> getTenantHistory(ContactIdentifier identifier) {
+  public List<PropertyContactHistoryResponse> getContactHistory(ContactIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return contactService.getContactHistory(identifier, principal);
   }
 
   @Override
-  public List<RecentActivityResponse> getTenantAuditLog(ContactIdentifier identifier) {
+  public List<RecentActivityResponse> getContactAuditLog(ContactIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return contactService.getAuditLog(identifier, principal);
   }
 
+  // --- Documents ---
+
   @Override
-  public DocumentResponse uploadDocument(
+  public DocumentResponse uploadContactDocument(
       ContactIdentifier identifier,
       MultipartFile file,
       Optional<String> title,
@@ -101,31 +116,33 @@ public class ContactController implements TenantsApi {
   }
 
   @Override
-  public List<DocumentResponse> getDocuments(ContactIdentifier identifier) {
+  public List<DocumentResponse> getContactDocuments(ContactIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return contactService.getDocuments(identifier, principal);
   }
 
   @Override
-  public Map<String, String> getDownloadUrl(DocumentIdentifier documentIdentifier) {
+  public Map<String, String> getContactDownloadUrl(DocumentIdentifier documentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return contactService.getDownloadUrl(documentIdentifier, principal);
   }
 
   @Override
-  public void deleteTenantDocument(DocumentIdentifier documentIdentifier) {
+  public void deleteContactDocument(DocumentIdentifier documentIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     contactService.deleteDocument(documentIdentifier, principal);
   }
 
+  // --- Photos ---
+
   @Override
-  public List<PhotoResponse> getPhotos(ContactIdentifier identifier) {
+  public List<PhotoResponse> getContactPhotos(ContactIdentifier identifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return contactService.getPhotos(identifier, principal);
   }
 
   @Override
-  public PhotoResponse uploadPhoto(
+  public PhotoResponse uploadContactPhoto(
       ContactIdentifier identifier,
       MultipartFile file,
       Optional<String> title,
@@ -136,34 +153,36 @@ public class ContactController implements TenantsApi {
   }
 
   @Override
-  public PhotoResponse setMainPhoto(
+  public PhotoResponse setContactMainPhoto(
       ContactIdentifier identifier, PhotoIdentifier photoIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return contactService.setMainPhoto(identifier, photoIdentifier, principal);
   }
 
+  // --- Addresses ---
+
   @Override
-  public ContactAddressResponse createAddress(
+  public ContactAddressResponse createContactAddress(
       ContactIdentifier contactIdentifier, CreateContactAddressRequest request) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return contactService.createAddress(contactIdentifier, request, principal);
   }
 
   @Override
-  public List<ContactAddressResponse> getAddresses(ContactIdentifier contactIdentifier) {
+  public List<ContactAddressResponse> getContactAddresses(ContactIdentifier contactIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return contactService.getAddresses(contactIdentifier, principal);
   }
 
   @Override
-  public ContactAddressResponse getAddress(
+  public ContactAddressResponse getContactAddress(
       ContactIdentifier contactIdentifier, ContactAddressIdentifier addressIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return contactService.getAddress(contactIdentifier, addressIdentifier, principal);
   }
 
   @Override
-  public ContactAddressResponse updateAddress(
+  public ContactAddressResponse updateContactAddress(
       ContactIdentifier contactIdentifier,
       ContactAddressIdentifier addressIdentifier,
       UpdateContactAddressRequest request) {
@@ -173,34 +192,129 @@ public class ContactController implements TenantsApi {
   }
 
   @Override
-  public void deleteAddress(
+  public void deleteContactAddress(
       ContactIdentifier contactIdentifier, ContactAddressIdentifier addressIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     contactService.deleteAddress(contactIdentifier, addressIdentifier, principal);
   }
 
-  /**
-   * Removed in BUUR-77 contacts rework. Will be deleted from the OpenAPI spec in Phase 4a.
-   *
-   * @deprecated Use contract parties to associate contacts with properties.
-   */
-  @Deprecated(forRemoval = true)
+  // --- Notes ---
+
   @Override
-  public ContactResponse linkTenantToProperty(
-      ContactIdentifier identifier, LinkContactToPropertyRequest request) {
-    throw new UnsupportedOperationException(
-        "linkTenantToProperty has been removed. Use contract parties instead.");
+  public ContactNoteResponse createContactNote(
+      ContactIdentifier contactIdentifier, CreateContactNoteRequest request) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return contactNoteService.createNote(contactIdentifier, request, principal);
   }
 
-  /**
-   * Removed in BUUR-77 contacts rework. Will be deleted from the OpenAPI spec in Phase 4a.
-   *
-   * @deprecated Use contract parties to associate contacts with properties.
-   */
-  @Deprecated(forRemoval = true)
   @Override
-  public ContactResponse unlinkTenantFromProperty(ContactIdentifier identifier) {
-    throw new UnsupportedOperationException(
-        "unlinkTenantFromProperty has been removed. Use contract parties instead.");
+  public List<ContactNoteResponse> getContactNotes(ContactIdentifier contactIdentifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return contactNoteService.getNotes(contactIdentifier, principal);
+  }
+
+  @Override
+  public ContactNoteResponse updateContactNote(
+      ContactIdentifier contactIdentifier,
+      ContactNoteIdentifier noteIdentifier,
+      UpdateContactNoteRequest request) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return contactNoteService.updateNote(contactIdentifier, noteIdentifier, request, principal);
+  }
+
+  @Override
+  public void deleteContactNote(
+      ContactIdentifier contactIdentifier, ContactNoteIdentifier noteIdentifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    contactNoteService.deleteNote(contactIdentifier, noteIdentifier, principal);
+  }
+
+  @Override
+  public ContactNoteResponse pinContactNote(
+      ContactIdentifier contactIdentifier, ContactNoteIdentifier noteIdentifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return contactNoteService.pinNote(contactIdentifier, noteIdentifier, principal);
+  }
+
+  @Override
+  public ContactNoteResponse unpinContactNote(
+      ContactIdentifier contactIdentifier, ContactNoteIdentifier noteIdentifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return contactNoteService.unpinNote(contactIdentifier, noteIdentifier, principal);
+  }
+
+  // --- Relationships ---
+
+  @Override
+  public ContactRelationshipResponse createContactRelationship(
+      ContactIdentifier contactIdentifier, CreateContactRelationshipRequest request) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return contactRelationshipService.createRelationship(contactIdentifier, request, principal);
+  }
+
+  @Override
+  public List<ContactRelationshipResponse> getContactRelationships(
+      ContactIdentifier contactIdentifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return contactRelationshipService.getRelationships(contactIdentifier, principal);
+  }
+
+  @Override
+  public ContactRelationshipResponse updateContactRelationship(
+      ContactIdentifier contactIdentifier,
+      ContactRelationshipIdentifier relationshipIdentifier,
+      UpdateContactRelationshipRequest request) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return contactRelationshipService.updateRelationship(
+        contactIdentifier, relationshipIdentifier, request, principal);
+  }
+
+  @Override
+  public void deleteContactRelationship(
+      ContactIdentifier contactIdentifier,
+      ContactRelationshipIdentifier relationshipIdentifier) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    contactRelationshipService.deleteRelationship(
+        contactIdentifier, relationshipIdentifier, principal);
+  }
+
+  // --- Tags (stub) ---
+
+  @Override
+  public ContactResponse addContactTag(
+      ContactIdentifier contactIdentifier, AddContactTagRequest request) {
+    throw new UnsupportedOperationException("Not yet implemented");
+  }
+
+  @Override
+  public ContactResponse removeContactTag(ContactIdentifier contactIdentifier, String tag) {
+    throw new UnsupportedOperationException("Not yet implemented");
+  }
+
+  // --- Duplicates (stub) ---
+
+  @Override
+  public DuplicateCheckResponse checkContactDuplicates(CreateContactRequest request) {
+    throw new UnsupportedOperationException("Not yet implemented");
+  }
+
+  // --- Activity (stub) ---
+
+  @Override
+  @SuppressWarnings("rawtypes")
+  public PageResponse getContactActivity(
+      ContactIdentifier contactIdentifier,
+      Optional<Integer> page,
+      Optional<Integer> size,
+      Optional<String> sort,
+      Optional<String> direction) {
+    throw new UnsupportedOperationException("Not yet implemented");
+  }
+
+  // --- GDPR Erase (stub) ---
+
+  @Override
+  public void eraseContactData(ContactIdentifier contactIdentifier) {
+    throw new UnsupportedOperationException("Not yet implemented");
   }
 }

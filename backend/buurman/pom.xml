@@ -291,8 +291,8 @@
                                 <schemaMapping>PageResponseContractResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <schemaMapping>PageResponseExpenseResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <schemaMapping>PageResponsePaymentResponse=com.buurman.dto.response.PageResponse</schemaMapping>
-                                <schemaMapping>PageResponseTenantResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <schemaMapping>PageResponseContactResponse=com.buurman.dto.response.PageResponse</schemaMapping>
+                                <schemaMapping>PageResponseContactActivityItem=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <schemaMapping>PageResponseNotificationResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <schemaMapping>PageResponseDocumentResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <schemaMapping>PageResponsePhotoResponse=com.buurman.dto.response.PageResponse</schemaMapping>
@@ -323,8 +323,10 @@
                                 <schemaMapping>PropertyTaxIdentifier=com.buurman.domain.identifier.PropertyTaxIdentifier</schemaMapping>
                                 <schemaMapping>PropertyValuationIdentifier=com.buurman.domain.identifier.PropertyValuationIdentifier</schemaMapping>
                                 <schemaMapping>TeamIdentifier=com.buurman.domain.identifier.TeamIdentifier</schemaMapping>
-                                <schemaMapping>TenantAddressIdentifier=com.buurman.domain.identifier.ContactAddressIdentifier</schemaMapping>
-                                <schemaMapping>TenantIdentifier=com.buurman.domain.identifier.ContactIdentifier</schemaMapping>
+                                <schemaMapping>ContactAddressIdentifier=com.buurman.domain.identifier.ContactAddressIdentifier</schemaMapping>
+                                <schemaMapping>ContactIdentifier=com.buurman.domain.identifier.ContactIdentifier</schemaMapping>
+                                <schemaMapping>ContactNoteIdentifier=com.buurman.domain.identifier.ContactNoteIdentifier</schemaMapping>
+                                <schemaMapping>ContactRelationshipIdentifier=com.buurman.domain.identifier.ContactRelationshipIdentifier</schemaMapping>
                                 <schemaMapping>UserIdentifier=com.buurman.domain.identifier.UserIdentifier</schemaMapping>
                                 <schemaMapping>WwsCalculationIdentifier=com.buurman.domain.identifier.WwsCalculationIdentifier</schemaMapping>
                                 <schemaMapping>RentRegulationCountryIdentifier=com.buurman.domain.identifier.RentRegulationCountryIdentifier</schemaMapping>
@@ -333,18 +335,33 @@
                                 <schemaMapping>BroadcastMessageIdentifier=com.buurman.domain.identifier.BroadcastMessageIdentifier</schemaMapping>
                                 <schemaMapping>DataTakeoutIdentifier=com.buurman.domain.identifier.DataTakeoutIdentifier</schemaMapping>
                                 <schemaMapping>PageResponseTakeoutResponse=com.buurman.dto.response.PageResponse</schemaMapping>
-                                <!-- BUUR-77: Map old Tenant schema names to new Contact types -->
-                                <schemaMapping>TenantResponse=com.buurman.dto.response.ContactResponse</schemaMapping>
-                                <schemaMapping>TenantAddressResponse=com.buurman.dto.response.ContactAddressResponse</schemaMapping>
-                                <schemaMapping>TenantSummary=com.buurman.dto.response.ContactSummary</schemaMapping>
-                                <schemaMapping>CreateTenantRequest=com.buurman.dto.request.CreateContactRequest</schemaMapping>
-                                <schemaMapping>CreateTenantAddressRequest=com.buurman.dto.request.CreateContactAddressRequest</schemaMapping>
-                                <schemaMapping>UpdateTenantRequest=com.buurman.dto.request.UpdateContactRequest</schemaMapping>
-                                <schemaMapping>UpdateTenantAddressRequest=com.buurman.dto.request.UpdateContactAddressRequest</schemaMapping>
-                                <schemaMapping>ChangePrimaryTenantRequest=com.buurman.dto.request.ChangePrimaryContactRequest</schemaMapping>
-                                <schemaMapping>PropertyTenantHistoryResponse=com.buurman.dto.response.PropertyContactHistoryResponse</schemaMapping>
-                                <schemaMapping>TenantPropertyAssignment=com.buurman.dto.response.ContactPropertyAssignment</schemaMapping>
-                                <schemaMapping>LinkTenantToPropertyRequest=com.buurman.dto.request.LinkContactToPropertyRequest</schemaMapping>
+                                <!-- BUUR-77: Contact schema mappings -->
+                                <schemaMapping>ContactResponse=com.buurman.dto.response.ContactResponse</schemaMapping>
+                                <schemaMapping>ContactAddressResponse=com.buurman.dto.response.ContactAddressResponse</schemaMapping>
+                                <schemaMapping>ContactSummary=com.buurman.dto.response.ContactSummary</schemaMapping>
+                                <schemaMapping>ContactNoteResponse=com.buurman.dto.response.ContactNoteResponse</schemaMapping>
+                                <schemaMapping>ContactRelationshipResponse=com.buurman.dto.response.ContactRelationshipResponse</schemaMapping>
+                                <schemaMapping>ContactActivityItem=com.buurman.dto.response.ContactActivityItem</schemaMapping>
+                                <schemaMapping>DuplicateCheckResponse=com.buurman.dto.response.DuplicateCheckResponse</schemaMapping>
+                                <schemaMapping>DuplicateMatch=com.buurman.dto.response.DuplicateMatch</schemaMapping>
+                                <schemaMapping>ContactPropertyAssignment=com.buurman.dto.response.ContactPropertyAssignment</schemaMapping>
+                                <schemaMapping>PropertyContactHistoryResponse=com.buurman.dto.response.PropertyContactHistoryResponse</schemaMapping>
+                                <schemaMapping>CreateContactRequest=com.buurman.dto.request.CreateContactRequest</schemaMapping>
+                                <schemaMapping>CreateContactAddressRequest=com.buurman.dto.request.CreateContactAddressRequest</schemaMapping>
+                                <schemaMapping>UpdateContactRequest=com.buurman.dto.request.UpdateContactRequest</schemaMapping>
+                                <schemaMapping>UpdateContactAddressRequest=com.buurman.dto.request.UpdateContactAddressRequest</schemaMapping>
+                                <schemaMapping>CreateContactNoteRequest=com.buurman.dto.request.CreateContactNoteRequest</schemaMapping>
+                                <schemaMapping>UpdateContactNoteRequest=com.buurman.dto.request.UpdateContactNoteRequest</schemaMapping>
+                                <schemaMapping>CreateContactRelationshipRequest=com.buurman.dto.request.CreateContactRelationshipRequest</schemaMapping>
+                                <schemaMapping>UpdateContactRelationshipRequest=com.buurman.dto.request.UpdateContactRelationshipRequest</schemaMapping>
+                                <schemaMapping>AddContactTagRequest=com.buurman.dto.request.AddContactTagRequest</schemaMapping>
+                                <schemaMapping>ChangePrimaryContactRequest=com.buurman.dto.request.ChangePrimaryContactRequest</schemaMapping>
+                                <!-- BUUR-77: Enum schema mappings -->
+                                <schemaMapping>ContactType=com.buurman.domain.ContactType</schemaMapping>
+                                <schemaMapping>InteractionType=com.buurman.domain.InteractionType</schemaMapping>
+                                <schemaMapping>RelationshipType=com.buurman.domain.RelationshipType</schemaMapping>
+                                <schemaMapping>ContactTag=com.buurman.domain.ContactTag</schemaMapping>
+                                <schemaMapping>DataRetentionStatus=com.buurman.domain.DataRetentionStatus</schemaMapping>
                             </schemaMappings>
                             <importMappings>
                                 <importMapping>Instant=java.time.Instant</importMapping>
@@ -408,7 +425,7 @@
                                 <importMapping>PropertyResponse=com.buurman.dto.response.PropertyResponse</importMapping>
                                 <importMapping>PropertySummary=com.buurman.dto.response.PropertySummary</importMapping>
                                 <importMapping>PropertyTaxResponse=com.buurman.dto.response.PropertyTaxResponse</importMapping>
-                                <importMapping>PropertyTenantHistoryResponse=com.buurman.dto.response.PropertyContactHistoryResponse</importMapping>
+                                <importMapping>PropertyContactHistoryResponse=com.buurman.dto.response.PropertyContactHistoryResponse</importMapping>
                                 <importMapping>PropertyTimelineResponse=com.buurman.dto.response.PropertyTimelineResponse</importMapping>
                                 <importMapping>PropertyValuationResponse=com.buurman.dto.response.PropertyValuationResponse</importMapping>
                                 <importMapping>RecentActivityResponse=com.buurman.dto.response.RecentActivityResponse</importMapping>
@@ -420,10 +437,15 @@
                                 <importMapping>TeamMemberResponse=com.buurman.dto.response.TeamMemberResponse</importMapping>
                                 <importMapping>TeamPreferencesResponse=com.buurman.dto.response.TeamPreferencesResponse</importMapping>
                                 <importMapping>TeamResponse=com.buurman.dto.response.TeamResponse</importMapping>
-                                <importMapping>TenantAddressResponse=com.buurman.dto.response.ContactAddressResponse</importMapping>
-                                <importMapping>TenantPropertyAssignment=com.buurman.dto.response.ContactPropertyAssignment</importMapping>
-                                <importMapping>TenantResponse=com.buurman.dto.response.ContactResponse</importMapping>
-                                <importMapping>TenantSummary=com.buurman.dto.response.ContactSummary</importMapping>
+                                <importMapping>ContactAddressResponse=com.buurman.dto.response.ContactAddressResponse</importMapping>
+                                <importMapping>ContactPropertyAssignment=com.buurman.dto.response.ContactPropertyAssignment</importMapping>
+                                <importMapping>ContactResponse=com.buurman.dto.response.ContactResponse</importMapping>
+                                <importMapping>ContactSummary=com.buurman.dto.response.ContactSummary</importMapping>
+                                <importMapping>ContactNoteResponse=com.buurman.dto.response.ContactNoteResponse</importMapping>
+                                <importMapping>ContactRelationshipResponse=com.buurman.dto.response.ContactRelationshipResponse</importMapping>
+                                <importMapping>ContactActivityItem=com.buurman.dto.response.ContactActivityItem</importMapping>
+                                <importMapping>DuplicateCheckResponse=com.buurman.dto.response.DuplicateCheckResponse</importMapping>
+                                <importMapping>DuplicateMatch=com.buurman.dto.response.DuplicateMatch</importMapping>
                                 <importMapping>TransactionResponse=com.buurman.dto.response.TransactionResponse</importMapping>
                                 <importMapping>UserPreferencesResponse=com.buurman.dto.response.UserPreferencesResponse</importMapping>
                                 <importMapping>UserProfileResponse=com.buurman.dto.response.UserProfileResponse</importMapping>
@@ -457,7 +479,7 @@
                                 <importMapping>BulkDownloadRequest=com.buurman.dto.request.BulkDownloadRequest</importMapping>
                                 <importMapping>BulkGeneratePaymentsRequest=com.buurman.dto.request.BulkGeneratePaymentsRequest</importMapping>
                                 <importMapping>ChangeContractStatusRequest=com.buurman.dto.request.ChangeContractStatusRequest</importMapping>
-                                <importMapping>ChangePrimaryTenantRequest=com.buurman.dto.request.ChangePrimaryContactRequest</importMapping>
+                                <importMapping>ChangePrimaryContactRequest=com.buurman.dto.request.ChangePrimaryContactRequest</importMapping>
                                 <importMapping>CommercialDetailsRequest=com.buurman.dto.request.CommercialDetailsRequest</importMapping>
                                 <importMapping>ContractPartyRequest=com.buurman.dto.request.ContractPartyRequest</importMapping>
                                 <importMapping>CreateCalendarFeedRequest=com.buurman.dto.request.CreateCalendarFeedRequest</importMapping>
@@ -477,8 +499,13 @@
                                 <importMapping>CreatePropertyTaxRequest=com.buurman.dto.request.CreatePropertyTaxRequest</importMapping>
                                 <importMapping>CreatePropertyValuationRequest=com.buurman.dto.request.CreatePropertyValuationRequest</importMapping>
                                 <importMapping>CreateRentPeriodRequest=com.buurman.dto.request.CreateRentPeriodRequest</importMapping>
-                                <importMapping>CreateTenantAddressRequest=com.buurman.dto.request.CreateContactAddressRequest</importMapping>
-                                <importMapping>CreateTenantRequest=com.buurman.dto.request.CreateContactRequest</importMapping>
+                                <importMapping>CreateContactAddressRequest=com.buurman.dto.request.CreateContactAddressRequest</importMapping>
+                                <importMapping>CreateContactRequest=com.buurman.dto.request.CreateContactRequest</importMapping>
+                                <importMapping>CreateContactNoteRequest=com.buurman.dto.request.CreateContactNoteRequest</importMapping>
+                                <importMapping>UpdateContactNoteRequest=com.buurman.dto.request.UpdateContactNoteRequest</importMapping>
+                                <importMapping>CreateContactRelationshipRequest=com.buurman.dto.request.CreateContactRelationshipRequest</importMapping>
+                                <importMapping>UpdateContactRelationshipRequest=com.buurman.dto.request.UpdateContactRelationshipRequest</importMapping>
+                                <importMapping>AddContactTagRequest=com.buurman.dto.request.AddContactTagRequest</importMapping>
                                 <importMapping>EndOccupancyPeriodRequest=com.buurman.dto.request.EndOccupancyPeriodRequest</importMapping>
                                 <importMapping>FinancialOverviewRequest=com.buurman.dto.request.FinancialOverviewRequest</importMapping>
                                 <importMapping>GeneratePaymentsRequest=com.buurman.dto.request.GeneratePaymentsRequest</importMapping>
