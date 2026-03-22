@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.buurman.domain.Contact;
 import com.buurman.domain.ContactAddress;
+import com.buurman.domain.ContactNote;
 import com.buurman.domain.ContactTag;
 import com.buurman.domain.ContactType;
 import com.buurman.exception.BadRequestException;
@@ -40,6 +41,7 @@ import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateContactAddressRequest;
 import com.buurman.dto.request.UpdateContactRequest;
 import com.buurman.dto.response.ContactAddressResponse;
+import com.buurman.dto.response.ContactActivityItem;
 import com.buurman.dto.response.ContactPropertyAssignment;
 import com.buurman.dto.response.ContactResponse;
 import com.buurman.dto.response.DocumentResponse;
@@ -234,6 +236,76 @@ public class ContactService {
     Contact contact =
         contactRepository.getByIdentifierAndTeamId(identifier, principal.requireTeamId());
     return auditService.getEntityAuditLog(principal.requireTeamId(), "CONTACT", contact.getId());
+  }
+
+  @PreAuthorize("hasRole('TEAM_VIEWER')")
+  public PageResponse<ContactActivityItem> getActivity(
+      ContactIdentifier identifier, UserPrincipal principal, PageRequest pageRequest) {
+    UUID teamId = principal.requireTeamId();
+    Contact contact = contactRepository.getByIdentifierAndTeamId(identifier, teamId);
+
+    List<ContactActivityItem> auditItems =
+        auditService.getEntityAuditLog(teamId, "CONTACT", contact.getId()).stream()
+            .map(this::auditEntryToActivityItem)
+            .toList();
+
+    List<ContactNote> notes = contactNoteRepository.findByContactIdAndTeamId(contact.getId(), teamId);
+    List<ContactActivityItem> noteItems =
+        notes.stream().map(this::noteToActivityItem).toList();
+
+    List<ContactActivityItem> merged = new ArrayList<>();
+    merged.addAll(auditItems);
+    merged.addAll(noteItems);
+    merged.sort((a, b) -> b.occurredAt().compareTo(a.occurredAt()));
+
+    int total = merged.size();
+    int offset = pageRequest.page() * pageRequest.size();
+    int toIndex = Math.min(offset + pageRequest.size(), total);
+    List<ContactActivityItem> page =
+        (offset >= total) ? List.of() : List.copyOf(merged.subList(offset, toIndex));
+
+    return PageResponse.of(page, pageRequest.page(), pageRequest.size(), total);
+  }
+
+  private ContactActivityItem auditEntryToActivityItem(RecentActivityResponse activity) {
+    return new ContactActivityItem(
+        "AUDIT",
+        activity.timestamp(),
+        activity.description().orElse(activity.action()),
+        Optional.of(activity.entityIdentifier()),
+        Optional.of(activity.entityType()),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        Optional.empty(),
+        activity.userName());
+  }
+
+  private ContactActivityItem noteToActivityItem(ContactNote note) {
+    String createdByName =
+        userRepository
+            .findById(note.getCreatedBy())
+            .map(User::getFullName)
+            .orElse("Unknown User");
+
+    String description =
+        note.getSubject()
+            .filter(s -> !s.isBlank())
+            .orElseGet(() -> note.getInteractionType().getDisplayName() + " note");
+
+    return new ContactActivityItem(
+        "NOTE",
+        note.getOccurredAt(),
+        description,
+        Optional.empty(),
+        Optional.empty(),
+        note.getIdentifier(),
+        Optional.of(note.getInteractionType()),
+        Optional.of(note.getBody()),
+        note.getSubject(),
+        Optional.of(note.isPinned()),
+        Optional.of(createdByName));
   }
 
   public DocumentResponse uploadDocument(

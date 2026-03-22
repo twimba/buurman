@@ -301,7 +301,7 @@ public class ContactController implements ContactsApi {
     return contactService.checkDuplicates(request, principal);
   }
 
-  // --- Activity (stub) ---
+  // --- Activity ---
 
   @Override
   @SuppressWarnings("rawtypes")
@@ -311,7 +311,11 @@ public class ContactController implements ContactsApi {
       Optional<Integer> size,
       Optional<String> sort,
       Optional<String> direction) {
-    throw new UnsupportedOperationException("Not yet implemented");
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    PageRequest pageRequest =
+        PageRequest.of(
+            page.orElse(null), size.orElse(null), sort.orElse(null), direction.orElse(null));
+    return contactService.getActivity(contactIdentifier, principal, pageRequest);
   }
 
   // --- GDPR Erase ---
