@@ -4,6 +4,8 @@ import static com.buurman.util.SidGenerator.newContactId;
 
 import java.net.URL;
 import java.time.Clock;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -18,8 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.buurman.domain.Contact;
 import com.buurman.domain.ContactAddress;
 import com.buurman.domain.ContactTag;
-import com.buurman.exception.BadRequestException;
 import com.buurman.domain.ContactType;
+import com.buurman.exception.BadRequestException;
 import com.buurman.domain.Contract;
 import com.buurman.domain.Photo;
 import com.buurman.domain.Property;
@@ -31,6 +33,9 @@ import com.buurman.domain.identifier.PhotoIdentifier;
 import com.buurman.dto.request.AddContactTagRequest;
 import com.buurman.dto.request.CreateContactAddressRequest;
 import com.buurman.dto.request.CreateContactRequest;
+import com.buurman.dto.response.ContactSummary;
+import com.buurman.dto.response.DuplicateCheckResponse;
+import com.buurman.dto.response.DuplicateMatch;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateContactAddressRequest;
 import com.buurman.dto.request.UpdateContactRequest;
@@ -45,6 +50,8 @@ import com.buurman.dto.response.PropertySummary;
 import com.buurman.dto.response.RecentActivityResponse;
 import com.buurman.mapper.ContactMapper;
 import com.buurman.repository.ContactAddressRepository;
+import com.buurman.repository.ContactNoteRepository;
+import com.buurman.repository.ContactRelationshipRepository;
 import com.buurman.repository.ContactRepository;
 import com.buurman.repository.ContactTagRepository;
 import com.buurman.repository.ContractPartyRepository;
@@ -79,6 +86,8 @@ public class ContactService {
   private final ContactAddressService addressService;
   private final ContactAddressRepository addressRepository;
   private final ContactTagRepository contactTagRepository;
+  private final ContactNoteRepository contactNoteRepository;
+  private final ContactRelationshipRepository contactRelationshipRepository;
   private final MetricsService metricsService;
   private final Clock clock;
 
@@ -404,6 +413,75 @@ public class ContactService {
         Map.of("tags", contactTag.name()));
 
     return toResponse(contact, principal.requireTeamId());
+  }
+
+  @PreAuthorize("hasRole('TEAM_VIEWER')")
+  public DuplicateCheckResponse checkDuplicates(
+      CreateContactRequest request, UserPrincipal principal) {
+    UUID teamId = principal.requireTeamId();
+    List<DuplicateMatch> matches = new ArrayList<>();
+
+    request
+        .email()
+        .filter(e -> !e.isBlank())
+        .ifPresent(
+            email ->
+                contactRepository
+                    .findDuplicatesByEmail(email, teamId)
+                    .forEach(
+                        c -> {
+                          ContactSummary summary = contactMapper.toSummary(c);
+                          matches.add(new DuplicateMatch(summary, "email", "exact"));
+                        }));
+
+    @Nullable String firstName = request.firstName().orElse(null);
+    @Nullable String lastName = request.lastName().orElse(null);
+    @Nullable String companyName = request.companyName().orElse(null);
+
+    contactRepository
+        .findDuplicatesByName(firstName, lastName, companyName, teamId)
+        .forEach(
+            c -> {
+              ContactSummary summary = contactMapper.toSummary(c);
+              String matchField =
+                  (companyName != null
+                          && !companyName.isBlank()
+                          && c.getCompanyName()
+                              .filter(
+                                  cn ->
+                                      cn.equalsIgnoreCase(companyName))
+                              .isPresent())
+                      ? "companyName"
+                      : "name";
+              matches.add(new DuplicateMatch(summary, matchField, "exact"));
+            });
+
+    return new DuplicateCheckResponse(List.copyOf(matches));
+  }
+
+  @Transactional
+  @PreAuthorize("hasRole('TEAM_ADMIN')")
+  public void eraseContactData(ContactIdentifier identifier, UserPrincipal principal) {
+    UUID teamId = principal.requireTeamId();
+    Contact contact = contactRepository.getByIdentifierAndTeamId(identifier, teamId);
+
+    Instant now = clock.instant();
+    contactRepository.anonymizeContact(contact.getId(), teamId, principal.getUserId(), now);
+
+    contactNoteRepository.anonymizeByContactId(contact.getId());
+    contactRelationshipRepository.softDeleteByContactId(contact.getId(), teamId);
+    contactTagRepository.deleteByContactId(contact.getId());
+
+    log.info("Contact data erased: {} for team {}", identifier, teamId);
+
+    auditService.logUpdate(
+        teamId,
+        "CONTACT",
+        contact.getId(),
+        principal.getUserId(),
+        null,
+        Map.of("action", "GDPR_ERASE"),
+        Map.of("dataRetentionStatus", "ANONYMIZED"));
   }
 
   private ContactResponse toResponse(Contact contact, UUID teamId) {

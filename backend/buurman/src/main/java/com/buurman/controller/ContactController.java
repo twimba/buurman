@@ -293,11 +293,12 @@ public class ContactController implements ContactsApi {
     return contactService.removeTag(contactIdentifier, tag, principal);
   }
 
-  // --- Duplicates (stub) ---
+  // --- Duplicates ---
 
   @Override
   public DuplicateCheckResponse checkContactDuplicates(CreateContactRequest request) {
-    throw new UnsupportedOperationException("Not yet implemented");
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return contactService.checkDuplicates(request, principal);
   }
 
   // --- Activity (stub) ---
@@ -313,10 +314,11 @@ public class ContactController implements ContactsApi {
     throw new UnsupportedOperationException("Not yet implemented");
   }
 
-  // --- GDPR Erase (stub) ---
+  // --- GDPR Erase ---
 
   @Override
   public void eraseContactData(ContactIdentifier contactIdentifier) {
-    throw new UnsupportedOperationException("Not yet implemented");
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    contactService.eraseContactData(contactIdentifier, principal);
   }
 }

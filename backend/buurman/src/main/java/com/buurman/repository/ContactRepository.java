@@ -2,9 +2,11 @@ package com.buurman.repository;
 
 import static com.buurman.jooq.generated.Tables.CONTACTS;
 import static java.time.ZoneOffset.UTC;
+import static org.jooq.impl.DSL.falseCondition;
 import static org.jooq.impl.DSL.lower;
 
 import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -230,6 +232,77 @@ public class ContactRepository {
     dsl.update(CONTACTS)
         .set(CONTACTS.DELETED_AT, now)
         .where(CONTACTS.ID.eq(id).and(CONTACTS.TEAM_ID.eq(teamId)))
+        .execute();
+  }
+
+  public List<Contact> findDuplicatesByEmail(String email, UUID teamId) {
+    return List.copyOf(
+        dsl.selectFrom(CONTACTS)
+            .where(
+                lower(CONTACTS.EMAIL)
+                    .eq(email.toLowerCase(Locale.ROOT))
+                    .and(CONTACTS.TEAM_ID.eq(teamId))
+                    .and(CONTACTS.DELETED_AT.isNull()))
+            .fetch()
+            .map(mapper::toDomain));
+  }
+
+  public List<Contact> findDuplicatesByName(
+      @Nullable String firstName,
+      @Nullable String lastName,
+      @Nullable String companyName,
+      UUID teamId) {
+    Condition nameCondition = falseCondition();
+    boolean anyClause = false;
+    if (firstName != null && !firstName.isBlank() && lastName != null && !lastName.isBlank()) {
+      nameCondition =
+          nameCondition.or(
+              lower(CONTACTS.FIRST_NAME)
+                  .eq(firstName.toLowerCase(Locale.ROOT))
+                  .and(lower(CONTACTS.LAST_NAME).eq(lastName.toLowerCase(Locale.ROOT))));
+      anyClause = true;
+    }
+    if (companyName != null && !companyName.isBlank()) {
+      nameCondition =
+          nameCondition.or(
+              lower(CONTACTS.COMPANY_NAME).eq(companyName.toLowerCase(Locale.ROOT)));
+      anyClause = true;
+    }
+    if (!anyClause) {
+      return List.of();
+    }
+    return List.copyOf(
+        dsl.selectFrom(CONTACTS)
+            .where(
+                nameCondition
+                    .and(CONTACTS.TEAM_ID.eq(teamId))
+                    .and(CONTACTS.DELETED_AT.isNull()))
+            .fetch()
+            .map(mapper::toDomain));
+  }
+
+  public void anonymizeContact(UUID contactId, UUID teamId, UUID updatedBy, Instant now) {
+    LocalDateTime updatedAt = LocalDateTime.ofInstant(now, UTC);
+    dsl.update(CONTACTS)
+        .set(CONTACTS.DISPLAY_NAME, "[ERASED]")
+        .set(CONTACTS.FIRST_NAME, "[ERASED]")
+        .set(CONTACTS.LAST_NAME, "[ERASED]")
+        .set(CONTACTS.COMPANY_NAME, "[ERASED]")
+        .set(CONTACTS.TRADE_NAME, (String) null)
+        .set(CONTACTS.INDUSTRY, (String) null)
+        .set(CONTACTS.EMAIL, (String) null)
+        .set(CONTACTS.INVOICE_EMAIL, (String) null)
+        .set(CONTACTS.PHONE, (String) null)
+        .set(CONTACTS.WEBSITE, (String) null)
+        .set(CONTACTS.TAX_NUMBER, (String) null)
+        .set(CONTACTS.ID_NUMBER, (String) null)
+        .set(CONTACTS.DATE_OF_BIRTH, (java.time.LocalDate) null)
+        .set(CONTACTS.ID_EXPIRY_DATE, (java.time.LocalDate) null)
+        .set(CONTACTS.NOTES, (String) null)
+        .set(CONTACTS.DATA_RETENTION_STATUS, DataRetentionStatus.ANONYMIZED.name())
+        .set(CONTACTS.UPDATED_AT, updatedAt)
+        .set(CONTACTS.UPDATED_BY, updatedBy)
+        .where(CONTACTS.ID.eq(contactId).and(CONTACTS.TEAM_ID.eq(teamId)))
         .execute();
   }
 
