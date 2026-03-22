@@ -278,6 +278,9 @@ RENAME COLUMN tenant_id TO contact_id;
 ALTER INDEX idx_calendar_feeds_tenant_id
 RENAME TO idx_calendar_feeds_contact_id;
 
+-- Migrate existing calendar feed type before re-creating CHECK
+UPDATE calendar_feeds SET feed_type = 'CONTACT_PAYMENTS' WHERE feed_type = 'TENANT_PAYMENTS';
+
 ALTER TABLE calendar_feeds
 DROP CONSTRAINT IF EXISTS chk_calendar_feeds_entity_required;
 
@@ -296,7 +299,7 @@ ADD CONSTRAINT chk_calendar_feeds_entity_required CHECK (
         AND contact_id IS NULL
     )
     OR (
-        feed_type = 'TENANT_PAYMENTS'
+        feed_type = 'CONTACT_PAYMENTS'
         AND contact_id IS NOT NULL
         AND contract_id IS NULL
         AND property_id IS NULL
@@ -316,7 +319,7 @@ CREATE TABLE contact_notes (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     identifier VARCHAR(29) NOT NULL,
     team_id UUID NOT NULL REFERENCES teams (id),
-    contact_id UUID NOT NULL REFERENCES contacts (id) ON DELETE CASCADE,
+    contact_id UUID NOT NULL REFERENCES contacts (id),
     interaction_type VARCHAR(30) NOT NULL,
     subject VARCHAR(500),
     body TEXT NOT NULL,
@@ -373,8 +376,8 @@ CREATE TABLE contact_relationships (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     identifier VARCHAR(29) NOT NULL,
     team_id UUID NOT NULL REFERENCES teams (id),
-    source_contact_id UUID NOT NULL REFERENCES contacts (id) ON DELETE CASCADE,
-    target_contact_id UUID NOT NULL REFERENCES contacts (id) ON DELETE CASCADE,
+    source_contact_id UUID NOT NULL REFERENCES contacts (id),
+    target_contact_id UUID NOT NULL REFERENCES contacts (id),
     relationship_type VARCHAR(40) NOT NULL,
     notes TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
@@ -393,14 +396,13 @@ CREATE TABLE contact_relationships (
             'PARTNER_OF',
             'OTHER'
         )
-    ),
-    CONSTRAINT uq_contact_relationships_pair UNIQUE (
-        team_id,
-        source_contact_id,
-        target_contact_id,
-        relationship_type
     )
 );
+
+-- Partial unique index: allows re-creation of soft-deleted relationships
+CREATE UNIQUE INDEX uq_contact_relationships_pair
+    ON contact_relationships (team_id, source_contact_id, target_contact_id, relationship_type)
+    WHERE deleted_at IS NULL;
 
 CREATE INDEX idx_contact_relationships_source ON contact_relationships (source_contact_id)
 WHERE
@@ -420,7 +422,7 @@ WHERE
 CREATE TABLE contact_tags (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     team_id UUID NOT NULL REFERENCES teams (id),
-    contact_id UUID NOT NULL REFERENCES contacts (id) ON DELETE CASCADE,
+    contact_id UUID NOT NULL REFERENCES contacts (id),
     tag VARCHAR(40) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     created_by UUID NOT NULL REFERENCES users (id),
