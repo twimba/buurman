@@ -332,6 +332,15 @@
     line-height: 1.7;
 }
 
+.section-heading--features {
+    font-size: clamp(2.25rem, 5.5vw, 3.75rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    max-width: 18ch;
+    margin-inline: auto;
+}
+
 /* ── Features Grid ───────────────────────────────── */
 .features-grid {
     display: grid;
@@ -586,7 +595,7 @@
 
 .pricing-note {
     margin-top: 3rem;
-    max-width: 680px;
+    max-width: 780px;
     margin-left: auto;
     margin-right: auto;
     background: var(--surface);
