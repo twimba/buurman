@@ -135,7 +135,7 @@ services:
       - buurman-network
 
   seaweedfs-init:
-    image: amazon/aws-cli:2.34.14
+    image: amazon/aws-cli:2.34.15
     depends_on:
       seaweedfs:
         condition: service_healthy
