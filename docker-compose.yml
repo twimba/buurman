@@ -150,7 +150,7 @@ services:
       - buurman-network
 
   flagsmith:
-    image: flagsmith/flagsmith:2.222.4
+    image: flagsmith/flagsmith:2.224.0
     env_file: .env
     environment:
       DATABASE_URL: postgresql://${DB_FLAGSMITH_USERNAME:-flagsmith}:${DB_FLAGSMITH_PASSWORD:-flagsmith}@postgres:5432/flagsmith
@@ -188,7 +188,7 @@ services:
       - buurman-network
 
   flagsmith-processor:
-    image: flagsmith/flagsmith:2.222.4
+    image: flagsmith/flagsmith:2.224.0
     command: run-task-processor
     env_file: .env
     environment:
