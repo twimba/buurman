@@ -1089,10 +1089,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@posthog/types@npm:1.363.1":
-  version: 1.363.1
-  resolution: "@posthog/types@npm:1.363.1"
-  checksum: 10c0/a69c22d24d566aff5afb5598617b436afa7cb244f4be0b1c2f322801b00d57d570238562d354cf97e66d41087f16ff1d2e75f4698e3763ab3c679a0055d8072c
+"@posthog/types@npm:1.363.4":
+  version: 1.363.4
+  resolution: "@posthog/types@npm:1.363.4"
+  checksum: 10c0/361d59c98d67341b928e7623fa4483ab54bc7cb27c5fa8c6064be10b37f4703478c2c73c8c31a624a1b9a68e44038f04baed7bb01dfa09c944610a66ade258ca
   languageName: node
   linkType: hard
 
@@ -3804,7 +3804,7 @@ __metadata:
     keycloak-js: "npm:26.2.3"
     libphonenumber-js: "npm:1.12.40"
     lucide-react: "npm:0.577.0"
-    posthog-js: "npm:^1.363.1"
+    posthog-js: "npm:^1.363.4"
     prettier: "npm:3.8.1"
     react: "npm:19.2.4"
     react-dom: "npm:19.2.4"
@@ -3851,7 +3851,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.0.1"
     keycloak-js: "npm:26.2.3"
     lucide-react: "npm:0.577.0"
-    posthog-js: "npm:^1.363.1"
+    posthog-js: "npm:^1.363.4"
     prettier: "npm:3.8.1"
     react: "npm:19.2.4"
     react-dom: "npm:19.2.4"
@@ -6946,9 +6946,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-js@npm:^1.363.1":
-  version: 1.363.1
-  resolution: "posthog-js@npm:1.363.1"
+"posthog-js@npm:^1.363.4":
+  version: 1.363.4
+  resolution: "posthog-js@npm:1.363.4"
   dependencies:
     "@opentelemetry/api": "npm:^1.9.0"
     "@opentelemetry/api-logs": "npm:^0.208.0"
@@ -6956,14 +6956,14 @@ __metadata:
     "@opentelemetry/resources": "npm:^2.2.0"
     "@opentelemetry/sdk-logs": "npm:^0.208.0"
     "@posthog/core": "npm:1.24.1"
-    "@posthog/types": "npm:1.363.1"
+    "@posthog/types": "npm:1.363.4"
     core-js: "npm:^3.38.1"
     dompurify: "npm:^3.3.2"
     fflate: "npm:^0.4.8"
     preact: "npm:^10.28.2"
     query-selector-shadow-dom: "npm:^1.0.1"
     web-vitals: "npm:^5.1.0"
-  checksum: 10c0/953a351958e9ff22c60a1195bff876a58729c823ac6663bd156c35913800ff301e61a3872c2720c8604c94264800583239c31a486e3b9837bf01aa6ff506e4ad
+  checksum: 10c0/6d0bffc1bf694676f46efeab4e02cf13ec432c077409debae018ac93a5612669784119ef012ff32a4181549a0ae850f5484cb023886767d9fd613d1ad02798e3
   languageName: node
   linkType: hard
 
