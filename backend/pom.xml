@@ -35,7 +35,7 @@
         <java.version>21</java.version>
         <mapstruct.version>1.7.0.Beta1</mapstruct.version>
         <jooq.version>3.21.1</jooq.version>
-        <flyway.version>12.1.1</flyway.version>
+        <flyway.version>12.2.0</flyway.version>
         <testcontainers.version>2.0.4</testcontainers.version>
         <testcontainers-jooq-codegen-maven-plugin.version>0.0.4</testcontainers-jooq-codegen-maven-plugin.version>
         <keycloak.version>26.0.8</keycloak.version>
