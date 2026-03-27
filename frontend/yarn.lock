@@ -3377,9 +3377,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vis.gl/react-google-maps@npm:1.8.0":
-  version: 1.8.0
-  resolution: "@vis.gl/react-google-maps@npm:1.8.0"
+"@vis.gl/react-google-maps@npm:1.8.1":
+  version: 1.8.1
+  resolution: "@vis.gl/react-google-maps@npm:1.8.1"
   dependencies:
     "@googlemaps/js-api-loader": "npm:^2.0.2"
     "@types/google.maps": "npm:^3.54.10"
@@ -3388,7 +3388,7 @@ __metadata:
   peerDependencies:
     react: ">=16.8.0 || ^19.0 || ^19.0.0-rc"
     react-dom: ">=16.8.0 || ^19.0 || ^19.0.0-rc"
-  checksum: 10c0/50953ed119833ea14733d96fd1f4be54a51cd95560abbcdfec33b5b5630a71a7557fd5c73371f5dc98a5fc4f273b9758a3f0036db665b174c50e8c759a5c8c55
+  checksum: 10c0/d5b1d80749fd580d09ab2bf2afb27c72a71b14224bfc263c05f519a9dd3031f4231433f6173fe5f619efc5de84894de9c21626482782f634112dd48460ca8333
   languageName: node
   linkType: hard
 
@@ -3804,7 +3804,7 @@ __metadata:
     "@types/react-dom": "npm:19.2.3"
     "@types/react-is": "npm:19.2.0"
     "@types/swagger-ui-react": "npm:^5"
-    "@vis.gl/react-google-maps": "npm:1.8.0"
+    "@vis.gl/react-google-maps": "npm:1.8.1"
     "@vitejs/plugin-react": "npm:6.0.1"
     axios: "npm:1.13.6"
     date-fns: "npm:4.1.0"
