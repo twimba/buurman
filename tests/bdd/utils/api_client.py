@@ -54,7 +54,7 @@ class BuurmanApiClient:
 
         Temporarily removes Content-Type header so requests sets the boundary.
         """
-        headers = {k: v for k, v in self.session.headers.items() if k != "Content-Type"}
+        headers = {"Content-Type": None}
         return self.session.post(
             f"{self.base_url}{path}",
             files=files,
