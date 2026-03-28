@@ -196,6 +196,10 @@ printf "  ${DIM}│${RESET} ${GREEN}%-${QLT}s${RESET} ${DIM}│${RESET} %-${QRT}
 printf "  ${DIM}│${RESET} ${GREEN}%-${QLT}s${RESET} ${DIM}│${RESET} %-${QRT}s ${DIM}│${RESET}\n" "make frontend-app"         "Start Vite app (port ${LOCAL_APP_PORT})"
 printf "  ${DIM}│${RESET} ${GREEN}%-${QLT}s${RESET} ${DIM}│${RESET} %-${QRT}s ${DIM}│${RESET}\n" "make frontend-backoffice"  "Start Vite backoffice (port ${LOCAL_BACKOFFICE_PORT})"
 printf "  ${DIM}│${RESET} ${GREEN}%-${QLT}s${RESET} ${DIM}│${RESET} %-${QRT}s ${DIM}│${RESET}\n" "make hub"                  "Workspace dashboard (http://localhost:3333)"
+printf "  ${DIM}├%s┼%s┤${RESET}\n" "$QL_D" "$QR_D"
+printf "  ${DIM}│${RESET} ${GREEN}%-${QLT}s${RESET} ${DIM}│${RESET} %-${QRT}s ${DIM}│${RESET}\n" "make test-bdd-run"         "Start system + run BDD tests (one command)"
+printf "  ${DIM}│${RESET} ${GREEN}%-${QLT}s${RESET} ${DIM}│${RESET} %-${QRT}s ${DIM}│${RESET}\n" "make test-bdd"             "Run BDD tests (system must be running)"
+printf "  ${DIM}│${RESET} ${GREEN}%-${QLT}s${RESET} ${DIM}│${RESET} %-${QRT}s ${DIM}│${RESET}\n" "make test-bdd-smoke"       "Run BDD smoke tests only (fast)"
 printf "  ${DIM}└%s┴%s┘${RESET}\n" "$QL_D" "$QR_D"
 echo ""
 
