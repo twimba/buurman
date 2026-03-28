@@ -41,3 +41,14 @@ docker/traefik/certs/
 # Generated API clients (regenerated at build time)
 frontend/app/src/generated/
 frontend/backoffice/src/generated/
+
+# Python (BDD tests)
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.venv/
+venv/
+tests/bdd/.env.bdd
+htmlcov/
+.coverage
