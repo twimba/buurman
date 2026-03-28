@@ -7,9 +7,9 @@ import java.util.Optional;
 import com.buurman.domain.MaxIncreaseType;
 import com.buurman.domain.RentFrequency;
 import com.buurman.domain.Sid;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record RentRegulationRuleResponse(
     Sid identifier,
     int year,

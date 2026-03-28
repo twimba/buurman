@@ -7,9 +7,9 @@ import java.util.Optional;
 
 import com.buurman.domain.PropertyValuation;
 import com.buurman.domain.Sid;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record PropertyValuationResponse(
     Sid identifier,
     PropertyValuation.ValuationType valuationType,

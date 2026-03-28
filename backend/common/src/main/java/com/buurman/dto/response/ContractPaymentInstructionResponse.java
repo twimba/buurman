@@ -5,9 +5,9 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.Sid;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record ContractPaymentInstructionResponse(
     Sid identifier,
     Optional<Sid> paymentInstructionIdentifier,

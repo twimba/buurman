@@ -5,12 +5,12 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.PropertyOccupancyPeriod.OccupancyType;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 
-@Generated
+@SkipTestCoverage
 public record UpdateOccupancyPeriodRequest(
     Optional<LocalDate> startDate,
     Optional<OccupancyType> type,

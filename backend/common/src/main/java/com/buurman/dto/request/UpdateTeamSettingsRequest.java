@@ -2,7 +2,7 @@ package com.buurman.dto.request;
 
 import java.util.Optional;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -10,7 +10,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-@Generated
+@SkipTestCoverage
 public record UpdateTeamSettingsRequest(
     @Valid Optional<PaymentSettings> payments, @Valid Optional<RegionalSettings> regional) {
 

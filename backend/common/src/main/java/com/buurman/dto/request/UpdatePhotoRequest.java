@@ -2,7 +2,7 @@ package com.buurman.dto.request;
 
 import java.util.Optional;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record UpdatePhotoRequest(Optional<String> title, Optional<String> notes) {}

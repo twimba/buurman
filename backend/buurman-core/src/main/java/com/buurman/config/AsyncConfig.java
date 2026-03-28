@@ -3,9 +3,9 @@ package com.buurman.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 @Configuration
 @EnableAsync
-@Generated
+@SkipTestCoverage
 public class AsyncConfig {}

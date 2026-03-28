@@ -5,9 +5,9 @@ import java.util.Optional;
 
 import com.buurman.domain.CalendarFeed;
 import com.buurman.domain.Sid;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record CalendarFeedResponse(
     Sid identifier,
     CalendarFeed.FeedType feedType,

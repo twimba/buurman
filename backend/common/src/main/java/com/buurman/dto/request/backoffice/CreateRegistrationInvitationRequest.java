@@ -3,9 +3,9 @@ package com.buurman.dto.request.backoffice;
 import java.time.Instant;
 import java.util.Optional;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record CreateRegistrationInvitationRequest(
     Optional<String> code,
     Optional<Integer> maxUsages,

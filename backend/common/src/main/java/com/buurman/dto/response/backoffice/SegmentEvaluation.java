@@ -4,9 +4,9 @@ import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record SegmentEvaluation(
     long segmentId,
     @Nullable String segmentName,

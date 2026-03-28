@@ -3,9 +3,9 @@ package com.buurman.dto.response;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record WwsPreFillResponse(
     Optional<BigDecimal> surfaceAreaSqm,
     Optional<Integer> numberOfRooms,

@@ -2,8 +2,8 @@ package com.buurman.dto.response;
 
 import java.math.BigDecimal;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record WwsCategoryBreakdown(
     String key, String name, String nameNl, BigDecimal points, String explanation) {}

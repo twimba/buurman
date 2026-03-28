@@ -2,11 +2,11 @@ package com.buurman.dto.request;
 
 import java.util.List;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 
-@Generated
+@SkipTestCoverage
 public record BulkCreateRentRegulationRulesRequest(
     @NotEmpty @Valid List<CreateRentRegulationRuleRequest> rules) {}

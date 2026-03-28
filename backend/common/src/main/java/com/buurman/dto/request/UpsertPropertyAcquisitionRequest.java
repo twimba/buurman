@@ -5,13 +5,13 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.PropertyAcquisition;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
-@Generated
+@SkipTestCoverage
 public record UpsertPropertyAcquisitionRequest(
     @NotNull(message = "Acquisition type is required") PropertyAcquisition.AcquisitionType acquisitionType,
     Optional<LocalDate> acquisitionDate,

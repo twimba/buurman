@@ -4,10 +4,10 @@ import java.util.Optional;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 @ConfigurationProperties(prefix = "flagsmith")
-@Generated
+@SkipTestCoverage
 public record FlagsmithProperties(
     String apiUrl,
     boolean enableAnalytics,

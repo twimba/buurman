@@ -5,12 +5,12 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.InteractionType;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-@Generated
+@SkipTestCoverage
 public record CreateContactNoteRequest(
     @NotNull(message = "Interaction type is required") InteractionType interactionType,
     Optional<String> subject,

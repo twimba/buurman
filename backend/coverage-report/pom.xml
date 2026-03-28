@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.buurman</groupId>
         <artifactId>buurman-backend</artifactId>
-        <version>0.56.0</version>
+        <version>0.59.0</version>
     </parent>
 
     <artifactId>buurman-coverage-report</artifactId>
@@ -50,6 +50,37 @@
                         </goals>
                         <configuration>
                             <outputDirectory>${project.reporting.outputDirectory}/jacoco-aggregate</outputDirectory>
+                            <excludes>
+                                <!-- OpenAPI-generated code -->
+                                <exclude>com/buurman/generated/**</exclude>
+
+                                <!-- Trivial DTOs (all request + response records) -->
+                                <exclude>com/buurman/dto/**</exclude>
+
+                                <!-- Typed identifiers (all extend Sid, no logic) -->
+                                <exclude>com/buurman/domain/identifier/**</exclude>
+
+                                <!-- Exception classes (constructor-only) -->
+                                <exclude>com/buurman/exception/**</exclude>
+
+                                <!-- @ConfigurationProperties records (pure data containers) -->
+                                <exclude>com/buurman/config/models/**</exclude>
+
+                                <!-- Trivial config wiring classes -->
+                                <exclude>com/buurman/config/AsyncConfig*</exclude>
+                                <exclude>com/buurman/config/JacksonConfig*</exclude>
+                                <exclude>com/buurman/config/JooqConfig*</exclude>
+                                <exclude>com/buurman/config/KeycloakConfig*</exclude>
+                                <exclude>com/buurman/config/QuartzJobsConfig*</exclude>
+                                <exclude>com/buurman/config/S3Config*</exclude>
+                                <exclude>com/buurman/config/NotificationQuartzConfig*</exclude>
+                                <exclude>com/buurman/config/SendGridConfig*</exclude>
+                                <exclude>com/buurman/config/DemoQuartzConfig*</exclude>
+                                <exclude>com/buurman/config/TakeoutQuartzConfig*</exclude>
+
+                                <!-- Main application class -->
+                                <exclude>com/buurman/BuurmanApplication*</exclude>
+                            </excludes>
                         </configuration>
                     </execution>
                     <!-- Full report: everything included, for browsing -->

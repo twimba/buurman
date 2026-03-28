@@ -5,13 +5,13 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 
-@Generated
+@SkipTestCoverage
 public record CreateRentPeriodRequest(
     @NotNull @DecimalMin(value = "0.01") BigDecimal rentAmount,
     @NotNull LocalDate effectiveFrom,

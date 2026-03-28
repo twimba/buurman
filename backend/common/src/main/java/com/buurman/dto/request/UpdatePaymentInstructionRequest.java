@@ -3,11 +3,11 @@ package com.buurman.dto.request;
 import java.util.Optional;
 
 import com.buurman.domain.PaymentInstruction.PaymentMethod;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.Size;
 
-@Generated
+@SkipTestCoverage
 public record UpdatePaymentInstructionRequest(
     Optional<String> name,
     Optional<String> description,

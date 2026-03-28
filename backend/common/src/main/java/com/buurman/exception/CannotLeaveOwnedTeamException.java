@@ -1,8 +1,8 @@
 package com.buurman.exception;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public class CannotLeaveOwnedTeamException extends BusinessRuleException {
   public CannotLeaveOwnedTeamException(String message) {
     super(message);

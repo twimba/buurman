@@ -3,9 +3,9 @@ package com.buurman.dto.response.backoffice;
 import java.time.Instant;
 
 import com.buurman.domain.Sid;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record UserTeamMembership(
     Sid teamIdentifier,
     String teamName,

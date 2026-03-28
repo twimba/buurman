@@ -1,9 +1,9 @@
 package com.buurman.dto.response;
 
 import com.buurman.domain.Sid;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record ImpersonationSessionInfo(
     Sid sessionIdentifier,
     String adminEmail,

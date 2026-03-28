@@ -14,10 +14,10 @@ import com.buurman.job.ContractExpiryCheckJob;
 import com.buurman.job.NotificationOutboxJob;
 import com.buurman.job.PaymentReminderCheckJob;
 import com.buurman.job.RenewalReminderJob;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 @Configuration
-@Generated
+@SkipTestCoverage
 public class NotificationQuartzConfig {
 
   // ── Notification Outbox ──────────────────────────────────────────────────

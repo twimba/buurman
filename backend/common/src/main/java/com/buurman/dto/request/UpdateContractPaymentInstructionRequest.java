@@ -4,12 +4,12 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-@Generated
+@SkipTestCoverage
 public record UpdateContractPaymentInstructionRequest(
     Optional<String> paymentInstructionIdentifier,
     Optional<Boolean> isCustom,

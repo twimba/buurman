@@ -1,8 +1,8 @@
 package com.buurman.exception;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public class ImpersonationRestrictionException extends BuurmanException {
   public ImpersonationRestrictionException(String message) {
     super(message);

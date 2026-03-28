@@ -4,9 +4,9 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record PropertyFinancialSummaryResponse(
     Optional<PropertyAcquisitionResponse> acquisition,
     Optional<PropertyValuationResponse> latestValuation,

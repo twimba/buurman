@@ -5,14 +5,14 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.PropertyFinancing;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
-@Generated
+@SkipTestCoverage
 public record CreatePropertyFinancingRequest(
     @NotNull(message = "Financing type is required") PropertyFinancing.FinancingType financingType,
     @NotNull(message = "Rate type is required") PropertyFinancing.RateType rateType,

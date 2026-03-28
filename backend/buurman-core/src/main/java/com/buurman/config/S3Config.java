@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.buurman.config.models.AwsS3Properties;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -19,7 +19,7 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 @Configuration
 @RequiredArgsConstructor
-@Generated
+@SkipTestCoverage
 public class S3Config {
 
   private final AwsS3Properties awsS3Properties;

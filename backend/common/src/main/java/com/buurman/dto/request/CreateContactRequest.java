@@ -6,14 +6,14 @@ import java.util.Optional;
 
 import com.buurman.domain.ContactTag;
 import com.buurman.domain.ContactType;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-@Generated
+@SkipTestCoverage
 public record CreateContactRequest(
     @NotNull(message = "Contact type is required") ContactType contactType,
     Optional<@Size(max = 255) String> firstName,

@@ -4,9 +4,9 @@ import java.time.Instant;
 import java.util.Optional;
 
 import com.buurman.domain.PropertyContactHistory;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record PropertyContactHistoryResponse(
     PropertySummary property,
     Optional<Instant> movedInAt,

@@ -5,11 +5,11 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.PropertyInsurance;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.Positive;
 
-@Generated
+@SkipTestCoverage
 public record UpdatePropertyInsuranceRequest(
     Optional<PropertyInsurance.InsuranceType> insuranceType,
     Optional<String> provider,

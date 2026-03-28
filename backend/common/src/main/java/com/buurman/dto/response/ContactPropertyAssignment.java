@@ -2,7 +2,7 @@ package com.buurman.dto.response;
 
 import java.util.Optional;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record ContactPropertyAssignment(PropertySummary property, Optional<String> role) {}

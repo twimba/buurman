@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.PropertyTax;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -13,7 +13,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-@Generated
+@SkipTestCoverage
 public record CreatePropertyTaxRequest(
     @NotNull(message = "Tax type is required") PropertyTax.TaxType taxType,
     Optional<String> authority,

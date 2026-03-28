@@ -6,13 +6,13 @@ import java.util.Optional;
 
 import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-@Generated
+@SkipTestCoverage
 public record CreatePaymentRequest(
     @NotNull(message = "Contract identifier is required") ContractIdentifier contractIdentifier,
     @NotNull(message = "Amount is required") @Positive(message = "Amount must be positive") BigDecimal amount,

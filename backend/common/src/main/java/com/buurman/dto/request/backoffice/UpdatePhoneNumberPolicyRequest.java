@@ -3,13 +3,13 @@ package com.buurman.dto.request.backoffice;
 import java.util.List;
 import java.util.Map;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
-@Generated
+@SkipTestCoverage
 public record UpdatePhoneNumberPolicyRequest(
     @NotNull(message = "Policy matrix is required") Map<String, List<String>> policyMatrix,
     @Min(value = 1, message = "Max codes per hour must be at least 1") @Max(value = 20, message = "Max codes per hour must be at most 20") int maxCodesPerHour,

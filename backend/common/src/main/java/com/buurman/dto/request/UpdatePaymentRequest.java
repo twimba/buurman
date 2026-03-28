@@ -6,11 +6,11 @@ import java.util.Optional;
 
 import com.buurman.domain.Payment.PaymentStatus;
 import com.buurman.domain.identifier.ContactIdentifier;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.Positive;
 
-@Generated
+@SkipTestCoverage
 public record UpdatePaymentRequest(
     Optional<@Positive(message = "Amount must be positive") BigDecimal> amount,
     Optional<String> currency,

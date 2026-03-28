@@ -2,11 +2,11 @@ package com.buurman.dto.request;
 
 import java.util.Optional;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.Pattern;
 
-@Generated
+@SkipTestCoverage
 public record UpdateUserPreferencesRequest(
     Optional<@Pattern(regexp = "light|dark|system") String> theme,
     Optional<@Pattern(regexp = "[a-z]{2}") String> language,

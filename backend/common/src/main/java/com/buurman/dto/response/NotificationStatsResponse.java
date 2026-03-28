@@ -2,9 +2,9 @@ package com.buurman.dto.response;
 
 import java.util.Map;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record NotificationStatsResponse(
     long totalCount,
     long pendingCount,
