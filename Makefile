@@ -90,11 +90,11 @@ hub:
 
 ## Run BDD behavior tests against the live system (requires `make up` first)
 test-bdd:
-	cd tests/bdd && python -m pytest
+	cd tests/bdd && python3 -m pytest
 
 ## Run BDD smoke tests only (fast subset for local development)
 test-bdd-smoke:
-	cd tests/bdd && python -m pytest -m smoke
+	cd tests/bdd && python3 -m pytest -m smoke
 
 ## Start the system, wait for readiness, run BDD tests, then stop everything
 test-bdd-run:
@@ -113,7 +113,7 @@ test-bdd-run:
 		sleep 3; \
 	done
 	@echo "\nSystem ready. Running BDD tests..."
-	cd tests/bdd && python -m pytest -v; rc=$$?; \
+	cd tests/bdd && python3 -m pytest -v; rc=$$?; \
 	echo ""; \
 	if [ $$rc -eq 0 ]; then echo "All tests passed."; else echo "Some tests failed (exit code $$rc)."; fi; \
 	exit $$rc
