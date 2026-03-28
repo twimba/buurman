@@ -36,6 +36,7 @@ export interface SegmentFlagOverride {
 
 export interface SegmentEvaluation {
   segmentId: number;
+  segmentKey: string;
   segmentName: string;
   description?: string;
   overrides: Record<string, SegmentFlagOverride>;

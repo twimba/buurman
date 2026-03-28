@@ -6893,6 +6893,8 @@ components:
         segmentId:
           type: integer
           format: int64
+        segmentKey:
+          type: string
         segmentName:
           type: string
         description:

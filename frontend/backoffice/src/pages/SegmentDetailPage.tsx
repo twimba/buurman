@@ -19,6 +19,7 @@ import {
   useSegmentMatchingTeams,
   useSegmentMatchingUsers,
 } from "../hooks/useSegments";
+import { SegmentDetailFeatureFlags } from "../components/UserFeatureFlags";
 import type { SegmentCondition } from "../api/segments";
 
 const ATTRIBUTES = [
@@ -659,6 +660,9 @@ export const SegmentDetailPage = () => {
           </div>
         )}
       </section>
+
+      {/* Feature Flag Overrides */}
+      {key && <SegmentDetailFeatureFlags segmentKey={key} />}
     </div>
   );
 };

@@ -212,7 +212,7 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
                   });
 
               long segmentId = segmentKeyToId.getOrDefault(segKey, 0L);
-              return new SegmentEvaluation(segmentId, segName, desc, overrides);
+              return new SegmentEvaluation(segmentId, segKey, segName, desc, overrides);
             })
         .toList();
   }

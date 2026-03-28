@@ -1583,6 +1583,359 @@ export const SegmentFeatureFlags = () => {
   );
 };
 
+// --- Main export: SegmentDetailFeatureFlags ---
+
+const SegmentDetailRow = ({
+  name,
+  flag,
+  globalFlag,
+  showOverrideOnly,
+  segmentId,
+  onUpsertOverride,
+  onDeleteOverride,
+  mutating,
+}: {
+  name: string;
+  flag: { enabled: boolean; value: unknown };
+  globalFlag?: { enabled: boolean; value: unknown };
+  showOverrideOnly: boolean;
+  segmentId: number;
+  onUpsertOverride: (
+    flagName: string,
+    segmentId: number,
+    enabled: boolean,
+    value: string | null,
+  ) => void;
+  onDeleteOverride: (flagName: string, segmentId: number) => void;
+  mutating?: boolean;
+}) => {
+  const override = isOverridden(flag, globalFlag);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  if (showOverrideOnly && !override) {
+    return null;
+  }
+
+  return (
+    <>
+      <tr className="border-b border-border-default last:border-b-0 hover:bg-surface-inset/50 transition-colors">
+        <td className="px-5 py-3.5">
+          <div className="flex items-center gap-2.5">
+            <code className="text-sm font-mono font-medium text-text-primary">
+              {name}
+            </code>
+            {override && <OverrideBadge />}
+          </div>
+        </td>
+        <td className="px-5 py-3.5">
+          <ToggleSwitch
+            enabled={flag.enabled}
+            loading={mutating}
+            onChange={(enabled) =>
+              onUpsertOverride(
+                name,
+                segmentId,
+                enabled,
+                flag.value != null ? String(flag.value) : null,
+              )
+            }
+          />
+        </td>
+        {globalFlag !== undefined && (
+          <td className="px-5 py-3.5">
+            <FlagBadge enabled={globalFlag.enabled} />
+          </td>
+        )}
+        <td className="px-5 py-3.5">
+          <InlineValueEditor
+            value={flag.value}
+            loading={mutating}
+            onSave={(value) =>
+              onUpsertOverride(name, segmentId, flag.enabled, value)
+            }
+          />
+        </td>
+        {globalFlag !== undefined && <ValueCell value={globalFlag.value} />}
+        <td className="px-5 py-3.5">
+          {override ? (
+            <button
+              onClick={() => setConfirmDelete(true)}
+              disabled={mutating}
+              className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium text-error-text hover:bg-error-bg transition-colors disabled:opacity-50"
+              title="Remove override"
+            >
+              <Trash2 className="h-3 w-3" />
+              Remove
+            </button>
+          ) : (
+            <button
+              onClick={() =>
+                onUpsertOverride(
+                  name,
+                  segmentId,
+                  !flag.enabled,
+                  flag.value != null ? String(flag.value) : null,
+                )
+              }
+              disabled={mutating}
+              className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium text-primary-500 hover:bg-primary-500/10 transition-colors disabled:opacity-50"
+              title="Create override"
+            >
+              <Plus className="h-3 w-3" />
+              Override
+            </button>
+          )}
+        </td>
+      </tr>
+      {confirmDelete && (
+        <tr>
+          <td colSpan={6} className="p-0">
+            <ConfirmDialog
+              title="Remove Segment Override"
+              message={`Remove the override for "${name}"? The flag will fall back to the global default for this segment.`}
+              confirmLabel="Remove"
+              variant="danger"
+              isLoading={mutating}
+              onConfirm={() => {
+                onDeleteOverride(name, segmentId);
+                setConfirmDelete(false);
+              }}
+              onCancel={() => setConfirmDelete(false)}
+            />
+          </td>
+        </tr>
+      )}
+    </>
+  );
+};
+
+const SegmentDetailTable = ({
+  flags,
+  globalFlags,
+  showOverrideOnly,
+  segmentId,
+  onUpsertOverride,
+  onDeleteOverride,
+  mutatingFlag,
+}: {
+  flags: Record<string, { enabled: boolean; value: unknown }>;
+  globalFlags?: FlagMap;
+  showOverrideOnly: boolean;
+  segmentId: number;
+  onUpsertOverride: (
+    flagName: string,
+    segmentId: number,
+    enabled: boolean,
+    value: string | null,
+  ) => void;
+  onDeleteOverride: (flagName: string, segmentId: number) => void;
+  mutatingFlag?: string | null;
+}) => {
+  const sortedNames = useMemo(() => Object.keys(flags).sort(), [flags]);
+
+  const visibleCount = showOverrideOnly
+    ? sortedNames.filter((name) =>
+        isOverridden(flags[name], globalFlags?.[name]),
+      ).length
+    : sortedNames.length;
+
+  if (sortedNames.length === 0) {
+    return (
+      <div className="text-center py-12 text-text-muted">
+        <Flag className="h-10 w-10 mx-auto mb-3 opacity-40" />
+        <p className="text-sm">No feature flags configured</p>
+      </div>
+    );
+  }
+
+  if (showOverrideOnly && visibleCount === 0) {
+    return (
+      <div className="text-center py-12 text-text-muted">
+        <CheckCircle2 className="h-10 w-10 mx-auto mb-3 opacity-40" />
+        <p className="text-sm">All flags match the global defaults</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full">
+        <thead>
+          <tr className="border-b border-border-default">
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
+              Flag
+            </th>
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
+              Segment Status
+            </th>
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
+              Global Status
+            </th>
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
+              Segment Value
+            </th>
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
+              Global Value
+            </th>
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {sortedNames.map((name) => (
+            <SegmentDetailRow
+              key={name}
+              name={name}
+              flag={flags[name]}
+              globalFlag={globalFlags?.[name]}
+              showOverrideOnly={showOverrideOnly}
+              segmentId={segmentId}
+              onUpsertOverride={onUpsertOverride}
+              onDeleteOverride={onDeleteOverride}
+              mutating={mutatingFlag === name}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export const SegmentDetailFeatureFlags = ({
+  segmentKey,
+}: {
+  segmentKey: string;
+}) => {
+  const [showOverrideOnly, setShowOverrideOnly] = useState(false);
+  const [showBanner, setShowBanner] = useState(false);
+  const [mutatingFlag, setMutatingFlag] = useState<string | null>(null);
+
+  const {
+    data: globalFlags,
+    isFetching: globalFetching,
+    refetch: refetchGlobal,
+  } = useGlobalFeatureFlags();
+
+  const {
+    data: segments,
+    isLoading: segmentsLoading,
+    isFetching: segmentsFetching,
+    refetch: refetchSegments,
+  } = useSegmentFeatureFlags();
+
+  const upsertOverride = useUpsertSegmentOverride();
+  const deleteOverride = useDeleteSegmentOverride();
+
+  const segment = segments?.find((s) => s.segmentKey === segmentKey);
+
+  const handleUpsertOverride = useCallback(
+    (
+      flagName: string,
+      segmentId: number,
+      enabled: boolean,
+      value: string | null,
+    ) => {
+      setMutatingFlag(flagName);
+      upsertOverride.mutate(
+        { segmentId, flagName, data: { enabled, value: value ?? undefined } },
+        {
+          onSettled: () => setMutatingFlag(null),
+          onSuccess: () => setShowBanner(true),
+        },
+      );
+    },
+    [upsertOverride],
+  );
+
+  const handleDeleteOverride = useCallback(
+    (flagName: string, segmentId: number) => {
+      setMutatingFlag(flagName);
+      deleteOverride.mutate(
+        { segmentId, flagName },
+        {
+          onSettled: () => setMutatingFlag(null),
+          onSuccess: () => setShowBanner(true),
+        },
+      );
+    },
+    [deleteOverride],
+  );
+
+  const overrideCount =
+    segment && globalFlags
+      ? Object.keys(segment.overrides).filter((k) =>
+          isOverridden(segment.overrides[k], globalFlags[k]),
+        ).length
+      : 0;
+
+  return (
+    <div className="space-y-4">
+      <PropagationBanner
+        visible={showBanner}
+        onDismiss={() => setShowBanner(false)}
+      />
+
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <Flag className="h-4 w-4 text-primary-500" />
+          <h2 className="text-sm font-semibold text-text-primary">
+            Feature Flag Overrides
+          </h2>
+          {overrideCount > 0 && (
+            <span className="text-xs font-medium text-amber-600">
+              {overrideCount} override{overrideCount !== 1 ? "s" : ""}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowOverrideOnly(!showOverrideOnly)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              showOverrideOnly
+                ? "bg-amber-50 text-amber-700 border border-amber-200"
+                : "text-text-secondary hover:bg-surface-inset border border-border-default"
+            }`}
+          >
+            <Filter className="h-3 w-3" />
+            Overrides only
+          </button>
+          <RefreshButton
+            onClick={() => {
+              refetchGlobal();
+              refetchSegments();
+            }}
+            isRefreshing={globalFetching || segmentsFetching}
+          />
+        </div>
+      </div>
+
+      <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
+        {segmentsLoading ? (
+          <div className="text-center py-12 text-text-muted text-sm">
+            Loading flags...
+          </div>
+        ) : segment ? (
+          <SegmentDetailTable
+            flags={segment.overrides}
+            globalFlags={globalFlags}
+            showOverrideOnly={showOverrideOnly}
+            segmentId={segment.segmentId}
+            onUpsertOverride={handleUpsertOverride}
+            onDeleteOverride={handleDeleteOverride}
+            mutatingFlag={mutatingFlag}
+          />
+        ) : (
+          <div className="text-center py-12 text-text-muted">
+            <Flag className="h-10 w-10 mx-auto mb-3 opacity-40" />
+            <p className="text-sm">No flag data available for this segment</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 /** Exported for use by FeatureFlagsPage global section */
 export { GlobalFlagTable, PropagationBanner };
 export type { FlagMap };
