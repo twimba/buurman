@@ -165,7 +165,6 @@ printf "  ${DIM}│${RESET} ${BOLD}%-${C1T}s${RESET} ${DIM}│${RESET} ${BOLD}%-
 printf "  ${DIM}├%s┼%s┼%s┤${RESET}\n" "$C1_D" "$C2_D" "$C3_D"
 printf "  ${DIM}│${RESET} %-${C1T}s ${DIM}│${RESET} %-${C2T}s ${DIM}│${RESET} %-${C3T}s ${DIM}│${RESET}\n" "Keycloak Admin" "admin" "admin"
 printf "  ${DIM}│${RESET} %-${C1T}s ${DIM}│${RESET} %-${C2T}s ${DIM}│${RESET} %-${C3T}s ${DIM}│${RESET}\n" "PostgreSQL" "admin" "admin"
-printf "  ${DIM}│${RESET} %-${C1T}s ${DIM}│${RESET} %-${C2T}s ${DIM}│${RESET} %-${C3T}s ${DIM}│${RESET}\n" "Flagsmith" "buurmy@buurman.io" "buurmy"
 printf "  ${DIM}└%s┴%s┴%s┘${RESET}\n" "$C1_D" "$C2_D" "$C3_D"
 echo ""
 

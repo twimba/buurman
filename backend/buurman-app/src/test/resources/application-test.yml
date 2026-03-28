@@ -86,17 +86,6 @@ scheduling:
   thumbnail-backfill:
     cron: "0 */5 * * * ?"
 
-flagsmith:
-  api-url: http://flagsmith.test.invalid/api/v1/
-  server-side-key: ""
-  admin-email: ""
-  admin-password: ""
-  api-token: ""
-  enable-analytics: false
-  environment-refresh-interval-seconds: 60
-  project-name: buurman
-  environment-name: test
-
 buurman:
   demo:
     enabled: false

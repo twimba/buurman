@@ -36,9 +36,6 @@ buurman:
   demo:
     cron: "23 */2 */12 * * ?"
 
-flagsmith:
-  environment-name: Production
-
 app:
   public-url: https://app.buurman.io
   api:

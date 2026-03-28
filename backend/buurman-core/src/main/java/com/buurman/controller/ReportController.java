@@ -10,12 +10,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.buurman.domain.Property;
-import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.response.DataDateRangeResponse;
 import com.buurman.dto.response.ExpenseBreakdownResponse;
 import com.buurman.dto.response.FinancialOverviewResponse;
@@ -25,7 +22,6 @@ import com.buurman.dto.response.PropertyComparisonResponse;
 import com.buurman.dto.response.TaxSummaryResponse;
 import com.buurman.exception.ForbiddenException;
 import com.buurman.generated.api.ReportsApi;
-import com.buurman.repository.PropertyRepository;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.ExportService;
@@ -42,7 +38,6 @@ public class ReportController implements ReportsApi {
   private final ReportService reportService;
   private final ExportService exportService;
   private final FeatureFlagService featureFlagService;
-  private final PropertyRepository propertyRepository;
   private final HttpServletResponse httpServletResponse;
 
   @ModelAttribute
@@ -66,7 +61,8 @@ public class ReportController implements ReportsApi {
       Optional<String> currency) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     List<UUID> propertyIds =
-        resolvePropertyIdentifiers(propertyIdentifiers.orElse(null), principal.requireTeamId());
+        reportService.resolvePropertyIdentifiers(
+            propertyIdentifiers.orElse(null), principal.requireTeamId());
     return reportService.getFinancialOverview(
         startDate, endDate, propertyIds, currency.orElse(null), principal);
   }
@@ -79,7 +75,8 @@ public class ReportController implements ReportsApi {
       Optional<List<String>> propertyIdentifiers) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     List<UUID> propertyIds =
-        resolvePropertyIdentifiers(propertyIdentifiers.orElse(null), principal.requireTeamId());
+        reportService.resolvePropertyIdentifiers(
+            propertyIdentifiers.orElse(null), principal.requireTeamId());
     if (startDate.isPresent() && endDate.isPresent()) {
       return reportService.getIncomeTrendByDateRange(
           startDate.get(), endDate.get(), propertyIds, principal);
@@ -92,7 +89,8 @@ public class ReportController implements ReportsApi {
       LocalDate startDate, LocalDate endDate, Optional<List<String>> propertyIdentifiers) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     List<UUID> propertyIds =
-        resolvePropertyIdentifiers(propertyIdentifiers.orElse(null), principal.requireTeamId());
+        reportService.resolvePropertyIdentifiers(
+            propertyIdentifiers.orElse(null), principal.requireTeamId());
     return reportService.getExpenseBreakdown(startDate, endDate, propertyIds, principal);
   }
 
@@ -101,7 +99,8 @@ public class ReportController implements ReportsApi {
       LocalDate startDate, LocalDate endDate, Optional<List<String>> propertyIdentifiers) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     List<UUID> propertyIds =
-        resolvePropertyIdentifiers(propertyIdentifiers.orElse(null), principal.requireTeamId());
+        reportService.resolvePropertyIdentifiers(
+            propertyIdentifiers.orElse(null), principal.requireTeamId());
     return reportService.getPropertyComparison(startDate, endDate, propertyIds, principal);
   }
 
@@ -156,14 +155,4 @@ public class ReportController implements ReportsApi {
         startDate, endDate, principal.requireTeamId());
   }
 
-  private @Nullable List<UUID> resolvePropertyIdentifiers(
-      @Nullable List<String> identifiers, UUID teamId) {
-    if (identifiers == null || identifiers.isEmpty()) {
-      return null;
-    }
-    return identifiers.stream()
-        .map(id -> propertyRepository.getByIdentifierAndTeamId(PropertyIdentifier.of(id), teamId))
-        .map(Property::getId)
-        .toList();
-  }
 }

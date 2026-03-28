@@ -15,9 +15,11 @@ import {
   MessageSquare,
   Radio,
   Flag,
+  Layers,
   BookOpen,
   Ticket,
   Timer,
+  Database,
   ScrollText,
   Monitor,
   LogOut,
@@ -26,6 +28,7 @@ import {
   ChevronDown,
   Loader2,
   ExternalLink,
+  Shield,
 } from "lucide-react";
 import { SidebarTooltip } from "@buurman/ui";
 import { useAuth } from "../contexts/AuthContext";
@@ -39,14 +42,20 @@ import {
   TwilioIcon,
   SendGridIcon,
   AwsIcon,
-  FlagsmithIcon,
   HetznerIcon,
 } from "./ToolIcons";
 import { useGrafanaDashboards } from "../hooks/useGrafanaDashboards";
 
 const STORAGE_KEY = "buurman-backoffice-sidebar-collapsed";
 
-const navigation = [
+type NavItem = {
+  name: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  indent?: boolean;
+};
+
+const navigation: NavItem[] = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Teams", href: "/teams", icon: Users },
   { name: "Users", href: "/users", icon: UserCog },
@@ -56,12 +65,15 @@ const navigation = [
   { name: "Invitations", href: "/registration-invitations", icon: Ticket },
   { name: "Rent Regulations", href: "/rent-regulations", icon: BookOpen },
   { name: "Feature Flags", href: "/feature-flags", icon: Flag },
+  { name: "Segments", href: "/segments", icon: Layers, indent: true },
   { name: "Impersonation", href: "/impersonation", icon: UserCheck },
 ];
 
 const adminNavigation = [
   { name: "Buurmies", href: "/buurmies", icon: Smile },
   { name: "Scheduler", href: "/scheduler", icon: Timer },
+  { name: "Caches", href: "/caches", icon: Database },
+  { name: "Rate Limits", href: "/rate-limits", icon: Shield },
   { name: "Loggers", href: "/loggers", icon: ScrollText },
   {
     name: "System",
@@ -83,14 +95,6 @@ type ToolItem = {
 const getTools = (): ToolItem[] => {
   const local = isLocalEnv();
   return [
-    local
-      ? { name: "Flagsmith", href: "/tools/flagsmith", icon: FlagsmithIcon }
-      : {
-          name: "Flagsmith",
-          href: "https://app.flagsmith.com/project/34353/environment/QjT99rGBHX7Q8FP8538yZb/features",
-          icon: FlagsmithIcon,
-          external: true,
-        },
     { name: "Keycloak", href: "/tools/keycloak", icon: KeycloakIcon },
     { name: "Prometheus", href: "/tools/prometheus", icon: PrometheusIcon },
     ...(local
@@ -263,10 +267,22 @@ export const Layout = () => {
                     <NavLink
                       to={item.href}
                       className={({ isActive }) =>
-                        navLinkClass(isActive, collapsed)
+                        item.indent
+                          ? `flex items-center gap-2.5 ${collapsed ? "px-3 py-2 justify-center" : "pl-10 pr-3 py-2"} rounded-lg text-[13px] transition-all duration-200 ${
+                              isActive
+                                ? "bg-primary-50 text-primary-700 font-semibold"
+                                : "text-text-secondary hover:bg-neutral-50 hover:text-text-primary"
+                            }`
+                          : navLinkClass(isActive, collapsed)
                       }
                     >
-                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      <item.icon
+                        className={
+                          item.indent
+                            ? "h-4 w-4 flex-shrink-0"
+                            : "h-5 w-5 flex-shrink-0"
+                        }
+                      />
                       {!collapsed && (
                         <span className="truncate">{item.name}</span>
                       )}

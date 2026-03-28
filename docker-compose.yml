@@ -149,74 +149,6 @@ services:
     networks:
       - buurman-network
 
-  flagsmith:
-    image: flagsmith/flagsmith:2.224.0
-    env_file: .env
-    environment:
-      DATABASE_URL: postgresql://${DB_FLAGSMITH_USERNAME:-flagsmith}:${DB_FLAGSMITH_PASSWORD:-flagsmith}@postgres:5432/flagsmith
-      DJANGO_SECRET_KEY: ${FLAGSMITH_SECRET_KEY:-change-me-in-production}
-      TASK_RUN_METHOD: TASK_PROCESSOR
-      PROMETHEUS_ENABLED: "true"
-      USE_POSTGRES_FOR_ANALYTICS: "true"
-      DJANGO_ALLOWED_HOSTS: "*"
-      DJANGO_SETTINGS_MODULE: app.settings.dev_local
-      ALLOW_REGISTRATION_WITHOUT_INVITE: "true"
-    volumes:
-      - ./docker/flagsmith/dev_settings.py:/app/app/settings/dev_local.py:ro
-    labels:
-      - "traefik.enable=true"
-      - "buurman.workspace=${COMPOSE_PROJECT_NAME:-buurman}"
-      - "traefik.http.routers.${HOSTNAME_PREFIX:-}flagsmith.rule=Host(`${HOSTNAME_PREFIX:-}flagsmith.local.buurman.io`)"
-      - "traefik.http.routers.${HOSTNAME_PREFIX:-}flagsmith.entrypoints=websecure"
-      - "traefik.http.routers.${HOSTNAME_PREFIX:-}flagsmith.tls=true"
-      - "traefik.http.routers.${HOSTNAME_PREFIX:-}flagsmith.middlewares=${HOSTNAME_PREFIX:-}flagsmith-headers"
-      - "traefik.http.services.${HOSTNAME_PREFIX:-}flagsmith.loadbalancer.server.port=8000"
-      - "traefik.http.middlewares.${HOSTNAME_PREFIX:-}flagsmith-headers.headers.customResponseHeaders.Content-Security-Policy=frame-src 'self'; frame-ancestors 'self' https://*.local.buurman.io https://*.local.buurman.io:* https://*.buurman.io; object-src 'none'"
-      - "traefik.http.middlewares.${HOSTNAME_PREFIX:-}flagsmith-headers.headers.customResponseHeaders.X-Frame-Options="
-    ports:
-      - "${FLAGSMITH_HOST_PORT:-8000}:8000"
-    depends_on:
-      postgres:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/')\""]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 30s
-    networks:
-      - buurman-network
-
-  flagsmith-processor:
-    image: flagsmith/flagsmith:2.224.0
-    command: run-task-processor
-    env_file: .env
-    environment:
-      DATABASE_URL: postgresql://${DB_FLAGSMITH_USERNAME:-flagsmith}:${DB_FLAGSMITH_PASSWORD:-flagsmith}@postgres:5432/flagsmith
-      DJANGO_SECRET_KEY: ${FLAGSMITH_SECRET_KEY:-change-me-in-production}
-    depends_on:
-      flagsmith:
-        condition: service_healthy
-    networks:
-      - buurman-network
-
-  flagsmith-setup:
-    image: python:3-alpine
-    entrypoint: ["python3", "/setup.py"]
-    environment:
-      FLAGSMITH_API_URL: http://flagsmith:8000
-      FLAGSMITH_ADMIN_EMAIL: ${FLAGSMITH_ADMIN_EMAIL:-buurmy@buurman.io}
-      FLAGSMITH_ADMIN_PASSWORD: ${FLAGSMITH_ADMIN_PASSWORD:-buurmy}
-    volumes:
-      - ./docker/flagsmith/setup.sh:/setup.py:ro
-      - ./backend/common/src/main/java/com/buurman/util/FeatureFlags.java:/FeatureFlags.java:ro
-    depends_on:
-      flagsmith:
-        condition: service_healthy
-    restart: "no"
-    networks:
-      - buurman-network
-
   mailpit:
     image: axllent/mailpit:v1.29.4
     ports:
@@ -377,8 +309,6 @@ services:
       keycloak:
         condition: service_started
       seaweedfs-init:
-        condition: service_completed_successfully
-      flagsmith-setup:
         condition: service_completed_successfully
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8082/actuator/health"]

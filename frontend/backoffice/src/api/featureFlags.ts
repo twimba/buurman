@@ -36,6 +36,7 @@ export interface SegmentFlagOverride {
 
 export interface SegmentEvaluation {
   segmentId: number;
+  segmentKey: string;
   segmentName: string;
   description?: string;
   overrides: Record<string, SegmentFlagOverride>;
@@ -74,6 +75,22 @@ export const featureFlagsApi = {
     client.delete(
       `/feature-flags/identities/${userIdentifier}/teams/${teamIdentifier}/${flagName}`,
     ),
+
+  getForTeam: (teamIdentifier: string) =>
+    client.get<FlagMap>(`/feature-flags/teams/${teamIdentifier}`),
+
+  upsertTeamOverride: (
+    teamIdentifier: string,
+    flagName: string,
+    data: UpdateFlagRequest,
+  ) =>
+    client.put<FeatureFlagUpdateResponse>(
+      `/feature-flags/teams/${teamIdentifier}/${flagName}`,
+      data,
+    ),
+
+  deleteTeamOverride: (teamIdentifier: string, flagName: string) =>
+    client.delete(`/feature-flags/teams/${teamIdentifier}/${flagName}`),
 
   getSegments: () => client.get<SegmentEvaluation[]>("/feature-flags/segments"),
 

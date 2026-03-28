@@ -60,7 +60,6 @@ HTTP_PORT=$((80 + WS * 1000))
 PG_HOST_PORT=$((5432 + WS * 1000))
 TRAEFIK_DASHBOARD_PORT=$((8082 + WS * 1000))
 SMTP_HOST_PORT=$((1025 + WS))
-FLAGSMITH_HOST_PORT=$((8000 + WS * 1000))
 BACKEND_HOST_PORT=$((8081 + WS * 100))
 BACKEND_MGMT_HOST_PORT=$((8083 + WS * 100))
 LOCAL_APP_PORT=$((5173 + WS * 10))
@@ -110,7 +109,6 @@ HTTPS_PORT=${HTTPS_PORT}
 PG_HOST_PORT=${PG_HOST_PORT}
 TRAEFIK_DASHBOARD_PORT=${TRAEFIK_DASHBOARD_PORT}
 SMTP_HOST_PORT=${SMTP_HOST_PORT}
-FLAGSMITH_HOST_PORT=${FLAGSMITH_HOST_PORT}
 BACKEND_HOST_PORT=${BACKEND_HOST_PORT}
 BACKEND_MGMT_HOST_PORT=${BACKEND_MGMT_HOST_PORT}
 LOCAL_BACKEND_PORT=${BACKEND_HOST_PORT}
@@ -309,7 +307,6 @@ export SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_BACKOFFICE_JWKSETURI=https://${
 export KEYCLOAK_ADMIN_SERVERURL=https://${HP}keycloak.local.buurman.io${PORT_SUFFIX}
 export AWS_S3_ENDPOINT=https://${HP}seaweedfs.local.buurman.io${PORT_SUFFIX}
 export AWS_S3_PUBLICENDPOINT=https://${HP}seaweedfs.local.buurman.io${PORT_SUFFIX}
-export FLAGSMITH_APIURL=https://${HP}flagsmith.local.buurman.io${PORT_SUFFIX}/api/v1/
 export SPRING_MAIL_PORT=${SMTP_HOST_PORT}
 export APP_PUBLICURL=https://${HP}app.local.buurman.io${PORT_SUFFIX}
 export APP_API_BASEURL=https://${HP}api.local.buurman.io${PORT_SUFFIX}
@@ -329,7 +326,7 @@ if [ ! -f "$CERT_FILE" ]; then
   bash "$SCRIPT_DIR/setup-local-certs.sh"
 fi
 
-DNS_HOSTS="${HP}app.local.buurman.io ${HP}api.local.buurman.io ${HP}keycloak.local.buurman.io ${HP}seaweedfs.local.buurman.io ${HP}seaweedfs-ui.local.buurman.io ${HP}mailpit.local.buurman.io ${HP}flagsmith.local.buurman.io ${HP}traefik.local.buurman.io ${HP}prometheus.local.buurman.io ${HP}grafana.local.buurman.io"
+DNS_HOSTS="${HP}app.local.buurman.io ${HP}api.local.buurman.io ${HP}keycloak.local.buurman.io ${HP}seaweedfs.local.buurman.io ${HP}seaweedfs-ui.local.buurman.io ${HP}mailpit.local.buurman.io ${HP}traefik.local.buurman.io ${HP}prometheus.local.buurman.io ${HP}grafana.local.buurman.io"
 UNRESOLVED_HOSTS=""
 for h in $DNS_HOSTS; do
   if ! dscacheutil -q host -a name "$h" | grep -q 'ip_address'; then

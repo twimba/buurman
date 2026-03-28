@@ -91,17 +91,6 @@ google:
   maps:
     api-key: ${GOOGLE_MAPS_API_KEY:}
 
-# Flagsmith Feature Flags
-flagsmith:
-  api-url: ${FLAGSMITH_API_URL:http://flagsmith:8000/api/v1/}
-  admin-email: ${FLAGSMITH_ADMIN_EMAIL:}
-  admin-password: ${FLAGSMITH_ADMIN_PASSWORD:}
-  api-token: ${FLAGSMITH_API_TOKEN:}
-  project-name: Buurman
-  environment-name: Local
-  enable-analytics: true
-  environment-refresh-interval-seconds: 300
-
 # Application Configuration
 app:
   version: @project.version@

@@ -78,6 +78,9 @@ public class RateLimitFilter extends OncePerRequestFilter {
       ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
 
       if (probe.isConsumed()) {
+        metricsService.incrementCounter("ratelimit.allowed.total", "endpoint", configKey);
+        metricsService.recordHistogram(
+            "ratelimit.remaining_tokens", probe.getRemainingTokens(), "endpoint", configKey);
         filterChain.doFilter(request, response);
         return;
       }
@@ -91,6 +94,8 @@ public class RateLimitFilter extends OncePerRequestFilter {
           configKey,
           retryAfterSeconds);
       metricsService.incrementCounter("ratelimit.rejected.total", "endpoint", configKey);
+      metricsService.recordHistogram(
+          "ratelimit.remaining_tokens", probe.getRemainingTokens(), "endpoint", configKey);
 
       response.setStatus(429);
       response.setContentType("application/json");

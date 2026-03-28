@@ -1,5 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Search, Flag, User, XCircle, AlertTriangle } from "lucide-react";
+import {
+  Search,
+  Flag,
+  User,
+  Building2,
+  XCircle,
+  AlertTriangle,
+} from "lucide-react";
 import { AxiosError } from "axios";
 import { RefreshButton } from "@buurman/ui";
 import {
@@ -8,11 +15,13 @@ import {
   useUpdateGlobalFlag,
 } from "../hooks/useFeatureFlags";
 import { useUsers } from "../hooks/useUsers";
+import { useTeams } from "../hooks/useTeams";
 import {
   UserFeatureFlags,
   GlobalFlagTable,
   PropagationBanner,
   SegmentFeatureFlags,
+  TeamFeatureFlags,
 } from "../components/UserFeatureFlags";
 
 function useDebouncedValue<T>(value: T, delay: number): T {
@@ -34,7 +43,14 @@ export const FeatureFlagsPage = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const blurTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
+  const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
+  const [selectedTeamLabel, setSelectedTeamLabel] = useState("");
+  const [teamInputValue, setTeamInputValue] = useState("");
+  const [showTeamDropdown, setShowTeamDropdown] = useState(false);
+  const teamBlurTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
   const debouncedSearch = useDebouncedValue(inputValue, 300);
+  const debouncedTeamSearch = useDebouncedValue(teamInputValue, 300);
 
   const { data: adminStatus } = useAdminStatus();
   const adminConfigured = adminStatus?.adminConfigured ?? true;
@@ -53,6 +69,11 @@ export const FeatureFlagsPage = () => {
     size: 10,
     sort: "email",
     direction: "ASC",
+  });
+
+  const { data: teamsData } = useTeams({
+    search: debouncedTeamSearch || undefined,
+    size: 10,
   });
 
   const globalFlagCount = globalFlags ? Object.keys(globalFlags).length : 0;
@@ -131,6 +152,35 @@ export const FeatureFlagsPage = () => {
     setInputValue("");
   };
 
+  const handleTeamFocus = () => {
+    if (!selectedTeam) {
+      setShowTeamDropdown(true);
+    }
+  };
+
+  const handleTeamBlur = () => {
+    teamBlurTimeoutRef.current = setTimeout(
+      () => setShowTeamDropdown(false),
+      200,
+    );
+  };
+
+  const handleTeamSelect = (identifier: string, label: string) => {
+    if (teamBlurTimeoutRef.current) {
+      clearTimeout(teamBlurTimeoutRef.current);
+    }
+    setSelectedTeam(identifier);
+    setSelectedTeamLabel(label);
+    setTeamInputValue("");
+    setShowTeamDropdown(false);
+  };
+
+  const handleTeamClear = () => {
+    setSelectedTeam(null);
+    setSelectedTeamLabel("");
+    setTeamInputValue("");
+  };
+
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       {/* Header */}
@@ -150,19 +200,8 @@ export const FeatureFlagsPage = () => {
               Feature flag management unavailable
             </p>
             <p className="text-sm text-warning-text mt-1">
-              No Flagsmith admin credentials configured. Set{" "}
-              <code className="text-xs bg-warning-bg px-1 py-0.5 rounded">
-                FLAGSMITH_API_TOKEN
-              </code>{" "}
-              (Cloud) or{" "}
-              <code className="text-xs bg-warning-bg px-1 py-0.5 rounded">
-                FLAGSMITH_ADMIN_EMAIL
-              </code>{" "}
-              +{" "}
-              <code className="text-xs bg-warning-bg px-1 py-0.5 rounded">
-                FLAGSMITH_ADMIN_PASSWORD
-              </code>{" "}
-              (self-hosted).
+              Feature flag admin is not configured. Check the backend
+              configuration to enable management.
             </p>
           </div>
         </div>
@@ -313,6 +352,96 @@ export const FeatureFlagsPage = () => {
               <User className="h-10 w-10 mx-auto mb-3 opacity-40" />
               <p className="text-sm">
                 Select a user to see their feature flag evaluation per team
+              </p>
+            </div>
+          </div>
+        )}
+      </section>
+
+      {/* Team-Specific Flags */}
+      <section>
+        <div className="flex items-center gap-2.5 mb-3">
+          <Building2 className="h-4 w-4 text-primary-500" />
+          <h2 className="text-sm font-semibold text-text-primary">
+            Team-Specific Overrides
+          </h2>
+        </div>
+
+        {/* Team search */}
+        <div className="relative mb-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
+            <input
+              type="text"
+              placeholder="Search by team name or identifier..."
+              value={selectedTeam ? selectedTeamLabel : teamInputValue}
+              onChange={(e) => {
+                setTeamInputValue(e.target.value);
+                setSelectedTeam(null);
+                setSelectedTeamLabel("");
+                setShowTeamDropdown(true);
+              }}
+              onFocus={handleTeamFocus}
+              onBlur={handleTeamBlur}
+              className="w-full pl-10 pr-10 py-2.5 rounded-lg border border-border-default bg-surface-card text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 transition-all"
+            />
+            {selectedTeam && (
+              <button
+                onClick={handleTeamClear}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-secondary transition-colors"
+              >
+                <XCircle className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Dropdown */}
+          {showTeamDropdown && !selectedTeam && (
+            <div className="absolute z-20 mt-1 w-full bg-surface-card border border-border-default rounded-lg shadow-lg overflow-hidden max-h-80 overflow-y-auto">
+              {teamsData?.content && teamsData.content.length > 0 ? (
+                teamsData.content.map((team) => (
+                  <button
+                    key={team.identifier}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() =>
+                      handleTeamSelect(team.identifier, team.teamName)
+                    }
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-surface-inset transition-colors"
+                  >
+                    <div className="h-7 w-7 rounded-full bg-primary-500/10 flex items-center justify-center flex-shrink-0">
+                      <Building2 className="h-3.5 w-3.5 text-primary-500" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-text-primary truncate">
+                        {team.teamName}
+                      </p>
+                      <p className="text-xs text-text-secondary truncate">
+                        {team.ownerEmail ?? "No owner"}
+                      </p>
+                    </div>
+                    <span className="text-[10px] font-mono text-text-muted flex-shrink-0">
+                      {team.identifier.slice(0, 8)}...
+                    </span>
+                  </button>
+                ))
+              ) : (
+                <div className="px-4 py-3 text-sm text-text-muted">
+                  No teams found
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Team flag overrides */}
+        {selectedTeam ? (
+          <TeamFeatureFlags teamIdentifier={selectedTeam} />
+        ) : (
+          <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
+            <div className="text-center py-12 text-text-muted">
+              <Building2 className="h-10 w-10 mx-auto mb-3 opacity-40" />
+              <p className="text-sm">
+                Select a team to manage its feature flag overrides
               </p>
             </div>
           </div>

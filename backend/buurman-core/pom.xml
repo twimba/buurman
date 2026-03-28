@@ -186,10 +186,10 @@
             <artifactId>libphonenumber</artifactId>
         </dependency>
 
-        <!-- Feature Flags -->
+        <!-- Feature Flags (in-memory cache) -->
         <dependency>
-            <groupId>com.flagsmith</groupId>
-            <artifactId>flagsmith-java-client</artifactId>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
         </dependency>
 
         <!-- AOP -->

@@ -20,6 +20,7 @@ import {
 import { PageHeader, Button, ConfirmDialog, RefreshButton } from "@buurman/ui";
 import { useTeam, useUpdateTeam, useDeleteTeam } from "../hooks/useTeams";
 import { LoadingSpinner } from "../components/LoadingSpinner";
+import { TeamFeatureFlags } from "../components/UserFeatureFlags";
 import { trackEvent } from "../utils/analytics";
 import { AnalyticsEvent } from "../constants/analyticsEvents";
 
@@ -444,6 +445,12 @@ export const TeamDetailPage = () => {
             />
           </div>
         </div>
+      </div>
+
+      {/* Feature Flags */}
+      <SectionTitle title="Feature Flags" />
+      <div className="mb-6">
+        <TeamFeatureFlags teamIdentifier={identifier ?? ""} />
       </div>
 
       {/* Delete confirmation dialog */}

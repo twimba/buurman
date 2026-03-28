@@ -80,6 +80,29 @@ const RentRegulationCountryDetailPage = lazy(() =>
     default: m.RentRegulationCountryDetailPage,
   })),
 );
+const SegmentsPage = lazy(() =>
+  import("./pages/SegmentsPage").then((m) => ({
+    default: m.SegmentsPage,
+  })),
+);
+const SegmentDetailPage = lazy(() =>
+  import("./pages/SegmentDetailPage").then((m) => ({
+    default: m.SegmentDetailPage,
+  })),
+);
+const SegmentCreatePage = lazy(() =>
+  import("./pages/SegmentCreatePage").then((m) => ({
+    default: m.SegmentCreatePage,
+  })),
+);
+const CachesPage = lazy(() =>
+  import("./pages/CachesPage").then((m) => ({ default: m.CachesPage })),
+);
+const RateLimitBucketsPage = lazy(() =>
+  import("./pages/RateLimitBucketsPage").then((m) => ({
+    default: m.RateLimitBucketsPage,
+  })),
+);
 const ImpersonationSessionsPage = lazy(() =>
   import("./pages/ImpersonationSessionsPage").then((m) => ({
     default: m.ImpersonationSessionsPage,
@@ -136,11 +159,22 @@ function App() {
                     element={<RentRegulationCountryDetailPage />}
                   />
                   <Route path="/feature-flags" element={<FeatureFlagsPage />} />
+                  <Route path="/segments" element={<SegmentsPage />} />
+                  <Route path="/segments/new" element={<SegmentCreatePage />} />
+                  <Route
+                    path="/segments/:key"
+                    element={<SegmentDetailPage />}
+                  />
                   <Route
                     path="/impersonation"
                     element={<ImpersonationSessionsPage />}
                   />
                   <Route path="/scheduler" element={<SchedulerPage />} />
+                  <Route path="/caches" element={<CachesPage />} />
+                  <Route
+                    path="/rate-limits"
+                    element={<RateLimitBucketsPage />}
+                  />
                   <Route path="/loggers" element={<LoggersPage />} />
                   <Route path="/system" element={<SystemInfoPage />} />
                   <Route path="/tools/:toolKey" element={<ToolEmbedPage />} />

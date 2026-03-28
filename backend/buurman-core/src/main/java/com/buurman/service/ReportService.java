@@ -49,6 +49,7 @@ import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.ExpenseRepository;
 import com.buurman.repository.PaymentRepository;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.security.UserPrincipal;
 
@@ -801,5 +802,16 @@ public class ReportService {
     }
 
     return (int) totalDays;
+  }
+
+  public @Nullable List<UUID> resolvePropertyIdentifiers(
+      @Nullable List<String> identifiers, UUID teamId) {
+    if (identifiers == null || identifiers.isEmpty()) {
+      return null;
+    }
+    return identifiers.stream()
+        .map(id -> propertyRepository.getByIdentifierAndTeamId(PropertyIdentifier.of(id), teamId))
+        .map(Property::getId)
+        .toList();
   }
 }
