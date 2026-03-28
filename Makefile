@@ -1,4 +1,4 @@
-.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend frontend-app frontend-backoffice workspace-setup workspace-teardown test test-coverage test-bdd test-bdd-smoke hub
+.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend frontend-app frontend-backoffice workspace-setup workspace-teardown test test-coverage test-bdd test-bdd-smoke test-bdd-run hub
 
 ## Start everything in Docker (including backend + app containers)
 up:
@@ -95,6 +95,28 @@ test-bdd:
 ## Run BDD smoke tests only (fast subset for local development)
 test-bdd-smoke:
 	cd tests/bdd && python -m pytest -m smoke
+
+## Start the system, wait for readiness, run BDD tests, then stop everything
+test-bdd-run:
+	@echo "Starting Docker containers..."
+	docker compose up -d
+	@echo "Waiting for backend to be ready..."
+	@timeout=180; elapsed=0; \
+	while ! curl -sf -o /dev/null https://api.local.buurman.io/actuator/health --insecure 2>/dev/null; do \
+		elapsed=$$((elapsed + 3)); \
+		if [ $$elapsed -ge $$timeout ]; then \
+			echo "Timed out waiting for backend after $${timeout}s"; \
+			docker compose logs backend --tail=50; \
+			exit 1; \
+		fi; \
+		printf "\r  Waiting... %ds / %ds" $$elapsed $$timeout; \
+		sleep 3; \
+	done
+	@echo "\nSystem ready. Running BDD tests..."
+	cd tests/bdd && python -m pytest -v; rc=$$?; \
+	echo ""; \
+	if [ $$rc -eq 0 ]; then echo "All tests passed."; else echo "Some tests failed (exit code $$rc)."; fi; \
+	exit $$rc
 
 backend-upgradable-dependencies:
 	mvn versions:display-dependency-updates -DallowMajorUpdates=false -Dversions.outputLineWidth=145 -Dmaven.version.ignore='(?i).*-(alpha|beta|rc|m)([-.]?\d+)?' -DprocessDependencyManagementTransitive=false
