@@ -20,7 +20,6 @@ import com.buurman.config.models.AwsS3Properties;
 import com.buurman.config.models.KeycloakProperties;
 import com.buurman.dto.response.backoffice.BackofficeSystemInfoResponse.ServiceHealth;
 import com.buurman.dto.response.backoffice.BackofficeSystemInfoResponse.ServiceHealth.Status;
-import com.flagsmith.FlagsmithClient;
 import com.sendgrid.SendGrid;
 
 import jakarta.annotation.PreDestroy;
@@ -41,7 +40,6 @@ public class BackofficeHealthCheckService {
   private final AwsS3Properties awsS3Properties;
   private final Keycloak keycloak;
   private final KeycloakProperties keycloakProperties;
-  private final ObjectProvider<FlagsmithClient> flagsmithClientProvider;
   private final ObjectProvider<SendGrid> sendGridProvider;
   private final ObjectProvider<JavaMailSender> mailSenderProvider;
 
@@ -53,7 +51,6 @@ public class BackofficeHealthCheckService {
       AwsS3Properties awsS3Properties,
       Keycloak keycloak,
       KeycloakProperties keycloakProperties,
-      ObjectProvider<FlagsmithClient> flagsmithClientProvider,
       ObjectProvider<SendGrid> sendGridProvider,
       ObjectProvider<JavaMailSender> mailSenderProvider) {
     this.dsl = dsl;
@@ -63,7 +60,6 @@ public class BackofficeHealthCheckService {
     this.awsS3Properties = awsS3Properties;
     this.keycloak = keycloak;
     this.keycloakProperties = keycloakProperties;
-    this.flagsmithClientProvider = flagsmithClientProvider;
     this.sendGridProvider = sendGridProvider;
     this.mailSenderProvider = mailSenderProvider;
   }
@@ -80,7 +76,7 @@ public class BackofficeHealthCheckService {
     futures.add(checkAsync("Quartz Scheduler", this::checkQuartz));
     futures.add(checkAsync("S3 Storage", this::checkS3));
     futures.add(checkAsync("Keycloak", this::checkKeycloak));
-    futures.add(checkAsync("Flagsmith", this::checkFlagsmith));
+
     futures.add(checkAsync("SendGrid", this::checkSendGrid));
     futures.add(checkAsync("SMTP", this::checkSmtp));
 
@@ -176,24 +172,6 @@ public class BackofficeHealthCheckService {
         Status.UP,
         Optional.of(latency),
         Optional.of("Realm: " + keycloakProperties.realm()),
-        Optional.empty());
-  }
-
-  private ServiceHealth checkFlagsmith() {
-    var client = flagsmithClientProvider.getIfAvailable();
-    if (client == null) {
-      return new ServiceHealth(
-          "Flagsmith",
-          Status.DISABLED,
-          Optional.empty(),
-          Optional.of("Client not initialized"),
-          Optional.empty());
-    }
-    return new ServiceHealth(
-        "Flagsmith",
-        Status.UP,
-        Optional.empty(),
-        Optional.of("Client initialized"),
         Optional.empty());
   }
 

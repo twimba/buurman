@@ -9,6 +9,8 @@ import java.util.UUID;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buurman.domain.FeatureFlagOverride;
+import com.buurman.domain.SegmentDefinition;
 import com.buurman.domain.Sid;
 import com.buurman.domain.Team;
 import com.buurman.domain.TeamMember;
@@ -20,17 +22,16 @@ import com.buurman.dto.response.backoffice.FeatureFlagUpdateResponse;
 import com.buurman.dto.response.backoffice.SegmentEvaluation;
 import com.buurman.dto.response.backoffice.SegmentFlagOverride;
 import com.buurman.dto.response.backoffice.TeamFlagEvaluation;
+import com.buurman.exception.NotFoundException;
 import com.buurman.generated.backoffice.api.BackofficeFeatureFlagsApi;
+import com.buurman.repository.FeatureFlagOverrideRepository;
 import com.buurman.repository.TeamMemberRepository;
 import com.buurman.repository.TeamRepository;
 import com.buurman.repository.UserRepository;
+import com.buurman.security.SecurityUtils;
+import com.buurman.service.FeatureFlagAdminService;
 import com.buurman.service.FeatureFlagService;
-import com.buurman.service.FlagsmithAdminService;
-import com.buurman.service.FlagsmithAdminService.FeatureStateInfo;
-import com.buurman.service.FlagsmithAdminService.IdentityInfo;
-import com.buurman.service.FlagsmithAdminService.IdentityOverrideInfo;
-import com.buurman.service.FlagsmithAdminService.SegmentOverrideState;
-import com.buurman.service.FlagsmithAdminService.SegmentWithOverrides;
+import com.buurman.service.SegmentAdminService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -39,7 +40,9 @@ import lombok.RequiredArgsConstructor;
 public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsApi {
 
   private final FeatureFlagService featureFlagService;
-  private final FlagsmithAdminService flagsmithAdminService;
+  private final FeatureFlagAdminService featureFlagAdminService;
+  private final SegmentAdminService segmentAdminService;
+  private final FeatureFlagOverrideRepository overrideRepo;
   private final UserRepository userRepository;
   private final TeamMemberRepository teamMemberRepository;
   private final TeamRepository teamRepository;
@@ -48,9 +51,7 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
 
   @Override
   public Map<String, Object> getAdminStatus() {
-    return Map.of(
-        "adminConfigured", flagsmithAdminService.isAdminConfigured(),
-        "authMethod", flagsmithAdminService.getAuthMethod());
+    return Map.of("adminConfigured", true, "authMethod", "builtin");
   }
 
   @Override
@@ -63,7 +64,7 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
     User user =
         userRepository
             .findByIdentifierUnscoped(userIdentifier)
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            .orElseThrow(() -> new NotFoundException("User not found"));
 
     List<TeamMember> memberships = teamMemberRepository.findAllByUserId(user.getId());
     Optional<UUID> activeTeamId = resolveActiveTeamId(user, memberships);
@@ -71,31 +72,30 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
     List<TeamFlagEvaluation> evaluations = new ArrayList<>();
 
     for (TeamMember membership : memberships) {
-      Team team = teamRepository.findById(membership.getTeamId()).orElse(null);
-      if (team == null) {
-        continue;
-      }
+      teamRepository
+          .findById(membership.getTeamId())
+          .ifPresent(
+              team -> {
+                Sid teamSid = team.getIdentifier().orElseThrow();
 
-      Sid teamId = team.getIdentifier().orElseThrow();
-      Sid userId = user.getIdentifier().orElseThrow();
+                Map<String, Object> flags =
+                    featureFlagService.evaluateAllForUser(
+                        user.getId(),
+                        membership.getTeamId(),
+                        membership.isOwner(),
+                        membership.getRole(),
+                        user.getEmail(),
+                        user.getEmailVerifiedAt().isPresent());
 
-      String identity = FeatureFlagService.buildIdentity(teamId.value(), userId.value());
-
-      Map<String, Object> traits = new HashMap<>();
-      traits.put("team", teamId);
-      traits.put("role", membership.getRole());
-      traits.put("is_owner", membership.isOwner());
-
-      Map<String, Object> flags = featureFlagService.getAllFlagsForIdentity(identity, traits);
-
-      evaluations.add(
-          new TeamFlagEvaluation(
-              teamId,
-              team.getName(),
-              membership.getRole().name(),
-              membership.isOwner(),
-              activeTeamId.map(membership.getTeamId()::equals).orElse(false),
-              flags));
+                evaluations.add(
+                    new TeamFlagEvaluation(
+                        teamSid,
+                        team.getName(),
+                        membership.getRole().name(),
+                        membership.isOwner(),
+                        activeTeamId.map(membership.getTeamId()::equals).orElse(false),
+                        flags));
+              });
     }
 
     return evaluations;
@@ -106,22 +106,16 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
   @Override
   public FeatureFlagUpdateResponse updateGlobalFlag(
       String flagName, UpdateFeatureFlagRequest updateFeatureFlagRequest) {
+    var updated =
+        featureFlagAdminService.updateFlag(
+            flagName,
+            Optional.ofNullable(updateFeatureFlagRequest.enabled()),
+            Optional.ofNullable(updateFeatureFlagRequest.value()),
+            Optional.empty(),
+            currentActorId());
 
-    FeatureStateInfo current =
-        flagsmithAdminService
-            .findFeatureStateByName(flagName)
-            .orElseThrow(
-                () ->
-                    new IllegalArgumentException(
-                        "Feature flag '%s' not found".formatted(flagName)));
-
-    FeatureStateInfo updated =
-        flagsmithAdminService.updateFeatureState(
-            current.featureStateId(),
-            updateFeatureFlagRequest.enabled(),
-            updateFeatureFlagRequest.value());
-
-    return new FeatureFlagUpdateResponse(updated.featureName(), updated.enabled(), updated.value());
+    return new FeatureFlagUpdateResponse(
+        updated.getKey(), updated.isDefaultEnabled(), updated.getDefaultValue().orElse(null));
   }
 
   @Override
@@ -131,122 +125,94 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
       String flagName,
       UpdateFeatureFlagRequest updateFeatureFlagRequest) {
 
-    String identity =
-        FeatureFlagService.buildIdentity(teamIdentifier.value(), userIdentifier.value());
-
-    // Find the feature ID from the global feature states
-    FeatureStateInfo globalState =
-        flagsmithAdminService
-            .findFeatureStateByName(flagName)
-            .orElseThrow(
-                () ->
-                    new IllegalArgumentException(
-                        "Feature flag '%s' not found".formatted(flagName)));
-
-    // Find or get the identity in Flagsmith
-    IdentityInfo identityInfo =
-        flagsmithAdminService
-            .findIdentity(identity)
-            .orElseThrow(
-                () ->
-                    new IllegalArgumentException(
-                        "Identity '%s' not found in Flagsmith. The user must have logged in at least once with this team."
-                            .formatted(identity)));
-
-    // Check if an override already exists
-    List<IdentityOverrideInfo> existing =
-        flagsmithAdminService.listIdentityOverrides(identityInfo.id());
-    IdentityOverrideInfo existingOverride =
-        existing.stream()
-            .filter(o -> o.featureId() == globalState.featureId())
-            .findFirst()
-            .orElse(null);
+    User user =
+        userRepository
+            .findByIdentifierUnscoped(userIdentifier)
+            .orElseThrow(() -> new NotFoundException("User not found"));
+    Team team =
+        teamRepository
+            .findByIdentifierForBackoffice(teamIdentifier)
+            .orElseThrow(() -> new NotFoundException("Team not found"));
 
     boolean enabled =
-        updateFeatureFlagRequest.enabled() != null
-            ? updateFeatureFlagRequest.enabled()
-            : globalState.enabled();
-    String value = updateFeatureFlagRequest.value();
+        updateFeatureFlagRequest.enabled() != null ? updateFeatureFlagRequest.enabled() : false;
 
-    IdentityOverrideInfo result;
-    if (existingOverride != null) {
-      result =
-          flagsmithAdminService.updateIdentityOverride(
-              identityInfo.id(),
-              existingOverride.featureStateId(),
-              updateFeatureFlagRequest.enabled(),
-              value);
-    } else {
-      result =
-          flagsmithAdminService.createIdentityOverride(
-              identityInfo.id(), globalState.featureId(), enabled, value);
-    }
+    var override =
+        featureFlagAdminService.upsertUserOverride(
+            flagName,
+            team.getId(),
+            user.getId(),
+            enabled,
+            Optional.ofNullable(updateFeatureFlagRequest.value()),
+            currentActorId());
 
-    return new FeatureFlagUpdateResponse(flagName, result.enabled(), result.value());
+    return new FeatureFlagUpdateResponse(
+        flagName, override.isEnabled(), override.getValue().orElse(null));
   }
 
   @Override
   public void deleteIdentityOverride(
       UserIdentifier userIdentifier, TeamIdentifier teamIdentifier, String flagName) {
 
-    String identity =
-        FeatureFlagService.buildIdentity(teamIdentifier.value(), userIdentifier.value());
+    User user =
+        userRepository
+            .findByIdentifierUnscoped(userIdentifier)
+            .orElseThrow(() -> new NotFoundException("User not found"));
+    Team team =
+        teamRepository
+            .findByIdentifierForBackoffice(teamIdentifier)
+            .orElseThrow(() -> new NotFoundException("Team not found"));
 
-    FeatureStateInfo globalState =
-        flagsmithAdminService
-            .findFeatureStateByName(flagName)
-            .orElseThrow(
-                () ->
-                    new IllegalArgumentException(
-                        "Feature flag '%s' not found".formatted(flagName)));
-
-    IdentityInfo identityInfo =
-        flagsmithAdminService
-            .findIdentity(identity)
-            .orElseThrow(
-                () -> new IllegalArgumentException("Identity '%s' not found".formatted(identity)));
-
-    List<IdentityOverrideInfo> overrides =
-        flagsmithAdminService.listIdentityOverrides(identityInfo.id());
-    IdentityOverrideInfo target =
-        overrides.stream()
-            .filter(o -> o.featureId() == globalState.featureId())
-            .findFirst()
-            .orElseThrow(
-                () ->
-                    new IllegalArgumentException(
-                        "No override found for flag '%s' on identity '%s'"
-                            .formatted(flagName, identity)));
-
-    flagsmithAdminService.deleteIdentityOverride(identityInfo.id(), target.featureStateId());
+    featureFlagAdminService.deleteUserOverride(
+        flagName, team.getId(), user.getId(), currentActorId());
   }
 
   // --- Segment endpoints ---
 
   @Override
   public List<SegmentEvaluation> getSegmentOverrides() {
-    List<SegmentWithOverrides> raw = flagsmithAdminService.getSegmentOverrides();
-    List<FeatureStateInfo> globalFlags = flagsmithAdminService.listFeatureStates();
+    List<Map<String, Object>> segments = featureFlagAdminService.listSegments();
+    Map<String, Object> globalFlags = featureFlagService.getAllEnvironmentFlags();
 
-    return raw.stream()
+    // Build a key->index map from DB segments for stable IDs
+    List<SegmentDefinition> dbSegments = segmentAdminService.listSegments();
+    Map<String, Long> segmentKeyToId = new HashMap<>();
+    for (int i = 0; i < dbSegments.size(); i++) {
+      segmentKeyToId.put(dbSegments.get(i).getKey(), (long) i);
+    }
+
+    return segments.stream()
         .map(
             seg -> {
-              // Start with global defaults for all flags
+              String segKey = String.valueOf(seg.get("segmentKey"));
+              String segName = String.valueOf(seg.get("segmentName"));
+              String desc = String.valueOf(seg.get("description"));
+
+              @SuppressWarnings("unchecked")
+              Map<String, Object> segOverrides =
+                  (Map<String, Object>) seg.getOrDefault("overrides", Map.of());
+
               Map<String, SegmentFlagOverride> overrides = new HashMap<>();
-              for (FeatureStateInfo global : globalFlags) {
-                overrides.put(
-                    global.featureName(),
-                    new SegmentFlagOverride(
-                        global.featureName(), global.enabled(), global.value()));
-              }
-              // Layer segment overrides on top
-              for (SegmentOverrideState state : seg.overrides()) {
-                overrides.put(
-                    state.featureName(),
-                    new SegmentFlagOverride(state.featureName(), state.enabled(), state.value()));
-              }
-              return new SegmentEvaluation(
-                  seg.segmentId(), seg.segmentName(), seg.description(), overrides);
+              globalFlags.forEach(
+                  (flagKey, flagData) -> {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> data = (Map<String, Object>) flagData;
+                    boolean enabled = Boolean.TRUE.equals(data.get("enabled"));
+                    overrides.put(
+                        flagKey, new SegmentFlagOverride(flagKey, enabled, data.get("value")));
+                  });
+
+              segOverrides.forEach(
+                  (flagKey, overrideData) -> {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> data = (Map<String, Object>) overrideData;
+                    boolean enabled = Boolean.TRUE.equals(data.get("enabled"));
+                    overrides.put(
+                        flagKey, new SegmentFlagOverride(flagKey, enabled, data.get("value")));
+                  });
+
+              long segmentId = segmentKeyToId.getOrDefault(segKey, 0L);
+              return new SegmentEvaluation(segmentId, segName, desc, overrides);
             })
         .toList();
   }
@@ -255,71 +221,103 @@ public class BackofficeFeatureFlagController implements BackofficeFeatureFlagsAp
   public FeatureFlagUpdateResponse upsertSegmentOverride(
       Long segmentId, String flagName, UpdateFeatureFlagRequest updateFeatureFlagRequest) {
 
-    FeatureStateInfo globalState =
-        flagsmithAdminService
-            .findFeatureStateByName(flagName)
-            .orElseThrow(
-                () ->
-                    new IllegalArgumentException(
-                        "Feature flag '%s' not found".formatted(flagName)));
+    String segmentKey = resolveSegmentKey(segmentId);
+    int priority = segmentAdminService.getSegment(segmentKey).getPriority();
 
-    // Ensure a feature-segment link exists, creating one if needed
-    long linkId =
-        flagsmithAdminService
-            .findFeatureSegmentId(globalState.featureId(), segmentId)
-            .orElseGet(
-                () ->
-                    flagsmithAdminService.createFeatureSegment(globalState.featureId(), segmentId));
+    boolean enabled =
+        updateFeatureFlagRequest.enabled() != null ? updateFeatureFlagRequest.enabled() : false;
 
-    // Find the feature state for this segment override
-    var featureStateId =
-        flagsmithAdminService.findSegmentOverrideFeatureStateId(segmentId, globalState.featureId());
+    var override =
+        featureFlagAdminService.upsertSegmentOverride(
+            flagName,
+            segmentKey,
+            enabled,
+            Optional.ofNullable(updateFeatureFlagRequest.value()),
+            priority,
+            currentActorId());
 
-    // Update existing feature state
-    // No auto-created feature state — create one explicitly with desired values
-    FeatureStateInfo updated =
-        featureStateId
-            .map(
-                aLong ->
-                    flagsmithAdminService.updateSegmentOverrideState(
-                        aLong,
-                        segmentId,
-                        updateFeatureFlagRequest.enabled(),
-                        updateFeatureFlagRequest.value()))
-            .orElseGet(
-                () ->
-                    flagsmithAdminService.createSegmentOverrideFeatureState(
-                        linkId,
-                        globalState.featureId(),
-                        updateFeatureFlagRequest.enabled(),
-                        updateFeatureFlagRequest.value()));
-    return new FeatureFlagUpdateResponse(flagName, updated.enabled(), updated.value());
+    return new FeatureFlagUpdateResponse(
+        flagName, override.isEnabled(), override.getValue().orElse(null));
   }
 
   @Override
   public void deleteSegmentOverride(Long segmentId, String flagName) {
+    String segmentKey = resolveSegmentKey(segmentId);
+    featureFlagAdminService.deleteSegmentOverride(flagName, segmentKey, currentActorId());
+  }
 
-    FeatureStateInfo globalState =
-        flagsmithAdminService
-            .findFeatureStateByName(flagName)
-            .orElseThrow(
-                () ->
-                    new IllegalArgumentException(
-                        "Feature flag '%s' not found".formatted(flagName)));
+  // --- Team endpoints ---
 
-    long featureSegmentId =
-        flagsmithAdminService
-            .findFeatureSegmentId(globalState.featureId(), segmentId)
-            .orElseThrow(
-                () ->
-                    new IllegalArgumentException(
-                        "No segment override found for flag '%s' on segment %d"
-                            .formatted(flagName, segmentId)));
+  @Override
+  public Map<String, Object> getTeamFlags(TeamIdentifier teamIdentifier) {
+    Team team =
+        teamRepository
+            .findByIdentifierForBackoffice(teamIdentifier)
+            .orElseThrow(() -> new NotFoundException("Team not found"));
 
-    flagsmithAdminService.deleteFeatureSegment(featureSegmentId);
+    // Start with global flag defaults
+    Map<String, Object> result = new HashMap<>(featureFlagService.getAllEnvironmentFlags());
+
+    // Overlay TEAM-scope overrides
+    for (FeatureFlagOverride override : overrideRepo.findTeamScopeOverrides(team.getId())) {
+      Map<String, Object> flagData = new HashMap<>();
+      flagData.put("enabled", override.isEnabled());
+      flagData.put("value", override.getValue().orElse(null));
+      result.put(override.getFlagKey(), flagData);
+    }
+
+    return result;
+  }
+
+  @Override
+  public FeatureFlagUpdateResponse upsertTeamOverride(
+      TeamIdentifier teamIdentifier,
+      String flagName,
+      UpdateFeatureFlagRequest updateFeatureFlagRequest) {
+
+    Team team =
+        teamRepository
+            .findByIdentifierForBackoffice(teamIdentifier)
+            .orElseThrow(() -> new NotFoundException("Team not found"));
+
+    boolean enabled =
+        updateFeatureFlagRequest.enabled() != null ? updateFeatureFlagRequest.enabled() : false;
+
+    var override =
+        featureFlagAdminService.upsertTeamOverride(
+            flagName,
+            team.getId(),
+            enabled,
+            Optional.ofNullable(updateFeatureFlagRequest.value()),
+            currentActorId());
+
+    return new FeatureFlagUpdateResponse(
+        flagName, override.isEnabled(), override.getValue().orElse(null));
+  }
+
+  @Override
+  public void deleteTeamOverride(TeamIdentifier teamIdentifier, String flagName) {
+    Team team =
+        teamRepository
+            .findByIdentifierForBackoffice(teamIdentifier)
+            .orElseThrow(() -> new NotFoundException("Team not found"));
+
+    featureFlagAdminService.deleteTeamOverride(flagName, team.getId(), currentActorId());
   }
 
   // --- Internal ---
+
+  private UUID currentActorId() {
+    return UUID.fromString(SecurityUtils.getBackofficePrincipal().getKeycloakId());
+  }
+
+  private String resolveSegmentKey(Long segmentId) {
+    List<SegmentDefinition> segments = segmentAdminService.listSegments();
+    if (segmentId >= 0 && segmentId < segments.size()) {
+      return segments.get(segmentId.intValue()).getKey();
+    }
+    throw new NotFoundException("Unknown segment ID: " + segmentId);
+  }
 
   private Optional<UUID> resolveActiveTeamId(User user, List<TeamMember> memberships) {
     if (memberships.isEmpty()) {

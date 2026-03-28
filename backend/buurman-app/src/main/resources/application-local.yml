@@ -42,10 +42,6 @@ aws:
     public-endpoint: https://seaweedfs.local.buurman.io
     use-presigned-urls: false
 
-flagsmith:
-  api-url: https://flagsmith.local.buurman.io/api/v1/
-  environment-refresh-interval-seconds: 15
-
 spring.mail:
   host: localhost
   port: 1025

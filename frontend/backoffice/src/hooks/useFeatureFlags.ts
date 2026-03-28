@@ -91,6 +91,52 @@ export const useDeleteIdentityOverride = () => {
   });
 };
 
+export const useTeamFeatureFlags = (teamIdentifier: string | null) => {
+  return useQuery({
+    queryKey: ["feature-flags", "team", teamIdentifier],
+    queryFn: () =>
+      featureFlagsApi.getForTeam(teamIdentifier ?? "").then((res) => res.data),
+    enabled: !!teamIdentifier,
+  });
+};
+
+export const useUpsertTeamOverride = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      teamIdentifier,
+      flagName,
+      data,
+    }: {
+      teamIdentifier: string;
+      flagName: string;
+      data: UpdateFlagRequest;
+    }) =>
+      featureFlagsApi
+        .upsertTeamOverride(teamIdentifier, flagName, data)
+        .then((r) => r.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["feature-flags"] });
+    },
+  });
+};
+
+export const useDeleteTeamOverride = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      teamIdentifier,
+      flagName,
+    }: {
+      teamIdentifier: string;
+      flagName: string;
+    }) => featureFlagsApi.deleteTeamOverride(teamIdentifier, flagName),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["feature-flags"] });
+    },
+  });
+};
+
 export const useSegmentFeatureFlags = () => {
   return useQuery({
     queryKey: ["feature-flags", "segments"],

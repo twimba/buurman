@@ -40,6 +40,12 @@ tags:
     description: User impersonation session management
   - name: Backoffice - Broadcasts
     description: Broadcast message management
+  - name: Backoffice - Caches
+    description: Cache inspection and management
+  - name: Backoffice - Segments
+    description: Segment management for feature flag targeting
+  - name: Backoffice - Rate Limits
+    description: Rate limit bucket inspection and management
 paths:
   /backoffice/teams/{identifier}:
     get:
@@ -339,6 +345,116 @@ paths:
                 $ref: "#/components/schemas/ProblemDetail"
       security:
         - bearer-jwt: []
+  /backoffice/rate-limits/buckets:
+    get:
+      tags:
+        - Backoffice - Rate Limits
+      summary: List active rate limit buckets
+      operationId: listRateLimitBuckets
+      parameters:
+        - name: configKey
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: clientIp
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 50
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+      security:
+        - bearer-jwt: []
+    delete:
+      tags:
+        - Backoffice - Rate Limits
+      summary: Bulk delete buckets by config key
+      operationId: deleteRateLimitBucketsByConfigKey
+      parameters:
+        - name: configKey
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+      security:
+        - bearer-jwt: []
+  /backoffice/rate-limits/buckets/summary:
+    get:
+      tags:
+        - Backoffice - Rate Limits
+      summary: Get rate limit summary
+      operationId: getRateLimitSummary
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+      security:
+        - bearer-jwt: []
+  /backoffice/rate-limits/buckets/{bucketId}:
+    get:
+      tags:
+        - Backoffice - Rate Limits
+      summary: Get a single rate limit bucket
+      operationId: getRateLimitBucket
+      parameters:
+        - name: bucketId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+      security:
+        - bearer-jwt: []
+    delete:
+      tags:
+        - Backoffice - Rate Limits
+      summary: Delete (reset) a single rate limit bucket
+      operationId: deleteRateLimitBucket
+      parameters:
+        - name: bucketId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+      security:
+        - bearer-jwt: []
   /backoffice/settings/phone-policy:
     get:
       tags:
@@ -512,6 +628,197 @@ paths:
                 $ref: "#/components/schemas/ProblemDetail"
       security:
         - bearer-jwt: []
+  /backoffice/feature-flags/teams/{teamIdentifier}:
+    get:
+      tags:
+        - Backoffice - Feature Flags
+      summary: Get feature flags for a specific team
+      description: Returns global flags with team-scope overrides merged in
+      operationId: getTeamFlags
+      parameters:
+        - name: teamIdentifier
+          in: path
+          description: Team identifier
+          required: true
+          schema:
+            $ref: "#/components/schemas/TeamIdentifier"
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+                additionalProperties: {}
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/feature-flags/teams/{teamIdentifier}/{flagName}:
+    put:
+      tags:
+        - Backoffice - Feature Flags
+      summary: Create or update a team override
+      description: Sets a feature flag override for a specific team
+      operationId: upsertTeamOverride
+      parameters:
+        - name: teamIdentifier
+          in: path
+          description: Team identifier
+          required: true
+          schema:
+            $ref: "#/components/schemas/TeamIdentifier"
+        - name: flagName
+          in: path
+          description: Feature flag name
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateFeatureFlagRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureFlagUpdateResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    delete:
+      tags:
+        - Backoffice - Feature Flags
+      summary: Remove a team override
+      description: Removes a feature flag override so the team falls back to the global default
+      operationId: deleteTeamOverride
+      parameters:
+        - name: teamIdentifier
+          in: path
+          description: Team identifier
+          required: true
+          schema:
+            $ref: "#/components/schemas/TeamIdentifier"
+        - name: flagName
+          in: path
+          description: Feature flag name
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - business rule violation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
   /backoffice/feature-flags/segments/{segmentId}/{flagName}:
     put:
       tags:
@@ -522,7 +829,7 @@ paths:
       parameters:
         - name: segmentId
           in: path
-          description: Flagsmith segment ID
+          description: Segment ID
           required: true
           schema:
             type: integer
@@ -593,7 +900,7 @@ paths:
       parameters:
         - name: segmentId
           in: path
-          description: Flagsmith segment ID
+          description: Segment ID
           required: true
           schema:
             type: integer
@@ -3414,7 +3721,7 @@ paths:
       tags:
         - Backoffice - Feature Flags
       summary: Get all segments with their feature flag overrides
-      description: Returns segments configured in Flagsmith with any feature flag overrides they define
+      description: Returns segments with any feature flag overrides they define
       operationId: getSegmentOverrides
       responses:
         "200":
@@ -3467,7 +3774,7 @@ paths:
     get:
       tags:
         - Backoffice - Feature Flags
-      summary: Check if Flagsmith admin operations are available
+      summary: Check if feature flag admin operations are available
       description: Returns whether the backend has admin credentials configured for flag management
       operationId: getAdminStatus
       responses:
@@ -4964,6 +5271,415 @@ paths:
                 $ref: "#/components/schemas/ProblemDetail"
         "500":
           description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/caches:
+    get:
+      tags:
+        - Backoffice - Caches
+      summary: List all application caches
+      description: Returns metadata and statistics for all application caches
+      operationId: listCaches
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/caches/{cacheName}:
+    get:
+      tags:
+        - Backoffice - Caches
+      summary: Get cache details with entries
+      description: Returns cache metadata, statistics, and current entries
+      operationId: getCacheDetail
+      parameters:
+        - name: cacheName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Cache not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/caches/{cacheName}/invalidate:
+    post:
+      tags:
+        - Backoffice - Caches
+      summary: Invalidate a cache
+      description: Forces immediate invalidation of all entries in the specified cache
+      operationId: invalidateCache
+      parameters:
+        - name: cacheName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Cache not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/segments:
+    get:
+      tags:
+        - Backoffice - Segments
+      summary: List all segments
+      description: Returns all segments with their conditions
+      operationId: listSegments
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SegmentDetailResponse"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    post:
+      tags:
+        - Backoffice - Segments
+      summary: Create a new segment
+      description: Creates a new segment with conditions
+      operationId: createSegment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSegmentRequest"
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SegmentDetailResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - segment key already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/segments/{segmentKey}:
+    get:
+      tags:
+        - Backoffice - Segments
+      summary: Get segment details
+      description: Returns segment with conditions and match count
+      operationId: getSegment
+      parameters:
+        - name: segmentKey
+          in: path
+          description: Segment key
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SegmentDetailResponse"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Segment not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    put:
+      tags:
+        - Backoffice - Segments
+      summary: Update a segment
+      description: Updates segment name, description, priority and conditions
+      operationId: updateSegment
+      parameters:
+        - name: segmentKey
+          in: path
+          description: Segment key
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSegmentRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SegmentDetailResponse"
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Segment not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+    delete:
+      tags:
+        - Backoffice - Segments
+      summary: Delete a segment
+      description: Soft-deletes a segment. Builtin segments cannot be deleted.
+      operationId: deleteSegment
+      parameters:
+        - name: segmentKey
+          in: path
+          description: Segment key
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Segment not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "409":
+          description: Conflict - cannot delete segment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/segments/{segmentKey}/matches:
+    get:
+      tags:
+        - Backoffice - Segments
+      summary: Get matched entity count
+      description: Returns count of teams matching this segment's conditions
+      operationId: getSegmentMatches
+      parameters:
+        - name: segmentKey
+          in: path
+          description: Segment key
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SegmentMatchesResponse"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Segment not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/segments/{segmentKey}/matching-teams:
+    get:
+      tags:
+        - Backoffice - Segments
+      summary: List teams matching a segment
+      description: Returns up to 500 teams matching this segment's conditions
+      operationId: getMatchingTeams
+      parameters:
+        - name: segmentKey
+          in: path
+          description: Segment key
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SegmentMatchingTeam"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Segment not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+      security:
+        - bearer-jwt: []
+  /backoffice/segments/{segmentKey}/matching-users:
+    get:
+      tags:
+        - Backoffice - Segments
+      summary: List users matching a segment
+      description: Returns up to 500 users matching this segment's conditions
+      operationId: getMatchingUsers
+      parameters:
+        - name: segmentKey
+          in: path
+          description: Segment key
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SegmentMatchingUser"
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+        "404":
+          description: Segment not found
           content:
             application/json:
               schema:
@@ -6848,6 +7564,168 @@ components:
           type: boolean
         empty:
           type: boolean
+    SegmentDetailResponse:
+      type: object
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        priority:
+          type: integer
+        conditions:
+          type: array
+          items:
+            $ref: "#/components/schemas/SegmentConditionResponse"
+        matchingTeamCount:
+          type: integer
+          format: int64
+        matchingUserCount:
+          type: integer
+          format: int64
+    SegmentConditionResponse:
+      type: object
+      properties:
+        attribute:
+          type: string
+        operator:
+          type: string
+        value:
+          type: string
+    CreateSegmentRequest:
+      type: object
+      required:
+        - key
+        - name
+      properties:
+        key:
+          type: string
+          maxLength: 64
+        name:
+          type: string
+          maxLength: 128
+        description:
+          type: string
+        priority:
+          type: integer
+          default: 0
+        conditions:
+          type: array
+          items:
+            $ref: "#/components/schemas/SegmentConditionRequest"
+    UpdateSegmentRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          maxLength: 128
+        description:
+          type: string
+        priority:
+          type: integer
+          default: 0
+        conditions:
+          type: array
+          items:
+            $ref: "#/components/schemas/SegmentConditionRequest"
+    SegmentConditionRequest:
+      type: object
+      required:
+        - attribute
+        - operator
+        - value
+      properties:
+        attribute:
+          type: string
+          enum:
+            - is_demo
+            - is_owner
+            - role
+            - email
+            - email_verified
+            - property_count
+            - member_count
+            - team_age_days
+            - contract_count
+            - contact_count
+            - photo_count
+            - document_count
+            - expense_count
+            - payment_count
+            - calendar_feed_count
+            - is_team
+            - is_user
+        operator:
+          type: string
+          enum:
+            - eq
+            - neq
+            - in
+            - not_in
+            - gt
+            - gte
+            - lt
+            - lte
+            - contains
+            - not_contains
+            - starts_with
+            - ends_with
+            - regex
+        value:
+          type: string
+    SegmentMatchesResponse:
+      type: object
+      properties:
+        matchingTeamCount:
+          type: integer
+          format: int64
+        matchingUserCount:
+          type: integer
+          format: int64
+    SegmentMatchingTeam:
+      type: object
+      properties:
+        identifier:
+          type: string
+        teamName:
+          type: string
+        demo:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - teamName
+        - demo
+        - createdAt
+    SegmentMatchingUser:
+      type: object
+      properties:
+        identifier:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        role:
+          type: string
+        teamIdentifier:
+          type: string
+        teamName:
+          type: string
+      required:
+        - identifier
+        - email
+        - role
+        - teamIdentifier
+        - teamName
   securitySchemes:
     bearer-jwt:
       type: http

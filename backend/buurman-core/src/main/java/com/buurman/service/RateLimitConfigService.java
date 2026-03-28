@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class RateLimitConfigService {
 
   private final RateLimitConfigRepository configRepository;
+  private final MetricsService metricsService;
 
   private volatile @Nullable Map<String, RateLimitConfig> cachedConfigs;
 
@@ -50,6 +51,7 @@ public class RateLimitConfigService {
 
     RateLimitConfig saved = configRepository.save(config);
     cachedConfigs = null;
+    metricsService.incrementCounter("ratelimit.config.reload.total");
     log.info(
         "Rate limit config '{}' updated by {} — maxRequests={}, periodSeconds={}, enabled={}",
         key,

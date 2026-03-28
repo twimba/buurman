@@ -23,6 +23,9 @@ import {
   useUserFeatureFlags,
   useUpsertIdentityOverride,
   useDeleteIdentityOverride,
+  useTeamFeatureFlags,
+  useUpsertTeamOverride,
+  useDeleteTeamOverride,
   useSegmentFeatureFlags,
   useUpsertSegmentOverride,
   useDeleteSegmentOverride,
@@ -49,8 +52,7 @@ const PropagationBanner = ({
     <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-info-bg border border-info-border text-sm text-info-text">
       <Info className="h-4 w-4 flex-shrink-0" />
       <span className="flex-1">
-        Flag updated in Flagsmith. The app will pick up this change within ~60
-        seconds.
+        Flag updated. The app will pick up this change within ~60 seconds.
       </span>
       <button
         onClick={onDismiss}
@@ -825,6 +827,363 @@ export const UserFeatureFlags = ({
   );
 };
 
+// --- Team Override Row ---
+
+const TeamOverrideRow = ({
+  name,
+  flag,
+  globalFlag,
+  showOverrideOnly,
+  teamIdentifier,
+  onUpsertOverride,
+  onDeleteOverride,
+  mutating,
+}: {
+  name: string;
+  flag: { enabled: boolean; value: unknown };
+  globalFlag?: { enabled: boolean; value: unknown };
+  showOverrideOnly: boolean;
+  teamIdentifier: string;
+  onUpsertOverride: (
+    flagName: string,
+    teamIdentifier: string,
+    enabled: boolean,
+    value: string | null,
+  ) => void;
+  onDeleteOverride: (flagName: string, teamIdentifier: string) => void;
+  mutating?: boolean;
+}) => {
+  const override = isOverridden(flag, globalFlag);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  if (showOverrideOnly && !override) {
+    return null;
+  }
+
+  return (
+    <>
+      <tr className="border-b border-border-default last:border-b-0 hover:bg-surface-inset/50 transition-colors">
+        <td className="px-5 py-3.5">
+          <div className="flex items-center gap-2.5">
+            <code className="text-sm font-mono font-medium text-text-primary">
+              {name}
+            </code>
+            {override && <OverrideBadge />}
+          </div>
+        </td>
+        <td className="px-5 py-3.5">
+          <ToggleSwitch
+            enabled={flag.enabled}
+            loading={mutating}
+            onChange={(enabled) =>
+              onUpsertOverride(
+                name,
+                teamIdentifier,
+                enabled,
+                flag.value != null ? String(flag.value) : null,
+              )
+            }
+          />
+        </td>
+        {globalFlag !== undefined && (
+          <td className="px-5 py-3.5">
+            <FlagBadge enabled={globalFlag.enabled} />
+          </td>
+        )}
+        <td className="px-5 py-3.5">
+          <InlineValueEditor
+            value={flag.value}
+            loading={mutating}
+            onSave={(value) =>
+              onUpsertOverride(name, teamIdentifier, flag.enabled, value)
+            }
+          />
+        </td>
+        {globalFlag !== undefined && <ValueCell value={globalFlag.value} />}
+        <td className="px-5 py-3.5">
+          {override ? (
+            <button
+              onClick={() => setConfirmDelete(true)}
+              disabled={mutating}
+              className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium text-error-text hover:bg-error-bg transition-colors disabled:opacity-50"
+              title="Remove override"
+            >
+              <Trash2 className="h-3 w-3" />
+              Remove
+            </button>
+          ) : (
+            <button
+              onClick={() =>
+                onUpsertOverride(
+                  name,
+                  teamIdentifier,
+                  !flag.enabled,
+                  flag.value != null ? String(flag.value) : null,
+                )
+              }
+              disabled={mutating}
+              className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium text-primary-500 hover:bg-primary-500/10 transition-colors disabled:opacity-50"
+              title="Create override"
+            >
+              <Plus className="h-3 w-3" />
+              Override
+            </button>
+          )}
+        </td>
+      </tr>
+      {confirmDelete && (
+        <tr>
+          <td colSpan={6} className="p-0">
+            <ConfirmDialog
+              title="Remove Override"
+              message={`Remove the team override for "${name}"? The flag will fall back to the global default.`}
+              confirmLabel="Remove"
+              variant="danger"
+              isLoading={mutating}
+              onConfirm={() => {
+                onDeleteOverride(name, teamIdentifier);
+                setConfirmDelete(false);
+              }}
+              onCancel={() => setConfirmDelete(false)}
+            />
+          </td>
+        </tr>
+      )}
+    </>
+  );
+};
+
+// --- Team Override Table ---
+
+const TeamOverrideTable = ({
+  flags,
+  globalFlags,
+  showOverrideOnly,
+  teamIdentifier,
+  onUpsertOverride,
+  onDeleteOverride,
+  mutatingFlag,
+}: {
+  flags: FlagMap;
+  globalFlags?: FlagMap;
+  showOverrideOnly: boolean;
+  teamIdentifier: string;
+  onUpsertOverride: (
+    flagName: string,
+    teamIdentifier: string,
+    enabled: boolean,
+    value: string | null,
+  ) => void;
+  onDeleteOverride: (flagName: string, teamIdentifier: string) => void;
+  mutatingFlag?: string | null;
+}) => {
+  const sortedNames = useMemo(() => Object.keys(flags).sort(), [flags]);
+
+  const visibleCount = showOverrideOnly
+    ? sortedNames.filter((name) =>
+        isOverridden(flags[name], globalFlags?.[name]),
+      ).length
+    : sortedNames.length;
+
+  if (sortedNames.length === 0) {
+    return (
+      <div className="text-center py-12 text-text-muted">
+        <Flag className="h-10 w-10 mx-auto mb-3 opacity-40" />
+        <p className="text-sm">No feature flags configured</p>
+      </div>
+    );
+  }
+
+  if (showOverrideOnly && visibleCount === 0) {
+    return (
+      <div className="text-center py-12 text-text-muted">
+        <CheckCircle2 className="h-10 w-10 mx-auto mb-3 opacity-40" />
+        <p className="text-sm">All flags match the global defaults</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full">
+        <thead>
+          <tr className="border-b border-border-default">
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
+              Flag
+            </th>
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
+              Team Status
+            </th>
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
+              Global Status
+            </th>
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
+              Team Value
+            </th>
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
+              Global Value
+            </th>
+            <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-text-muted">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {sortedNames.map((name) => (
+            <TeamOverrideRow
+              key={name}
+              name={name}
+              flag={flags[name]}
+              globalFlag={globalFlags?.[name]}
+              showOverrideOnly={showOverrideOnly}
+              teamIdentifier={teamIdentifier}
+              onUpsertOverride={onUpsertOverride}
+              onDeleteOverride={onDeleteOverride}
+              mutating={mutatingFlag === name}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+// --- Main export: TeamFeatureFlags ---
+
+export const TeamFeatureFlags = ({
+  teamIdentifier,
+}: {
+  teamIdentifier: string;
+}) => {
+  const [showOverrideOnly, setShowOverrideOnly] = useState(false);
+  const [showBanner, setShowBanner] = useState(false);
+  const [mutatingFlag, setMutatingFlag] = useState<string | null>(null);
+
+  const {
+    data: globalFlags,
+    isFetching: globalFetching,
+    refetch: refetchGlobal,
+  } = useGlobalFeatureFlags();
+
+  const {
+    data: teamFlags,
+    isLoading: teamLoading,
+    isFetching: teamFetching,
+    refetch: refetchTeam,
+  } = useTeamFeatureFlags(teamIdentifier);
+
+  const upsertOverride = useUpsertTeamOverride();
+  const deleteOverride = useDeleteTeamOverride();
+
+  const handleUpsertOverride = useCallback(
+    (flagName: string, tid: string, enabled: boolean, value: string | null) => {
+      setMutatingFlag(flagName);
+      upsertOverride.mutate(
+        {
+          teamIdentifier: tid,
+          flagName,
+          data: { enabled, value: value ?? undefined },
+        },
+        {
+          onSettled: () => setMutatingFlag(null),
+          onSuccess: () => setShowBanner(true),
+        },
+      );
+    },
+    [upsertOverride],
+  );
+
+  const handleDeleteOverride = useCallback(
+    (flagName: string, tid: string) => {
+      setMutatingFlag(flagName);
+      deleteOverride.mutate(
+        { teamIdentifier: tid, flagName },
+        {
+          onSettled: () => setMutatingFlag(null),
+          onSuccess: () => setShowBanner(true),
+        },
+      );
+    },
+    [deleteOverride],
+  );
+
+  const overrideCount =
+    teamFlags && globalFlags
+      ? Object.keys(teamFlags).filter((k) =>
+          isOverridden(teamFlags[k], globalFlags[k]),
+        ).length
+      : 0;
+
+  return (
+    <div className="space-y-4">
+      <PropagationBanner
+        visible={showBanner}
+        onDismiss={() => setShowBanner(false)}
+      />
+
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <Flag className="h-4 w-4 text-primary-500" />
+          <h2 className="text-sm font-semibold text-text-primary">
+            Feature Flags
+          </h2>
+          <span className="text-[10px] font-mono text-text-muted">
+            {teamIdentifier}
+          </span>
+          {overrideCount > 0 && (
+            <span className="text-xs font-medium text-amber-600">
+              {overrideCount} override{overrideCount !== 1 ? "s" : ""}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowOverrideOnly(!showOverrideOnly)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              showOverrideOnly
+                ? "bg-amber-50 text-amber-700 border border-amber-200"
+                : "text-text-secondary hover:bg-surface-inset border border-border-default"
+            }`}
+          >
+            <Filter className="h-3 w-3" />
+            Overrides only
+          </button>
+          <RefreshButton
+            onClick={() => {
+              refetchGlobal();
+              refetchTeam();
+            }}
+            isRefreshing={globalFetching || teamFetching}
+          />
+        </div>
+      </div>
+
+      <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
+        {teamLoading ? (
+          <div className="text-center py-12 text-text-muted text-sm">
+            Evaluating flags...
+          </div>
+        ) : teamFlags ? (
+          <TeamOverrideTable
+            flags={teamFlags}
+            globalFlags={globalFlags}
+            showOverrideOnly={showOverrideOnly}
+            teamIdentifier={teamIdentifier}
+            onUpsertOverride={handleUpsertOverride}
+            onDeleteOverride={handleDeleteOverride}
+            mutatingFlag={mutatingFlag}
+          />
+        ) : (
+          <div className="text-center py-12 text-text-muted">
+            <Building2 className="h-10 w-10 mx-auto mb-3 opacity-40" />
+            <p className="text-sm">No flag data available for this team</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 // --- Segment override row ---
 
 const SegmentOverrideRow = ({
@@ -1216,7 +1575,7 @@ export const SegmentFeatureFlags = () => {
         <div className="bg-surface-card rounded-lg border border-border-default overflow-hidden">
           <div className="text-center py-12 text-text-muted">
             <Layers className="h-10 w-10 mx-auto mb-3 opacity-40" />
-            <p className="text-sm">No segments configured in Flagsmith</p>
+            <p className="text-sm">No segments configured</p>
           </div>
         </div>
       )}

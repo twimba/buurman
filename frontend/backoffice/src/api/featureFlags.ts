@@ -75,6 +75,22 @@ export const featureFlagsApi = {
       `/feature-flags/identities/${userIdentifier}/teams/${teamIdentifier}/${flagName}`,
     ),
 
+  getForTeam: (teamIdentifier: string) =>
+    client.get<FlagMap>(`/feature-flags/teams/${teamIdentifier}`),
+
+  upsertTeamOverride: (
+    teamIdentifier: string,
+    flagName: string,
+    data: UpdateFlagRequest,
+  ) =>
+    client.put<FeatureFlagUpdateResponse>(
+      `/feature-flags/teams/${teamIdentifier}/${flagName}`,
+      data,
+    ),
+
+  deleteTeamOverride: (teamIdentifier: string, flagName: string) =>
+    client.delete(`/feature-flags/teams/${teamIdentifier}/${flagName}`),
+
   getSegments: () => client.get<SegmentEvaluation[]>("/feature-flags/segments"),
 
   upsertSegmentOverride: (

@@ -1,8 +1,11 @@
 package com.buurman.util;
 
+import java.util.List;
+import java.util.Map;
+
 /**
- * Feature flag key constants. Prevents typos and enables IDE navigation. Keep in sync with
- * Flagsmith dashboard and app/src/constants/featureFlags.ts.
+ * Feature flag key constants. Prevents typos and enables IDE navigation. Keep in sync with the
+ * feature_flags DB table and frontend/app/src/constants/featureFlags.ts.
  */
 public final class FeatureFlags {
 
@@ -17,4 +20,34 @@ public final class FeatureFlags {
   public static final String TAKEOUT_MAX_EXPORTS = "takeout_max_exports";
   public static final String EXCEL_EXPORT = "excel_export";
   public static final String SWAGGER = "swagger";
+
+  public static final List<String> ALL_KEYS =
+      List.of(
+          REPORTS,
+          INVITATION_REQUIRED,
+          SMS_NOTIFICATIONS,
+          EMAIL_NOTIFICATIONS,
+          BLOCK_EMAIL_NOTIFICATIONS,
+          BLOCK_SMS_NOTIFICATIONS,
+          TAKEOUT_MAX_EXPORTS,
+          EXCEL_EXPORT,
+          SWAGGER);
+
+  /** Compile-time defaults — ultimate fallback when both cache and DB are unreachable. */
+  public static final Map<String, Boolean> DEFAULTS =
+      Map.of(
+          REPORTS, true,
+          INVITATION_REQUIRED, true,
+          SMS_NOTIFICATIONS, false,
+          EMAIL_NOTIFICATIONS, true,
+          BLOCK_EMAIL_NOTIFICATIONS, false,
+          BLOCK_SMS_NOTIFICATIONS, false,
+          TAKEOUT_MAX_EXPORTS, true,
+          EXCEL_EXPORT, false,
+          SWAGGER, true);
+
+  /** Returns the compile-time default for a flag key, or false for unknown keys. */
+  public static boolean defaultEnabled(String flagKey) {
+    return Boolean.TRUE.equals(DEFAULTS.get(flagKey));
+  }
 }

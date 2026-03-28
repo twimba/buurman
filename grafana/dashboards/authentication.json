@@ -23,7 +23,9 @@
     { "title": "Database", "type": "link", "url": "/d/buurman-database", "icon": "dashboard", "tooltip": "PostgreSQL & HikariCP", "targetBlank": false },
     { "title": "Business", "type": "link", "url": "/d/buurman-business", "icon": "dashboard", "tooltip": "Business Metrics", "targetBlank": false },
     { "title": "Integrations", "type": "link", "url": "/d/buurman-integrations", "icon": "dashboard", "tooltip": "S3, Notifications, Geocoding", "targetBlank": false },
-    { "title": "Hetzner", "type": "link", "url": "/d/hetzner-servers", "icon": "dashboard", "tooltip": "Server Infrastructure", "targetBlank": false }
+    { "title": "Hetzner", "type": "link", "url": "/d/hetzner-servers", "icon": "dashboard", "tooltip": "Server Infrastructure", "targetBlank": false },
+    { "title": "Feature Flags", "type": "link", "url": "/d/buurman-feature-flags", "icon": "dashboard", "tooltip": "Feature Flag Metrics", "targetBlank": false },
+    { "title": "Rate Limiting", "type": "link", "url": "/d/rate-limiting", "icon": "dashboard", "tooltip": "Rate Limiting Metrics", "targetBlank": false }
   ],
   "panels": [
     {

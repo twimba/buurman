@@ -440,6 +440,13 @@ public class DemoDataService {
         dsl.deleteFrom(TEAM_INVITATIONS).where(TEAM_INVITATIONS.TEAM_ID.in(demoTeamIds)).execute();
     log.debug("Deleted {} team invitations", deleted);
 
+    // 17a. Feature flag overrides (FK -> teams, users)
+    deleted =
+        dsl.deleteFrom(DSL.table("feature_flag_overrides"))
+            .where(DSL.field("team_id", java.util.UUID.class).in(demoTeamIds))
+            .execute();
+    log.debug("Deleted {} feature flag overrides", deleted);
+
     // 17. Team members
     deleted = dsl.deleteFrom(TEAM_MEMBERS).where(TEAM_MEMBERS.TEAM_ID.in(demoTeamIds)).execute();
     log.debug("Deleted {} team members", deleted);

@@ -592,22 +592,44 @@ WHERE
 
 -- Create a rent period for contracts that have rent components but no rent periods at all.
 -- This handles orphaned data where components exist without a corresponding period.
-INSERT INTO contract_rent_periods (identifier, team_id, contract_id, rent_amount, currency, effective_from, created_at, updated_at, created_by, updated_by)
-SELECT DISTINCT ON (crc.contract_id)
-    'CRP' || upper(substring(replace(gen_random_uuid()::text, '-', '') from 1 for 26)),
+INSERT INTO
+    contract_rent_periods (
+        identifier,
+        team_id,
+        contract_id,
+        rent_amount,
+        currency,
+        effective_from,
+        created_at,
+        updated_at,
+        created_by,
+        updated_by
+    )
+SELECT DISTINCT
+    ON (crc.contract_id) 'CRP' || upper(
+        substring(
+            replace(gen_random_uuid()::TEXT, '-', '')
+            FROM
+                1 FOR 26
+        )
+    ),
     crc.team_id,
     crc.contract_id,
     crc.amount,
     crc.currency,
-    COALESCE(c.start_date, CURRENT_DATE),
+    coalesce(c.start_date, CURRENT_DATE),
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP,
     crc.created_by,
     crc.updated_by
-FROM contract_rent_components crc
-JOIN contracts c ON c.id = crc.contract_id
-WHERE crc.rent_period_id IS NULL
-ORDER BY crc.contract_id, crc.created_at ASC;
+FROM
+    contract_rent_components crc
+    JOIN contracts c ON c.id = crc.contract_id
+WHERE
+    crc.rent_period_id IS NULL
+ORDER BY
+    crc.contract_id,
+    crc.created_at ASC;
 
 -- Link the remaining orphaned components to their newly created rent period
 UPDATE contract_rent_components crc
