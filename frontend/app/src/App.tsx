@@ -74,6 +74,11 @@ const ContactEditPage = lazy(() =>
     default: m.ContactEditPage,
   }))
 );
+const ImportHistoryPage = lazy(() =>
+  import('./pages/ImportHistoryPage').then((m) => ({
+    default: m.ImportHistoryPage,
+  }))
+);
 const ContractsPage = lazy(() =>
   import('./pages/ContractsPage').then((m) => ({ default: m.ContractsPage }))
 );
@@ -287,6 +292,16 @@ function App() {
                             <ProtectedRoute>
                               <Layout>
                                 <ContactListPage />
+                              </Layout>
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/contacts/imports"
+                          element={
+                            <ProtectedRoute>
+                              <Layout>
+                                <ImportHistoryPage />
                               </Layout>
                             </ProtectedRoute>
                           }

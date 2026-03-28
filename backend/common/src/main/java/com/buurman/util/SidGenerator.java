@@ -10,6 +10,7 @@ import com.buurman.domain.identifier.ContactNoteIdentifier;
 import com.buurman.domain.identifier.ContactRelationshipIdentifier;
 import com.buurman.domain.identifier.ContractExtensionIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
+import com.buurman.domain.identifier.DataImportIdentifier;
 import com.buurman.domain.identifier.ContractPartyIdentifier;
 import com.buurman.domain.identifier.ContractPaymentInstructionIdentifier;
 import com.buurman.domain.identifier.ContractRentPeriodIdentifier;
@@ -89,6 +90,10 @@ public class SidGenerator {
 
   public static ContractPaymentInstructionIdentifier newContractPaymentInstructionId() {
     return ContractPaymentInstructionIdentifier.of(generateRaw(EntityPrefix.CPI));
+  }
+
+  public static DataImportIdentifier newDataImportId() {
+    return DataImportIdentifier.of(generateRaw(EntityPrefix.DIM));
   }
 
   public static DocumentIdentifier newDocumentId() {

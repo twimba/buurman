@@ -10,6 +10,8 @@ public enum EntityPrefix {
   CTP("CTP", "Contract Parties"),
   CAL("CAL", "Calendar Feeds"),
   CON("CON", "Contracts"),
+  DII("DII", "Data Import Items"),
+  DIM("DIM", "Data Imports"),
   DOC("DOC", "Documents"),
   EXP("EXP", "Expenses"),
   GRP("GRP", "Generated Reports"),

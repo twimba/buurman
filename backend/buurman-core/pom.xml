@@ -102,6 +102,16 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
 
+        <!-- CSV/Excel parsing for imports -->
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+        </dependency>
+
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -335,6 +345,21 @@
                                 <schemaMapping>RentRegulationRuleIdentifier=com.buurman.domain.identifier.RentRegulationRuleIdentifier</schemaMapping>
                                 <schemaMapping>BroadcastMessageIdentifier=com.buurman.domain.identifier.BroadcastMessageIdentifier</schemaMapping>
                                 <schemaMapping>DataTakeoutIdentifier=com.buurman.domain.identifier.DataTakeoutIdentifier</schemaMapping>
+                                <schemaMapping>DataImportIdentifier=com.buurman.domain.identifier.DataImportIdentifier</schemaMapping>
+                                <schemaMapping>PageResponseDataImportResponse=com.buurman.dto.response.PageResponse</schemaMapping>
+                                <!-- BUUR-82: Data Import schema mappings -->
+                                <schemaMapping>ImportUploadResponse=com.buurman.dto.response.ImportUploadResponse</schemaMapping>
+                                <schemaMapping>ImportPreviewRequest=com.buurman.dto.request.ImportPreviewRequest</schemaMapping>
+                                <schemaMapping>ImportPreviewItemResponse=com.buurman.dto.response.ImportPreviewItemResponse</schemaMapping>
+                                <schemaMapping>ImportPreviewResponse=com.buurman.dto.response.ImportPreviewResponse</schemaMapping>
+                                <schemaMapping>ImportExecuteRequest=com.buurman.dto.request.ImportExecuteRequest</schemaMapping>
+                                <schemaMapping>ImportExecuteResponse=com.buurman.dto.response.ImportExecuteResponse</schemaMapping>
+                                <schemaMapping>DataImportResponse=com.buurman.dto.response.DataImportResponse</schemaMapping>
+                                <schemaMapping>DataImportDetailResponse=com.buurman.dto.response.DataImportDetailResponse</schemaMapping>
+                                <schemaMapping>DataImportItemResponse=com.buurman.dto.response.DataImportItemResponse</schemaMapping>
+                                <schemaMapping>ImportRevertResponse=com.buurman.dto.response.ImportRevertResponse</schemaMapping>
+                                <schemaMapping>DataImportStatus=com.buurman.domain.DataImportStatus</schemaMapping>
+                                <schemaMapping>DataImportEntityType=com.buurman.domain.DataImportEntityType</schemaMapping>
                                 <schemaMapping>PageResponseTakeoutResponse=com.buurman.dto.response.PageResponse</schemaMapping>
                                 <!-- BUUR-77: Contact schema mappings -->
                                 <schemaMapping>ContactListItemResponse=com.buurman.dto.response.ContactListItemResponse</schemaMapping>

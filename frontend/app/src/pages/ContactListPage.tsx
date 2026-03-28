@@ -15,6 +15,7 @@ import {
   ChevronUp,
   Save,
   Download,
+  Upload,
   ArrowUpDown,
 } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
@@ -32,6 +33,7 @@ import {
   useDuplicateCheck,
   DuplicateContactWarning,
 } from '@/components/contacts/DuplicateContactWarning';
+import { ImportWizard } from '@/components/contacts/ImportWizard';
 
 const CONTACT_TYPES: ContactType[] = [
   'INDIVIDUAL',
@@ -202,6 +204,7 @@ export const ContactListPage = () => {
   };
 
   const [isExporting, setIsExporting] = useState(false);
+  const [showImportWizard, setShowImportWizard] = useState(false);
 
   const handleExportCsv = async () => {
     setIsExporting(true);
@@ -268,6 +271,16 @@ export const ContactListPage = () => {
               <Download className="h-4 w-4" />
               CSV
             </button>
+            {canEditData && (
+              <button
+                onClick={() => setShowImportWizard(true)}
+                className="border border-border-strong bg-surface-card text-text-secondary px-3 py-2 rounded hover:border-primary-500 transition-colors flex items-center gap-1.5 text-sm"
+                title="Import contacts from file"
+              >
+                <Upload className="h-4 w-4" />
+                Import
+              </button>
+            )}
             {canEditData && (
               <button
                 onClick={() => setShowQuickAdd(!showQuickAdd)}
@@ -690,6 +703,10 @@ export const ContactListPage = () => {
           </div>
         )}
       </div>
+      <ImportWizard
+        open={showImportWizard}
+        onClose={() => setShowImportWizard(false)}
+      />
     </div>
   );
 };

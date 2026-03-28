@@ -137,6 +137,29 @@ public class ContactRepository {
         .map(mapper::toDomain);
   }
 
+  public Map<String, Contact> findByEmailsAndTeamId(
+      Collection<String> emails, UUID teamId) {
+    if (emails.isEmpty()) {
+      return Map.of();
+    }
+    return dsl.selectFrom(CONTACTS)
+        .where(
+            CONTACTS
+                .EMAIL
+                .in(emails)
+                .and(CONTACTS.TEAM_ID.eq(teamId))
+                .and(CONTACTS.DELETED_AT.isNull()))
+        .fetch()
+        .stream()
+        .map(mapper::toDomain)
+        .filter(c -> c.getEmail().isPresent())
+        .collect(
+            java.util.stream.Collectors.toMap(
+                c -> c.getEmail().orElseThrow(),
+                c -> c,
+                (a, b) -> a));
+  }
+
   public Contact save(Contact contact) {
     LocalDateTime now = LocalDateTime.now(clock);
 
