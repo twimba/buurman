@@ -28,13 +28,10 @@ public class JurisdictionDefaultController {
   @PreAuthorize("isAuthenticated()")
   public JurisdictionDefaultResponse getDefaults(
       @RequestParam @Size(min = 2, max = 2) @Pattern(regexp = "[A-Z]{2}") String countryCode,
-      @RequestParam(required = false) String regionCode,
-      @RequestParam(required = false) String landlordType,
-      @RequestParam(required = false) Boolean furnished) {
+      @RequestParam Optional<String> regionCode,
+      @RequestParam Optional<String> landlordType,
+      @RequestParam Optional<Boolean> furnished) {
     return jurisdictionDefaultService.getDefaults(
-        countryCode,
-        Optional.ofNullable(regionCode),
-        Optional.ofNullable(landlordType),
-        Optional.ofNullable(furnished));
+        countryCode, regionCode, landlordType, furnished);
   }
 }

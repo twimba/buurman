@@ -25,12 +25,11 @@ public class BackofficeRateLimitBucketController {
 
   @GetMapping
   public Map<String, Object> listBuckets(
-      @RequestParam(required = false) String configKey,
-      @RequestParam(required = false) String clientIp,
+      @RequestParam Optional<String> configKey,
+      @RequestParam Optional<String> clientIp,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "50") int size) {
-    return bucketService.listBuckets(
-        Optional.ofNullable(configKey), Optional.ofNullable(clientIp), page, Math.min(size, 200));
+    return bucketService.listBuckets(configKey, clientIp, page, Math.min(size, 200));
   }
 
   @GetMapping("/summary")
