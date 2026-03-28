@@ -1,8 +1,8 @@
 package com.buurman.exception;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public abstract class BuurmanException extends RuntimeException {
   protected BuurmanException(String message) {
     super(message);

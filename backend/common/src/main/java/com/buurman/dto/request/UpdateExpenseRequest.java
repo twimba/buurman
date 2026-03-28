@@ -6,12 +6,12 @@ import java.util.Optional;
 
 import com.buurman.domain.Expense.ExpenseCategory;
 import com.buurman.domain.identifier.ContactIdentifier;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
-@Generated
+@SkipTestCoverage
 public record UpdateExpenseRequest(
     Optional<ExpenseCategory> category,
     Optional<@Positive(message = "Amount must be positive") BigDecimal> amount,

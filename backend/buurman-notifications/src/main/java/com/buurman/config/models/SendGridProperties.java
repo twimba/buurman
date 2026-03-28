@@ -4,10 +4,10 @@ import java.util.Optional;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 @ConfigurationProperties(prefix = "sendgrid")
-@Generated
+@SkipTestCoverage
 public record SendGridProperties(
     String apiKey, String fromEmail, String fromName, Optional<String> webhookVerificationKey) {
 

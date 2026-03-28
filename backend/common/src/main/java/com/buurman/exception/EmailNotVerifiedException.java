@@ -1,8 +1,8 @@
 package com.buurman.exception;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public class EmailNotVerifiedException extends ForbiddenException {
   public EmailNotVerifiedException(String message) {
     super(message);

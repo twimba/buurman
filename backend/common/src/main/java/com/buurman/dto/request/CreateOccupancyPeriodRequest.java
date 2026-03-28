@@ -5,13 +5,13 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.PropertyOccupancyPeriod.OccupancyType;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 
-@Generated
+@SkipTestCoverage
 public record CreateOccupancyPeriodRequest(
     @NotNull(message = "Start date is required") LocalDate startDate,
     @NotNull(message = "Occupancy type is required") OccupancyType type,

@@ -2,10 +2,10 @@ package com.buurman.config.models;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 @ConfigurationProperties(prefix = "notification.consolidation")
-@Generated
+@SkipTestCoverage
 public record NotificationConsolidationProperties(
     boolean enabled, EmailConsolidation email, SmsConsolidation sms) {
 

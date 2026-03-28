@@ -3,12 +3,12 @@ package com.buurman.dto.request;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 
-@Generated
+@SkipTestCoverage
 public record IndustrialDetailsRequest(
     Optional<@Positive(message = "Clear height must be positive") BigDecimal> clearHeightValue,
     Optional<String> clearHeightUnit,

@@ -5,12 +5,12 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.PropertyFinancing;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
-@Generated
+@SkipTestCoverage
 public record UpdatePropertyFinancingRequest(
     Optional<PropertyFinancing.FinancingType> financingType,
     Optional<PropertyFinancing.RateType> rateType,

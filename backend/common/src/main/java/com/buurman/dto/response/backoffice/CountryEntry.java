@@ -1,6 +1,6 @@
 package com.buurman.dto.response.backoffice;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record CountryEntry(String code, String name) {}

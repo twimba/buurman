@@ -5,11 +5,11 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.ContractExtension;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.Positive;
 
-@Generated
+@SkipTestCoverage
 public record CreateContractExtensionRequest(
     Optional<LocalDate> newEndDate,
     Optional<@Positive(message = "New rent amount must be positive") BigDecimal> newRentAmount,

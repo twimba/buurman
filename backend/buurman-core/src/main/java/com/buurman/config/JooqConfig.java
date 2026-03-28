@@ -11,10 +11,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 @Configuration
-@Generated
+@SkipTestCoverage
 public class JooqConfig {
 
   @Bean

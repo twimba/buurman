@@ -1,6 +1,6 @@
 package com.buurman.dto.request.backoffice;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record RescheduleRequest(String cronExpression) {}

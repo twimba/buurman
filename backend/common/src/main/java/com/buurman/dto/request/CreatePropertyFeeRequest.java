@@ -5,13 +5,13 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.PropertyFee;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-@Generated
+@SkipTestCoverage
 public record CreatePropertyFeeRequest(
     @NotNull(message = "Fee type is required") PropertyFee.FeeType feeType,
     Optional<String> name,

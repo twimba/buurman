@@ -5,9 +5,9 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.identifier.ContractIdentifier;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record RentIncreaseResult(
     ContractIdentifier contractIdentifier,
     String propertyName,

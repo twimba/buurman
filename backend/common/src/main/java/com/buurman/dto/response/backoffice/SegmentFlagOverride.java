@@ -2,8 +2,8 @@ package com.buurman.dto.response.backoffice;
 
 import org.jspecify.annotations.Nullable;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record SegmentFlagOverride(
     @Nullable String flagName, boolean enabled, @Nullable Object value) {}

@@ -9,10 +9,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.buurman.job.TakeoutCleanupJob;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 @Configuration
-@Generated
+@SkipTestCoverage
 public class TakeoutQuartzConfig {
 
   @Bean

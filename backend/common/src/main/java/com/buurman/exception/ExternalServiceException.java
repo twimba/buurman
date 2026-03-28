@@ -1,8 +1,8 @@
 package com.buurman.exception;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public class ExternalServiceException extends BuurmanException {
   public ExternalServiceException(String message) {
     super(message);

@@ -3,9 +3,9 @@ package com.buurman.dto.response;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record TaxSummaryResponse(
     int year,
     BigDecimal totalIncome,

@@ -17,10 +17,10 @@ import com.buurman.job.PaymentGenerationJob;
 import com.buurman.job.RateLimitCleanupJob;
 import com.buurman.job.ThumbnailBackfillJob;
 import com.buurman.job.VerificationCodeCleanupJob;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 @Configuration
-@Generated
+@SkipTestCoverage
 public class QuartzJobsConfig {
 
   // ── Payment Generation ──────────────────────────────────────────────────

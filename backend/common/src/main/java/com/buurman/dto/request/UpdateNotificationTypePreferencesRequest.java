@@ -2,12 +2,12 @@ package com.buurman.dto.request;
 
 import java.util.List;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
-@Generated
+@SkipTestCoverage
 public record UpdateNotificationTypePreferencesRequest(@Valid @NotNull List<Entry> preferences) {
   public record Entry(
       @NotNull String notificationType,

@@ -5,9 +5,9 @@ import java.util.Optional;
 import com.buurman.domain.ContactType;
 import com.buurman.domain.DataRetentionStatus;
 import com.buurman.domain.Sid;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record ContactSummary(
     Sid identifier,
     ContactType contactType,

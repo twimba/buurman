@@ -10,9 +10,9 @@ import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
 import com.buurman.domain.Sid;
 import com.buurman.domain.metadata.ContractCountryMetadata;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record ContractResponse(
     Sid identifier,
     Optional<PropertySummary> property,

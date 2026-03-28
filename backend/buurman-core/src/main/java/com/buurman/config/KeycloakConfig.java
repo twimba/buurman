@@ -7,13 +7,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.buurman.config.models.KeycloakProperties;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
-@Generated
+@SkipTestCoverage
 public class KeycloakConfig {
 
   private final KeycloakProperties keycloakProperties;

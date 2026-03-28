@@ -4,10 +4,10 @@ import java.util.Optional;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 @ConfigurationProperties(prefix = "aws.s3")
-@Generated
+@SkipTestCoverage
 public record AwsS3Properties(
     Optional<String> endpoint,
     String region,

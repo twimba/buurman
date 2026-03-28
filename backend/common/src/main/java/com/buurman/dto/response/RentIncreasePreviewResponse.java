@@ -2,9 +2,9 @@ package com.buurman.dto.response;
 
 import java.util.List;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record RentIncreasePreviewResponse(
     int year,
     List<RentIncreaseCountrySummary> countrySummaries,

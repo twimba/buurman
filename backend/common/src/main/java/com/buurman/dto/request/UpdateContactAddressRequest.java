@@ -3,12 +3,12 @@ package com.buurman.dto.request;
 import java.util.Optional;
 
 import com.buurman.domain.ContactAddress;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-@Generated
+@SkipTestCoverage
 public record UpdateContactAddressRequest(
     @NotBlank(message = "Street is required") String street,
     @NotBlank(message = "City is required") String city,

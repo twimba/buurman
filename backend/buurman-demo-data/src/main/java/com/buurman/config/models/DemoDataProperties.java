@@ -2,8 +2,8 @@ package com.buurman.config.models;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 @ConfigurationProperties(prefix = "buurman.demo")
-@Generated
+@SkipTestCoverage
 public record DemoDataProperties(boolean enabled, String cron) {}

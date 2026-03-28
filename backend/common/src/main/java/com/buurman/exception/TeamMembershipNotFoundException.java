@@ -1,8 +1,8 @@
 package com.buurman.exception;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public class TeamMembershipNotFoundException extends NotFoundException {
   public TeamMembershipNotFoundException(String message) {
     super(message);

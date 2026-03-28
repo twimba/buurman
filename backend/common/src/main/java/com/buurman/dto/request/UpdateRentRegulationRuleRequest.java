@@ -6,13 +6,13 @@ import java.util.Optional;
 
 import com.buurman.domain.MaxIncreaseType;
 import com.buurman.domain.RentFrequency;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-@Generated
+@SkipTestCoverage
 public record UpdateRentRegulationRuleRequest(
     @Min(1900) int year,
     @NotBlank String propertyCategory,

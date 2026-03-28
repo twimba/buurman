@@ -5,12 +5,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import com.buurman.config.models.SendGridProperties;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 import com.sendgrid.SendGrid;
 
 @Configuration
 @Profile("!local")
-@Generated
+@SkipTestCoverage
 public class SendGridConfig {
 
   @Bean

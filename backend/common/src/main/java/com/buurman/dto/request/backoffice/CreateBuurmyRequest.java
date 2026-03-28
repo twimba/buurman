@@ -2,13 +2,13 @@ package com.buurman.dto.request.backoffice;
 
 import java.util.Optional;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-@Generated
+@SkipTestCoverage
 public record CreateBuurmyRequest(
     @NotBlank @Email String email,
     Optional<@Size(min = 3, max = 50) String> username,

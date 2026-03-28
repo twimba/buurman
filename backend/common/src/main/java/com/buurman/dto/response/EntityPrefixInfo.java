@@ -1,6 +1,6 @@
 package com.buurman.dto.response;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record EntityPrefixInfo(String prefix, String entity) {}

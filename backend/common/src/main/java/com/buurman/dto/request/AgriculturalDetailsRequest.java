@@ -3,11 +3,11 @@ package com.buurman.dto.request;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.Positive;
 
-@Generated
+@SkipTestCoverage
 public record AgriculturalDetailsRequest(
     Optional<@Positive(message = "Total land area must be positive") BigDecimal> totalLandAreaValue,
     Optional<String> totalLandAreaUnit,

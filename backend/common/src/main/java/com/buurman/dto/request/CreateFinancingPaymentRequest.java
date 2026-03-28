@@ -5,14 +5,14 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import com.buurman.domain.FinancingPayment;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
-@Generated
+@SkipTestCoverage
 public record CreateFinancingPaymentRequest(
     @NotNull(message = "Payment date is required") LocalDate paymentDate,
     @NotNull(message = "Total amount is required") @Positive(message = "Total amount must be positive") BigDecimal totalAmount,

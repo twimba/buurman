@@ -11,11 +11,11 @@ import org.springframework.context.annotation.Configuration;
 
 import com.buurman.config.models.DemoDataProperties;
 import com.buurman.job.DemoDataRegenerationJob;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 @Configuration
 @ConditionalOnProperty(name = "buurman.demo.enabled", havingValue = "true")
-@Generated
+@SkipTestCoverage
 public class DemoQuartzConfig {
 
   @Bean

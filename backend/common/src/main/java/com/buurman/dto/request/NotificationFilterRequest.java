@@ -2,9 +2,9 @@ package com.buurman.dto.request;
 
 import java.util.Optional;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record NotificationFilterRequest(
     Optional<String> type,
     Optional<String> channel,

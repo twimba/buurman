@@ -7,14 +7,14 @@ import java.util.Optional;
 import com.buurman.domain.Expense;
 import com.buurman.domain.identifier.ContactIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
-@Generated
+@SkipTestCoverage
 public record CreateExpenseRequest(
     @NotNull(message = "Property identifier is required") PropertyIdentifier propertyIdentifier,
     @NotNull(message = "Category is required") Expense.ExpenseCategory category,

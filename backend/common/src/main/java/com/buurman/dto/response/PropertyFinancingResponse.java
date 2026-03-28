@@ -7,9 +7,9 @@ import java.util.Optional;
 
 import com.buurman.domain.PropertyFinancing;
 import com.buurman.domain.Sid;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record PropertyFinancingResponse(
     Sid identifier,
     Sid propertyIdentifier,

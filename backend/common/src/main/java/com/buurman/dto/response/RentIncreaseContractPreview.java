@@ -6,9 +6,9 @@ import java.util.Optional;
 
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record RentIncreaseContractPreview(
     ContractIdentifier contractIdentifier,
     PropertyIdentifier propertyIdentifier,

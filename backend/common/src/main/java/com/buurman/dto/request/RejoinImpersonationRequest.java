@@ -1,9 +1,9 @@
 package com.buurman.dto.request;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.NotBlank;
 
-@Generated
+@SkipTestCoverage
 public record RejoinImpersonationRequest(
     @NotBlank(message = "Password is required") String password) {}

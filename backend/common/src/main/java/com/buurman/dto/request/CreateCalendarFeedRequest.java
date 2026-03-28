@@ -3,11 +3,11 @@ package com.buurman.dto.request;
 import java.util.Optional;
 
 import com.buurman.domain.CalendarFeed;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
 import jakarta.validation.constraints.NotNull;
 
-@Generated
+@SkipTestCoverage
 public record CreateCalendarFeedRequest(
     @NotNull CalendarFeed.FeedType feedType,
     Optional<String> contractIdentifier,

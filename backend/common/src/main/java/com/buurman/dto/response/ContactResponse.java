@@ -9,9 +9,9 @@ import com.buurman.domain.ContactTag;
 import com.buurman.domain.ContactType;
 import com.buurman.domain.DataRetentionStatus;
 import com.buurman.domain.Sid;
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record ContactResponse(
     Sid identifier,
     ContactType contactType,

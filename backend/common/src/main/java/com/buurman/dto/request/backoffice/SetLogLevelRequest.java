@@ -2,7 +2,7 @@ package com.buurman.dto.request.backoffice;
 
 import java.util.Optional;
 
-import com.buurman.util.Generated;
+import com.buurman.util.SkipTestCoverage;
 
-@Generated
+@SkipTestCoverage
 public record SetLogLevelRequest(Optional<String> level) {}
