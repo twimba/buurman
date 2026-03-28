@@ -1,4 +1,4 @@
-.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend frontend-app frontend-backoffice workspace-setup workspace-teardown test test-coverage hub
+.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend frontend-app frontend-backoffice workspace-setup workspace-teardown test test-coverage test-bdd test-bdd-smoke hub
 
 ## Start everything in Docker (including backend + app containers)
 up:
@@ -87,6 +87,14 @@ frontend-backoffice:
 ## Buurman Hub — workspace directory & service status dashboard (http://localhost:3333)
 hub:
 	python3 scripts/hub/server.py
+
+## Run BDD behavior tests against the live system (requires `make up` first)
+test-bdd:
+	cd tests/bdd && python -m pytest
+
+## Run BDD smoke tests only (fast subset for local development)
+test-bdd-smoke:
+	cd tests/bdd && python -m pytest -m smoke
 
 backend-upgradable-dependencies:
 	mvn versions:display-dependency-updates -DallowMajorUpdates=false -Dversions.outputLineWidth=145 -Dmaven.version.ignore='(?i).*-(alpha|beta|rc|m)([-.]?\d+)?' -DprocessDependencyManagementTransitive=false
