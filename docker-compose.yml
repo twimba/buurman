@@ -346,8 +346,8 @@ services:
   # --------------------------------------------------------------------------
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
       target: dev
     user: "0:991"
     env_file: .env
