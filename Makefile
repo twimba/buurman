@@ -89,14 +89,25 @@ hub:
 	python3 scripts/hub/server.py
 
 BDD_PYTHON := tests/bdd/.venv/bin/python3
+BDD_PYTEST := $(BDD_PYTHON) -m pytest -c tests/bdd/pyproject.toml --rootdir=tests/bdd
+
+# Build workspace-aware BDD URLs from .env (HOSTNAME_PREFIX, HTTPS_PORT)
+# Falls back to defaults if .env is missing or vars are unset
+-include .env
+BDD_HP    := $(HOSTNAME_PREFIX)
+BDD_PORT  := $(or $(HTTPS_PORT),443)
+BDD_PORT_SUFFIX := $(if $(filter 443,$(BDD_PORT)),,$(addprefix :,$(BDD_PORT)))
+BDD_ENV   := BDD_API_URL=https://$(BDD_HP)api.local.buurman.io$(BDD_PORT_SUFFIX) \
+             BDD_KEYCLOAK_URL=https://$(BDD_HP)keycloak.local.buurman.io$(BDD_PORT_SUFFIX) \
+             BDD_MAILPIT_URL=https://$(BDD_HP)mailpit.local.buurman.io$(BDD_PORT_SUFFIX)
 
 ## Run BDD behavior tests against the live system (requires `make up` first)
 test-bdd:
-	$(BDD_PYTHON) -m pytest -c tests/bdd/pyproject.toml --rootdir=tests/bdd
+	$(BDD_ENV) $(BDD_PYTEST)
 
 ## Run BDD smoke tests only (fast subset for local development)
 test-bdd-smoke:
-	$(BDD_PYTHON) -m pytest -c tests/bdd/pyproject.toml --rootdir=tests/bdd -m smoke
+	$(BDD_ENV) $(BDD_PYTEST) -m smoke
 
 ## Start the system, wait for readiness, run BDD tests, then stop everything
 test-bdd-run:
@@ -104,7 +115,7 @@ test-bdd-run:
 	docker compose up -d
 	@echo "Waiting for backend to be ready..."
 	@timeout=180; elapsed=0; \
-	while ! curl -sf -o /dev/null https://api.local.buurman.io/actuator/health --insecure 2>/dev/null; do \
+	while ! curl -sf -o /dev/null https://$(BDD_HP)api.local.buurman.io$(BDD_PORT_SUFFIX)/actuator/health --insecure 2>/dev/null; do \
 		elapsed=$$((elapsed + 3)); \
 		if [ $$elapsed -ge $$timeout ]; then \
 			echo "Timed out waiting for backend after $${timeout}s"; \
@@ -115,7 +126,7 @@ test-bdd-run:
 		sleep 3; \
 	done
 	@echo "\nSystem ready. Running BDD tests..."
-	$(BDD_PYTHON) -m pytest -c tests/bdd/pyproject.toml --rootdir=tests/bdd -v; rc=$$?; \
+	$(BDD_ENV) $(BDD_PYTEST) -v; rc=$$?; \
 	echo ""; \
 	if [ $$rc -eq 0 ]; then echo "All tests passed."; else echo "Some tests failed (exit code $$rc)."; fi; \
 	exit $$rc
