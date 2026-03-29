@@ -34,7 +34,7 @@ jobs:
       - name: Run tests with coverage
         working-directory: backend
         run: |
-          mvn verify -pl common,buurman-core,buurman-notifications,buurman-booklets \
+          mvn verify -pl buurman-common,buurman-core,buurman-notifications,buurman-booklets \
             -am -Pquick -B -Dmaven.build.cache.enabled=false
 
       - name: Generate coverage summary
@@ -55,7 +55,7 @@ jobs:
           TOTAL_METHOD_MISSED=0
           TOTAL_METHOD_COVERED=0
 
-          for MODULE in common buurman-core buurman-notifications buurman-booklets; do
+          for MODULE in buurman-common buurman-core buurman-notifications buurman-booklets; do
             CSV="${MODULE}/target/site/jacoco/jacoco.csv"
             if [ -f "$CSV" ]; then
               # Sum all rows (skip header)

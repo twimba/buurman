@@ -346,3 +346,10 @@ export const exportContactsCsv = async (): Promise<Blob> => {
   });
   return response.data;
 };
+
+export const exportContactsXlsx = async (): Promise<Blob> => {
+  const response = await client.get('/booklets/contacts/xlsx', {
+    responseType: 'blob',
+  });
+  return response.data;
+};

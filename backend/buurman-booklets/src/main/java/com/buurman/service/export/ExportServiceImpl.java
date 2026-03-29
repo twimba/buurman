@@ -37,6 +37,7 @@ public class ExportServiceImpl implements ExportService {
   private final PropertyDashboardExcelExporter propertyDashboardExcelExporter;
   private final PortfolioDashboardExcelExporter portfolioDashboardExcelExporter;
   private final ContactCsvExporter contactCsvExporter;
+  private final ContactExcelExporter contactExcelExporter;
   private final MetricsService metricsService;
   private final Clock clock;
 
@@ -118,6 +119,11 @@ public class ExportServiceImpl implements ExportService {
   @Override
   public byte[] generateContactsCSV(UUID teamId) {
     return withMetrics("contacts_csv", () -> contactCsvExporter.generate(teamId));
+  }
+
+  @Override
+  public byte[] generateContactsExcel(UUID teamId) {
+    return withMetrics("contacts_excel", () -> contactExcelExporter.generate(teamId));
   }
 
   private byte[] withMetrics(String exportType, Supplier<byte[]> generator) {

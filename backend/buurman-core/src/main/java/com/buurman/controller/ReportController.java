@@ -154,5 +154,4 @@ public class ReportController implements ReportsApi {
     return exportService.generateTransactionHistoryExcel(
         startDate, endDate, principal.requireTeamId());
   }
-
 }

@@ -59,28 +59,43 @@ const navigation: NavItem[] = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Teams", href: "/teams", icon: Users },
   { name: "Users", href: "/users", icon: UserCog },
+  {
+    name: "Impersonation",
+    href: "/impersonation",
+    icon: UserCheck,
+    indent: true,
+  },
+  {
+    name: "Invitations",
+    href: "/registration-invitations",
+    icon: Ticket,
+    indent: true,
+  },
   { name: "Notifications", href: "/notifications", icon: Bell },
+  {
+    name: "SMS Policy",
+    href: "/sms-policy",
+    icon: MessageSquare,
+    indent: true,
+  },
   { name: "Broadcasts", href: "/broadcasts", icon: Radio },
-  { name: "SMS Policy", href: "/sms-policy", icon: MessageSquare },
-  { name: "Invitations", href: "/registration-invitations", icon: Ticket },
   { name: "Rent Regulations", href: "/rent-regulations", icon: BookOpen },
   { name: "Feature Flags", href: "/feature-flags", icon: Flag },
   { name: "Segments", href: "/segments", icon: Layers, indent: true },
-  { name: "Impersonation", href: "/impersonation", icon: UserCheck },
 ];
 
 const adminNavigation = [
   { name: "Buurmies", href: "/buurmies", icon: Smile },
-  { name: "Scheduler", href: "/scheduler", icon: Timer },
-  { name: "Caches", href: "/caches", icon: Database },
-  { name: "Rate Limits", href: "/rate-limits", icon: Shield },
-  { name: "Loggers", href: "/loggers", icon: ScrollText },
   {
     name: "System",
     href: "/system",
     icon: Monitor,
     role: "BACKOFFICE_SYSTEM" as const,
   },
+  { name: "Scheduler", href: "/scheduler", icon: Timer, indent: true },
+  { name: "Caches", href: "/caches", icon: Database, indent: true },
+  { name: "Rate Limits", href: "/rate-limits", icon: Shield, indent: true },
+  { name: "Loggers", href: "/loggers", icon: ScrollText, indent: true },
 ];
 
 const isLocalEnv = () => window.location.hostname.includes("local.buurman.io");
@@ -308,10 +323,22 @@ export const Layout = () => {
                         <NavLink
                           to={item.href}
                           className={({ isActive }) =>
-                            navLinkClass(isActive, collapsed)
+                            item.indent
+                              ? `flex items-center gap-2.5 ${collapsed ? "px-3 py-2 justify-center" : "pl-10 pr-3 py-2"} rounded-lg text-[13px] transition-all duration-200 ${
+                                  isActive
+                                    ? "bg-primary-50 text-primary-700 font-semibold"
+                                    : "text-text-secondary hover:bg-neutral-50 hover:text-text-primary"
+                                }`
+                              : navLinkClass(isActive, collapsed)
                           }
                         >
-                          <item.icon className="h-5 w-5 flex-shrink-0" />
+                          <item.icon
+                            className={
+                              item.indent
+                                ? "h-4 w-4 flex-shrink-0"
+                                : "h-5 w-5 flex-shrink-0"
+                            }
+                          />
                           {!collapsed && (
                             <span className="truncate">{item.name}</span>
                           )}

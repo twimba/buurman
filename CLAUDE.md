@@ -31,8 +31,8 @@ Buurman is a property management dashboard for small landlords (properties, tena
 ### Backend (Spring Boot/Maven — Multi-Module)
 
 The backend is a 10-module Maven project:
-- `common` — domain, DTOs, utils (no Spring deps)
-- `jooq` — JOOQ codegen + Flyway migrations
+- `buurman-common` — domain, DTOs, utils (no Spring deps)
+- `buurman-jooq` — JOOQ codegen + Flyway migrations
 - `buurman` — core services, repos, mappers, config, security (`buurman-core`)
 - `buurman-notifications` — notification system (email/SMS, outbox, webhooks)
 - `buurman-backoffice` — backoffice admin controllers/services/repos (depends on core + notifications)
@@ -45,7 +45,7 @@ The backend is a 10-module Maven project:
 - Run: `cd backend && mvn spring-boot:run -pl buurman-app -am` (port **8081**)
 - Quick build (skip formatting): `cd backend && mvn package -DskipTests -Pquick`
 - Tests: `cd backend && mvn test` / `mvn test -pl buurman-core -Dtest=ClassName#methodName`
-- Regenerate JOOQ after migration changes: `cd backend && mvn generate-sources -pl jooq -am`
+- Regenerate JOOQ after migration changes: `cd backend && mvn generate-sources -pl buurman-jooq -am`
 - Build cache: enabled locally (`.mvn/extensions.xml`), disabled in CI (`-Dmaven.build.cache.enabled=false`)
 
 ### Frontend (React/Vite/Yarn 4)
@@ -100,7 +100,7 @@ Commands (via Makefile):
 - Path files use `$ref: '#/components/schemas/...'` — these resolve correctly in the bundled output
 
 ### Database Migrations (Flyway)
-- Location: `backend/jooq/src/main/resources/db/migration/`
+- Location: `backend/buurman-jooq/src/main/resources/db/migration/`
 - Convention: `V<version>__<description>.sql` (currently at V028)
 - Auto-applied on startup. **Never modify existing migrations.**
 
@@ -132,14 +132,14 @@ Commands (via Makefile):
 ### Backend Module Structure
 ```
 backend/
-├── common/                  Leaf module (~381 files, no Spring deps)
+├── buurman-common/          Leaf module (~381 files, no Spring deps)
 │   └── com.buurman
 │       ├── domain/              POJOs, Sid, typed identifiers, enums
 │       ├── dto/                 Request + response DTOs
 │       ├── exception/           Custom exceptions (not GlobalExceptionHandler)
 │       ├── util/                SidGenerator, EntityPrefix, MoneyAmount, DateUtils
 │       └── config/jooq/         SidJooqConverter, MoneyMinorUnitConverter
-├── jooq/                    JOOQ codegen + Flyway migrations (0 hand-written Java)
+├── buurman-jooq/            JOOQ codegen + Flyway migrations (0 hand-written Java)
 │   ├── src/main/resources/db/migration/  (28 SQL migrations)
 │   └── target/generated-sources/jooq/   (generated JOOQ records)
 ├── buurman-core/            Core module (~259 files, buurman-core)
@@ -253,10 +253,10 @@ frontend/
 - Always test multi-tenant isolation
 
 ## Adding a New Entity (Checklist)
-1. Flyway migration in `backend/jooq/src/main/resources/db/migration/` (next version after V028)
-2. Regenerate JOOQ: `cd backend && mvn generate-sources -pl jooq -am`
-3. Domain POJO in `backend/common/src/.../domain/`
-4. Request/Response DTOs in `backend/common/src/.../dto/`
+1. Flyway migration in `backend/buurman-jooq/src/main/resources/db/migration/` (next version after V028)
+2. Regenerate JOOQ: `cd backend && mvn generate-sources -pl buurman-jooq -am`
+3. Domain POJO in `backend/buurman-common/src/.../domain/`
+4. Request/Response DTOs in `backend/buurman-common/src/.../dto/`
 5. JOOQ repository in `backend/buurman-core/src/.../repository/` with manual `team_id` filtering
 6. MapStruct mapper in `backend/buurman-core/src/.../mapper/`
 7. Service with `@Transactional` and `@PreAuthorize` in `backend/buurman-core/src/.../service/`

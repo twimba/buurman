@@ -58,6 +58,15 @@ public class BookletController implements BookletsApi {
   }
 
   @Override
+  public byte[] exportContactsXlsx() {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    httpServletResponse.setHeader("Content-Disposition", "attachment; filename=contacts.xlsx");
+    httpServletResponse.setContentType(
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    return exportService.generateContactsExcel(principal.requireTeamId());
+  }
+
+  @Override
   public byte[] exportContractBooklet(ContractIdentifier contractIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     httpServletResponse.setHeader(

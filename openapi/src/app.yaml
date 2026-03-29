@@ -78,6 +78,8 @@ tags:
     description: Rental agreement management
   - name: Contract Extensions
     description: Contract extension lifecycle management
+  - name: Data Imports
+    description: Data import management for bulk operations
   - name: Dashboard
     description: Dashboard statistics and recent activities
   - name: Registration
@@ -443,6 +445,20 @@ paths:
     $ref: 'paths/dashboard.yaml#/dashboard-recent-activities'
   /dashboard/upcoming-renewals:
     $ref: 'paths/dashboard.yaml#/dashboard-upcoming-renewals'
+  /imports/upload:
+    $ref: 'paths/imports.yaml#/upload'
+  /imports/preview:
+    $ref: 'paths/imports.yaml#/preview'
+  /imports/execute:
+    $ref: 'paths/imports.yaml#/execute'
+  /imports:
+    $ref: 'paths/imports.yaml#/collection'
+  /imports/{identifier}:
+    $ref: 'paths/imports.yaml#/item'
+  /imports/{identifier}/revert:
+    $ref: 'paths/imports.yaml#/revert'
+  /imports/{identifier}/error-report:
+    $ref: 'paths/imports.yaml#/error-report'
   /contracts/{identifier}/audit-log:
     $ref: 'paths/contracts.yaml#/audit-log'
   /contracts/{contractIdentifier}/payment-instructions/current:
@@ -457,6 +473,8 @@ paths:
     $ref: 'paths/documents.yaml#/booklets-contact-item'
   /booklets/contacts/csv:
     $ref: 'paths/documents.yaml#/booklets-contacts-csv'
+  /booklets/contacts/xlsx:
+    $ref: 'paths/documents.yaml#/booklets-contacts-xlsx'
   /booklets/property/{propertyIdentifier}:
     $ref: 'paths/documents.yaml#/booklets-property-item'
   /booklets/contract/{contractIdentifier}:
@@ -571,6 +589,9 @@ components:
     ContractRentPeriodIdentifier:
       type: string
       description: Contract rent period identifier
+    DataImportIdentifier:
+      type: string
+      description: Data import identifier
     DocumentIdentifier:
       type: string
       description: Document identifier
@@ -8486,6 +8507,347 @@ components:
         - amount
         - currency
         - sortOrder
+    ImportUploadResponse:
+      type: object
+      properties:
+        columns:
+          type: array
+          items:
+            type: string
+        previewRows:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: string
+        fileName:
+          type: string
+        totalRows:
+          type: integer
+          format: int32
+        fileFormat:
+          type: string
+      required:
+        - columns
+        - previewRows
+        - fileName
+        - totalRows
+        - fileFormat
+    ImportPreviewRequest:
+      type: object
+      properties:
+        fileName:
+          type: string
+          minLength: 1
+        mappings:
+          type: object
+          additionalProperties:
+            type: string
+        contactType:
+          type: string
+          enum:
+            - INDIVIDUAL
+            - COMPANY
+            - SERVICE_PROVIDER
+        tags:
+          type: array
+          items:
+            type: string
+            enum:
+              - VIP
+              - PROSPECT
+              - LATE_PAYER
+              - LONG_TERM
+              - KEY_HOLDER
+              - DO_NOT_CONTACT
+              - FORMER_TENANT
+              - REFERRED
+      required:
+        - fileName
+        - mappings
+        - contactType
+    ImportPreviewItemResponse:
+      type: object
+      properties:
+        rowNumber:
+          type: integer
+          format: int32
+        status:
+          type: string
+          enum:
+            - CREATE
+            - SKIP
+            - ERROR
+        displayName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        errorMessage:
+          type: string
+        duplicateOfIdentifier:
+          type: string
+        duplicateOfDisplayName:
+          type: string
+      required:
+        - rowNumber
+        - status
+        - displayName
+    ImportPreviewResponse:
+      type: object
+      properties:
+        toCreate:
+          type: integer
+          format: int32
+        toSkip:
+          type: integer
+          format: int32
+        errors:
+          type: integer
+          format: int32
+        totalRows:
+          type: integer
+          format: int32
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportPreviewItemResponse'
+      required:
+        - toCreate
+        - toSkip
+        - errors
+        - totalRows
+        - items
+    ImportExecuteRequest:
+      type: object
+      properties:
+        fileName:
+          type: string
+          minLength: 1
+        mappings:
+          type: object
+          additionalProperties:
+            type: string
+        contactType:
+          type: string
+          enum:
+            - INDIVIDUAL
+            - COMPANY
+            - SERVICE_PROVIDER
+        tags:
+          type: array
+          items:
+            type: string
+            enum:
+              - VIP
+              - PROSPECT
+              - LATE_PAYER
+              - LONG_TERM
+              - KEY_HOLDER
+              - DO_NOT_CONTACT
+              - FORMER_TENANT
+              - REFERRED
+        skipErrors:
+          type: boolean
+          default: false
+      required:
+        - fileName
+        - mappings
+        - contactType
+    ImportExecuteResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        importedCount:
+          type: integer
+          format: int32
+        skippedCount:
+          type: integer
+          format: int32
+        errorCount:
+          type: integer
+          format: int32
+        totalRows:
+          type: integer
+          format: int32
+      required:
+        - identifier
+        - importedCount
+        - skippedCount
+        - errorCount
+        - totalRows
+    DataImportResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        fileName:
+          type: string
+        fileFormat:
+          type: string
+        entityType:
+          type: string
+          enum:
+            - CONTACT
+        status:
+          type: string
+          enum:
+            - PROCESSING
+            - COMPLETED
+            - PARTIALLY_COMPLETED
+            - FAILED
+            - REVERTED
+        totalRows:
+          type: integer
+          format: int32
+        importedRows:
+          type: integer
+          format: int32
+        skippedRows:
+          type: integer
+          format: int32
+        errorRows:
+          type: integer
+          format: int32
+        createdByName:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        revertedAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - fileName
+        - fileFormat
+        - entityType
+        - status
+        - totalRows
+        - importedRows
+        - skippedRows
+        - errorRows
+        - createdAt
+    DataImportItemResponse:
+      type: object
+      properties:
+        entityIdentifier:
+          type: string
+        entityType:
+          type: string
+        displayName:
+          type: string
+        rowNumber:
+          type: integer
+          format: int32
+      required:
+        - entityIdentifier
+        - entityType
+        - displayName
+        - rowNumber
+    DataImportDetailResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        fileName:
+          type: string
+        fileFormat:
+          type: string
+        entityType:
+          type: string
+          enum:
+            - CONTACT
+        status:
+          type: string
+          enum:
+            - PROCESSING
+            - COMPLETED
+            - PARTIALLY_COMPLETED
+            - FAILED
+            - REVERTED
+        totalRows:
+          type: integer
+          format: int32
+        importedRows:
+          type: integer
+          format: int32
+        skippedRows:
+          type: integer
+          format: int32
+        errorRows:
+          type: integer
+          format: int32
+        columnMapping:
+          type: object
+          additionalProperties:
+            type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataImportItemResponse'
+        createdByName:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        revertedAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - fileName
+        - fileFormat
+        - entityType
+        - status
+        - totalRows
+        - importedRows
+        - skippedRows
+        - errorRows
+        - columnMapping
+        - items
+        - createdAt
+    ImportRevertResponse:
+      type: object
+      properties:
+        deletedContactCount:
+          type: integer
+          format: int32
+        deletedRelatedEntities:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int32
+      required:
+        - deletedContactCount
+        - deletedRelatedEntities
+    PageResponseDataImportResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataImportResponse'
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+      required:
+        - content
+        - totalElements
+        - totalPages
+        - page
+        - size
   securitySchemes:
     bearer-jwt:
       type: http

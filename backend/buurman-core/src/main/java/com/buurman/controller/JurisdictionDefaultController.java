@@ -31,7 +31,6 @@ public class JurisdictionDefaultController {
       @RequestParam Optional<String> regionCode,
       @RequestParam Optional<String> landlordType,
       @RequestParam Optional<Boolean> furnished) {
-    return jurisdictionDefaultService.getDefaults(
-        countryCode, regionCode, landlordType, furnished);
+    return jurisdictionDefaultService.getDefaults(countryCode, regionCode, landlordType, furnished);
   }
 }

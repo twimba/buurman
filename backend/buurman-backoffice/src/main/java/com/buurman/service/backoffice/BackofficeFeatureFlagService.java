@@ -186,12 +186,7 @@ public class BackofficeFeatureFlagService {
 
     var override =
         featureFlagAdminService.upsertSegmentOverride(
-            flagName,
-            segmentKey,
-            enabled,
-            Optional.ofNullable(request.value()),
-            priority,
-            actorId);
+            flagName, segmentKey, enabled, Optional.ofNullable(request.value()), priority, actorId);
 
     return new FeatureFlagUpdateResponse(
         flagName, override.isEnabled(), override.getValue().orElse(null));
@@ -228,11 +223,7 @@ public class BackofficeFeatureFlagService {
 
     var override =
         featureFlagAdminService.upsertTeamOverride(
-            flagName,
-            team.getId(),
-            enabled,
-            Optional.ofNullable(request.value()),
-            actorId);
+            flagName, team.getId(), enabled, Optional.ofNullable(request.value()), actorId);
 
     return new FeatureFlagUpdateResponse(
         flagName, override.isEnabled(), override.getValue().orElse(null));

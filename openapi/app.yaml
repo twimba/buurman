@@ -78,6 +78,8 @@ tags:
     description: Rental agreement management
   - name: Contract Extensions
     description: Contract extension lifecycle management
+  - name: Data Imports
+    description: Data import management for bulk operations
   - name: Dashboard
     description: Dashboard statistics and recent activities
   - name: Registration
@@ -14752,6 +14754,280 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
+  /imports/upload:
+    post:
+      tags:
+        - Data Imports
+      summary: Upload import file
+      description: Upload a CSV or XLSX file for contact import. Returns parsed column headers and preview rows.
+      operationId: uploadImportFile
+      parameters:
+        - name: headerRow
+          in: query
+          description: Whether the first row contains column headers. When false, synthetic column names (Column A, Column B, ...) are generated.
+          required: false
+          schema:
+            type: boolean
+            default: true
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: CSV or XLSX file to import
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportUploadResponse'
+        "400":
+          description: Bad request (unsupported format, empty file, etc.)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden (XLSX requires excel_export feature flag)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /imports/preview:
+    post:
+      tags:
+        - Data Imports
+      summary: Preview import
+      description: Submit column mapping and get a dry-run preview of what will be created, skipped, or errored.
+      operationId: previewImport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportPreviewRequest'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportPreviewResponse'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /imports/execute:
+    post:
+      tags:
+        - Data Imports
+      summary: Execute import
+      description: Confirm and execute the import, creating contacts from the uploaded file with the given column mapping.
+      operationId: executeImport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportExecuteRequest'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportExecuteResponse'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /imports:
+    get:
+      tags:
+        - Data Imports
+      summary: List imports
+      description: Get paginated list of data imports for the current team
+      operationId: listImports
+      parameters:
+        - name: page
+          in: query
+          description: Page number (zero-based)
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: size
+          in: query
+          description: Page size
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 25
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageResponseDataImportResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /imports/{identifier}:
+    get:
+      tags:
+        - Data Imports
+      summary: Get import details
+      description: Get details of a specific data import including imported items
+      operationId: getImport
+      parameters:
+        - name: identifier
+          in: path
+          description: Data import identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/DataImportIdentifier'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataImportDetailResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /imports/{identifier}/revert:
+    post:
+      tags:
+        - Data Imports
+      summary: Revert import
+      description: Revert a data import, deleting all contacts and related entities created by the import.
+      operationId: revertImport
+      parameters:
+        - name: identifier
+          in: path
+          description: Data import identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/DataImportIdentifier'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportRevertResponse'
+        "400":
+          description: Bad request (import already reverted or too old)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /imports/{identifier}/error-report:
+    get:
+      tags:
+        - Data Imports
+      summary: Download error report
+      description: Download CSV error report for a data import
+      operationId: downloadImportErrorReport
+      parameters:
+        - name: identifier
+          in: path
+          description: Data import identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/DataImportIdentifier'
+      responses:
+        "200":
+          description: OK
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
   /contracts/{identifier}/audit-log:
     get:
       tags:
@@ -15113,6 +15389,41 @@ paths:
           description: OK
           content:
             "text/csv":
+              schema:
+                type: string
+                format: byte
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /booklets/contacts/xlsx:
+    get:
+      tags:
+        - Booklets
+      summary: Export contacts list to Excel
+      description: Download all contacts for the team as an XLSX file
+      operationId: exportContactsXlsx
+      responses:
+        "200":
+          description: OK
+          content:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
               schema:
                 type: string
                 format: byte
@@ -18080,6 +18391,9 @@ components:
     ContractRentPeriodIdentifier:
       type: string
       description: Contract rent period identifier
+    DataImportIdentifier:
+      type: string
+      description: Data import identifier
     DocumentIdentifier:
       type: string
       description: Document identifier
@@ -25995,6 +26309,347 @@ components:
         - amount
         - currency
         - sortOrder
+    ImportUploadResponse:
+      type: object
+      properties:
+        columns:
+          type: array
+          items:
+            type: string
+        previewRows:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: string
+        fileName:
+          type: string
+        totalRows:
+          type: integer
+          format: int32
+        fileFormat:
+          type: string
+      required:
+        - columns
+        - previewRows
+        - fileName
+        - totalRows
+        - fileFormat
+    ImportPreviewRequest:
+      type: object
+      properties:
+        fileName:
+          type: string
+          minLength: 1
+        mappings:
+          type: object
+          additionalProperties:
+            type: string
+        contactType:
+          type: string
+          enum:
+            - INDIVIDUAL
+            - COMPANY
+            - SERVICE_PROVIDER
+        tags:
+          type: array
+          items:
+            type: string
+            enum:
+              - VIP
+              - PROSPECT
+              - LATE_PAYER
+              - LONG_TERM
+              - KEY_HOLDER
+              - DO_NOT_CONTACT
+              - FORMER_TENANT
+              - REFERRED
+      required:
+        - fileName
+        - mappings
+        - contactType
+    ImportPreviewItemResponse:
+      type: object
+      properties:
+        rowNumber:
+          type: integer
+          format: int32
+        status:
+          type: string
+          enum:
+            - CREATE
+            - SKIP
+            - ERROR
+        displayName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        errorMessage:
+          type: string
+        duplicateOfIdentifier:
+          type: string
+        duplicateOfDisplayName:
+          type: string
+      required:
+        - rowNumber
+        - status
+        - displayName
+    ImportPreviewResponse:
+      type: object
+      properties:
+        toCreate:
+          type: integer
+          format: int32
+        toSkip:
+          type: integer
+          format: int32
+        errors:
+          type: integer
+          format: int32
+        totalRows:
+          type: integer
+          format: int32
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportPreviewItemResponse'
+      required:
+        - toCreate
+        - toSkip
+        - errors
+        - totalRows
+        - items
+    ImportExecuteRequest:
+      type: object
+      properties:
+        fileName:
+          type: string
+          minLength: 1
+        mappings:
+          type: object
+          additionalProperties:
+            type: string
+        contactType:
+          type: string
+          enum:
+            - INDIVIDUAL
+            - COMPANY
+            - SERVICE_PROVIDER
+        tags:
+          type: array
+          items:
+            type: string
+            enum:
+              - VIP
+              - PROSPECT
+              - LATE_PAYER
+              - LONG_TERM
+              - KEY_HOLDER
+              - DO_NOT_CONTACT
+              - FORMER_TENANT
+              - REFERRED
+        skipErrors:
+          type: boolean
+          default: false
+      required:
+        - fileName
+        - mappings
+        - contactType
+    ImportExecuteResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        importedCount:
+          type: integer
+          format: int32
+        skippedCount:
+          type: integer
+          format: int32
+        errorCount:
+          type: integer
+          format: int32
+        totalRows:
+          type: integer
+          format: int32
+      required:
+        - identifier
+        - importedCount
+        - skippedCount
+        - errorCount
+        - totalRows
+    DataImportResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        fileName:
+          type: string
+        fileFormat:
+          type: string
+        entityType:
+          type: string
+          enum:
+            - CONTACT
+        status:
+          type: string
+          enum:
+            - PROCESSING
+            - COMPLETED
+            - PARTIALLY_COMPLETED
+            - FAILED
+            - REVERTED
+        totalRows:
+          type: integer
+          format: int32
+        importedRows:
+          type: integer
+          format: int32
+        skippedRows:
+          type: integer
+          format: int32
+        errorRows:
+          type: integer
+          format: int32
+        createdByName:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        revertedAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - fileName
+        - fileFormat
+        - entityType
+        - status
+        - totalRows
+        - importedRows
+        - skippedRows
+        - errorRows
+        - createdAt
+    DataImportItemResponse:
+      type: object
+      properties:
+        entityIdentifier:
+          type: string
+        entityType:
+          type: string
+        displayName:
+          type: string
+        rowNumber:
+          type: integer
+          format: int32
+      required:
+        - entityIdentifier
+        - entityType
+        - displayName
+        - rowNumber
+    DataImportDetailResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+        fileName:
+          type: string
+        fileFormat:
+          type: string
+        entityType:
+          type: string
+          enum:
+            - CONTACT
+        status:
+          type: string
+          enum:
+            - PROCESSING
+            - COMPLETED
+            - PARTIALLY_COMPLETED
+            - FAILED
+            - REVERTED
+        totalRows:
+          type: integer
+          format: int32
+        importedRows:
+          type: integer
+          format: int32
+        skippedRows:
+          type: integer
+          format: int32
+        errorRows:
+          type: integer
+          format: int32
+        columnMapping:
+          type: object
+          additionalProperties:
+            type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataImportItemResponse'
+        createdByName:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        revertedAt:
+          type: string
+          format: date-time
+      required:
+        - identifier
+        - fileName
+        - fileFormat
+        - entityType
+        - status
+        - totalRows
+        - importedRows
+        - skippedRows
+        - errorRows
+        - columnMapping
+        - items
+        - createdAt
+    ImportRevertResponse:
+      type: object
+      properties:
+        deletedContactCount:
+          type: integer
+          format: int32
+        deletedRelatedEntities:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int32
+      required:
+        - deletedContactCount
+        - deletedRelatedEntities
+    PageResponseDataImportResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataImportResponse'
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+      required:
+        - content
+        - totalElements
+        - totalPages
+        - page
+        - size
   securitySchemes:
     bearer-jwt:
       type: http
