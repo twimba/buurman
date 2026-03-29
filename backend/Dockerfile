@@ -8,8 +8,8 @@ RUN apk add --no-cache docker-cli wget
 
 # Copy all POMs first for dependency caching
 COPY backend/pom.xml .
-COPY backend/common/pom.xml common/
-COPY backend/jooq/pom.xml jooq/
+COPY backend/buurman-common/pom.xml buurman-common/
+COPY backend/buurman-jooq/pom.xml buurman-jooq/
 COPY backend/buurman-core/pom.xml buurman-core/
 COPY backend/buurman-notifications/pom.xml buurman-notifications/
 COPY backend/buurman-backoffice/pom.xml buurman-backoffice/
@@ -25,8 +25,8 @@ RUN mvn dependency:go-offline -B -fn -Dmaven.build.cache.enabled=false
 COPY openapi/app.yaml openapi/backoffice.yaml ../openapi/
 
 # Copy source
-COPY backend/common/src common/src
-COPY backend/jooq/src jooq/src
+COPY backend/buurman-common/src buurman-common/src
+COPY backend/buurman-jooq/src buurman-jooq/src
 COPY backend/buurman-core/src buurman-core/src
 COPY backend/buurman-notifications/src buurman-notifications/src
 COPY backend/buurman-backoffice/src buurman-backoffice/src

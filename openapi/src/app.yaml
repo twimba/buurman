@@ -473,6 +473,8 @@ paths:
     $ref: 'paths/documents.yaml#/booklets-contact-item'
   /booklets/contacts/csv:
     $ref: 'paths/documents.yaml#/booklets-contacts-csv'
+  /booklets/contacts/xlsx:
+    $ref: 'paths/documents.yaml#/booklets-contacts-xlsx'
   /booklets/property/{propertyIdentifier}:
     $ref: 'paths/documents.yaml#/booklets-property-item'
   /booklets/contract/{contractIdentifier}:

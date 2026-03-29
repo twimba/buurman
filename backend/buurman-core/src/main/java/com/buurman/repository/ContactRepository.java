@@ -137,12 +137,12 @@ public class ContactRepository {
         .map(mapper::toDomain);
   }
 
-  public Map<String, Contact> findByEmailsAndTeamId(
-      Collection<String> emails, UUID teamId) {
+  public Map<String, Contact> findByEmailsAndTeamId(Collection<String> emails, UUID teamId) {
     if (emails.isEmpty()) {
       return Map.of();
     }
-    return dsl.selectFrom(CONTACTS)
+    return dsl
+        .selectFrom(CONTACTS)
         .where(
             CONTACTS
                 .EMAIL
@@ -155,9 +155,7 @@ public class ContactRepository {
         .filter(c -> c.getEmail().isPresent())
         .collect(
             java.util.stream.Collectors.toMap(
-                c -> c.getEmail().orElseThrow(),
-                c -> c,
-                (a, b) -> a));
+                c -> c.getEmail().orElseThrow(), c -> c, (a, b) -> a));
   }
 
   public Contact save(Contact contact) {

@@ -5,6 +5,14 @@ upload:
     summary: Upload import file
     description: Upload a CSV or XLSX file for contact import. Returns parsed column headers and preview rows.
     operationId: uploadImportFile
+    parameters:
+      - name: headerRow
+        in: query
+        description: Whether the first row contains column headers. When false, synthetic column names (Column A, Column B, ...) are generated.
+        required: false
+        schema:
+          type: boolean
+          default: true
     requestBody:
       required: true
       content:

@@ -69,7 +69,6 @@ import com.buurman.service.imports.ImportFileStore;
 import com.buurman.util.FeatureFlags;
 import com.buurman.util.PaginationHelper;
 import com.buurman.util.SidGenerator;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -111,14 +110,15 @@ public class DataImportService {
   private final ObjectMapper objectMapper;
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR')")
-  public ImportUploadResponse uploadFile(MultipartFile file, UserPrincipal principal) {
+  public ImportUploadResponse uploadFile(
+      MultipartFile file, boolean headerRow, UserPrincipal principal) {
     String format = fileParser.detectFormat(file);
     if ("XLSX".equals(format)
         && !featureFlagService.isEnabled(FeatureFlags.EXCEL_EXPORT, principal)) {
       throw new ForbiddenException("XLSX import requires the Excel feature to be enabled");
     }
 
-    ImportFileParser.ParsedFile parsed = fileParser.parse(file);
+    ImportFileParser.ParsedFile parsed = fileParser.parse(file, headerRow);
 
     String storeKey =
         fileStore.store(
@@ -145,9 +145,7 @@ public class DataImportService {
         fileStore
             .get(request.fileName())
             .orElseThrow(
-                () ->
-                    new BadRequestException(
-                        "File not found or expired. Please upload again."));
+                () -> new BadRequestException("File not found or expired. Please upload again."));
 
     validateMappings(request.mappings());
 
@@ -233,9 +231,7 @@ public class DataImportService {
         fileStore
             .get(request.fileName())
             .orElseThrow(
-                () ->
-                    new BadRequestException(
-                        "File not found or expired. Please upload again."));
+                () -> new BadRequestException("File not found or expired. Please upload again."));
 
     validateMappings(request.mappings());
 
@@ -392,7 +388,8 @@ public class DataImportService {
 
     fileStore.remove(request.fileName());
 
-    return new ImportExecuteResponse(importIdentifier, imported, skipped, errored, data.rows().size());
+    return new ImportExecuteResponse(
+        importIdentifier, imported, skipped, errored, data.rows().size());
   }
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
@@ -402,8 +399,7 @@ public class DataImportService {
     PaginationHelper.PaginatedResult<DataImport> result =
         dataImportRepository.findAllByTeamIdPaginated(teamId, pageRequest);
 
-    List<DataImportResponse> items =
-        result.items().stream().map(this::toResponse).toList();
+    List<DataImportResponse> items = result.items().stream().map(this::toResponse).toList();
 
     return PageResponse.of(items, pageRequest.page(), pageRequest.size(), result.totalElements());
   }
@@ -413,8 +409,7 @@ public class DataImportService {
       DataImportIdentifier identifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     DataImport dataImport = dataImportRepository.getByIdentifierAndTeamId(identifier, teamId);
-    List<DataImportItem> items =
-        dataImportRepository.findItemsByImportId(dataImport.getId());
+    List<DataImportItem> items = dataImportRepository.findItemsByImportId(dataImport.getId());
 
     List<UUID> contactIds =
         items.stream()
@@ -434,8 +429,7 @@ public class DataImportService {
             .map(
                 item -> {
                   Contact contact = contactMap.get(item.getEntityId());
-                  String displayName =
-                      contact != null ? contact.getDisplayName() : "(deleted)";
+                  String displayName = contact != null ? contact.getDisplayName() : "(deleted)";
                   Sid entityIdentifier =
                       contact != null
                           ? contact.getIdentifier().orElse(Sid.of("unknown"))
@@ -478,16 +472,13 @@ public class DataImportService {
     }
 
     Instant revertDeadline =
-        dataImport
-            .getCreatedAt()
-            .plusSeconds((long) REVERT_WINDOW_DAYS * 24 * 60 * 60);
+        dataImport.getCreatedAt().plusSeconds((long) REVERT_WINDOW_DAYS * 24 * 60 * 60);
     if (Instant.now().isAfter(revertDeadline)) {
       throw new BadRequestException(
           "Import can only be reverted within " + REVERT_WINDOW_DAYS + " days of creation");
     }
 
-    List<UUID> contactIds =
-        dataImportRepository.findContactIdsByImportId(dataImport.getId());
+    List<UUID> contactIds = dataImportRepository.findContactIdsByImportId(dataImport.getId());
 
     Map<String, Integer> deletedRelated = new HashMap<>();
     int deletedContacts = 0;
@@ -499,7 +490,9 @@ public class DataImportService {
           dsl.update(CONTACT_ADDRESSES)
               .set(CONTACT_ADDRESSES.DELETED_AT, now)
               .where(
-                  CONTACT_ADDRESSES.CONTACT_ID.in(contactIds)
+                  CONTACT_ADDRESSES
+                      .CONTACT_ID
+                      .in(contactIds)
                       .and(CONTACT_ADDRESSES.DELETED_AT.isNull()))
               .execute();
       if (softDeletedAddresses > 0) {
@@ -509,9 +502,7 @@ public class DataImportService {
       int softDeletedNotes =
           dsl.update(CONTACT_NOTES)
               .set(CONTACT_NOTES.DELETED_AT, now)
-              .where(
-                  CONTACT_NOTES.CONTACT_ID.in(contactIds)
-                      .and(CONTACT_NOTES.DELETED_AT.isNull()))
+              .where(CONTACT_NOTES.CONTACT_ID.in(contactIds).and(CONTACT_NOTES.DELETED_AT.isNull()))
               .execute();
       if (softDeletedNotes > 0) {
         deletedRelated.put("notes", softDeletedNotes);
@@ -535,7 +526,9 @@ public class DataImportService {
           dsl.update(CONTRACT_PARTIES)
               .set(CONTRACT_PARTIES.DELETED_AT, now)
               .where(
-                  CONTRACT_PARTIES.CONTACT_ID.in(contactIds)
+                  CONTRACT_PARTIES
+                      .CONTACT_ID
+                      .in(contactIds)
                       .and(CONTRACT_PARTIES.DELETED_AT.isNull()))
               .execute();
       if (softDeletedParties > 0) {
@@ -554,8 +547,7 @@ public class DataImportService {
           dsl.update(CALENDAR_FEEDS)
               .set(CALENDAR_FEEDS.DELETED_AT, now)
               .where(
-                  CALENDAR_FEEDS.CONTACT_ID.in(contactIds)
-                      .and(CALENDAR_FEEDS.DELETED_AT.isNull()))
+                  CALENDAR_FEEDS.CONTACT_ID.in(contactIds).and(CALENDAR_FEEDS.DELETED_AT.isNull()))
               .execute();
       if (softDeletedCalendarFeeds > 0) {
         deletedRelated.put("calendarFeeds", softDeletedCalendarFeeds);
@@ -563,9 +555,7 @@ public class DataImportService {
 
       // Hard-delete junction table (no deleted_at column)
       int deletedTags =
-          dsl.deleteFrom(CONTACT_TAGS)
-              .where(CONTACT_TAGS.CONTACT_ID.in(contactIds))
-              .execute();
+          dsl.deleteFrom(CONTACT_TAGS).where(CONTACT_TAGS.CONTACT_ID.in(contactIds)).execute();
       if (deletedTags > 0) {
         deletedRelated.put("tags", deletedTags);
       }
@@ -605,7 +595,9 @@ public class DataImportService {
               .set(CONTACTS.UPDATED_AT, now)
               .set(CONTACTS.UPDATED_BY, userId)
               .where(
-                  CONTACTS.ID.in(contactIds)
+                  CONTACTS
+                      .ID
+                      .in(contactIds)
                       .and(CONTACTS.TEAM_ID.eq(teamId))
                       .and(CONTACTS.DELETED_AT.isNull()))
               .execute();
@@ -618,16 +610,14 @@ public class DataImportService {
   }
 
   @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
-  public Resource downloadErrorReport(
-      DataImportIdentifier identifier, UserPrincipal principal) {
+  public Resource downloadErrorReport(DataImportIdentifier identifier, UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     DataImport dataImport = dataImportRepository.getByIdentifierAndTeamId(identifier, teamId);
 
     String errorReport =
         dataImport
             .getErrorReport()
-            .orElseThrow(
-                () -> new NotFoundException("No error report available for this import"));
+            .orElseThrow(() -> new NotFoundException("No error report available for this import"));
 
     String csv = convertErrorReportToCsv(errorReport);
     return new ByteArrayResource(csv.getBytes(StandardCharsets.UTF_8));
@@ -646,8 +636,7 @@ public class DataImportService {
     }
   }
 
-  private Map<String, String> applyMapping(
-      Map<String, String> row, Map<String, String> mappings) {
+  private Map<String, String> applyMapping(Map<String, String> row, Map<String, String> mappings) {
     Map<String, String> result = new LinkedHashMap<>();
     for (Map.Entry<String, String> mapping : mappings.entrySet()) {
       String sourceColumn = mapping.getKey();
@@ -661,8 +650,7 @@ public class DataImportService {
   }
 
   private String computeDisplayName(Map<String, String> mapped, ContactType contactType) {
-    if (contactType == ContactType.COMPANY
-        || contactType == ContactType.SERVICE_PROVIDER) {
+    if (contactType == ContactType.COMPANY || contactType == ContactType.SERVICE_PROVIDER) {
       String companyName = mapped.getOrDefault("companyName", "");
       if (!companyName.isBlank()) {
         return companyName;
@@ -679,28 +667,22 @@ public class DataImportService {
       String firstName = mapped.getOrDefault("firstName", "");
       String lastName = mapped.getOrDefault("lastName", "");
       if (firstName.isBlank() && lastName.isBlank()) {
-        return Optional.of(
-            "Individual contact requires at least first name or last name");
+        return Optional.of("Individual contact requires at least first name or last name");
       }
     } else {
       String companyName = mapped.getOrDefault("companyName", "");
       if (companyName.isBlank()) {
-        return Optional.of(
-            contactType.getDisplayName() + " contact requires company name");
+        return Optional.of(contactType.getDisplayName() + " contact requires company name");
       }
     }
 
     String email = mapped.get("email");
-    if (email != null
-        && !email.isBlank()
-        && !email.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
+    if (email != null && !email.isBlank() && !email.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
       return Optional.of("Invalid email format: " + email);
     }
 
     String phone = mapped.get("phone");
-    if (phone != null
-        && !phone.isBlank()
-        && !phone.matches("^\\+[1-9]\\d{1,14}$")) {
+    if (phone != null && !phone.isBlank() && !phone.matches("^\\+[1-9]\\d{1,14}$")) {
       return Optional.of("Invalid phone format (expected E.164): " + phone);
     }
 
@@ -752,8 +734,7 @@ public class DataImportService {
 
   private String convertErrorReportToCsv(String jsonReport) {
     try {
-      List<Map<String, String>> rows =
-          objectMapper.readValue(jsonReport, new TypeReference<>() {});
+      List<Map<String, String>> rows = objectMapper.readValue(jsonReport, new TypeReference<>() {});
 
       if (rows.isEmpty()) {
         return "No errors";
@@ -787,7 +768,11 @@ public class DataImportService {
       return value;
     }
     char first = value.charAt(0);
-    if (first == '=' || first == '+' || first == '-' || first == '@' || first == '\t'
+    if (first == '='
+        || first == '+'
+        || first == '-'
+        || first == '@'
+        || first == '\t'
         || first == '\r') {
       return "'" + value;
     }

@@ -28,13 +28,12 @@ public class ImportFileParser {
 
   private static final String FORMAT_CSV = "CSV";
   private static final String FORMAT_XLSX = "XLSX";
+  private static final String UTF8_BOM = "\uFEFF";
 
   public record ParsedFile(
-      List<String> columns,
-      List<Map<String, String>> rows,
-      String fileFormat) {}
+      List<String> columns, List<Map<String, String>> rows, String fileFormat) {}
 
-  public ParsedFile parse(MultipartFile file) {
+  public ParsedFile parse(MultipartFile file, boolean headerRow) {
     String filename = file.getOriginalFilename();
     if (filename == null || filename.isBlank()) {
       throw new BadRequestException("File name is required");
@@ -42,9 +41,9 @@ public class ImportFileParser {
 
     String lower = filename.toLowerCase(Locale.ROOT);
     if (lower.endsWith(".csv")) {
-      return parseCsv(file);
+      return parseCsv(file, headerRow);
     } else if (lower.endsWith(".xlsx")) {
-      return parseXlsx(file);
+      return parseXlsx(file, headerRow);
     } else {
       throw new BadRequestException("Unsupported file format. Accepted: CSV, XLSX");
     }
@@ -58,9 +57,7 @@ public class ImportFileParser {
     return FORMAT_CSV;
   }
 
-  private static final String UTF8_BOM = "\uFEFF";
-
-  private ParsedFile parseCsv(MultipartFile file) {
+  private ParsedFile parseCsv(MultipartFile file, boolean headerRow) {
     try (InputStream is = file.getInputStream();
         CSVReader reader = new CSVReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
 
@@ -69,23 +66,32 @@ public class ImportFileParser {
         throw new BadRequestException("CSV file is empty");
       }
 
-      String[] headerRow = allLines.get(0);
-      List<String> columns = new ArrayList<>();
-      for (int i = 0; i < headerRow.length; i++) {
-        String col = headerRow[i].trim();
-        // Strip UTF-8 BOM from first column
-        if (i == 0 && col.startsWith(UTF8_BOM)) {
-          col = col.substring(1);
+      List<String> columns;
+      int dataStartIndex;
+
+      if (headerRow) {
+        String[] headerLine = allLines.get(0);
+        columns = new ArrayList<>();
+        for (int i = 0; i < headerLine.length; i++) {
+          String col = headerLine[i].trim();
+          if (i == 0 && col.startsWith(UTF8_BOM)) {
+            col = col.substring(1);
+          }
+          columns.add(deduplicateColumnName(col, columns));
         }
-        columns.add(deduplicateColumnName(col, columns));
+        dataStartIndex = 1;
+      } else {
+        int columnCount = allLines.get(0).length;
+        columns = generateSyntheticColumns(columnCount);
+        dataStartIndex = 0;
       }
 
       if (columns.isEmpty()) {
-        throw new BadRequestException("No columns found in CSV header");
+        throw new BadRequestException("No columns found in CSV");
       }
 
       List<Map<String, String>> rows = new ArrayList<>();
-      for (int i = 1; i < allLines.size(); i++) {
+      for (int i = dataStartIndex; i < allLines.size(); i++) {
         String[] line = allLines.get(i);
         boolean allEmpty = true;
         for (String val : line) {
@@ -112,7 +118,7 @@ public class ImportFileParser {
     }
   }
 
-  private ParsedFile parseXlsx(MultipartFile file) {
+  private ParsedFile parseXlsx(MultipartFile file, boolean headerRow) {
     try (InputStream is = file.getInputStream();
         Workbook workbook = new XSSFWorkbook(is)) {
 
@@ -122,24 +128,37 @@ public class ImportFileParser {
       }
 
       DataFormatter formatter = new DataFormatter();
-      Row headerRow = sheet.getRow(0);
-      if (headerRow == null) {
-        throw new BadRequestException("No header row found in XLSX");
-      }
+      List<String> columns;
+      int dataStartIndex;
 
-      List<String> columns = new ArrayList<>();
-      for (int j = 0; j < headerRow.getLastCellNum(); j++) {
-        Cell cell = headerRow.getCell(j);
-        String value = cell != null ? formatter.formatCellValue(cell).trim() : "";
-        columns.add(deduplicateColumnName(value, columns));
+      if (headerRow) {
+        Row headerLine = sheet.getRow(0);
+        if (headerLine == null) {
+          throw new BadRequestException("No header row found in XLSX");
+        }
+        columns = new ArrayList<>();
+        for (int j = 0; j < headerLine.getLastCellNum(); j++) {
+          Cell cell = headerLine.getCell(j);
+          String value = cell != null ? formatter.formatCellValue(cell).trim() : "";
+          columns.add(deduplicateColumnName(value, columns));
+        }
+        dataStartIndex = 1;
+      } else {
+        Row firstRow = sheet.getRow(0);
+        if (firstRow == null) {
+          throw new BadRequestException("XLSX file is empty");
+        }
+        int columnCount = firstRow.getLastCellNum();
+        columns = generateSyntheticColumns(columnCount);
+        dataStartIndex = 0;
       }
 
       if (columns.isEmpty()) {
-        throw new BadRequestException("No columns found in XLSX header");
+        throw new BadRequestException("No columns found in XLSX");
       }
 
       List<Map<String, String>> rows = new ArrayList<>();
-      for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+      for (int i = dataStartIndex; i <= sheet.getLastRowNum(); i++) {
         Row row = sheet.getRow(i);
         if (row == null) {
           continue;
@@ -165,6 +184,25 @@ public class ImportFileParser {
     } catch (IOException e) {
       throw new BadRequestException("Failed to parse XLSX file: " + e.getMessage());
     }
+  }
+
+  /** Generates synthetic column names: Column A, Column B, ... Column Z, Column AA, ... */
+  private List<String> generateSyntheticColumns(int count) {
+    List<String> columns = new ArrayList<>();
+    for (int i = 0; i < count; i++) {
+      columns.add("Column " + toLetterLabel(i));
+    }
+    return columns;
+  }
+
+  private String toLetterLabel(int index) {
+    StringBuilder sb = new StringBuilder();
+    int remaining = index;
+    do {
+      sb.insert(0, (char) ('A' + remaining % 26));
+      remaining = remaining / 26 - 1;
+    } while (remaining >= 0);
+    return sb.toString();
   }
 
   /** Appends a numeric suffix if the column name already exists in the list. */

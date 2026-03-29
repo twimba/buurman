@@ -18,7 +18,13 @@ import { getErrorMessage } from '@/utils/errorMessages';
 export const useUploadImportFile = () => {
   const { showToast } = useToast();
   return useMutation({
-    mutationFn: (file: File) => uploadImportFile({ file }),
+    mutationFn: ({
+      file,
+      headerRow = true,
+    }: {
+      file: File;
+      headerRow?: boolean;
+    }) => uploadImportFile({ file }, { headerRow }),
     onError: (error: unknown) => {
       showToast(getErrorMessage(error), 'error');
     },

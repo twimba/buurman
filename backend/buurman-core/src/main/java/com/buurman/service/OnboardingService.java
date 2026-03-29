@@ -44,8 +44,7 @@ public class OnboardingService {
     try {
       java.util.Currency.getInstance(request.currency());
     } catch (IllegalArgumentException e) {
-      throw new BadRequestException(
-          "Invalid ISO 4217 currency code: " + request.currency());
+      throw new BadRequestException("Invalid ISO 4217 currency code: " + request.currency());
     }
 
     prefs.setDefaultCountryCode(request.countryCode());

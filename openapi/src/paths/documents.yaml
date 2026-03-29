@@ -924,6 +924,42 @@ booklets-contacts-csv:
     security:
       - bearer-jwt: []
 
+booklets-contacts-xlsx:
+  get:
+    tags:
+      - Booklets
+    summary: Export contacts list to Excel
+    description: Download all contacts for the team as an XLSX file
+    operationId: exportContactsXlsx
+    responses:
+      "200":
+        description: OK
+        content:
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+            schema:
+              type: string
+              format: byte
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
 booklets-contact-item:
   get:
     tags:

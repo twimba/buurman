@@ -39,6 +39,10 @@ client.interceptors.request.use(
     } else if (keycloak.authenticated && keycloak.token) {
       config.headers.Authorization = `Bearer ${keycloak.token}`;
     }
+    // Let Axios set the correct Content-Type for FormData (multipart/form-data with boundary)
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+    }
     return config;
   },
   (error) => Promise.reject(error)

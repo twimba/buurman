@@ -30,9 +30,9 @@ public class DataImportController implements DataImportsApi {
   private final DataImportService dataImportService;
 
   @Override
-  public ImportUploadResponse uploadImportFile(MultipartFile file) {
+  public ImportUploadResponse uploadImportFile(MultipartFile file, Optional<Boolean> headerRow) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    return dataImportService.uploadFile(file, principal);
+    return dataImportService.uploadFile(file, headerRow.orElse(true), principal);
   }
 
   @Override

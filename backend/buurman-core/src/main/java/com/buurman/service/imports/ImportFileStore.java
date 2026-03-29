@@ -31,8 +31,7 @@ public class ImportFileStore {
 
   public Optional<ParsedImportData> get(String key) {
     evictExpired();
-    return Optional.ofNullable(store.get(key))
-        .filter(data -> !isExpired(data));
+    return Optional.ofNullable(store.get(key)).filter(data -> !isExpired(data));
   }
 
   public void remove(String key) {

@@ -14,7 +14,6 @@ import {
   ChevronDown,
   ChevronUp,
   Save,
-  Download,
   Upload,
   ArrowUpDown,
 } from 'lucide-react';
@@ -34,6 +33,7 @@ import {
   DuplicateContactWarning,
 } from '@/components/contacts/DuplicateContactWarning';
 import { ImportWizard } from '@/components/contacts/ImportWizard';
+import { ExportDropdown } from '@/components/common/ExportDropdown';
 
 const CONTACT_TYPES: ContactType[] = [
   'INDIVIDUAL',
@@ -206,18 +206,34 @@ export const ContactListPage = () => {
   const [isExporting, setIsExporting] = useState(false);
   const [showImportWizard, setShowImportWizard] = useState(false);
 
+  const downloadBlob = (blob: Blob, filename: string) => {
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  };
+
   const handleExportCsv = async () => {
     setIsExporting(true);
     try {
       const blob = await contactsApi.exportContactsCsv();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'contacts.csv';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      downloadBlob(blob, 'contacts.csv');
+    } catch {
+      // Download error — browser handles feedback
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleExportXlsx = async () => {
+    setIsExporting(true);
+    try {
+      const blob = await contactsApi.exportContactsXlsx();
+      downloadBlob(blob, 'contacts.xlsx');
     } catch {
       // Download error — browser handles feedback
     } finally {
@@ -262,15 +278,15 @@ export const ContactListPage = () => {
               onClick={() => refetch()}
               isRefreshing={isFetching}
             />
-            <button
-              onClick={handleExportCsv}
+            <ExportDropdown
+              size="md"
               disabled={isExporting}
-              className="border border-border-strong bg-surface-card text-text-secondary px-3 py-2 rounded hover:border-primary-500 transition-colors flex items-center gap-1.5 text-sm disabled:opacity-50"
-              title="Export contacts to CSV"
-            >
-              <Download className="h-4 w-4" />
-              CSV
-            </button>
+              exporting={isExporting}
+              options={[
+                { label: 'CSV', onExport: handleExportCsv },
+                { label: 'Excel', onExport: handleExportXlsx },
+              ]}
+            />
             {canEditData && (
               <button
                 onClick={() => setShowImportWizard(true)}

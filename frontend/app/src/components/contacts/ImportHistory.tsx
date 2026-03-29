@@ -23,8 +23,7 @@ import { AnalyticsEvent } from '@/constants/analyticsEvents';
 import type { DataImportResponse } from '@/generated/models';
 
 const STATUS_STYLES: Record<string, string> = {
-  PROCESSING:
-    'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
+  PROCESSING: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
   COMPLETED:
     'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
   PARTIALLY_COMPLETED:
@@ -67,10 +66,8 @@ export const ImportHistory = () => {
   );
 
   const { data: importsData, isLoading, error } = useImports(page, size);
-  const {
-    data: detail,
-    isLoading: detailLoading,
-  } = useImportDetail(expandedId);
+  const { data: detail, isLoading: detailLoading } =
+    useImportDetail(expandedId);
   const revertMutation = useRevertImport();
   const downloadMutation = useDownloadErrorReport();
 
@@ -171,7 +168,8 @@ export const ImportHistory = () => {
                 <div>
                   <span
                     className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                      STATUS_STYLES[imp.status as string] ?? STATUS_STYLES.COMPLETED
+                      STATUS_STYLES[imp.status as string] ??
+                      STATUS_STYLES.COMPLETED
                     }`}
                   >
                     {STATUS_LABELS[imp.status as string] ?? imp.status}
@@ -207,19 +205,20 @@ export const ImportHistory = () => {
                       <Eye className="h-4 w-4" />
                     )}
                   </button>
-                  {imp.errorRows > 0 && (imp.status as string) !== 'REVERTED' && (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleDownloadErrors(imp.identifier, imp.fileName)
-                      }
-                      disabled={downloadMutation.isPending}
-                      className="p-1.5 rounded hover:bg-surface-inset text-text-muted hover:text-text-primary transition-colors disabled:opacity-50"
-                      title="Download error report"
-                    >
-                      <Download className="h-4 w-4" />
-                    </button>
-                  )}
+                  {imp.errorRows > 0 &&
+                    (imp.status as string) !== 'REVERTED' && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleDownloadErrors(imp.identifier, imp.fileName)
+                        }
+                        disabled={downloadMutation.isPending}
+                        className="p-1.5 rounded hover:bg-surface-inset text-text-muted hover:text-text-primary transition-colors disabled:opacity-50"
+                        title="Download error report"
+                      >
+                        <Download className="h-4 w-4" />
+                      </button>
+                    )}
                   {canRevert(imp) && (
                     <button
                       type="button"

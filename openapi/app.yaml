@@ -14761,6 +14761,14 @@ paths:
       summary: Upload import file
       description: Upload a CSV or XLSX file for contact import. Returns parsed column headers and preview rows.
       operationId: uploadImportFile
+      parameters:
+        - name: headerRow
+          in: query
+          description: Whether the first row contains column headers. When false, synthetic column names (Column A, Column B, ...) are generated.
+          required: false
+          schema:
+            type: boolean
+            default: true
       requestBody:
         required: true
         content:
@@ -15381,6 +15389,41 @@ paths:
           description: OK
           content:
             "text/csv":
+              schema:
+                type: string
+                format: byte
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /booklets/contacts/xlsx:
+    get:
+      tags:
+        - Booklets
+      summary: Export contacts list to Excel
+      description: Download all contacts for the team as an XLSX file
+      operationId: exportContactsXlsx
+      responses:
+        "200":
+          description: OK
+          content:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
               schema:
                 type: string
                 format: byte

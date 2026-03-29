@@ -22,7 +22,6 @@ import com.buurman.domain.Sid;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.exception.NotFoundException;
 import com.buurman.util.PaginationHelper;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -77,9 +76,7 @@ public class DataImportRepository {
             .set(DATA_IMPORTS.IMPORTED_ROWS, importedRows)
             .set(DATA_IMPORTS.SKIPPED_ROWS, skippedRows)
             .set(DATA_IMPORTS.ERROR_ROWS, errorRows)
-            .set(
-                DATA_IMPORTS.ERROR_REPORT,
-                errorReport.map(JSONB::jsonb).orElse(null))
+            .set(DATA_IMPORTS.ERROR_REPORT, errorReport.map(JSONB::jsonb).orElse(null))
             .set(DATA_IMPORTS.UPDATED_AT, now)
             .set(DATA_IMPORTS.UPDATED_BY, updatedBy);
 
@@ -90,9 +87,7 @@ public class DataImportRepository {
     LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
 
     dsl.update(DATA_IMPORTS)
-        .set(
-            DATA_IMPORTS.STATUS,
-            com.buurman.jooq.generated.enums.DataImportStatus.REVERTED)
+        .set(DATA_IMPORTS.STATUS, com.buurman.jooq.generated.enums.DataImportStatus.REVERTED)
         .set(DATA_IMPORTS.REVERTED_AT, now)
         .set(DATA_IMPORTS.REVERTED_BY, revertedBy)
         .set(DATA_IMPORTS.UPDATED_AT, now)
@@ -116,8 +111,7 @@ public class DataImportRepository {
   public PaginationHelper.PaginatedResult<DataImport> findAllByTeamIdPaginated(
       UUID teamId, PageRequest pageRequest) {
     var condition = DATA_IMPORTS.TEAM_ID.eq(teamId);
-    Map<String, org.jooq.Field<?>> sortableFields =
-        Map.of("createdAt", DATA_IMPORTS.CREATED_AT);
+    Map<String, org.jooq.Field<?>> sortableFields = Map.of("createdAt", DATA_IMPORTS.CREATED_AT);
 
     return PaginationHelper.paginate(
         dsl,
@@ -188,15 +182,12 @@ public class DataImportRepository {
   }
 
   public void deleteItemsByImportId(UUID importId) {
-    dsl.deleteFrom(DATA_IMPORT_ITEMS)
-        .where(DATA_IMPORT_ITEMS.IMPORT_ID.eq(importId))
-        .execute();
+    dsl.deleteFrom(DATA_IMPORT_ITEMS).where(DATA_IMPORT_ITEMS.IMPORT_ID.eq(importId)).execute();
   }
 
   // --- Mapping helpers ---
 
-  private DataImport toDomain(
-      com.buurman.jooq.generated.tables.records.DataImportsRecord record) {
+  private DataImport toDomain(com.buurman.jooq.generated.tables.records.DataImportsRecord record) {
     return DataImport.builder()
         .id(record.getId())
         .identifier(Optional.of(record.getIdentifier()))
@@ -216,8 +207,7 @@ public class DataImportRepository {
         .createdBy(record.getCreatedBy())
         .updatedBy(record.getUpdatedBy())
         .revertedAt(
-            Optional.ofNullable(record.getRevertedAt())
-                .map(ldt -> ldt.toInstant(ZoneOffset.UTC)))
+            Optional.ofNullable(record.getRevertedAt()).map(ldt -> ldt.toInstant(ZoneOffset.UTC)))
         .revertedBy(Optional.ofNullable(record.getRevertedBy()))
         .build();
   }
@@ -241,8 +231,7 @@ public class DataImportRepository {
     }
   }
 
-  private com.buurman.jooq.generated.enums.DataImportStatus toJooqStatus(
-      DataImportStatus status) {
+  private com.buurman.jooq.generated.enums.DataImportStatus toJooqStatus(DataImportStatus status) {
     return com.buurman.jooq.generated.enums.DataImportStatus.valueOf(status.name());
   }
 

@@ -26,6 +26,7 @@ markers = [
     "critical: Critical path scenarios that must always pass",
     "properties: Property management scenarios",
     "contacts: Contact management scenarios",
+    "imports: Contact import scenarios",
     "contracts: Contract lifecycle scenarios",
     "payments: Payment tracking scenarios",
     "multi_tenancy: Multi-tenant data isolation scenarios",

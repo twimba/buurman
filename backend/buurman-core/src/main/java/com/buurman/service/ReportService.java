@@ -35,6 +35,7 @@ import com.buurman.domain.ContractExtension;
 import com.buurman.domain.Expense;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Property;
+import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.response.CategoryExpenseSummary;
 import com.buurman.dto.response.DataDateRangeResponse;
 import com.buurman.dto.response.ExpenseBreakdownResponse;
@@ -49,7 +50,6 @@ import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.ExpenseRepository;
 import com.buurman.repository.PaymentRepository;
-import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.security.UserPrincipal;
 
