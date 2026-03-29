@@ -97,6 +97,17 @@ public class GlobalExceptionHandler {
     return problem;
   }
 
+  @ExceptionHandler(DocumentRenderException.class)
+  public ProblemDetail handleDocumentRender(
+      DocumentRenderException ex, HttpServletRequest request) {
+    log.error("Document rendering failed: {}", ex.getMessage(), ex);
+    ProblemDetail problem =
+        forStatusAndDetail(INTERNAL_SERVER_ERROR, "Failed to generate document");
+    problem.setTitle("Document Generation Error");
+    problem.setInstance(URI.create(request.getRequestURI()));
+    return problem;
+  }
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ProblemDetail handleValidation(
       MethodArgumentNotValidException ex, HttpServletRequest request) {

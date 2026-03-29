@@ -4209,6 +4209,74 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
+  /contracts/{contractIdentifier}/rent-periods/{periodIdentifier}/document:
+    get:
+      tags:
+        - Contract Documents
+      summary: Download rent change document PDF
+      description: Download the rent change notification document for a specific rent period as PDF. Includes regulation data when available.
+      operationId: getRentChangeDocument
+      parameters:
+        - name: contractIdentifier
+          in: path
+          description: Contract identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractIdentifier'
+        - name: periodIdentifier
+          in: path
+          description: Rent period identifier
+          required: true
+          schema:
+            $ref: '#/components/schemas/ContractRentPeriodIdentifier'
+        - name: lang
+          in: query
+          description: Document language (ISO 639-1 code)
+          required: false
+          schema:
+            type: string
+            default: en
+            example: nl
+      responses:
+        "200":
+          description: Rent change document PDF
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
   /contracts/{contractIdentifier}/payment-instructions/{instructionIdentifier}:
     put:
       tags:
@@ -9933,7 +10001,7 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
-  /contracts/{id}/extensions:
+  /contracts/{contractIdentifier}/extensions:
     get:
       tags:
         - Contract Extensions
@@ -9941,7 +10009,7 @@ paths:
       description: List all extensions for a contract with pagination
       operationId: listContractExtensions
       parameters:
-        - name: id
+        - name: contractIdentifier
           in: path
           description: Contract identifier
           required: true
@@ -10005,7 +10073,7 @@ paths:
       description: Create a new extension in DRAFT status for a contract
       operationId: createContractExtension
       parameters:
-        - name: id
+        - name: contractIdentifier
           in: path
           description: Contract identifier
           required: true
@@ -10062,7 +10130,7 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
-  /contracts/{id}/extensions/{extId}:
+  /contracts/{contractIdentifier}/extensions/{extensionIdentifier}:
     get:
       tags:
         - Contract Extensions
@@ -10070,13 +10138,13 @@ paths:
       description: Get details of a specific contract extension
       operationId: getContractExtension
       parameters:
-        - name: id
+        - name: contractIdentifier
           in: path
           description: Contract identifier
           required: true
           schema:
             type: string
-        - name: extId
+        - name: extensionIdentifier
           in: path
           description: Extension identifier
           required: true
@@ -10128,13 +10196,13 @@ paths:
       description: Cancel a draft extension, marking it as soft-deleted
       operationId: cancelContractExtension
       parameters:
-        - name: id
+        - name: contractIdentifier
           in: path
           description: Contract identifier
           required: true
           schema:
             type: string
-        - name: extId
+        - name: extensionIdentifier
           in: path
           description: Extension identifier
           required: true
@@ -10181,7 +10249,7 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
-  /contracts/{id}/extensions/{extId}/activate:
+  /contracts/{contractIdentifier}/extensions/{extensionIdentifier}/activate:
     post:
       tags:
         - Contract Extensions
@@ -10189,13 +10257,13 @@ paths:
       description: Transition a draft extension to ACTIVE status
       operationId: activateContractExtension
       parameters:
-        - name: id
+        - name: contractIdentifier
           in: path
           description: Contract identifier
           required: true
           schema:
             type: string
-        - name: extId
+        - name: extensionIdentifier
           in: path
           description: Extension identifier
           required: true
@@ -10246,7 +10314,7 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
-  /contracts/{id}/extensions/{extId}/confirm:
+  /contracts/{contractIdentifier}/extensions/{extensionIdentifier}/confirm:
     post:
       tags:
         - Contract Extensions
@@ -10254,13 +10322,13 @@ paths:
       description: Record that the tenant has confirmed the extension
       operationId: confirmContractExtension
       parameters:
-        - name: id
+        - name: contractIdentifier
           in: path
           description: Contract identifier
           required: true
           schema:
             type: string
-        - name: extId
+        - name: extensionIdentifier
           in: path
           description: Extension identifier
           required: true
@@ -10311,7 +10379,7 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
-  /contracts/{id}/extensions/{extId}/decline:
+  /contracts/{contractIdentifier}/extensions/{extensionIdentifier}/decline:
     post:
       tags:
         - Contract Extensions
@@ -10319,13 +10387,13 @@ paths:
       description: Decline an extension with an optional reason
       operationId: declineContractExtension
       parameters:
-        - name: id
+        - name: contractIdentifier
           in: path
           description: Contract identifier
           required: true
           schema:
             type: string
-        - name: extId
+        - name: extensionIdentifier
           in: path
           description: Extension identifier
           required: true
@@ -10381,7 +10449,7 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
-  /contracts/{id}/extensions/{extId}/addendum:
+  /contracts/{contractIdentifier}/extensions/{extensionIdentifier}/addendum:
     get:
       tags:
         - Contract Extensions
@@ -10389,18 +10457,26 @@ paths:
       description: Download the addendum document for a contract extension as PDF
       operationId: getExtensionAddendum
       parameters:
-        - name: id
+        - name: contractIdentifier
           in: path
           description: Contract identifier
           required: true
           schema:
             type: string
-        - name: extId
+        - name: extensionIdentifier
           in: path
           description: Extension identifier
           required: true
           schema:
             type: string
+        - name: lang
+          in: query
+          description: Document language (ISO 639-1 code)
+          required: false
+          schema:
+            type: string
+            default: en
+            example: nl
       responses:
         "200":
           description: PDF addendum
@@ -10441,7 +10517,7 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
-  /contracts/{id}/extensions/{extId}/rent-increase-letter:
+  /contracts/{contractIdentifier}/extensions/{extensionIdentifier}/rent-increase-letter:
     get:
       tags:
         - Contract Extensions
@@ -10449,18 +10525,26 @@ paths:
       description: Download the rent increase notification letter as PDF
       operationId: getRentIncreaseLetter
       parameters:
-        - name: id
+        - name: contractIdentifier
           in: path
           description: Contract identifier
           required: true
           schema:
             type: string
-        - name: extId
+        - name: extensionIdentifier
           in: path
           description: Extension identifier
           required: true
           schema:
             type: string
+        - name: lang
+          in: query
+          description: Document language (ISO 639-1 code)
+          required: false
+          schema:
+            type: string
+            default: en
+            example: nl
       responses:
         "200":
           description: Rent increase letter PDF
@@ -21042,6 +21126,12 @@ components:
           $ref: '#/components/schemas/LandlordType'
         regionCode:
           type: string
+        documentLanguages:
+          type: array
+          items:
+            type: string
+          description: Preferred language(s) for generated documents (ISO 639-1 codes)
+          example: ["en"]
         countryMetadata:
           type: object
           additionalProperties: {}
@@ -21435,6 +21525,11 @@ components:
           $ref: '#/components/schemas/LandlordType'
         regionCode:
           type: string
+        documentLanguages:
+          type: array
+          items:
+            type: string
+          description: Preferred language(s) for generated documents (ISO 639-1 codes)
         effectiveEndDate:
           type: string
           format: date
@@ -21457,6 +21552,7 @@ components:
       required:
         - contractType
         - createdAt
+        - documentLanguages
         - extensionCount
         - identifier
         - landlordNoticeDays
@@ -23464,6 +23560,12 @@ components:
           $ref: '#/components/schemas/LandlordType'
         regionCode:
           type: string
+        documentLanguages:
+          type: array
+          items:
+            type: string
+          description: Preferred language(s) for generated documents (ISO 639-1 codes)
+          example: ["en"]
         countryMetadata:
           type: object
           additionalProperties: {}

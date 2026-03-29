@@ -29,6 +29,10 @@ public interface ContractMapper {
   @Mapping(target = "countryMetadata", ignore = true)
   @Mapping(target = "terminationNoticeDays", defaultExpression = "java(30)")
   @Mapping(
+      target = "documentLanguages",
+      expression =
+          "java(request.documentLanguages().orElse(java.util.List.of(\"en\")))")
+  @Mapping(
       target = "rentAmount",
       expression =
           "java(com.buurman.util.MoneyAmount.of(request.rentAmount(),"
@@ -88,6 +92,10 @@ public interface ContractMapper {
   @Mapping(target = "deletedAt", ignore = true)
   @Mapping(target = "countryCode", ignore = true)
   @Mapping(target = "countryMetadata", ignore = true)
+  @Mapping(
+      target = "documentLanguages",
+      expression =
+          "java(request.documentLanguages().orElse(contract.getDocumentLanguages()))")
   @Mapping(
       target = "rentAmount",
       expression =

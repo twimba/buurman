@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<h1 th:text="#{test.title}">Title</h1>
+<p th:text="#{test.greeting(${name})}">Greeting</p>
+<p th:if="${showExtra}" th:text="#{test.extra}">Extra</p>
+</body>
+</html>

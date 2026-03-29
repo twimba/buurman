@@ -48,6 +48,7 @@ public record ContractResponse(
     Optional<BigDecimal> rentAdjustmentValue,
     Optional<Contract.LandlordType> landlordType,
     Optional<String> regionCode,
+    List<String> documentLanguages,
     // Effective end date (computed from extensions)
     Optional<LocalDate> effectiveEndDate,
     // Extension statistics

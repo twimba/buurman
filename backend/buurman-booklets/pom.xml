@@ -22,6 +22,12 @@
             <artifactId>buurman-core</artifactId>
         </dependency>
 
+        <!-- Thymeleaf (document templates) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
         <!-- PDF -->
         <dependency>
             <groupId>com.itextpdf</groupId>

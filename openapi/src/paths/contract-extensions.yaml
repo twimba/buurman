@@ -6,7 +6,7 @@ extensions:
     description: List all extensions for a contract with pagination
     operationId: listContractExtensions
     parameters:
-      - name: id
+      - name: contractIdentifier
         in: path
         description: Contract identifier
         required: true
@@ -70,7 +70,7 @@ extensions:
     description: Create a new extension in DRAFT status for a contract
     operationId: createContractExtension
     parameters:
-      - name: id
+      - name: contractIdentifier
         in: path
         description: Contract identifier
         required: true
@@ -136,13 +136,13 @@ extensions-item:
     description: Get details of a specific contract extension
     operationId: getContractExtension
     parameters:
-      - name: id
+      - name: contractIdentifier
         in: path
         description: Contract identifier
         required: true
         schema:
           type: string
-      - name: extId
+      - name: extensionIdentifier
         in: path
         description: Extension identifier
         required: true
@@ -194,13 +194,13 @@ extensions-item:
     description: Cancel a draft extension, marking it as soft-deleted
     operationId: cancelContractExtension
     parameters:
-      - name: id
+      - name: contractIdentifier
         in: path
         description: Contract identifier
         required: true
         schema:
           type: string
-      - name: extId
+      - name: extensionIdentifier
         in: path
         description: Extension identifier
         required: true
@@ -256,13 +256,13 @@ extensions-activate:
     description: Transition a draft extension to ACTIVE status
     operationId: activateContractExtension
     parameters:
-      - name: id
+      - name: contractIdentifier
         in: path
         description: Contract identifier
         required: true
         schema:
           type: string
-      - name: extId
+      - name: extensionIdentifier
         in: path
         description: Extension identifier
         required: true
@@ -322,13 +322,13 @@ extensions-confirm:
     description: Record that the tenant has confirmed the extension
     operationId: confirmContractExtension
     parameters:
-      - name: id
+      - name: contractIdentifier
         in: path
         description: Contract identifier
         required: true
         schema:
           type: string
-      - name: extId
+      - name: extensionIdentifier
         in: path
         description: Extension identifier
         required: true
@@ -388,13 +388,13 @@ extensions-decline:
     description: Decline an extension with an optional reason
     operationId: declineContractExtension
     parameters:
-      - name: id
+      - name: contractIdentifier
         in: path
         description: Contract identifier
         required: true
         schema:
           type: string
-      - name: extId
+      - name: extensionIdentifier
         in: path
         description: Extension identifier
         required: true
@@ -459,18 +459,26 @@ extensions-addendum:
     description: Download the addendum document for a contract extension as PDF
     operationId: getExtensionAddendum
     parameters:
-      - name: id
+      - name: contractIdentifier
         in: path
         description: Contract identifier
         required: true
         schema:
           type: string
-      - name: extId
+      - name: extensionIdentifier
         in: path
         description: Extension identifier
         required: true
         schema:
           type: string
+      - name: lang
+        in: query
+        description: Document language (ISO 639-1 code)
+        required: false
+        schema:
+          type: string
+          default: en
+          example: nl
     responses:
       "200":
         description: PDF addendum
@@ -520,18 +528,26 @@ extensions-rent-increase-letter:
     description: Download the rent increase notification letter as PDF
     operationId: getRentIncreaseLetter
     parameters:
-      - name: id
+      - name: contractIdentifier
         in: path
         description: Contract identifier
         required: true
         schema:
           type: string
-      - name: extId
+      - name: extensionIdentifier
         in: path
         description: Extension identifier
         required: true
         schema:
           type: string
+      - name: lang
+        in: query
+        description: Document language (ISO 639-1 code)
+        required: false
+        schema:
+          type: string
+          default: en
+          example: nl
     responses:
       "200":
         description: Rent increase letter PDF
