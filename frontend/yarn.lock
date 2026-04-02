@@ -1090,19 +1090,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@posthog/core@npm:1.24.4":
-  version: 1.24.4
-  resolution: "@posthog/core@npm:1.24.4"
-  dependencies:
-    cross-spawn: "npm:^7.0.6"
-  checksum: 10c0/626da28ab846fe9889f6a5d045b83270ffa56022ad3385303a297f4257f60540453fc32278252fa21723c0583cc5edae51adcb334e93abb589718581ca3b13fa
+"@posthog/core@npm:1.24.5":
+  version: 1.24.5
+  resolution: "@posthog/core@npm:1.24.5"
+  checksum: 10c0/901240b851144967668b6c6d3eaf0997d4f74af3e105672c7389c21da60fb6eab039f51dd7029b3786e6d3ff183733ea278a3925b26ab80e3e2a548c9a3729a7
   languageName: node
   linkType: hard
 
-"@posthog/types@npm:1.364.2":
-  version: 1.364.2
-  resolution: "@posthog/types@npm:1.364.2"
-  checksum: 10c0/4d28e48c8ccfa02116818a06b2016a0e696ad9cb0a897d5d7372db0f9175a34611dd03ed7181a1986e8524111f6cefc6a3d8c3c9f88cc8781c0085687d79cf9b
+"@posthog/types@npm:1.364.5":
+  version: 1.364.5
+  resolution: "@posthog/types@npm:1.364.5"
+  checksum: 10c0/6f5637a180b7645f2ceb52b35b04ff03227aa2374198620c5dfdc87f4fded37e1a7f5e81d936e0da350ed726d935399f437640538cd24111d8943642c432574b
   languageName: node
   linkType: hard
 
@@ -3377,18 +3375,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vis.gl/react-google-maps@npm:1.8.1":
-  version: 1.8.1
-  resolution: "@vis.gl/react-google-maps@npm:1.8.1"
+"@vis.gl/react-google-maps@npm:1.8.2":
+  version: 1.8.2
+  resolution: "@vis.gl/react-google-maps@npm:1.8.2"
   dependencies:
     "@googlemaps/js-api-loader": "npm:^2.0.2"
     "@types/google.maps": "npm:^3.54.10"
     fast-deep-equal: "npm:^3.1.3"
-    vite: "npm:^8.0.0"
   peerDependencies:
     react: ">=16.8.0 || ^19.0 || ^19.0.0-rc"
     react-dom: ">=16.8.0 || ^19.0 || ^19.0.0-rc"
-  checksum: 10c0/d5b1d80749fd580d09ab2bf2afb27c72a71b14224bfc263c05f519a9dd3031f4231433f6173fe5f619efc5de84894de9c21626482782f634112dd48460ca8333
+  checksum: 10c0/14c05facc8de2365ac19d995f29d201f2ecdbb162fb6122cf7082174e41c6389fbf02a5c054a54193bab4eadae80b4001e1f8aeeee6d0fe1b300e20ceb8d9ada
   languageName: node
   linkType: hard
 
@@ -3804,7 +3801,7 @@ __metadata:
     "@types/react-dom": "npm:19.2.3"
     "@types/react-is": "npm:19.2.0"
     "@types/swagger-ui-react": "npm:^5"
-    "@vis.gl/react-google-maps": "npm:1.8.1"
+    "@vis.gl/react-google-maps": "npm:1.8.2"
     "@vitejs/plugin-react": "npm:6.0.1"
     axios: "npm:1.14.0"
     date-fns: "npm:4.1.0"
@@ -3816,7 +3813,7 @@ __metadata:
     keycloak-js: "npm:26.2.3"
     libphonenumber-js: "npm:1.12.41"
     lucide-react: "npm:0.577.0"
-    posthog-js: "npm:^1.364.2"
+    posthog-js: "npm:^1.364.5"
     prettier: "npm:3.8.1"
     react: "npm:19.2.4"
     react-dom: "npm:19.2.4"
@@ -3863,7 +3860,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.0.1"
     keycloak-js: "npm:26.2.3"
     lucide-react: "npm:0.577.0"
-    posthog-js: "npm:^1.364.2"
+    posthog-js: "npm:^1.364.5"
     prettier: "npm:3.8.1"
     react: "npm:19.2.4"
     react-dom: "npm:19.2.4"
@@ -6965,24 +6962,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-js@npm:^1.364.2":
-  version: 1.364.2
-  resolution: "posthog-js@npm:1.364.2"
+"posthog-js@npm:^1.364.5":
+  version: 1.364.5
+  resolution: "posthog-js@npm:1.364.5"
   dependencies:
     "@opentelemetry/api": "npm:^1.9.0"
     "@opentelemetry/api-logs": "npm:^0.208.0"
     "@opentelemetry/exporter-logs-otlp-http": "npm:^0.208.0"
     "@opentelemetry/resources": "npm:^2.2.0"
     "@opentelemetry/sdk-logs": "npm:^0.208.0"
-    "@posthog/core": "npm:1.24.4"
-    "@posthog/types": "npm:1.364.2"
+    "@posthog/core": "npm:1.24.5"
+    "@posthog/types": "npm:1.364.5"
     core-js: "npm:^3.38.1"
     dompurify: "npm:^3.3.2"
     fflate: "npm:^0.4.8"
     preact: "npm:^10.28.2"
     query-selector-shadow-dom: "npm:^1.0.1"
     web-vitals: "npm:^5.1.0"
-  checksum: 10c0/95f66f9c095c7e37fa3a29fe15d708ad91f40326016b3ac92cea75ffa67626ab1e183e70d5dac683180e0a221f6131e779f5381c817c74d72c3c458a0845f56e
+  checksum: 10c0/b094d57a51878a08ed851429eb4e11c521c8d48b232729910f3cc82a396ac9e50a247c9b90c59542219e6c4c874b9e70815624abc6269fdee7b13550bb1e7ae8
   languageName: node
   linkType: hard
 
@@ -8781,7 +8778,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:8.0.3, vite@npm:^8.0.0":
+"vite@npm:8.0.3":
   version: 8.0.3
   resolution: "vite@npm:8.0.3"
   dependencies:
