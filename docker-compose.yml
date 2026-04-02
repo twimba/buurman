@@ -100,7 +100,7 @@ services:
       - buurman-network
 
   seaweedfs:
-    image: chrislusf/seaweedfs:4.17
+    image: chrislusf/seaweedfs:4.18
     entrypoint: ["/bin/sh", "/etc/seaweedfs/entrypoint.sh"]
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-test}
