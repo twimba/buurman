@@ -1,4 +1,4 @@
-FROM prom/prometheus:v3.10.0
+FROM prom/prometheus:v3.11.0
 
 USER root
 RUN apk add --no-cache gettext
