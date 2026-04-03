@@ -303,6 +303,8 @@ paths:
     $ref: 'paths/contract-extensions.yaml#/extensions-addendum'
   /contracts/{contractIdentifier}/extensions/{extensionIdentifier}/rent-increase-letter:
     $ref: 'paths/contract-extensions.yaml#/extensions-rent-increase-letter'
+  /contracts/{contractIdentifier}/extensions/{extensionIdentifier}/generate-documents:
+    $ref: 'paths/contract-extensions.yaml#/extensions-generate-documents'
   /calendar/feeds:
     $ref: 'paths/calendar-feeds.yaml#/feeds'
   /calendar/feeds/{identifier}/rotate:
@@ -8348,6 +8350,28 @@ components:
           type: number
         notes:
           type: string
+    GenerateExtensionDocumentsRequest:
+      type: object
+      properties:
+        documentTypes:
+          type: array
+          items:
+            type: string
+            enum:
+              - EXTENSION_ADDENDUM
+              - RENT_INCREASE_LETTER
+          description: Document types to generate
+        languages:
+          type: array
+          items:
+            type: string
+          description: ISO 639-1 language codes (defaults to contract's documentLanguages)
+        replaceExisting:
+          type: boolean
+          default: false
+          description: Delete existing extension documents before generating new ones
+      required:
+        - documentTypes
     DeclineContractExtensionRequest:
       type: object
       properties:

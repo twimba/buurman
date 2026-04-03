@@ -10193,7 +10193,7 @@ paths:
       tags:
         - Contract Extensions
       summary: Cancel (soft delete) a draft extension
-      description: Cancel a draft extension, marking it as soft-deleted
+      description: Cancel a draft extension, marking it as soft-deleted. Optionally delete generated documents.
       operationId: cancelContractExtension
       parameters:
         - name: contractIdentifier
@@ -10208,6 +10208,13 @@ paths:
           required: true
           schema:
             type: string
+        - name: deleteDocuments
+          in: query
+          description: Also delete generated documents for this extension
+          required: false
+          schema:
+            type: boolean
+            default: false
       responses:
         "204":
           description: Extension cancelled
@@ -10553,6 +10560,73 @@ paths:
               schema:
                 type: string
                 format: binary
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
+  /contracts/{contractIdentifier}/extensions/{extensionIdentifier}/generate-documents:
+    post:
+      tags:
+        - Contract Extensions
+      summary: Generate and persist extension documents
+      description: Generate PDF documents for a contract extension and save them to S3 storage
+      operationId: generateExtensionDocuments
+      parameters:
+        - name: contractIdentifier
+          in: path
+          description: Contract identifier
+          required: true
+          schema:
+            type: string
+        - name: extensionIdentifier
+          in: path
+          description: Extension identifier
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateExtensionDocumentsRequest'
+      responses:
+        "200":
+          description: Generated documents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DocumentResponse'
         "400":
           description: Bad request - validation error or malformed input
           content:
@@ -26232,6 +26306,28 @@ components:
           type: number
         notes:
           type: string
+    GenerateExtensionDocumentsRequest:
+      type: object
+      properties:
+        documentTypes:
+          type: array
+          items:
+            type: string
+            enum:
+              - EXTENSION_ADDENDUM
+              - RENT_INCREASE_LETTER
+          description: Document types to generate
+        languages:
+          type: array
+          items:
+            type: string
+          description: ISO 639-1 language codes (defaults to contract's documentLanguages)
+        replaceExisting:
+          type: boolean
+          default: false
+          description: Delete existing extension documents before generating new ones
+      required:
+        - documentTypes
     DeclineContractExtensionRequest:
       type: object
       properties:

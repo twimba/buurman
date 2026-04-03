@@ -2,12 +2,15 @@ package com.buurman.controller;
 
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,11 +19,14 @@ import com.buurman.domain.identifier.ContractExtensionIdentifier;
 import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.ContractRentPeriodIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
+import com.buurman.dto.request.GenerateExtensionDocumentsRequest;
+import com.buurman.dto.response.DocumentResponse;
 import com.buurman.generated.api.BookletsApi;
 import com.buurman.security.SecurityUtils;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.ExportService;
 import com.buurman.service.export.ContractExtensionAddendumExporter;
+import com.buurman.service.export.ExtensionDocumentGenerationService;
 import com.buurman.service.export.RentChangeDocumentExporter;
 import com.buurman.service.export.RentIncreaseLetterExporter;
 
@@ -35,6 +41,7 @@ public class BookletController implements BookletsApi {
   private final ContractExtensionAddendumExporter addendumExporter;
   private final RentIncreaseLetterExporter rentIncreaseLetterExporter;
   private final RentChangeDocumentExporter rentChangeDocumentExporter;
+  private final ExtensionDocumentGenerationService extensionDocumentGenerationService;
   private final HttpServletResponse httpServletResponse;
 
   @Override
@@ -126,5 +133,15 @@ public class BookletController implements BookletsApi {
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
         .header(HttpHeaders.CONTENT_TYPE, APPLICATION_PDF_VALUE)
         .body(pdf);
+  }
+
+  @PostMapping("/contracts/{contractId}/extensions/{extensionId}/generate-documents")
+  public List<DocumentResponse> generateExtensionDocuments(
+      @PathVariable ContractIdentifier contractId,
+      @PathVariable ContractExtensionIdentifier extensionId,
+      @RequestBody GenerateExtensionDocumentsRequest request) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return extensionDocumentGenerationService.generateAndPersist(
+        contractId, extensionId, request, principal);
   }
 }

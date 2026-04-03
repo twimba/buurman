@@ -49,6 +49,7 @@ import com.buurman.exception.BusinessRuleException;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRentPeriodRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TeamRepository;
 import com.buurman.security.UserPrincipal;
@@ -62,9 +63,11 @@ class ContractExtensionServiceTest {
   @Mock private ContractExtensionRepository extensionRepository;
   @Mock private ContractRepository contractRepository;
   @Mock private ContractRentPeriodRepository rentPeriodRepository;
+  @Mock private DocumentRepository documentRepository;
   @Mock private PropertyRepository propertyRepository;
   @Mock private TeamRepository teamRepository;
   @Mock private NotificationService notificationService;
+  @Mock private S3StorageService s3StorageService;
   @Mock private AuditService auditService;
   @Mock private TransactionTemplate transactionTemplate;
   @Mock private AppProperties appProperties;
@@ -87,9 +90,11 @@ class ContractExtensionServiceTest {
             extensionRepository,
             contractRepository,
             rentPeriodRepository,
+            documentRepository,
             propertyRepository,
             teamRepository,
             notificationService,
+            s3StorageService,
             auditService,
             transactionTemplate,
             appProperties,
@@ -604,7 +609,7 @@ class ContractExtensionServiceTest {
       when(contractRepository.getByIdentifierAndTeamId(CONTRACT_SID, TEAM_ID)).thenReturn(contract);
       when(extensionRepository.getByIdentifierAndTeamId(extSid, TEAM_ID)).thenReturn(extension);
 
-      service.cancelExtension(CONTRACT_SID, extSid, principal);
+      service.cancelExtension(CONTRACT_SID, extSid, false, principal);
 
       verify(extensionRepository).cancelByIdAndTeamId(extensionId, TEAM_ID, USER_ID);
       verify(auditService)

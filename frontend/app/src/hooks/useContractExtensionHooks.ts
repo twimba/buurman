@@ -141,9 +141,14 @@ export const useCancelExtension = (contractId: string) => {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   return useMutation({
-    mutationFn: (extensionId: string) =>
-      extensionsApi.cancelExtension(contractId, extensionId),
-    onSuccess: () => {
+    mutationFn: ({
+      extensionId,
+      deleteDocuments,
+    }: {
+      extensionId: string;
+      deleteDocuments?: boolean;
+    }) => extensionsApi.cancelExtension(contractId, extensionId, deleteDocuments),
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: ['contractExtensions', contractId],
       });
@@ -152,7 +157,42 @@ export const useCancelExtension = (contractId: string) => {
         queryKey: ['contractAuditLog', contractId],
       });
       queryClient.invalidateQueries({ queryKey: ['upcomingRenewals'] });
+      if (variables.deleteDocuments) {
+        queryClient.invalidateQueries({
+          queryKey: ['contractDocuments', contractId],
+        });
+        queryClient.invalidateQueries({ queryKey: ['documents'] });
+      }
       showToast('Extension cancelled', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const useGenerateExtensionDocuments = (contractId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: ({
+      extensionId,
+      request,
+    }: {
+      extensionId: string;
+      request: extensionsApi.GenerateExtensionDocumentsRequest;
+    }) => extensionsApi.generateExtensionDocuments(contractId, extensionId, request),
+    onSuccess: (docs) => {
+      queryClient.invalidateQueries({
+        queryKey: ['contractDocuments', contractId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['documents'],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['contractAuditLog', contractId],
+      });
+      showToast(`${docs.length} document(s) generated successfully`, 'success');
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');

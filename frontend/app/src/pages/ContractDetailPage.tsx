@@ -1481,9 +1481,11 @@ export const ContractDetailPage = () => {
               currency={contract.rentAmountCurrency}
               currentRentAmount={contract.rentAmount}
               currentEndDate={contract.effectiveEndDate ?? contract.endDate}
+              countryCode={contract.countryCode}
               renewalTermMonths={contract.renewalTermMonths}
               rentAdjustmentType={contract.rentAdjustmentType}
               rentAdjustmentValue={contract.rentAdjustmentValue}
+              documentLanguages={contract.documentLanguages}
             />
           </div>
         )}
