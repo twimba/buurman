@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"/>
+<style th:replace="~{_letter-styles :: letter-css}">/* replaced by shared fragment */</style>
+<style>
+.regulation-info { margin: 16px 0; padding: 12px 16px; background-color: #fefce8;
+  border: 1px solid #fef08a; border-radius: 6px; font-size: 12px; color: #854d0e; line-height: 1.5; }
+.regulation-warning { margin: 16px 0; padding: 12px 16px; background-color: #fef2f2;
+  border: 1px solid #fecaca; border-radius: 6px; font-size: 12px; color: #991b1b; line-height: 1.5; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="letter">
+  <!-- Header -->
+  <div class="letter-header">
+    <div class="letter-date" th:text="${generatedDate}"></div>
+    <div class="letter-ref" th:text="#{rentchange.ref(${rentPeriodIdentifier})}"></div>
+  </div>
+
+  <!-- Addressee -->
+  <div class="letter-addressee">
+    <div th:if="${primaryContactName != null}">
+      <div class="addressee-name" th:text="${primaryContactName}"></div>
+      <div th:if="${contactAddress != null}">
+        <div th:text="${contactAddress.street}"></div>
+        <div th:text="${contactAddress.postalCode} + ' ' + ${contactAddress.city}"></div>
+        <div th:text="${contactAddress.countryCode}"></div>
+      </div>
+    </div>
+    <div th:unless="${primaryContactName != null}">
+      <div class="addressee-name" th:text="#{rentchange.salutation.default}">Dear Resident,</div>
+    </div>
+  </div>
+
+  <!-- Subject -->
+  <div th:if="${isInitialRent}" class="letter-subject" th:text="'Re: ' + #{rentchange.title.initial}"></div>
+  <div th:unless="${isInitialRent}" class="letter-subject" th:text="'Re: ' + #{rentchange.title}"></div>
+
+  <!-- Body -->
+  <div class="letter-body">
+    <!-- Salutation -->
+    <p th:if="${primaryContactName != null}" th:text="#{rentchange.salutation(${primaryContactName})}"></p>
+    <p th:unless="${primaryContactName != null}" th:text="#{rentchange.salutation.default}"></p>
+
+    <!-- Paragraph 1: Notification -->
+    <p th:if="${isInitialRent}" th:utext="#{rentchange.body.notification.initial(${propertyAddress}, ${newRent}, ${effectiveDate})}"></p>
+    <p th:unless="${isInitialRent}" th:utext="#{rentchange.body.notification(${propertyAddress}, ${previousRent}, ${newRent}, ${effectiveDate})}"></p>
+
+    <!-- Paragraph 2: Adjustment basis -->
+    <p th:if="${adjustmentBasis != null}" th:text="${adjustmentBasis}"></p>
+
+    <!-- Percentage change (non-initial only) -->
+    <p th:if="${!isInitialRent and percentageChange != null and percentageChange > 0}" th:text="#{rentchange.body.change(${percentageChangeFormatted})}"></p>
+    <p th:if="${!isInitialRent and percentageChange != null and percentageChange < 0}" th:text="#{rentchange.body.decrease(${percentageChangeFormatted})}"></p>
+
+    <!-- Country-specific legal clause -->
+    <div th:if="${legalClause != null}" class="legal-clause" th:text="${legalClause}"></div>
+
+    <!-- Rent regulation data -->
+    <div th:if="${regulation != null}" class="regulation-info">
+      <strong th:text="#{rentchange.regulation.intro}">Applicable rent regulation:</strong><br/>
+      <span th:if="${regulation.maxIncreasePercentage != null}" th:text="#{rentchange.regulation.maxIncrease(${regulation.year}, ${regulation.maxIncreasePercentage})}"></span><br th:if="${regulation.maxIncreasePercentage != null}"/>
+      <span th:if="${regulation.indexName != null}" th:text="#{rentchange.regulation.index(${regulation.indexName}, ${regulation.indexValue})}"></span><br th:if="${regulation.indexName != null}"/>
+      <span th:if="${regulation.noticePeriodDays != null}" th:text="#{rentchange.regulation.noticePeriod(${regulation.noticePeriodDays})}"></span><br th:if="${regulation.noticePeriodDays != null}"/>
+      <span th:if="${regulation.additionalConditions != null}" th:text="#{rentchange.regulation.conditions(${regulation.additionalConditions})}"></span><br th:if="${regulation.additionalConditions != null}"/>
+      <span th:if="${regulation.sourceUrl != null}" th:text="#{rentchange.regulation.source(${regulation.sourceUrl})}"></span>
+    </div>
+
+    <!-- Warning if increase exceeds max -->
+    <div th:if="${exceedsMaxIncrease}" class="regulation-warning" th:text="#{rentchange.regulation.warning(${regulation.maxIncreasePercentage})}"></div>
+
+    <!-- Extension details (if linked) -->
+    <div th:if="${extensionNumber != null}">
+      <p th:if="${extensionNewEndDate != null}" th:text="#{rentchange.body.extension(${extensionNumber}, ${extensionNewEndDate})}"></p>
+      <p th:unless="${extensionNewEndDate != null}" th:text="#{rentchange.body.extension.indefinite(${extensionNumber})}"></p>
+    </div>
+
+    <!-- Summary table -->
+    <table class="summary-table">
+      <tr>
+        <td class="st-label" th:text="#{rentchange.summary.contractRef}">Contract Reference</td>
+        <td class="st-value" th:text="${contractIdentifier}"></td>
+      </tr>
+      <tr>
+        <td class="st-label" th:text="#{rentchange.summary.property}">Property</td>
+        <td class="st-value" th:text="${propertyAddress}"></td>
+      </tr>
+      <tr th:if="${!isInitialRent}">
+        <td class="st-label" th:text="#{rentchange.summary.previousRent}">Previous Rent</td>
+        <td class="st-value" th:text="${previousRent}"></td>
+      </tr>
+      <tr>
+        <td class="st-label" th:text="#{rentchange.summary.newRent}">New Rent</td>
+        <td class="st-value"><strong th:text="${newRent}"></strong></td>
+      </tr>
+      <tr th:if="${!isInitialRent and percentageChangeFormatted != null}">
+        <td class="st-label" th:text="#{rentchange.summary.change}">Change</td>
+        <td class="st-value" th:text="${percentageChangeFormatted} + '%'"></td>
+      </tr>
+      <tr th:if="${adjustmentType != null}">
+        <td class="st-label" th:text="#{rentchange.summary.adjustmentType}">Adjustment Type</td>
+        <td class="st-value" th:text="${adjustmentType}"></td>
+      </tr>
+      <tr>
+        <td class="st-label" th:text="#{rentchange.summary.effectiveDate}">Effective Date</td>
+        <td class="st-value" th:text="${effectiveDate}"></td>
+      </tr>
+      <tr th:if="${extensionNewEndDate != null}">
+        <td class="st-label" th:text="#{rentchange.summary.newEndDate}">New End Date</td>
+        <td class="st-value" th:text="${extensionNewEndDate}"></td>
+      </tr>
+      <tr th:if="${regulation != null and regulation.indexName != null}">
+        <td class="st-label" th:text="#{rentchange.summary.regulation}">Applicable Regulation</td>
+        <td class="st-value" th:text="${regulation.indexName}"></td>
+      </tr>
+    </table>
+
+    <!-- Closing -->
+    <p th:text="#{rentchange.closing}"></p>
+    <p th:text="#{rentchange.regards}"></p>
+  </div>
+
+  <!-- Signature -->
+  <div class="letter-signature">
+    <div class="sig-line"></div>
+    <div class="sig-label" th:text="#{rentchange.signature}">Landlord / Property Manager</div>
+    <div class="sig-date"><span th:text="#{rentchange.signature.date}">Date:</span> <span class="sig-date-line"></span></div>
+  </div>
+
+  <!-- Disclaimer -->
+  <div class="letter-disclaimer" th:text="#{rentchange.disclaimer}"></div>
+
+  <!-- Footer -->
+  <div class="letter-footer">
+    <span th:text="#{rentchange.generated(${generatedDate})}"></span>
+    <span> &mdash; </span>
+    <span th:text="#{rentchange.footer}"></span>
+  </div>
+</div>
+
+</body>
+</html>

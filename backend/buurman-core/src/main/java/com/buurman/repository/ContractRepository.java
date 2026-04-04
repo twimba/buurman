@@ -48,6 +48,9 @@ public class ContractRepository {
       org.jooq.impl.DSL.field("country_code", String.class);
   private static final Field<JSONB> COUNTRY_METADATA =
       org.jooq.impl.DSL.field("country_metadata", JSONB.class);
+  // Field for column added in V048
+  private static final Field<String[]> DOCUMENT_LANGUAGES =
+      org.jooq.impl.DSL.field("document_languages", String[].class);
 
   public Optional<Contract> findByIdentifierAndTeamId(Sid identifier, UUID teamId) {
     return dsl.selectFrom(CONTRACTS)
@@ -243,6 +246,7 @@ public class ContractRepository {
           .set(CONTRACTS.RENT_ADJUSTMENT_VALUE, contract.getRentAdjustmentValue().orElse(null))
           .set(CONTRACTS.LANDLORD_TYPE, contract.getLandlordType().map(Enum::name).orElse(null))
           .set(CONTRACTS.REGION_CODE, contract.getRegionCode().orElse(null))
+          .set(DOCUMENT_LANGUAGES, contract.getDocumentLanguages().toArray(new String[0]))
           .set(CONTRACTS.CREATED_AT, now)
           .set(CONTRACTS.UPDATED_AT, now)
           .set(CONTRACTS.CREATED_BY, contract.getCreatedBy())
@@ -292,7 +296,8 @@ public class ContractRepository {
               .set(CONTRACTS.RENT_ADJUSTMENT_TYPE, contract.getRentAdjustmentType().name())
               .set(CONTRACTS.RENT_ADJUSTMENT_VALUE, contract.getRentAdjustmentValue().orElse(null))
               .set(CONTRACTS.LANDLORD_TYPE, contract.getLandlordType().map(Enum::name).orElse(null))
-              .set(CONTRACTS.REGION_CODE, contract.getRegionCode().orElse(null));
+              .set(CONTRACTS.REGION_CODE, contract.getRegionCode().orElse(null))
+              .set(DOCUMENT_LANGUAGES, contract.getDocumentLanguages().toArray(new String[0]));
 
       // Only update country_code and country_metadata while contract is DRAFT (locked after
       // activation)

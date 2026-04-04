@@ -238,6 +238,22 @@ public class DocumentRepository {
         mapper::toDomain);
   }
 
+  public List<Document> findByEntityAndFileNamePatternAndTeamId(
+      String entityType, UUID entityId, String fileNamePattern, UUID teamId) {
+    return List.copyOf(
+        dsl.selectFrom(DOCUMENTS)
+            .where(
+                DOCUMENTS
+                    .ENTITY_TYPE
+                    .eq(entityType)
+                    .and(DOCUMENTS.ENTITY_ID.eq(entityId))
+                    .and(DOCUMENTS.FILE_NAME.like(fileNamePattern))
+                    .and(DOCUMENTS.TEAM_ID.eq(teamId))
+                    .and(DOCUMENTS.DELETED_AT.isNull()))
+            .fetch()
+            .map(mapper::toDomain));
+  }
+
   public List<Document> findByIdsAndTeamId(List<UUID> ids, UUID teamId) {
     return List.copyOf(
         dsl.selectFrom(DOCUMENTS)

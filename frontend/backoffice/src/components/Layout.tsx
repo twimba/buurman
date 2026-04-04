@@ -43,6 +43,7 @@ import {
   SendGridIcon,
   AwsIcon,
   HetznerIcon,
+  BetterStackIcon,
 } from "./ToolIcons";
 import { useGrafanaDashboards } from "../hooks/useGrafanaDashboards";
 
@@ -141,6 +142,12 @@ const getTools = (): ToolItem[] => {
       name: "Hetzner",
       href: "https://console.hetzner.cloud/projects",
       icon: HetznerIcon,
+      external: true,
+    },
+    {
+      name: "Better Stack",
+      href: "https://telemetry.betterstack.com/team/t505111/tail?s=1735995",
+      icon: BetterStackIcon,
       external: true,
     },
   ];

@@ -4,6 +4,7 @@ import {
   CreateRentPeriodRequest,
   UpdateRentPeriodRequest,
 } from '../types/contract';
+import type { DocumentResponse } from '@/types/property';
 
 export const getRentPeriods = async (
   contractId: string
@@ -42,4 +43,21 @@ export const deleteRentPeriod = async (
   await client.delete(
     `/contracts/${contractId}/rent-periods/${periodIdentifier}`
   );
+};
+
+export interface GenerateRentChangeDocumentsRequest {
+  languages?: string[];
+  replaceExisting?: boolean;
+}
+
+export const generateRentChangeDocuments = async (
+  contractId: string,
+  periodId: string,
+  request: GenerateRentChangeDocumentsRequest
+): Promise<DocumentResponse[]> => {
+  const response = await client.post(
+    `/contracts/${contractId}/rent-periods/${periodId}/generate-documents`,
+    request
+  );
+  return response.data;
 };

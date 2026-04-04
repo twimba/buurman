@@ -47,6 +47,7 @@ public record UpdateContractRequest(
     Optional<BigDecimal> rentAdjustmentValue,
     Optional<Contract.LandlordType> landlordType,
     Optional<String> regionCode,
+    Optional<List<String>> documentLanguages,
     Optional<@PositiveOrZero(message = "Late fee percentage must be zero or positive") BigDecimal>
         lateFeePercentage,
     Optional<String> termsAndConditions,

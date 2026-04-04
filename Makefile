@@ -1,4 +1,4 @@
-.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend frontend-app frontend-backoffice workspace-setup workspace-teardown test test-coverage test-bdd test-bdd-smoke test-bdd-run hub
+.PHONY: up dev down down-v restart restart-dev logs ps certs stats deploy-prod generate-api bundle-openapi backend backend-watch frontend-app frontend-backoffice workspace-setup workspace-teardown test test-coverage test-bdd test-bdd-smoke test-bdd-run hub
 
 ## Start everything in Docker (including backend + app containers)
 up:
@@ -130,6 +130,19 @@ test-bdd-run:
 	echo ""; \
 	if [ $$rc -eq 0 ]; then echo "All tests passed."; else echo "Some tests failed (exit code $$rc)."; fi; \
 	exit $$rc
+
+## Watch backend Java sources and auto-compile on changes (run alongside `make backend`)
+## DevTools detects recompiled classes and warm-restarts (~2s). Requires: brew install fswatch
+backend-watch:
+	@echo "Watching backend Java sources for changes... (compile on save)"
+	@cd backend && fswatch -o -r --event Created --event Updated --event Removed \
+		-e '.*' -i '\\.java$$' \
+		buurman-common/src buurman-core/src buurman-notifications/src buurman-backoffice/src \
+		buurman-booklets/src buurman-demo-data/src buurman-takeout/src \
+	| while read -r num; do \
+		echo ""; echo "[backend-watch] Change detected, compiling..."; \
+		mvn compile -DskipTests -Pquick 2>&1 | tail -12; \
+	done
 
 backend-upgradable-dependencies:
 	mvn versions:display-dependency-updates -DallowMajorUpdates=false -Dversions.outputLineWidth=145 -Dmaven.version.ignore='(?i).*-(alpha|beta|rc|m)([-.]?\d+)?' -DprocessDependencyManagementTransitive=false

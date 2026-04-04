@@ -7,6 +7,7 @@ import {
   JurisdictionDefaultResponse,
 } from '../types/contractExtension';
 import { PageResponse } from '@/types/common';
+import type { DocumentResponse } from '@/types/property';
 
 export const listExtensions = async (
   contractId: string,
@@ -74,9 +75,12 @@ export const declineExtension = async (
 
 export const cancelExtension = async (
   contractId: string,
-  extensionId: string
+  extensionId: string,
+  deleteDocuments?: boolean
 ): Promise<void> => {
-  await client.delete(`/contracts/${contractId}/extensions/${extensionId}`);
+  await client.delete(`/contracts/${contractId}/extensions/${extensionId}`, {
+    params: deleteDocuments ? { deleteDocuments: true } : undefined,
+  });
 };
 
 export const getUpcomingRenewals = async (): Promise<
@@ -90,6 +94,48 @@ export const getPendingExtensions = async (): Promise<
   ContractExtensionResponse[]
 > => {
   const response = await client.get('/dashboard/pending-extensions');
+  return response.data;
+};
+
+export const downloadAddendum = async (
+  contractId: string,
+  extensionId: string,
+  lang?: string
+): Promise<Blob> => {
+  const response = await client.get(
+    `/contracts/${contractId}/extensions/${extensionId}/addendum`,
+    { responseType: 'blob', params: { lang } }
+  );
+  return response.data;
+};
+
+export const downloadRentIncreaseLetter = async (
+  contractId: string,
+  extensionId: string,
+  lang?: string
+): Promise<Blob> => {
+  const response = await client.get(
+    `/contracts/${contractId}/extensions/${extensionId}/rent-increase-letter`,
+    { responseType: 'blob', params: { lang } }
+  );
+  return response.data;
+};
+
+export interface GenerateExtensionDocumentsRequest {
+  documentTypes: ('EXTENSION_ADDENDUM' | 'RENT_INCREASE_LETTER')[];
+  languages?: string[];
+  replaceExisting?: boolean;
+}
+
+export const generateExtensionDocuments = async (
+  contractId: string,
+  extensionId: string,
+  request: GenerateExtensionDocumentsRequest
+): Promise<DocumentResponse[]> => {
+  const response = await client.post(
+    `/contracts/${contractId}/extensions/${extensionId}/generate-documents`,
+    request
+  );
   return response.data;
 };
 

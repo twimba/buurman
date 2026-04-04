@@ -41,6 +41,12 @@
             <groupId>com.buurman</groupId>
             <artifactId>buurman-booklets</artifactId>
         </dependency>
+        <!-- DevTools (auto-restart + live reload, excluded from fat JAR by default) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
+        </dependency>
         <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -78,7 +84,7 @@
             <plugin>
                 <groupId>io.github.git-commit-id</groupId>
                 <artifactId>git-commit-id-maven-plugin</artifactId>
-                <version>9.0.2</version>
+                <version>9.1.0</version>
                 <executions>
                     <execution>
                         <goals>

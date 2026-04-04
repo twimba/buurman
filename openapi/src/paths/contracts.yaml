@@ -308,6 +308,143 @@ rent-periods-item:
     security:
       - bearer-jwt: []
 
+rent-periods-document:
+  get:
+    tags:
+      - Contract Documents
+    summary: Download rent change document PDF
+    description: Download the rent change notification document for a specific rent period as PDF. Includes regulation data when available.
+    operationId: getRentChangeDocument
+    parameters:
+      - name: contractIdentifier
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ContractIdentifier'
+      - name: periodIdentifier
+        in: path
+        description: Rent period identifier
+        required: true
+        schema:
+          $ref: '#/components/schemas/ContractRentPeriodIdentifier'
+      - name: lang
+        in: query
+        description: Document language (ISO 639-1 code)
+        required: false
+        schema:
+          type: string
+          default: en
+          example: nl
+    responses:
+      "200":
+        description: Rent change document PDF
+        content:
+          application/pdf:
+            schema:
+              type: string
+              format: binary
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
+rent-periods-generate-documents:
+  post:
+    tags:
+      - Contract Documents
+    summary: Generate and persist rent change documents
+    description: Generate rent change PDF documents for a rent period and save them to S3 storage
+    operationId: generateRentChangeDocuments
+    parameters:
+      - name: contractIdentifier
+        in: path
+        description: Contract identifier
+        required: true
+        schema:
+          type: string
+      - name: periodIdentifier
+        in: path
+        description: Rent period identifier
+        required: true
+        schema:
+          type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenerateRentChangeDocumentsRequest'
+    responses:
+      "200":
+        description: Generated documents
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/DocumentResponse'
+      "400":
+        description: Bad request - validation error or malformed input
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "401":
+        description: Unauthorized - missing or invalid JWT token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "403":
+        description: Forbidden - insufficient permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "404":
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+      "500":
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProblemDetail'
+    security:
+      - bearer-jwt: []
+
 payment-instructions-item:
   put:
     tags:

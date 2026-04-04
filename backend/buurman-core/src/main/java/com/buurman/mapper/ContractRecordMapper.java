@@ -2,6 +2,8 @@ package com.buurman.mapper;
 
 import static java.time.ZoneOffset.UTC;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
@@ -81,6 +83,11 @@ public class ContractRecordMapper {
         contract.setCountryMetadata(Optional.ofNullable(metadata));
       }
     }
+
+    // document_languages column (added in V048)
+    String[] docLangs = record.get(org.jooq.impl.DSL.field("document_languages", String[].class));
+    contract.setDocumentLanguages(
+        docLangs != null ? List.copyOf(Arrays.asList(docLangs)) : List.of("en"));
 
     return Optional.of(contract);
   }

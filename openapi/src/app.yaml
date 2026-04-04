@@ -173,6 +173,10 @@ paths:
     $ref: 'paths/contracts.yaml#/item'
   /contracts/{contractIdentifier}/rent-periods/{periodIdentifier}:
     $ref: 'paths/contracts.yaml#/rent-periods-item'
+  /contracts/{contractIdentifier}/rent-periods/{periodIdentifier}/document:
+    $ref: 'paths/contracts.yaml#/rent-periods-document'
+  /contracts/{contractIdentifier}/rent-periods/{periodIdentifier}/generate-documents:
+    $ref: 'paths/contracts.yaml#/rent-periods-generate-documents'
   /contracts/{contractIdentifier}/payment-instructions/{instructionIdentifier}:
     $ref: 'paths/contracts.yaml#/payment-instructions-item'
   /auth/me:
@@ -287,20 +291,22 @@ paths:
     $ref: 'paths/contracts.yaml#/rent-periods'
   /contracts/{contractIdentifier}/payment-instructions:
     $ref: 'paths/contracts.yaml#/payment-instructions'
-  /contracts/{id}/extensions:
+  /contracts/{contractIdentifier}/extensions:
     $ref: 'paths/contract-extensions.yaml#/extensions'
-  /contracts/{id}/extensions/{extId}:
+  /contracts/{contractIdentifier}/extensions/{extensionIdentifier}:
     $ref: 'paths/contract-extensions.yaml#/extensions-item'
-  /contracts/{id}/extensions/{extId}/activate:
+  /contracts/{contractIdentifier}/extensions/{extensionIdentifier}/activate:
     $ref: 'paths/contract-extensions.yaml#/extensions-activate'
-  /contracts/{id}/extensions/{extId}/confirm:
+  /contracts/{contractIdentifier}/extensions/{extensionIdentifier}/confirm:
     $ref: 'paths/contract-extensions.yaml#/extensions-confirm'
-  /contracts/{id}/extensions/{extId}/decline:
+  /contracts/{contractIdentifier}/extensions/{extensionIdentifier}/decline:
     $ref: 'paths/contract-extensions.yaml#/extensions-decline'
-  /contracts/{id}/extensions/{extId}/addendum:
+  /contracts/{contractIdentifier}/extensions/{extensionIdentifier}/addendum:
     $ref: 'paths/contract-extensions.yaml#/extensions-addendum'
-  /contracts/{id}/extensions/{extId}/rent-increase-letter:
+  /contracts/{contractIdentifier}/extensions/{extensionIdentifier}/rent-increase-letter:
     $ref: 'paths/contract-extensions.yaml#/extensions-rent-increase-letter'
+  /contracts/{contractIdentifier}/extensions/{extensionIdentifier}/generate-documents:
+    $ref: 'paths/contract-extensions.yaml#/extensions-generate-documents'
   /calendar/feeds:
     $ref: 'paths/calendar-feeds.yaml#/feeds'
   /calendar/feeds/{identifier}/rotate:
@@ -3281,6 +3287,12 @@ components:
           $ref: '#/components/schemas/LandlordType'
         regionCode:
           type: string
+        documentLanguages:
+          type: array
+          items:
+            type: string
+          description: Preferred language(s) for generated documents (ISO 639-1 codes)
+          example: ["en"]
         countryMetadata:
           type: object
           additionalProperties: {}
@@ -3674,6 +3686,11 @@ components:
           $ref: '#/components/schemas/LandlordType'
         regionCode:
           type: string
+        documentLanguages:
+          type: array
+          items:
+            type: string
+          description: Preferred language(s) for generated documents (ISO 639-1 codes)
         effectiveEndDate:
           type: string
           format: date
@@ -3696,6 +3713,7 @@ components:
       required:
         - contractType
         - createdAt
+        - documentLanguages
         - extensionCount
         - identifier
         - landlordNoticeDays
@@ -5703,6 +5721,12 @@ components:
           $ref: '#/components/schemas/LandlordType'
         regionCode:
           type: string
+        documentLanguages:
+          type: array
+          items:
+            type: string
+          description: Preferred language(s) for generated documents (ISO 639-1 codes)
+          example: ["en"]
         countryMetadata:
           type: object
           additionalProperties: {}
@@ -8369,6 +8393,40 @@ components:
           type: number
         notes:
           type: string
+    GenerateExtensionDocumentsRequest:
+      type: object
+      properties:
+        documentTypes:
+          type: array
+          items:
+            type: string
+            enum:
+              - EXTENSION_ADDENDUM
+              - RENT_INCREASE_LETTER
+          description: Document types to generate
+        languages:
+          type: array
+          items:
+            type: string
+          description: ISO 639-1 language codes (defaults to contract's documentLanguages)
+        replaceExisting:
+          type: boolean
+          default: false
+          description: Delete existing extension documents before generating new ones
+      required:
+        - documentTypes
+    GenerateRentChangeDocumentsRequest:
+      type: object
+      properties:
+        languages:
+          type: array
+          items:
+            type: string
+          description: ISO 639-1 language codes (defaults to contract's documentLanguages)
+        replaceExisting:
+          type: boolean
+          default: false
+          description: Delete existing rent change documents before generating new ones
     DeclineContractExtensionRequest:
       type: object
       properties:

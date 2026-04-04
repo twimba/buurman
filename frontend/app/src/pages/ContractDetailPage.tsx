@@ -908,6 +908,8 @@ export const ContractDetailPage = () => {
                   currentRentAmount={contract.rentAmount}
                   currentComponents={contract.rentComponents ?? []}
                   paymentFrequency={contract.paymentFrequency}
+                  documentLanguages={contract.documentLanguages}
+                  countryCode={contract.countryCode}
                 />
                 {contract.rentComponents &&
                   contract.rentComponents.length > 0 && (
@@ -1481,9 +1483,11 @@ export const ContractDetailPage = () => {
               currency={contract.rentAmountCurrency}
               currentRentAmount={contract.rentAmount}
               currentEndDate={contract.effectiveEndDate ?? contract.endDate}
+              countryCode={contract.countryCode}
               renewalTermMonths={contract.renewalTermMonths}
               rentAdjustmentType={contract.rentAdjustmentType}
               rentAdjustmentValue={contract.rentAdjustmentValue}
+              documentLanguages={contract.documentLanguages}
             />
           </div>
         )}

@@ -126,6 +126,7 @@ export interface ContractResponse {
   rentAdjustmentValue?: number;
   landlordType?: LandlordType;
   regionCode?: string;
+  documentLanguages?: string[];
   extensionCount?: number;
   extensionsRemaining?: number;
   rentComponents: RentComponentResponseItem[];
