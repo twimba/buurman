@@ -39,7 +39,7 @@ import { PropertyAuditTab } from '@/components/properties/PropertyAuditTab';
 import { FeatureGate } from '@/components/FeatureGate';
 import { FeatureFlags } from '@/constants/featureFlags';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { Button, LoadingSpinner, PageHeader, useToast } from '@buurman/ui';
+import { Button, PageHeader, Skeleton, useToast } from '@buurman/ui';
 import { trackEvent } from '@/utils/analytics';
 import { AnalyticsEvent } from '@/constants/analyticsEvents';
 import { useTeam } from '@/context/TeamContext';
@@ -190,8 +190,40 @@ export const PropertyDetailPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <LoadingSpinner />
+      <div className="min-h-screen bg-background">
+        <div className="px-4 py-8 space-y-6">
+          {/* Header skeleton */}
+          <div className="flex items-center gap-4">
+            <Skeleton className="h-8 w-64" />
+            <Skeleton className="h-6 w-20 rounded-full" />
+          </div>
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-4 w-48" />
+          </div>
+          {/* Action buttons skeleton */}
+          <div className="flex gap-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-10 w-24 rounded" />
+            ))}
+          </div>
+          {/* Tab bar skeleton */}
+          <div className="flex gap-6 border-b border-border-default pb-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-5 w-20" />
+            ))}
+          </div>
+          {/* Tab content skeleton */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <Skeleton className="h-48 w-full rounded-lg" />
+              <Skeleton className="h-32 w-full rounded-lg" />
+            </div>
+            <div className="space-y-4">
+              <Skeleton className="h-64 w-full rounded-lg" />
+              <Skeleton className="h-32 w-full rounded-lg" />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

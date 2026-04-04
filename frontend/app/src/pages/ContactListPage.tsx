@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
-import { EmptyState, LoadingSpinner, Pagination, RefreshButton } from '@buurman/ui';
+import { EmptyState, Pagination, RefreshButton, Skeleton } from '@buurman/ui';
 import {
   ContactType,
   ContactTag,
@@ -244,8 +244,38 @@ export const ContactListPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <LoadingSpinner />
+      <div className="min-h-screen bg-background">
+        <div className="px-4 py-8 space-y-6">
+          {/* Header skeleton */}
+          <div className="flex justify-between items-center">
+            <div className="space-y-2">
+              <Skeleton className="h-8 w-48" />
+              <Skeleton className="h-4 w-64" />
+            </div>
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-10 w-24 rounded" />
+              <Skeleton className="h-10 w-32 rounded" />
+            </div>
+          </div>
+          {/* Search bar skeleton */}
+          <Skeleton className="h-10 w-full rounded" />
+          {/* Contact cards grid skeleton */}
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="p-4 rounded-lg border border-border-default space-y-3">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-10 w-10 rounded-full" />
+                  <div className="space-y-1.5 flex-1">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-3 w-1/2" />
+                  </div>
+                </div>
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-2/3" />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }

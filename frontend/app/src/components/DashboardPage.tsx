@@ -5,7 +5,7 @@ import { usePayments, useMarkPaymentAsPaid } from '@/hooks/usePaymentHooks';
 import { usePendingExtensions } from '@/hooks/useContractExtensionHooks';
 import * as extensionsApi from '@/api/contractExtensions';
 import { useTeam } from '@/context/TeamContext';
-import { LoadingSpinner, useToast } from '@buurman/ui';
+import { Skeleton, useToast } from '@buurman/ui';
 import { MetricHint } from '@/components/common/MetricHint';
 import { ErrorMessage } from './ErrorMessage';
 import { PendingInvitationsPanel } from './dashboard/PendingInvitationsPanel';
@@ -120,8 +120,40 @@ export const DashboardPage = () => {
 
   if (statsLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <LoadingSpinner />
+      <div className="space-y-8">
+        {/* Summary cards skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="bg-surface-card rounded-lg border border-border-default p-6 space-y-3">
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-4 w-28" />
+                <Skeleton className="h-8 w-8 rounded" />
+              </div>
+              <Skeleton className="h-8 w-20" />
+              <Skeleton className="h-4 w-36" />
+            </div>
+          ))}
+        </div>
+        {/* Payments table skeleton */}
+        <div className="bg-surface-card rounded-lg border border-border-default p-6 space-y-4">
+          <Skeleton className="h-6 w-48" />
+          <div className="space-y-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-12 w-full rounded" />
+            ))}
+          </div>
+        </div>
+        {/* Charts skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-surface-card rounded-lg border border-border-default p-6 space-y-4">
+            <Skeleton className="h-6 w-40" />
+            <Skeleton className="h-48 w-full rounded" />
+          </div>
+          <div className="bg-surface-card rounded-lg border border-border-default p-6 space-y-4">
+            <Skeleton className="h-6 w-40" />
+            <Skeleton className="h-48 w-full rounded" />
+          </div>
+        </div>
       </div>
     );
   }
