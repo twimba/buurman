@@ -1,15 +1,15 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { broadcastsApi } from "../api/broadcasts";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { broadcastsApi } from '../api/broadcasts';
 import type {
   CreateBroadcastMessageRequest,
   UpdateBroadcastMessageRequest,
-} from "../types";
-import { trackEvent } from "../utils/analytics";
-import { AnalyticsEvent } from "../constants/analyticsEvents";
+} from '../types';
+import { trackEvent } from '../utils/analytics';
+import { AnalyticsEvent } from '../constants/analyticsEvents';
 
 export const useBroadcasts = () => {
   return useQuery({
-    queryKey: ["broadcasts"],
+    queryKey: ['broadcasts'],
     queryFn: () => broadcastsApi.list().then((res) => res.data),
   });
 };
@@ -20,7 +20,7 @@ export const useCreateBroadcast = () => {
     mutationFn: (data: CreateBroadcastMessageRequest) =>
       broadcastsApi.create(data).then((res) => res.data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["broadcasts"] });
+      queryClient.invalidateQueries({ queryKey: ['broadcasts'] });
       trackEvent(AnalyticsEvent.BO_BROADCAST_CREATED);
     },
   });
@@ -37,7 +37,7 @@ export const useUpdateBroadcast = () => {
       data: UpdateBroadcastMessageRequest;
     }) => broadcastsApi.update(identifier, data).then((res) => res.data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["broadcasts"] });
+      queryClient.invalidateQueries({ queryKey: ['broadcasts'] });
     },
   });
 };
@@ -47,7 +47,7 @@ export const useDeleteBroadcast = () => {
   return useMutation({
     mutationFn: (identifier: string) => broadcastsApi.delete(identifier),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["broadcasts"] });
+      queryClient.invalidateQueries({ queryKey: ['broadcasts'] });
     },
   });
 };

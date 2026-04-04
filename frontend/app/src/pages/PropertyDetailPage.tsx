@@ -1371,13 +1371,9 @@ export const PropertyDetailPage = () => {
 
         {activeTab === 'photos' && <PropertyPhotosTab propertyId={id} />}
 
-        {activeTab === 'documents' && (
-          <PropertyDocumentsTab propertyId={id} />
-        )}
+        {activeTab === 'documents' && <PropertyDocumentsTab propertyId={id} />}
 
-        {activeTab === 'contracts' && (
-          <PropertyContractsTab propertyId={id} />
-        )}
+        {activeTab === 'contracts' && <PropertyContractsTab propertyId={id} />}
 
         {activeTab === 'expenses' && <PropertyExpensesTab propertyId={id} />}
 

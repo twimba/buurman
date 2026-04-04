@@ -1,26 +1,26 @@
-import { useState, useMemo } from "react";
-import { Search, X } from "lucide-react";
-import { useTeams } from "../hooks/useTeams";
-import { useUsers } from "../hooks/useUsers";
+import { useState, useMemo } from 'react';
+import { Search, X } from 'lucide-react';
+import { useTeams } from '../hooks/useTeams';
+import { useUsers } from '../hooks/useUsers';
 
 interface TargetSelectorProps {
   selected: string[];
   onChange: (selected: string[]) => void;
 }
 
-const LABEL_CLASS = "block text-sm font-medium text-text-secondary mb-1";
+const LABEL_CLASS = 'block text-sm font-medium text-text-secondary mb-1';
 const INPUT_CLASS =
-  "w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary placeholder-text-muted focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors";
+  'w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary placeholder-text-muted focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors';
 const PILL_CLASS =
-  "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium bg-primary-500/10 text-primary-600";
+  'inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium bg-primary-500/10 text-primary-600';
 const CHECK_ITEM_CLASS =
-  "flex items-center gap-2 px-3 py-1.5 text-sm text-text-secondary hover:bg-surface-page cursor-pointer rounded transition-colors";
+  'flex items-center gap-2 px-3 py-1.5 text-sm text-text-secondary hover:bg-surface-page cursor-pointer rounded transition-colors';
 
 export const TargetTeamSelector = ({
   selected,
   onChange,
 }: TargetSelectorProps) => {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const { data } = useTeams({ search: search || undefined, size: 20 });
 
   const teams = useMemo(() => data?.content ?? [], [data]);
@@ -82,7 +82,7 @@ export const TargetTeamSelector = ({
               />
               <span>{team.teamName}</span>
               <span className="text-text-muted text-xs ml-auto">
-                {team.memberCount} member{team.memberCount !== 1 ? "s" : ""}
+                {team.memberCount} member{team.memberCount !== 1 ? 's' : ''}
               </span>
             </label>
           ))
@@ -96,7 +96,7 @@ export const TargetUserSelector = ({
   selected,
   onChange,
 }: TargetSelectorProps) => {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const { data } = useUsers({ search: search || undefined, size: 20 });
 
   const users = useMemo(() => data?.content ?? [], [data]);

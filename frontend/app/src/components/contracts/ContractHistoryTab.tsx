@@ -10,9 +10,7 @@ interface ContractHistoryTabProps {
   contractId: string;
 }
 
-export const ContractHistoryTab = ({
-  contractId,
-}: ContractHistoryTabProps) => {
+export const ContractHistoryTab = ({ contractId }: ContractHistoryTabProps) => {
   const { formatRelative } = useFormatDate();
   const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
     new Set()
@@ -52,9 +50,7 @@ export const ContractHistoryTab = ({
               >
                 <div
                   className={`flex items-start gap-4 p-4 transition-colors ${
-                    hasChanges
-                      ? 'cursor-pointer hover:bg-surface-inset'
-                      : ''
+                    hasChanges ? 'cursor-pointer hover:bg-surface-inset' : ''
                   }`}
                   onClick={() =>
                     hasChanges &&
@@ -134,8 +130,7 @@ export const ContractHistoryTab = ({
                             field === 'documentAdded' ||
                             field === 'documentRemoved'
                           ) {
-                            const category =
-                              activity.changedFields?.category;
+                            const category = activity.changedFields?.category;
                             const title = activity.changedFields?.title;
                             return (
                               <div
@@ -162,9 +157,7 @@ export const ContractHistoryTab = ({
                                   Type
                                 </div>
                                 <div className="text-text-primary">
-                                  {category === 'PHOTO'
-                                    ? 'Photo'
-                                    : 'Document'}
+                                  {category === 'PHOTO' ? 'Photo' : 'Document'}
                                 </div>
                               </div>
                             );
@@ -187,9 +180,7 @@ export const ContractHistoryTab = ({
                               <div className="font-semibold text-text-secondary mb-1">
                                 {field
                                   .replace(/([A-Z])/g, ' $1')
-                                  .replace(/^./, (str) =>
-                                    str.toUpperCase()
-                                  )
+                                  .replace(/^./, (str) => str.toUpperCase())
                                   .trim()}
                               </div>
                               <div className="grid grid-cols-2 gap-2">

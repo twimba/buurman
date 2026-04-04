@@ -1,4 +1,4 @@
-import { useState, useMemo, Fragment } from "react";
+import { useState, useMemo, Fragment } from 'react';
 import {
   Plus,
   Pencil,
@@ -8,68 +8,74 @@ import {
   Info,
   AlertTriangle,
   AlertCircle,
-} from "lucide-react";
-import { RefreshButton, ConfirmDialog, Button, RichTextEditor, RichTextDisplay } from "@buurman/ui";
-import { format, isPast, isFuture, parseISO } from "date-fns";
+} from 'lucide-react';
+import {
+  RefreshButton,
+  ConfirmDialog,
+  Button,
+  RichTextEditor,
+  RichTextDisplay,
+} from '@buurman/ui';
+import { format, isPast, isFuture, parseISO } from 'date-fns';
 import {
   useBroadcasts,
   useCreateBroadcast,
   useUpdateBroadcast,
   useDeleteBroadcast,
-} from "../hooks/useBroadcasts";
-import { LoadingSpinner } from "../components/LoadingSpinner";
+} from '../hooks/useBroadcasts';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 import {
   TargetTeamSelector,
   TargetUserSelector,
-} from "../components/TargetSelector";
+} from '../components/TargetSelector';
 import type {
   BroadcastMessage,
   BroadcastSeverity,
   BroadcastScope,
   CreateBroadcastMessageRequest,
-} from "../types";
+} from '../types';
 
 const TH_CLASS =
-  "text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary";
+  'text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary';
 
 const SEVERITY_CONFIG: Record<
   BroadcastSeverity,
   { label: string; icon: React.ReactNode; classes: string }
 > = {
   INFO: {
-    label: "Info",
+    label: 'Info',
     icon: <Info className="h-3.5 w-3.5" />,
-    classes: "bg-info-bg text-info-text ring-1 ring-info-border",
+    classes: 'bg-info-bg text-info-text ring-1 ring-info-border',
   },
   WARNING: {
-    label: "Warning",
+    label: 'Warning',
     icon: <AlertTriangle className="h-3.5 w-3.5" />,
-    classes: "bg-warning-bg text-warning-text ring-1 ring-warning-border",
+    classes: 'bg-warning-bg text-warning-text ring-1 ring-warning-border',
   },
   CRITICAL: {
-    label: "Critical",
+    label: 'Critical',
     icon: <AlertCircle className="h-3.5 w-3.5" />,
-    classes: "bg-error-bg text-error-text ring-1 ring-error-border",
+    classes: 'bg-error-bg text-error-text ring-1 ring-error-border',
   },
 };
 
-type BroadcastStatus = "active" | "scheduled" | "expired";
+type BroadcastStatus = 'active' | 'scheduled' | 'expired';
 
 const getStatus = (msg: BroadcastMessage): BroadcastStatus => {
   const start = parseISO(msg.startAt);
   if (isFuture(start)) {
-    return "scheduled";
+    return 'scheduled';
   }
   if (msg.endAt && isPast(parseISO(msg.endAt))) {
-    return "expired";
+    return 'expired';
   }
-  return "active";
+  return 'active';
 };
 
 const STATUS_STYLES: Record<BroadcastStatus, string> = {
-  active: "bg-success-bg text-success-text ring-1 ring-success-border",
-  scheduled: "bg-info-bg text-info-text ring-1 ring-info-border",
-  expired: "bg-gray-50 text-gray-500 ring-1 ring-gray-200",
+  active: 'bg-success-bg text-success-text ring-1 ring-success-border',
+  scheduled: 'bg-info-bg text-info-text ring-1 ring-info-border',
+  expired: 'bg-gray-50 text-gray-500 ring-1 ring-gray-200',
 };
 
 interface FormData {
@@ -87,12 +93,12 @@ interface FormData {
 }
 
 const emptyForm: FormData = {
-  title: "",
-  body: "",
-  severity: "INFO",
-  scope: "GLOBAL",
-  startAt: "",
-  endAt: "",
+  title: '',
+  body: '',
+  severity: 'INFO',
+  scope: 'GLOBAL',
+  startAt: '',
+  endAt: '',
   showOnLogin: false,
   showOnRegister: false,
   showInApp: true,
@@ -104,7 +110,7 @@ const toLocalDatetime = (iso: string): string => {
   try {
     return format(parseISO(iso), "yyyy-MM-dd'T'HH:mm");
   } catch {
-    return "";
+    return '';
   }
 };
 
@@ -114,13 +120,13 @@ export const BroadcastsPage = () => {
   const updateBroadcast = useUpdateBroadcast();
   const deleteBroadcast = useDeleteBroadcast();
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editingBroadcast, setEditingBroadcast] =
     useState<BroadcastMessage | null>(null);
   const [form, setForm] = useState<FormData>(emptyForm);
   const [deleteTarget, setDeleteTarget] = useState<BroadcastMessage | null>(
-    null,
+    null
   );
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -134,7 +140,7 @@ export const BroadcastsPage = () => {
       (b) =>
         b.title.toLowerCase().includes(q) ||
         b.body.toLowerCase().includes(q) ||
-        b.severity.toLowerCase().includes(q),
+        b.severity.toLowerCase().includes(q)
     );
   }, [data, search]);
 
@@ -155,7 +161,7 @@ export const BroadcastsPage = () => {
       severity: msg.severity,
       scope: msg.scope,
       startAt: toLocalDatetime(msg.startAt),
-      endAt: msg.endAt ? toLocalDatetime(msg.endAt) : "",
+      endAt: msg.endAt ? toLocalDatetime(msg.endAt) : '',
       showOnLogin: msg.showOnLogin,
       showOnRegister: msg.showOnRegister,
       showInApp: msg.showInApp,
@@ -184,15 +190,15 @@ export const BroadcastsPage = () => {
       showOnRegister: form.showOnRegister,
       showInApp: form.showInApp,
       targetTeamIdentifiers:
-        form.scope === "TEAMS" ? form.targetTeamIdentifiers : undefined,
+        form.scope === 'TEAMS' ? form.targetTeamIdentifiers : undefined,
       targetUserIdentifiers:
-        form.scope === "USERS" ? form.targetUserIdentifiers : undefined,
+        form.scope === 'USERS' ? form.targetUserIdentifiers : undefined,
     };
 
     if (editingBroadcast) {
       updateBroadcast.mutate(
         { identifier: editingBroadcast.identifier, data: payload },
-        { onSuccess: closeForm },
+        { onSuccess: closeForm }
       );
     } else {
       createBroadcast.mutate(payload, { onSuccess: closeForm });
@@ -228,9 +234,9 @@ export const BroadcastsPage = () => {
       <div
         className="mb-6"
         style={{
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "space-between",
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
         }}
       >
         <div>
@@ -240,7 +246,7 @@ export const BroadcastsPage = () => {
             registration, and in-app.
           </p>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <RefreshButton onClick={() => refetch()} isRefreshing={isFetching} />
           <Button
             variant="primary"
@@ -319,11 +325,11 @@ export const BroadcastsPage = () => {
                         </td>
                         <td className="px-4 py-3">
                           <span className="text-sm text-text-secondary">
-                            {msg.scope === "GLOBAL"
-                              ? "Global"
-                              : msg.scope === "TEAMS"
-                                ? `${msg.targetTeamIdentifiers?.length ?? 0} Team${(msg.targetTeamIdentifiers?.length ?? 0) !== 1 ? "s" : ""}`
-                                : `${msg.targetUserIdentifiers?.length ?? 0} User${(msg.targetUserIdentifiers?.length ?? 0) !== 1 ? "s" : ""}`}
+                            {msg.scope === 'GLOBAL'
+                              ? 'Global'
+                              : msg.scope === 'TEAMS'
+                                ? `${msg.targetTeamIdentifiers?.length ?? 0} Team${(msg.targetTeamIdentifiers?.length ?? 0) !== 1 ? 's' : ''}`
+                                : `${msg.targetUserIdentifiers?.length ?? 0} User${(msg.targetUserIdentifiers?.length ?? 0) !== 1 ? 's' : ''}`}
                           </span>
                         </td>
                         <td className="px-4 py-3">
@@ -354,14 +360,14 @@ export const BroadcastsPage = () => {
                         </td>
                         <td className="px-4 py-3">
                           <span className="text-sm text-text-secondary">
-                            {format(parseISO(msg.startAt), "dd MMM yyyy HH:mm")}
+                            {format(parseISO(msg.startAt), 'dd MMM yyyy HH:mm')}
                           </span>
                         </td>
                         <td className="px-4 py-3">
                           <span className="text-sm text-text-secondary">
                             {msg.endAt
-                              ? format(parseISO(msg.endAt), "dd MMM yyyy HH:mm")
-                              : "Never"}
+                              ? format(parseISO(msg.endAt), 'dd MMM yyyy HH:mm')
+                              : 'Never'}
                           </span>
                         </td>
                         <td className="px-4 py-3 text-right">
@@ -412,7 +418,7 @@ export const BroadcastsPage = () => {
           <div className="relative bg-surface-card rounded-lg border border-border-default shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between px-6 py-4 border-b border-border-default">
               <h2 className="text-lg font-semibold text-text-primary">
-                {editingBroadcast ? "Edit Broadcast" : "New Broadcast"}
+                {editingBroadcast ? 'Edit Broadcast' : 'New Broadcast'}
               </h2>
               <button
                 onClick={closeForm}
@@ -485,17 +491,17 @@ export const BroadcastsPage = () => {
                       ...f,
                       scope: e.target.value as BroadcastScope,
                       targetTeamIdentifiers:
-                        e.target.value !== "TEAMS"
+                        e.target.value !== 'TEAMS'
                           ? []
                           : f.targetTeamIdentifiers,
                       targetUserIdentifiers:
-                        e.target.value !== "USERS"
+                        e.target.value !== 'USERS'
                           ? []
                           : f.targetUserIdentifiers,
                       showOnLogin:
-                        e.target.value !== "GLOBAL" ? false : f.showOnLogin,
+                        e.target.value !== 'GLOBAL' ? false : f.showOnLogin,
                       showOnRegister:
-                        e.target.value !== "GLOBAL" ? false : f.showOnRegister,
+                        e.target.value !== 'GLOBAL' ? false : f.showOnRegister,
                     }))
                   }
                   className="w-full px-3 py-2 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors"
@@ -507,7 +513,7 @@ export const BroadcastsPage = () => {
               </div>
 
               {/* Target Selectors */}
-              {form.scope === "TEAMS" && (
+              {form.scope === 'TEAMS' && (
                 <TargetTeamSelector
                   selected={form.targetTeamIdentifiers}
                   onChange={(ids) =>
@@ -515,7 +521,7 @@ export const BroadcastsPage = () => {
                   }
                 />
               )}
-              {form.scope === "USERS" && (
+              {form.scope === 'USERS' && (
                 <TargetUserSelector
                   selected={form.targetUserIdentifiers}
                   onChange={(ids) =>
@@ -565,17 +571,17 @@ export const BroadcastsPage = () => {
                 </label>
                 <div className="flex flex-wrap gap-4">
                   <label
-                    className={`flex items-center gap-2 text-sm ${form.scope !== "GLOBAL" ? "text-text-muted cursor-not-allowed" : "text-text-secondary cursor-pointer"}`}
+                    className={`flex items-center gap-2 text-sm ${form.scope !== 'GLOBAL' ? 'text-text-muted cursor-not-allowed' : 'text-text-secondary cursor-pointer'}`}
                     title={
-                      form.scope !== "GLOBAL"
-                        ? "Only available for Global scope"
+                      form.scope !== 'GLOBAL'
+                        ? 'Only available for Global scope'
                         : undefined
                     }
                   >
                     <input
                       type="checkbox"
                       checked={form.showOnLogin}
-                      disabled={form.scope !== "GLOBAL"}
+                      disabled={form.scope !== 'GLOBAL'}
                       onChange={(e) =>
                         setForm((f) => ({
                           ...f,
@@ -587,17 +593,17 @@ export const BroadcastsPage = () => {
                     Login Page
                   </label>
                   <label
-                    className={`flex items-center gap-2 text-sm ${form.scope !== "GLOBAL" ? "text-text-muted cursor-not-allowed" : "text-text-secondary cursor-pointer"}`}
+                    className={`flex items-center gap-2 text-sm ${form.scope !== 'GLOBAL' ? 'text-text-muted cursor-not-allowed' : 'text-text-secondary cursor-pointer'}`}
                     title={
-                      form.scope !== "GLOBAL"
-                        ? "Only available for Global scope"
+                      form.scope !== 'GLOBAL'
+                        ? 'Only available for Global scope'
                         : undefined
                     }
                   >
                     <input
                       type="checkbox"
                       checked={form.showOnRegister}
-                      disabled={form.scope !== "GLOBAL"}
+                      disabled={form.scope !== 'GLOBAL'}
                       onChange={(e) =>
                         setForm((f) => ({
                           ...f,
@@ -636,7 +642,7 @@ export const BroadcastsPage = () => {
                   type="submit"
                   isLoading={isSaving}
                 >
-                  {editingBroadcast ? "Save Changes" : "Create Broadcast"}
+                  {editingBroadcast ? 'Save Changes' : 'Create Broadcast'}
                 </Button>
               </div>
             </form>

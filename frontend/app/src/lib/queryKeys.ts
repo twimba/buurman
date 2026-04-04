@@ -55,8 +55,7 @@ export const queryKeys = {
   // --- Property Financials ---
   propertyFinancials: {
     summary: (propertyId?: string) => k('propertyFinancials', propertyId),
-    acquisition: (propertyId?: string) =>
-      k('propertyAcquisition', propertyId),
+    acquisition: (propertyId?: string) => k('propertyAcquisition', propertyId),
     valuations: (propertyId?: string) => k('propertyValuations', propertyId),
     latestValuation: (propertyId?: string) =>
       k('propertyValuation', 'latest', propertyId),
@@ -83,8 +82,7 @@ export const queryKeys = {
     photos: (contactId?: string) => k('contactPhotos', contactId),
     addresses: (contactId?: string) => k('contactAddresses', contactId),
     notes: (contactId?: string) => k('contactNotes', contactId),
-    relationships: (contactId?: string) =>
-      k('contactRelationships', contactId),
+    relationships: (contactId?: string) => k('contactRelationships', contactId),
     activity: (contactId?: string, params?: unknown) =>
       k('contactActivity', contactId, params),
   },
@@ -115,7 +113,13 @@ export const queryKeys = {
       landlordType?: string,
       furnished?: boolean
     ) =>
-      k('jurisdictionDefaults', countryCode, regionCode, landlordType, furnished),
+      k(
+        'jurisdictionDefaults',
+        countryCode,
+        regionCode,
+        landlordType,
+        furnished
+      ),
   },
 
   // --- Payments ---
@@ -124,8 +128,7 @@ export const queryKeys = {
     stats: () => k('paymentStats'),
     detail: (id?: string) => k('payment', id),
     overdue: () => k('payments', 'overdue'),
-    byContract: (contractId?: string) =>
-      k('payments', 'contract', contractId),
+    byContract: (contractId?: string) => k('payments', 'contract', contractId),
     documents: (paymentId?: string) => k('paymentDocuments', paymentId),
     auditLog: (paymentId?: string) => k('paymentAuditLog', paymentId),
     receivals: (paymentId?: string) => k('paymentReceivals', paymentId),
@@ -146,8 +149,7 @@ export const queryKeys = {
     all: (params?: unknown) => k('expenses', params),
     stats: () => k('expenseStats'),
     detail: (id?: string) => k('expense', id),
-    byProperty: (propertyId?: string) =>
-      k('expenses', 'property', propertyId),
+    byProperty: (propertyId?: string) => k('expenses', 'property', propertyId),
     summary: (period?: string) => k('expenses', 'summary', period),
     documents: (expenseId?: string) => k('expenseDocuments', expenseId),
     auditLog: (expenseId?: string) => k('expenseAuditLog', expenseId),
@@ -200,8 +202,7 @@ export const queryKeys = {
       endDate?: string,
       propertyIds?: string[],
       currency?: string
-    ) =>
-      k('financial-overview', startDate, endDate, propertyIds, currency),
+    ) => k('financial-overview', startDate, endDate, propertyIds, currency),
     incomeTrend: (
       startDate?: string,
       endDate?: string,
@@ -288,7 +289,6 @@ export const queryKeys = {
       k('wwsPreFill', propertyIdentifier),
     calculations: (propertyIdentifier?: string) =>
       k('wwsCalculations', propertyIdentifier),
-    latest: (propertyIdentifier?: string) =>
-      k('wwsLatest', propertyIdentifier),
+    latest: (propertyIdentifier?: string) => k('wwsLatest', propertyIdentifier),
   },
 } as const;

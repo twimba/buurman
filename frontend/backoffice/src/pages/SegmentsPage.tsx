@@ -1,43 +1,43 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Layers, Plus, Trash2, ChevronRight } from "lucide-react";
-import { ConfirmDialog } from "@buurman/ui";
-import { useSegmentsList, useDeleteSegment } from "../hooks/useSegments";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Layers, Plus, Trash2, ChevronRight } from 'lucide-react';
+import { ConfirmDialog } from '@buurman/ui';
+import { useSegmentsList, useDeleteSegment } from '../hooks/useSegments';
 
 const ATTRIBUTE_LABELS: Record<string, string> = {
-  is_demo: "Is Demo",
-  is_owner: "Is Owner",
-  is_team: "Is Team",
-  is_user: "Is User",
-  role: "Role",
-  email: "Email",
-  email_verified: "Email Verified",
-  property_count: "Property Count",
-  member_count: "Member Count",
-  team_age_days: "Team Age (days)",
-  contract_count: "Contract Count",
-  contact_count: "Contact Count",
-  photo_count: "Photo Count",
-  document_count: "Document Count",
-  expense_count: "Expense Count",
-  payment_count: "Payment Count",
-  calendar_feed_count: "Calendar Feed Count",
+  is_demo: 'Is Demo',
+  is_owner: 'Is Owner',
+  is_team: 'Is Team',
+  is_user: 'Is User',
+  role: 'Role',
+  email: 'Email',
+  email_verified: 'Email Verified',
+  property_count: 'Property Count',
+  member_count: 'Member Count',
+  team_age_days: 'Team Age (days)',
+  contract_count: 'Contract Count',
+  contact_count: 'Contact Count',
+  photo_count: 'Photo Count',
+  document_count: 'Document Count',
+  expense_count: 'Expense Count',
+  payment_count: 'Payment Count',
+  calendar_feed_count: 'Calendar Feed Count',
 };
 
 const OPERATOR_LABELS: Record<string, string> = {
-  eq: "=",
-  neq: "!=",
-  in: "in",
-  not_in: "not in",
-  gt: ">",
-  gte: ">=",
-  lt: "<",
-  lte: "<=",
-  contains: "contains",
-  not_contains: "not contains",
-  starts_with: "starts with",
-  ends_with: "ends with",
-  regex: "matches regex",
+  eq: '=',
+  neq: '!=',
+  in: 'in',
+  not_in: 'not in',
+  gt: '>',
+  gte: '>=',
+  lt: '<',
+  lte: '<=',
+  contains: 'contains',
+  not_contains: 'not contains',
+  starts_with: 'starts with',
+  ends_with: 'ends with',
+  regex: 'matches regex',
 };
 
 export const SegmentsPage = () => {
@@ -64,7 +64,7 @@ export const SegmentsPage = () => {
           </p>
         </div>
         <button
-          onClick={() => navigate("/segments/new")}
+          onClick={() => navigate('/segments/new')}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-500 text-white text-sm font-medium hover:bg-primary-600 transition-colors"
         >
           <Plus className="h-4 w-4" />
@@ -129,10 +129,10 @@ export const SegmentsPage = () => {
                           <div key={i} className="text-xs text-text-secondary">
                             <span className="font-medium">
                               {ATTRIBUTE_LABELS[c.attribute] ?? c.attribute}
-                            </span>{" "}
+                            </span>{' '}
                             <span className="text-text-muted">
                               {OPERATOR_LABELS[c.operator] ?? c.operator}
-                            </span>{" "}
+                            </span>{' '}
                             <span className="font-mono">{c.value}</span>
                           </div>
                         ))}

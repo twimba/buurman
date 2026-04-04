@@ -1,4 +1,4 @@
-import { cn } from "../utils/cn";
+import { cn } from '../utils/cn';
 
 interface FormFieldProps {
   label: string;
@@ -7,7 +7,7 @@ interface FormFieldProps {
   error?: string;
   hint?: string;
   children: React.ReactNode;
-  labelPosition?: "top" | "left";
+  labelPosition?: 'top' | 'left';
   readOnly?: boolean;
   className?: string;
   colSpan?: 1 | 2;
@@ -20,7 +20,7 @@ export function FormField({
   error,
   hint,
   children,
-  labelPosition = "top",
+  labelPosition = 'top',
   readOnly,
   className,
   colSpan,
@@ -31,17 +31,17 @@ export function FormField({
   return (
     <div
       className={cn(
-        labelPosition === "left" && "flex items-start gap-4",
-        colSpan === 2 && "col-span-2",
-        className,
+        labelPosition === 'left' && 'flex items-start gap-4',
+        colSpan === 2 && 'col-span-2',
+        className
       )}
     >
       <label
         htmlFor={htmlFor}
         className={cn(
-          "block text-sm font-medium text-text-primary",
-          labelPosition === "top" ? "mb-1.5" : "mt-2.5 w-40 shrink-0",
-          readOnly && "text-text-muted",
+          'block text-sm font-medium text-text-primary',
+          labelPosition === 'top' ? 'mb-1.5' : 'mt-2.5 w-40 shrink-0',
+          readOnly && 'text-text-muted'
         )}
       >
         {label}
@@ -71,4 +71,4 @@ export function FormField({
   );
 }
 
-FormField.displayName = "FormField";
+FormField.displayName = 'FormField';

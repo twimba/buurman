@@ -1,5 +1,5 @@
-import client from "./client";
-import type { PageResponse } from "../types";
+import client from './client';
+import type { PageResponse } from '../types';
 
 export interface ImpersonationSession {
   identifier: string;
@@ -32,7 +32,7 @@ export interface ListImpersonationSessionsParams {
 
 export const impersonationApi = {
   listSessions: (params?: ListImpersonationSessionsParams) =>
-    client.get<PageResponse<ImpersonationSession>>("/impersonation/sessions", {
+    client.get<PageResponse<ImpersonationSession>>('/impersonation/sessions', {
       params,
     }),
 };

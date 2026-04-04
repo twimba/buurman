@@ -1,9 +1,9 @@
-import client from "./client";
+import client from './client';
 import type {
   BackofficeUser,
   BackofficeUserDetail,
   PageResponse,
-} from "../types";
+} from '../types';
 
 interface ListUsersParams {
   page?: number;
@@ -16,7 +16,7 @@ interface ListUsersParams {
 
 export const usersApi = {
   list: (params?: ListUsersParams) =>
-    client.get<PageResponse<BackofficeUser>>("/users", { params }),
+    client.get<PageResponse<BackofficeUser>>('/users', { params }),
   get: (identifier: string) =>
     client.get<BackofficeUserDetail>(`/users/${identifier}`),
   disable: (identifier: string) => client.post(`/users/${identifier}/disable`),

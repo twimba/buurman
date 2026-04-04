@@ -964,7 +964,10 @@ export const ContactDetailPage = () => {
         {/* ===== Tab: Financials ===== */}
         {activeTab === 'financials' && (
           <div id="tabpanel-financials" role="tabpanel">
-            <ContactFinancialsTab contactIdentifier={id} backTo={`/contacts/${id}?tab=financials`} />
+            <ContactFinancialsTab
+              contactIdentifier={id}
+              backTo={`/contacts/${id}?tab=financials`}
+            />
           </div>
         )}
 

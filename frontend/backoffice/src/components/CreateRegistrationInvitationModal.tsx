@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { X, RefreshCw, Loader2, Sparkles } from "lucide-react";
-import { RichTextEditor } from "@buurman/ui";
+import { useState } from 'react';
+import { X, RefreshCw, Loader2, Sparkles } from 'lucide-react';
+import { RichTextEditor } from '@buurman/ui';
 import {
   useCreateRegistrationInvitation,
   useSuggestCode,
-} from "../hooks/useRegistrationInvitations";
+} from '../hooks/useRegistrationInvitations';
 
 interface Props {
   onClose: () => void;
@@ -12,17 +12,17 @@ interface Props {
 
 export function CreateRegistrationInvitationModal({ onClose }: Props) {
   const [codeOverride, setCodeOverride] = useState<string | null>(null);
-  const [maxUsages, setMaxUsages] = useState<string>("1");
+  const [maxUsages, setMaxUsages] = useState<string>('1');
   const [unlimited, setUnlimited] = useState(false);
-  const [expiresAt, setExpiresAt] = useState("");
+  const [expiresAt, setExpiresAt] = useState('');
   const [neverExpires, setNeverExpires] = useState(true);
-  const [note, setNote] = useState("");
-  const [error, setError] = useState("");
+  const [note, setNote] = useState('');
+  const [error, setError] = useState('');
 
   const { data: suggestedCode, refetch: refreshCode } = useSuggestCode();
   const createMutation = useCreateRegistrationInvitation();
 
-  const code = codeOverride ?? suggestedCode ?? "";
+  const code = codeOverride ?? suggestedCode ?? '';
   const setCode = (v: string) => setCodeOverride(v);
 
   const handleRefreshCode = () => {
@@ -36,10 +36,10 @@ export function CreateRegistrationInvitationModal({ onClose }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setError('');
 
     if (!code.trim()) {
-      setError("Code is required");
+      setError('Code is required');
       return;
     }
 
@@ -53,7 +53,7 @@ export function CreateRegistrationInvitationModal({ onClose }: Props) {
       onClose();
     } catch (err: unknown) {
       const error = err as { response?: { data?: { detail?: string } } };
-      setError(error.response?.data?.detail || "Failed to create invitation");
+      setError(error.response?.data?.detail || 'Failed to create invitation');
     }
   };
 
@@ -161,7 +161,7 @@ export function CreateRegistrationInvitationModal({ onClose }: Props) {
           {/* Internal Note */}
           <div>
             <label className="block text-sm font-medium text-text-primary mb-1.5">
-              Internal Note{" "}
+              Internal Note{' '}
               <span className="text-text-muted font-normal">(optional)</span>
             </label>
             <RichTextEditor

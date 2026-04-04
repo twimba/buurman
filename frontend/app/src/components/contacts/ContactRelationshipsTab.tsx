@@ -212,8 +212,7 @@ export const ContactRelationshipsTab = ({
                       </div>
                     )}
                     <p className="text-xs text-text-muted mt-1">
-                      Added{' '}
-                      {formatRelative(rel.createdAt)}
+                      Added {formatRelative(rel.createdAt)}
                     </p>
                   </div>
                 </div>

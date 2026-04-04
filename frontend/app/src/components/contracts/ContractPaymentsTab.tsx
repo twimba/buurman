@@ -152,9 +152,7 @@ export const ContractPaymentsTab = ({
             <Button
               variant="secondary"
               leftIcon={<Calendar />}
-              onClick={() =>
-                navigate(`/payments/new?contractId=${contractId}`)
-              }
+              onClick={() => navigate(`/payments/new?contractId=${contractId}`)}
               disabled={!canEditData}
             >
               Schedule Payment
@@ -163,9 +161,7 @@ export const ContractPaymentsTab = ({
               variant="primary"
               leftIcon={<Plus />}
               onClick={() =>
-                navigate(
-                  `/payments/new?contractId=${contractId}&register=true`
-                )
+                navigate(`/payments/new?contractId=${contractId}&register=true`)
               }
               disabled={!canEditData}
             >
@@ -187,9 +183,7 @@ export const ContractPaymentsTab = ({
             <Button
               variant="primary"
               leftIcon={<Plus />}
-              onClick={() =>
-                navigate(`/payments/new?contractId=${contractId}`)
-              }
+              onClick={() => navigate(`/payments/new?contractId=${contractId}`)}
               disabled={!canEditData}
             >
               Create First Payment
@@ -359,8 +353,7 @@ export const ContractPaymentsTab = ({
             {paymentsTotalPages > 1 && (
               <div className="flex items-center justify-between mt-4 pt-4 border-t border-border-default">
                 <div className="text-sm text-text-secondary">
-                  Showing {(paymentsCurrentPage - 1) * paymentsPerPage + 1}{' '}
-                  to{' '}
+                  Showing {(paymentsCurrentPage - 1) * paymentsPerPage + 1} to{' '}
                   {Math.min(
                     paymentsCurrentPage * paymentsPerPage,
                     filteredAndSortedPayments.length

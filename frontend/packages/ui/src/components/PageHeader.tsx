@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
-import { cn } from "../utils/cn";
+import { ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
+import { cn } from '../utils/cn';
 
 interface PageHeaderProps {
   /** Main title of the page */
@@ -40,13 +40,13 @@ export const PageHeader = ({
             <button
               onClick={() => navigate(backTo)}
               className={cn(
-                "flex-shrink-0",
-                "p-2 -ml-2",
-                "text-text-muted",
-                "hover:text-text-primary",
-                "hover:bg-neutral-50",
-                "rounded-lg",
-                "transition-colors",
+                'flex-shrink-0',
+                'p-2 -ml-2',
+                'text-text-muted',
+                'hover:text-text-primary',
+                'hover:bg-neutral-50',
+                'rounded-lg',
+                'transition-colors'
               )}
               aria-label="Go back"
             >

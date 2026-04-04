@@ -6,13 +6,7 @@ import { ErrorMessage } from '@/components/ErrorMessage';
 import { LoadingSpinner } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import {
-  Plus,
-  Search,
-  ChevronUp,
-  ChevronDown,
-  Receipt,
-} from 'lucide-react';
+import { Plus, Search, ChevronUp, ChevronDown, Receipt } from 'lucide-react';
 
 interface PropertyExpensesTabProps {
   propertyId: string;

@@ -1,5 +1,5 @@
-import { Loader2 } from "lucide-react";
-import { cn } from "../utils/cn";
+import { Loader2 } from 'lucide-react';
+import { cn } from '../utils/cn';
 
 interface LoadingSpinnerProps {
   /** Optional message displayed below the spinner */
@@ -17,9 +17,9 @@ export function LoadingSpinner({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center gap-3",
-        fullScreen ? "min-h-screen" : "p-8",
-        className,
+        'flex flex-col items-center justify-center gap-3',
+        fullScreen ? 'min-h-screen' : 'p-8',
+        className
       )}
     >
       <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
@@ -30,4 +30,4 @@ export function LoadingSpinner({
   );
 }
 
-LoadingSpinner.displayName = "LoadingSpinner";
+LoadingSpinner.displayName = 'LoadingSpinner';

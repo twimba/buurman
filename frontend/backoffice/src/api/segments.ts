@@ -1,38 +1,38 @@
-import client from "./client";
+import client from './client';
 
 export interface SegmentCondition {
   attribute:
-    | "is_demo"
-    | "is_owner"
-    | "is_team"
-    | "is_user"
-    | "role"
-    | "email"
-    | "email_verified"
-    | "property_count"
-    | "member_count"
-    | "team_age_days"
-    | "contract_count"
-    | "contact_count"
-    | "photo_count"
-    | "document_count"
-    | "expense_count"
-    | "payment_count"
-    | "calendar_feed_count";
+    | 'is_demo'
+    | 'is_owner'
+    | 'is_team'
+    | 'is_user'
+    | 'role'
+    | 'email'
+    | 'email_verified'
+    | 'property_count'
+    | 'member_count'
+    | 'team_age_days'
+    | 'contract_count'
+    | 'contact_count'
+    | 'photo_count'
+    | 'document_count'
+    | 'expense_count'
+    | 'payment_count'
+    | 'calendar_feed_count';
   operator:
-    | "eq"
-    | "neq"
-    | "in"
-    | "not_in"
-    | "gt"
-    | "gte"
-    | "lt"
-    | "lte"
-    | "contains"
-    | "not_contains"
-    | "starts_with"
-    | "ends_with"
-    | "regex";
+    | 'eq'
+    | 'neq'
+    | 'in'
+    | 'not_in'
+    | 'gt'
+    | 'gte'
+    | 'lt'
+    | 'lte'
+    | 'contains'
+    | 'not_contains'
+    | 'starts_with'
+    | 'ends_with'
+    | 'regex';
   value: string;
 }
 
@@ -83,10 +83,10 @@ export interface MatchingUser {
 }
 
 export const segmentsApi = {
-  list: () => client.get<SegmentDetailResponse[]>("/segments"),
+  list: () => client.get<SegmentDetailResponse[]>('/segments'),
   get: (key: string) => client.get<SegmentDetailResponse>(`/segments/${key}`),
   create: (data: CreateSegmentRequest) =>
-    client.post<SegmentDetailResponse>("/segments", data),
+    client.post<SegmentDetailResponse>('/segments', data),
   update: (key: string, data: UpdateSegmentRequest) =>
     client.put<SegmentDetailResponse>(`/segments/${key}`, data),
   delete: (key: string) => client.delete(`/segments/${key}`),

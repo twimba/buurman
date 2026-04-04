@@ -13,11 +13,7 @@ interface PropertyPhotosTabProps {
 
 export const PropertyPhotosTab = ({ propertyId }: PropertyPhotosTabProps) => {
   const { canEditData } = useTeam();
-  const {
-    data: photos = [],
-    isLoading,
-    error,
-  } = usePropertyPhotos(propertyId);
+  const { data: photos = [], isLoading, error } = usePropertyPhotos(propertyId);
   const uploadMutation = useUploadPropertyPhoto(propertyId);
   const setMainMutation = useSetMainPhoto(propertyId);
   const deleteMutation = useDeletePhoto();

@@ -1,6 +1,6 @@
-import { useState, useRef } from "react";
-import { Shield } from "lucide-react";
-import { ModalWrapper, Button } from "@buurman/ui";
+import { useState, useRef } from 'react';
+import { Shield } from 'lucide-react';
+import { ModalWrapper, Button } from '@buurman/ui';
 
 interface PasswordConfirmationDialogProps {
   open: boolean;
@@ -18,14 +18,14 @@ export const PasswordConfirmationDialog = ({
   onConfirm,
   isLoading,
   error,
-  title = "Confirm your identity",
-  subtitle = "Enter your password to continue with this privileged action.",
+  title = 'Confirm your identity',
+  subtitle = 'Enter your password to continue with this privileged action.',
 }: PasswordConfirmationDialogProps) => {
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleClose = () => {
-    setPassword("");
+    setPassword('');
     onClose();
   };
 
@@ -36,7 +36,7 @@ export const PasswordConfirmationDialog = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !isLoading && password.trim()) {
+    if (e.key === 'Enter' && !isLoading && password.trim()) {
       e.preventDefault();
       handleSubmit();
     }

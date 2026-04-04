@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Search,
   Flag,
@@ -6,23 +6,23 @@ import {
   Building2,
   XCircle,
   AlertTriangle,
-} from "lucide-react";
-import { AxiosError } from "axios";
-import { RefreshButton } from "@buurman/ui";
+} from 'lucide-react';
+import { AxiosError } from 'axios';
+import { RefreshButton } from '@buurman/ui';
 import {
   useAdminStatus,
   useGlobalFeatureFlags,
   useUpdateGlobalFlag,
-} from "../hooks/useFeatureFlags";
-import { useUsers } from "../hooks/useUsers";
-import { useTeams } from "../hooks/useTeams";
+} from '../hooks/useFeatureFlags';
+import { useUsers } from '../hooks/useUsers';
+import { useTeams } from '../hooks/useTeams';
 import {
   UserFeatureFlags,
   GlobalFlagTable,
   PropagationBanner,
   SegmentFeatureFlags,
   TeamFeatureFlags,
-} from "../components/UserFeatureFlags";
+} from '../components/UserFeatureFlags';
 
 function useDebouncedValue<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value);
@@ -35,8 +35,8 @@ function useDebouncedValue<T>(value: T, delay: number): T {
 
 export const FeatureFlagsPage = () => {
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
-  const [selectedUserLabel, setSelectedUserLabel] = useState("");
-  const [inputValue, setInputValue] = useState("");
+  const [selectedUserLabel, setSelectedUserLabel] = useState('');
+  const [inputValue, setInputValue] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [showBanner, setShowBanner] = useState(false);
   const [mutatingFlag, setMutatingFlag] = useState<string | null>(null);
@@ -44,8 +44,8 @@ export const FeatureFlagsPage = () => {
   const blurTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
-  const [selectedTeamLabel, setSelectedTeamLabel] = useState("");
-  const [teamInputValue, setTeamInputValue] = useState("");
+  const [selectedTeamLabel, setSelectedTeamLabel] = useState('');
+  const [teamInputValue, setTeamInputValue] = useState('');
   const [showTeamDropdown, setShowTeamDropdown] = useState(false);
   const teamBlurTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -67,8 +67,8 @@ export const FeatureFlagsPage = () => {
   const { data: usersData } = useUsers({
     search: debouncedSearch || undefined,
     size: 10,
-    sort: "email",
-    direction: "ASC",
+    sort: 'email',
+    direction: 'ASC',
   });
 
   const { data: teamsData } = useTeams({
@@ -85,13 +85,13 @@ export const FeatureFlagsPage = () => {
         data.detail ||
         data.message ||
         data.title ||
-        "Failed to update feature flag"
+        'Failed to update feature flag'
       );
     }
     if (error instanceof Error) {
       return error.message;
     }
-    return "Failed to update feature flag";
+    return 'Failed to update feature flag';
   };
 
   const handleToggle = useCallback(
@@ -104,10 +104,10 @@ export const FeatureFlagsPage = () => {
           onSettled: () => setMutatingFlag(null),
           onSuccess: () => setShowBanner(true),
           onError: (error) => setErrorMessage(extractError(error)),
-        },
+        }
       );
     },
-    [updateGlobalFlag],
+    [updateGlobalFlag]
   );
 
   const handleValueChange = useCallback(
@@ -120,10 +120,10 @@ export const FeatureFlagsPage = () => {
           onSettled: () => setMutatingFlag(null),
           onSuccess: () => setShowBanner(true),
           onError: (error) => setErrorMessage(extractError(error)),
-        },
+        }
       );
     },
-    [updateGlobalFlag],
+    [updateGlobalFlag]
   );
 
   const handleFocus = () => {
@@ -142,14 +142,14 @@ export const FeatureFlagsPage = () => {
     }
     setSelectedUser(identifier);
     setSelectedUserLabel(label);
-    setInputValue("");
+    setInputValue('');
     setShowDropdown(false);
   };
 
   const handleClear = () => {
     setSelectedUser(null);
-    setSelectedUserLabel("");
-    setInputValue("");
+    setSelectedUserLabel('');
+    setInputValue('');
   };
 
   const handleTeamFocus = () => {
@@ -161,7 +161,7 @@ export const FeatureFlagsPage = () => {
   const handleTeamBlur = () => {
     teamBlurTimeoutRef.current = setTimeout(
       () => setShowTeamDropdown(false),
-      200,
+      200
     );
   };
 
@@ -171,14 +171,14 @@ export const FeatureFlagsPage = () => {
     }
     setSelectedTeam(identifier);
     setSelectedTeamLabel(label);
-    setTeamInputValue("");
+    setTeamInputValue('');
     setShowTeamDropdown(false);
   };
 
   const handleTeamClear = () => {
     setSelectedTeam(null);
-    setSelectedTeamLabel("");
-    setTeamInputValue("");
+    setSelectedTeamLabel('');
+    setTeamInputValue('');
   };
 
   return (
@@ -237,7 +237,7 @@ export const FeatureFlagsPage = () => {
               Global Defaults
             </h2>
             <span className="text-xs text-text-muted">
-              {globalFlagCount} flag{globalFlagCount !== 1 ? "s" : ""}
+              {globalFlagCount} flag{globalFlagCount !== 1 ? 's' : ''}
             </span>
           </div>
           <RefreshButton
@@ -246,7 +246,7 @@ export const FeatureFlagsPage = () => {
           />
         </div>
         <div
-          className={`bg-surface-card rounded-lg border border-border-default overflow-hidden${!adminConfigured ? " opacity-60 pointer-events-none" : ""}`}
+          className={`bg-surface-card rounded-lg border border-border-default overflow-hidden${!adminConfigured ? ' opacity-60 pointer-events-none' : ''}`}
         >
           {globalLoading ? (
             <div className="text-center py-12 text-text-muted text-sm">
@@ -283,7 +283,7 @@ export const FeatureFlagsPage = () => {
               onChange={(e) => {
                 setInputValue(e.target.value);
                 setSelectedUser(null);
-                setSelectedUserLabel("");
+                setSelectedUserLabel('');
                 setShowDropdown(true);
               }}
               onFocus={handleFocus}
@@ -311,7 +311,7 @@ export const FeatureFlagsPage = () => {
                     onClick={() =>
                       handleSelect(
                         user.identifier,
-                        `${user.email} — ${user.firstName} ${user.lastName}`,
+                        `${user.email} — ${user.firstName} ${user.lastName}`
                       )
                     }
                     className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-surface-inset transition-colors"
@@ -378,7 +378,7 @@ export const FeatureFlagsPage = () => {
               onChange={(e) => {
                 setTeamInputValue(e.target.value);
                 setSelectedTeam(null);
-                setSelectedTeamLabel("");
+                setSelectedTeamLabel('');
                 setShowTeamDropdown(true);
               }}
               onFocus={handleTeamFocus}
@@ -416,7 +416,7 @@ export const FeatureFlagsPage = () => {
                         {team.teamName}
                       </p>
                       <p className="text-xs text-text-secondary truncate">
-                        {team.ownerEmail ?? "No owner"}
+                        {team.ownerEmail ?? 'No owner'}
                       </p>
                     </div>
                     <span className="text-[10px] font-mono text-text-muted flex-shrink-0">

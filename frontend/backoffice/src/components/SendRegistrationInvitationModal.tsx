@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { X, Send, Loader2, Mail, MessageSquare } from "lucide-react";
-import { useSendRegistrationInvitation } from "../hooks/useRegistrationInvitations";
-import type { RegistrationInvitation } from "../api/registrationInvitations";
+import { useState } from 'react';
+import { X, Send, Loader2, Mail, MessageSquare } from 'lucide-react';
+import { useSendRegistrationInvitation } from '../hooks/useRegistrationInvitations';
+import type { RegistrationInvitation } from '../api/registrationInvitations';
 
 interface Props {
   invitation: RegistrationInvitation;
@@ -12,22 +12,22 @@ export function SendRegistrationInvitationModal({
   invitation,
   onClose,
 }: Props) {
-  const [recipient, setRecipient] = useState("");
-  const [channel, setChannel] = useState<"EMAIL" | "SMS">("EMAIL");
-  const [error, setError] = useState("");
+  const [recipient, setRecipient] = useState('');
+  const [channel, setChannel] = useState<'EMAIL' | 'SMS'>('EMAIL');
+  const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
   const sendMutation = useSendRegistrationInvitation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setError('');
 
     if (!recipient.trim()) {
       setError(
-        channel === "EMAIL"
-          ? "Email address is required"
-          : "Phone number is required",
+        channel === 'EMAIL'
+          ? 'Email address is required'
+          : 'Phone number is required'
       );
       return;
     }
@@ -41,11 +41,11 @@ export function SendRegistrationInvitationModal({
       setTimeout(onClose, 1500);
     } catch (err: unknown) {
       const error = err as { response?: { data?: { detail?: string } } };
-      setError(error.response?.data?.detail || "Failed to send invitation");
+      setError(error.response?.data?.detail || 'Failed to send invitation');
     }
   };
 
-  const registerUrl = `${window.location.protocol}//app.${window.location.hostname.replace(/^backoffice\./, "")}/register?code=${invitation.code}`;
+  const registerUrl = `${window.location.protocol}//app.${window.location.hostname.replace(/^backoffice\./, '')}/register?code=${invitation.code}`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -95,11 +95,11 @@ export function SendRegistrationInvitationModal({
               <div className="flex gap-2">
                 <button
                   type="button"
-                  onClick={() => setChannel("EMAIL")}
+                  onClick={() => setChannel('EMAIL')}
                   className={`flex-1 flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors ${
-                    channel === "EMAIL"
-                      ? "border-primary-500 bg-primary-50 text-primary-700"
-                      : "border-border-default text-text-secondary hover:bg-surface-inset"
+                    channel === 'EMAIL'
+                      ? 'border-primary-500 bg-primary-50 text-primary-700'
+                      : 'border-border-default text-text-secondary hover:bg-surface-inset'
                   }`}
                 >
                   <Mail className="h-4 w-4" />
@@ -107,11 +107,11 @@ export function SendRegistrationInvitationModal({
                 </button>
                 <button
                   type="button"
-                  onClick={() => setChannel("SMS")}
+                  onClick={() => setChannel('SMS')}
                   className={`flex-1 flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors ${
-                    channel === "SMS"
-                      ? "border-primary-500 bg-primary-50 text-primary-700"
-                      : "border-border-default text-text-secondary hover:bg-surface-inset"
+                    channel === 'SMS'
+                      ? 'border-primary-500 bg-primary-50 text-primary-700'
+                      : 'border-border-default text-text-secondary hover:bg-surface-inset'
                   }`}
                 >
                   <MessageSquare className="h-4 w-4" />
@@ -123,15 +123,15 @@ export function SendRegistrationInvitationModal({
             {/* Recipient */}
             <div>
               <label className="block text-sm font-medium text-text-primary mb-1.5">
-                {channel === "EMAIL" ? "Email Address" : "Phone Number"}
+                {channel === 'EMAIL' ? 'Email Address' : 'Phone Number'}
               </label>
               <input
-                type={channel === "EMAIL" ? "email" : "tel"}
+                type={channel === 'EMAIL' ? 'email' : 'tel'}
                 value={recipient}
                 onChange={(e) => setRecipient(e.target.value)}
                 className="w-full rounded-md border border-border-default bg-surface-card px-3 py-2 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
                 placeholder={
-                  channel === "EMAIL" ? "john@example.com" : "+1 (555) 123-4567"
+                  channel === 'EMAIL' ? 'john@example.com' : '+1 (555) 123-4567'
                 }
               />
             </div>
@@ -142,20 +142,20 @@ export function SendRegistrationInvitationModal({
                 Message preview
               </div>
               <div className="text-xs text-text-secondary leading-relaxed">
-                {channel === "EMAIL" ? (
+                {channel === 'EMAIL' ? (
                   <>
-                    The recipient will receive an email with the code{" "}
+                    The recipient will receive an email with the code{' '}
                     <span className="font-mono font-semibold">
                       {invitation.code}
-                    </span>{" "}
+                    </span>{' '}
                     and a direct link to register.
                   </>
                 ) : (
                   <>
-                    &ldquo;You&apos;ve been invited to join Buurman! Use code:{" "}
+                    &ldquo;You&apos;ve been invited to join Buurman! Use code:{' '}
                     <span className="font-mono font-semibold">
                       {invitation.code}
-                    </span>{" "}
+                    </span>{' '}
                     or register at: {registerUrl}&rdquo;
                   </>
                 )}

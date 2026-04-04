@@ -61,7 +61,10 @@ export const ContractsPage = () => {
           {/* Contract cards grid skeleton */}
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="p-4 rounded-lg border border-border-default space-y-3">
+              <div
+                key={i}
+                className="p-4 rounded-lg border border-border-default space-y-3"
+              >
                 <div className="flex justify-between items-start">
                   <Skeleton className="h-5 w-2/3" />
                   <Skeleton className="h-6 w-16 rounded-full" />

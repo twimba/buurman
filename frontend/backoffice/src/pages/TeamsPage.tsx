@@ -1,18 +1,18 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Search, Eye, Trash2 } from "lucide-react";
-import { RefreshButton } from "@buurman/ui";
-import { formatDate } from "../utils/dateFormatting";
-import { Pagination, ConfirmDialog } from "@buurman/ui";
-import { useTeams, useDeleteTeam } from "../hooks/useTeams";
-import { LoadingSpinner } from "../components/LoadingSpinner";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Search, Eye, Trash2 } from 'lucide-react';
+import { RefreshButton } from '@buurman/ui';
+import { formatDate } from '../utils/dateFormatting';
+import { Pagination, ConfirmDialog } from '@buurman/ui';
+import { useTeams, useDeleteTeam } from '../hooks/useTeams';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 
 export const TeamsPage = () => {
   const navigate = useNavigate();
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(25);
-  const [search, setSearch] = useState("");
-  const [searchInput, setSearchInput] = useState("");
+  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState('');
   const [deleteIdentifier, setDeleteIdentifier] = useState<string | null>(null);
 
   const { data, isLoading, isFetching, error, refetch } = useTeams({
@@ -57,9 +57,9 @@ export const TeamsPage = () => {
       <div
         className="mb-6"
         style={{
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "space-between",
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
         }}
       >
         <div>

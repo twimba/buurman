@@ -1,4 +1,4 @@
-import client from "./client";
+import client from './client';
 
 export interface RegistrationInvitation {
   identifier: string;
@@ -7,7 +7,7 @@ export interface RegistrationInvitation {
   usageCount: number;
   expiresAt?: string;
   revoked: boolean;
-  status: "ACTIVE" | "EXPIRED" | "EXHAUSTED" | "REVOKED";
+  status: 'ACTIVE' | 'EXPIRED' | 'EXHAUSTED' | 'REVOKED';
   createdBy: string;
   createdAt: string;
   hasNote: boolean;
@@ -41,7 +41,7 @@ export interface UpdateRegistrationInvitationNoteRequest {
 
 export interface SendRegistrationInvitationRequest {
   recipient: string;
-  channel: "EMAIL" | "SMS";
+  channel: 'EMAIL' | 'SMS';
 }
 
 export interface PageResponse<T> {
@@ -55,17 +55,17 @@ export interface PageResponse<T> {
 export const registrationInvitationsApi = {
   list: (params?: Record<string, unknown>) =>
     client.get<PageResponse<RegistrationInvitation>>(
-      "/registration-invitations",
-      { params },
+      '/registration-invitations',
+      { params }
     ),
 
   get: (identifier: string) =>
     client.get<RegistrationInvitationDetail>(
-      `/registration-invitations/${identifier}`,
+      `/registration-invitations/${identifier}`
     ),
 
   create: (data: CreateRegistrationInvitationRequest) =>
-    client.post<RegistrationInvitation>("/registration-invitations", data),
+    client.post<RegistrationInvitation>('/registration-invitations', data),
 
   revoke: (identifier: string) =>
     client.post(`/registration-invitations/${identifier}/revoke`),
@@ -75,15 +75,15 @@ export const registrationInvitationsApi = {
 
   suggestCode: () =>
     client
-      .get<{ code: string }>("/registration-invitations/suggest-code")
+      .get<{ code: string }>('/registration-invitations/suggest-code')
       .then((res) => res.data.code),
 
   updateNote: (
     identifier: string,
-    data: UpdateRegistrationInvitationNoteRequest,
+    data: UpdateRegistrationInvitationNoteRequest
   ) =>
     client.put<RegistrationInvitationDetail>(
       `/registration-invitations/${identifier}/note`,
-      data,
+      data
     ),
 };

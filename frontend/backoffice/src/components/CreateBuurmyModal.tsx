@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef, forwardRef } from "react";
-import { X, Loader2 } from "lucide-react";
-import { AxiosError } from "axios";
-import { useCreateBuurmy } from "../hooks/useBuurmies";
+import { useState, useEffect, useRef, forwardRef } from 'react';
+import { X, Loader2 } from 'lucide-react';
+import { AxiosError } from 'axios';
+import { useCreateBuurmy } from '../hooks/useBuurmies';
 
 interface CreateBuurmyModalProps {
   onClose: () => void;
@@ -11,24 +11,24 @@ const getErrorMessage = (error: unknown): string => {
   if (error instanceof AxiosError && error.response?.data) {
     const data = error.response.data;
     return (
-      data.detail || data.message || data.title || "Failed to create buurmy"
+      data.detail || data.message || data.title || 'Failed to create buurmy'
     );
   }
   if (error instanceof Error) {
     return error.message;
   }
-  return "Failed to create buurmy";
+  return 'Failed to create buurmy';
 };
 
 export const CreateBuurmyModal = ({ onClose }: CreateBuurmyModalProps) => {
   const createBuurmy = useCreateBuurmy();
   const firstInputRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({
-    email: "",
-    username: "",
-    firstName: "",
-    lastName: "",
-    password: "",
+    email: '',
+    username: '',
+    firstName: '',
+    lastName: '',
+    password: '',
     temporaryPassword: true,
   });
 
@@ -38,12 +38,12 @@ export const CreateBuurmyModal = ({ onClose }: CreateBuurmyModalProps) => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+      if (e.key === 'Escape') {
         onClose();
       }
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -57,7 +57,7 @@ export const CreateBuurmyModal = ({ onClose }: CreateBuurmyModalProps) => {
         password: form.password,
         temporaryPassword: form.temporaryPassword,
       },
-      { onSuccess: () => onClose() },
+      { onSuccess: () => onClose() }
     );
   };
 
@@ -111,13 +111,13 @@ export const CreateBuurmyModal = ({ onClose }: CreateBuurmyModalProps) => {
                   ref={firstInputRef}
                   label="First Name"
                   value={form.firstName}
-                  onChange={(v) => update("firstName", v)}
+                  onChange={(v) => update('firstName', v)}
                   required
                 />
                 <InputField
                   label="Last Name"
                   value={form.lastName}
-                  onChange={(v) => update("lastName", v)}
+                  onChange={(v) => update('lastName', v)}
                   required
                 />
               </div>
@@ -126,14 +126,14 @@ export const CreateBuurmyModal = ({ onClose }: CreateBuurmyModalProps) => {
                 label="Email"
                 type="email"
                 value={form.email}
-                onChange={(v) => update("email", v)}
+                onChange={(v) => update('email', v)}
                 required
               />
 
               <InputField
                 label="Username"
                 value={form.username}
-                onChange={(v) => update("username", v)}
+                onChange={(v) => update('username', v)}
                 placeholder="Defaults to email if empty"
               />
 
@@ -141,7 +141,7 @@ export const CreateBuurmyModal = ({ onClose }: CreateBuurmyModalProps) => {
                 label="Password"
                 type="password"
                 value={form.password}
-                onChange={(v) => update("password", v)}
+                onChange={(v) => update('password', v)}
                 required
                 minLength={8}
                 hint="Minimum 8 characters"
@@ -154,7 +154,7 @@ export const CreateBuurmyModal = ({ onClose }: CreateBuurmyModalProps) => {
                     type="checkbox"
                     checked={form.temporaryPassword}
                     onChange={(e) =>
-                      update("temporaryPassword", e.target.checked)
+                      update('temporaryPassword', e.target.checked)
                     }
                     className="sr-only peer"
                   />
@@ -219,13 +219,13 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       label,
       value,
       onChange,
-      type = "text",
+      type = 'text',
       required = false,
       placeholder,
       minLength,
       hint,
     },
-    ref,
+    ref
   ) {
     return (
       <div>
@@ -246,5 +246,5 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
         {hint && <p className="mt-1 text-xs text-text-muted">{hint}</p>}
       </div>
     );
-  },
+  }
 );

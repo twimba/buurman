@@ -1,4 +1,4 @@
-import client from "./client";
+import client from './client';
 
 export interface RateLimitBucketEntry {
   bucketId: string;
@@ -38,7 +38,7 @@ export interface RateLimitSummaryResponse {
 
 export const rateLimitBucketsApi = {
   getSummary: () =>
-    client.get<RateLimitSummaryResponse>("/rate-limits/buckets/summary"),
+    client.get<RateLimitSummaryResponse>('/rate-limits/buckets/summary'),
 
   list: (params: {
     configKey?: string;
@@ -46,18 +46,18 @@ export const rateLimitBucketsApi = {
     page?: number;
     size?: number;
   }) =>
-    client.get<RateLimitBucketListResponse>("/rate-limits/buckets", { params }),
+    client.get<RateLimitBucketListResponse>('/rate-limits/buckets', { params }),
 
   get: (bucketId: string) =>
     client.get<RateLimitBucketDetail>(
-      `/rate-limits/buckets/${encodeURIComponent(bucketId)}`,
+      `/rate-limits/buckets/${encodeURIComponent(bucketId)}`
     ),
 
   deleteBucket: (bucketId: string) =>
     client.delete(`/rate-limits/buckets/${encodeURIComponent(bucketId)}`),
 
   deleteByConfigKey: (configKey: string) =>
-    client.delete<{ deletedCount: number }>("/rate-limits/buckets", {
+    client.delete<{ deletedCount: number }>('/rate-limits/buckets', {
       params: { configKey },
     }),
 };

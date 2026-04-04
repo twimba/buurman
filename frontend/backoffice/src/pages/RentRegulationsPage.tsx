@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Plus,
   Search,
@@ -11,25 +11,30 @@ import {
   MessageSquareText,
   Clock,
   Globe,
-} from "lucide-react";
-import { RefreshButton, Button, ConfirmDialog, RichTextEditor } from "@buurman/ui";
-import { formatDistanceToNow } from "date-fns";
-import { formatDate, formatDateTime } from "../utils/dateFormatting";
+} from 'lucide-react';
+import {
+  RefreshButton,
+  Button,
+  ConfirmDialog,
+  RichTextEditor,
+} from '@buurman/ui';
+import { formatDistanceToNow } from 'date-fns';
+import { formatDate, formatDateTime } from '../utils/dateFormatting';
 import {
   useRentRegulationCountries,
   useCreateCountry,
   useCountryRegulationRequests,
   useDismissCountryRequest,
-} from "../hooks/useRentRegulationHooks";
-import { LoadingSpinner } from "../components/LoadingSpinner";
+} from '../hooks/useRentRegulationHooks';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 import type {
   RentRegulationCountryResponse,
   CountryRegulationRequestSummary,
   CountryRegulationRequester,
-} from "../api/rentRegulations";
+} from '../api/rentRegulations';
 
 function groupByTeam(
-  requesters: CountryRegulationRequester[],
+  requesters: CountryRegulationRequester[]
 ): [string, CountryRegulationRequester[]][] {
   const map = new Map<string, CountryRegulationRequester[]>();
   for (const r of requesters) {
@@ -44,14 +49,14 @@ function groupByTeam(
 }
 
 const TH_CLASS =
-  "text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary";
+  'text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary';
 
 const countryCodeToFlag = (code: string): string =>
   code
     .toUpperCase()
-    .split("")
+    .split('')
     .map((c) => String.fromCodePoint(0x1f1e6 + c.charCodeAt(0) - 65))
-    .join("");
+    .join('');
 
 interface CountryForm {
   countryCode: string;
@@ -61,36 +66,36 @@ interface CountryForm {
 }
 
 const emptyForm: CountryForm = {
-  countryCode: "",
-  countryName: "",
+  countryCode: '',
+  countryName: '',
   hasRegionalRegulations: false,
-  summary: "",
+  summary: '',
 };
 
-type Tab = "countries" | "requests";
+type Tab = 'countries' | 'requests';
 
 export const RentRegulationsPage = () => {
-  const [tab, setTab] = useState<Tab>("countries");
+  const [tab, setTab] = useState<Tab>('countries');
 
   return (
     <div>
       {/* Tab bar */}
       <div className="flex gap-1 mb-6 border-b border-border-default">
         <TabButton
-          active={tab === "countries"}
-          onClick={() => setTab("countries")}
+          active={tab === 'countries'}
+          onClick={() => setTab('countries')}
         >
           Countries
         </TabButton>
         <TabButton
-          active={tab === "requests"}
-          onClick={() => setTab("requests")}
+          active={tab === 'requests'}
+          onClick={() => setTab('requests')}
         >
           Country Requests
         </TabButton>
       </div>
 
-      {tab === "countries" ? <CountriesTab /> : <CountryRequestsTab />}
+      {tab === 'countries' ? <CountriesTab /> : <CountryRequestsTab />}
     </div>
   );
 };
@@ -109,8 +114,8 @@ function TabButton({
       onClick={onClick}
       className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
         active
-          ? "border-primary-500 text-primary-500"
-          : "border-transparent text-text-secondary hover:text-text-secondary"
+          ? 'border-primary-500 text-primary-500'
+          : 'border-transparent text-text-secondary hover:text-text-secondary'
       }`}
     >
       {children}
@@ -126,7 +131,7 @@ function CountriesTab() {
   const createCountry = useCreateCountry();
   const navigate = useNavigate();
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<CountryForm>(emptyForm);
 
@@ -139,7 +144,7 @@ function CountriesTab() {
     return all.filter(
       (c) =>
         c.countryName.toLowerCase().includes(q) ||
-        c.countryCode.toLowerCase().includes(q),
+        c.countryCode.toLowerCase().includes(q)
     );
   }, [data, search]);
 
@@ -162,7 +167,7 @@ function CountriesTab() {
         hasRegionalRegulations: form.hasRegionalRegulations,
         summary: form.summary || undefined,
       },
-      { onSuccess: closeForm },
+      { onSuccess: closeForm }
     );
   };
 
@@ -184,9 +189,9 @@ function CountriesTab() {
       <div
         className="mb-6"
         style={{
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "space-between",
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
         }}
       >
         <div>
@@ -198,7 +203,7 @@ function CountriesTab() {
             up-to-date.
           </p>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <RefreshButton onClick={() => refetch()} isRefreshing={isFetching} />
           <Button
             variant="primary"
@@ -394,14 +399,14 @@ function CountryRow({
       </td>
       <td className="px-4 py-3">
         <span className="text-sm text-text-secondary">
-          {country.hasRegionalRegulations ? "Yes" : "No"}
+          {country.hasRegionalRegulations ? 'Yes' : 'No'}
         </span>
       </td>
       <td className="px-4 py-3">
         <span className="text-sm text-text-secondary">
           {country.lastReviewedAt
             ? formatDate(country.lastReviewedAt)
-            : "Never"}
+            : 'Never'}
         </span>
       </td>
       <td className="px-4 py-3">
@@ -470,9 +475,9 @@ function CountryRequestsTab() {
       <div
         className="mb-6"
         style={{
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "space-between",
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
         }}
       >
         <div>
@@ -557,8 +562,8 @@ function RequestCard({
             </span>
             <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium bg-primary-500/10 text-primary-500 ring-1 ring-primary-500/20">
               <Users className="h-3 w-3" />
-              {request.requestCount}{" "}
-              {request.requestCount === 1 ? "request" : "requests"}
+              {request.requestCount}{' '}
+              {request.requestCount === 1 ? 'request' : 'requests'}
             </span>
           </div>
           <div className="flex items-center gap-4 mt-1">
@@ -568,7 +573,7 @@ function RequestCard({
             </span>
             <span className="flex items-center gap-1 text-xs text-text-muted">
               <Clock className="h-3 w-3" />
-              Last:{" "}
+              Last:{' '}
               {formatDistanceToNow(new Date(request.lastRequestedAt), {
                 addSuffix: true,
               })}

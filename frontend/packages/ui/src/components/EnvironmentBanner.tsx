@@ -1,16 +1,16 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
-export type Environment = "local" | "dev" | "staging" | "production";
+export type Environment = 'local' | 'dev' | 'staging' | 'production';
 
 const BANNER_HEIGHT = 16;
 
 const CONFIG: Record<
-  Exclude<Environment, "production">,
+  Exclude<Environment, 'production'>,
   { label: string; color: string; prefix: string }
 > = {
-  local: { label: "LOCAL ENVIRONMENT", color: "#f59e0b", prefix: "[LOCAL]" },
-  dev: { label: "DEV ENVIRONMENT", color: "#3b82f6", prefix: "[DEV]" },
-  staging: { label: "STAGING", color: "#8b5cf6", prefix: "[STAGING]" },
+  local: { label: 'LOCAL ENVIRONMENT', color: '#f59e0b', prefix: '[LOCAL]' },
+  dev: { label: 'DEV ENVIRONMENT', color: '#3b82f6', prefix: '[DEV]' },
+  staging: { label: 'STAGING', color: '#8b5cf6', prefix: '[STAGING]' },
 };
 
 interface EnvironmentBannerProps {
@@ -20,13 +20,13 @@ interface EnvironmentBannerProps {
 
 export function EnvironmentBanner({ environment }: EnvironmentBannerProps) {
   useEffect(() => {
-    if (environment === "production") {
+    if (environment === 'production') {
       return;
     }
 
     document.documentElement.style.setProperty(
-      "--env-banner-height",
-      `${BANNER_HEIGHT}px`,
+      '--env-banner-height',
+      `${BANNER_HEIGHT}px`
     );
 
     const config = CONFIG[environment];
@@ -34,12 +34,12 @@ export function EnvironmentBanner({ environment }: EnvironmentBannerProps) {
     document.title = `${config.prefix} ${originalTitle}`;
 
     return () => {
-      document.documentElement.style.removeProperty("--env-banner-height");
+      document.documentElement.style.removeProperty('--env-banner-height');
       document.title = originalTitle;
     };
   }, [environment]);
 
-  if (environment === "production") {
+  if (environment === 'production') {
     return null;
   }
 
@@ -50,16 +50,16 @@ export function EnvironmentBanner({ environment }: EnvironmentBannerProps) {
       style={{
         height: BANNER_HEIGHT,
         backgroundColor: config.color,
-        color: "#fff",
+        color: '#fff',
         fontSize: 9,
         fontWeight: 600,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        letterSpacing: "0.05em",
-        textTransform: "uppercase",
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        letterSpacing: '0.05em',
+        textTransform: 'uppercase',
         zIndex: 9999,
-        position: "fixed",
+        position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
@@ -71,4 +71,4 @@ export function EnvironmentBanner({ environment }: EnvironmentBannerProps) {
   );
 }
 
-EnvironmentBanner.displayName = "EnvironmentBanner";
+EnvironmentBanner.displayName = 'EnvironmentBanner';

@@ -1,14 +1,14 @@
-import { useEffect, useRef } from "react";
-import { AlertTriangle, X } from "lucide-react";
-import { cn } from "../utils/cn";
-import { Button } from "./Button";
+import { useEffect, useRef } from 'react';
+import { AlertTriangle, X } from 'lucide-react';
+import { cn } from '../utils/cn';
+import { Button } from './Button';
 
 interface ConfirmDialogProps {
   title: string;
   message: string;
   confirmLabel?: string;
   cancelLabel?: string;
-  variant?: "danger" | "default";
+  variant?: 'danger' | 'default';
   isLoading?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
@@ -17,9 +17,9 @@ interface ConfirmDialogProps {
 export const ConfirmDialog = ({
   title,
   message,
-  confirmLabel = "Confirm",
-  cancelLabel = "Cancel",
-  variant = "default",
+  confirmLabel = 'Confirm',
+  cancelLabel = 'Cancel',
+  variant = 'default',
   isLoading = false,
   onConfirm,
   onCancel,
@@ -32,15 +32,15 @@ export const ConfirmDialog = ({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+      if (e.key === 'Escape') {
         onCancel();
       }
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onCancel]);
 
-  const isDanger = variant === "danger";
+  const isDanger = variant === 'danger';
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto" onClick={onCancel}>
@@ -55,14 +55,14 @@ export const ConfirmDialog = ({
             <div className="flex items-start gap-4">
               <div
                 className={cn(
-                  "flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center",
-                  isDanger ? "bg-error-bg" : "bg-info-bg",
+                  'flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center',
+                  isDanger ? 'bg-error-bg' : 'bg-info-bg'
                 )}
               >
                 <AlertTriangle
                   className={cn(
-                    "h-5 w-5",
-                    isDanger ? "text-error-text" : "text-primary-600",
+                    'h-5 w-5',
+                    isDanger ? 'text-error-text' : 'text-primary-600'
                   )}
                 />
               </div>
@@ -94,7 +94,7 @@ export const ConfirmDialog = ({
               {cancelLabel}
             </Button>
             <Button
-              variant={isDanger ? "danger" : "primary"}
+              variant={isDanger ? 'danger' : 'primary'}
               size="md"
               onClick={onConfirm}
               disabled={isLoading}

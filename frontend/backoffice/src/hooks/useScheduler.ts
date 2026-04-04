@@ -1,9 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { schedulerApi } from "../api/scheduler";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { schedulerApi } from '../api/scheduler';
 
 export const useScheduledJobs = () => {
   return useQuery({
-    queryKey: ["scheduler-jobs"],
+    queryKey: ['scheduler-jobs'],
     queryFn: () => schedulerApi.listJobs().then((res) => res.data),
     refetchInterval: 30000,
   });
@@ -15,7 +15,7 @@ export const usePauseJob = () => {
     mutationFn: ({ jobName, group }: { jobName: string; group: string }) =>
       schedulerApi.pauseJob(jobName, group),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["scheduler-jobs"] });
+      queryClient.invalidateQueries({ queryKey: ['scheduler-jobs'] });
     },
   });
 };
@@ -26,7 +26,7 @@ export const useResumeJob = () => {
     mutationFn: ({ jobName, group }: { jobName: string; group: string }) =>
       schedulerApi.resumeJob(jobName, group),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["scheduler-jobs"] });
+      queryClient.invalidateQueries({ queryKey: ['scheduler-jobs'] });
     },
   });
 };
@@ -37,8 +37,8 @@ export const useTriggerJob = () => {
     mutationFn: ({ jobName, group }: { jobName: string; group: string }) =>
       schedulerApi.triggerJob(jobName, group),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["scheduler-jobs"] });
-      queryClient.invalidateQueries({ queryKey: ["scheduler-history"] });
+      queryClient.invalidateQueries({ queryKey: ['scheduler-jobs'] });
+      queryClient.invalidateQueries({ queryKey: ['scheduler-history'] });
     },
   });
 };
@@ -56,7 +56,7 @@ export const useRescheduleJob = () => {
       cronExpression: string;
     }) => schedulerApi.rescheduleJob(jobName, group, cronExpression),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["scheduler-jobs"] });
+      queryClient.invalidateQueries({ queryKey: ['scheduler-jobs'] });
     },
   });
 };
@@ -72,7 +72,7 @@ interface HistoryParams {
 
 export const useJobExecutionHistory = (params?: HistoryParams) => {
   return useQuery({
-    queryKey: ["scheduler-history", params],
+    queryKey: ['scheduler-history', params],
     queryFn: () => schedulerApi.history(params).then((res) => res.data),
   });
 };

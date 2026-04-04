@@ -43,8 +43,7 @@ export const FinancingFormModal = ({
     rateType: existing?.rateType ?? RateType.FIXED,
     lenderName: existing?.lenderName ?? '',
     loanNumber: existing?.loanNumber ?? '',
-    originalAmount:
-      existing?.originalAmount as number | undefined,
+    originalAmount: existing?.originalAmount as number | undefined,
     originalAmountCurrency:
       existing?.originalAmountCurrency ?? defaultCurrency ?? 'EUR',
     currentBalance: existing?.currentBalance ?? undefined,

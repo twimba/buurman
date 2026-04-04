@@ -1,21 +1,21 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { CreateImpersonationRequest } from "../generated/models";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import type { CreateImpersonationRequest } from '../generated/models';
 import {
   createImpersonationSession,
   rejoinImpersonationSession,
   terminateImpersonationSession,
-} from "../generated/api/backoffice-impersonation/backoffice-impersonation";
-import { getUserFlags } from "../generated/api/backoffice-feature-flags/backoffice-feature-flags";
+} from '../generated/api/backoffice-impersonation/backoffice-impersonation';
+import { getUserFlags } from '../generated/api/backoffice-feature-flags/backoffice-feature-flags';
 import {
   impersonationApi,
   type ListImpersonationSessionsParams,
-} from "../api/impersonation";
+} from '../api/impersonation';
 
 export const useImpersonationSessions = (
-  params?: ListImpersonationSessionsParams,
+  params?: ListImpersonationSessionsParams
 ) => {
   return useQuery({
-    queryKey: ["impersonation-sessions", params],
+    queryKey: ['impersonation-sessions', params],
     queryFn: () =>
       impersonationApi.listSessions(params).then((res) => res.data),
   });
@@ -28,7 +28,7 @@ export const useCreateImpersonation = () => {
     mutationFn: (data: CreateImpersonationRequest) =>
       createImpersonationSession(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["impersonation-sessions"] });
+      queryClient.invalidateQueries({ queryKey: ['impersonation-sessions'] });
     },
   });
 };
@@ -52,22 +52,22 @@ export const useTerminateImpersonation = () => {
     mutationFn: (identifier: string) =>
       terminateImpersonationSession(identifier),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["impersonation-sessions"] });
+      queryClient.invalidateQueries({ queryKey: ['impersonation-sessions'] });
     },
   });
 };
 
 export const useUserTeams = (userIdentifier: string) => {
   return useQuery({
-    queryKey: ["user-teams", userIdentifier],
+    queryKey: ['user-teams', userIdentifier],
     queryFn: () =>
       getUserFlags(userIdentifier).then((teams) =>
         teams.map((t) => ({
-          teamIdentifier: t.teamIdentifier ?? "",
-          teamName: t.teamName ?? "",
-          role: t.role ?? "",
+          teamIdentifier: t.teamIdentifier ?? '',
+          teamName: t.teamName ?? '',
+          role: t.role ?? '',
           isOwner: t.isOwner ?? false,
-        })),
+        }))
       ),
     enabled: !!userIdentifier,
   });

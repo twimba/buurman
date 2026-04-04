@@ -1,9 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
-import { systemApi } from "../api/system";
+import { useQuery } from '@tanstack/react-query';
+import { systemApi } from '../api/system';
 
 export const useSystemInfo = () => {
   return useQuery({
-    queryKey: ["system-info"],
+    queryKey: ['system-info'],
     queryFn: () => systemApi.info().then((res) => res.data),
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
@@ -18,11 +18,11 @@ interface AppBuildInfo {
   buildTime: string;
 }
 
-const appBuildInfoUrl = `${window.location.protocol}//app.${window.location.hostname.replace(/^backoffice\./, "")}/build-info.json`;
+const appBuildInfoUrl = `${window.location.protocol}//app.${window.location.hostname.replace(/^backoffice\./, '')}/build-info.json`;
 
 export const useAppBuildInfo = () => {
   return useQuery({
-    queryKey: ["app-build-info"],
+    queryKey: ['app-build-info'],
     queryFn: async (): Promise<AppBuildInfo | null> => {
       try {
         const res = await fetch(appBuildInfoUrl);

@@ -538,7 +538,9 @@ function ExtensionCard({
           {extension.notes && (
             <div
               className="text-xs text-text-muted mt-2 prose prose-xs dark:prose-invert max-w-none"
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(extension.notes) }}
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(extension.notes),
+              }}
             />
           )}
 

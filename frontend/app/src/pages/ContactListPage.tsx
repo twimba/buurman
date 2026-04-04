@@ -262,7 +262,10 @@ export const ContactListPage = () => {
           {/* Contact cards grid skeleton */}
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="p-4 rounded-lg border border-border-default space-y-3">
+              <div
+                key={i}
+                className="p-4 rounded-lg border border-border-default space-y-3"
+              >
                 <div className="flex items-center gap-3">
                   <Skeleton className="h-10 w-10 rounded-full" />
                   <div className="space-y-1.5 flex-1">

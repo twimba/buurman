@@ -1,11 +1,11 @@
-import Keycloak from "keycloak-js";
-import { env } from "./env";
+import Keycloak from 'keycloak-js';
+import { env } from './env';
 
 // Create Keycloak instance with configuration
 const keycloakConfig = {
-  url: env("VITE_BACKOFFICE_KEYCLOAK_URL"),
-  realm: env("VITE_BACKOFFICE_KEYCLOAK_REALM"),
-  clientId: env("VITE_BACKOFFICE_KEYCLOAK_CLIENT_ID"),
+  url: env('VITE_BACKOFFICE_KEYCLOAK_URL'),
+  realm: env('VITE_BACKOFFICE_KEYCLOAK_REALM'),
+  clientId: env('VITE_BACKOFFICE_KEYCLOAK_CLIENT_ID'),
 };
 
 // Singleton pattern to ensure only one Keycloak instance is created
@@ -23,11 +23,11 @@ const keycloak = getKeycloakInstance();
 
 // Keycloak initialization options — all pages are protected, always login-required
 export const keycloakInitOptions = {
-  onLoad: "login-required" as const,
-  pkceMethod: "S256" as const,
+  onLoad: 'login-required' as const,
+  pkceMethod: 'S256' as const,
   // Disable login iframe — blocked by third-party cookie restrictions in modern browsers
   checkLoginIframe: false,
-  silentCheckSsoRedirectUri: window.location.origin + "/silent-check-sso.html",
+  silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
   enableLogging: import.meta.env.DEV,
 };
 

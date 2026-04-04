@@ -195,9 +195,7 @@ export const ContactCard = ({ contact }: ContactCardProps) => {
           title={new Date(contact.createdAt).toLocaleDateString()}
         >
           <Calendar className="h-3.5 w-3.5" />
-          <span className="text-xs">
-            {formatRelative(contact.createdAt)}
-          </span>
+          <span className="text-xs">{formatRelative(contact.createdAt)}</span>
         </div>
       </div>
     </div>

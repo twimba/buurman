@@ -1,16 +1,16 @@
-import axios from "axios";
-import keycloak from "../config/keycloak";
+import axios from 'axios';
+import keycloak from '../config/keycloak';
 
 // Derive API base URL from current hostname: backoffice.X → api.X/backoffice (handles workspace prefixes like w1-backoffice → w1-api)
-const apiHostname = window.location.hostname.replace(/\bbackoffice\b/, "api");
-const apiPort = window.location.port ? `:${window.location.port}` : "";
+const apiHostname = window.location.hostname.replace(/\bbackoffice\b/, 'api');
+const apiPort = window.location.port ? `:${window.location.port}` : '';
 const apiBaseUrl = `${window.location.protocol}//${apiHostname}${apiPort}/backoffice`;
 
 const client = axios.create({
   baseURL: apiBaseUrl,
   timeout: 15_000,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 
@@ -22,7 +22,7 @@ client.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error),
+  (error) => Promise.reject(error)
 );
 
 // Response interceptor: Handle 401 and token refresh
@@ -50,7 +50,7 @@ client.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  },
+  }
 );
 
 export default client;

@@ -32,10 +32,7 @@ import {
   Download,
   Repeat,
 } from 'lucide-react';
-import {
-  ChangeContractStatusRequest,
-  ContractStatus,
-} from '@/types/contract';
+import { ChangeContractStatusRequest, ContractStatus } from '@/types/contract';
 
 export const ContractDetailPage = () => {
   const { id = '' } = useParams<{ id: string }>();
@@ -336,13 +333,9 @@ export const ContractDetailPage = () => {
           <ContractExtensionsTab contract={contract} contractId={id} />
         )}
 
-        {activeTab === 'documents' && (
-          <ContractDocumentsTab contractId={id} />
-        )}
+        {activeTab === 'documents' && <ContractDocumentsTab contractId={id} />}
 
-        {activeTab === 'history' && (
-          <ContractHistoryTab contractId={id} />
-        )}
+        {activeTab === 'history' && <ContractHistoryTab contractId={id} />}
       </div>
 
       {/* Delete Confirmation Modal */}

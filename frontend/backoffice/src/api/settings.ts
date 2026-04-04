@@ -1,4 +1,4 @@
-import client from "./client";
+import client from './client';
 
 export interface CountryEntry {
   code: string;
@@ -31,20 +31,20 @@ export interface UpdatePhoneNumberPolicyRequest {
 }
 
 export const getPhonePolicy = async (): Promise<PhoneNumberPolicyResponse> => {
-  const response = await client.get("/settings/phone-policy");
+  const response = await client.get('/settings/phone-policy');
   return response.data;
 };
 
 export const getPhonePolicyMetadata =
   async (): Promise<PhonePolicyMetadataResponse> => {
-    const response = await client.get("/settings/phone-policy/metadata");
+    const response = await client.get('/settings/phone-policy/metadata');
     return response.data;
   };
 
 export const updatePhonePolicy = async (
-  data: UpdatePhoneNumberPolicyRequest,
+  data: UpdatePhoneNumberPolicyRequest
 ): Promise<PhoneNumberPolicyResponse> => {
-  const response = await client.put("/settings/phone-policy", data);
+  const response = await client.put('/settings/phone-policy', data);
   return response.data;
 };
 
@@ -68,7 +68,7 @@ export interface UpdateRateLimitConfigRequest {
 }
 
 export const getRateLimitConfig = async (
-  key: string,
+  key: string
 ): Promise<RateLimitConfigResponse> => {
   const response = await client.get(`/settings/rate-limits/${key}`);
   return response.data;
@@ -76,7 +76,7 @@ export const getRateLimitConfig = async (
 
 export const updateRateLimitConfig = async (
   key: string,
-  data: UpdateRateLimitConfigRequest,
+  data: UpdateRateLimitConfigRequest
 ): Promise<RateLimitConfigResponse> => {
   const response = await client.put(`/settings/rate-limits/${key}`, data);
   return response.data;

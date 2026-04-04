@@ -1,9 +1,9 @@
-import client from "./client";
+import client from './client';
 import type {
   BackofficeNotification,
   NotificationStats,
   PageResponse,
-} from "../types";
+} from '../types';
 
 interface ListNotificationsParams {
   page?: number;
@@ -21,12 +21,12 @@ interface ListNotificationsParams {
 
 export const notificationsApi = {
   list: (params?: ListNotificationsParams) =>
-    client.get<PageResponse<BackofficeNotification>>("/notifications", {
+    client.get<PageResponse<BackofficeNotification>>('/notifications', {
       params,
     }),
   get: (identifier: string) =>
     client.get<BackofficeNotification>(`/notifications/${identifier}`),
   resend: (identifier: string) =>
     client.post<BackofficeNotification>(`/notifications/${identifier}/resend`),
-  stats: () => client.get<NotificationStats>("/notifications/stats"),
+  stats: () => client.get<NotificationStats>('/notifications/stats'),
 };

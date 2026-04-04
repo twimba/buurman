@@ -24,7 +24,13 @@ import {
   useUpdateDocument,
 } from '@/hooks/useDocumentHooks';
 import { usePagination } from '@/hooks/usePagination';
-import { ConfirmDialog, LoadingSpinner, Pagination, RefreshButton, RichTextDisplay } from '@buurman/ui';
+import {
+  ConfirmDialog,
+  LoadingSpinner,
+  Pagination,
+  RefreshButton,
+  RichTextDisplay,
+} from '@buurman/ui';
 import { DocumentPreviewModal } from '@/components/documents/DocumentPreviewModal';
 import { EditMetadataModal } from '@/components/ui/EditMetadataModal';
 import { DocumentResponse } from '@/types/property';

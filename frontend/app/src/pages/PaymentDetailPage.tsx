@@ -17,7 +17,13 @@ import {
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 import { PaymentForm } from '@/components/payments/PaymentForm';
-import { Button, LoadingSpinner, PageHeader, RichTextDisplay, RichTextEditor } from '@buurman/ui';
+import {
+  Button,
+  LoadingSpinner,
+  PageHeader,
+  RichTextDisplay,
+  RichTextEditor,
+} from '@buurman/ui';
 import { DocumentList } from '@/components/properties/DocumentList';
 import { useTeam } from '@/context/TeamContext';
 import {

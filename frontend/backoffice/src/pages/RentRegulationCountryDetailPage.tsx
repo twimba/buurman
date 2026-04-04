@@ -1,8 +1,15 @@
-import { useState, useMemo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { Pencil, Trash2, Plus, X, CheckCircle, Layers } from "lucide-react";
-import { PageHeader, Button, ConfirmDialog, RefreshButton, RichTextEditor, RichTextDisplay } from "@buurman/ui";
-import { formatDateTime } from "../utils/dateFormatting";
+import { useState, useMemo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Pencil, Trash2, Plus, X, CheckCircle, Layers } from 'lucide-react';
+import {
+  PageHeader,
+  Button,
+  ConfirmDialog,
+  RefreshButton,
+  RichTextEditor,
+  RichTextDisplay,
+} from '@buurman/ui';
+import { formatDateTime } from '../utils/dateFormatting';
 import {
   useRentRegulationCountries,
   useUpdateCountry,
@@ -17,43 +24,43 @@ import {
   useBulkCreateRules,
   useUpdateRule,
   useDeleteRule,
-} from "../hooks/useRentRegulationHooks";
-import { LoadingSpinner } from "../components/LoadingSpinner";
+} from '../hooks/useRentRegulationHooks';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 import type {
   RentRegulationCountryResponse,
   RentRegulationRegionResponse,
   RentRegulationRuleResponse,
   CreateRuleRequest,
-} from "../api/rentRegulations";
+} from '../api/rentRegulations';
 
-type Tab = "overview" | "regions" | "rules";
+type Tab = 'overview' | 'regions' | 'rules';
 
 const countryCodeToFlag = (code: string): string =>
   code
     .toUpperCase()
-    .split("")
+    .split('')
     .map((c) => String.fromCodePoint(0x1f1e6 + c.charCodeAt(0) - 65))
-    .join("");
+    .join('');
 
 const TAB_CLASS = (active: boolean) =>
   `px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
     active
-      ? "border-primary-500 text-primary-600"
-      : "border-transparent text-text-secondary hover:text-text-secondary hover:border-border-default"
+      ? 'border-primary-500 text-primary-600'
+      : 'border-transparent text-text-secondary hover:text-text-secondary hover:border-border-default'
   }`;
 
 const INPUT_CLASS =
-  "w-full px-3 py-2 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors";
+  'w-full px-3 py-2 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors';
 
 const TH_CLASS =
-  "text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary";
+  'text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary';
 
 const CURRENT_YEAR = new Date().getFullYear();
 
 export const RentRegulationCountryDetailPage = () => {
   const { code } = useParams<{ code: string }>();
   const navigate = useNavigate();
-  const countryCode = code ?? "";
+  const countryCode = code ?? '';
 
   const {
     data: countries,
@@ -64,7 +71,7 @@ export const RentRegulationCountryDetailPage = () => {
   const deleteCountry = useDeleteCountry();
   const reviewCountry = useReviewCountry();
 
-  const [activeTab, setActiveTab] = useState<Tab>("overview");
+  const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const country = countries?.find((c) => c.countryCode === countryCode);
@@ -78,7 +85,7 @@ export const RentRegulationCountryDetailPage = () => {
       <div className="text-center py-12">
         <p className="text-error-text">Country not found.</p>
         <button
-          onClick={() => navigate("/rent-regulations")}
+          onClick={() => navigate('/rent-regulations')}
           className="mt-4 text-sm text-primary-500 hover:underline"
         >
           Back to rent regulations
@@ -89,7 +96,7 @@ export const RentRegulationCountryDetailPage = () => {
 
   const handleDelete = () => {
     deleteCountry.mutate(countryCode, {
-      onSuccess: () => navigate("/rent-regulations"),
+      onSuccess: () => navigate('/rent-regulations'),
     });
   };
 
@@ -138,22 +145,22 @@ export const RentRegulationCountryDetailPage = () => {
       <div className="border-b border-border-default mb-6">
         <nav className="flex gap-0">
           <button
-            className={TAB_CLASS(activeTab === "overview")}
-            onClick={() => setActiveTab("overview")}
+            className={TAB_CLASS(activeTab === 'overview')}
+            onClick={() => setActiveTab('overview')}
           >
             Overview
           </button>
           {country.hasRegionalRegulations && (
             <button
-              className={TAB_CLASS(activeTab === "regions")}
-              onClick={() => setActiveTab("regions")}
+              className={TAB_CLASS(activeTab === 'regions')}
+              onClick={() => setActiveTab('regions')}
             >
               Regions
             </button>
           )}
           <button
-            className={TAB_CLASS(activeTab === "rules")}
-            onClick={() => setActiveTab("rules")}
+            className={TAB_CLASS(activeTab === 'rules')}
+            onClick={() => setActiveTab('rules')}
           >
             Rules
           </button>
@@ -161,13 +168,13 @@ export const RentRegulationCountryDetailPage = () => {
       </div>
 
       {/* Tab Content */}
-      {activeTab === "overview" && (
+      {activeTab === 'overview' && (
         <OverviewTab country={country} countryCode={countryCode} />
       )}
-      {activeTab === "regions" && country.hasRegionalRegulations && (
+      {activeTab === 'regions' && country.hasRegionalRegulations && (
         <RegionsTab countryCode={countryCode} />
       )}
-      {activeTab === "rules" && <RulesTab countryCode={countryCode} />}
+      {activeTab === 'rules' && <RulesTab countryCode={countryCode} />}
 
       {/* Delete confirmation */}
       {showDeleteDialog && (
@@ -198,14 +205,14 @@ function OverviewTab({
   const updateCountry = useUpdateCountry();
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(country.countryName);
-  const [editSummary, setEditSummary] = useState(country.summary ?? "");
+  const [editSummary, setEditSummary] = useState(country.summary ?? '');
   const [editRegional, setEditRegional] = useState(
-    country.hasRegionalRegulations,
+    country.hasRegionalRegulations
   );
 
   const startEditing = () => {
     setEditName(country.countryName);
-    setEditSummary(country.summary ?? "");
+    setEditSummary(country.summary ?? '');
     setEditRegional(country.hasRegionalRegulations);
     setIsEditing(true);
   };
@@ -220,7 +227,7 @@ function OverviewTab({
           summary: editSummary || undefined,
         },
       },
-      { onSuccess: () => setIsEditing(false) },
+      { onSuccess: () => setIsEditing(false) }
     );
   };
 
@@ -253,7 +260,7 @@ function OverviewTab({
                 type="text"
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
-                className={INPUT_CLASS + " max-w-md"}
+                className={INPUT_CLASS + ' max-w-md'}
                 autoFocus
               />
             </div>
@@ -301,14 +308,14 @@ function OverviewTab({
             <DetailRow label="Country Name" value={country.countryName} />
             <DetailRow
               label="Regional Regulations"
-              value={country.hasRegionalRegulations ? "Yes" : "No"}
+              value={country.hasRegionalRegulations ? 'Yes' : 'No'}
             />
             <DetailRow
               label="Last Reviewed"
               value={
                 country.lastReviewedAt
                   ? formatDateTime(country.lastReviewedAt)
-                  : "Never"
+                  : 'Never'
               }
             />
             <DetailRow
@@ -367,17 +374,17 @@ function RegionsTab({ countryCode }: { countryCode: string }) {
   const [showForm, setShowForm] = useState(false);
   const [editingRegion, setEditingRegion] =
     useState<RentRegulationRegionResponse | null>(null);
-  const [regionCode, setRegionCode] = useState("");
-  const [regionName, setRegionName] = useState("");
-  const [regionSummary, setRegionSummary] = useState("");
+  const [regionCode, setRegionCode] = useState('');
+  const [regionName, setRegionName] = useState('');
+  const [regionSummary, setRegionSummary] = useState('');
   const [deleteTarget, setDeleteTarget] =
     useState<RentRegulationRegionResponse | null>(null);
 
   const openCreate = () => {
     setEditingRegion(null);
-    setRegionCode("");
-    setRegionName("");
-    setRegionSummary("");
+    setRegionCode('');
+    setRegionName('');
+    setRegionSummary('');
     setShowForm(true);
   };
 
@@ -385,7 +392,7 @@ function RegionsTab({ countryCode }: { countryCode: string }) {
     setEditingRegion(region);
     setRegionCode(region.regionCode);
     setRegionName(region.regionName);
-    setRegionSummary(region.summary ?? "");
+    setRegionSummary(region.summary ?? '');
     setShowForm(true);
   };
 
@@ -406,7 +413,7 @@ function RegionsTab({ countryCode }: { countryCode: string }) {
             summary: regionSummary || undefined,
           },
         },
-        { onSuccess: closeForm },
+        { onSuccess: closeForm }
       );
     } else {
       createRegion.mutate(
@@ -418,7 +425,7 @@ function RegionsTab({ countryCode }: { countryCode: string }) {
             summary: regionSummary || undefined,
           },
         },
-        { onSuccess: closeForm },
+        { onSuccess: closeForm }
       );
     }
   };
@@ -429,7 +436,7 @@ function RegionsTab({ countryCode }: { countryCode: string }) {
     }
     deleteRegion.mutate(
       { countryCode, regionCode: deleteTarget.regionCode },
-      { onSuccess: () => setDeleteTarget(null) },
+      { onSuccess: () => setDeleteTarget(null) }
     );
   };
 
@@ -531,7 +538,7 @@ function RegionsTab({ countryCode }: { countryCode: string }) {
           <div className="relative bg-surface-card rounded-lg border border-border-default shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between px-6 py-4 border-b border-border-default">
               <h2 className="text-lg font-semibold text-text-primary">
-                {editingRegion ? "Edit Region" : "Add Region"}
+                {editingRegion ? 'Edit Region' : 'Add Region'}
               </h2>
               <button
                 onClick={closeForm}
@@ -555,7 +562,7 @@ function RegionsTab({ countryCode }: { countryCode: string }) {
                   placeholder="NH"
                   className={
                     INPUT_CLASS +
-                    (editingRegion ? " opacity-50 cursor-not-allowed" : "")
+                    (editingRegion ? ' opacity-50 cursor-not-allowed' : '')
                   }
                 />
               </div>
@@ -595,7 +602,7 @@ function RegionsTab({ countryCode }: { countryCode: string }) {
                   type="submit"
                   isLoading={isSaving}
                 >
-                  {editingRegion ? "Save Changes" : "Add Region"}
+                  {editingRegion ? 'Save Changes' : 'Add Region'}
                 </Button>
               </div>
             </form>
@@ -640,18 +647,18 @@ interface RuleForm {
 
 const emptyRuleForm: RuleForm = {
   year: CURRENT_YEAR,
-  propertyCategory: "RESIDENTIAL",
-  sector: "",
-  maxIncreasePercentage: "",
-  maxIncreaseType: "PERCENTAGE",
-  indexName: "",
-  indexValue: "",
-  effectiveDate: "",
-  noticePeriodDays: "",
-  frequency: "ANNUAL",
-  additionalConditions: "",
-  sourceUrl: "",
-  notes: "",
+  propertyCategory: 'RESIDENTIAL',
+  sector: '',
+  maxIncreasePercentage: '',
+  maxIncreaseType: 'PERCENTAGE',
+  indexName: '',
+  indexValue: '',
+  effectiveDate: '',
+  noticePeriodDays: '',
+  frequency: 'ANNUAL',
+  additionalConditions: '',
+  sourceUrl: '',
+  notes: '',
 };
 
 function ruleFormToRequest(form: RuleForm): CreateRuleRequest {
@@ -680,21 +687,21 @@ function ruleToForm(rule: RentRegulationRuleResponse): RuleForm {
   return {
     year: rule.year,
     propertyCategory: rule.propertyCategory,
-    sector: rule.sector ?? "",
+    sector: rule.sector ?? '',
     maxIncreasePercentage:
       rule.maxIncreasePercentage != null
         ? String(rule.maxIncreasePercentage)
-        : "",
+        : '',
     maxIncreaseType: rule.maxIncreaseType,
-    indexName: rule.indexName ?? "",
-    indexValue: rule.indexValue != null ? String(rule.indexValue) : "",
-    effectiveDate: rule.effectiveDate ?? "",
+    indexName: rule.indexName ?? '',
+    indexValue: rule.indexValue != null ? String(rule.indexValue) : '',
+    effectiveDate: rule.effectiveDate ?? '',
     noticePeriodDays:
-      rule.noticePeriodDays != null ? String(rule.noticePeriodDays) : "",
+      rule.noticePeriodDays != null ? String(rule.noticePeriodDays) : '',
     frequency: rule.frequency,
-    additionalConditions: rule.additionalConditions ?? "",
-    sourceUrl: rule.sourceUrl ?? "",
-    notes: rule.notes ?? "",
+    additionalConditions: rule.additionalConditions ?? '',
+    sourceUrl: rule.sourceUrl ?? '',
+    notes: rule.notes ?? '',
   };
 }
 
@@ -724,12 +731,12 @@ function RulesTab({ countryCode }: { countryCode: string }) {
   const [bulkRows, setBulkRows] = useState<BulkRow[]>(() =>
     Array.from({ length: 7 }, (_, i) => ({
       year: CURRENT_YEAR - 6 + i,
-      maxIncreasePercentage: "",
-      maxIncreaseType: "PERCENTAGE",
-      indexValue: "",
-      effectiveDate: "",
-      sourceUrl: "",
-    })),
+      maxIncreasePercentage: '',
+      maxIncreaseType: 'PERCENTAGE',
+      indexValue: '',
+      effectiveDate: '',
+      sourceUrl: '',
+    }))
   );
 
   // Group rules by year descending
@@ -767,12 +774,12 @@ function RulesTab({ countryCode }: { countryCode: string }) {
     if (editingRule) {
       updateRule.mutate(
         { identifier: editingRule.identifier, data: request },
-        { onSuccess: closeForm },
+        { onSuccess: closeForm }
       );
     } else {
       createRule.mutate(
         { countryCode, data: request },
-        { onSuccess: closeForm },
+        { onSuccess: closeForm }
       );
     }
   };
@@ -788,14 +795,14 @@ function RulesTab({ countryCode }: { countryCode: string }) {
 
   const handleBulkSubmit = () => {
     const filledRows = bulkRows.filter(
-      (r) => r.maxIncreasePercentage || r.indexValue,
+      (r) => r.maxIncreasePercentage || r.indexValue
     );
     if (filledRows.length === 0) {
       return;
     }
     const bulkRules: CreateRuleRequest[] = filledRows.map((row) => ({
       year: row.year,
-      propertyCategory: "RESIDENTIAL",
+      propertyCategory: 'RESIDENTIAL',
       maxIncreasePercentage: row.maxIncreasePercentage
         ? Number(row.maxIncreasePercentage)
         : undefined,
@@ -803,18 +810,18 @@ function RulesTab({ countryCode }: { countryCode: string }) {
       indexValue: row.indexValue ? Number(row.indexValue) : undefined,
       effectiveDate: row.effectiveDate || undefined,
       sourceUrl: row.sourceUrl || undefined,
-      frequency: "ANNUAL",
+      frequency: 'ANNUAL',
     }));
     bulkCreate.mutate(
       { countryCode, data: { rules: bulkRules } },
-      { onSuccess: () => setBulkMode(false) },
+      { onSuccess: () => setBulkMode(false) }
     );
   };
 
   const updateBulkRow = (
     index: number,
     field: keyof BulkRow,
-    value: string | number,
+    value: string | number
   ) => {
     setBulkRows((prev) => {
       const next = [...prev];
@@ -840,7 +847,7 @@ function RulesTab({ countryCode }: { countryCode: string }) {
             leftIcon={<Layers />}
             onClick={() => setBulkMode(!bulkMode)}
           >
-            {bulkMode ? "Cancel Bulk" : "Bulk Entry"}
+            {bulkMode ? 'Cancel Bulk' : 'Bulk Entry'}
           </Button>
           <Button
             variant="secondary"
@@ -882,15 +889,15 @@ function RulesTab({ countryCode }: { countryCode: string }) {
                   <tr
                     key={row.year}
                     className={`border-b border-border-default last:border-b-0 ${
-                      row.year === CURRENT_YEAR ? "bg-primary-500/5" : ""
+                      row.year === CURRENT_YEAR ? 'bg-primary-500/5' : ''
                     }`}
                   >
                     <td className="px-4 py-2">
                       <span
                         className={`text-sm font-medium ${
                           row.year === CURRENT_YEAR
-                            ? "text-primary-600"
-                            : "text-text-primary"
+                            ? 'text-primary-600'
+                            : 'text-text-primary'
                         }`}
                       >
                         {row.year}
@@ -904,21 +911,21 @@ function RulesTab({ countryCode }: { countryCode: string }) {
                         onChange={(e) =>
                           updateBulkRow(
                             idx,
-                            "maxIncreasePercentage",
-                            e.target.value,
+                            'maxIncreasePercentage',
+                            e.target.value
                           )
                         }
                         placeholder="e.g. 3.1"
-                        className={INPUT_CLASS + " w-28"}
+                        className={INPUT_CLASS + ' w-28'}
                       />
                     </td>
                     <td className="px-4 py-2">
                       <select
                         value={row.maxIncreaseType}
                         onChange={(e) =>
-                          updateBulkRow(idx, "maxIncreaseType", e.target.value)
+                          updateBulkRow(idx, 'maxIncreaseType', e.target.value)
                         }
-                        className={INPUT_CLASS + " w-36"}
+                        className={INPUT_CLASS + ' w-36'}
                       >
                         <option value="PERCENTAGE">Percentage</option>
                         <option value="INDEX_LINKED">Index-linked</option>
@@ -933,10 +940,10 @@ function RulesTab({ countryCode }: { countryCode: string }) {
                         step="0.01"
                         value={row.indexValue}
                         onChange={(e) =>
-                          updateBulkRow(idx, "indexValue", e.target.value)
+                          updateBulkRow(idx, 'indexValue', e.target.value)
                         }
                         placeholder="e.g. 104.2"
-                        className={INPUT_CLASS + " w-28"}
+                        className={INPUT_CLASS + ' w-28'}
                       />
                     </td>
                     <td className="px-4 py-2">
@@ -944,9 +951,9 @@ function RulesTab({ countryCode }: { countryCode: string }) {
                         type="date"
                         value={row.effectiveDate}
                         onChange={(e) =>
-                          updateBulkRow(idx, "effectiveDate", e.target.value)
+                          updateBulkRow(idx, 'effectiveDate', e.target.value)
                         }
-                        className={INPUT_CLASS + " w-36"}
+                        className={INPUT_CLASS + ' w-36'}
                       />
                     </td>
                     <td className="px-4 py-2">
@@ -954,10 +961,10 @@ function RulesTab({ countryCode }: { countryCode: string }) {
                         type="url"
                         value={row.sourceUrl}
                         onChange={(e) =>
-                          updateBulkRow(idx, "sourceUrl", e.target.value)
+                          updateBulkRow(idx, 'sourceUrl', e.target.value)
                         }
                         placeholder="https://..."
-                        className={INPUT_CLASS + " w-48"}
+                        className={INPUT_CLASS + ' w-48'}
                       />
                     </td>
                   </tr>
@@ -997,22 +1004,22 @@ function RulesTab({ countryCode }: { countryCode: string }) {
               key={year}
               className={`bg-surface-card rounded-lg border overflow-hidden ${
                 year === CURRENT_YEAR
-                  ? "border-primary-500/40"
-                  : "border-border-default"
+                  ? 'border-primary-500/40'
+                  : 'border-border-default'
               }`}
             >
               <div
                 className={`px-4 py-2.5 border-b ${
                   year === CURRENT_YEAR
-                    ? "bg-primary-500/5 border-primary-500/20"
-                    : "bg-surface-page border-border-default"
+                    ? 'bg-primary-500/5 border-primary-500/20'
+                    : 'bg-surface-page border-border-default'
                 }`}
               >
                 <span
                   className={`text-sm font-semibold ${
                     year === CURRENT_YEAR
-                      ? "text-primary-600"
-                      : "text-text-primary"
+                      ? 'text-primary-600'
+                      : 'text-text-primary'
                   }`}
                 >
                   {year}
@@ -1049,7 +1056,7 @@ function RulesTab({ countryCode }: { countryCode: string }) {
                         <span className="text-sm text-text-secondary">
                           {rule.maxIncreasePercentage != null
                             ? `${rule.maxIncreasePercentage}%`
-                            : "--"}
+                            : '--'}
                         </span>
                       </td>
                       <td className="px-4 py-3">
@@ -1064,7 +1071,7 @@ function RulesTab({ countryCode }: { countryCode: string }) {
                       </td>
                       <td className="px-4 py-3">
                         <span className="text-sm text-text-secondary">
-                          {rule.effectiveDate ?? "--"}
+                          {rule.effectiveDate ?? '--'}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right">
@@ -1101,7 +1108,7 @@ function RulesTab({ countryCode }: { countryCode: string }) {
           <div className="relative bg-surface-card rounded-lg border border-border-default shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between px-6 py-4 border-b border-border-default">
               <h2 className="text-lg font-semibold text-text-primary">
-                {editingRule ? "Edit Rule" : "Add Rule"}
+                {editingRule ? 'Edit Rule' : 'Add Rule'}
               </h2>
               <button
                 onClick={closeForm}
@@ -1361,7 +1368,7 @@ function RulesTab({ countryCode }: { countryCode: string }) {
                     setForm((f) => ({ ...f, notes: e.target.value }))
                   }
                   rows={2}
-                  className={INPUT_CLASS + " resize-none"}
+                  className={INPUT_CLASS + ' resize-none'}
                 />
               </div>
 
@@ -1375,7 +1382,7 @@ function RulesTab({ countryCode }: { countryCode: string }) {
                   type="submit"
                   isLoading={isSaving}
                 >
-                  {editingRule ? "Save Changes" : "Add Rule"}
+                  {editingRule ? 'Save Changes' : 'Add Rule'}
                 </Button>
               </div>
             </form>
@@ -1402,7 +1409,7 @@ function RulesTab({ countryCode }: { countryCode: string }) {
 
 function formatLabel(value: string): string {
   return value
-    .replace(/_/g, "")
+    .replace(/_/g, '')
     .toLowerCase()
     .replace(/^\w/, (c) => c.toUpperCase());
 }

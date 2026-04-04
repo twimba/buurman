@@ -146,9 +146,7 @@ export const ContactActivityTab = ({ contactId }: ContactActivityTabProps) => {
                     )}
 
                     <div className="flex items-center gap-2 mt-1 text-xs text-text-muted">
-                      <span>
-                        {formatRelative(item.occurredAt)}
-                      </span>
+                      <span>{formatRelative(item.occurredAt)}</span>
                       <span>·</span>
                       <span>{formatDate(item.occurredAt)}</span>
                       {item.createdByName && (

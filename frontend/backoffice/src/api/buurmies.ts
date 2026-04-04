@@ -1,5 +1,5 @@
-import client from "./client";
-import type { Buurmy, CreateBuurmyRequest, PageResponse } from "../types";
+import client from './client';
+import type { Buurmy, CreateBuurmyRequest, PageResponse } from '../types';
 
 interface ListBuurmiesParams {
   page?: number;
@@ -11,9 +11,9 @@ interface ListBuurmiesParams {
 
 export const buurmiesApi = {
   list: (params?: ListBuurmiesParams) =>
-    client.get<PageResponse<Buurmy>>("/buurmies", { params }),
+    client.get<PageResponse<Buurmy>>('/buurmies', { params }),
   get: (keycloakId: string) => client.get<Buurmy>(`/buurmies/${keycloakId}`),
-  create: (data: CreateBuurmyRequest) => client.post<Buurmy>("/buurmies", data),
+  create: (data: CreateBuurmyRequest) => client.post<Buurmy>('/buurmies', data),
   disable: (keycloakId: string) =>
     client.post(`/buurmies/${keycloakId}/disable`),
   enable: (keycloakId: string) => client.post(`/buurmies/${keycloakId}/enable`),

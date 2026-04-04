@@ -1,5 +1,5 @@
-import { useCallback, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useCallback, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 type FilterValues = Record<string, string | undefined>;
 
@@ -36,7 +36,7 @@ export function useFilterState({ keys, defaults = {} }: UseFilterStateOptions) {
         return updated;
       });
     },
-    [keys, setSearchParams],
+    [keys, setSearchParams]
   );
 
   const onReset = useCallback(() => {

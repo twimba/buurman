@@ -1,14 +1,14 @@
-import { ButtonHTMLAttributes, ReactNode } from "react";
-import { Loader2 } from "lucide-react";
-import { cn } from "../utils/cn";
+import { ButtonHTMLAttributes, ReactNode } from 'react';
+import { Loader2 } from 'lucide-react';
+import { cn } from '../utils/cn';
 
 export type ButtonVariant =
-  | "primary"
-  | "secondary"
-  | "danger"
-  | "ghost"
-  | "success";
-export type ButtonSize = "sm" | "md" | "lg";
+  | 'primary'
+  | 'secondary'
+  | 'danger'
+  | 'ghost'
+  | 'success';
+export type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -82,20 +82,20 @@ const variantStyles: Record<ButtonVariant, string> = {
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
-  sm: "h-8 px-3 text-xs gap-1.5",
-  md: "h-9 px-4 text-sm gap-2",
-  lg: "h-11 px-5 text-base gap-2.5",
+  sm: 'h-8 px-3 text-xs gap-1.5',
+  md: 'h-9 px-4 text-sm gap-2',
+  lg: 'h-11 px-5 text-base gap-2.5',
 };
 
 const iconSizes: Record<ButtonSize, string> = {
-  sm: "h-3.5 w-3.5",
-  md: "h-4 w-4",
-  lg: "h-5 w-5",
+  sm: 'h-3.5 w-3.5',
+  md: 'h-4 w-4',
+  lg: 'h-5 w-5',
 };
 
 export const Button = ({
-  variant = "primary",
-  size = "md",
+  variant = 'primary',
+  size = 'md',
   isLoading = false,
   leftIcon,
   rightIcon,
@@ -112,27 +112,27 @@ export const Button = ({
       ref={ref}
       disabled={isDisabled}
       className={cn(
-        "inline-flex items-center justify-center",
-        "font-medium",
-        "rounded-md",
-        "transition-all duration-150 ease-out",
-        "outline-none",
-        "select-none",
-        "disabled:cursor-not-allowed",
-        "disabled:pointer-events-none",
+        'inline-flex items-center justify-center',
+        'font-medium',
+        'rounded-md',
+        'transition-all duration-150 ease-out',
+        'outline-none',
+        'select-none',
+        'disabled:cursor-not-allowed',
+        'disabled:pointer-events-none',
         variantStyles[variant],
         sizeStyles[size],
-        className,
+        className
       )}
       {...props}
     >
       {isLoading ? (
-        <Loader2 className={cn(iconSizes[size], "animate-spin")} />
+        <Loader2 className={cn(iconSizes[size], 'animate-spin')} />
       ) : leftIcon ? (
         <span
           className={cn(
             iconSizes[size],
-            "flex-shrink-0 [&>svg]:h-full [&>svg]:w-full",
+            'flex-shrink-0 [&>svg]:h-full [&>svg]:w-full'
           )}
         >
           {leftIcon}
@@ -143,7 +143,7 @@ export const Button = ({
         <span
           className={cn(
             iconSizes[size],
-            "flex-shrink-0 [&>svg]:h-full [&>svg]:w-full",
+            'flex-shrink-0 [&>svg]:h-full [&>svg]:w-full'
           )}
         >
           {rightIcon}

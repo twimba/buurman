@@ -1,11 +1,11 @@
-import { useParams, useSearchParams } from "react-router-dom";
-import { ExternalLink } from "lucide-react";
+import { useParams, useSearchParams } from 'react-router-dom';
+import { ExternalLink } from 'lucide-react';
 
-const isLocalEnv = () => window.location.hostname.includes("local.buurman.io");
+const isLocalEnv = () => window.location.hostname.includes('local.buurman.io');
 
 const getToolUrl = (subdomain: string) => {
   const hostname = window.location.hostname;
-  const base = hostname.replace(/^backoffice\./, "");
+  const base = hostname.replace(/^backoffice\./, '');
   return `${window.location.protocol}//${subdomain}.${base}`;
 };
 
@@ -17,17 +17,17 @@ type ToolConfig = { name: string } & (
 const getToolsConfig = (): Record<string, ToolConfig> => {
   const local = isLocalEnv();
   return {
-    grafana: { name: "Grafana", subdomain: "grafana" },
-    keycloak: { name: "Keycloak", subdomain: "keycloak" },
-    prometheus: { name: "Prometheus", subdomain: "prometheus" },
-    traefik: { name: "Traefik", subdomain: "traefik" },
+    grafana: { name: 'Grafana', subdomain: 'grafana' },
+    keycloak: { name: 'Keycloak', subdomain: 'keycloak' },
+    prometheus: { name: 'Prometheus', subdomain: 'prometheus' },
+    traefik: { name: 'Traefik', subdomain: 'traefik' },
     ...(local
       ? {
-          mailpit: { name: "Mailpit", subdomain: "mailpit" },
-          seaweedfs: { name: "SeaweedFS", subdomain: "seaweedfs-ui" },
+          mailpit: { name: 'Mailpit', subdomain: 'mailpit' },
+          seaweedfs: { name: 'SeaweedFS', subdomain: 'seaweedfs-ui' },
         }
       : {
-          twilio: { name: "Twilio", url: "https://console.twilio.com" },
+          twilio: { name: 'Twilio', url: 'https://console.twilio.com' },
         }),
   };
 };
@@ -47,19 +47,20 @@ export const ToolEmbedPage = () => {
   }
 
   const baseUrl = tool.subdomain ? getToolUrl(tool.subdomain) : tool.url;
-  const rawPath = searchParams.get("path");
+  const rawPath = searchParams.get('path');
   // Only allow simple path segments — no traversal, query strings, or fragments
-  const safePath = rawPath && /^\/[a-zA-Z0-9\-_/]+$/.test(rawPath) ? rawPath : null;
+  const safePath =
+    rawPath && /^\/[a-zA-Z0-9\-_/]+$/.test(rawPath) ? rawPath : null;
   const url = safePath ? `${baseUrl}${safePath}?kiosk` : baseUrl;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Toolbar */}
       <div
         style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
           flexShrink: 0,
         }}
         className="px-4 py-2 border-b border-border-default bg-surface-card"
@@ -81,7 +82,7 @@ export const ToolEmbedPage = () => {
       <iframe
         src={url}
         title={tool.name}
-        style={{ flex: 1, width: "100%", border: "none" }}
+        style={{ flex: 1, width: '100%', border: 'none' }}
         sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals"
       />
     </div>

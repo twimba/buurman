@@ -1,8 +1,8 @@
-import { useNavigate } from "react-router-dom";
-import { Users, UserCog, Bell, TrendingUp, ArrowRight } from "lucide-react";
-import { RefreshButton } from "@buurman/ui";
-import { useDashboardStats } from "../hooks/useDashboard";
-import { LoadingSpinner } from "../components/LoadingSpinner";
+import { useNavigate } from 'react-router-dom';
+import { Users, UserCog, Bell, TrendingUp, ArrowRight } from 'lucide-react';
+import { RefreshButton } from '@buurman/ui';
+import { useDashboardStats } from '../hooks/useDashboard';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 
 export const DashboardPage = () => {
   const navigate = useNavigate();
@@ -29,60 +29,60 @@ export const DashboardPage = () => {
   const deliveryRate =
     stats.totalNotifications > 0
       ? Math.round(
-          (stats.deliveredNotifications / stats.totalNotifications) * 100,
+          (stats.deliveredNotifications / stats.totalNotifications) * 100
         )
       : 0;
 
   const cards = [
     {
-      title: "Total Teams",
+      title: 'Total Teams',
       value: stats.totalTeams,
-      subtitle: "Registered teams",
+      subtitle: 'Registered teams',
       icon: Users,
-      color: "blue",
-      bgClass: "bg-blue-50",
-      iconClass: "text-blue-600",
-      valueClass: "text-blue-700",
+      color: 'blue',
+      bgClass: 'bg-blue-50',
+      iconClass: 'text-blue-600',
+      valueClass: 'text-blue-700',
     },
     {
-      title: "Total Users",
+      title: 'Total Users',
       value: stats.totalUsers,
       subtitle: `${stats.disabledUsers} disabled`,
       icon: UserCog,
-      color: "emerald",
-      bgClass: "bg-emerald-50",
-      iconClass: "text-emerald-600",
-      valueClass: "text-emerald-700",
+      color: 'emerald',
+      bgClass: 'bg-emerald-50',
+      iconClass: 'text-emerald-600',
+      valueClass: 'text-emerald-700',
     },
     {
-      title: "Total Notifications",
+      title: 'Total Notifications',
       value: stats.totalNotifications,
       subtitle: `${stats.pendingNotifications} pending, ${stats.failedNotifications} failed`,
       icon: Bell,
-      color: "purple",
-      bgClass: "bg-purple-50",
-      iconClass: "text-purple-600",
-      valueClass: "text-purple-700",
+      color: 'purple',
+      bgClass: 'bg-purple-50',
+      iconClass: 'text-purple-600',
+      valueClass: 'text-purple-700',
     },
     {
-      title: "Delivery Rate",
+      title: 'Delivery Rate',
       value: `${deliveryRate}%`,
       subtitle: `${stats.deliveredNotifications} delivered`,
       icon: TrendingUp,
-      color: "amber",
-      bgClass: "bg-amber-50",
-      iconClass: "text-amber-600",
-      valueClass: "text-amber-700",
+      color: 'amber',
+      bgClass: 'bg-amber-50',
+      iconClass: 'text-amber-600',
+      valueClass: 'text-amber-700',
     },
   ];
 
   const quickLinks = [
-    { name: "Teams", href: "/teams", description: "Manage registered teams" },
-    { name: "Users", href: "/users", description: "Manage platform users" },
+    { name: 'Teams', href: '/teams', description: 'Manage registered teams' },
+    { name: 'Users', href: '/users', description: 'Manage platform users' },
     {
-      name: "Notifications",
-      href: "/notifications",
-      description: "View notification logs",
+      name: 'Notifications',
+      href: '/notifications',
+      description: 'View notification logs',
     },
   ];
 
@@ -92,9 +92,9 @@ export const DashboardPage = () => {
       <div
         className="mb-6"
         style={{
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "space-between",
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
         }}
       >
         <div>
@@ -115,9 +115,9 @@ export const DashboardPage = () => {
           >
             <div
               style={{
-                display: "flex",
-                alignItems: "flex-start",
-                justifyContent: "space-between",
+                display: 'flex',
+                alignItems: 'flex-start',
+                justifyContent: 'space-between',
               }}
             >
               <div>
@@ -147,7 +147,7 @@ export const DashboardPage = () => {
           <h2 className="text-sm font-semibold text-text-primary mb-3">
             Notifications by Channel
           </h2>
-          <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
             {Object.entries(stats.notificationsByChannel).map(
               ([channel, count]) => (
                 <div
@@ -161,7 +161,7 @@ export const DashboardPage = () => {
                     {count}
                   </p>
                 </div>
-              ),
+              )
             )}
           </div>
         </div>
@@ -181,9 +181,9 @@ export const DashboardPage = () => {
             >
               <div
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
                 }}
               >
                 <div>

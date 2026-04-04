@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect, useCallback } from "react";
-import { X, ChevronDown, Loader2 } from "lucide-react";
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { X, ChevronDown, Loader2 } from 'lucide-react';
 
 export interface AsyncSelectOption {
   value: string;
@@ -19,10 +19,10 @@ export const AsyncSelect = ({
   selected,
   onSelect,
   search,
-  placeholder = "Search...",
-  className = "",
+  placeholder = 'Search...',
+  className = '',
 }: AsyncSelectProps) => {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
   const [results, setResults] = useState<AsyncSelectOption[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -48,7 +48,7 @@ export const AsyncSelect = ({
         setIsLoading(false);
       }
     },
-    [search, selected],
+    [search, selected]
   );
 
   useEffect(() => {
@@ -72,13 +72,13 @@ export const AsyncSelect = ({
         setIsOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const handleSelect = (option: AsyncSelectOption) => {
     onSelect([...selected, option]);
-    setQuery("");
+    setQuery('');
     setResults([]);
     setHighlightIndex(-1);
     inputRef.current?.focus();
@@ -89,22 +89,22 @@ export const AsyncSelect = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "ArrowDown") {
+    if (e.key === 'ArrowDown') {
       e.preventDefault();
       setHighlightIndex((i) => Math.min(i + 1, results.length - 1));
-    } else if (e.key === "ArrowUp") {
+    } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       setHighlightIndex((i) => Math.max(i - 1, 0));
     } else if (
-      e.key === "Enter" &&
+      e.key === 'Enter' &&
       highlightIndex >= 0 &&
       results[highlightIndex]
     ) {
       e.preventDefault();
       handleSelect(results[highlightIndex]);
-    } else if (e.key === "Escape") {
+    } else if (e.key === 'Escape') {
       setIsOpen(false);
-    } else if (e.key === "Backspace" && query === "" && selected.length > 0) {
+    } else if (e.key === 'Backspace' && query === '' && selected.length > 0) {
       handleRemove(selected[selected.length - 1].value);
     }
   };
@@ -141,7 +141,7 @@ export const AsyncSelect = ({
           }}
           onFocus={() => setIsOpen(true)}
           onKeyDown={handleKeyDown}
-          placeholder={selected.length === 0 ? placeholder : ""}
+          placeholder={selected.length === 0 ? placeholder : ''}
           className="flex-1 min-w-[100px] bg-transparent outline-none placeholder-text-muted text-sm"
         />
         {isLoading ? (
@@ -160,8 +160,8 @@ export const AsyncSelect = ({
               onClick={() => handleSelect(option)}
               className={`w-full text-left px-3 py-2 text-sm transition-colors ${
                 idx === highlightIndex
-                  ? "bg-primary-50 text-primary-700"
-                  : "text-text-primary hover:bg-surface-inset"
+                  ? 'bg-primary-50 text-primary-700'
+                  : 'text-text-primary hover:bg-surface-inset'
               }`}
             >
               <span className="font-medium">{option.label}</span>

@@ -252,9 +252,7 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
                       <RichTextDisplay content={note.body} />
                     </div>
                     <div className="flex items-center gap-2 mt-2 text-xs text-text-muted">
-                      <span>
-                        {formatRelative(note.occurredAt)}
-                      </span>
+                      <span>{formatRelative(note.occurredAt)}</span>
                       {note.createdByName && (
                         <>
                           <span>·</span>

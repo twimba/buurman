@@ -1,7 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useCallback } from "react";
-import { usersApi } from "../api/users";
-import type { AsyncSelectOption } from "../components/AsyncSelect";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useCallback } from 'react';
+import { usersApi } from '../api/users';
+import type { AsyncSelectOption } from '../components/AsyncSelect';
 
 interface ListUsersParams {
   page?: number;
@@ -14,14 +14,14 @@ interface ListUsersParams {
 
 export const useUsers = (params?: ListUsersParams) => {
   return useQuery({
-    queryKey: ["users", params],
+    queryKey: ['users', params],
     queryFn: () => usersApi.list(params).then((res) => res.data),
   });
 };
 
 export const useUser = (identifier: string) => {
   return useQuery({
-    queryKey: ["users", identifier],
+    queryKey: ['users', identifier],
     queryFn: () => usersApi.get(identifier).then((res) => res.data),
     enabled: !!identifier,
   });
@@ -33,7 +33,7 @@ export const useDisableUser = () => {
   return useMutation({
     mutationFn: (identifier: string) => usersApi.disable(identifier),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ['users'] });
     },
   });
 };
@@ -44,7 +44,7 @@ export const useEnableUser = () => {
   return useMutation({
     mutationFn: (identifier: string) => usersApi.enable(identifier),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ['users'] });
     },
   });
 };
@@ -62,7 +62,7 @@ export const useUserSearch = () => {
       value: user.identifier,
       label: user.email,
       sublabel:
-        `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() || undefined,
+        `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || undefined,
     }));
   }, []);
 };

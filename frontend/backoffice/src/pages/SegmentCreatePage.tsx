@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
   Save,
@@ -7,59 +7,59 @@ import {
   Trash2,
   Loader2,
   ExternalLink,
-} from "lucide-react";
-import { useCreateSegment } from "../hooks/useSegments";
-import type { SegmentCondition } from "../api/segments";
+} from 'lucide-react';
+import { useCreateSegment } from '../hooks/useSegments';
+import type { SegmentCondition } from '../api/segments';
 
 const ATTRIBUTES = [
-  { value: "is_demo", label: "Is Demo", type: "boolean" },
-  { value: "is_owner", label: "Is Owner", type: "boolean" },
-  { value: "is_team", label: "Is Team", type: "boolean" },
-  { value: "is_user", label: "Is User", type: "boolean" },
-  { value: "role", label: "Role", type: "role" },
-  { value: "email", label: "Email", type: "string" },
-  { value: "email_verified", label: "Email Verified", type: "boolean" },
-  { value: "property_count", label: "Property Count", type: "number" },
-  { value: "member_count", label: "Member Count", type: "number" },
-  { value: "team_age_days", label: "Team Age (days)", type: "number" },
-  { value: "contract_count", label: "Contract Count", type: "number" },
-  { value: "contact_count", label: "Contact Count", type: "number" },
-  { value: "photo_count", label: "Photo Count", type: "number" },
-  { value: "document_count", label: "Document Count", type: "number" },
-  { value: "expense_count", label: "Expense Count", type: "number" },
-  { value: "payment_count", label: "Payment Count", type: "number" },
+  { value: 'is_demo', label: 'Is Demo', type: 'boolean' },
+  { value: 'is_owner', label: 'Is Owner', type: 'boolean' },
+  { value: 'is_team', label: 'Is Team', type: 'boolean' },
+  { value: 'is_user', label: 'Is User', type: 'boolean' },
+  { value: 'role', label: 'Role', type: 'role' },
+  { value: 'email', label: 'Email', type: 'string' },
+  { value: 'email_verified', label: 'Email Verified', type: 'boolean' },
+  { value: 'property_count', label: 'Property Count', type: 'number' },
+  { value: 'member_count', label: 'Member Count', type: 'number' },
+  { value: 'team_age_days', label: 'Team Age (days)', type: 'number' },
+  { value: 'contract_count', label: 'Contract Count', type: 'number' },
+  { value: 'contact_count', label: 'Contact Count', type: 'number' },
+  { value: 'photo_count', label: 'Photo Count', type: 'number' },
+  { value: 'document_count', label: 'Document Count', type: 'number' },
+  { value: 'expense_count', label: 'Expense Count', type: 'number' },
+  { value: 'payment_count', label: 'Payment Count', type: 'number' },
   {
-    value: "calendar_feed_count",
-    label: "Calendar Feed Count",
-    type: "number",
+    value: 'calendar_feed_count',
+    label: 'Calendar Feed Count',
+    type: 'number',
   },
 ];
 
 const OPERATORS = [
-  { value: "eq", label: "equals" },
-  { value: "neq", label: "not equals" },
-  { value: "in", label: "in" },
-  { value: "not_in", label: "not in" },
-  { value: "gt", label: ">" },
-  { value: "gte", label: ">=" },
-  { value: "lt", label: "<" },
-  { value: "lte", label: "<=" },
-  { value: "contains", label: "contains" },
-  { value: "not_contains", label: "does not contain" },
-  { value: "starts_with", label: "starts with" },
-  { value: "ends_with", label: "ends with" },
-  { value: "regex", label: "matches regex" },
+  { value: 'eq', label: 'equals' },
+  { value: 'neq', label: 'not equals' },
+  { value: 'in', label: 'in' },
+  { value: 'not_in', label: 'not in' },
+  { value: 'gt', label: '>' },
+  { value: 'gte', label: '>=' },
+  { value: 'lt', label: '<' },
+  { value: 'lte', label: '<=' },
+  { value: 'contains', label: 'contains' },
+  { value: 'not_contains', label: 'does not contain' },
+  { value: 'starts_with', label: 'starts with' },
+  { value: 'ends_with', label: 'ends with' },
+  { value: 'regex', label: 'matches regex' },
 ];
 
-const ROLE_VALUES = ["TEAM_ADMIN", "TEAM_EDITOR", "TEAM_VIEWER"];
+const ROLE_VALUES = ['TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER'];
 
 export const SegmentCreatePage = () => {
   const navigate = useNavigate();
   const createSegment = useCreateSegment();
 
-  const [key, setKey] = useState("");
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const [key, setKey] = useState('');
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
   const [priority, setPriority] = useState(0);
   const [conditions, setConditions] = useState<SegmentCondition[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -67,7 +67,7 @@ export const SegmentCreatePage = () => {
   const handleSave = () => {
     setError(null);
     if (!key.trim() || !name.trim()) {
-      setError("Key and name are required");
+      setError('Key and name are required');
       return;
     }
 
@@ -82,25 +82,25 @@ export const SegmentCreatePage = () => {
       {
         onSuccess: (data) => navigate(`/segments/${data.key}`),
         onError: (err: unknown) => {
-          if (err && typeof err === "object" && "response" in err) {
+          if (err && typeof err === 'object' && 'response' in err) {
             const axiosErr = err as {
               response?: { data?: { detail?: string } };
             };
             setError(
-              axiosErr.response?.data?.detail ?? "Failed to create segment",
+              axiosErr.response?.data?.detail ?? 'Failed to create segment'
             );
           } else {
-            setError("Failed to create segment");
+            setError('Failed to create segment');
           }
         },
-      },
+      }
     );
   };
 
   const addCondition = () => {
     setConditions([
       ...conditions,
-      { attribute: "is_demo", operator: "eq", value: "true" },
+      { attribute: 'is_demo', operator: 'eq', value: 'true' },
     ]);
   };
 
@@ -111,26 +111,26 @@ export const SegmentCreatePage = () => {
   const updateCondition = (
     index: number,
     field: keyof SegmentCondition,
-    value: string,
+    value: string
   ) => {
     const updated = [...conditions];
     updated[index] = { ...updated[index], [field]: value };
 
-    if (field === "attribute") {
+    if (field === 'attribute') {
       const newType = ATTRIBUTES.find((a) => a.value === value)?.type;
-      if (newType === "boolean") {
-        updated[index].value = "true";
-        updated[index].operator = "eq";
-      } else if (newType === "role") {
-        updated[index].value = "TEAM_ADMIN";
-        updated[index].operator = "eq";
-      } else if (newType === "number") {
-        updated[index].value = "0";
-        updated[index].operator = "gte";
+      if (newType === 'boolean') {
+        updated[index].value = 'true';
+        updated[index].operator = 'eq';
+      } else if (newType === 'role') {
+        updated[index].value = 'TEAM_ADMIN';
+        updated[index].operator = 'eq';
+      } else if (newType === 'number') {
+        updated[index].value = '0';
+        updated[index].operator = 'gte';
       } else {
         // string
-        updated[index].value = "";
-        updated[index].operator = "eq";
+        updated[index].value = '';
+        updated[index].operator = 'eq';
       }
     }
 
@@ -143,7 +143,7 @@ export const SegmentCreatePage = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button
-            onClick={() => navigate("/segments")}
+            onClick={() => navigate('/segments')}
             className="p-1.5 rounded-md text-text-muted hover:text-text-primary hover:bg-surface-inset transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />
@@ -182,7 +182,7 @@ export const SegmentCreatePage = () => {
               type="text"
               value={key}
               onChange={(e) =>
-                setKey(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "_"))
+                setKey(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '_'))
               }
               placeholder="my_segment"
               className="w-full px-3 py-2 rounded-lg border border-border-default bg-surface-card text-sm font-mono text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 transition-all"
@@ -260,7 +260,7 @@ export const SegmentCreatePage = () => {
                   <select
                     value={condition.attribute}
                     onChange={(e) =>
-                      updateCondition(index, "attribute", e.target.value)
+                      updateCondition(index, 'attribute', e.target.value)
                     }
                     className="px-3 py-1.5 rounded-lg border border-border-default bg-surface-card text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500/30"
                   >
@@ -273,39 +273,39 @@ export const SegmentCreatePage = () => {
                   <select
                     value={condition.operator}
                     onChange={(e) =>
-                      updateCondition(index, "operator", e.target.value)
+                      updateCondition(index, 'operator', e.target.value)
                     }
                     className="px-3 py-1.5 rounded-lg border border-border-default bg-surface-card text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500/30"
                   >
                     {OPERATORS.filter((op) => {
                       const attrType = ATTRIBUTES.find(
-                        (a) => a.value === condition.attribute,
+                        (a) => a.value === condition.attribute
                       )?.type;
-                      if (attrType === "boolean") {
-                        return op.value === "eq" || op.value === "neq";
+                      if (attrType === 'boolean') {
+                        return op.value === 'eq' || op.value === 'neq';
                       }
-                      if (attrType === "string") {
+                      if (attrType === 'string') {
                         return [
-                          "eq",
-                          "neq",
-                          "in",
-                          "not_in",
-                          "contains",
-                          "not_contains",
-                          "starts_with",
-                          "ends_with",
-                          "regex",
+                          'eq',
+                          'neq',
+                          'in',
+                          'not_in',
+                          'contains',
+                          'not_contains',
+                          'starts_with',
+                          'ends_with',
+                          'regex',
                         ].includes(op.value);
                       }
-                      if (attrType === "role") {
-                        return ["eq", "neq", "in", "not_in"].includes(op.value);
+                      if (attrType === 'role') {
+                        return ['eq', 'neq', 'in', 'not_in'].includes(op.value);
                       }
                       // number type: all except string operators
                       return ![
-                        "contains",
-                        "not_contains",
-                        "starts_with",
-                        "ends_with",
+                        'contains',
+                        'not_contains',
+                        'starts_with',
+                        'ends_with',
                       ].includes(op.value);
                     }).map((op) => (
                       <option key={op.value} value={op.value}>
@@ -315,14 +315,14 @@ export const SegmentCreatePage = () => {
                   </select>
                   {(() => {
                     const attrType = ATTRIBUTES.find(
-                      (a) => a.value === condition.attribute,
+                      (a) => a.value === condition.attribute
                     )?.type;
-                    if (attrType === "boolean") {
+                    if (attrType === 'boolean') {
                       return (
                         <select
                           value={condition.value}
                           onChange={(e) =>
-                            updateCondition(index, "value", e.target.value)
+                            updateCondition(index, 'value', e.target.value)
                           }
                           className="px-3 py-1.5 rounded-lg border border-border-default bg-surface-card text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500/30"
                         >
@@ -331,14 +331,14 @@ export const SegmentCreatePage = () => {
                         </select>
                       );
                     }
-                    if (attrType === "role") {
-                      return condition.operator === "in" ||
-                        condition.operator === "not_in" ? (
+                    if (attrType === 'role') {
+                      return condition.operator === 'in' ||
+                        condition.operator === 'not_in' ? (
                         <input
                           type="text"
                           value={condition.value}
                           onChange={(e) =>
-                            updateCondition(index, "value", e.target.value)
+                            updateCondition(index, 'value', e.target.value)
                           }
                           placeholder="TEAM_ADMIN,TEAM_EDITOR"
                           className="flex-1 px-3 py-1.5 rounded-lg border border-border-default bg-surface-card text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500/30"
@@ -347,7 +347,7 @@ export const SegmentCreatePage = () => {
                         <select
                           value={condition.value}
                           onChange={(e) =>
-                            updateCondition(index, "value", e.target.value)
+                            updateCondition(index, 'value', e.target.value)
                           }
                           className="px-3 py-1.5 rounded-lg border border-border-default bg-surface-card text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500/30"
                         >
@@ -359,13 +359,13 @@ export const SegmentCreatePage = () => {
                         </select>
                       );
                     }
-                    if (attrType === "number") {
+                    if (attrType === 'number') {
                       return (
                         <input
                           type="number"
                           value={condition.value}
                           onChange={(e) =>
-                            updateCondition(index, "value", e.target.value)
+                            updateCondition(index, 'value', e.target.value)
                           }
                           className="flex-1 px-3 py-1.5 rounded-lg border border-border-default bg-surface-card text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500/30"
                         />
@@ -377,12 +377,12 @@ export const SegmentCreatePage = () => {
                         type="text"
                         value={condition.value}
                         onChange={(e) =>
-                          updateCondition(index, "value", e.target.value)
+                          updateCondition(index, 'value', e.target.value)
                         }
                         placeholder={
-                          condition.attribute === "email"
-                            ? "user@buurman.io"
-                            : ""
+                          condition.attribute === 'email'
+                            ? 'user@buurman.io'
+                            : ''
                         }
                         className="flex-1 px-3 py-1.5 rounded-lg border border-border-default bg-surface-card text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500/30"
                       />
@@ -395,36 +395,36 @@ export const SegmentCreatePage = () => {
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
-                {condition.operator === "regex" && (
+                {condition.operator === 'regex' && (
                   <div className="ml-3 bg-surface-inset border border-border-subtle rounded-lg p-3 text-xs text-text-muted space-y-1.5">
                     <p className="font-medium text-text-secondary">
                       Regex Help
                     </p>
                     <p>
-                      Matches the <span className="font-medium">entire</span>{" "}
-                      value. Use{" "}
+                      Matches the <span className="font-medium">entire</span>{' '}
+                      value. Use{' '}
                       <code className="bg-surface-card px-1 rounded">
                         .*pattern.*
-                      </code>{" "}
+                      </code>{' '}
                       for partial match.
                     </p>
                     <div className="flex flex-wrap gap-x-4 gap-y-1">
                       <span>
                         <code className="bg-surface-card px-1 rounded">
                           .*@gmail\.com
-                        </code>{" "}
+                        </code>{' '}
                         ends with @gmail.com
                       </span>
                       <span>
                         <code className="bg-surface-card px-1 rounded">
                           (admin|editor)
-                        </code>{" "}
+                        </code>{' '}
                         admin or editor
                       </span>
                       <span>
                         <code className="bg-surface-card px-1 rounded">
                           ^[A-Z].*
-                        </code>{" "}
+                        </code>{' '}
                         starts with uppercase
                       </span>
                     </div>

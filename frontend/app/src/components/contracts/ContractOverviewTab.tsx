@@ -189,19 +189,15 @@ export const ContractOverviewTab = ({
                 <select
                   value={addPartyRole}
                   onChange={(e) =>
-                    setAddPartyRole(
-                      e.target.value as ContractPartyResponseRole
-                    )
+                    setAddPartyRole(e.target.value as ContractPartyResponseRole)
                   }
                   className="w-full border border-border-strong rounded px-3 py-2 bg-surface-card text-text-primary text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
                 >
-                  {Object.entries(PARTY_ROLE_LABELS).map(
-                    ([value, label]) => (
-                      <option key={value} value={value}>
-                        {label}
-                      </option>
-                    )
-                  )}
+                  {Object.entries(PARTY_ROLE_LABELS).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -244,8 +240,7 @@ export const ContractOverviewTab = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-medium text-text-secondary mb-1">
-                      First Name{' '}
-                      <span className="text-error-text">*</span>
+                      First Name <span className="text-error-text">*</span>
                     </label>
                     <input
                       type="text"
@@ -325,8 +320,7 @@ export const ContractOverviewTab = ({
                   disabled={
                     addPartyMutation.isPending ||
                     (addPartyMode === 'select' && !selectedContactId) ||
-                    (addPartyMode === 'create' &&
-                      !newContactData.firstName)
+                    (addPartyMode === 'create' && !newContactData.firstName)
                   }
                   className="px-4 py-1.5 text-sm bg-primary-500 text-white rounded hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
@@ -397,8 +391,7 @@ export const ContractOverviewTab = ({
                   <p className="text-sm text-text-secondary">End Date</p>
                   <p className="font-medium text-text-primary">
                     {formatDate(
-                      (contract.endDate ??
-                        contract.effectiveEndDate) as string
+                      (contract.endDate ?? contract.effectiveEndDate) as string
                     )}
                   </p>
                 </div>
@@ -462,9 +455,7 @@ export const ContractOverviewTab = ({
                         <p
                           className={`text-sm font-semibold ${isLatest ? 'text-text-primary' : 'text-text-secondary line-through decoration-text-muted/40'}`}
                         >
-                          {ext.newEndDate
-                            ? formatDate(ext.newEndDate)
-                            : '—'}
+                          {ext.newEndDate ? formatDate(ext.newEndDate) : '—'}
                         </p>
                         {ext.activatedAt && (
                           <p className="text-[10px] text-text-muted mt-0.5">
@@ -497,41 +488,40 @@ export const ContractOverviewTab = ({
             documentLanguages={contract.documentLanguages}
             countryCode={contract.countryCode}
           />
-          {contract.rentComponents &&
-            contract.rentComponents.length > 0 && (
-              <div>
-                <h4 className="text-sm font-medium text-text-secondary mb-2">
-                  Rent Breakdown
-                </h4>
-                <div className="bg-surface-secondary rounded-lg p-3 space-y-2">
-                  {contract.rentComponents.map((comp) => (
-                    <div
-                      key={comp.identifier}
-                      className="flex justify-between items-center text-sm"
-                    >
-                      <span className="text-text-secondary">
-                        {comp.componentTypeDisplayName}
-                        {comp.description && (
-                          <span className="text-text-tertiary ml-1">
-                            ({comp.description})
-                          </span>
-                        )}
-                      </span>
-                      <span className="font-medium text-text-primary">
-                        {comp.currency} {comp.amount.toFixed(2)}
-                      </span>
-                    </div>
-                  ))}
-                  <div className="flex justify-between items-center text-sm font-semibold pt-2 border-t border-border-default">
-                    <span>Total</span>
-                    <span>
-                      {contract.rentAmountCurrency}{' '}
-                      {contract.rentAmount.toFixed(2)}
+          {contract.rentComponents && contract.rentComponents.length > 0 && (
+            <div>
+              <h4 className="text-sm font-medium text-text-secondary mb-2">
+                Rent Breakdown
+              </h4>
+              <div className="bg-surface-secondary rounded-lg p-3 space-y-2">
+                {contract.rentComponents.map((comp) => (
+                  <div
+                    key={comp.identifier}
+                    className="flex justify-between items-center text-sm"
+                  >
+                    <span className="text-text-secondary">
+                      {comp.componentTypeDisplayName}
+                      {comp.description && (
+                        <span className="text-text-tertiary ml-1">
+                          ({comp.description})
+                        </span>
+                      )}
+                    </span>
+                    <span className="font-medium text-text-primary">
+                      {comp.currency} {comp.amount.toFixed(2)}
                     </span>
                   </div>
+                ))}
+                <div className="flex justify-between items-center text-sm font-semibold pt-2 border-t border-border-default">
+                  <span>Total</span>
+                  <span>
+                    {contract.rentAmountCurrency}{' '}
+                    {contract.rentAmount.toFixed(2)}
+                  </span>
                 </div>
               </div>
-            )}
+            </div>
+          )}
           {contract.depositAmount && (
             <div className="flex items-center gap-3">
               <DollarSign className="h-5 w-5 text-text-muted " />
@@ -549,9 +539,7 @@ export const ContractOverviewTab = ({
             <div className="flex items-center gap-3">
               <DollarSign className="h-5 w-5 text-text-muted " />
               <div>
-                <p className="text-sm text-text-secondary">
-                  Security Deposit
-                </p>
+                <p className="text-sm text-text-secondary">Security Deposit</p>
                 <p className="font-medium text-text-primary">
                   {contract.securityDepositCurrency ??
                     contract.rentAmountCurrency}{' '}
@@ -562,9 +550,7 @@ export const ContractOverviewTab = ({
           )}
           {contract.paymentDueDay && (
             <div>
-              <p className="text-sm text-text-secondary">
-                Payment Due Day
-              </p>
+              <p className="text-sm text-text-secondary">Payment Due Day</p>
               <p className="font-medium text-text-primary">
                 Day {contract.paymentDueDay} of each period
               </p>
@@ -600,16 +586,12 @@ export const ContractOverviewTab = ({
                     : 'bg-info-bg text-info-text'
                 }`}
               >
-                {contract.renewalMode === 'AUTOMATIC'
-                  ? 'Automatic'
-                  : 'Manual'}
+                {contract.renewalMode === 'AUTOMATIC' ? 'Automatic' : 'Manual'}
               </span>
             </div>
             {contract.renewalTermMonths != null && (
               <div className="flex items-center justify-between">
-                <p className="text-sm text-text-secondary">
-                  Renewal Term
-                </p>
+                <p className="text-sm text-text-secondary">Renewal Term</p>
                 <p className="text-sm font-medium text-text-primary">
                   {contract.renewalTermMonths}{' '}
                   {contract.renewalTermMonths === 1 ? 'month' : 'months'}
@@ -626,23 +608,18 @@ export const ContractOverviewTab = ({
                 </p>
               </div>
             )}
-            {!contract.maxRenewals &&
-              contract.extensionsRemaining == null && (
-                <div className="flex items-center justify-between">
-                  <p className="text-sm text-text-secondary">
-                    Extensions
-                  </p>
-                  <p className="text-sm font-medium text-text-primary">
-                    Unlimited
-                  </p>
-                </div>
-              )}
+            {!contract.maxRenewals && contract.extensionsRemaining == null && (
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-text-secondary">Extensions</p>
+                <p className="text-sm font-medium text-text-primary">
+                  Unlimited
+                </p>
+              </div>
+            )}
             {contract.rentAdjustmentType &&
               contract.rentAdjustmentType !== 'NONE' && (
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-text-secondary">
-                    Rent Adjustment
-                  </p>
+                  <p className="text-sm text-text-secondary">Rent Adjustment</p>
                   <p className="text-sm font-medium text-text-primary">
                     {contract.rentAdjustmentType === 'FIXED_PERCENTAGE' &&
                     contract.rentAdjustmentValue != null
@@ -665,9 +642,7 @@ export const ContractOverviewTab = ({
                 <div className="space-y-2">
                   {contract.landlordNoticeDays != null && (
                     <div className="flex items-center justify-between">
-                      <p className="text-sm text-text-secondary">
-                        Landlord
-                      </p>
+                      <p className="text-sm text-text-secondary">Landlord</p>
                       <p className="text-sm font-medium text-text-primary">
                         {contract.landlordNoticeDays} days
                       </p>
@@ -675,9 +650,7 @@ export const ContractOverviewTab = ({
                   )}
                   {contract.contactNoticeDays != null && (
                     <div className="flex items-center justify-between">
-                      <p className="text-sm text-text-secondary">
-                        Contact
-                      </p>
+                      <p className="text-sm text-text-secondary">Contact</p>
                       <p className="text-sm font-medium text-text-primary">
                         {contract.contactNoticeDays} days
                       </p>
@@ -775,9 +748,7 @@ export const ContractOverviewTab = ({
           onClick={() => setIsMetadataExpanded(!isMetadataExpanded)}
           className="w-full flex items-center justify-between text-left group"
         >
-          <h2 className="text-lg font-semibold text-text-primary">
-            Metadata
-          </h2>
+          <h2 className="text-lg font-semibold text-text-primary">Metadata</h2>
           {isMetadataExpanded ? (
             <ChevronUp className="h-5 w-5 text-text-secondary group-hover:text-text-secondary " />
           ) : (

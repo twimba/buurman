@@ -1,4 +1,4 @@
-import { ChevronUp, ChevronDown, ArrowUpDown } from "lucide-react";
+import { ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react';
 
 interface SortableHeaderProps {
   field: string;
@@ -19,10 +19,10 @@ export const SortableHeader = ({
     onClick={() => onSortChange(field)}
     className="cursor-pointer select-none text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary hover:text-text-primary transition-colors"
   >
-    <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
       {label}
       {sort === field ? (
-        direction === "asc" ? (
+        direction === 'asc' ? (
           <ChevronUp className="h-3.5 w-3.5" />
         ) : (
           <ChevronDown className="h-3.5 w-3.5" />
