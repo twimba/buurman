@@ -1,4 +1,4 @@
-import client from "./client";
+import client from './client';
 
 export interface FlagStatus {
   enabled: boolean;
@@ -44,12 +44,12 @@ export interface SegmentEvaluation {
 
 export interface AdminStatus {
   adminConfigured: boolean;
-  authMethod: "api_token" | "credentials" | "none";
+  authMethod: 'api_token' | 'credentials' | 'none';
 }
 
 export const featureFlagsApi = {
-  getAdminStatus: () => client.get<AdminStatus>("/feature-flags/admin-status"),
-  getGlobal: () => client.get<FlagMap>("/feature-flags"),
+  getAdminStatus: () => client.get<AdminStatus>('/feature-flags/admin-status'),
+  getGlobal: () => client.get<FlagMap>('/feature-flags'),
   getForUser: (userIdentifier: string) =>
     client.get<TeamFlagEvaluation[]>(`/feature-flags/users/${userIdentifier}`),
 
@@ -60,20 +60,20 @@ export const featureFlagsApi = {
     userIdentifier: string,
     teamIdentifier: string,
     flagName: string,
-    data: UpdateFlagRequest,
+    data: UpdateFlagRequest
   ) =>
     client.put<FeatureFlagUpdateResponse>(
       `/feature-flags/identities/${userIdentifier}/teams/${teamIdentifier}/${flagName}`,
-      data,
+      data
     ),
 
   deleteIdentityOverride: (
     userIdentifier: string,
     teamIdentifier: string,
-    flagName: string,
+    flagName: string
   ) =>
     client.delete(
-      `/feature-flags/identities/${userIdentifier}/teams/${teamIdentifier}/${flagName}`,
+      `/feature-flags/identities/${userIdentifier}/teams/${teamIdentifier}/${flagName}`
     ),
 
   getForTeam: (teamIdentifier: string) =>
@@ -82,26 +82,26 @@ export const featureFlagsApi = {
   upsertTeamOverride: (
     teamIdentifier: string,
     flagName: string,
-    data: UpdateFlagRequest,
+    data: UpdateFlagRequest
   ) =>
     client.put<FeatureFlagUpdateResponse>(
       `/feature-flags/teams/${teamIdentifier}/${flagName}`,
-      data,
+      data
     ),
 
   deleteTeamOverride: (teamIdentifier: string, flagName: string) =>
     client.delete(`/feature-flags/teams/${teamIdentifier}/${flagName}`),
 
-  getSegments: () => client.get<SegmentEvaluation[]>("/feature-flags/segments"),
+  getSegments: () => client.get<SegmentEvaluation[]>('/feature-flags/segments'),
 
   upsertSegmentOverride: (
     segmentId: number,
     flagName: string,
-    data: UpdateFlagRequest,
+    data: UpdateFlagRequest
   ) =>
     client.put<FeatureFlagUpdateResponse>(
       `/feature-flags/segments/${segmentId}/${flagName}`,
-      data,
+      data
     ),
 
   deleteSegmentOverride: (segmentId: number, flagName: string) =>

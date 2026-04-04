@@ -1,112 +1,112 @@
-import { lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "./contexts/AuthContext";
-import { AnalyticsInitializer } from "./components/AnalyticsInitializer";
-import ProtectedRoute from "./components/ProtectedRoute";
-import { Layout } from "./components/Layout";
-import { LoadingSpinner } from "./components/LoadingSpinner";
-import { EnvironmentBanner } from "./components/EnvironmentBanner";
+import { lazy, Suspense } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import { AnalyticsInitializer } from './components/AnalyticsInitializer';
+import ProtectedRoute from './components/ProtectedRoute';
+import { Layout } from './components/Layout';
+import { LoadingSpinner } from './components/LoadingSpinner';
+import { EnvironmentBanner } from './components/EnvironmentBanner';
 
 const DashboardPage = lazy(() =>
-  import("./pages/DashboardPage").then((m) => ({ default: m.DashboardPage })),
+  import('./pages/DashboardPage').then((m) => ({ default: m.DashboardPage }))
 );
 const TeamsPage = lazy(() =>
-  import("./pages/TeamsPage").then((m) => ({ default: m.TeamsPage })),
+  import('./pages/TeamsPage').then((m) => ({ default: m.TeamsPage }))
 );
 const TeamDetailPage = lazy(() =>
-  import("./pages/TeamDetailPage").then((m) => ({ default: m.TeamDetailPage })),
+  import('./pages/TeamDetailPage').then((m) => ({ default: m.TeamDetailPage }))
 );
 const UsersPage = lazy(() =>
-  import("./pages/UsersPage").then((m) => ({ default: m.UsersPage })),
+  import('./pages/UsersPage').then((m) => ({ default: m.UsersPage }))
 );
 const UserDetailPage = lazy(() =>
-  import("./pages/UserDetailPage").then((m) => ({ default: m.UserDetailPage })),
+  import('./pages/UserDetailPage').then((m) => ({ default: m.UserDetailPage }))
 );
 const NotificationsPage = lazy(() =>
-  import("./pages/NotificationsPage").then((m) => ({
+  import('./pages/NotificationsPage').then((m) => ({
     default: m.NotificationsPage,
-  })),
+  }))
 );
 const NotificationDetailPage = lazy(() =>
-  import("./pages/NotificationDetailPage").then((m) => ({
+  import('./pages/NotificationDetailPage').then((m) => ({
     default: m.NotificationDetailPage,
-  })),
+  }))
 );
 const ToolEmbedPage = lazy(() =>
-  import("./pages/ToolEmbedPage").then((m) => ({ default: m.ToolEmbedPage })),
+  import('./pages/ToolEmbedPage').then((m) => ({ default: m.ToolEmbedPage }))
 );
 const SmsPolicyPage = lazy(() =>
-  import("./pages/SmsPolicyPage").then((m) => ({ default: m.SmsPolicyPage })),
+  import('./pages/SmsPolicyPage').then((m) => ({ default: m.SmsPolicyPage }))
 );
 const FeatureFlagsPage = lazy(() =>
-  import("./pages/FeatureFlagsPage").then((m) => ({
+  import('./pages/FeatureFlagsPage').then((m) => ({
     default: m.FeatureFlagsPage,
-  })),
+  }))
 );
 const SchedulerPage = lazy(() =>
-  import("./pages/SchedulerPage").then((m) => ({ default: m.SchedulerPage })),
+  import('./pages/SchedulerPage').then((m) => ({ default: m.SchedulerPage }))
 );
 const LoggersPage = lazy(() =>
-  import("./pages/LoggersPage").then((m) => ({ default: m.LoggersPage })),
+  import('./pages/LoggersPage').then((m) => ({ default: m.LoggersPage }))
 );
 const BuurmiesPage = lazy(() =>
-  import("./pages/BuurmiesPage").then((m) => ({ default: m.BuurmiesPage })),
+  import('./pages/BuurmiesPage').then((m) => ({ default: m.BuurmiesPage }))
 );
 const SystemInfoPage = lazy(() =>
-  import("./pages/SystemInfoPage").then((m) => ({ default: m.SystemInfoPage })),
+  import('./pages/SystemInfoPage').then((m) => ({ default: m.SystemInfoPage }))
 );
 const RegistrationInvitationsPage = lazy(() =>
-  import("./pages/RegistrationInvitationsPage").then((m) => ({
+  import('./pages/RegistrationInvitationsPage').then((m) => ({
     default: m.RegistrationInvitationsPage,
-  })),
+  }))
 );
 const RegistrationInvitationDetailPage = lazy(() =>
-  import("./pages/RegistrationInvitationDetailPage").then((m) => ({
+  import('./pages/RegistrationInvitationDetailPage').then((m) => ({
     default: m.RegistrationInvitationDetailPage,
-  })),
+  }))
 );
 const BroadcastsPage = lazy(() =>
-  import("./pages/BroadcastsPage").then((m) => ({
+  import('./pages/BroadcastsPage').then((m) => ({
     default: m.BroadcastsPage,
-  })),
+  }))
 );
 const RentRegulationsPage = lazy(() =>
-  import("./pages/RentRegulationsPage").then((m) => ({
+  import('./pages/RentRegulationsPage').then((m) => ({
     default: m.RentRegulationsPage,
-  })),
+  }))
 );
 const RentRegulationCountryDetailPage = lazy(() =>
-  import("./pages/RentRegulationCountryDetailPage").then((m) => ({
+  import('./pages/RentRegulationCountryDetailPage').then((m) => ({
     default: m.RentRegulationCountryDetailPage,
-  })),
+  }))
 );
 const SegmentsPage = lazy(() =>
-  import("./pages/SegmentsPage").then((m) => ({
+  import('./pages/SegmentsPage').then((m) => ({
     default: m.SegmentsPage,
-  })),
+  }))
 );
 const SegmentDetailPage = lazy(() =>
-  import("./pages/SegmentDetailPage").then((m) => ({
+  import('./pages/SegmentDetailPage').then((m) => ({
     default: m.SegmentDetailPage,
-  })),
+  }))
 );
 const SegmentCreatePage = lazy(() =>
-  import("./pages/SegmentCreatePage").then((m) => ({
+  import('./pages/SegmentCreatePage').then((m) => ({
     default: m.SegmentCreatePage,
-  })),
+  }))
 );
 const CachesPage = lazy(() =>
-  import("./pages/CachesPage").then((m) => ({ default: m.CachesPage })),
+  import('./pages/CachesPage').then((m) => ({ default: m.CachesPage }))
 );
 const RateLimitBucketsPage = lazy(() =>
-  import("./pages/RateLimitBucketsPage").then((m) => ({
+  import('./pages/RateLimitBucketsPage').then((m) => ({
     default: m.RateLimitBucketsPage,
-  })),
+  }))
 );
 const ImpersonationSessionsPage = lazy(() =>
-  import("./pages/ImpersonationSessionsPage").then((m) => ({
+  import('./pages/ImpersonationSessionsPage').then((m) => ({
     default: m.ImpersonationSessionsPage,
-  })),
+  }))
 );
 
 function App() {

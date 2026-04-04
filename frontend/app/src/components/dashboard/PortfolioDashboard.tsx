@@ -15,8 +15,7 @@ import {
   exportPortfolioDashboardCSV,
   exportPortfolioDashboardExcel,
 } from '@/api/dashboard';
-import { Card } from '@buurman/ui';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { Card, LoadingSpinner } from '@buurman/ui';
 import { ExportDropdown } from '@/components/common/ExportDropdown';
 import { PortfolioSummaryCards } from './PortfolioSummaryCards';
 import { PortfolioCashFlowChart } from './PortfolioCashFlowChart';

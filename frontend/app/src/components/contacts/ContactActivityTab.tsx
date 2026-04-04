@@ -5,9 +5,7 @@ import {
   ContactActivityItem,
 } from '@/types/contact';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { RichTextDisplay } from '@/components/common/RichTextDisplay';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { Pagination } from '@buurman/ui';
+import { LoadingSpinner, Pagination, RichTextDisplay } from '@buurman/ui';
 import { usePagination } from '@/hooks/usePagination';
 import {
   Activity,
@@ -21,7 +19,6 @@ import {
   MoreHorizontal,
   Pin,
 } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
 
 const EVENT_TYPE_ICONS: Record<string, React.ReactNode> = {
   AUDIT: <FileText className="h-4 w-4" />,
@@ -48,7 +45,7 @@ interface ContactActivityTabProps {
 }
 
 export const ContactActivityTab = ({ contactId }: ContactActivityTabProps) => {
-  const { formatDate } = useFormatDate();
+  const { formatDate, formatRelative } = useFormatDate();
   const { pageParams, page, size, handlePageChange, handleSizeChange } =
     usePagination({ defaultSize: 25 });
 
@@ -149,11 +146,7 @@ export const ContactActivityTab = ({ contactId }: ContactActivityTabProps) => {
                     )}
 
                     <div className="flex items-center gap-2 mt-1 text-xs text-text-muted">
-                      <span>
-                        {formatDistanceToNow(new Date(item.occurredAt), {
-                          addSuffix: true,
-                        })}
-                      </span>
+                      <span>{formatRelative(item.occurredAt)}</span>
                       <span>·</span>
                       <span>{formatDate(item.occurredAt)}</span>
                       {item.createdByName && (

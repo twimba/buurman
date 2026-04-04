@@ -1,22 +1,22 @@
-import { cn } from "../utils/cn";
+import { cn } from '../utils/cn';
 
 interface SelectProps extends Omit<
   React.SelectHTMLAttributes<HTMLSelectElement>,
-  "size"
+  'size'
 > {
-  size?: "sm" | "md" | "lg";
+  size?: 'sm' | 'md' | 'lg';
   error?: boolean;
   ref?: React.Ref<HTMLSelectElement>;
 }
 
 const sizeMap = {
-  sm: "h-8 px-2.5 text-sm",
-  md: "h-10 px-3 text-sm",
-  lg: "h-12 px-4 text-base",
+  sm: 'h-8 px-2.5 text-sm',
+  md: 'h-10 px-3 text-sm',
+  lg: 'h-12 px-4 text-base',
 } as const;
 
 export function Select({
-  size = "md",
+  size = 'md',
   error,
   className,
   children,
@@ -27,15 +27,15 @@ export function Select({
     <select
       ref={ref}
       className={cn(
-        "w-full rounded-md border bg-surface-card text-text-primary",
-        "transition-colors duration-150",
-        "focus-ring",
+        'w-full rounded-md border bg-surface-card text-text-primary',
+        'transition-colors duration-150',
+        'focus-ring',
         error
-          ? "border-error-border focus-visible:shadow-ring-error"
-          : "border-border-default",
-        props.disabled && "cursor-not-allowed bg-neutral-50 text-text-disabled",
+          ? 'border-error-border focus-visible:shadow-ring-error'
+          : 'border-border-default',
+        props.disabled && 'cursor-not-allowed bg-neutral-50 text-text-disabled',
         sizeMap[size],
-        className,
+        className
       )}
       {...props}
     >
@@ -44,4 +44,4 @@ export function Select({
   );
 }
 
-Select.displayName = "Select";
+Select.displayName = 'Select';

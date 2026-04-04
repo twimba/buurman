@@ -3,13 +3,13 @@ import { X } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   BulkDataGrid,
-  ColumnDef,
+  BulkColumnDef,
   RowData,
 } from '@/components/common/BulkDataGrid';
 import { CurrencySelector } from '@/components/common/CurrencySelector';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 import { bulkCreateFinancingPayments } from '@/api/propertyFinancials';
-import { useToast } from '@/context/ToastContext';
+import { useToast } from '@buurman/ui';
 import { getErrorMessage } from '@/utils/errorMessages';
 import {
   PaymentStatus,
@@ -24,7 +24,7 @@ interface BulkFinancingPaymentModalProps {
   onClose: () => void;
 }
 
-const BULK_COLUMNS: ColumnDef[] = [
+const BULK_COLUMNS: BulkColumnDef[] = [
   { key: 'date', label: 'Date', type: 'date', required: true },
   { key: 'totalAmount', label: 'Total Amount', type: 'number', required: true },
   { key: 'principal', label: 'Principal', type: 'number' },

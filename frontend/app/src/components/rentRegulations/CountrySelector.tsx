@@ -1,4 +1,4 @@
-import { RichTextDisplay } from '@/components/common/RichTextDisplay';
+import { RichTextDisplay } from '@buurman/ui';
 import { RequestCountryCard } from './RequestCountryCard';
 import type { RentRegulationCountryResponse } from '@/types/rentRegulation';
 

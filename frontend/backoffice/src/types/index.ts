@@ -147,7 +147,7 @@ export interface ScheduledJob {
   jobClass: string;
   triggerName?: string;
   triggerGroup?: string;
-  triggerType?: "cron" | "simple";
+  triggerType?: 'cron' | 'simple';
   scheduleExpression?: string;
   triggerState: string;
   nextFireTime?: string;
@@ -161,7 +161,7 @@ export interface JobExecutionHistory {
   startedAt: string;
   endedAt?: string;
   durationMs?: number;
-  status: "RUNNING" | "SUCCESS" | "FAILED";
+  status: 'RUNNING' | 'SUCCESS' | 'FAILED';
   errorMessage?: string;
   nodeId?: string;
 }
@@ -195,8 +195,8 @@ export interface CreateBuurmyRequest {
 }
 
 // Broadcast types
-export type BroadcastSeverity = "INFO" | "WARNING" | "CRITICAL";
-export type BroadcastScope = "GLOBAL" | "TEAMS" | "USERS";
+export type BroadcastSeverity = 'INFO' | 'WARNING' | 'CRITICAL';
+export type BroadcastScope = 'GLOBAL' | 'TEAMS' | 'USERS';
 
 export interface BroadcastMessage {
   identifier: string;
@@ -244,7 +244,7 @@ export interface UpdateBroadcastMessageRequest {
 }
 
 // System Info types
-export type ServiceHealthStatus = "UP" | "DOWN" | "DISABLED" | "UNKNOWN";
+export type ServiceHealthStatus = 'UP' | 'DOWN' | 'DISABLED' | 'UNKNOWN';
 
 export interface ServiceHealth {
   name: string;

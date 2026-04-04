@@ -1,11 +1,11 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { Navigate, Outlet } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { useImpersonation } from '../context/ImpersonationContext';
 import { useCurrentUser } from '../hooks/useAuthHooks';
 
 interface ProtectedRouteProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   requireVerification?: boolean;
 }
 
@@ -43,7 +43,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return <Navigate to="/verify-email" replace />;
   }
 
-  return <>{children}</>;
+  return children ? <>{children}</> : <Outlet />;
 };
+
+ProtectedRoute.displayName = 'ProtectedRoute';
 
 export default ProtectedRoute;

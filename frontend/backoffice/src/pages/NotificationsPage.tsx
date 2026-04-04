@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Search,
   Eye,
@@ -9,102 +9,102 @@ import {
   CheckCircle,
   Clock,
   AlertTriangle,
-} from "lucide-react";
-import { formatDateTime } from "../utils/dateFormatting";
-import { Pagination, ConfirmDialog, RefreshButton } from "@buurman/ui";
-import { SortableHeader } from "../components/SortableHeader";
+} from 'lucide-react';
+import { formatDateTime } from '../utils/dateFormatting';
+import { Pagination, ConfirmDialog, RefreshButton } from '@buurman/ui';
+import { SortableHeader } from '../components/SortableHeader';
 import {
   useNotifications,
   useNotificationStats,
   useResendNotification,
-} from "../hooks/useNotifications";
-import { usePagination } from "../hooks/usePagination";
-import { LoadingSpinner } from "../components/LoadingSpinner";
-import { AsyncSelect, type AsyncSelectOption } from "../components/AsyncSelect";
-import { useTeamSearch } from "../hooks/useTeams";
+} from '../hooks/useNotifications';
+import { usePagination } from '../hooks/usePagination';
+import { LoadingSpinner } from '../components/LoadingSpinner';
+import { AsyncSelect, type AsyncSelectOption } from '../components/AsyncSelect';
+import { useTeamSearch } from '../hooks/useTeams';
 
 const NOTIFICATION_TYPES = [
-  "WELCOME",
-  "VERIFICATION_CODE",
-  "TEAM_INVITATION",
-  "INVITATION_ACCEPTED",
-  "PASSWORD_CHANGED",
-  "PAYMENT_REMINDER",
-  "CONTRACT_EXPIRY",
-  "PROPERTY_CREATED",
-  "CONTRACT_CREATED",
-  "CONTRACT_STATUS_CHANGED",
-  "CONTRACT_REOPENED",
-  "PAYMENT_PAID",
-  "PAYMENT_RECEIVAL",
-  "EXPENSE_CREATED",
+  'WELCOME',
+  'VERIFICATION_CODE',
+  'TEAM_INVITATION',
+  'INVITATION_ACCEPTED',
+  'PASSWORD_CHANGED',
+  'PAYMENT_REMINDER',
+  'CONTRACT_EXPIRY',
+  'PROPERTY_CREATED',
+  'CONTRACT_CREATED',
+  'CONTRACT_STATUS_CHANGED',
+  'CONTRACT_REOPENED',
+  'PAYMENT_PAID',
+  'PAYMENT_RECEIVAL',
+  'EXPENSE_CREATED',
 ];
 
-const CHANNELS = ["EMAIL", "SMS"];
+const CHANNELS = ['EMAIL', 'SMS'];
 
 const STATUSES = [
-  "PENDING",
-  "QUEUED",
-  "SENT",
-  "DELIVERED",
-  "FAILED",
-  "BOUNCED",
-  "REJECTED",
+  'PENDING',
+  'QUEUED',
+  'SENT',
+  'DELIVERED',
+  'FAILED',
+  'BOUNCED',
+  'REJECTED',
 ];
 
 const typeLabels: Record<string, string> = {
-  WELCOME: "Welcome",
-  VERIFICATION_CODE: "Verification",
-  TEAM_INVITATION: "Invitation",
-  INVITATION_ACCEPTED: "Accepted",
-  PASSWORD_CHANGED: "Password",
-  PAYMENT_REMINDER: "Payment",
-  CONTRACT_EXPIRY: "Contract",
-  PROPERTY_CREATED: "Property",
-  CONTRACT_CREATED: "New Contract",
-  CONTRACT_STATUS_CHANGED: "Status Change",
-  CONTRACT_REOPENED: "Reopened",
-  PAYMENT_PAID: "Paid",
-  PAYMENT_RECEIVAL: "Receival",
-  EXPENSE_CREATED: "Expense",
+  WELCOME: 'Welcome',
+  VERIFICATION_CODE: 'Verification',
+  TEAM_INVITATION: 'Invitation',
+  INVITATION_ACCEPTED: 'Accepted',
+  PASSWORD_CHANGED: 'Password',
+  PAYMENT_REMINDER: 'Payment',
+  CONTRACT_EXPIRY: 'Contract',
+  PROPERTY_CREATED: 'Property',
+  CONTRACT_CREATED: 'New Contract',
+  CONTRACT_STATUS_CHANGED: 'Status Change',
+  CONTRACT_REOPENED: 'Reopened',
+  PAYMENT_PAID: 'Paid',
+  PAYMENT_RECEIVAL: 'Receival',
+  EXPENSE_CREATED: 'Expense',
 };
 
 const statusBadgeConfig: Record<string, { label: string; className: string }> =
   {
     PENDING: {
-      label: "Pending",
-      className: "bg-slate-50 text-slate-700 ring-1 ring-slate-200",
+      label: 'Pending',
+      className: 'bg-slate-50 text-slate-700 ring-1 ring-slate-200',
     },
     QUEUED: {
-      label: "Queued",
-      className: "bg-blue-50 text-blue-700 ring-1 ring-blue-200",
+      label: 'Queued',
+      className: 'bg-blue-50 text-blue-700 ring-1 ring-blue-200',
     },
     SENT: {
-      label: "Sent",
-      className: "bg-sky-50 text-sky-700 ring-1 ring-sky-200",
+      label: 'Sent',
+      className: 'bg-sky-50 text-sky-700 ring-1 ring-sky-200',
     },
     DELIVERED: {
-      label: "Delivered",
-      className: "bg-success-bg text-success-text ring-1 ring-success-border",
+      label: 'Delivered',
+      className: 'bg-success-bg text-success-text ring-1 ring-success-border',
     },
     FAILED: {
-      label: "Failed",
-      className: "bg-error-bg text-error-text ring-1 ring-error-border",
+      label: 'Failed',
+      className: 'bg-error-bg text-error-text ring-1 ring-error-border',
     },
     BOUNCED: {
-      label: "Bounced",
-      className: "bg-warning-bg text-warning-text ring-1 ring-warning-border",
+      label: 'Bounced',
+      className: 'bg-warning-bg text-warning-text ring-1 ring-warning-border',
     },
     REJECTED: {
-      label: "Rejected",
-      className: "bg-error-bg text-error-text ring-1 ring-error-border",
+      label: 'Rejected',
+      className: 'bg-error-bg text-error-text ring-1 ring-error-border',
     },
   };
 
 const StatusBadge = ({ status }: { status: string }) => {
   const config = statusBadgeConfig[status] ?? {
     label: status,
-    className: "bg-slate-50 text-slate-700 ring-1 ring-slate-200",
+    className: 'bg-slate-50 text-slate-700 ring-1 ring-slate-200',
   };
   return (
     <span
@@ -116,10 +116,10 @@ const StatusBadge = ({ status }: { status: string }) => {
 };
 
 const selectClass =
-  "px-3 py-2 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors";
+  'px-3 py-2 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors';
 
 const inputClass =
-  "px-3 py-2 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary placeholder-text-muted focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors";
+  'px-3 py-2 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary placeholder-text-muted focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors';
 
 export const NotificationsPage = () => {
   const navigate = useNavigate();
@@ -131,19 +131,19 @@ export const NotificationsPage = () => {
     handlePageChange,
     handleSizeChange,
     handleSortChange,
-  } = usePagination({ defaultSort: "createdAt" });
+  } = usePagination({ defaultSort: 'createdAt' });
 
-  const [recipientEmail, setRecipientEmail] = useState("");
-  const [recipientInput, setRecipientInput] = useState("");
-  const [typeFilter, setTypeFilter] = useState("");
-  const [channelFilter, setChannelFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [recipientEmail, setRecipientEmail] = useState('');
+  const [recipientInput, setRecipientInput] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
+  const [channelFilter, setChannelFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
   const [searchParams] = useSearchParams();
   const teamSearch = useTeamSearch();
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const [selectedTeam, setSelectedTeam] = useState<AsyncSelectOption[]>(() => {
-    const initialTeamId = searchParams.get("teamIdentifier");
+    const initialTeamId = searchParams.get('teamIdentifier');
     if (!initialTeamId) {
       return [];
     }
@@ -183,7 +183,7 @@ export const NotificationsPage = () => {
   };
 
   const canResend = (status: string) =>
-    ["FAILED", "BOUNCED", "REJECTED"].includes(status);
+    ['FAILED', 'BOUNCED', 'REJECTED'].includes(status);
 
   if (isLoading) {
     return <LoadingSpinner message="Loading notifications..." />;
@@ -205,9 +205,9 @@ export const NotificationsPage = () => {
       <div
         className="mb-6"
         style={{
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "space-between",
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
         }}
       >
         <div>
@@ -226,7 +226,7 @@ export const NotificationsPage = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-surface-card rounded-lg border border-border-default p-4">
             <div
-              style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
               className="text-text-secondary text-sm mb-1"
             >
               <Mail className="h-4 w-4" />
@@ -238,7 +238,7 @@ export const NotificationsPage = () => {
           </div>
           <div className="bg-surface-card rounded-lg border border-border-default p-4">
             <div
-              style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
               className="text-text-secondary text-sm mb-1"
             >
               <CheckCircle className="h-4 w-4 text-success-text" />
@@ -250,7 +250,7 @@ export const NotificationsPage = () => {
           </div>
           <div className="bg-surface-card rounded-lg border border-border-default p-4">
             <div
-              style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
               className="text-text-secondary text-sm mb-1"
             >
               <Clock className="h-4 w-4 text-info-text" />
@@ -262,7 +262,7 @@ export const NotificationsPage = () => {
           </div>
           <div className="bg-surface-card rounded-lg border border-border-default p-4">
             <div
-              style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
               className="text-text-secondary text-sm mb-1"
             >
               <AlertTriangle className="h-4 w-4 text-error-text" />
@@ -440,7 +440,7 @@ export const NotificationsPage = () => {
                     </td>
                     <td className="px-4 py-3">
                       <span className="inline-flex items-center gap-1 text-sm text-text-secondary">
-                        {notif.channel === "EMAIL" ? (
+                        {notif.channel === 'EMAIL' ? (
                           <Mail className="h-3.5 w-3.5" />
                         ) : (
                           <Phone className="h-3.5 w-3.5" />
@@ -450,9 +450,9 @@ export const NotificationsPage = () => {
                     </td>
                     <td className="px-4 py-3 max-w-[200px]">
                       <span className="text-sm text-text-secondary truncate block">
-                        {notif.channel === "SMS"
-                          ? notif.recipientPhone || notif.recipientEmail || "-"
-                          : notif.recipientEmail || "-"}
+                        {notif.channel === 'SMS'
+                          ? notif.recipientPhone || notif.recipientEmail || '-'
+                          : notif.recipientEmail || '-'}
                       </span>
                     </td>
                     <td className="px-4 py-3">
@@ -465,7 +465,7 @@ export const NotificationsPage = () => {
                     </td>
                     <td className="px-4 py-3 max-w-[200px]">
                       <span className="text-sm text-text-secondary truncate block">
-                        {notif.subject || "-"}
+                        {notif.subject || '-'}
                       </span>
                     </td>
                     <td className="px-4 py-3">
@@ -479,10 +479,10 @@ export const NotificationsPage = () => {
                     <td className="px-4 py-3 text-right">
                       <div
                         style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "flex-end",
-                          gap: "0.25rem",
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'flex-end',
+                          gap: '0.25rem',
                         }}
                       >
                         <button

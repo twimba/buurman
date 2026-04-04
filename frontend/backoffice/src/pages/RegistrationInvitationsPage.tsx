@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Search,
   Plus,
@@ -11,36 +11,36 @@ import {
   StickyNote,
   Save,
   Loader2,
-} from "lucide-react";
-import { RefreshButton, Pagination, ConfirmDialog } from "@buurman/ui";
-import { formatDateTime } from "../utils/dateFormatting";
+} from 'lucide-react';
+import { RefreshButton, Pagination, ConfirmDialog } from '@buurman/ui';
+import { formatDateTime } from '../utils/dateFormatting';
 import {
   useRegistrationInvitations,
   useRevokeRegistrationInvitation,
-} from "../hooks/useRegistrationInvitations";
+} from '../hooks/useRegistrationInvitations';
 import {
   useRateLimitConfig,
   useUpdateRateLimitConfig,
-} from "../hooks/useSettings";
-import { usePagination } from "../hooks/usePagination";
-import { LoadingSpinner } from "../components/LoadingSpinner";
-import { SortableHeader } from "../components/SortableHeader";
-import { CreateRegistrationInvitationModal } from "../components/CreateRegistrationInvitationModal";
-import { SendRegistrationInvitationModal } from "../components/SendRegistrationInvitationModal";
-import type { RegistrationInvitation } from "../api/registrationInvitations";
+} from '../hooks/useSettings';
+import { usePagination } from '../hooks/usePagination';
+import { LoadingSpinner } from '../components/LoadingSpinner';
+import { SortableHeader } from '../components/SortableHeader';
+import { CreateRegistrationInvitationModal } from '../components/CreateRegistrationInvitationModal';
+import { SendRegistrationInvitationModal } from '../components/SendRegistrationInvitationModal';
+import type { RegistrationInvitation } from '../api/registrationInvitations';
 
 const STATUS_STYLES: Record<string, string> = {
-  ACTIVE: "bg-success-bg text-success-text border-success-border",
-  EXPIRED: "bg-warning-bg text-warning-text border-warning-border",
-  EXHAUSTED: "bg-surface-inset text-text-secondary border-border-default",
-  REVOKED: "bg-error-bg text-error-text border-error-border",
+  ACTIVE: 'bg-success-bg text-success-text border-success-border',
+  EXPIRED: 'bg-warning-bg text-warning-text border-warning-border',
+  EXHAUSTED: 'bg-surface-inset text-text-secondary border-border-default',
+  REVOKED: 'bg-error-bg text-error-text border-error-border',
 };
 
 export function RegistrationInvitationsPage() {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [showCreate, setShowCreate] = useState(false);
   const [sendTarget, setSendTarget] = useState<RegistrationInvitation | null>(
-    null,
+    null
   );
   const [revokeTarget, setRevokeTarget] =
     useState<RegistrationInvitation | null>(null);
@@ -52,7 +52,7 @@ export function RegistrationInvitationsPage() {
 
   // Rate limit settings
   const { data: rlConfig, isLoading: rlLoading } = useRateLimitConfig(
-    "registration-validation",
+    'registration-validation'
   );
   const updateRateLimit = useUpdateRateLimitConfig();
   const [rlMaxRequests, setRlMaxRequests] = useState<number | null>(null);
@@ -66,7 +66,7 @@ export function RegistrationInvitationsPage() {
   const handleSaveRateLimit = () => {
     updateRateLimit.mutate(
       {
-        key: "registration-validation",
+        key: 'registration-validation',
         data: {
           maxRequests: displayMaxRequests,
           periodSeconds: displayPeriodSeconds,
@@ -79,14 +79,14 @@ export function RegistrationInvitationsPage() {
           setRlPeriodSeconds(data.periodSeconds);
           setRlEnabled(data.enabled);
         },
-      },
+      }
     );
   };
 
   const handleToggleMenu = (identifier: string) => {
     if (openMenu !== identifier) {
       const btn = document.querySelector<HTMLElement>(
-        `[data-menu-trigger="${identifier}"]`,
+        `[data-menu-trigger="${identifier}"]`
       );
       if (btn) {
         const rect = btn.getBoundingClientRect();
@@ -109,8 +109,8 @@ export function RegistrationInvitationsPage() {
     handleSortChange,
     resetPage,
   } = usePagination({
-    defaultSort: "createdAt",
-    defaultDirection: "desc",
+    defaultSort: 'createdAt',
+    defaultDirection: 'desc',
   });
 
   const { data, isLoading, refetch } = useRegistrationInvitations({
@@ -124,7 +124,7 @@ export function RegistrationInvitationsPage() {
   const revokeMutation = useRevokeRegistrationInvitation();
 
   const handleCopyLink = (code: string) => {
-    const url = `${window.location.protocol}//app.${window.location.hostname.replace(/^backoffice\./, "")}/register?code=${code}`;
+    const url = `${window.location.protocol}//app.${window.location.hostname.replace(/^backoffice\./, '')}/register?code=${code}`;
     navigator.clipboard.writeText(url);
   };
 
@@ -182,7 +182,7 @@ export function RegistrationInvitationsPage() {
             </h2>
             <p className="text-sm text-text-secondary mt-1">
               {rlConfig.description ||
-                "Configure rate limiting for code validation requests."}
+                'Configure rate limiting for code validation requests.'}
             </p>
           </div>
           <div className="p-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -197,7 +197,7 @@ export function RegistrationInvitationsPage() {
                 value={displayMaxRequests}
                 onChange={(e) =>
                   setRlMaxRequests(
-                    Math.max(1, Math.min(10000, Number(e.target.value) || 1)),
+                    Math.max(1, Math.min(10000, Number(e.target.value) || 1))
                   )
                 }
                 className="w-full px-3 py-2 text-sm border border-border-strong rounded-lg bg-surface-card text-text-primary outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
@@ -217,7 +217,7 @@ export function RegistrationInvitationsPage() {
                 value={displayPeriodSeconds}
                 onChange={(e) =>
                   setRlPeriodSeconds(
-                    Math.max(10, Math.min(86400, Number(e.target.value) || 10)),
+                    Math.max(10, Math.min(86400, Number(e.target.value) || 10))
                   )
                 }
                 className="w-full px-3 py-2 text-sm border border-border-strong rounded-lg bg-surface-card text-text-primary outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
@@ -236,19 +236,19 @@ export function RegistrationInvitationsPage() {
                 aria-checked={displayEnabled}
                 onClick={() => setRlEnabled(!displayEnabled)}
                 className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${
-                  displayEnabled ? "bg-primary-500" : "bg-neutral-200"
+                  displayEnabled ? 'bg-primary-500' : 'bg-neutral-200'
                 }`}
               >
                 <span
                   className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-surface-card shadow ring-0 transition duration-200 ease-in-out ${
-                    displayEnabled ? "translate-x-5" : "translate-x-0"
+                    displayEnabled ? 'translate-x-5' : 'translate-x-0'
                   }`}
                 />
               </button>
               <p className="text-xs text-text-muted mt-1">
                 {displayEnabled
-                  ? "Rate limiting is active."
-                  : "Rate limiting is disabled — all requests pass through."}
+                  ? 'Rate limiting is active.'
+                  : 'Rate limiting is disabled — all requests pass through.'}
               </p>
             </div>
           </div>
@@ -257,7 +257,7 @@ export function RegistrationInvitationsPage() {
               {rlConfig.updatedAt && (
                 <p className="text-xs text-text-muted">
                   Last updated {formatDateTime(rlConfig.updatedAt)}
-                  {rlConfig.updatedBy ? ` by ${rlConfig.updatedBy}` : ""}
+                  {rlConfig.updatedBy ? ` by ${rlConfig.updatedBy}` : ''}
                 </p>
               )}
             </div>
@@ -359,7 +359,7 @@ export function RegistrationInvitationsPage() {
                     </td>
                     <td className="px-4 py-3">
                       <span
-                        className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[inv.status] ?? ""}`}
+                        className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[inv.status] ?? ''}`}
                       >
                         {inv.status}
                       </span>
@@ -368,7 +368,7 @@ export function RegistrationInvitationsPage() {
                       {formatUsage(inv)}
                     </td>
                     <td className="px-4 py-3 text-sm text-text-secondary">
-                      {inv.expiresAt ? formatDateTime(inv.expiresAt) : "Never"}
+                      {inv.expiresAt ? formatDateTime(inv.expiresAt) : 'Never'}
                     </td>
                     <td className="px-4 py-3 text-sm text-text-secondary">
                       {inv.createdBy}
@@ -392,7 +392,7 @@ export function RegistrationInvitationsPage() {
                           />
                           <div
                             style={{
-                              position: "fixed",
+                              position: 'fixed',
                               top: menuPos.top,
                               right: menuPos.right,
                             }}
@@ -408,7 +408,7 @@ export function RegistrationInvitationsPage() {
                               <Copy className="h-4 w-4" />
                               Copy Link
                             </button>
-                            {inv.status === "ACTIVE" && (
+                            {inv.status === 'ACTIVE' && (
                               <>
                                 <button
                                   onClick={() => {

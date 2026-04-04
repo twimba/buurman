@@ -14,10 +14,9 @@ import {
   Loader2,
 } from 'lucide-react';
 import { PhotoResponse } from '@/types/property';
-import { LoadingSpinner } from '../LoadingSpinner';
+import { LoadingSpinner, RichTextDisplay } from '@buurman/ui';
 import { ErrorMessage } from '../ErrorMessage';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { RichTextDisplay } from '../ui/RichTextDisplay';
 
 interface PhotoGridProps {
   photos: PhotoResponse[];

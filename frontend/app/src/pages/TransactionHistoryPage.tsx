@@ -12,8 +12,7 @@ import {
 } from 'lucide-react';
 import { usePayments } from '@/hooks/usePaymentHooks';
 import { useExpenses } from '@/hooks/useExpenseHooks';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { RefreshButton, Pagination } from '@buurman/ui';
+import { LoadingSpinner, Pagination, RefreshButton } from '@buurman/ui';
 import { PaymentStatus } from '@/types/payment';
 import client from '@/api/client';
 import { useFormatDate } from '@/hooks/useFormatDate';

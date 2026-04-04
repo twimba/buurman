@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { useTeam } from '../context/TeamContext';
 import { useCurrentUser } from '../hooks/useAuthHooks';
 import { initAnalytics, identifyUser } from '../utils/analytics';

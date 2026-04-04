@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import DOMPurify from 'dompurify';
 import {
   Plus,
   Check,
@@ -24,7 +25,7 @@ import {
 import { ExtensionStatusBadge } from './ExtensionStatusBadge';
 import { CreateExtensionModal } from './CreateExtensionModal';
 import { DocumentPreviewModal } from '@/components/documents/DocumentPreviewModal';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { LoadingSpinner } from '@buurman/ui';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useTeam } from '@/context/TeamContext';
 import { useContractDocuments } from '@/hooks/useContractHooks';
@@ -537,7 +538,9 @@ function ExtensionCard({
           {extension.notes && (
             <div
               className="text-xs text-text-muted mt-2 prose prose-xs dark:prose-invert max-w-none"
-              dangerouslySetInnerHTML={{ __html: extension.notes }}
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(extension.notes),
+              }}
             />
           )}
 

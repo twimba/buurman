@@ -3,12 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { ContractStatus } from '@/types/contract';
 import { useContracts } from '@/hooks/useContractHooks';
 import { ContractCard } from '@/components/contracts/ContractCard';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { Plus, FileText, Filter } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
-import { Pagination, RefreshButton } from '@buurman/ui';
+import { Pagination, RefreshButton, Skeleton } from '@buurman/ui';
 
 const statusFilters = [
   { value: undefined, label: 'All Statuses' },
@@ -47,8 +46,39 @@ export const ContractsPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <LoadingSpinner />
+      <div className="min-h-screen bg-background">
+        <div className="px-4 py-8 space-y-6">
+          {/* Header skeleton */}
+          <div className="flex justify-between items-center">
+            <div className="space-y-2">
+              <Skeleton className="h-8 w-48" />
+              <Skeleton className="h-4 w-64" />
+            </div>
+            <Skeleton className="h-10 w-36 rounded" />
+          </div>
+          {/* Filter bar skeleton */}
+          <Skeleton className="h-24 w-full rounded-lg" />
+          {/* Contract cards grid skeleton */}
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="p-4 rounded-lg border border-border-default space-y-3"
+              >
+                <div className="flex justify-between items-start">
+                  <Skeleton className="h-5 w-2/3" />
+                  <Skeleton className="h-6 w-16 rounded-full" />
+                </div>
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <div className="flex gap-4 pt-2">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }

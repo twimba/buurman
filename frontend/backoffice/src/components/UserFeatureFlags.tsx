@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import {
   Flag,
   Filter,
@@ -16,8 +16,8 @@ import {
   X,
   Info,
   Layers,
-} from "lucide-react";
-import { RefreshButton, ConfirmDialog } from "@buurman/ui";
+} from 'lucide-react';
+import { RefreshButton, ConfirmDialog } from '@buurman/ui';
 import {
   useGlobalFeatureFlags,
   useUserFeatureFlags,
@@ -29,12 +29,12 @@ import {
   useSegmentFeatureFlags,
   useUpsertSegmentOverride,
   useDeleteSegmentOverride,
-} from "../hooks/useFeatureFlags";
+} from '../hooks/useFeatureFlags';
 import type {
   FlagMap,
   TeamFlagEvaluation,
   SegmentEvaluation,
-} from "../api/featureFlags";
+} from '../api/featureFlags';
 
 // --- Propagation banner ---
 
@@ -79,12 +79,12 @@ const ToggleSwitch = ({
     onClick={() => !loading && onChange(!enabled)}
     disabled={loading}
     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30 disabled:opacity-50 ${
-      enabled ? "bg-emerald-500" : "bg-neutral-200"
+      enabled ? 'bg-emerald-500' : 'bg-neutral-200'
     }`}
   >
     <span
       className={`inline-block h-4 w-4 transform rounded-full bg-surface-card shadow transition-transform duration-200 ${
-        enabled ? "translate-x-6" : "translate-x-1"
+        enabled ? 'translate-x-6' : 'translate-x-1'
       }`}
     />
     {loading && (
@@ -105,7 +105,7 @@ const InlineValueEditor = ({
   loading?: boolean;
 }) => {
   const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState("");
+  const [draft, setDraft] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -116,19 +116,19 @@ const InlineValueEditor = ({
   }, [editing]);
 
   const startEdit = () => {
-    setDraft(value != null ? String(value) : "");
+    setDraft(value != null ? String(value) : '');
     setEditing(true);
   };
 
-  const hasValue = value != null && String(value) !== "";
+  const hasValue = value != null && String(value) !== '';
 
   const save = () => {
     setEditing(false);
     const newValue = draft.trim();
-    const oldValue = hasValue ? String(value) : "";
+    const oldValue = hasValue ? String(value) : '';
     if (newValue !== oldValue) {
       // Send "" to clear, non-empty to set
-      onSave(newValue ?? "");
+      onSave(newValue ?? '');
     }
   };
 
@@ -143,10 +143,10 @@ const InlineValueEditor = ({
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
+            if (e.key === 'Enter') {
               save();
             }
-            if (e.key === "Escape") {
+            if (e.key === 'Escape') {
               cancel();
             }
           }}
@@ -175,7 +175,7 @@ const InlineValueEditor = ({
       </button>
       {hasValue && !loading && (
         <button
-          onClick={() => onSave("")}
+          onClick={() => onSave('')}
           className="p-0.5 rounded text-text-muted hover:text-error-text opacity-0 group-hover/val:opacity-100 transition-all"
           title="Clear value"
         >
@@ -192,8 +192,8 @@ const FlagBadge = ({ enabled }: { enabled: boolean }) => (
   <span
     className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold tracking-wide ${
       enabled
-        ? "bg-success-bg text-success-text"
-        : "bg-error-bg text-error-text"
+        ? 'bg-success-bg text-success-text'
+        : 'bg-error-bg text-error-text'
     }`}
   >
     {enabled ? (
@@ -201,7 +201,7 @@ const FlagBadge = ({ enabled }: { enabled: boolean }) => (
     ) : (
       <XCircle className="h-3.5 w-3.5" />
     )}
-    {enabled ? "Enabled" : "Disabled"}
+    {enabled ? 'Enabled' : 'Disabled'}
   </span>
 );
 
@@ -212,11 +212,11 @@ const OverrideBadge = () => (
 );
 
 const RoleBadge = ({ role }: { role: string }) => {
-  const label = role.replace("TEAM_", "");
+  const label = role.replace('TEAM_', '');
   const colors: Record<string, string> = {
-    ADMIN: "bg-violet-50 text-violet-700 border-violet-200",
-    EDITOR: "bg-sky-50 text-sky-700 border-sky-200",
-    VIEWER: "bg-slate-50 text-slate-600 border-slate-200",
+    ADMIN: 'bg-violet-50 text-violet-700 border-violet-200',
+    EDITOR: 'bg-sky-50 text-sky-700 border-sky-200',
+    VIEWER: 'bg-slate-50 text-slate-600 border-slate-200',
   };
   return (
     <span
@@ -242,14 +242,14 @@ const ValueCell = ({ value }: { value: unknown }) => (
 
 const isOverridden = (
   flag: { enabled: boolean; value: unknown },
-  globalFlag?: { enabled: boolean; value: unknown },
+  globalFlag?: { enabled: boolean; value: unknown }
 ) => {
   if (!globalFlag) {
     return false;
   }
   return (
     flag.enabled !== globalFlag.enabled ||
-    String(flag.value ?? "") !== String(globalFlag.value ?? "")
+    String(flag.value ?? '') !== String(globalFlag.value ?? '')
   );
 };
 
@@ -317,12 +317,12 @@ const UserFlagRow = ({
     userIdentifier: string,
     teamIdentifier: string,
     enabled: boolean,
-    value: string | null,
+    value: string | null
   ) => void;
   onDeleteOverride: (
     flagName: string,
     userIdentifier: string,
-    teamIdentifier: string,
+    teamIdentifier: string
   ) => void;
   mutating?: boolean;
 }) => {
@@ -354,7 +354,7 @@ const UserFlagRow = ({
                 userIdentifier,
                 teamIdentifier,
                 enabled,
-                flag.value != null ? String(flag.value) : null,
+                flag.value != null ? String(flag.value) : null
               )
             }
           />
@@ -374,7 +374,7 @@ const UserFlagRow = ({
                 userIdentifier,
                 teamIdentifier,
                 flag.enabled,
-                value,
+                value
               )
             }
           />
@@ -399,7 +399,7 @@ const UserFlagRow = ({
                   userIdentifier,
                   teamIdentifier,
                   !flag.enabled,
-                  flag.value != null ? String(flag.value) : null,
+                  flag.value != null ? String(flag.value) : null
                 )
               }
               disabled={mutating}
@@ -511,12 +511,12 @@ const UserFlagTable = ({
     userIdentifier: string,
     teamIdentifier: string,
     enabled: boolean,
-    value: string | null,
+    value: string | null
   ) => void;
   onDeleteOverride: (
     flagName: string,
     userIdentifier: string,
-    teamIdentifier: string,
+    teamIdentifier: string
   ) => void;
   mutatingFlag?: string | null;
 }) => {
@@ -524,7 +524,7 @@ const UserFlagTable = ({
 
   const visibleCount = showOverrideOnly
     ? sortedNames.filter((name) =>
-        isOverridden(flags[name], globalFlags?.[name]),
+        isOverridden(flags[name], globalFlags?.[name])
       ).length
     : sortedNames.length;
 
@@ -612,18 +612,18 @@ const TeamFlagSection = ({
     userIdentifier: string,
     teamIdentifier: string,
     enabled: boolean,
-    value: string | null,
+    value: string | null
   ) => void;
   onDeleteOverride: (
     flagName: string,
     userIdentifier: string,
-    teamIdentifier: string,
+    teamIdentifier: string
   ) => void;
   mutatingFlag?: string | null;
 }) => {
   const overrideCount = globalFlags
     ? Object.keys(evaluation.flags).filter((k) =>
-        isOverridden(evaluation.flags[k], globalFlags[k]),
+        isOverridden(evaluation.flags[k], globalFlags[k])
       ).length
     : 0;
 
@@ -646,7 +646,7 @@ const TeamFlagSection = ({
           )}
           {overrideCount > 0 && (
             <span className="text-xs font-medium text-amber-600">
-              {overrideCount} override{overrideCount !== 1 ? "s" : ""}
+              {overrideCount} override{overrideCount !== 1 ? 's' : ''}
             </span>
           )}
         </div>
@@ -701,7 +701,7 @@ export const UserFeatureFlags = ({
       uid: string,
       tid: string,
       enabled: boolean,
-      value: string | null,
+      value: string | null
     ) => {
       setMutatingFlag(flagName);
       upsertOverride.mutate(
@@ -714,10 +714,10 @@ export const UserFeatureFlags = ({
         {
           onSettled: () => setMutatingFlag(null),
           onSuccess: () => setShowBanner(true),
-        },
+        }
       );
     },
-    [upsertOverride],
+    [upsertOverride]
   );
 
   const handleDeleteOverride = useCallback(
@@ -728,10 +728,10 @@ export const UserFeatureFlags = ({
         {
           onSettled: () => setMutatingFlag(null),
           onSuccess: () => setShowBanner(true),
-        },
+        }
       );
     },
-    [deleteOverride],
+    [deleteOverride]
   );
 
   const totalOverrides =
@@ -740,9 +740,9 @@ export const UserFeatureFlags = ({
           (total, ev) =>
             total +
             Object.keys(ev.flags).filter((k) =>
-              isOverridden(ev.flags[k], globalFlags[k]),
+              isOverridden(ev.flags[k], globalFlags[k])
             ).length,
-          0,
+          0
         )
       : 0;
 
@@ -765,9 +765,9 @@ export const UserFeatureFlags = ({
           </span>
           {totalOverrides > 0 && (
             <span className="text-xs font-medium text-amber-600">
-              {totalOverrides} override{totalOverrides !== 1 ? "s" : ""} across{" "}
+              {totalOverrides} override{totalOverrides !== 1 ? 's' : ''} across{' '}
               {teamEvaluations?.length} team
-              {(teamEvaluations?.length ?? 0) !== 1 ? "s" : ""}
+              {(teamEvaluations?.length ?? 0) !== 1 ? 's' : ''}
             </span>
           )}
         </div>
@@ -776,8 +776,8 @@ export const UserFeatureFlags = ({
             onClick={() => setShowOverrideOnly(!showOverrideOnly)}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               showOverrideOnly
-                ? "bg-amber-50 text-amber-700 border border-amber-200"
-                : "text-text-secondary hover:bg-surface-inset border border-border-default"
+                ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                : 'text-text-secondary hover:bg-surface-inset border border-border-default'
             }`}
           >
             <Filter className="h-3 w-3" />
@@ -848,7 +848,7 @@ const TeamOverrideRow = ({
     flagName: string,
     teamIdentifier: string,
     enabled: boolean,
-    value: string | null,
+    value: string | null
   ) => void;
   onDeleteOverride: (flagName: string, teamIdentifier: string) => void;
   mutating?: boolean;
@@ -880,7 +880,7 @@ const TeamOverrideRow = ({
                 name,
                 teamIdentifier,
                 enabled,
-                flag.value != null ? String(flag.value) : null,
+                flag.value != null ? String(flag.value) : null
               )
             }
           />
@@ -918,7 +918,7 @@ const TeamOverrideRow = ({
                   name,
                   teamIdentifier,
                   !flag.enabled,
-                  flag.value != null ? String(flag.value) : null,
+                  flag.value != null ? String(flag.value) : null
                 )
               }
               disabled={mutating}
@@ -972,7 +972,7 @@ const TeamOverrideTable = ({
     flagName: string,
     teamIdentifier: string,
     enabled: boolean,
-    value: string | null,
+    value: string | null
   ) => void;
   onDeleteOverride: (flagName: string, teamIdentifier: string) => void;
   mutatingFlag?: string | null;
@@ -981,7 +981,7 @@ const TeamOverrideTable = ({
 
   const visibleCount = showOverrideOnly
     ? sortedNames.filter((name) =>
-        isOverridden(flags[name], globalFlags?.[name]),
+        isOverridden(flags[name], globalFlags?.[name])
       ).length
     : sortedNames.length;
 
@@ -1087,10 +1087,10 @@ export const TeamFeatureFlags = ({
         {
           onSettled: () => setMutatingFlag(null),
           onSuccess: () => setShowBanner(true),
-        },
+        }
       );
     },
-    [upsertOverride],
+    [upsertOverride]
   );
 
   const handleDeleteOverride = useCallback(
@@ -1101,16 +1101,16 @@ export const TeamFeatureFlags = ({
         {
           onSettled: () => setMutatingFlag(null),
           onSuccess: () => setShowBanner(true),
-        },
+        }
       );
     },
-    [deleteOverride],
+    [deleteOverride]
   );
 
   const overrideCount =
     teamFlags && globalFlags
       ? Object.keys(teamFlags).filter((k) =>
-          isOverridden(teamFlags[k], globalFlags[k]),
+          isOverridden(teamFlags[k], globalFlags[k])
         ).length
       : 0;
 
@@ -1132,7 +1132,7 @@ export const TeamFeatureFlags = ({
           </span>
           {overrideCount > 0 && (
             <span className="text-xs font-medium text-amber-600">
-              {overrideCount} override{overrideCount !== 1 ? "s" : ""}
+              {overrideCount} override{overrideCount !== 1 ? 's' : ''}
             </span>
           )}
         </div>
@@ -1141,8 +1141,8 @@ export const TeamFeatureFlags = ({
             onClick={() => setShowOverrideOnly(!showOverrideOnly)}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               showOverrideOnly
-                ? "bg-amber-50 text-amber-700 border border-amber-200"
-                : "text-text-secondary hover:bg-surface-inset border border-border-default"
+                ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                : 'text-text-secondary hover:bg-surface-inset border border-border-default'
             }`}
           >
             <Filter className="h-3 w-3" />
@@ -1205,7 +1205,7 @@ const SegmentOverrideRow = ({
     flagName: string,
     segmentId: number,
     enabled: boolean,
-    value: string | null,
+    value: string | null
   ) => void;
   onDeleteOverride: (flagName: string, segmentId: number) => void;
   mutating?: boolean;
@@ -1237,7 +1237,7 @@ const SegmentOverrideRow = ({
                 name,
                 segmentId,
                 enabled,
-                flag.value != null ? String(flag.value) : null,
+                flag.value != null ? String(flag.value) : null
               )
             }
           />
@@ -1310,7 +1310,7 @@ const SegmentFlagTable = ({
     flagName: string,
     segmentId: number,
     enabled: boolean,
-    value: string | null,
+    value: string | null
   ) => void;
   onDeleteOverride: (flagName: string, segmentId: number) => void;
   mutatingFlag?: string | null;
@@ -1328,7 +1328,7 @@ const SegmentFlagTable = ({
 
   const visibleCount = showOverrideOnly
     ? sortedNames.filter((name) =>
-        isOverridden(overrides[name], globalFlags?.[name]),
+        isOverridden(overrides[name], globalFlags?.[name])
       ).length
     : sortedNames.length;
 
@@ -1403,7 +1403,7 @@ const SegmentFlagSection = ({
     flagName: string,
     segmentId: number,
     enabled: boolean,
-    value: string | null,
+    value: string | null
   ) => void;
   onDeleteOverride: (flagName: string, segmentId: number) => void;
   mutatingFlag?: string | null;
@@ -1420,7 +1420,7 @@ const SegmentFlagSection = ({
           </span>
           {overrideCount > 0 && (
             <span className="text-xs font-medium text-amber-600">
-              {overrideCount} override{overrideCount !== 1 ? "s" : ""}
+              {overrideCount} override{overrideCount !== 1 ? 's' : ''}
             </span>
           )}
         </div>
@@ -1471,7 +1471,7 @@ export const SegmentFeatureFlags = () => {
       flagName: string,
       segmentId: number,
       enabled: boolean,
-      value: string | null,
+      value: string | null
     ) => {
       setMutatingFlag(flagName);
       upsertOverride.mutate(
@@ -1479,10 +1479,10 @@ export const SegmentFeatureFlags = () => {
         {
           onSettled: () => setMutatingFlag(null),
           onSuccess: () => setShowBanner(true),
-        },
+        }
       );
     },
-    [upsertOverride],
+    [upsertOverride]
   );
 
   const handleDeleteOverride = useCallback(
@@ -1493,16 +1493,16 @@ export const SegmentFeatureFlags = () => {
         {
           onSettled: () => setMutatingFlag(null),
           onSuccess: () => setShowBanner(true),
-        },
+        }
       );
     },
-    [deleteOverride],
+    [deleteOverride]
   );
 
   const totalOverrides = segments
     ? segments.reduce(
         (total, seg) => total + Object.keys(seg.overrides).length,
-        0,
+        0
       )
     : 0;
 
@@ -1521,11 +1521,11 @@ export const SegmentFeatureFlags = () => {
           </h2>
           <span className="text-xs text-text-muted">
             {segments?.length ?? 0} segment
-            {(segments?.length ?? 0) !== 1 ? "s" : ""}
+            {(segments?.length ?? 0) !== 1 ? 's' : ''}
           </span>
           {totalOverrides > 0 && (
             <span className="text-xs font-medium text-amber-600">
-              {totalOverrides} override{totalOverrides !== 1 ? "s" : ""} total
+              {totalOverrides} override{totalOverrides !== 1 ? 's' : ''} total
             </span>
           )}
         </div>
@@ -1534,8 +1534,8 @@ export const SegmentFeatureFlags = () => {
             onClick={() => setShowOverrideOnly(!showOverrideOnly)}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               showOverrideOnly
-                ? "bg-amber-50 text-amber-700 border border-amber-200"
-                : "text-text-secondary hover:bg-surface-inset border border-border-default"
+                ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                : 'text-text-secondary hover:bg-surface-inset border border-border-default'
             }`}
           >
             <Filter className="h-3 w-3" />
@@ -1604,7 +1604,7 @@ const SegmentDetailRow = ({
     flagName: string,
     segmentId: number,
     enabled: boolean,
-    value: string | null,
+    value: string | null
   ) => void;
   onDeleteOverride: (flagName: string, segmentId: number) => void;
   mutating?: boolean;
@@ -1636,7 +1636,7 @@ const SegmentDetailRow = ({
                 name,
                 segmentId,
                 enabled,
-                flag.value != null ? String(flag.value) : null,
+                flag.value != null ? String(flag.value) : null
               )
             }
           />
@@ -1674,7 +1674,7 @@ const SegmentDetailRow = ({
                   name,
                   segmentId,
                   !flag.enabled,
-                  flag.value != null ? String(flag.value) : null,
+                  flag.value != null ? String(flag.value) : null
                 )
               }
               disabled={mutating}
@@ -1726,7 +1726,7 @@ const SegmentDetailTable = ({
     flagName: string,
     segmentId: number,
     enabled: boolean,
-    value: string | null,
+    value: string | null
   ) => void;
   onDeleteOverride: (flagName: string, segmentId: number) => void;
   mutatingFlag?: string | null;
@@ -1735,7 +1735,7 @@ const SegmentDetailTable = ({
 
   const visibleCount = showOverrideOnly
     ? sortedNames.filter((name) =>
-        isOverridden(flags[name], globalFlags?.[name]),
+        isOverridden(flags[name], globalFlags?.[name])
       ).length
     : sortedNames.length;
 
@@ -1834,7 +1834,7 @@ export const SegmentDetailFeatureFlags = ({
       flagName: string,
       segmentId: number,
       enabled: boolean,
-      value: string | null,
+      value: string | null
     ) => {
       setMutatingFlag(flagName);
       upsertOverride.mutate(
@@ -1842,10 +1842,10 @@ export const SegmentDetailFeatureFlags = ({
         {
           onSettled: () => setMutatingFlag(null),
           onSuccess: () => setShowBanner(true),
-        },
+        }
       );
     },
-    [upsertOverride],
+    [upsertOverride]
   );
 
   const handleDeleteOverride = useCallback(
@@ -1856,16 +1856,16 @@ export const SegmentDetailFeatureFlags = ({
         {
           onSettled: () => setMutatingFlag(null),
           onSuccess: () => setShowBanner(true),
-        },
+        }
       );
     },
-    [deleteOverride],
+    [deleteOverride]
   );
 
   const overrideCount =
     segment && globalFlags
       ? Object.keys(segment.overrides).filter((k) =>
-          isOverridden(segment.overrides[k], globalFlags[k]),
+          isOverridden(segment.overrides[k], globalFlags[k])
         ).length
       : 0;
 
@@ -1884,7 +1884,7 @@ export const SegmentDetailFeatureFlags = ({
           </h2>
           {overrideCount > 0 && (
             <span className="text-xs font-medium text-amber-600">
-              {overrideCount} override{overrideCount !== 1 ? "s" : ""}
+              {overrideCount} override{overrideCount !== 1 ? 's' : ''}
             </span>
           )}
         </div>
@@ -1893,8 +1893,8 @@ export const SegmentDetailFeatureFlags = ({
             onClick={() => setShowOverrideOnly(!showOverrideOnly)}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               showOverrideOnly
-                ? "bg-amber-50 text-amber-700 border border-amber-200"
-                : "text-text-secondary hover:bg-surface-inset border border-border-default"
+                ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                : 'text-text-secondary hover:bg-surface-inset border border-border-default'
             }`}
           >
             <Filter className="h-3 w-3" />

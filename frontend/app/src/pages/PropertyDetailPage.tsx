@@ -1,44 +1,27 @@
-import { useState, useMemo, useEffect } from 'react';
-import { RichTextDisplay } from '@/components/common/RichTextDisplay';
-import { formatAuditValue } from '@/utils/formatAuditValue';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTabState } from '@/hooks/useTabState';
-import {
-  useProperty,
-  useDeleteProperty,
-  usePropertyDocuments,
-  useUploadPropertyDocument,
-  useDeleteDocument,
-  usePropertyAuditLog,
-  usePropertyPhotos,
-  useUploadPropertyPhoto,
-  useSetMainPhoto,
-} from '@/hooks/usePropertyHooks';
-import { useDeletePhoto } from '@/hooks/usePhotoHooks';
-import { useContracts } from '@/hooks/useContractHooks';
-import { CalendarFeedResponseFeedType as CalendarFeedType } from '@/generated/models';
-import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
-import { useExpensesByProperty } from '@/hooks/useExpenseHooks';
+import { useProperty, useDeleteProperty } from '@/hooks/usePropertyHooks';
 import {
   useOccupancyPeriods,
   useDeleteOccupancyPeriod,
 } from '@/hooks/useOccupancyPeriodHooks';
+import { EndSelfOccupancyModal } from '@/components/properties/EndSelfOccupancyModal';
 import { useFinancings } from '@/hooks/usePropertyFinancialsHooks';
 import { FinancingFormModal } from '@/components/properties/financials/modals/FinancingFormModal';
-import { OCCUPANCY_TYPE_LABELS } from '@/types/occupancyPeriod';
-import { SelfOccupancyModal } from '@/components/properties/SelfOccupancyModal';
-import { WwsCalculatorModal } from '@/components/wws/WwsCalculatorModal';
 import {
   useLatestWwsCalculation,
   useWwsCalculations,
   useDeleteWwsCalculation,
 } from '@/hooks/useWwsHooks';
-import { EndSelfOccupancyModal } from '@/components/properties/EndSelfOccupancyModal';
-import { EditSelfOccupancyModal } from '@/components/properties/EditSelfOccupancyModal';
 import { SelfOccupancyCard } from '@/components/properties/SelfOccupancyCard';
 import { PropertyLifecycleTimeline } from '@/components/properties/PropertyLifecycleTimeline';
 import { PropertyTypeIcon } from '@/components/common/PropertyTypeIcon';
-import { ExpenseCategoryBadge } from '@/components/expenses/ExpenseCategoryBadge';
+import { EditSelfOccupancyModal } from '@/components/properties/EditSelfOccupancyModal';
+import { CalendarFeedResponseFeedType as CalendarFeedType } from '@/generated/models';
+import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
+import { WwsCalculatorModal } from '@/components/wws/WwsCalculatorModal';
+import { InteractiveMap } from '@/components/common/InteractiveMap';
 import {
   PropertyStatus,
   PropertyCategory,
@@ -46,25 +29,26 @@ import {
   PROPERTY_CATEGORY_LABELS,
   PROPERTY_STATUS_LABELS,
 } from '@/types/property';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { PropertyDashboardTab } from '@/components/properties/dashboard/PropertyDashboardTab';
 import { PropertyFinancialsTab } from '@/components/properties/financials/PropertyFinancialsTab';
+import { PropertyContractsTab } from '@/components/properties/PropertyContractsTab';
+import { PropertyExpensesTab } from '@/components/properties/PropertyExpensesTab';
+import { PropertyDocumentsTab } from '@/components/properties/PropertyDocumentsTab';
+import { PropertyPhotosTab } from '@/components/properties/PropertyPhotosTab';
+import { PropertyAuditTab } from '@/components/properties/PropertyAuditTab';
 import { FeatureGate } from '@/components/FeatureGate';
 import { FeatureFlags } from '@/constants/featureFlags';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { DocumentList } from '@/components/properties/DocumentList';
-import { PhotoGallery } from '@/components/properties/PhotoGallery';
-import { InteractiveMap } from '@/components/common/InteractiveMap';
-import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
-import { Button, PageHeader } from '@buurman/ui';
+import { Button, PageHeader, Skeleton, useToast } from '@buurman/ui';
 import { trackEvent } from '@/utils/analytics';
 import { AnalyticsEvent } from '@/constants/analyticsEvents';
 import { useTeam } from '@/context/TeamContext';
-import client from '@/api/client';
+import { downloadPropertyBooklet } from '@/api/properties';
+import DOMPurify from 'dompurify';
+import { useFormatDate } from '@/hooks/useFormatDate';
 import {
   Edit,
   Trash2,
-  Square,
   Bed,
   Bath,
   Ruler,
@@ -72,22 +56,15 @@ import {
   History,
   Image,
   FileText,
-  Plus,
   Receipt,
-  Search,
   ChevronUp,
   ChevronDown,
   Download,
   BarChart3,
   Wallet,
-  Home,
   Calculator,
   X,
-  Eye,
 } from 'lucide-react';
-import DOMPurify from 'dompurify';
-import { formatDistanceToNow } from 'date-fns';
-import { useFormatDate } from '@/hooks/useFormatDate';
 
 const statusColors: Record<string, string> = {
   VACANT: 'bg-success-bg text-success-text',
@@ -100,11 +77,24 @@ const statusColors: Record<string, string> = {
   SELF_OCCUPIED: 'bg-info-bg text-info-text',
 };
 
+const formatEnumValue = (value: string | null): string => {
+  if (!value) {
+    return '';
+  }
+  return value
+    .replace(/_/g, '')
+    .replace(/\b\w/g, (c) => c.toUpperCase())
+    .replace(/\bAc\b/g, 'AC')
+    .replace(/\bCo\b/g, 'CO')
+    .replace(/\bDsl\b/g, 'DSL');
+};
+
 export const PropertyDetailPage = () => {
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData, canManageMembers } = useTeam();
   const { formatDate } = useFormatDate();
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useTabState('info', [
     'info',
     'financials',
@@ -115,8 +105,21 @@ export const PropertyDetailPage = () => {
     'audit',
     'dashboard',
   ] as const);
+
+  // Page-level modal state
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showSelfOccupancyModal, setShowSelfOccupancyModal] = useState(false);
+  const [showWwsModal, setShowWwsModal] = useState(false);
+  const [showDeleteWwsConfirm, setShowDeleteWwsConfirm] = useState(false);
+  const [deleteWwsHistoryId, setDeleteWwsHistoryId] = useState<string | null>(
+    null
+  );
+  const [showWwsHistory, setShowWwsHistory] = useState(false);
+  const [isMetadataExpanded, setIsMetadataExpanded] = useState(false);
+  const [editOccupancyPeriodId, setEditOccupancyPeriodId] = useState<
+    string | null
+  >(null);
+  const [editFinancingId, setEditFinancingId] = useState<string | null>(null);
+  // Info-tab self-occupancy card actions
   const [showEndOccupancyModal, setShowEndOccupancyModal] = useState(false);
   const [endOccupancyPeriodId, setEndOccupancyPeriodId] = useState<
     string | null
@@ -124,43 +127,8 @@ export const PropertyDetailPage = () => {
   const [deleteOccupancyPeriodId, setDeleteOccupancyPeriodId] = useState<
     string | null
   >(null);
-  const [editOccupancyPeriodId, setEditOccupancyPeriodId] = useState<
-    string | null
-  >(null);
-  const [editFinancingId, setEditFinancingId] = useState<string | null>(null);
-  const [showWwsModal, setShowWwsModal] = useState(false);
-  const [showDeleteWwsConfirm, setShowDeleteWwsConfirm] = useState(false);
-  const [deleteWwsHistoryId, setDeleteWwsHistoryId] = useState<string | null>(
-    null
-  );
-  const [showWwsHistory, setShowWwsHistory] = useState(false);
-  const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
-    new Set()
-  );
-  const [isMetadataExpanded, setIsMetadataExpanded] = useState(false);
 
-  // Contracts table state
-  const [contractsSearchTerm, setContractsSearchTerm] = useState('');
-  const [contractsSortField, setContractsSortField] = useState<
-    'startDate' | 'rentAmount' | 'status' | 'contact' | 'contractType'
-  >('startDate');
-  const [contractsSortOrder, setContractsSortOrder] = useState<'asc' | 'desc'>(
-    'desc'
-  );
-  const [contractsCurrentPage, setContractsCurrentPage] = useState(1);
-  const contractsPerPage = 10;
-
-  // Expenses table state
-  const [expensesSearchTerm, setExpensesSearchTerm] = useState('');
-  const [expensesSortField, setExpensesSortField] = useState<
-    'expenseDate' | 'amount' | 'category' | 'description'
-  >('expenseDate');
-  const [expensesSortOrder, setExpensesSortOrder] = useState<'asc' | 'desc'>(
-    'desc'
-  );
-  const [expensesCurrentPage, setExpensesCurrentPage] = useState(1);
-  const expensesPerPage = 10;
-
+  // Core property data
   const { data: property, isLoading, error } = useProperty(id);
   const propertyIdentifier = property?.identifier;
 
@@ -170,6 +138,7 @@ export const PropertyDetailPage = () => {
     }
   }, [propertyIdentifier]);
 
+  // WWS (NL-only)
   const isNlProperty = property?.countryCode === 'NL';
   const { data: latestWws } = useLatestWwsCalculation(
     isNlProperty ? id : undefined
@@ -178,205 +147,16 @@ export const PropertyDetailPage = () => {
     isNlProperty && showWwsHistory ? id : undefined
   );
   const deleteWwsMutation = useDeleteWwsCalculation(id);
-  const {
-    data: documents = [],
-    isLoading: docsLoading,
-    error: docsError,
-  } = usePropertyDocuments(id);
-  const {
-    data: photos = [],
-    isLoading: photosLoading,
-    error: photosError,
-  } = usePropertyPhotos(id);
-  const {
-    data: auditLog = [],
-    isLoading: auditLoading,
-    error: auditError,
-  } = usePropertyAuditLog(id);
-  const {
-    data: contractsData,
-    isLoading: contractsLoading,
-    error: contractsError,
-  } = useContracts(id ? { propertyIdentifier: id } : undefined);
-  const contracts = useMemo(
-    () => contractsData?.content ?? [],
-    [contractsData]
-  );
-  const {
-    data: expenses = [],
-    isLoading: expensesLoading,
-    error: expensesError,
-  } = useExpensesByProperty(id);
+
+  // Info tab data (needed for timeline and self-occupancy card)
   const { data: occupancyPeriods = [] } = useOccupancyPeriods(id);
   const { data: financings = [] } = useFinancings(id);
   const activeOccupancyPeriod = occupancyPeriods.find(
     (p) => !p.endDate || new Date(p.endDate) >= new Date()
   );
+
   const deleteOccupancyMutation = useDeleteOccupancyPeriod(id);
   const deletePropertyMutation = useDeleteProperty();
-  const uploadDocumentMutation = useUploadPropertyDocument(id);
-  const uploadPhotoMutation = useUploadPropertyPhoto(id);
-  const setMainPhotoMutation = useSetMainPhoto(id);
-  const deleteDocumentMutation = useDeleteDocument(id);
-  const deletePhotoMutation = useDeletePhoto();
-
-  // Contracts filtering, sorting, and pagination
-  const filteredAndSortedContracts = useMemo(() => {
-    if (!contracts) {
-      return [];
-    }
-
-    let filtered = [...contracts];
-
-    // Apply search filter
-    if (contractsSearchTerm) {
-      const search = contractsSearchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (contract) =>
-          contract.identifier.toLowerCase().includes(search) ||
-          `${contract.primaryContact.firstName} ${contract.primaryContact.lastName}`
-            .toLowerCase()
-            .includes(search) ||
-          contract.contractType.toLowerCase().includes(search)
-      );
-    }
-
-    // Apply sorting
-    filtered.sort((a, b) => {
-      let aVal: string | number, bVal: string | number;
-
-      switch (contractsSortField) {
-        case 'startDate':
-          aVal = new Date(a.startDate).getTime();
-          bVal = new Date(b.startDate).getTime();
-          break;
-        case 'rentAmount':
-          aVal = a.rentAmount;
-          bVal = b.rentAmount;
-          break;
-        case 'status':
-          aVal = a.status;
-          bVal = b.status;
-          break;
-        case 'contact':
-          aVal = `${a.primaryContact.firstName} ${a.primaryContact.lastName}`;
-          bVal = `${b.primaryContact.firstName} ${b.primaryContact.lastName}`;
-          break;
-        case 'contractType':
-          aVal = a.contractType;
-          bVal = b.contractType;
-          break;
-        default:
-          return 0;
-      }
-
-      if (aVal < bVal) {
-        return contractsSortOrder === 'asc' ? -1 : 1;
-      }
-      if (aVal > bVal) {
-        return contractsSortOrder === 'asc' ? 1 : -1;
-      }
-      return 0;
-    });
-
-    return filtered;
-  }, [contracts, contractsSearchTerm, contractsSortField, contractsSortOrder]);
-
-  // Paginated contracts
-  const paginatedContracts = useMemo(() => {
-    const startIndex = (contractsCurrentPage - 1) * contractsPerPage;
-    const endIndex = startIndex + contractsPerPage;
-    return filteredAndSortedContracts.slice(startIndex, endIndex);
-  }, [filteredAndSortedContracts, contractsCurrentPage]);
-
-  const contractsTotalPages = Math.ceil(
-    filteredAndSortedContracts.length / contractsPerPage
-  );
-
-  const handleContractsSort = (field: typeof contractsSortField) => {
-    if (contractsSortField === field) {
-      setContractsSortOrder(contractsSortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setContractsSortField(field);
-      setContractsSortOrder('asc');
-    }
-  };
-
-  // Expenses filtering, sorting, and pagination
-  const filteredAndSortedExpenses = useMemo(() => {
-    if (!expenses) {
-      return [];
-    }
-
-    let filtered = [...expenses];
-
-    // Apply search filter
-    if (expensesSearchTerm) {
-      const search = expensesSearchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (expense) =>
-          expense.identifier.toLowerCase().includes(search) ||
-          expense.description.toLowerCase().includes(search) ||
-          expense.category.toLowerCase().includes(search)
-      );
-    }
-
-    // Apply sorting
-    filtered.sort((a, b) => {
-      let aVal: string | number, bVal: string | number;
-
-      switch (expensesSortField) {
-        case 'expenseDate':
-          aVal = new Date(a.expenseDate).getTime();
-          bVal = new Date(b.expenseDate).getTime();
-          break;
-        case 'amount':
-          aVal = a.amount;
-          bVal = b.amount;
-          break;
-        case 'category':
-          aVal = a.category;
-          bVal = b.category;
-          break;
-        case 'description':
-          aVal = a.description;
-          bVal = b.description;
-          break;
-        default:
-          return 0;
-      }
-
-      if (aVal < bVal) {
-        return expensesSortOrder === 'asc' ? -1 : 1;
-      }
-      if (aVal > bVal) {
-        return expensesSortOrder === 'asc' ? 1 : -1;
-      }
-      return 0;
-    });
-
-    return filtered;
-  }, [expenses, expensesSearchTerm, expensesSortField, expensesSortOrder]);
-
-  // Paginated expenses
-  const paginatedExpenses = useMemo(() => {
-    const startIndex = (expensesCurrentPage - 1) * expensesPerPage;
-    const endIndex = startIndex + expensesPerPage;
-    return filteredAndSortedExpenses.slice(startIndex, endIndex);
-  }, [filteredAndSortedExpenses, expensesCurrentPage]);
-
-  const expensesTotalPages = Math.ceil(
-    filteredAndSortedExpenses.length / expensesPerPage
-  );
-
-  const handleExpensesSort = (field: typeof expensesSortField) => {
-    if (expensesSortField === field) {
-      setExpensesSortOrder(expensesSortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setExpensesSortField(field);
-      setExpensesSortOrder('asc');
-    }
-  };
 
   const handleDelete = async () => {
     if (!id) {
@@ -390,94 +170,60 @@ export const PropertyDetailPage = () => {
     }
   };
 
-  const handleUploadDocument = async (
-    file: File,
-    title?: string,
-    notes?: string
-  ) => {
-    await uploadDocumentMutation.mutateAsync({ file, title, notes });
-  };
-
-  const handleDeleteDocument = async (documentId: string) => {
-    await deleteDocumentMutation.mutateAsync(documentId);
-  };
-
-  const handleDeletePhoto = async (photoId: string) => {
-    await deletePhotoMutation.mutateAsync(photoId);
-  };
-
-  const handleUploadPhoto = async (
-    file: File,
-    title?: string,
-    notes?: string
-  ) => {
-    await uploadPhotoMutation.mutateAsync({ file, title, notes });
-  };
-
-  const handleSetMainPhoto = async (photoId: string) => {
-    await setMainPhotoMutation.mutateAsync(photoId);
-  };
-
-  const toggleAuditItem = (itemId: string) => {
-    const newExpanded = new Set(expandedAuditItems);
-    if (newExpanded.has(itemId)) {
-      newExpanded.delete(itemId);
-    } else {
-      newExpanded.add(itemId);
+  const handleDownloadBooklet = async () => {
+    try {
+      const blob = await downloadPropertyBooklet(id);
+      const pdfBlob = new Blob([blob], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'property-booklet.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Failed to download booklet:', err);
+      showToast('Failed to download booklet. Please try again.', 'error');
     }
-    setExpandedAuditItems(newExpanded);
-  };
-
-  const formatFieldName = (field: string): string => {
-    // Handle special field names
-    if (field === 'documentAdded') {
-      return 'Document Added';
-    }
-    if (field === 'documentRemoved') {
-      return 'Document Removed';
-    }
-    if (field === 'documentCount') {
-      return 'Document Count';
-    }
-    if (field === 'photoAdded') {
-      return 'Photo Added';
-    }
-    if (field === 'photoRemoved') {
-      return 'Photo Removed';
-    }
-    if (field === 'photoCount') {
-      return 'Photo Count';
-    }
-    if (field === 'photoEdited') {
-      return 'Photo Edited';
-    }
-    if (field === 'documentEdited') {
-      return 'Document Edited';
-    }
-
-    // Convert camelCase to Title Case with spaces
-    return field
-      .replace(/([A-Z])/g, ' $1')
-      .replace(/^./, (str) => str.toUpperCase())
-      .trim();
-  };
-
-  const formatEnumValue = (value: string | null): string => {
-    if (!value) {
-      return '';
-    }
-    return value
-      .replace(/_/g, '')
-      .replace(/\b\w/g, (c) => c.toUpperCase())
-      .replace(/\bAc\b/g, 'AC')
-      .replace(/\bCo\b/g, 'CO')
-      .replace(/\bDsl\b/g, 'DSL');
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <LoadingSpinner />
+      <div className="min-h-screen bg-background">
+        <div className="px-4 py-8 space-y-6">
+          {/* Header skeleton */}
+          <div className="flex items-center gap-4">
+            <Skeleton className="h-8 w-64" />
+            <Skeleton className="h-6 w-20 rounded-full" />
+          </div>
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-4 w-48" />
+          </div>
+          {/* Action buttons skeleton */}
+          <div className="flex gap-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-10 w-24 rounded" />
+            ))}
+          </div>
+          {/* Tab bar skeleton */}
+          <div className="flex gap-6 border-b border-border-default pb-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-5 w-20" />
+            ))}
+          </div>
+          {/* Tab content skeleton */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <Skeleton className="h-48 w-full rounded-lg" />
+              <Skeleton className="h-32 w-full rounded-lg" />
+            </div>
+            <div className="space-y-4">
+              <Skeleton className="h-64 w-full rounded-lg" />
+              <Skeleton className="h-32 w-full rounded-lg" />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -489,6 +235,9 @@ export const PropertyDetailPage = () => {
       </div>
     );
   }
+
+  // All rich text fields are sanitized with DOMPurify before rendering
+  const sanitize = DOMPurify.sanitize;
 
   return (
     <div className="min-h-screen bg-background">
@@ -512,30 +261,7 @@ export const PropertyDetailPage = () => {
               <Button
                 variant="primary"
                 leftIcon={<Download />}
-                onClick={async () => {
-                  try {
-                    const response = await client.get(
-                      `/booklets/property/${id}`,
-                      {
-                        responseType: 'blob',
-                      }
-                    );
-                    const blob = new Blob([response.data], {
-                      type: 'application/pdf',
-                    });
-                    const url = window.URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = 'property-booklet.pdf';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    window.URL.revokeObjectURL(url);
-                  } catch (error) {
-                    console.error('Failed to download booklet:', error);
-                    alert('Failed to download booklet. Please try again.');
-                  }
-                }}
+                onClick={handleDownloadBooklet}
               >
                 Booklet
               </Button>
@@ -611,7 +337,7 @@ export const PropertyDetailPage = () => {
               }`}
             >
               <Image className="h-4 w-4" />
-              Photos {photos.length > 0 && `(${photos.length})`}
+              Photos
             </button>
             <button
               onClick={() => setActiveTab('documents')}
@@ -621,7 +347,7 @@ export const PropertyDetailPage = () => {
                   : 'border-transparent text-text-secondary hover:text-text-primary'
               }`}
             >
-              Documents {documents.length > 0 && `(${documents.length})`}
+              Documents
             </button>
             <button
               onClick={() => setActiveTab('contracts')}
@@ -632,7 +358,7 @@ export const PropertyDetailPage = () => {
               }`}
             >
               <FileText className="h-4 w-4" />
-              Contracts {contracts.length > 0 && `(${contracts.length})`}
+              Contracts
             </button>
             <button
               onClick={() => setActiveTab('expenses')}
@@ -643,7 +369,7 @@ export const PropertyDetailPage = () => {
               }`}
             >
               <Receipt className="h-4 w-4" />
-              Expenses {expenses.length > 0 && `(${expenses.length})`}
+              Expenses
             </button>
             <button
               onClick={() => setActiveTab('audit')}
@@ -654,7 +380,7 @@ export const PropertyDetailPage = () => {
               }`}
             >
               <History className="h-4 w-4" />
-              History {auditLog.length > 0 && `(${auditLog.length})`}
+              History
             </button>
           </div>
         </div>
@@ -717,8 +443,9 @@ export const PropertyDetailPage = () => {
                 }
               />
             )}
+
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 space-y-6">
-              {/* Status & Category — elegant inline display */}
+              {/* Status & Category */}
               <div className="flex items-center gap-4 text-sm pb-2 border-b border-border-subtle">
                 <div className="flex items-center gap-2">
                   <span
@@ -741,7 +468,7 @@ export const PropertyDetailPage = () => {
                     ] ?? property.status}
                   </span>
                 </div>
-                <span className="text-text-disabled">·</span>
+                <span className="text-text-disabled">{'\u00b7'}</span>
                 <span className="inline-flex items-center gap-1 text-text-secondary">
                   <PropertyTypeIcon
                     category={property.propertyCategory}
@@ -751,7 +478,7 @@ export const PropertyDetailPage = () => {
                     property.propertyCategory as PropertyCategory
                   ] ?? property.propertyCategory}
                 </span>
-                <span className="text-text-disabled">·</span>
+                <span className="text-text-disabled">{'\u00b7'}</span>
                 <span className="inline-flex items-center gap-1 text-text-secondary">
                   <PropertyTypeIcon type={property.propertyType} size={13} />
                   {PROPERTY_TYPE_LABELS[property.propertyType] ??
@@ -793,7 +520,7 @@ export const PropertyDetailPage = () => {
                     </div>
                     <p className="text-2xl font-semibold text-text-primary">
                       {property.areaValue}
-                      {property.areaUnit === 'sqft' ? 'ft²' : 'm²'}
+                      {property.areaUnit === 'sqft' ? 'ft\u00b2' : 'm\u00b2'}
                     </p>
                   </div>
                 )}
@@ -976,7 +703,7 @@ export const PropertyDetailPage = () => {
                     <div
                       className="text-sm text-text-primary mt-1 prose prose-sm dark:prose-invert max-w-none"
                       dangerouslySetInnerHTML={{
-                        __html: DOMPurify.sanitize(property.structuralNotes),
+                        __html: sanitize(property.structuralNotes),
                       }}
                     />
                   </div>
@@ -1073,7 +800,7 @@ export const PropertyDetailPage = () => {
                     <div
                       className="text-sm text-text-primary mt-1 prose prose-sm dark:prose-invert max-w-none"
                       dangerouslySetInnerHTML={{
-                        __html: DOMPurify.sanitize(property.insulationNotes),
+                        __html: sanitize(property.insulationNotes),
                       }}
                     />
                   </div>
@@ -1359,7 +1086,7 @@ export const PropertyDetailPage = () => {
                     <div
                       className="text-sm text-text-primary mt-1 prose prose-sm dark:prose-invert max-w-none"
                       dangerouslySetInnerHTML={{
-                        __html: DOMPurify.sanitize(property.safetyNotes),
+                        __html: sanitize(property.safetyNotes),
                       }}
                     />
                   </div>
@@ -1419,7 +1146,7 @@ export const PropertyDetailPage = () => {
                     <div
                       className="text-sm text-text-primary mt-1 prose prose-sm dark:prose-invert max-w-none"
                       dangerouslySetInnerHTML={{
-                        __html: DOMPurify.sanitize(property.accessibilityNotes),
+                        __html: sanitize(property.accessibilityNotes),
                       }}
                     />
                   </div>
@@ -1427,9 +1154,7 @@ export const PropertyDetailPage = () => {
               </div>
             )}
 
-            {/* Investment & Financial panel removed — data now in Financials tab */}
-
-            {/* WWS Points Calculator — NL properties only */}
+            {/* WWS Points Calculator -- NL properties only */}
             {isNlProperty && (
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -1644,905 +1369,18 @@ export const PropertyDetailPage = () => {
           <PropertyFinancialsTab propertyId={id} />
         )}
 
-        {activeTab === 'photos' && (
-          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-            <PhotoGallery
-              photos={photos}
-              isLoading={photosLoading}
-              error={photosError}
-              onUpload={handleUploadPhoto}
-              onSetMain={handleSetMainPhoto}
-              onDelete={handleDeletePhoto}
-              isUploading={uploadPhotoMutation.isPending}
-              isDeleting={deletePhotoMutation.isPending}
-              readOnly={!canEditData}
-            />
-          </div>
-        )}
+        {activeTab === 'photos' && <PropertyPhotosTab propertyId={id} />}
 
-        {activeTab === 'documents' && (
-          <DocumentList
-            documents={documents}
-            isLoading={docsLoading}
-            error={docsError}
-            onUpload={handleUploadDocument}
-            onDelete={handleDeleteDocument}
-            isUploading={uploadDocumentMutation.isPending}
-            isDeleting={deleteDocumentMutation.isPending}
-            readOnly={!canEditData}
-          />
-        )}
+        {activeTab === 'documents' && <PropertyDocumentsTab propertyId={id} />}
 
-        {activeTab === 'contracts' && (
-          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-text-primary">
-                Contracts ({filteredAndSortedContracts.length})
-              </h2>
-              <button
-                onClick={() => navigate(`/contracts/new?propertyId=${id}`)}
-                disabled={!canEditData}
-                className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
-              >
-                <Plus className="h-4 w-4" />
-                Add Contract
-              </button>
-            </div>
+        {activeTab === 'contracts' && <PropertyContractsTab propertyId={id} />}
 
-            {contractsLoading ? (
-              <LoadingSpinner />
-            ) : contractsError ? (
-              <ErrorMessage message="Failed to load contracts" />
-            ) : contracts.length === 0 ? (
-              <div className="text-center py-12">
-                <FileText className="h-12 w-12 text-text-disabled mx-auto mb-3" />
-                <p className="text-text-secondary mb-4">
-                  No contracts for this property
-                </p>
-                <button
-                  onClick={() => navigate(`/contracts/new?propertyId=${id}`)}
-                  disabled={!canEditData}
-                  className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
-                >
-                  <Plus className="h-4 w-4" />
-                  Create First Contract
-                </button>
-              </div>
-            ) : (
-              <>
-                {/* Search Bar */}
-                <div className="mb-4">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-text-muted " />
-                    <input
-                      type="text"
-                      placeholder="Search by contract #, contact, type..."
-                      value={contractsSearchTerm}
-                      onChange={(e) => {
-                        setContractsSearchTerm(e.target.value);
-                        setContractsCurrentPage(1);
-                      }}
-                      className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-                </div>
+        {activeTab === 'expenses' && <PropertyExpensesTab propertyId={id} />}
 
-                {/* Table */}
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-border-default">
-                    <thead className="bg-surface-page">
-                      <tr>
-                        <th
-                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                          onClick={() => handleContractsSort('startDate')}
-                        >
-                          <div className="flex items-center gap-1">
-                            Contract #
-                            {contractsSortField === 'startDate' &&
-                              (contractsSortOrder === 'asc' ? (
-                                <ChevronUp className="h-4 w-4" />
-                              ) : (
-                                <ChevronDown className="h-4 w-4" />
-                              ))}
-                          </div>
-                        </th>
-                        <th
-                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                          onClick={() => handleContractsSort('contact')}
-                        >
-                          <div className="flex items-center gap-1">
-                            Contact
-                            {contractsSortField === 'contact' &&
-                              (contractsSortOrder === 'asc' ? (
-                                <ChevronUp className="h-4 w-4" />
-                              ) : (
-                                <ChevronDown className="h-4 w-4" />
-                              ))}
-                          </div>
-                        </th>
-                        <th
-                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                          onClick={() => handleContractsSort('contractType')}
-                        >
-                          <div className="flex items-center gap-1">
-                            Type
-                            {contractsSortField === 'contractType' &&
-                              (contractsSortOrder === 'asc' ? (
-                                <ChevronUp className="h-4 w-4" />
-                              ) : (
-                                <ChevronDown className="h-4 w-4" />
-                              ))}
-                          </div>
-                        </th>
-                        <th
-                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                          onClick={() => handleContractsSort('startDate')}
-                        >
-                          <div className="flex items-center gap-1">
-                            Start Date
-                            {contractsSortField === 'startDate' &&
-                              (contractsSortOrder === 'asc' ? (
-                                <ChevronUp className="h-4 w-4" />
-                              ) : (
-                                <ChevronDown className="h-4 w-4" />
-                              ))}
-                          </div>
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                          End Date
-                        </th>
-                        <th
-                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                          onClick={() => handleContractsSort('rentAmount')}
-                        >
-                          <div className="flex items-center gap-1">
-                            Rent Amount
-                            {contractsSortField === 'rentAmount' &&
-                              (contractsSortOrder === 'asc' ? (
-                                <ChevronUp className="h-4 w-4" />
-                              ) : (
-                                <ChevronDown className="h-4 w-4" />
-                              ))}
-                          </div>
-                        </th>
-                        <th
-                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                          onClick={() => handleContractsSort('status')}
-                        >
-                          <div className="flex items-center gap-1">
-                            Status
-                            {contractsSortField === 'status' &&
-                              (contractsSortOrder === 'asc' ? (
-                                <ChevronUp className="h-4 w-4" />
-                              ) : (
-                                <ChevronDown className="h-4 w-4" />
-                              ))}
-                          </div>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-surface-card divide-y divide-border-default">
-                      {paginatedContracts.length === 0 ? (
-                        <tr>
-                          <td
-                            colSpan={7}
-                            className="px-6 py-12 text-center text-text-secondary"
-                          >
-                            No contracts found matching your search
-                          </td>
-                        </tr>
-                      ) : (
-                        paginatedContracts.map((contract) => (
-                          <tr
-                            key={contract.identifier}
-                            onClick={() =>
-                              navigate(`/contracts/${contract.identifier}`)
-                            }
-                            className="hover:bg-primary-50 cursor-pointer transition-colors"
-                          >
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-primary-500 dark:text-primary-300">
-                                #{contract.identifier}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-text-primary">
-                                {contract.primaryContact.firstName}{' '}
-                                {contract.primaryContact.lastName}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-text-primary">
-                                {contract.contractType.replace('_', '')}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-text-primary">
-                                {formatDate(contract.startDate)}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-text-primary">
-                                {(contract.effectiveEndDate ?? contract.endDate)
-                                  ? formatDate(
-                                      (contract.effectiveEndDate ??
-                                        contract.endDate) as string
-                                    )
-                                  : '-'}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-text-primary">
-                                {contract.rentAmountCurrency}{' '}
-                                {contract.rentAmount.toFixed(2)}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <ContractStatusBadge status={contract.status} />
-                            </td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-
-                {/* Pagination */}
-                {contractsTotalPages > 1 && (
-                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-border-default">
-                    <div className="text-sm text-text-secondary">
-                      Showing{' '}
-                      {(contractsCurrentPage - 1) * contractsPerPage + 1} to{' '}
-                      {Math.min(
-                        contractsCurrentPage * contractsPerPage,
-                        filteredAndSortedContracts.length
-                      )}{' '}
-                      of {filteredAndSortedContracts.length} contracts
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() =>
-                          setContractsCurrentPage(contractsCurrentPage - 1)
-                        }
-                        disabled={contractsCurrentPage === 1}
-                        className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
-                      >
-                        Previous
-                      </button>
-                      <span className="px-3 py-1 text-sm text-text-secondary">
-                        Page {contractsCurrentPage} of {contractsTotalPages}
-                      </span>
-                      <button
-                        onClick={() =>
-                          setContractsCurrentPage(contractsCurrentPage + 1)
-                        }
-                        disabled={contractsCurrentPage === contractsTotalPages}
-                        className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
-                      >
-                        Next
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
-
-            {/* Self-Occupancy Periods Section */}
-            <div className="mt-8 pt-6 border-t border-border-default">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <Home className="h-5 w-5 text-info-text" />
-                  <h2 className="text-lg font-semibold text-text-primary">
-                    Self-Occupancy Periods
-                  </h2>
-                  {occupancyPeriods.length > 0 && (
-                    <span className="text-sm text-text-secondary">
-                      ({occupancyPeriods.length})
-                    </span>
-                  )}
-                </div>
-                {canEditData && (
-                  <button
-                    onClick={() => setShowSelfOccupancyModal(true)}
-                    className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 text-sm"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Add Self-Occupancy
-                  </button>
-                )}
-              </div>
-
-              {occupancyPeriods.length === 0 ? (
-                <div className="text-center py-8 border border-dashed border-border-default rounded-lg">
-                  <Home className="h-10 w-10 text-text-disabled mx-auto mb-3" />
-                  <p className="text-text-secondary text-sm mb-3">
-                    No self-occupancy periods recorded
-                  </p>
-                  {canEditData && (
-                    <button
-                      onClick={() => setShowSelfOccupancyModal(true)}
-                      className="text-primary-500 hover:underline text-sm font-medium inline-flex items-center gap-1"
-                    >
-                      <Plus className="h-3.5 w-3.5" />
-                      Record a self-occupancy period
-                    </button>
-                  )}
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-border-default">
-                    <thead className="bg-surface-page">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                          Period
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                          Type
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                          Occupant
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                          Status
-                        </th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-surface-card divide-y divide-border-default">
-                      {occupancyPeriods.map((period) => {
-                        const isPeriodActive =
-                          !period.endDate ||
-                          new Date(period.endDate) >= new Date();
-                        return (
-                          <tr
-                            key={period.identifier}
-                            className="hover:bg-surface-page transition-colors"
-                          >
-                            <td className="px-4 py-3 text-sm text-text-primary">
-                              {formatDate(period.startDate)} &mdash;{' '}
-                              {period.endDate
-                                ? formatDate(period.endDate)
-                                : 'Ongoing'}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-text-secondary">
-                              {OCCUPANCY_TYPE_LABELS[period.type]}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-text-secondary">
-                              {period.occupantName ?? (
-                                <span className="text-text-muted">—</span>
-                              )}
-                            </td>
-                            <td className="px-4 py-3">
-                              {isPeriodActive ? (
-                                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-info-text">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-primary-500 animate-pulse" />
-                                  Active
-                                </span>
-                              ) : (
-                                <span className="text-xs font-medium text-text-secondary">
-                                  Ended
-                                </span>
-                              )}
-                            </td>
-                            <td className="px-4 py-3 text-right">
-                              <div className="flex items-center justify-end gap-1">
-                                <button
-                                  onClick={() =>
-                                    setEditOccupancyPeriodId(period.identifier)
-                                  }
-                                  title="Edit"
-                                  className="p-1.5 rounded-lg hover:bg-surface-inset text-text-secondary hover:text-primary-500 transition-colors"
-                                >
-                                  <Edit className="h-4 w-4" />
-                                </button>
-                                {isPeriodActive && canEditData && (
-                                  <button
-                                    onClick={() => {
-                                      setEndOccupancyPeriodId(
-                                        period.identifier
-                                      );
-                                      setShowEndOccupancyModal(true);
-                                    }}
-                                    title="End occupancy"
-                                    className="p-1.5 rounded-lg hover:bg-warning-bg text-text-secondary hover:text-warning-text transition-colors"
-                                  >
-                                    <Square className="h-4 w-4" />
-                                  </button>
-                                )}
-                                {canManageMembers && (
-                                  <button
-                                    onClick={() =>
-                                      setDeleteOccupancyPeriodId(
-                                        period.identifier
-                                      )
-                                    }
-                                    title="Delete"
-                                    className="p-1.5 rounded-lg hover:bg-error-bg text-text-secondary hover:text-error-text transition-colors"
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </button>
-                                )}
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'expenses' && (
-          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-text-primary">
-                Expenses ({filteredAndSortedExpenses.length})
-              </h2>
-              <button
-                onClick={() => navigate(`/expenses/new?propertyId=${id}`)}
-                disabled={!canEditData}
-                className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
-              >
-                <Plus className="h-4 w-4" />
-                Add Expense
-              </button>
-            </div>
-
-            {expensesLoading ? (
-              <LoadingSpinner />
-            ) : expensesError ? (
-              <ErrorMessage message="Failed to load expenses" />
-            ) : expenses.length === 0 ? (
-              <div className="text-center py-12">
-                <Receipt className="h-12 w-12 text-text-disabled mx-auto mb-3" />
-                <p className="text-text-secondary mb-4">
-                  No expenses for this property
-                </p>
-                <button
-                  onClick={() => navigate(`/expenses/new?propertyId=${id}`)}
-                  disabled={!canEditData}
-                  className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
-                >
-                  <Plus className="h-4 w-4" />
-                  Create First Expense
-                </button>
-              </div>
-            ) : (
-              <>
-                {/* Search Bar */}
-                <div className="mb-4">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-text-muted " />
-                    <input
-                      type="text"
-                      placeholder="Search by expense #, description, category..."
-                      value={expensesSearchTerm}
-                      onChange={(e) => {
-                        setExpensesSearchTerm(e.target.value);
-                        setExpensesCurrentPage(1);
-                      }}
-                      className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-                </div>
-
-                {/* Table */}
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-border-default">
-                    <thead className="bg-surface-page">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                          Expense #
-                        </th>
-                        <th
-                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                          onClick={() => handleExpensesSort('expenseDate')}
-                        >
-                          <div className="flex items-center gap-1">
-                            Date
-                            {expensesSortField === 'expenseDate' &&
-                              (expensesSortOrder === 'asc' ? (
-                                <ChevronUp className="h-4 w-4" />
-                              ) : (
-                                <ChevronDown className="h-4 w-4" />
-                              ))}
-                          </div>
-                        </th>
-                        <th
-                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                          onClick={() => handleExpensesSort('description')}
-                        >
-                          <div className="flex items-center gap-1">
-                            Description
-                            {expensesSortField === 'description' &&
-                              (expensesSortOrder === 'asc' ? (
-                                <ChevronUp className="h-4 w-4" />
-                              ) : (
-                                <ChevronDown className="h-4 w-4" />
-                              ))}
-                          </div>
-                        </th>
-                        <th
-                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                          onClick={() => handleExpensesSort('category')}
-                        >
-                          <div className="flex items-center gap-1">
-                            Category
-                            {expensesSortField === 'category' &&
-                              (expensesSortOrder === 'asc' ? (
-                                <ChevronUp className="h-4 w-4" />
-                              ) : (
-                                <ChevronDown className="h-4 w-4" />
-                              ))}
-                          </div>
-                        </th>
-                        <th
-                          className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                          onClick={() => handleExpensesSort('amount')}
-                        >
-                          <div className="flex items-center gap-1">
-                            Amount
-                            {expensesSortField === 'amount' &&
-                              (expensesSortOrder === 'asc' ? (
-                                <ChevronUp className="h-4 w-4" />
-                              ) : (
-                                <ChevronDown className="h-4 w-4" />
-                              ))}
-                          </div>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-surface-card divide-y divide-border-default">
-                      {paginatedExpenses.length === 0 ? (
-                        <tr>
-                          <td
-                            colSpan={5}
-                            className="px-6 py-12 text-center text-text-secondary"
-                          >
-                            No expenses found matching your search
-                          </td>
-                        </tr>
-                      ) : (
-                        paginatedExpenses.map((expense) => (
-                          <tr
-                            key={expense.identifier}
-                            className="hover:bg-primary-50 cursor-pointer"
-                            onClick={() =>
-                              navigate(`/expenses/${expense.identifier}`, {
-                                state: { backTo: `/properties/${id}?tab=expenses` },
-                              })
-                            }
-                          >
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-500 dark:text-primary-300">
-                              #{expense.identifier}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
-                              {formatDate(expense.expenseDate)}
-                            </td>
-                            <td className="px-6 py-4 text-sm text-text-primary">
-                              {expense.description}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <ExpenseCategoryBadge
-                                category={expense.category}
-                              />
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-text-primary">
-                              {expense.currency} {expense.amount.toFixed(2)}
-                            </td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-
-                {/* Pagination */}
-                {expensesTotalPages > 1 && (
-                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-border-default">
-                    <div className="text-sm text-text-secondary">
-                      Showing {(expensesCurrentPage - 1) * expensesPerPage + 1}{' '}
-                      to{' '}
-                      {Math.min(
-                        expensesCurrentPage * expensesPerPage,
-                        filteredAndSortedExpenses.length
-                      )}{' '}
-                      of {filteredAndSortedExpenses.length} expenses
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() =>
-                          setExpensesCurrentPage(expensesCurrentPage - 1)
-                        }
-                        disabled={expensesCurrentPage === 1}
-                        className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
-                      >
-                        Previous
-                      </button>
-                      <span className="px-3 py-1 text-sm text-text-secondary">
-                        Page {expensesCurrentPage} of {expensesTotalPages}
-                      </span>
-                      <button
-                        onClick={() =>
-                          setExpensesCurrentPage(expensesCurrentPage + 1)
-                        }
-                        disabled={expensesCurrentPage === expensesTotalPages}
-                        className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
-                      >
-                        Next
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        )}
-
-        {activeTab === 'audit' && (
-          <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-            <h2 className="text-xl font-semibold text-text-primary mb-4">
-              Property History
-            </h2>
-
-            {auditLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <LoadingSpinner />
-              </div>
-            ) : auditError ? (
-              <ErrorMessage message="Failed to load history" />
-            ) : auditLog.length > 0 ? (
-              <div className="space-y-4">
-                {auditLog.map((activity) => {
-                  const activityKey = `${activity.entityType}-${activity.entityIdentifier}-${activity.timestamp}`;
-                  const isExpanded = expandedAuditItems.has(activityKey);
-                  const hasChanges =
-                    activity.action === 'UPDATE' &&
-                    activity.changedFields &&
-                    Object.keys(activity.changedFields).length > 0;
-
-                  return (
-                    <div
-                      key={activityKey}
-                      className="border border-border-default rounded-lg overflow-hidden"
-                    >
-                      <div
-                        className={`flex items-start gap-4 p-4 transition-colors cursor-pointer ${
-                          hasChanges ? 'hover:bg-surface-inset' : ''
-                        }`}
-                        onClick={() =>
-                          hasChanges && toggleAuditItem(activityKey)
-                        }
-                      >
-                        <div
-                          className={`
-                            flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center
-                            ${
-                              activity.action === 'CREATE'
-                                ? 'bg-success-bg'
-                                : activity.action === 'UPDATE'
-                                  ? 'bg-primary-100 dark:bg-primary-500/10'
-                                  : 'bg-error-bg'
-                            }
-                          `}
-                        >
-                          <span
-                            className={`
-                              text-xs font-semibold
-                              ${
-                                activity.action === 'CREATE'
-                                  ? 'text-success-text'
-                                  : activity.action === 'UPDATE'
-                                    ? 'text-info-text'
-                                    : 'text-error-text'
-                              }
-                            `}
-                          >
-                            {activity.action.charAt(0)}
-                          </span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-text-primary">
-                            {activity.description}
-                          </p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <p className="text-xs text-text-secondary">
-                              {formatDistanceToNow(
-                                new Date(activity.timestamp),
-                                {
-                                  addSuffix: true,
-                                }
-                              )}
-                            </p>
-                            {activity.impersonatedBy && (
-                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-warning-bg text-warning-text">
-                                <Eye className="h-3 w-3" />
-                                Impersonated
-                              </span>
-                            )}
-                          </div>
-                          {hasChanges && (
-                            <p className="text-xs text-primary-500 mt-1">
-                              {isExpanded
-                                ? 'Click to hide changes'
-                                : 'Click to view changes'}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Expanded Details */}
-                      {isExpanded && hasChanges && (
-                        <div className="bg-surface-page px-4 py-3 border-t border-border-default">
-                          <h4 className="text-xs font-semibold text-text-secondary mb-2 uppercase">
-                            Changed Fields
-                          </h4>
-                          <div className="space-y-2">
-                            {Object.entries(activity.changedFields ?? {}).map(
-                              ([field, value]) => {
-                                // Skip internal count fields
-                                if (
-                                  field === 'documentCount' ||
-                                  field === 'photoCount'
-                                )
-                                  return null;
-
-                                // Skip marker fields for edit operations (fileName is context only)
-                                if (
-                                  field === 'photoEdited' ||
-                                  field === 'documentEdited'
-                                )
-                                  return null;
-                                if (
-                                  field === 'fileName' &&
-                                  (activity.changedFields?.photoEdited ||
-                                    activity.changedFields?.documentEdited)
-                                )
-                                  return null;
-
-                                // Special handling for document/photo upload/delete operations
-                                if (
-                                  field === 'documentAdded' ||
-                                  field === 'documentRemoved' ||
-                                  field === 'photoAdded' ||
-                                  field === 'photoRemoved'
-                                ) {
-                                  const category =
-                                    activity.changedFields?.category;
-                                  const title = activity.changedFields?.title;
-                                  return (
-                                    <div
-                                      key={field}
-                                      className="bg-surface-card rounded p-2 text-xs"
-                                    >
-                                      <div className="font-semibold text-text-secondary mb-1">
-                                        File Name
-                                      </div>
-                                      <div className="text-text-primary">
-                                        {String(value)}
-                                      </div>
-                                      {title ? (
-                                        <>
-                                          <div className="font-semibold text-text-secondary mb-1 mt-2">
-                                            Title
-                                          </div>
-                                          <div className="text-text-primary">
-                                            {String(title)}
-                                          </div>
-                                        </>
-                                      ) : null}
-                                      <div className="font-semibold text-text-secondary mb-1 mt-2">
-                                        Type
-                                      </div>
-                                      <div className="text-text-primary">
-                                        {category === 'PHOTO'
-                                          ? 'Photo'
-                                          : 'Document'}
-                                      </div>
-                                    </div>
-                                  );
-                                }
-
-                                // Skip category and title for upload/delete operations (already shown above)
-                                if (
-                                  (field === 'category' || field === 'title') &&
-                                  (activity.changedFields?.documentAdded ||
-                                    activity.changedFields?.documentRemoved ||
-                                    activity.changedFields?.photoAdded ||
-                                    activity.changedFields?.photoRemoved)
-                                ) {
-                                  return null;
-                                }
-
-                                return (
-                                  <div
-                                    key={field}
-                                    className="bg-surface-card rounded p-2 text-xs"
-                                  >
-                                    <div className="font-semibold text-text-secondary mb-1">
-                                      {formatFieldName(field)}
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-2">
-                                      <div>
-                                        <span className="text-text-secondary">
-                                          Old:{' '}
-                                        </span>
-                                        {typeof activity.oldValues?.[field] ===
-                                          'string' &&
-                                        /<[a-z][\s\S]*>/i.test(
-                                          activity.oldValues[field]
-                                        ) ? (
-                                          <RichTextDisplay
-                                            content={activity.oldValues[field]}
-                                            className="text-xs text-error-text line-through [&_p]:m-0 inline"
-                                          />
-                                        ) : (
-                                          <span className="text-error-text line-through">
-                                            {formatAuditValue(
-                                              activity.oldValues?.[field]
-                                            )}
-                                          </span>
-                                        )}
-                                      </div>
-                                      <div>
-                                        <span className="text-text-secondary">
-                                          New:{' '}
-                                        </span>
-                                        {typeof activity.newValues?.[field] ===
-                                          'string' &&
-                                        /<[a-z][\s\S]*>/i.test(
-                                          activity.newValues[field]
-                                        ) ? (
-                                          <RichTextDisplay
-                                            content={activity.newValues[field]}
-                                            className="text-xs text-success-text font-medium [&_p]:m-0 inline"
-                                          />
-                                        ) : (
-                                          <span className="text-success-text font-medium">
-                                            {formatAuditValue(
-                                              activity.newValues?.[field]
-                                            )}
-                                          </span>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                );
-                              }
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <History className="h-12 w-12 text-text-disabled mx-auto mb-3" />
-                <p className="text-text-secondary">No history available</p>
-                <p className="text-sm text-text-muted mt-1">
-                  Changes to this property will appear here
-                </p>
-              </div>
-            )}
-          </div>
-        )}
+        {activeTab === 'audit' && <PropertyAuditTab propertyId={id} />}
       </div>
 
-      {/* Delete Confirmation Modal */}
-      {showSelfOccupancyModal && id && (
-        <SelfOccupancyModal
-          propertyIdentifier={id}
-          onClose={() => setShowSelfOccupancyModal(false)}
-        />
-      )}
-
+      {/* Page-level modals */}
       {showEndOccupancyModal && id && endOccupancyPeriodId && (
         <EndSelfOccupancyModal
           propertyIdentifier={id}
@@ -2553,36 +1391,6 @@ export const PropertyDetailPage = () => {
           }}
         />
       )}
-
-      {editOccupancyPeriodId &&
-        id &&
-        (() => {
-          const editPeriod = occupancyPeriods.find(
-            (p) => p.identifier === editOccupancyPeriodId
-          );
-          return editPeriod ? (
-            <EditSelfOccupancyModal
-              propertyIdentifier={id}
-              period={editPeriod}
-              onClose={() => setEditOccupancyPeriodId(null)}
-            />
-          ) : null;
-        })()}
-
-      {editFinancingId &&
-        id &&
-        (() => {
-          const editFinancing = financings.find(
-            (f) => f.identifier === editFinancingId
-          );
-          return editFinancing ? (
-            <FinancingFormModal
-              propertyId={id}
-              existing={editFinancing}
-              onClose={() => setEditFinancingId(null)}
-            />
-          ) : null;
-        })()}
 
       {deleteOccupancyPeriodId && id && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
@@ -2620,6 +1428,36 @@ export const PropertyDetailPage = () => {
           </div>
         </div>
       )}
+
+      {editOccupancyPeriodId &&
+        id &&
+        (() => {
+          const editPeriod = occupancyPeriods.find(
+            (p) => p.identifier === editOccupancyPeriodId
+          );
+          return editPeriod ? (
+            <EditSelfOccupancyModal
+              propertyIdentifier={id}
+              period={editPeriod}
+              onClose={() => setEditOccupancyPeriodId(null)}
+            />
+          ) : null;
+        })()}
+
+      {editFinancingId &&
+        id &&
+        (() => {
+          const editFinancing = financings.find(
+            (f) => f.identifier === editFinancingId
+          );
+          return editFinancing ? (
+            <FinancingFormModal
+              propertyId={id}
+              existing={editFinancing}
+              onClose={() => setEditFinancingId(null)}
+            />
+          ) : null;
+        })()}
 
       {isNlProperty && (
         <WwsCalculatorModal

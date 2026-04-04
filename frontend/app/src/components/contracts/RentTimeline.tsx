@@ -29,7 +29,7 @@ import { GenerateRentChangeModal } from './GenerateRentChangeModal';
 import { COUNTRY_OFFICIAL_LANGUAGES } from './GenerateDocumentsModal';
 import { DocumentPreviewModal } from '@/components/documents/DocumentPreviewModal';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { RichTextDisplay } from '@/components/common/RichTextDisplay';
+import { RichTextDisplay } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import type { DocumentResponse } from '@/types/property';
 
@@ -243,9 +243,13 @@ function RentPeriodRow({
   onRegenerateDocuments: () => void;
 }) {
   const hasDocuments = documents.length > 0;
-  const officialLangs = countryCode
-    ? (COUNTRY_OFFICIAL_LANGUAGES[countryCode.toUpperCase()] ?? [])
-    : [];
+  const officialLangs = useMemo(
+    () =>
+      countryCode
+        ? (COUNTRY_OFFICIAL_LANGUAGES[countryCode.toUpperCase()] ?? [])
+        : [],
+    [countryCode]
+  );
   const [previewIndex, setPreviewIndex] = useState<number | null>(null);
 
   // Sort docs: official languages first, then alphabetically

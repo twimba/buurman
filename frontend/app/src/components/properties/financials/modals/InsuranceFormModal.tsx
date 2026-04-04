@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { MoneyInput } from '@/components/common/MoneyInput';
-import { RichTextEditor } from '@/components/common/RichTextEditor';
+import { RichTextEditor } from '@buurman/ui';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 import {
   useCreateInsurance,
@@ -44,7 +44,7 @@ export const InsuranceFormModal = ({
     coverageAmount: existing?.coverageAmount ?? undefined,
     coverageAmountCurrency:
       existing?.coverageAmountCurrency ?? defaultCurrency ?? 'EUR',
-    annualPremium: existing?.annualPremium ?? (undefined as unknown as number),
+    annualPremium: existing?.annualPremium as number | undefined,
     annualPremiumCurrency:
       existing?.annualPremiumCurrency ?? defaultCurrency ?? 'EUR',
     paymentFrequency: existing?.paymentFrequency ?? PaymentFrequency.ANNUALLY,

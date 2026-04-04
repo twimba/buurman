@@ -28,7 +28,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { SidebarTooltip } from '@buurman/ui';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { useTeam } from '@/context/TeamContext';
 import { useFeatureFlags } from '@/context/FeatureFlagContext';
 import { FeatureFlags } from '@/constants/featureFlags';
@@ -67,7 +67,7 @@ const navigation: NavItem[] = [
       },
       {
         name: 'Payment Instructions',
-        href: '/payment-instructions',
+        href: '/admin/payment-instructions',
         icon: CreditCard,
       },
     ],
@@ -370,6 +370,8 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
     </>
   );
 };
+
+Sidebar.displayName = 'Sidebar';
 
 // ── Collapsible nav group (parent + children) ───────────────────────
 

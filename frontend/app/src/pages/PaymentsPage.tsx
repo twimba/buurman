@@ -6,11 +6,15 @@ import {
   usePaymentStats,
   useDeletePayment,
 } from '@/hooks/usePaymentHooks';
-import { ConfirmDialog, Pagination } from '@buurman/ui';
+import {
+  ConfirmDialog,
+  Pagination,
+  RefreshButton,
+  Skeleton,
+} from '@buurman/ui';
 import { usePagination } from '@/hooks/usePagination';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 import { ContractCell } from '@/components/contracts/ContractCell';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { ContractSelector } from '@/components/common/ContractSelector';
 import { PropertySelector } from '@/components/common/PropertySelector';
@@ -42,7 +46,6 @@ import {
 } from 'recharts';
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { RefreshButton } from '@buurman/ui';
 
 const statusFilters = [
   { value: undefined, label: 'All Statuses' },
@@ -116,8 +119,45 @@ export const PaymentsPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <LoadingSpinner />
+      <div className="min-h-screen bg-background">
+        <div className="px-4 py-8 space-y-6">
+          {/* Header skeleton */}
+          <div className="flex justify-between items-center">
+            <div className="space-y-2">
+              <Skeleton className="h-8 w-48" />
+              <Skeleton className="h-4 w-56" />
+            </div>
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-10 w-36 rounded" />
+              <Skeleton className="h-10 w-40 rounded" />
+            </div>
+          </div>
+          {/* Stats cards skeleton */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                className="bg-surface-card rounded-lg border border-border-default p-6 space-y-3"
+              >
+                <div className="flex items-center justify-between">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-5 w-5 rounded" />
+                </div>
+                <Skeleton className="h-8 w-40" />
+                <Skeleton className="h-4 w-24" />
+              </div>
+            ))}
+          </div>
+          {/* Filter bar skeleton */}
+          <Skeleton className="h-32 w-full rounded-lg" />
+          {/* Table rows skeleton */}
+          <div className="space-y-2">
+            <Skeleton className="h-10 w-full rounded" />
+            {Array.from({ length: 8 }).map((_, i) => (
+              <Skeleton key={i} className="h-14 w-full rounded" />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }

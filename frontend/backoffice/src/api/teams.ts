@@ -1,9 +1,9 @@
-import client from "./client";
+import client from './client';
 import type {
   BackofficeTeam,
   BackofficeTeamDetail,
   PageResponse,
-} from "../types";
+} from '../types';
 
 interface ListTeamsParams {
   page?: number;
@@ -13,7 +13,7 @@ interface ListTeamsParams {
 
 export const teamsApi = {
   list: (params?: ListTeamsParams) =>
-    client.get<PageResponse<BackofficeTeam>>("/teams", { params }),
+    client.get<PageResponse<BackofficeTeam>>('/teams', { params }),
   get: (identifier: string) =>
     client.get<BackofficeTeamDetail>(`/teams/${identifier}`),
   update: (identifier: string, data: { name: string }) =>

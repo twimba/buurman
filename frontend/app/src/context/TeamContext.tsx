@@ -6,7 +6,7 @@ import {
   setDefaultTeam as setDefaultTeamApi,
   UserTeamResponse,
 } from '../api/users';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from './AuthContext';
 import { useImpersonation } from './ImpersonationContext';
 import { trackEvent } from '../utils/analytics';
 import { AnalyticsEvent } from '../constants/analyticsEvents';
@@ -70,16 +70,9 @@ export const TeamProvider = ({ children }: { children: ReactNode }) => {
     mutationFn: switchTeamApi,
     onSuccess: () => {
       trackEvent(AnalyticsEvent.TEAM_SWITCHED);
-      // Invalidate all team-dependent queries
-      queryClient.invalidateQueries({ queryKey: ['user-teams'] });
-      queryClient.invalidateQueries({ queryKey: ['properties'] });
-      queryClient.invalidateQueries({ queryKey: ['contacts'] });
-      queryClient.invalidateQueries({ queryKey: ['contracts'] });
-      queryClient.invalidateQueries({ queryKey: ['payments'] });
-      queryClient.invalidateQueries({ queryKey: ['expenses'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      // Refresh the page to ensure all data is for the new team
-      window.location.reload();
+      // Clear all cached data and navigate to a known good state
+      queryClient.clear();
+      window.location.href = '/dashboard';
     },
   });
 

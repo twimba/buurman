@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { AuthenticatedBroadcastBanner } from './common/BroadcastBanner';
 import { OnboardingWizard } from './onboarding/OnboardingWizard';
@@ -7,7 +8,7 @@ import { useOnboardingStatus } from '@/hooks/useOnboarding';
 const STORAGE_KEY = 'buurman-sidebar-collapsed';
 
 interface LayoutProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export const Layout = ({ children }: LayoutProps) => {
@@ -54,7 +55,7 @@ export const Layout = ({ children }: LayoutProps) => {
       >
         <div className="max-w-screen-2xl mx-auto px-4 py-6 md:px-6 md:py-8 lg:px-8">
           <AuthenticatedBroadcastBanner />
-          {children}
+          {children ?? <Outlet />}
         </div>
       </main>
 
@@ -68,3 +69,5 @@ export const Layout = ({ children }: LayoutProps) => {
     </div>
   );
 };
+
+Layout.displayName = 'Layout';

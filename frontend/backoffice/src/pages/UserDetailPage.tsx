@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
-import { formatDateTime } from "../utils/dateFormatting";
+import { useState, useEffect, useCallback } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { formatDateTime } from '../utils/dateFormatting';
 import {
   Mail,
   User,
@@ -12,30 +12,35 @@ import {
   Eye,
   Pencil,
   Crown,
-} from "lucide-react";
-import { PageHeader, Button, ConfirmDialog, ModalWrapper } from "@buurman/ui";
+} from 'lucide-react';
+import {
+  PageHeader,
+  Button,
+  ConfirmDialog,
+  ModalWrapper,
+  RichTextEditor,
+} from '@buurman/ui';
 import {
   useUser,
   useDisableUser,
   useEnableUser,
   useResetPassword,
-} from "../hooks/useUsers";
+} from '../hooks/useUsers';
 import {
   useCreateImpersonation,
   useUserTeams,
-} from "../hooks/useImpersonation";
-import { LoadingSpinner } from "../components/LoadingSpinner";
-import { UserFeatureFlags } from "../components/UserFeatureFlags";
-import { RichTextEditor } from "../components/RichTextEditor";
-import { PasswordConfirmationDialog } from "../components/PasswordConfirmationDialog";
-import { trackEvent } from "../utils/analytics";
-import { AnalyticsEvent } from "../constants/analyticsEvents";
+} from '../hooks/useImpersonation';
+import { LoadingSpinner } from '../components/LoadingSpinner';
+import { UserFeatureFlags } from '../components/UserFeatureFlags';
+import { PasswordConfirmationDialog } from '../components/PasswordConfirmationDialog';
+import { trackEvent } from '../utils/analytics';
+import { AnalyticsEvent } from '../constants/analyticsEvents';
 
 const DURATION_PRESETS = [
-  { label: "15 min", value: 15 },
-  { label: "30 min", value: 30 },
-  { label: "45 min", value: 45 },
-  { label: "1 hour", value: 60 },
+  { label: '15 min', value: 15 },
+  { label: '30 min', value: 30 },
+  { label: '45 min', value: 45 },
+  { label: '1 hour', value: 60 },
 ] as const;
 
 interface ImpersonateFormData {
@@ -45,8 +50,8 @@ interface ImpersonateFormData {
 }
 
 const defaultFormData: ImpersonateFormData = {
-  teamIdentifier: "",
-  reason: "",
+  teamIdentifier: '',
+  reason: '',
   durationMinutes: 15,
 };
 
@@ -59,7 +64,7 @@ const toIsoDuration = (minutes: number): string => {
 };
 
 export const UserDetailPage = () => {
-  const { identifier = "" } = useParams<{ identifier: string }>();
+  const { identifier = '' } = useParams<{ identifier: string }>();
   const navigate = useNavigate();
   const { data: user, isLoading, error } = useUser(identifier);
   const disableUser = useDisableUser();
@@ -73,8 +78,8 @@ export const UserDetailPage = () => {
   const [showImpersonateDialog, setShowImpersonateDialog] = useState(false);
   const [impersonateForm, setImpersonateForm] =
     useState<ImpersonateFormData>(defaultFormData);
-  const [pendingMode, setPendingMode] = useState<"READ_ONLY" | "FULL" | null>(
-    null,
+  const [pendingMode, setPendingMode] = useState<'READ_ONLY' | 'FULL' | null>(
+    null
   );
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [passwordError, setPasswordError] = useState<string | null>(null);
@@ -88,14 +93,14 @@ export const UserDetailPage = () => {
 
   const openImpersonateDialog = useCallback(() => {
     const preselectedTeam =
-      userTeams?.length === 1 ? userTeams[0].teamIdentifier : "";
+      userTeams?.length === 1 ? userTeams[0].teamIdentifier : '';
     setImpersonateForm({ ...defaultFormData, teamIdentifier: preselectedTeam });
     setPendingMode(null);
     createImpersonation.reset();
     setShowImpersonateDialog(true);
   }, [userTeams, createImpersonation]);
 
-  const handleImpersonate = useCallback((mode: "READ_ONLY" | "FULL") => {
+  const handleImpersonate = useCallback((mode: 'READ_ONLY' | 'FULL') => {
     setPendingMode(mode);
     setPasswordError(null);
     setShowPasswordDialog(true);
@@ -108,7 +113,7 @@ export const UserDetailPage = () => {
       }
 
       // Pre-open window synchronously (user gesture) to avoid popup blockers.
-      const newWindow = window.open("about:blank", "_blank");
+      const newWindow = window.open('about:blank', '_blank');
 
       createImpersonation.mutate(
         {
@@ -126,22 +131,22 @@ export const UserDetailPage = () => {
             if (newWindow && !newWindow.closed) {
               newWindow.location.href = data.redirectUrl;
             } else {
-              window.open(data.redirectUrl, "_blank");
+              window.open(data.redirectUrl, '_blank');
             }
           },
           onError: (err) => {
             newWindow?.close();
             const axiosError = err as { response?: { status?: number } };
             if (axiosError.response?.status === 403) {
-              setPasswordError("Invalid password. Please try again.");
+              setPasswordError('Invalid password. Please try again.');
             } else {
-              setPasswordError("Failed to create impersonation session.");
+              setPasswordError('Failed to create impersonation session.');
             }
           },
-        },
+        }
       );
     },
-    [pendingMode, impersonateForm, identifier, createImpersonation],
+    [pendingMode, impersonateForm, identifier, createImpersonation]
   );
 
   if (isLoading) {
@@ -153,7 +158,7 @@ export const UserDetailPage = () => {
       <div className="text-center py-12">
         <p className="text-error-text">Failed to load user.</p>
         <button
-          onClick={() => navigate("/users")}
+          onClick={() => navigate('/users')}
           className="mt-4 text-sm text-primary-500 hover:underline"
         >
           Back to users
@@ -184,43 +189,43 @@ export const UserDetailPage = () => {
   const isFormValid =
     impersonateForm.teamIdentifier.length > 0 &&
     impersonateForm.reason.trim().length > 0 &&
-    impersonateForm.reason.replace(/<[^>]*>/g, "").trim().length > 0;
+    impersonateForm.reason.replace(/<[^>]*>/g, '').trim().length > 0;
 
   const infoItems = [
     {
-      label: "Email",
+      label: 'Email',
       value: user.email,
       icon: Mail,
     },
     {
-      label: "Name",
+      label: 'Name',
       value: `${user.firstName} ${user.lastName}`,
       icon: User,
     },
     {
-      label: "Phone",
-      value: user.phone || "-",
+      label: 'Phone',
+      value: user.phone || '-',
       icon: Phone,
     },
     {
-      label: "Email Verified",
-      value: user.emailVerified ? "Verified" : "Not verified",
+      label: 'Email Verified',
+      value: user.emailVerified ? 'Verified' : 'Not verified',
       icon: user.emailVerified ? CheckCircle : XCircle,
-      valueClass: user.emailVerified ? "text-success-text" : "text-error-text",
+      valueClass: user.emailVerified ? 'text-success-text' : 'text-error-text',
     },
     {
-      label: "Status",
-      value: user.disabled ? "Disabled" : "Active",
+      label: 'Status',
+      value: user.disabled ? 'Disabled' : 'Active',
       icon: Shield,
-      valueClass: user.disabled ? "text-error-text" : "text-success-text",
+      valueClass: user.disabled ? 'text-error-text' : 'text-success-text',
     },
     {
-      label: "Created",
+      label: 'Created',
       value: formatDateTime(user.createdAt),
       icon: Calendar,
     },
     {
-      label: "Updated",
+      label: 'Updated',
       value: formatDateTime(user.updatedAt),
       icon: Calendar,
     },
@@ -233,7 +238,7 @@ export const UserDetailPage = () => {
         subtitle={`${user.firstName} ${user.lastName}`}
         backTo="/users"
         actions={
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Button
               variant="secondary"
               onClick={openImpersonateDialog}
@@ -279,7 +284,7 @@ export const UserDetailPage = () => {
                   {item.label}
                 </p>
                 <p
-                  className={`text-sm font-medium ${item.valueClass ?? "text-text-primary "}`}
+                  className={`text-sm font-medium ${item.valueClass ?? 'text-text-primary '}`}
                 >
                   {item.value}
                 </p>
@@ -334,14 +339,14 @@ export const UserDetailPage = () => {
                       <td className="px-5 py-3">
                         <span
                           className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${
-                            tm.role === "TEAM_ADMIN"
-                              ? "bg-purple-100 text-purple-700"
-                              : tm.role === "TEAM_EDITOR"
-                                ? "bg-blue-100 text-blue-700"
-                                : "bg-slate-100 text-slate-600"
+                            tm.role === 'TEAM_ADMIN'
+                              ? 'bg-purple-100 text-purple-700'
+                              : tm.role === 'TEAM_EDITOR'
+                                ? 'bg-blue-100 text-blue-700'
+                                : 'bg-slate-100 text-slate-600'
                           }`}
                         >
-                          {tm.role.replace("TEAM_", "")}
+                          {tm.role.replace('TEAM_', '')}
                         </span>
                       </td>
                       <td className="px-5 py-3">
@@ -379,15 +384,15 @@ export const UserDetailPage = () => {
       {/* Disable/Enable confirmation dialog */}
       {showDisableDialog && (
         <ConfirmDialog
-          title={user.disabled ? "Enable User" : "Disable User"}
+          title={user.disabled ? 'Enable User' : 'Disable User'}
           message={
             user.disabled
               ? `Are you sure you want to enable "${user.email}"? They will be able to log in again.`
               : `Are you sure you want to disable "${user.email}"? They will no longer be able to log in.`
           }
-          confirmLabel={user.disabled ? "Enable" : "Disable"}
+          confirmLabel={user.disabled ? 'Enable' : 'Disable'}
           cancelLabel="Cancel"
-          variant={user.disabled ? "default" : "danger"}
+          variant={user.disabled ? 'default' : 'danger'}
           isLoading={disableUser.isPending || enableUser.isPending}
           onConfirm={handleToggleDisable}
           onCancel={() => setShowDisableDialog(false)}
@@ -427,7 +432,7 @@ export const UserDetailPage = () => {
             <Button
               variant="primary"
               leftIcon={<Eye />}
-              onClick={() => handleImpersonate("READ_ONLY")}
+              onClick={() => handleImpersonate('READ_ONLY')}
               disabled={!isFormValid || createImpersonation.isPending}
             >
               Start in Read Mode
@@ -435,7 +440,7 @@ export const UserDetailPage = () => {
             <Button
               variant="danger"
               leftIcon={<Pencil />}
-              onClick={() => handleImpersonate("FULL")}
+              onClick={() => handleImpersonate('FULL')}
               disabled={!isFormValid || createImpersonation.isPending}
             >
               Start in Full Access
@@ -515,8 +520,8 @@ export const UserDetailPage = () => {
                   }
                   className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
                     impersonateForm.durationMinutes === preset.value
-                      ? "bg-primary-500 text-white border-primary-600 shadow-sm"
-                      : "bg-surface-card text-text-secondary border-border-default hover:border-border-strong"
+                      ? 'bg-primary-500 text-white border-primary-600 shadow-sm'
+                      : 'bg-surface-card text-text-secondary border-border-default hover:border-border-strong'
                   }`}
                 >
                   {preset.label}

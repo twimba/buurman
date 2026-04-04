@@ -10,14 +10,17 @@ import {
   useUploadExpenseDocument,
   useDeleteExpenseDocument,
 } from '@/hooks/useExpenseHooks';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { RichTextDisplay } from '@/components/common/RichTextDisplay';
+import {
+  Button,
+  LoadingSpinner,
+  PageHeader,
+  RichTextDisplay,
+} from '@buurman/ui';
 import { formatAuditValue } from '@/utils/formatAuditValue';
 import { ExpenseCategoryBadge } from '@/components/expenses/ExpenseCategoryBadge';
 import { ExpenseForm } from '@/components/expenses/ExpenseForm';
 import { DocumentList } from '@/components/properties/DocumentList';
-import { Button, PageHeader } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import {
   Edit,
@@ -34,7 +37,6 @@ import {
   Eye,
   User,
 } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import {
   UpdateExpenseRequest,
@@ -48,7 +50,7 @@ export const ExpenseDetailPage = () => {
   const location = useLocation();
   const backTo = (location.state as { backTo?: string })?.backTo ?? '/expenses';
   const { canEditData } = useTeam();
-  const { formatDate } = useFormatDate();
+  const { formatDate, formatRelative } = useFormatDate();
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [activeTab, setActiveTab] = useTabState('details', [
@@ -446,12 +448,7 @@ export const ExpenseDetailPage = () => {
                           </p>
                           <div className="flex items-center gap-2 mt-1">
                             <p className="text-xs text-text-secondary">
-                              {formatDistanceToNow(
-                                new Date(activity.timestamp),
-                                {
-                                  addSuffix: true,
-                                }
-                              )}
+                              {formatRelative(activity.timestamp)}
                             </p>
                             {activity.impersonatedBy && (
                               <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-warning-bg text-warning-text">

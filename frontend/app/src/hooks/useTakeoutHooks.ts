@@ -7,19 +7,13 @@ import {
   TakeoutResponse,
 } from '@/api/takeouts';
 import { PageResponse } from '@/types/common';
-import { useToast } from '@/context/ToastContext';
+import { useToast } from '@buurman/ui';
 import { getErrorMessage } from '@/utils/errorMessages';
-
-const TAKEOUT_KEYS = {
-  all: ['takeouts'] as const,
-  list: () => [...TAKEOUT_KEYS.all, 'list'] as const,
-  detail: (identifier: string) =>
-    [...TAKEOUT_KEYS.all, 'detail', identifier] as const,
-};
+import { queryKeys } from '../lib/queryKeys';
 
 export const useTakeouts = () => {
   return useQuery({
-    queryKey: TAKEOUT_KEYS.list(),
+    queryKey: queryKeys.takeouts.list(),
     queryFn: () => listTakeouts({ size: 20 }),
     refetchInterval: (query) => {
       const data = query.state.data;
@@ -33,7 +27,7 @@ export const useTakeouts = () => {
 
 export const useTakeout = (identifier: string) => {
   return useQuery({
-    queryKey: TAKEOUT_KEYS.detail(identifier),
+    queryKey: queryKeys.takeouts.detail(identifier),
     queryFn: () => getTakeout(identifier),
     enabled: !!identifier,
     refetchInterval: (query) => {
@@ -53,7 +47,7 @@ export const useRequestTakeout = () => {
     mutationFn: requestTakeout,
     onSuccess: (newTakeout) => {
       queryClient.setQueryData<PageResponse<TakeoutResponse> | undefined>(
-        TAKEOUT_KEYS.list(),
+        queryKeys.takeouts.list(),
         (old) => {
           if (!old) {
             return undefined;
@@ -61,7 +55,7 @@ export const useRequestTakeout = () => {
           return { ...old, content: [newTakeout, ...old.content] };
         }
       );
-      queryClient.invalidateQueries({ queryKey: TAKEOUT_KEYS.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.takeouts.root });
       showToast(
         'Data export requested. This may take a few minutes.',
         'success'
@@ -80,7 +74,7 @@ export const useDeleteTakeout = () => {
     mutationFn: deleteTakeout,
     onSuccess: (_data, identifier) => {
       queryClient.setQueryData<PageResponse<TakeoutResponse> | undefined>(
-        TAKEOUT_KEYS.list(),
+        queryKeys.takeouts.list(),
         (old) => {
           if (!old) {
             return old;
@@ -91,7 +85,7 @@ export const useDeleteTakeout = () => {
           };
         }
       );
-      queryClient.invalidateQueries({ queryKey: TAKEOUT_KEYS.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.takeouts.root });
       showToast('Data export deleted.', 'success');
     },
     onError: (error) => {

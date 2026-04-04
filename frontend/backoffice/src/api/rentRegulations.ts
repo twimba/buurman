@@ -1,4 +1,4 @@
-import client from "./client";
+import client from './client';
 
 // ── Types ────────────────────────────────────────────────────────────
 
@@ -106,7 +106,7 @@ export interface CountryRegulationRequestSummary {
 
 // ── API ──────────────────────────────────────────────────────────────
 
-const BASE = "/rent-regulations";
+const BASE = '/rent-regulations';
 
 export const rentRegulationsApi = {
   // Countries
@@ -117,7 +117,7 @@ export const rentRegulationsApi = {
   updateCountry: (code: string, data: UpdateCountryRequest) =>
     client.put<RentRegulationCountryResponse>(
       `${BASE}/countries/${code}`,
-      data,
+      data
     ),
   deleteCountry: (code: string) => client.delete(`${BASE}/countries/${code}`),
   reviewCountry: (code: string) =>
@@ -126,21 +126,21 @@ export const rentRegulationsApi = {
   // Regions
   listRegions: (countryCode: string) =>
     client.get<RentRegulationRegionResponse[]>(
-      `${BASE}/countries/${countryCode}/regions`,
+      `${BASE}/countries/${countryCode}/regions`
     ),
   createRegion: (countryCode: string, data: CreateRegionRequest) =>
     client.post<RentRegulationRegionResponse>(
       `${BASE}/countries/${countryCode}/regions`,
-      data,
+      data
     ),
   updateRegion: (
     countryCode: string,
     regionCode: string,
-    data: UpdateRegionRequest,
+    data: UpdateRegionRequest
   ) =>
     client.put<RentRegulationRegionResponse>(
       `${BASE}/countries/${countryCode}/regions/${regionCode}`,
-      data,
+      data
     ),
   deleteRegion: (countryCode: string, regionCode: string) =>
     client.delete(`${BASE}/countries/${countryCode}/regions/${regionCode}`),
@@ -148,17 +148,17 @@ export const rentRegulationsApi = {
   // Rules
   listRules: (countryCode: string) =>
     client.get<RentRegulationRuleResponse[]>(
-      `${BASE}/countries/${countryCode}/rules`,
+      `${BASE}/countries/${countryCode}/rules`
     ),
   createRule: (countryCode: string, data: CreateRuleRequest) =>
     client.post<RentRegulationRuleResponse>(
       `${BASE}/countries/${countryCode}/rules`,
-      data,
+      data
     ),
   bulkCreateRules: (countryCode: string, data: BulkRuleRequest) =>
     client.post<BulkImportResult>(
       `${BASE}/countries/${countryCode}/rules/bulk`,
-      data,
+      data
     ),
   updateRule: (identifier: string, data: UpdateRuleRequest) =>
     client.put<RentRegulationRuleResponse>(`${BASE}/rules/${identifier}`, data),
@@ -170,6 +170,6 @@ export const rentRegulationsApi = {
     client.get<CountryRegulationRequestSummary[]>(`${BASE}/country-requests`),
   dismissCountryRequest: (countryName: string) =>
     client.delete(
-      `${BASE}/country-requests/${encodeURIComponent(countryName)}`,
+      `${BASE}/country-requests/${encodeURIComponent(countryName)}`
     ),
 };

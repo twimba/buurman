@@ -1,24 +1,24 @@
-import { cn } from "../utils/cn";
+import { cn } from '../utils/cn';
 
 interface EmptyStateProps {
   icon?: React.ReactNode;
   title: string;
   description?: string;
   actions?: React.ReactNode;
-  variant?: "page" | "section" | "inline";
+  variant?: 'page' | 'section' | 'inline';
   className?: string;
 }
 
 const variantStyles = {
-  page: "py-16",
-  section: "py-12",
-  inline: "py-6",
+  page: 'py-16',
+  section: 'py-12',
+  inline: 'py-6',
 } as const;
 
 const iconSizes = {
-  page: "h-12 w-12",
-  section: "h-10 w-10",
-  inline: "h-8 w-8",
+  page: 'h-12 w-12',
+  section: 'h-10 w-10',
+  inline: 'h-8 w-8',
 } as const;
 
 export function EmptyState({
@@ -26,21 +26,21 @@ export function EmptyState({
   title,
   description,
   actions,
-  variant = "section",
+  variant = 'section',
   className,
 }: EmptyStateProps) {
   return (
     <div
       className={cn(
-        "flex flex-col items-center text-center",
+        'flex flex-col items-center text-center',
         variantStyles[variant],
-        className,
+        className
       )}
       role="status"
     >
       {icon && (
         <div
-          className={cn("mb-4 text-text-muted", iconSizes[variant])}
+          className={cn('mb-4 text-text-muted', iconSizes[variant])}
           aria-hidden="true"
         >
           {icon}
@@ -48,8 +48,8 @@ export function EmptyState({
       )}
       <h3
         className={cn(
-          "font-semibold text-text-primary",
-          variant === "inline" ? "text-sm" : "text-base",
+          'font-semibold text-text-primary',
+          variant === 'inline' ? 'text-sm' : 'text-base'
         )}
       >
         {title}
@@ -57,8 +57,8 @@ export function EmptyState({
       {description && (
         <p
           className={cn(
-            "mt-1 text-text-secondary",
-            variant === "inline" ? "text-sm" : "text-sm max-w-sm",
+            'mt-1 text-text-secondary',
+            variant === 'inline' ? 'text-sm' : 'text-sm max-w-sm'
           )}
         >
           {description}
@@ -69,4 +69,4 @@ export function EmptyState({
   );
 }
 
-EmptyState.displayName = "EmptyState";
+EmptyState.displayName = 'EmptyState';

@@ -8,7 +8,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { DocumentResponse, PhotoResponse } from '@/types/property';
-import { RichTextDisplay } from '../ui/RichTextDisplay';
+import { RichTextDisplay } from '@buurman/ui';
 
 interface DocumentPreviewModalProps {
   document: DocumentResponse | PhotoResponse;
@@ -187,6 +187,7 @@ export const DocumentPreviewModal = ({
                       src={document.downloadUrl ?? undefined}
                       alt={document.title || document.fileName}
                       className="max-w-full h-auto rounded-lg shadow-lg"
+                      loading="lazy"
                       crossOrigin="anonymous"
                     />
                   </div>

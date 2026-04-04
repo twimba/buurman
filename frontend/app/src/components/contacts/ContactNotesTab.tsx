@@ -16,18 +16,18 @@ import {
 } from '@/types/contact';
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { RichTextDisplay } from '@/components/common/RichTextDisplay';
-import { RichTextEditor } from '@/components/common/RichTextEditor';
 import {
   Button,
-  ModalWrapper,
-  EmptyState,
   ConfirmDialog,
+  EmptyState,
   FormField,
-  Select,
   Input,
+  LoadingSpinner,
+  ModalWrapper,
+  RichTextDisplay,
+  RichTextEditor,
+  Select,
 } from '@buurman/ui';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
 import {
   Plus,
   Pin,
@@ -45,7 +45,6 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
 
 const INTERACTION_TYPE_ICONS: Record<InteractionType, React.ReactNode> = {
   [InteractionType.PHONE_CALL]: <Phone className="h-4 w-4" />,
@@ -87,7 +86,7 @@ interface ContactNotesTabProps {
 
 export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
   const { canEditData } = useTeam();
-  const { formatDate } = useFormatDate();
+  const { formatDate, formatRelative } = useFormatDate();
   const { data: notes = [], isLoading } = useContactNotes(contactId);
   const createMutation = useCreateContactNote(contactId);
   const deleteMutation = useDeleteContactNote(contactId);
@@ -253,11 +252,7 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
                       <RichTextDisplay content={note.body} />
                     </div>
                     <div className="flex items-center gap-2 mt-2 text-xs text-text-muted">
-                      <span>
-                        {formatDistanceToNow(new Date(note.occurredAt), {
-                          addSuffix: true,
-                        })}
-                      </span>
+                      <span>{formatRelative(note.occurredAt)}</span>
                       {note.createdByName && (
                         <>
                           <span>·</span>

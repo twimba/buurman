@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useImpersonation } from '../context/ImpersonationContext';
 import { exchangeImpersonationToken } from '../generated/api/impersonation/impersonation';
-import { LoadingSpinner } from '../components/LoadingSpinner';
+import { LoadingSpinner } from '@buurman/ui';
 
 export function ImpersonatePage() {
   const [searchParams] = useSearchParams();
@@ -47,6 +47,8 @@ export function ImpersonatePage() {
           targetTeamIdentifier: data.targetTeamIdentifier ?? undefined,
         });
 
+        // Remove the session token from browser history before navigating
+        window.history.replaceState({}, '', '/impersonate');
         navigate('/dashboard', { replace: true });
       } catch (err) {
         setError(

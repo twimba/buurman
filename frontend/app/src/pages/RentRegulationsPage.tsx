@@ -10,7 +10,7 @@ import { CountrySelector } from '@/components/rentRegulations/CountrySelector';
 import { RegulationSummary } from '@/components/rentRegulations/RegulationSummary';
 import { RegionSelector } from '@/components/rentRegulations/RegionSelector';
 import { RuleHistoryTable } from '@/components/rentRegulations/RuleHistoryTable';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { LoadingSpinner } from '@buurman/ui';
 import { ErrorMessage } from '@/components/ErrorMessage';
 
 const humanizeEnum = (value: string): string => {

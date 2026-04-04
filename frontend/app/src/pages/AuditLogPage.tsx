@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
-import { RichTextDisplay } from '@/components/common/RichTextDisplay';
+import {
+  LoadingSpinner,
+  Pagination,
+  RefreshButton,
+  RichTextDisplay,
+} from '@buurman/ui';
 import { formatAuditValue } from '@/utils/formatAuditValue';
 import { useNavigate } from 'react-router-dom';
 import { useAllAuditLogs } from '@/hooks/useDashboard';
 import { usePagination } from '@/hooks/usePagination';
-import { Pagination } from '@buurman/ui';
 import type { RecentActivity } from '@/api/dashboard';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import {
   ClipboardList,
@@ -20,7 +23,6 @@ import {
 import { format } from 'date-fns';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useTeam } from '@/context/TeamContext';
-import { RefreshButton } from '@buurman/ui';
 
 const entityTypeFilters = [
   { value: undefined, label: 'All Types' },

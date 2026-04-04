@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { PhotoResponse } from '@/types/property';
 import { Upload, X, Loader2 } from 'lucide-react';
-import { RichTextEditor } from '../common/RichTextEditor';
+import { ConfirmDialog, RichTextEditor } from '@buurman/ui';
 import { PhotoGrid } from '../photos/PhotoGrid';
 import { DocumentPreviewModal } from '../documents/DocumentPreviewModal';
-import { ConfirmDialog } from '@buurman/ui';
 import { EditMetadataModal } from '../ui/EditMetadataModal';
 import { usePhotoSelection } from '@/hooks/usePhotoSelection';
 import { useBulkDownloadPhotos, useUpdatePhoto } from '@/hooks/usePhotoHooks';

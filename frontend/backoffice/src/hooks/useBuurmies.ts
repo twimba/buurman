@@ -1,6 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { buurmiesApi } from "../api/buurmies";
-import type { CreateBuurmyRequest } from "../types";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { buurmiesApi } from '../api/buurmies';
+import type { CreateBuurmyRequest } from '../types';
 
 interface ListBuurmiesParams {
   page?: number;
@@ -12,14 +12,14 @@ interface ListBuurmiesParams {
 
 export const useBuurmies = (params?: ListBuurmiesParams) => {
   return useQuery({
-    queryKey: ["buurmies", params],
+    queryKey: ['buurmies', params],
     queryFn: () => buurmiesApi.list(params).then((res) => res.data),
   });
 };
 
 export const useBuurmy = (keycloakId: string) => {
   return useQuery({
-    queryKey: ["buurmies", keycloakId],
+    queryKey: ['buurmies', keycloakId],
     queryFn: () => buurmiesApi.get(keycloakId).then((res) => res.data),
     enabled: !!keycloakId,
   });
@@ -31,7 +31,7 @@ export const useCreateBuurmy = () => {
     mutationFn: (data: CreateBuurmyRequest) =>
       buurmiesApi.create(data).then((res) => res.data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["buurmies"] });
+      queryClient.invalidateQueries({ queryKey: ['buurmies'] });
     },
   });
 };
@@ -41,7 +41,7 @@ export const useDisableBuurmy = () => {
   return useMutation({
     mutationFn: (keycloakId: string) => buurmiesApi.disable(keycloakId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["buurmies"] });
+      queryClient.invalidateQueries({ queryKey: ['buurmies'] });
     },
   });
 };
@@ -51,7 +51,7 @@ export const useEnableBuurmy = () => {
   return useMutation({
     mutationFn: (keycloakId: string) => buurmiesApi.enable(keycloakId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["buurmies"] });
+      queryClient.invalidateQueries({ queryKey: ['buurmies'] });
     },
   });
 };
@@ -61,7 +61,7 @@ export const useDeleteBuurmy = () => {
   return useMutation({
     mutationFn: (keycloakId: string) => buurmiesApi.delete(keycloakId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["buurmies"] });
+      queryClient.invalidateQueries({ queryKey: ['buurmies'] });
     },
   });
 };
@@ -72,7 +72,7 @@ export const useForcePasswordUpdate = () => {
     mutationFn: (keycloakId: string) =>
       buurmiesApi.forcePasswordUpdate(keycloakId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["buurmies"] });
+      queryClient.invalidateQueries({ queryKey: ['buurmies'] });
     },
   });
 };
@@ -83,7 +83,7 @@ export const useForceProfileUpdate = () => {
     mutationFn: (keycloakId: string) =>
       buurmiesApi.forceProfileUpdate(keycloakId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["buurmies"] });
+      queryClient.invalidateQueries({ queryKey: ['buurmies'] });
     },
   });
 };
@@ -93,7 +93,7 @@ export const useVerifyBuurmy = () => {
   return useMutation({
     mutationFn: (keycloakId: string) => buurmiesApi.verify(keycloakId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["buurmies"] });
+      queryClient.invalidateQueries({ queryKey: ['buurmies'] });
     },
   });
 };
@@ -103,7 +103,7 @@ export const useUnverifyBuurmy = () => {
   return useMutation({
     mutationFn: (keycloakId: string) => buurmiesApi.unverify(keycloakId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["buurmies"] });
+      queryClient.invalidateQueries({ queryKey: ['buurmies'] });
     },
   });
 };
@@ -114,7 +114,7 @@ export const useRemovePasswordReset = () => {
     mutationFn: (keycloakId: string) =>
       buurmiesApi.removePasswordReset(keycloakId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["buurmies"] });
+      queryClient.invalidateQueries({ queryKey: ['buurmies'] });
     },
   });
 };
@@ -125,7 +125,7 @@ export const useRemoveProfileReset = () => {
     mutationFn: (keycloakId: string) =>
       buurmiesApi.removeProfileReset(keycloakId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["buurmies"] });
+      queryClient.invalidateQueries({ queryKey: ['buurmies'] });
     },
   });
 };

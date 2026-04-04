@@ -1,0 +1,17 @@
+# Pre-commit hooks for frontend quality gates
+# Install: brew install lefthook && lefthook install
+
+pre-commit:
+  parallel: true
+  commands:
+    lint-app:
+      root: "app/"
+      glob: "*.{ts,tsx}"
+      run: npx eslint --max-warnings 0 {staged_files}
+    lint-backoffice:
+      root: "backoffice/"
+      glob: "*.{ts,tsx}"
+      run: npx eslint --max-warnings 0 {staged_files}
+    format-check:
+      glob: "*.{ts,tsx,css,json}"
+      run: npx prettier --check {staged_files}

@@ -1,41 +1,41 @@
-import { Fragment, useState, useCallback } from "react";
-import { formatDateTime, formatDateTimeFull } from "../utils/dateFormatting";
-import { ChevronDown, ChevronRight, Clock, ExternalLink } from "lucide-react";
+import { Fragment, useState, useCallback } from 'react';
+import { formatDateTime, formatDateTimeFull } from '../utils/dateFormatting';
+import { ChevronDown, ChevronRight, Clock, ExternalLink } from 'lucide-react';
 import {
   PageHeader,
   Button,
   StatusBadge,
   Pagination,
   RefreshButton,
-} from "@buurman/ui";
-import type { BadgeColorVariant } from "@buurman/ui";
+  RichTextDisplay,
+} from '@buurman/ui';
+import type { BadgeColorVariant } from '@buurman/ui';
 import {
   useImpersonationSessions,
   useRejoinImpersonation,
   useTerminateImpersonation,
-} from "../hooks/useImpersonation";
-import { LoadingSpinner } from "../components/LoadingSpinner";
-import { RichTextDisplay } from "../components/RichTextDisplay";
-import { PasswordConfirmationDialog } from "../components/PasswordConfirmationDialog";
-import { SortableHeader } from "../components/SortableHeader";
-import { usePagination } from "../hooks/usePagination";
-import { AsyncSelect, type AsyncSelectOption } from "../components/AsyncSelect";
-import { useTeamSearch } from "../hooks/useTeams";
-import { useUserSearch } from "../hooks/useUsers";
+} from '../hooks/useImpersonation';
+import { LoadingSpinner } from '../components/LoadingSpinner';
+import { PasswordConfirmationDialog } from '../components/PasswordConfirmationDialog';
+import { SortableHeader } from '../components/SortableHeader';
+import { usePagination } from '../hooks/usePagination';
+import { AsyncSelect, type AsyncSelectOption } from '../components/AsyncSelect';
+import { useTeamSearch } from '../hooks/useTeams';
+import { useUserSearch } from '../hooks/useUsers';
 
 const statusBadgeColor: Record<string, BadgeColorVariant> = {
-  PENDING: "yellow",
-  ACTIVE: "green",
-  ENDED: "gray",
-  EXPIRED: "red",
+  PENDING: 'yellow',
+  ACTIVE: 'green',
+  ENDED: 'gray',
+  EXPIRED: 'red',
 };
 
 const selectClass =
-  "px-3 py-2 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors";
+  'px-3 py-2 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors';
 
 const ExpandableReason = ({ html }: { html: string }) => {
   const [expanded, setExpanded] = useState(false);
-  const plainText = html.replace(/<[^>]*>/g, "");
+  const plainText = html.replace(/<[^>]*>/g, '');
   const isLong = plainText.length > 80;
 
   if (!html || plainText.trim().length === 0) {
@@ -92,29 +92,29 @@ const SessionDetailPanel = ({
   };
 }) => {
   const details = [
-    { label: "Session ID", value: session.identifier },
-    { label: "Admin Name", value: session.adminName },
-    { label: "Target User ID", value: session.targetUserIdentifier },
-    { label: "Target Team ID", value: session.targetTeamIdentifier },
+    { label: 'Session ID', value: session.identifier },
+    { label: 'Admin Name', value: session.adminName },
+    { label: 'Target User ID', value: session.targetUserIdentifier },
+    { label: 'Target Team ID', value: session.targetTeamIdentifier },
     {
-      label: "Created",
+      label: 'Created',
       value: formatDateTimeFull(session.createdAt),
     },
     {
-      label: "Activated",
+      label: 'Activated',
       value: session.activatedAt
         ? formatDateTimeFull(session.activatedAt)
-        : "-",
+        : '-',
     },
     {
-      label: "Expires",
+      label: 'Expires',
       value: formatDateTimeFull(session.expiresAt),
     },
     {
-      label: "Ended",
-      value: session.endedAt ? formatDateTimeFull(session.endedAt) : "-",
+      label: 'Ended',
+      value: session.endedAt ? formatDateTimeFull(session.endedAt) : '-',
     },
-    { label: "End Reason", value: session.endReason ?? "-" },
+    { label: 'End Reason', value: session.endReason ?? '-' },
   ];
 
   return (
@@ -152,7 +152,7 @@ export const ImpersonationSessionsPage = () => {
     handlePageChange,
     handleSizeChange,
     handleSortChange,
-  } = usePagination({ defaultSort: "createdAt" });
+  } = usePagination({ defaultSort: 'createdAt' });
 
   const teamSearch = useTeamSearch();
   const userSearch = useUserSearch();
@@ -162,8 +162,8 @@ export const ImpersonationSessionsPage = () => {
   const [selectedTargetUser, setSelectedTargetUser] = useState<
     AsyncSelectOption[]
   >([]);
-  const [statusFilter, setStatusFilter] = useState("");
-  const [modeFilter, setModeFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState('');
+  const [modeFilter, setModeFilter] = useState('');
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
   const [rejoinTarget, setRejoinTarget] = useState<string | null>(null);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
@@ -197,7 +197,7 @@ export const ImpersonationSessionsPage = () => {
         return;
       }
 
-      const newWindow = window.open("about:blank", "_blank");
+      const newWindow = window.open('about:blank', '_blank');
 
       rejoinMutation.mutate(
         { identifier: rejoinTarget, password },
@@ -208,22 +208,22 @@ export const ImpersonationSessionsPage = () => {
             if (newWindow && !newWindow.closed) {
               newWindow.location.href = data.redirectUrl;
             } else {
-              window.open(data.redirectUrl, "_blank");
+              window.open(data.redirectUrl, '_blank');
             }
           },
           onError: (err) => {
             newWindow?.close();
             const axiosError = err as { response?: { status?: number } };
             if (axiosError.response?.status === 403) {
-              setPasswordError("Invalid password. Please try again.");
+              setPasswordError('Invalid password. Please try again.');
             } else {
-              setPasswordError("Failed to rejoin impersonation session.");
+              setPasswordError('Failed to rejoin impersonation session.');
             }
           },
-        },
+        }
       );
     },
-    [rejoinTarget, rejoinMutation],
+    [rejoinTarget, rejoinMutation]
   );
 
   if (isLoading) {
@@ -398,15 +398,15 @@ export const ImpersonationSessionsPage = () => {
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <StatusBadge
-                        label={session.mode === "FULL" ? "Full" : "Read Only"}
-                        color={session.mode === "FULL" ? "red" : "blue"}
+                        label={session.mode === 'FULL' ? 'Full' : 'Read Only'}
+                        color={session.mode === 'FULL' ? 'red' : 'blue'}
                         size="xs"
                       />
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <StatusBadge
                         label={session.status}
-                        color={statusBadgeColor[session.status] ?? "gray"}
+                        color={statusBadgeColor[session.status] ?? 'gray'}
                         size="xs"
                         dot
                       />
@@ -427,8 +427,8 @@ export const ImpersonationSessionsPage = () => {
                       className="px-4 py-3 text-sm"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      {(session.status === "ACTIVE" ||
-                        session.status === "PENDING") && (
+                      {(session.status === 'ACTIVE' ||
+                        session.status === 'PENDING') && (
                         <div className="flex items-center gap-2">
                           <Button
                             variant="secondary"

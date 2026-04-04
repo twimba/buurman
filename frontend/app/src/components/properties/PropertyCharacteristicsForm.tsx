@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Info, Plus, Trash2 } from 'lucide-react';
 import { CollapsibleSection } from './CollapsibleSection';
 import { MeasurementInput } from '@/components/common/MeasurementInput';
-import { RichTextEditor } from '@/components/common/RichTextEditor';
+import { RichTextEditor } from '@buurman/ui';
 import {
   CreatePropertyRequest,
   PropertyResponse,

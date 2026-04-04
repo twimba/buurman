@@ -3,25 +3,46 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "format": "prettier --write \"src/**/*.{ts,tsx,css}\""
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
+    "typecheck": "tsc --noEmit"
   },
   "main": "src/index.ts",
   "types": "src/index.ts",
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.14",
+    "@tiptap/core": "3.22.1",
+    "@tiptap/extension-highlight": "3.22.1",
+    "@tiptap/extension-link": "3.22.1",
+    "@tiptap/extension-placeholder": "3.22.1",
+    "@tiptap/extension-text-align": "3.22.1",
+    "@tiptap/extension-underline": "3.22.1",
+    "@tiptap/pm": "3.22.1",
+    "@tiptap/react": "3.22.1",
+    "@tiptap/starter-kit": "3.22.1",
     "clsx": "^2.1.1",
+    "dompurify": "3.3.3",
     "lucide-react": "1.7.0",
     "tailwind-merge": "^3.3.0"
   },
   "devDependencies": {
+    "@eslint/compat": "2.0.4",
+    "@eslint/js": "10.0.1",
     "@tailwindcss/postcss": "4.2.2",
+    "@types/dompurify": "3.2.0",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
+    "eslint": "10.2.0",
+    "eslint-plugin-react": "7.37.5",
+    "eslint-plugin-react-hooks": "7.0.1",
     "prettier": "3.8.1",
     "tailwindcss": "4.2.2",
-    "typescript": "6.0.2"
+    "typescript": "6.0.2",
+    "typescript-eslint": "8.58.0"
   },
   "peerDependencies": {
+    "keycloak-js": "^26.0.0",
+    "posthog-js": "^1.0.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-router-dom": "7.0.0"

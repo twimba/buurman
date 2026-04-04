@@ -5,12 +5,13 @@ import {
   UpdateOccupancyPeriodRequest,
   EndOccupancyPeriodRequest,
 } from '../types/occupancyPeriod';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '@buurman/ui';
 import { getErrorMessage } from '../utils/errorMessages';
+import { queryKeys } from '../lib/queryKeys';
 
 export const useOccupancyPeriods = (propertyIdentifier: string | undefined) => {
   return useQuery({
-    queryKey: ['occupancyPeriods', propertyIdentifier],
+    queryKey: queryKeys.occupancyPeriods.all(propertyIdentifier),
     queryFn: () => occupancyApi.getOccupancyPeriods(propertyIdentifier ?? ''),
     enabled: !!propertyIdentifier,
   });
@@ -21,7 +22,10 @@ export const useOccupancyPeriod = (
   periodIdentifier: string | undefined
 ) => {
   return useQuery({
-    queryKey: ['occupancyPeriod', propertyIdentifier, periodIdentifier],
+    queryKey: queryKeys.occupancyPeriods.detail(
+      propertyIdentifier,
+      periodIdentifier
+    ),
     queryFn: () =>
       occupancyApi.getOccupancyPeriod(
         propertyIdentifier ?? '',
@@ -39,14 +43,18 @@ export const useCreateOccupancyPeriod = (propertyIdentifier: string) => {
       occupancyApi.createOccupancyPeriod(propertyIdentifier, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['occupancyPeriods', propertyIdentifier],
+        queryKey: queryKeys.occupancyPeriods.all(propertyIdentifier),
       });
       queryClient.invalidateQueries({
-        queryKey: ['property', propertyIdentifier],
+        queryKey: queryKeys.properties.detail(propertyIdentifier),
       });
-      queryClient.invalidateQueries({ queryKey: ['properties'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.properties.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.stats(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Self-occupancy period created', 'success');
     },
     onError: (error) => {
@@ -73,16 +81,20 @@ export const useUpdateOccupancyPeriod = (propertyIdentifier: string) => {
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['occupancyPeriods', propertyIdentifier],
+        queryKey: queryKeys.occupancyPeriods.all(propertyIdentifier),
       });
       queryClient.invalidateQueries({
-        queryKey: ['property', propertyIdentifier],
+        queryKey: queryKeys.properties.detail(propertyIdentifier),
       });
-      queryClient.invalidateQueries({ queryKey: ['properties'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.properties.all() });
       queryClient.invalidateQueries({
-        queryKey: ['propertyTimeline', propertyIdentifier],
+        queryKey: queryKeys.dashboard.stats(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.occupancyPeriods.timeline(propertyIdentifier),
       });
       showToast('Self-occupancy period updated', 'success');
     },
@@ -110,16 +122,20 @@ export const useEndOccupancyPeriod = (propertyIdentifier: string) => {
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['occupancyPeriods', propertyIdentifier],
+        queryKey: queryKeys.occupancyPeriods.all(propertyIdentifier),
       });
       queryClient.invalidateQueries({
-        queryKey: ['property', propertyIdentifier],
+        queryKey: queryKeys.properties.detail(propertyIdentifier),
       });
-      queryClient.invalidateQueries({ queryKey: ['properties'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.properties.all() });
       queryClient.invalidateQueries({
-        queryKey: ['propertyTimeline', propertyIdentifier],
+        queryKey: queryKeys.dashboard.stats(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.occupancyPeriods.timeline(propertyIdentifier),
       });
       showToast('Self-occupancy period ended', 'success');
     },
@@ -137,16 +153,20 @@ export const useDeleteOccupancyPeriod = (propertyIdentifier: string) => {
       occupancyApi.deleteOccupancyPeriod(propertyIdentifier, periodIdentifier),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['occupancyPeriods', propertyIdentifier],
+        queryKey: queryKeys.occupancyPeriods.all(propertyIdentifier),
       });
       queryClient.invalidateQueries({
-        queryKey: ['property', propertyIdentifier],
+        queryKey: queryKeys.properties.detail(propertyIdentifier),
       });
-      queryClient.invalidateQueries({ queryKey: ['properties'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.properties.all() });
       queryClient.invalidateQueries({
-        queryKey: ['propertyTimeline', propertyIdentifier],
+        queryKey: queryKeys.dashboard.stats(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.occupancyPeriods.timeline(propertyIdentifier),
       });
       showToast('Self-occupancy period deleted', 'success');
     },
@@ -158,7 +178,7 @@ export const useDeleteOccupancyPeriod = (propertyIdentifier: string) => {
 
 export const usePropertyTimeline = (propertyIdentifier: string | undefined) => {
   return useQuery({
-    queryKey: ['propertyTimeline', propertyIdentifier],
+    queryKey: queryKeys.occupancyPeriods.timeline(propertyIdentifier),
     queryFn: () => occupancyApi.getPropertyTimeline(propertyIdentifier ?? ''),
     enabled: !!propertyIdentifier,
   });

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { X } from 'lucide-react';
 import { MoneyInput } from '@/components/common/MoneyInput';
-import { RichTextEditor } from '@/components/common/RichTextEditor';
+import { RichTextEditor } from '@buurman/ui';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 import { useCreateFee, useUpdateFee } from '@/hooks/usePropertyFinancialsHooks';
 import {

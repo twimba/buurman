@@ -21,10 +21,11 @@ import {
   DuplicateCheckResponse,
 } from '../types/contact';
 import type { PageParams } from '@/types/common';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '@buurman/ui';
 import { getErrorMessage } from '../utils/errorMessages';
 import { trackEvent } from '../utils/analytics';
 import { AnalyticsEvent } from '../constants/analyticsEvents';
+import { queryKeys } from '../lib/queryKeys';
 
 export const useContacts = (
   params?: {
@@ -34,7 +35,7 @@ export const useContacts = (
   } & PageParams
 ) => {
   return useQuery({
-    queryKey: ['contacts', params],
+    queryKey: queryKeys.contacts.all(params),
     queryFn: () => contactsApi.getContacts(params),
     placeholderData: keepPreviousData,
   });
@@ -42,7 +43,7 @@ export const useContacts = (
 
 export const useContact = (id: string | undefined) => {
   return useQuery({
-    queryKey: ['contact', id],
+    queryKey: queryKeys.contacts.detail(id),
     queryFn: () => contactsApi.getContact(id ?? ''),
     enabled: !!id,
   });
@@ -54,9 +55,13 @@ export const useCreateContact = () => {
   return useMutation({
     mutationFn: (data: CreateContactRequest) => contactsApi.createContact(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contacts'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.contacts.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.stats(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Contact created successfully', 'success');
       trackEvent(AnalyticsEvent.CONTACT_CREATED);
     },
@@ -73,11 +78,19 @@ export const useUpdateContact = (id: string) => {
     mutationFn: (data: UpdateContactRequest) =>
       contactsApi.updateContact(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contacts'] });
-      queryClient.invalidateQueries({ queryKey: ['contact', id] });
-      queryClient.invalidateQueries({ queryKey: ['contactAuditLog', id] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.contacts.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contacts.detail(id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contacts.auditLog(id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.stats(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Contact updated successfully', 'success');
     },
     onError: (error) => {
@@ -92,9 +105,13 @@ export const useDeleteContact = () => {
   return useMutation({
     mutationFn: (id: string) => contactsApi.deleteContact(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contacts'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.contacts.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.stats(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Contact deleted successfully', 'success');
       trackEvent(AnalyticsEvent.CONTACT_DELETED);
     },
@@ -106,7 +123,7 @@ export const useDeleteContact = () => {
 
 export const useContactHistory = (contactId: string | undefined) => {
   return useQuery({
-    queryKey: ['contactHistory', contactId],
+    queryKey: queryKeys.contacts.history(contactId),
     queryFn: () => contactsApi.getContactHistory(contactId ?? ''),
     enabled: !!contactId,
   });
@@ -114,7 +131,7 @@ export const useContactHistory = (contactId: string | undefined) => {
 
 export const useContactAuditLog = (contactId: string | undefined) => {
   return useQuery({
-    queryKey: ['contactAuditLog', contactId],
+    queryKey: queryKeys.contacts.auditLog(contactId),
     queryFn: () => contactsApi.getContactAuditLog(contactId ?? ''),
     enabled: !!contactId,
   });
@@ -122,7 +139,7 @@ export const useContactAuditLog = (contactId: string | undefined) => {
 
 export const useContactDocuments = (contactId: string | undefined) => {
   return useQuery({
-    queryKey: ['contactDocuments', contactId],
+    queryKey: queryKeys.contacts.documents(contactId),
     queryFn: () => contactsApi.getContactDocuments(contactId ?? ''),
     enabled: !!contactId,
   });
@@ -130,7 +147,7 @@ export const useContactDocuments = (contactId: string | undefined) => {
 
 export const useContactPhotos = (contactId: string | undefined) => {
   return useQuery({
-    queryKey: ['contactPhotos', contactId],
+    queryKey: queryKeys.contacts.photos(contactId),
     queryFn: () => contactsApi.getContactPhotos(contactId ?? ''),
     enabled: !!contactId,
   });
@@ -151,13 +168,13 @@ export const useUploadContactDocument = (contactId: string) => {
     }) => contactsApi.uploadContactDocument(contactId, file, title, notes),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['contactDocuments', contactId],
+        queryKey: queryKeys.contacts.documents(contactId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['contactAuditLog', contactId],
+        queryKey: queryKeys.contacts.auditLog(contactId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['documents'],
+        queryKey: queryKeys.documents.all(),
       });
     },
     onError: (error) => {
@@ -181,13 +198,15 @@ export const useUploadContactPhoto = (contactId: string) => {
     }) => contactsApi.uploadContactPhoto(contactId, file, title, notes),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['contactPhotos', contactId],
+        queryKey: queryKeys.contacts.photos(contactId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['contactAuditLog', contactId],
+        queryKey: queryKeys.contacts.auditLog(contactId),
       });
-      queryClient.invalidateQueries({ queryKey: ['contact', contactId] });
-      queryClient.invalidateQueries({ queryKey: ['photos'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contacts.detail(contactId),
+      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.photos.all() });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -203,14 +222,16 @@ export const useSetContactMainPhoto = (contactId: string) => {
       contactsApi.setContactMainPhoto(contactId, photoId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['contactPhotos', contactId],
+        queryKey: queryKeys.contacts.photos(contactId),
       });
-      queryClient.invalidateQueries({ queryKey: ['contact', contactId] });
       queryClient.invalidateQueries({
-        queryKey: ['contactAuditLog', contactId],
+        queryKey: queryKeys.contacts.detail(contactId),
       });
-      queryClient.invalidateQueries({ queryKey: ['contacts'] });
-      queryClient.invalidateQueries({ queryKey: ['photos'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contacts.auditLog(contactId),
+      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.contacts.all() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.photos.all() });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -226,14 +247,16 @@ export const useDeleteContactDocument = (contactId: string) => {
       contactsApi.deleteContactDocument(documentId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['contactDocuments', contactId],
-      });
-      queryClient.invalidateQueries({ queryKey: ['contact', contactId] });
-      queryClient.invalidateQueries({
-        queryKey: ['contactAuditLog', contactId],
+        queryKey: queryKeys.contacts.documents(contactId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['documents'],
+        queryKey: queryKeys.contacts.detail(contactId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contacts.auditLog(contactId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.documents.all(),
       });
     },
     onError: (error) => {
@@ -244,7 +267,7 @@ export const useDeleteContactDocument = (contactId: string) => {
 
 export const useContactAddresses = (contactId: string | undefined) => {
   return useQuery({
-    queryKey: ['contactAddresses', contactId],
+    queryKey: queryKeys.contacts.addresses(contactId),
     queryFn: () => contactsApi.getContactAddresses(contactId ?? ''),
     enabled: !!contactId,
   });
@@ -258,11 +281,13 @@ export const useCreateContactAddress = (contactId: string) => {
       contactsApi.createContactAddress(contactId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['contactAddresses', contactId],
+        queryKey: queryKeys.contacts.addresses(contactId),
       });
-      queryClient.invalidateQueries({ queryKey: ['contact', contactId] });
       queryClient.invalidateQueries({
-        queryKey: ['contactAuditLog', contactId],
+        queryKey: queryKeys.contacts.detail(contactId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contacts.auditLog(contactId),
       });
     },
     onError: (error) => {
@@ -282,11 +307,13 @@ export const useUpdateContactAddress = (
       contactsApi.updateContactAddress(contactId, addressId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['contactAddresses', contactId],
+        queryKey: queryKeys.contacts.addresses(contactId),
       });
-      queryClient.invalidateQueries({ queryKey: ['contact', contactId] });
       queryClient.invalidateQueries({
-        queryKey: ['contactAuditLog', contactId],
+        queryKey: queryKeys.contacts.detail(contactId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contacts.auditLog(contactId),
       });
     },
     onError: (error) => {
@@ -303,11 +330,13 @@ export const useDeleteContactAddress = (contactId: string) => {
       contactsApi.deleteContactAddress(contactId, addressId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['contactAddresses', contactId],
+        queryKey: queryKeys.contacts.addresses(contactId),
       });
-      queryClient.invalidateQueries({ queryKey: ['contact', contactId] });
       queryClient.invalidateQueries({
-        queryKey: ['contactAuditLog', contactId],
+        queryKey: queryKeys.contacts.detail(contactId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contacts.auditLog(contactId),
       });
     },
     onError: (error) => {
@@ -320,7 +349,7 @@ export const useDeleteContactAddress = (contactId: string) => {
 
 export const useContactNotes = (contactId: string | undefined) => {
   return useQuery({
-    queryKey: ['contactNotes', contactId],
+    queryKey: queryKeys.contacts.notes(contactId),
     queryFn: () => contactsApi.getContactNotes(contactId ?? ''),
     enabled: !!contactId,
   });
@@ -334,13 +363,13 @@ export const useCreateContactNote = (contactId: string) => {
       contactsApi.createContactNote(contactId, data),
     onSuccess: (_result, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ['contactNotes', contactId],
+        queryKey: queryKeys.contacts.notes(contactId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['contactActivity', contactId],
+        queryKey: queryKeys.contacts.activity(contactId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['contactAuditLog', contactId],
+        queryKey: queryKeys.contacts.auditLog(contactId),
       });
       showToast('Note created successfully', 'success');
       trackEvent(AnalyticsEvent.CONTACT_NOTE_CREATED, {
@@ -362,13 +391,13 @@ export const useUpdateContactNote = (contactId: string, noteId: string) => {
       contactsApi.updateContactNote(contactId, noteId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['contactNotes', contactId],
+        queryKey: queryKeys.contacts.notes(contactId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['contactActivity', contactId],
+        queryKey: queryKeys.contacts.activity(contactId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['contactAuditLog', contactId],
+        queryKey: queryKeys.contacts.auditLog(contactId),
       });
       showToast('Note updated successfully', 'success');
     },
@@ -386,13 +415,13 @@ export const useDeleteContactNote = (contactId: string) => {
       contactsApi.deleteContactNote(contactId, noteId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['contactNotes', contactId],
+        queryKey: queryKeys.contacts.notes(contactId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['contactActivity', contactId],
+        queryKey: queryKeys.contacts.activity(contactId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['contactAuditLog', contactId],
+        queryKey: queryKeys.contacts.auditLog(contactId),
       });
       showToast('Note deleted successfully', 'success');
     },
@@ -410,7 +439,7 @@ export const usePinContactNote = (contactId: string) => {
       contactsApi.pinContactNote(contactId, noteId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['contactNotes', contactId],
+        queryKey: queryKeys.contacts.notes(contactId),
       });
     },
     onError: (error) => {
@@ -427,7 +456,7 @@ export const useUnpinContactNote = (contactId: string) => {
       contactsApi.unpinContactNote(contactId, noteId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['contactNotes', contactId],
+        queryKey: queryKeys.contacts.notes(contactId),
       });
     },
     onError: (error) => {
@@ -440,7 +469,7 @@ export const useUnpinContactNote = (contactId: string) => {
 
 export const useContactRelationships = (contactId: string | undefined) => {
   return useQuery({
-    queryKey: ['contactRelationships', contactId],
+    queryKey: queryKeys.contacts.relationships(contactId),
     queryFn: () => contactsApi.getContactRelationships(contactId ?? ''),
     enabled: !!contactId,
   });
@@ -454,13 +483,13 @@ export const useCreateContactRelationship = (contactId: string) => {
       contactsApi.createContactRelationship(contactId, data),
     onSuccess: (_result, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ['contactRelationships', contactId],
+        queryKey: queryKeys.contacts.relationships(contactId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['contactActivity', contactId],
+        queryKey: queryKeys.contacts.activity(contactId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['contactAuditLog', contactId],
+        queryKey: queryKeys.contacts.auditLog(contactId),
       });
       showToast('Relationship created successfully', 'success');
       trackEvent(AnalyticsEvent.CONTACT_RELATIONSHIP_CREATED, {
@@ -484,13 +513,13 @@ export const useUpdateContactRelationship = (
       contactsApi.updateContactRelationship(contactId, relationshipId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['contactRelationships', contactId],
+        queryKey: queryKeys.contacts.relationships(contactId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['contactActivity', contactId],
+        queryKey: queryKeys.contacts.activity(contactId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['contactAuditLog', contactId],
+        queryKey: queryKeys.contacts.auditLog(contactId),
       });
       showToast('Relationship updated successfully', 'success');
     },
@@ -508,13 +537,13 @@ export const useDeleteContactRelationship = (contactId: string) => {
       contactsApi.deleteContactRelationship(contactId, relationshipId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['contactRelationships', contactId],
+        queryKey: queryKeys.contacts.relationships(contactId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['contactActivity', contactId],
+        queryKey: queryKeys.contacts.activity(contactId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['contactAuditLog', contactId],
+        queryKey: queryKeys.contacts.auditLog(contactId),
       });
       showToast('Relationship deleted successfully', 'success');
     },
@@ -533,13 +562,15 @@ export const useAddContactTag = (contactId: string) => {
     mutationFn: (data: AddContactTagRequest) =>
       contactsApi.addContactTag(contactId, data),
     onSuccess: (_result, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['contact', contactId] });
-      queryClient.invalidateQueries({ queryKey: ['contacts'] });
       queryClient.invalidateQueries({
-        queryKey: ['contactActivity', contactId],
+        queryKey: queryKeys.contacts.detail(contactId),
+      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.contacts.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contacts.activity(contactId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['contactAuditLog', contactId],
+        queryKey: queryKeys.contacts.auditLog(contactId),
       });
       showToast('Tag added successfully', 'success');
       trackEvent(AnalyticsEvent.CONTACT_TAG_ADDED, { tag: variables.tag });
@@ -556,13 +587,15 @@ export const useRemoveContactTag = (contactId: string) => {
   return useMutation({
     mutationFn: (tag: string) => contactsApi.removeContactTag(contactId, tag),
     onSuccess: (_result, removedTag) => {
-      queryClient.invalidateQueries({ queryKey: ['contact', contactId] });
-      queryClient.invalidateQueries({ queryKey: ['contacts'] });
       queryClient.invalidateQueries({
-        queryKey: ['contactActivity', contactId],
+        queryKey: queryKeys.contacts.detail(contactId),
+      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.contacts.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contacts.activity(contactId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['contactAuditLog', contactId],
+        queryKey: queryKeys.contacts.auditLog(contactId),
       });
       showToast('Tag removed successfully', 'success');
       trackEvent(AnalyticsEvent.CONTACT_TAG_REMOVED, { tag: removedTag });
@@ -580,7 +613,7 @@ export const useContactActivity = (
   params?: PageParams
 ) => {
   return useQuery({
-    queryKey: ['contactActivity', contactId, params],
+    queryKey: queryKeys.contacts.activity(contactId, params),
     queryFn: () => contactsApi.getContactActivity(contactId ?? '', params),
     enabled: !!contactId,
     placeholderData: keepPreviousData,
@@ -603,9 +636,13 @@ export const useEraseContactData = () => {
   return useMutation({
     mutationFn: (contactId: string) => contactsApi.eraseContactData(contactId),
     onSuccess: (_data, contactId) => {
-      queryClient.invalidateQueries({ queryKey: ['contacts'] });
-      queryClient.invalidateQueries({ queryKey: ['contact', contactId] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.contacts.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contacts.detail(contactId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.stats(),
+      });
       showToast('Contact data erased', 'success');
       trackEvent(AnalyticsEvent.CONTACT_DATA_ERASED);
     },

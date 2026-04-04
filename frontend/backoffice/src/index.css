@@ -1,5 +1,5 @@
-@import "@buurman/ui/src/styles/theme.css";
-@import "tailwindcss";
+@import '@buurman/ui/src/styles/theme.css';
+@import 'tailwindcss';
 @source "../../packages/ui/src";
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -7,14 +7,14 @@
 body {
   margin: 0;
   font-family:
-    "Inter",
+    'Inter',
     -apple-system,
     BlinkMacSystemFont,
-    "Segoe UI",
+    'Segoe UI',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
 }
 
 #root {
@@ -94,7 +94,7 @@ body {
   border-radius: 0.25em;
   padding: 0.15em 0.35em;
   font-size: 0.875em;
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
 }
 
 .tiptap pre {
@@ -104,7 +104,7 @@ body {
   padding: 0.75em 1em;
   margin: 0.5em 0;
   overflow-x: auto;
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
   font-size: 0.875em;
 }
 
@@ -205,7 +205,7 @@ body {
   border-radius: 0.25em;
   padding: 0.15em 0.35em;
   font-size: 0.875em;
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
 }
 
 .rich-text-display pre {
@@ -215,7 +215,7 @@ body {
   padding: 0.75em 1em;
   margin: 0.4em 0;
   overflow-x: auto;
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
   font-size: 0.875em;
 }
 

@@ -8,6 +8,7 @@ const apiBaseUrl = `${window.location.protocol}//${apiHostname}${apiPort}`;
 
 const client = axios.create({
   baseURL: apiBaseUrl,
+  timeout: 15_000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -82,6 +83,15 @@ client.interceptors.response.use(
     ) {
       window.location.href = '/verify-email';
       return Promise.reject(error);
+    }
+
+    // Surface rate-limit errors with specific guidance
+    if (error.response?.status === 429) {
+      const retryAfter = error.response.headers?.['retry-after'];
+      const message = retryAfter
+        ? `Too many requests. Please wait ${retryAfter} seconds before retrying.`
+        : 'Too many requests. Please wait a moment before retrying.';
+      error.message = message;
     }
 
     return Promise.reject(error);

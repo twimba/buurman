@@ -1,11 +1,11 @@
-import { LoadingSpinner as SharedLoadingSpinner } from "@buurman/ui";
+import { LoadingSpinner as SharedLoadingSpinner } from '@buurman/ui';
 
 interface LoadingSpinnerProps {
   message?: string;
 }
 
 export const LoadingSpinner = ({
-  message = "Loading...",
+  message = 'Loading...',
 }: LoadingSpinnerProps) => (
   <SharedLoadingSpinner message={message} fullScreen />
 );

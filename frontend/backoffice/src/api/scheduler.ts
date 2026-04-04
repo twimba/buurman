@@ -1,5 +1,5 @@
-import client from "./client";
-import type { ScheduledJob, JobExecutionHistory, PageResponse } from "../types";
+import client from './client';
+import type { ScheduledJob, JobExecutionHistory, PageResponse } from '../types';
 
 interface HistoryParams {
   jobName?: string[];
@@ -11,7 +11,7 @@ interface HistoryParams {
 }
 
 export const schedulerApi = {
-  listJobs: () => client.get<ScheduledJob[]>("/scheduler/jobs"),
+  listJobs: () => client.get<ScheduledJob[]>('/scheduler/jobs'),
   pauseJob: (jobName: string, group: string) =>
     client.post(`/scheduler/jobs/${jobName}/pause`, null, {
       params: { group },
@@ -28,10 +28,10 @@ export const schedulerApi = {
     client.post(
       `/scheduler/jobs/${jobName}/reschedule`,
       { cronExpression },
-      { params: { group } },
+      { params: { group } }
     ),
   history: (params?: HistoryParams) =>
-    client.get<PageResponse<JobExecutionHistory>>("/scheduler/history", {
+    client.get<PageResponse<JobExecutionHistory>>('/scheduler/history', {
       params,
       paramsSerializer: {
         indexes: null, // Serialize arrays as jobName=a&jobName=b (Spring format)

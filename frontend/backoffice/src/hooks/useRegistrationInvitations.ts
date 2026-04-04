@@ -1,12 +1,12 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   registrationInvitationsApi,
   type CreateRegistrationInvitationRequest,
   type SendRegistrationInvitationRequest,
   type UpdateRegistrationInvitationNoteRequest,
-} from "../api/registrationInvitations";
-import { trackEvent } from "../utils/analytics";
-import { AnalyticsEvent } from "../constants/analyticsEvents";
+} from '../api/registrationInvitations';
+import { trackEvent } from '../utils/analytics';
+import { AnalyticsEvent } from '../constants/analyticsEvents';
 
 interface ListParams {
   page?: number;
@@ -18,7 +18,7 @@ interface ListParams {
 
 export const useRegistrationInvitations = (params?: ListParams) => {
   return useQuery({
-    queryKey: ["registrationInvitations", params],
+    queryKey: ['registrationInvitations', params],
     queryFn: () =>
       registrationInvitationsApi
         .list(params as Record<string, unknown>)
@@ -28,7 +28,7 @@ export const useRegistrationInvitations = (params?: ListParams) => {
 
 export const useRegistrationInvitation = (identifier: string) => {
   return useQuery({
-    queryKey: ["registrationInvitations", identifier],
+    queryKey: ['registrationInvitations', identifier],
     queryFn: () =>
       registrationInvitationsApi.get(identifier).then((res) => res.data),
     enabled: !!identifier,
@@ -41,7 +41,7 @@ export const useCreateRegistrationInvitation = () => {
     mutationFn: (data: CreateRegistrationInvitationRequest) =>
       registrationInvitationsApi.create(data).then((res) => res.data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["registrationInvitations"] });
+      queryClient.invalidateQueries({ queryKey: ['registrationInvitations'] });
     },
   });
 };
@@ -52,7 +52,7 @@ export const useRevokeRegistrationInvitation = () => {
     mutationFn: (identifier: string) =>
       registrationInvitationsApi.revoke(identifier),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["registrationInvitations"] });
+      queryClient.invalidateQueries({ queryKey: ['registrationInvitations'] });
     },
   });
 };
@@ -87,10 +87,10 @@ export const useUpdateRegistrationInvitationNote = () => {
         .then((res) => res.data),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ["registrationInvitations"],
+        queryKey: ['registrationInvitations'],
       });
       queryClient.invalidateQueries({
-        queryKey: ["registrationInvitations", variables.identifier],
+        queryKey: ['registrationInvitations', variables.identifier],
       });
     },
   });
@@ -98,7 +98,7 @@ export const useUpdateRegistrationInvitationNote = () => {
 
 export const useSuggestCode = () => {
   return useQuery({
-    queryKey: ["registrationInvitations", "suggestCode"],
+    queryKey: ['registrationInvitations', 'suggestCode'],
     queryFn: registrationInvitationsApi.suggestCode,
     staleTime: 0,
   });

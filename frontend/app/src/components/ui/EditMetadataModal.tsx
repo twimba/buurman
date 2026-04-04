@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Save, Loader2 } from 'lucide-react';
-import { RichTextEditor } from '../common/RichTextEditor';
+import { RichTextEditor } from '@buurman/ui';
 
 interface EditMetadataModalProps {
   title: string;

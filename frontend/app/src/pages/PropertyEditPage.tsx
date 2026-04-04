@@ -12,7 +12,7 @@ import {
 } from '@/hooks/usePropertyHooks';
 import { PropertyForm } from '@/components/properties/PropertyForm';
 import { UpdatePropertyRequest } from '@/types/property';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { LoadingSpinner } from '@buurman/ui';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { ArrowLeft } from 'lucide-react';
 

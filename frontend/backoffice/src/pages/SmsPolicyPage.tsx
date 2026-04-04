@@ -1,62 +1,62 @@
-import { useState, useRef, useEffect, useCallback } from "react";
-import { createPortal } from "react-dom";
-import { Save, Loader2, ChevronRight, Info } from "lucide-react";
-import { RefreshButton } from "@buurman/ui";
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
+import { Save, Loader2, ChevronRight, Info } from 'lucide-react';
+import { RefreshButton } from '@buurman/ui';
 import {
   usePhonePolicy,
   usePhonePolicyMetadata,
   useUpdatePhonePolicy,
-} from "../hooks/useSettings";
-import { LoadingSpinner } from "../components/LoadingSpinner";
-import { formatDateTime } from "../utils/dateFormatting";
-import type { CountryGroupResponse } from "../api/settings";
+} from '../hooks/useSettings';
+import { LoadingSpinner } from '../components/LoadingSpinner';
+import { formatDateTime } from '../utils/dateFormatting';
+import type { CountryGroupResponse } from '../api/settings';
 
 const TYPE_LABELS: Record<string, string> = {
-  MOBILE: "Mobile",
-  FIXED_LINE: "Fixed",
-  FIXED_LINE_OR_MOBILE: "Fixed/Mobile",
-  VOIP: "VoIP",
-  TOLL_FREE: "Toll-Free",
-  PREMIUM_RATE: "Premium",
-  SHARED_COST: "Shared",
-  PERSONAL_NUMBER: "Personal",
-  PAGER: "Pager",
-  UAN: "UAN",
+  MOBILE: 'Mobile',
+  FIXED_LINE: 'Fixed',
+  FIXED_LINE_OR_MOBILE: 'Fixed/Mobile',
+  VOIP: 'VoIP',
+  TOLL_FREE: 'Toll-Free',
+  PREMIUM_RATE: 'Premium',
+  SHARED_COST: 'Shared',
+  PERSONAL_NUMBER: 'Personal',
+  PAGER: 'Pager',
+  UAN: 'UAN',
 };
 
 const TYPE_TOOLTIPS: Record<string, string> = {
-  MOBILE: "Standard mobile/cellular numbers. Most common for SMS verification.",
+  MOBILE: 'Standard mobile/cellular numbers. Most common for SMS verification.',
   FIXED_LINE:
-    "Landline numbers. Some can receive SMS depending on the carrier.",
+    'Landline numbers. Some can receive SMS depending on the carrier.',
   FIXED_LINE_OR_MOBILE:
-    "Numbers that could be either mobile or fixed line. Common in countries where number ranges overlap.",
-  VOIP: "Internet-based phone numbers (e.g. Google Voice, Skype). Higher fraud risk but used legitimately by some users.",
+    'Numbers that could be either mobile or fixed line. Common in countries where number ranges overlap.',
+  VOIP: 'Internet-based phone numbers (e.g. Google Voice, Skype). Higher fraud risk but used legitimately by some users.',
   TOLL_FREE:
-    "Free-to-call numbers (e.g. 0800). Often used by businesses. Sending SMS to these can be expensive.",
+    'Free-to-call numbers (e.g. 0800). Often used by businesses. Sending SMS to these can be expensive.',
   PREMIUM_RATE:
-    "Premium-rate numbers that charge the caller extra. High abuse risk \u2014 sending SMS here is costly.",
+    'Premium-rate numbers that charge the caller extra. High abuse risk \u2014 sending SMS here is costly.',
   SHARED_COST:
-    "Numbers where the cost is split between caller and recipient. Uncommon for personal use.",
+    'Numbers where the cost is split between caller and recipient. Uncommon for personal use.',
   PERSONAL_NUMBER:
-    "Numbers that follow the user across locations. Rare and carrier-dependent.",
-  PAGER: "Pager devices. Very limited SMS support, largely obsolete.",
-  UAN: "Universal Access Numbers that route to different destinations. Typically used by businesses, not individuals.",
+    'Numbers that follow the user across locations. Rare and carrier-dependent.',
+  PAGER: 'Pager devices. Very limited SMS support, largely obsolete.',
+  UAN: 'Universal Access Numbers that route to different destinations. Typically used by businesses, not individuals.',
 };
 
 const countryCodeToFlag = (code: string): string =>
   code
     .toUpperCase()
-    .split("")
+    .split('')
     .map((c) => String.fromCodePoint(0x1f1e6 + c.charCodeAt(0) - 65))
-    .join("");
+    .join('');
 
 // Tri-state: "all" | "some" | "none"
-type CheckState = "all" | "some" | "none";
+type CheckState = 'all' | 'some' | 'none';
 
 function getCheckState(
   countryCodes: string[],
   type: string,
-  matrix: Record<string, string[]>,
+  matrix: Record<string, string[]>
 ): CheckState {
   let has = 0;
   for (const code of countryCodes) {
@@ -65,18 +65,18 @@ function getCheckState(
     }
   }
   if (has === 0) {
-    return "none";
+    return 'none';
   }
   if (has === countryCodes.length) {
-    return "all";
+    return 'all';
   }
-  return "some";
+  return 'some';
 }
 
 function getRowCheckState(
   countryCodes: string[],
   types: string[],
-  matrix: Record<string, string[]>,
+  matrix: Record<string, string[]>
 ): CheckState {
   const totalCells = countryCodes.length * types.length;
   let checked = 0;
@@ -88,18 +88,18 @@ function getRowCheckState(
     }
   }
   if (checked === 0) {
-    return "none";
+    return 'none';
   }
   if (checked === totalCells) {
-    return "all";
+    return 'all';
   }
-  return "some";
+  return 'some';
 }
 
 function TriStateCheckbox({
   state,
   onChange,
-  className = "",
+  className = '',
 }: {
   state: CheckState;
   onChange: () => void;
@@ -109,7 +109,7 @@ function TriStateCheckbox({
 
   useEffect(() => {
     if (ref.current) {
-      ref.current.indeterminate = state === "some";
+      ref.current.indeterminate = state === 'some';
     }
   }, [state]);
 
@@ -117,7 +117,7 @@ function TriStateCheckbox({
     <input
       ref={ref}
       type="checkbox"
-      checked={state === "all"}
+      checked={state === 'all'}
       onChange={onChange}
       className={`rounded text-primary-500 focus:ring-primary-500 border-border-strong cursor-pointer ${className}`}
     />
@@ -158,7 +158,7 @@ function InfoTooltip({ text }: { text: string }) {
           >
             {text}
           </div>,
-          document.body,
+          document.body
         )}
     </>
   );
@@ -218,7 +218,7 @@ export const SmsPolicyPage = () => {
     (countryCodes: string[], type: string) => {
       setMatrix((prev) => {
         const state = getCheckState(countryCodes, type, prev);
-        const enable = state !== "all";
+        const enable = state !== 'all';
         const next = { ...prev };
         for (const code of countryCodes) {
           const types = next[code] ? [...next[code]] : [];
@@ -234,7 +234,7 @@ export const SmsPolicyPage = () => {
         return next;
       });
     },
-    [],
+    []
   );
 
   // Toggle all types for a set of countries (row-level)
@@ -242,7 +242,7 @@ export const SmsPolicyPage = () => {
     (countryCodes: string[], types: string[]) => {
       setMatrix((prev) => {
         const state = getRowCheckState(countryCodes, types, prev);
-        const enable = state !== "all";
+        const enable = state !== 'all';
         const next = { ...prev };
         for (const code of countryCodes) {
           next[code] = enable ? [...types] : [];
@@ -250,7 +250,7 @@ export const SmsPolicyPage = () => {
         return next;
       });
     },
-    [],
+    []
   );
 
   // Toggle a column (type) for ALL countries
@@ -258,7 +258,7 @@ export const SmsPolicyPage = () => {
     (type: string) => {
       toggleTypeForCountries(allCountryCodes, type);
     },
-    [allCountryCodes, toggleTypeForCountries],
+    [allCountryCodes, toggleTypeForCountries]
   );
 
   const handleSave = () => {
@@ -323,7 +323,7 @@ export const SmsPolicyPage = () => {
               value={maxCodesPerHour}
               onChange={(e) =>
                 setMaxCodesPerHour(
-                  Math.max(1, Math.min(20, Number(e.target.value) || 1)),
+                  Math.max(1, Math.min(20, Number(e.target.value) || 1))
                 )
               }
               className="w-full px-3 py-2 text-sm border border-border-strong rounded-lg bg-surface-card text-text-primary outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
@@ -343,7 +343,7 @@ export const SmsPolicyPage = () => {
               value={verificationCodeExpiryMinutes}
               onChange={(e) =>
                 setVerificationCodeExpiryMinutes(
-                  Math.max(1, Math.min(60, Number(e.target.value) || 1)),
+                  Math.max(1, Math.min(60, Number(e.target.value) || 1))
                 )
               }
               className="w-full px-3 py-2 text-sm border border-border-strong rounded-lg bg-surface-card text-text-primary outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
@@ -420,7 +420,7 @@ export const SmsPolicyPage = () => {
             {data?.updatedAt && (
               <p className="text-xs text-text-muted">
                 Last updated {formatDateTime(data.updatedAt)}
-                {data.updatedBy ? ` by ${data.updatedBy}` : ""}
+                {data.updatedBy ? ` by ${data.updatedBy}` : ''}
               </p>
             )}
           </div>
@@ -466,7 +466,7 @@ function GroupRows({
 
   // Count enabled countries (countries with at least one type)
   const enabledCount = codes.filter(
-    (c) => matrix[c] && matrix[c].length > 0,
+    (c) => matrix[c] && matrix[c].length > 0
   ).length;
 
   return (
@@ -484,7 +484,7 @@ function GroupRows({
               className="flex items-center gap-1.5 text-sm font-semibold text-text-primary hover:text-primary-500 transition-colors"
             >
               <ChevronRight
-                className={`h-3.5 w-3.5 transition-transform duration-150 ${isExpanded ? "rotate-90" : ""}`}
+                className={`h-3.5 w-3.5 transition-transform duration-150 ${isExpanded ? 'rotate-90' : ''}`}
               />
               {group.groupName}
             </button>

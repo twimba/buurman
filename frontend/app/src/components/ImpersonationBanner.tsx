@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import DOMPurify from 'dompurify';
 import { Lock } from 'lucide-react';
 import { useImpersonation } from '../context/ImpersonationContext';
 import { endImpersonationSession } from '../generated/api/impersonation/impersonation';
@@ -63,7 +64,7 @@ export function ImpersonationBanner() {
         <span
           className="text-amber-900 text-xs opacity-80 ml-2"
           title={reason.replace(/<[^>]*>/g, '')}
-          dangerouslySetInnerHTML={{ __html: reason }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(reason) }}
         />
       )}
       <button
@@ -75,3 +76,5 @@ export function ImpersonationBanner() {
     </div>
   );
 }
+
+ImpersonationBanner.displayName = 'ImpersonationBanner';

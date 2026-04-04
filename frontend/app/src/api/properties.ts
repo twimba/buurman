@@ -271,3 +271,14 @@ export const exportPropertyDashboardExcel = async (
   );
   return response.data;
 };
+
+// --- Booklet ---
+
+export const downloadPropertyBooklet = async (
+  propertyId: string
+): Promise<Blob> => {
+  const response = await client.get(`/booklets/property/${propertyId}`, {
+    responseType: 'blob',
+  });
+  return response.data;
+};

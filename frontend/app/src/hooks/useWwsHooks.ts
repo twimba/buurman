@@ -1,12 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as wwsApi from '../api/wws';
 import type { WwsCalculationRequest } from '../types/wws';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '@buurman/ui';
 import { getErrorMessage } from '../utils/errorMessages';
+import { queryKeys } from '../lib/queryKeys';
 
 export const useWwsPreFill = (propertyIdentifier: string | undefined) => {
   return useQuery({
-    queryKey: ['wwsPreFill', propertyIdentifier],
+    queryKey: queryKeys.wws.preFill(propertyIdentifier),
     queryFn: () => wwsApi.getWwsPreFill(propertyIdentifier ?? ''),
     enabled: !!propertyIdentifier,
   });
@@ -14,7 +15,7 @@ export const useWwsPreFill = (propertyIdentifier: string | undefined) => {
 
 export const useWwsCalculations = (propertyIdentifier: string | undefined) => {
   return useQuery({
-    queryKey: ['wwsCalculations', propertyIdentifier],
+    queryKey: queryKeys.wws.calculations(propertyIdentifier),
     queryFn: () => wwsApi.getWwsCalculations(propertyIdentifier ?? ''),
     enabled: !!propertyIdentifier,
   });
@@ -24,7 +25,7 @@ export const useLatestWwsCalculation = (
   propertyIdentifier: string | undefined
 ) => {
   return useQuery({
-    queryKey: ['wwsLatest', propertyIdentifier],
+    queryKey: queryKeys.wws.latest(propertyIdentifier),
     queryFn: () => wwsApi.getLatestWwsCalculation(propertyIdentifier ?? ''),
     enabled: !!propertyIdentifier,
     retry: false,
@@ -49,10 +50,10 @@ export const useCalculateAndSaveWws = () => {
       wwsApi.calculateAndSaveWws(data),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ['wwsCalculations', variables.propertyIdentifier],
+        queryKey: queryKeys.wws.calculations(variables.propertyIdentifier),
       });
       queryClient.invalidateQueries({
-        queryKey: ['wwsLatest', variables.propertyIdentifier],
+        queryKey: queryKeys.wws.latest(variables.propertyIdentifier),
       });
       showToast('WWS calculation saved', 'success');
     },
@@ -70,10 +71,10 @@ export const useDeleteWwsCalculation = (propertyIdentifier: string) => {
       wwsApi.deleteWwsCalculation(calculationIdentifier),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['wwsCalculations', propertyIdentifier],
+        queryKey: queryKeys.wws.calculations(propertyIdentifier),
       });
       queryClient.removeQueries({
-        queryKey: ['wwsLatest', propertyIdentifier],
+        queryKey: queryKeys.wws.latest(propertyIdentifier),
       });
       showToast('Calculation deleted', 'success');
     },

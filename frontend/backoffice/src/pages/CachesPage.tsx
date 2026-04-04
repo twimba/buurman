@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
   Database,
   Clock,
@@ -8,19 +8,19 @@ import {
   ChevronRight,
   Loader2,
   Zap,
-} from "lucide-react";
-import { RefreshButton, ConfirmDialog } from "@buurman/ui";
+} from 'lucide-react';
+import { RefreshButton, ConfirmDialog } from '@buurman/ui';
 import {
   useCachesList,
   useCacheDetail,
   useInvalidateCache,
-} from "../hooks/useCaches";
-import type { CacheInfo } from "../api/caches";
+} from '../hooks/useCaches';
+import type { CacheInfo } from '../api/caches';
 
 // Helper to format relative time
 const formatRelativeTime = (isoString: string | null): string => {
   if (!isoString) {
-    return "Never";
+    return 'Never';
   }
   const diff = Date.now() - new Date(isoString).getTime();
   const seconds = Math.floor(diff / 1000);
@@ -38,12 +38,12 @@ const formatRelativeTime = (isoString: string | null): string => {
 // Hit rate color
 const hitRateColor = (rate: number): string => {
   if (rate >= 0.9) {
-    return "text-success-text";
+    return 'text-success-text';
   }
   if (rate >= 0.5) {
-    return "text-warning-text";
+    return 'text-warning-text';
   }
-  return "text-error-text";
+  return 'text-error-text';
 };
 
 // Stat cell
@@ -65,7 +65,7 @@ const StatCell = ({
         {label}
       </span>
     </div>
-    <p className={`text-lg font-semibold ${valueClass ?? "text-text-primary"}`}>
+    <p className={`text-lg font-semibold ${valueClass ?? 'text-text-primary'}`}>
       {value}
     </p>
   </div>
@@ -125,10 +125,10 @@ const CacheEntryView = ({
                     >
                       {val === null ? (
                         <span className="text-text-muted">null</span>
-                      ) : typeof val === "boolean" ? (
+                      ) : typeof val === 'boolean' ? (
                         <span
                           className={
-                            val ? "text-success-text" : "text-error-text"
+                            val ? 'text-success-text' : 'text-error-text'
                           }
                         >
                           {String(val)}
@@ -154,7 +154,7 @@ const CacheCard = ({ cache }: { cache: CacheInfo }) => {
   const [showInvalidateDialog, setShowInvalidateDialog] = useState(false);
   const invalidateCache = useInvalidateCache();
   const { data: detail, isLoading: detailLoading } = useCacheDetail(
-    expanded ? cache.name : null,
+    expanded ? cache.name : null
   );
 
   const handleInvalidate = () => {
@@ -220,9 +220,9 @@ const CacheCard = ({ cache }: { cache: CacheInfo }) => {
           <StatCell
             icon={TrendingUp}
             label="Hit Rate"
-            value={hasActivity ? `${(cache.hitRate * 100).toFixed(1)}%` : "N/A"}
+            value={hasActivity ? `${(cache.hitRate * 100).toFixed(1)}%` : 'N/A'}
             valueClass={
-              hasActivity ? hitRateColor(cache.hitRate) : "text-text-muted"
+              hasActivity ? hitRateColor(cache.hitRate) : 'text-text-muted'
             }
           />
           <StatCell
@@ -236,32 +236,32 @@ const CacheCard = ({ cache }: { cache: CacheInfo }) => {
             value={
               cache.loadCount > 0
                 ? `${cache.averageLoadTimeMs.toFixed(1)}ms`
-                : "N/A"
+                : 'N/A'
             }
           />
         </div>
         <div className="flex items-center gap-6 mt-3 pt-3 border-t border-border-subtle text-xs text-text-muted">
           <span>
-            TTL:{" "}
+            TTL:{' '}
             <span className="font-medium text-text-secondary">
               {cache.ttlSeconds}s
-            </span>{" "}
+            </span>{' '}
             ({cache.refreshPolicy})
           </span>
           <span>
-            Evictions:{" "}
+            Evictions:{' '}
             <span className="font-medium text-text-secondary">
               {cache.evictionCount}
             </span>
           </span>
           <span>
-            Loads:{" "}
+            Loads:{' '}
             <span className="font-medium text-text-secondary">
               {cache.loadCount}
             </span>
           </span>
           <span>
-            Last Invalidated:{" "}
+            Last Invalidated:{' '}
             <span className="font-medium text-text-secondary">
               {formatRelativeTime(cache.lastInvalidatedAt)}
             </span>

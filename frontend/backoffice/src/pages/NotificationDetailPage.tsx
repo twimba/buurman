@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { formatDateTime } from "../utils/dateFormatting";
+import { useState, useEffect, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { formatDateTime } from '../utils/dateFormatting';
 import {
   Mail,
   Phone,
@@ -8,60 +8,60 @@ import {
   RefreshCw,
   Eye,
   MousePointerClick,
-} from "lucide-react";
-import { PageHeader, Button, ConfirmDialog } from "@buurman/ui";
+} from 'lucide-react';
+import { PageHeader, Button, ConfirmDialog } from '@buurman/ui';
 import {
   useNotification,
   useResendNotification,
-} from "../hooks/useNotifications";
-import { LoadingSpinner } from "../components/LoadingSpinner";
+} from '../hooks/useNotifications';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 
 const typeLabels: Record<string, string> = {
-  WELCOME: "Welcome",
-  VERIFICATION_CODE: "Verification Code",
-  TEAM_INVITATION: "Team Invitation",
-  INVITATION_ACCEPTED: "Invitation Accepted",
-  PASSWORD_CHANGED: "Password Changed",
-  PAYMENT_REMINDER: "Payment Reminder",
-  CONTRACT_EXPIRY: "Contract Expiry",
-  PROPERTY_CREATED: "Property Created",
-  CONTRACT_CREATED: "Contract Created",
-  CONTRACT_STATUS_CHANGED: "Contract Status Changed",
-  CONTRACT_REOPENED: "Contract Reopened",
-  PAYMENT_PAID: "Payment Paid",
-  PAYMENT_RECEIVAL: "Payment Receival",
-  EXPENSE_CREATED: "Expense Created",
+  WELCOME: 'Welcome',
+  VERIFICATION_CODE: 'Verification Code',
+  TEAM_INVITATION: 'Team Invitation',
+  INVITATION_ACCEPTED: 'Invitation Accepted',
+  PASSWORD_CHANGED: 'Password Changed',
+  PAYMENT_REMINDER: 'Payment Reminder',
+  CONTRACT_EXPIRY: 'Contract Expiry',
+  PROPERTY_CREATED: 'Property Created',
+  CONTRACT_CREATED: 'Contract Created',
+  CONTRACT_STATUS_CHANGED: 'Contract Status Changed',
+  CONTRACT_REOPENED: 'Contract Reopened',
+  PAYMENT_PAID: 'Payment Paid',
+  PAYMENT_RECEIVAL: 'Payment Receival',
+  EXPENSE_CREATED: 'Expense Created',
 };
 
 const statusBadgeConfig: Record<string, { label: string; className: string }> =
   {
     PENDING: {
-      label: "Pending",
-      className: "bg-slate-50 text-slate-700 ring-1 ring-slate-200",
+      label: 'Pending',
+      className: 'bg-slate-50 text-slate-700 ring-1 ring-slate-200',
     },
     QUEUED: {
-      label: "Queued",
-      className: "bg-blue-50 text-blue-700 ring-1 ring-blue-200",
+      label: 'Queued',
+      className: 'bg-blue-50 text-blue-700 ring-1 ring-blue-200',
     },
     SENT: {
-      label: "Sent",
-      className: "bg-sky-50 text-sky-700 ring-1 ring-sky-200",
+      label: 'Sent',
+      className: 'bg-sky-50 text-sky-700 ring-1 ring-sky-200',
     },
     DELIVERED: {
-      label: "Delivered",
-      className: "bg-success-bg text-success-text ring-1 ring-success-border",
+      label: 'Delivered',
+      className: 'bg-success-bg text-success-text ring-1 ring-success-border',
     },
     FAILED: {
-      label: "Failed",
-      className: "bg-error-bg text-error-text ring-1 ring-error-border",
+      label: 'Failed',
+      className: 'bg-error-bg text-error-text ring-1 ring-error-border',
     },
     BOUNCED: {
-      label: "Bounced",
-      className: "bg-warning-bg text-warning-text ring-1 ring-warning-border",
+      label: 'Bounced',
+      className: 'bg-warning-bg text-warning-text ring-1 ring-warning-border',
     },
     REJECTED: {
-      label: "Rejected",
-      className: "bg-error-bg text-error-text ring-1 ring-error-border",
+      label: 'Rejected',
+      className: 'bg-error-bg text-error-text ring-1 ring-error-border',
     },
   };
 
@@ -77,12 +77,12 @@ const EmailBodyPreview = ({ body }: { body: string }) => {
     const handleLoad = () => {
       const doc = iframe.contentDocument;
       if (doc?.body) {
-        iframe.style.height = doc.body.scrollHeight + "px";
+        iframe.style.height = doc.body.scrollHeight + 'px';
       }
     };
 
-    iframe.addEventListener("load", handleLoad);
-    return () => iframe.removeEventListener("load", handleLoad);
+    iframe.addEventListener('load', handleLoad);
+    return () => iframe.removeEventListener('load', handleLoad);
   }, [body]);
 
   return (
@@ -124,7 +124,7 @@ const SmsBodyPreview = ({ body }: { body: string }) => (
 );
 
 export const NotificationDetailPage = () => {
-  const { identifier = "" } = useParams<{ identifier: string }>();
+  const { identifier = '' } = useParams<{ identifier: string }>();
   const navigate = useNavigate();
   const { data: notif, isLoading, error } = useNotification(identifier);
   const resendMutation = useResendNotification();
@@ -139,7 +139,7 @@ export const NotificationDetailPage = () => {
       <div className="text-center py-12">
         <p className="text-error-text">Failed to load notification.</p>
         <button
-          onClick={() => navigate("/notifications")}
+          onClick={() => navigate('/notifications')}
           className="mt-4 text-sm text-primary-500 hover:underline"
         >
           Back to notifications
@@ -148,7 +148,7 @@ export const NotificationDetailPage = () => {
     );
   }
 
-  const canResend = ["FAILED", "BOUNCED", "REJECTED"].includes(notif.status);
+  const canResend = ['FAILED', 'BOUNCED', 'REJECTED'].includes(notif.status);
 
   const handleResend = () => {
     resendMutation.mutate(identifier, {
@@ -158,7 +158,7 @@ export const NotificationDetailPage = () => {
 
   const statusConfig = statusBadgeConfig[notif.status] ?? {
     label: notif.status,
-    className: "bg-slate-50 text-slate-700 ring-1 ring-slate-200",
+    className: 'bg-slate-50 text-slate-700 ring-1 ring-slate-200',
   };
 
   return (
@@ -203,7 +203,7 @@ export const NotificationDetailPage = () => {
             <dt className="text-text-secondary">Channel</dt>
             <dd className="font-medium text-text-primary mt-0.5">
               <span className="inline-flex items-center gap-1">
-                {notif.channel === "EMAIL" ? (
+                {notif.channel === 'EMAIL' ? (
                   <Mail className="h-3.5 w-3.5" />
                 ) : (
                   <Phone className="h-3.5 w-3.5" />
@@ -280,7 +280,7 @@ export const NotificationDetailPage = () => {
           <h2 className="text-sm font-semibold text-text-primary mb-3">
             Content
           </h2>
-          {notif.channel === "EMAIL" ? (
+          {notif.channel === 'EMAIL' ? (
             <EmailBodyPreview body={notif.body} />
           ) : (
             <SmsBodyPreview body={notif.body} />
@@ -316,7 +316,7 @@ export const NotificationDetailPage = () => {
       )}
 
       {/* Engagement Tracking */}
-      {notif.channel === "EMAIL" &&
+      {notif.channel === 'EMAIL' &&
         (notif.openCount > 0 || notif.clickCount > 0) && (
           <div className="bg-surface-card rounded-lg border border-border-default p-6 mb-6">
             <h2 className="text-sm font-semibold text-text-primary mb-4">
@@ -332,7 +332,7 @@ export const NotificationDetailPage = () => {
                     {notif.openCount}
                   </p>
                   <p className="text-xs text-text-secondary">
-                    {notif.openCount === 1 ? "Open" : "Opens"}
+                    {notif.openCount === 1 ? 'Open' : 'Opens'}
                     {notif.firstOpenedAt && (
                       <span className="ml-1">
                         &middot; First: {formatDateTime(notif.firstOpenedAt)}
@@ -351,7 +351,7 @@ export const NotificationDetailPage = () => {
                       {notif.clickCount}
                     </p>
                     <p className="text-xs text-text-secondary">
-                      {notif.clickCount === 1 ? "Click" : "Clicks"}
+                      {notif.clickCount === 1 ? 'Click' : 'Clicks'}
                       {notif.firstClickedAt && (
                         <span className="ml-1">
                           &middot; First: {formatDateTime(notif.firstClickedAt)}

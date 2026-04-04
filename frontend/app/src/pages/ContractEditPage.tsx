@@ -2,7 +2,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useContract, useUpdateContract } from '@/hooks/useContractHooks';
 import { ContractForm } from '@/components/contracts/ContractForm';
 import { CreateContractRequest, UpdateContractRequest } from '@/types/contract';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { LoadingSpinner } from '@buurman/ui';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { ArrowLeft } from 'lucide-react';
 

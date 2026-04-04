@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
   AlertTriangle,
   ChevronDown,
@@ -6,10 +6,10 @@ import {
   Lock,
   Users,
   XCircle,
-} from "lucide-react";
-import { RefreshButton } from "@buurman/ui";
-import { useSystemInfo, useAppBuildInfo } from "../hooks/useSystemInfo";
-import { useAuth } from "../contexts/AuthContext";
+} from 'lucide-react';
+import { RefreshButton } from '@buurman/ui';
+import { useSystemInfo, useAppBuildInfo } from '../hooks/useSystemInfo';
+import { useAuth } from '../contexts/AuthContext';
 import type {
   ConfigEntry,
   GcInfo,
@@ -20,7 +20,7 @@ import type {
   ServiceHealthStatus,
   SessionInfo,
   MigrationEntry,
-} from "../types";
+} from '../types';
 
 const BUILD_INFO = {
   version: __APP_VERSION__,
@@ -30,11 +30,11 @@ const BUILD_INFO = {
   buildTime: __BUILD_TIME__,
 };
 
-const GITHUB_REPO = "https://github.com/twimba/buurman";
+const GITHUB_REPO = 'https://github.com/twimba/buurman';
 
 function hasRole(
   keycloak: { tokenParsed?: Record<string, unknown> },
-  role: string,
+  role: string
 ): boolean {
   const roles = (keycloak.tokenParsed?.realm_access as { roles?: string[] })
     ?.roles;
@@ -43,7 +43,7 @@ function hasRole(
 
 function formatRelativeTime(iso?: string): string {
   if (!iso) {
-    return "\u2014";
+    return '\u2014';
   }
   const diff = Date.now() - new Date(iso).getTime();
   const seconds = Math.floor(diff / 1000);
@@ -75,7 +75,7 @@ function formatUptime(ms: number): string {
     parts.push(`${hours}h`);
   }
   parts.push(`${minutes}m`);
-  return parts.join("");
+  return parts.join('');
 }
 
 function formatBytes(bytes: number): string {
@@ -96,43 +96,43 @@ function formatNumber(n: number): string {
 }
 
 const statusDotClass: Record<ServiceHealthStatus, string> = {
-  UP: "bg-success-text",
-  DOWN: "bg-error-text",
-  DISABLED: "bg-slate-400",
-  UNKNOWN: "bg-warning-text animate-pulse",
+  UP: 'bg-success-text',
+  DOWN: 'bg-error-text',
+  DISABLED: 'bg-slate-400',
+  UNKNOWN: 'bg-warning-text animate-pulse',
 };
 
 const statusLabel: Record<ServiceHealthStatus, string> = {
-  UP: "UP",
-  DOWN: "DOWN",
-  DISABLED: "Disabled",
-  UNKNOWN: "Checking...",
+  UP: 'UP',
+  DOWN: 'DOWN',
+  DISABLED: 'Disabled',
+  UNKNOWN: 'Checking...',
 };
 
 const migrationBadgeClass: Record<string, string> = {
-  SUCCESS: "bg-success-bg text-success-text ring-1 ring-success-border",
-  PENDING: "bg-warning-bg text-warning-text ring-1 ring-warning-border",
-  FAILED: "bg-error-bg text-error-text ring-1 ring-error-border",
-  OUT_OF_ORDER: "bg-blue-50 text-blue-700 ring-1 ring-blue-200",
+  SUCCESS: 'bg-success-bg text-success-text ring-1 ring-success-border',
+  PENDING: 'bg-warning-bg text-warning-text ring-1 ring-warning-border',
+  FAILED: 'bg-error-bg text-error-text ring-1 ring-error-border',
+  OUT_OF_ORDER: 'bg-blue-50 text-blue-700 ring-1 ring-blue-200',
 };
 
 function getMigrationBadge(state: string): string {
   return (
     migrationBadgeClass[state] ??
-    "bg-slate-50 text-slate-700 ring-1 ring-slate-200"
+    'bg-slate-50 text-slate-700 ring-1 ring-slate-200'
   );
 }
 
 const metricTypeBadge: Record<string, string> = {
-  COUNTER: "bg-blue-50 text-blue-700 ring-1 ring-blue-200",
-  GAUGE: "bg-violet-50 text-violet-700 ring-1 ring-violet-200",
-  TIMER: "bg-amber-50 text-amber-700 ring-1 ring-amber-200",
-  DISTRIBUTION: "bg-teal-50 text-teal-700 ring-1 ring-teal-200",
+  COUNTER: 'bg-blue-50 text-blue-700 ring-1 ring-blue-200',
+  GAUGE: 'bg-violet-50 text-violet-700 ring-1 ring-violet-200',
+  TIMER: 'bg-amber-50 text-amber-700 ring-1 ring-amber-200',
+  DISTRIBUTION: 'bg-teal-50 text-teal-700 ring-1 ring-teal-200',
 };
 
 // --- Skeleton components ---
 
-function SkeletonBlock({ className = "" }: { className?: string }) {
+function SkeletonBlock({ className = '' }: { className?: string }) {
   return (
     <div className={`animate-pulse bg-surface-inset rounded ${className}`} />
   );
@@ -190,7 +190,7 @@ function CollapsiblePanel({
         )}
       </button>
       {expanded && (
-        <div className={noPadding ? "" : "px-5 pb-5"}>{children}</div>
+        <div className={noPadding ? '' : 'px-5 pb-5'}>{children}</div>
       )}
     </div>
   );
@@ -211,7 +211,7 @@ function ProgressBar({
 }) {
   const pct = max > 0 ? (used / max) * 100 : 0;
   const color =
-    pct > 80 ? "bg-red-500" : pct > 60 ? "bg-amber-500" : "bg-emerald-500";
+    pct > 80 ? 'bg-red-500' : pct > 60 ? 'bg-amber-500' : 'bg-emerald-500';
 
   return (
     <div>
@@ -240,24 +240,24 @@ function AlertBanner({
 }: {
   data: { pendingCount: number; failedCount: number; downServices: number };
 }) {
-  const alerts: { message: string; type: "warning" | "error" }[] = [];
+  const alerts: { message: string; type: 'warning' | 'error' }[] = [];
 
   if (data.failedCount > 0) {
     alerts.push({
       message: `${data.failedCount} failed migration(s) \u2014 immediate attention required`,
-      type: "error",
+      type: 'error',
     });
   }
   if (data.pendingCount > 0) {
     alerts.push({
       message: `${data.pendingCount} pending migration(s) detected`,
-      type: "warning",
+      type: 'warning',
     });
   }
   if (data.downServices > 0) {
     alerts.push({
       message: `${data.downServices} service(s) unreachable`,
-      type: "error",
+      type: 'error',
     });
   }
 
@@ -268,14 +268,14 @@ function AlertBanner({
   return (
     <div className="space-y-2 mb-6">
       {alerts.map((alert, i) => {
-        const isError = alert.type === "error";
+        const isError = alert.type === 'error';
         return (
           <div
             key={i}
             className={`rounded-lg px-4 py-3 flex items-center gap-3 text-sm font-medium ${
               isError
-                ? "bg-error-bg text-error-text border border-error-border"
-                : "bg-warning-bg text-warning-text border border-warning-border"
+                ? 'bg-error-bg text-error-text border border-error-border'
+                : 'bg-warning-bg text-warning-text border border-warning-border'
             }`}
           >
             {isError ? (
@@ -349,7 +349,7 @@ function VersionsCard({
 }) {
   const rows = [
     {
-      component: "Backend",
+      component: 'Backend',
       version: backendBuild.version,
       commit: backendBuild.gitCommit,
       commitFull: backendBuild.gitCommitFull,
@@ -357,15 +357,15 @@ function VersionsCard({
       buildTime: backendBuild.buildTime,
     },
     {
-      component: "App",
-      version: appBuild?.version ?? "\u2014",
+      component: 'App',
+      version: appBuild?.version ?? '\u2014',
       commit: appBuild?.gitCommit ?? null,
       commitFull: appBuild?.gitCommitFull ?? null,
       branch: appBuild?.gitBranch ?? null,
       buildTime: appBuild?.buildTime,
     },
     {
-      component: "Backoffice",
+      component: 'Backoffice',
       version: BUILD_INFO.version,
       commit: BUILD_INFO.gitCommit,
       commitFull: BUILD_INFO.gitCommitFull,
@@ -410,7 +410,7 @@ function VersionsCard({
                   {row.version}
                 </td>
                 <td className="px-5 py-3 text-sm font-mono">
-                  {row.commitFull && row.commitFull !== "unknown" ? (
+                  {row.commitFull && row.commitFull !== 'unknown' ? (
                     <a
                       href={`${GITHUB_REPO}/commit/${row.commitFull}`}
                       target="_blank"
@@ -422,12 +422,12 @@ function VersionsCard({
                     </a>
                   ) : (
                     <span className="text-primary-500">
-                      {row.commit ?? "\u2014"}
+                      {row.commit ?? '\u2014'}
                     </span>
                   )}
                 </td>
                 <td className="px-5 py-3 text-sm">
-                  {row.branch && row.branch !== "unknown" ? (
+                  {row.branch && row.branch !== 'unknown' ? (
                     <a
                       href={`${GITHUB_REPO}/tree/${row.branch}`}
                       target="_blank"
@@ -438,7 +438,7 @@ function VersionsCard({
                       {row.branch}
                     </a>
                   ) : (
-                    <span className="text-text-secondary">{"\u2014"}</span>
+                    <span className="text-text-secondary">{'\u2014'}</span>
                   )}
                 </td>
                 <td
@@ -457,7 +457,7 @@ function VersionsCard({
 }
 
 function ServiceHealthCard({ services }: { services: ServiceHealth[] }) {
-  const upCount = services.filter((s) => s.status === "UP").length;
+  const upCount = services.filter((s) => s.status === 'UP').length;
   return (
     <CollapsiblePanel
       title="Service Health"
@@ -484,17 +484,17 @@ function ServiceHealthCard({ services }: { services: ServiceHealth[] }) {
             </div>
             <div className="flex items-center gap-2">
               <span
-                className={`text-xs ${svc.status === "UP" ? "text-success-text" : svc.status === "DOWN" ? "text-error-text" : "text-text-muted "}`}
+                className={`text-xs ${svc.status === 'UP' ? 'text-success-text' : svc.status === 'DOWN' ? 'text-error-text' : 'text-text-muted '}`}
               >
                 {statusLabel[svc.status]}
               </span>
-              {svc.latencyMs != null && svc.status === "UP" && (
+              {svc.latencyMs != null && svc.status === 'UP' && (
                 <span className="text-xs text-text-muted font-mono">
                   {svc.latencyMs}ms
                 </span>
               )}
             </div>
-            {svc.details && svc.status === "UP" && (
+            {svc.details && svc.status === 'UP' && (
               <p className="text-[11px] text-text-muted mt-1 truncate">
                 {svc.details}
               </p>
@@ -531,20 +531,20 @@ function RuntimeCard({
   const cpuPct = runtime.cpuUsage >= 0 ? runtime.cpuUsage * 100 : -1;
   const cpuColor =
     cpuPct > 80
-      ? "bg-red-500"
+      ? 'bg-red-500'
       : cpuPct > 60
-        ? "bg-amber-500"
-        : "bg-emerald-500";
+        ? 'bg-amber-500'
+        : 'bg-emerald-500';
 
   const items = [
-    { label: "Java", value: runtime.javaVersion },
-    { label: "Spring Boot", value: runtime.springBootVersion },
-    { label: "PID", value: String(runtime.pid) },
-    { label: "Profiles", value: runtime.activeProfiles },
-    { label: "Processors", value: String(runtime.availableProcessors) },
-    { label: "Uptime", value: formatUptime(runtime.uptimeMs) },
+    { label: 'Java', value: runtime.javaVersion },
+    { label: 'Spring Boot', value: runtime.springBootVersion },
+    { label: 'PID', value: String(runtime.pid) },
+    { label: 'Profiles', value: runtime.activeProfiles },
+    { label: 'Processors', value: String(runtime.availableProcessors) },
+    { label: 'Uptime', value: formatUptime(runtime.uptimeMs) },
     {
-      label: "Server Time",
+      label: 'Server Time',
       value: new Date(runtime.serverTime).toLocaleString(),
     },
   ];
@@ -693,13 +693,13 @@ function LatencyBar({ latency }: { latency: HttpLatencyStats }) {
   // Normalize bars relative to p99 (or max, whichever is larger)
   const maxVal = Math.max(latency.p99Ms, latency.maxMs, 1);
   const bars = [
-    { label: "Min", value: latency.minMs, color: "bg-emerald-400" },
-    { label: "p50", value: latency.p50Ms, color: "bg-blue-400" },
-    { label: "Mean", value: latency.meanMs, color: "bg-sky-400" },
-    { label: "p75", value: latency.p75Ms, color: "bg-amber-400" },
-    { label: "p95", value: latency.p95Ms, color: "bg-orange-400" },
-    { label: "p99", value: latency.p99Ms, color: "bg-red-400" },
-    { label: "Max", value: latency.maxMs, color: "bg-red-600" },
+    { label: 'Min', value: latency.minMs, color: 'bg-emerald-400' },
+    { label: 'p50', value: latency.p50Ms, color: 'bg-blue-400' },
+    { label: 'Mean', value: latency.meanMs, color: 'bg-sky-400' },
+    { label: 'p75', value: latency.p75Ms, color: 'bg-amber-400' },
+    { label: 'p95', value: latency.p95Ms, color: 'bg-orange-400' },
+    { label: 'p99', value: latency.p99Ms, color: 'bg-red-400' },
+    { label: 'Max', value: latency.maxMs, color: 'bg-red-600' },
   ];
 
   return (
@@ -728,8 +728,8 @@ function MetricsCard({ metrics }: { metrics: MetricsSnapshot }) {
   // Group custom metrics by prefix (e.g., buurman.db, buurman.s3, etc.)
   const grouped: Record<string, MetricEntry[]> = {};
   for (const m of metrics.custom) {
-    const parts = m.name.split(".");
-    const group = parts.length >= 3 ? parts.slice(0, 2).join(".") : m.name;
+    const parts = m.name.split('.');
+    const group = parts.length >= 3 ? parts.slice(0, 2).join('.') : m.name;
     if (!grouped[group]) {
       grouped[group] = [];
     }
@@ -814,7 +814,7 @@ function MetricsCard({ metrics }: { metrics: MetricsSnapshot }) {
                   >
                     <td className="px-3 py-1.5 text-xs font-mono text-text-primary">
                       <span className="text-text-muted">{group}.</span>
-                      {m.name.replace(group + ".", "")}
+                      {m.name.replace(group + '.', '')}
                     </td>
                     <td className="px-3 py-1.5">
                       <span
@@ -829,13 +829,13 @@ function MetricsCard({ metrics }: { metrics: MetricsSnapshot }) {
                     <td className="px-3 py-1.5 text-[11px] text-text-secondary max-w-xs truncate">
                       {Object.entries(m.tags)
                         .filter(
-                          ([k, v]) => !(k === "application" && v === "buurman"),
+                          ([k, v]) => !(k === 'application' && v === 'buurman')
                         )
                         .map(([k, v]) => `${k}=${v}`)
-                        .join(",") || "\u2014"}
+                        .join(',') || '\u2014'}
                     </td>
                   </tr>
-                )),
+                ))
               )}
             </tbody>
           </table>
@@ -899,20 +899,20 @@ function ConfigurationCard({
                   className="border-b border-border-default last:border-b-0 hover:bg-surface-page transition-colors"
                 >
                   <td className="px-5 py-2.5 text-sm font-medium text-text-primary">
-                    {i === 0 ? category : ""}
+                    {i === 0 ? category : ''}
                   </td>
                   <td className="px-5 py-2.5 text-sm text-text-secondary">
                     {entry.key}
                   </td>
                   <td className="px-5 py-2.5 text-sm font-mono text-text-primary max-w-md truncate">
-                    {entry.value.includes("***") ? (
+                    {entry.value.includes('***') ? (
                       <span className="text-text-muted">{entry.value}</span>
                     ) : (
                       entry.value
                     )}
                   </td>
                 </tr>
-              )),
+              ))
             )}
           </tbody>
         </table>
@@ -990,7 +990,7 @@ function MigrationsCard({
                 className="border-b border-border-default last:border-b-0 hover:bg-surface-page transition-colors"
               >
                 <td className="px-5 py-3 text-sm font-mono text-text-primary">
-                  {m.version ?? "\u2014"}
+                  {m.version ?? '\u2014'}
                 </td>
                 <td className="px-5 py-3 text-sm text-text-primary max-w-xs truncate">
                   {m.description}
@@ -1005,7 +1005,7 @@ function MigrationsCard({
                 <td className="px-5 py-3 text-sm font-mono text-text-secondary">
                   {m.executionTimeMs != null
                     ? `${m.executionTimeMs}ms`
-                    : "\u2014"}
+                    : '\u2014'}
                 </td>
                 <td
                   className="px-5 py-3 text-sm text-text-secondary"
@@ -1079,10 +1079,10 @@ function AccessDenied() {
           Insufficient Permissions
         </h2>
         <p className="text-sm text-text-secondary">
-          You need the{" "}
+          You need the{' '}
           <span className="font-mono text-xs bg-surface-page px-1.5 py-0.5 rounded">
             BACKOFFICE_SYSTEM
-          </span>{" "}
+          </span>{' '}
           role to view this page.
         </p>
       </div>
@@ -1094,7 +1094,7 @@ function AccessDenied() {
 
 export const SystemInfoPage = () => {
   const { keycloak } = useAuth();
-  const canView = hasRole(keycloak, "BACKOFFICE_SYSTEM");
+  const canView = hasRole(keycloak, 'BACKOFFICE_SYSTEM');
 
   if (!canView) {
     return <AccessDenied />;
@@ -1164,7 +1164,7 @@ function SystemInfoContent() {
     );
   }
 
-  const downServices = data.services.filter((s) => s.status === "DOWN").length;
+  const downServices = data.services.filter((s) => s.status === 'DOWN').length;
 
   return (
     <div>
@@ -1172,9 +1172,9 @@ function SystemInfoContent() {
       <div
         className="mb-6"
         style={{
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "space-between",
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
         }}
       >
         <div>

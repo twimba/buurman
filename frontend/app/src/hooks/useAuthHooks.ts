@@ -1,11 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as authApi from '../api/auth';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '@buurman/ui';
 import { getErrorMessage } from '../utils/errorMessages';
+import { queryKeys } from '../lib/queryKeys';
 
 export const useCurrentUser = (enabled = true) => {
   return useQuery({
-    queryKey: ['currentUser'],
+    queryKey: queryKeys.auth.currentUser(),
     queryFn: authApi.getCurrentUser,
     retry: false,
     enabled,
@@ -28,7 +29,7 @@ export const useUpdateProfile = () => {
   return useMutation({
     mutationFn: authApi.updateProfile,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.currentUser() });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -41,7 +42,7 @@ export const useVerifyEmail = () => {
   return useMutation({
     mutationFn: authApi.verifyEmail,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.currentUser() });
     },
   });
 };
@@ -51,7 +52,7 @@ export const useVerifyEmailByToken = () => {
   return useMutation({
     mutationFn: authApi.verifyEmailByToken,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.currentUser() });
     },
   });
 };
@@ -71,7 +72,7 @@ export const useResendVerification = () => {
 
 export const useRegistrationConfig = () => {
   return useQuery({
-    queryKey: ['registrationConfig'],
+    queryKey: queryKeys.auth.registrationConfig(),
     queryFn: authApi.getRegistrationConfig,
     staleTime: 30_000,
   });

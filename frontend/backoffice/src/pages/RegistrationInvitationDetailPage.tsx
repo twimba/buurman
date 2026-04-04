@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
   Copy,
@@ -9,25 +9,28 @@ import {
   Users,
   User,
   Calendar,
-} from "lucide-react";
-import { RefreshButton, ConfirmDialog } from "@buurman/ui";
-import { formatDateTime } from "../utils/dateFormatting";
-import { useState } from "react";
+} from 'lucide-react';
+import {
+  RefreshButton,
+  ConfirmDialog,
+  RichTextEditor,
+  RichTextDisplay,
+} from '@buurman/ui';
+import { formatDateTime } from '../utils/dateFormatting';
+import { useState } from 'react';
 import {
   useRegistrationInvitation,
   useRevokeRegistrationInvitation,
   useUpdateRegistrationInvitationNote,
-} from "../hooks/useRegistrationInvitations";
-import { RichTextEditor } from "../components/RichTextEditor";
-import { RichTextDisplay } from "../components/RichTextDisplay";
-import { LoadingSpinner } from "../components/LoadingSpinner";
-import { SendRegistrationInvitationModal } from "../components/SendRegistrationInvitationModal";
+} from '../hooks/useRegistrationInvitations';
+import { LoadingSpinner } from '../components/LoadingSpinner';
+import { SendRegistrationInvitationModal } from '../components/SendRegistrationInvitationModal';
 
 const STATUS_STYLES: Record<string, string> = {
-  ACTIVE: "bg-success-bg text-success-text border-success-border",
-  EXPIRED: "bg-warning-bg text-warning-text border-warning-border",
-  EXHAUSTED: "bg-surface-inset text-text-secondary border-border-default",
-  REVOKED: "bg-error-bg text-error-text border-error-border",
+  ACTIVE: 'bg-success-bg text-success-text border-success-border',
+  EXPIRED: 'bg-warning-bg text-warning-text border-warning-border',
+  EXHAUSTED: 'bg-surface-inset text-text-secondary border-border-default',
+  REVOKED: 'bg-error-bg text-error-text border-error-border',
 };
 
 export function RegistrationInvitationDetailPage() {
@@ -37,19 +40,19 @@ export function RegistrationInvitationDetailPage() {
     data: invitation,
     isLoading,
     refetch,
-  } = useRegistrationInvitation(identifier ?? "");
+  } = useRegistrationInvitation(identifier ?? '');
   const revokeMutation = useRevokeRegistrationInvitation();
   const updateNoteMutation = useUpdateRegistrationInvitationNote();
   const [showRevoke, setShowRevoke] = useState(false);
   const [showSend, setShowSend] = useState(false);
   const [editingNote, setEditingNote] = useState(false);
-  const [noteValue, setNoteValue] = useState("");
+  const [noteValue, setNoteValue] = useState('');
 
   const handleCopyLink = () => {
     if (!invitation) {
       return;
     }
-    const url = `${window.location.protocol}//app.${window.location.hostname.replace(/^backoffice\./, "")}/register?code=${invitation.code}`;
+    const url = `${window.location.protocol}//app.${window.location.hostname.replace(/^backoffice\./, '')}/register?code=${invitation.code}`;
     navigator.clipboard.writeText(url);
   };
 
@@ -75,7 +78,7 @@ export function RegistrationInvitationDetailPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button
-            onClick={() => navigate("/registration-invitations")}
+            onClick={() => navigate('/registration-invitations')}
             className="p-1.5 rounded-md hover:bg-surface-inset transition-colors"
           >
             <ArrowLeft className="h-5 w-5 text-text-secondary" />
@@ -86,7 +89,7 @@ export function RegistrationInvitationDetailPage() {
               {invitation.code}
             </h1>
             <span
-              className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium mt-1 ${STATUS_STYLES[invitation.status] ?? ""}`}
+              className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium mt-1 ${STATUS_STYLES[invitation.status] ?? ''}`}
             >
               {invitation.status}
             </span>
@@ -101,7 +104,7 @@ export function RegistrationInvitationDetailPage() {
             <Copy className="h-4 w-4" />
             Copy Link
           </button>
-          {invitation.status === "ACTIVE" && (
+          {invitation.status === 'ACTIVE' && (
             <>
               <button
                 onClick={() => setShowSend(true)}
@@ -130,9 +133,9 @@ export function RegistrationInvitationDetailPage() {
             Usages
           </div>
           <div className="text-xl font-bold font-mono text-text-primary">
-            {invitation.usageCount}{" "}
+            {invitation.usageCount}{' '}
             <span className="text-text-muted text-sm font-normal">
-              / {invitation.maxUsages ?? "\u221E"}
+              / {invitation.maxUsages ?? '\u221E'}
             </span>
           </div>
         </div>
@@ -144,7 +147,7 @@ export function RegistrationInvitationDetailPage() {
           <div className="text-sm font-medium text-text-primary">
             {invitation.expiresAt
               ? formatDateTime(invitation.expiresAt)
-              : "Never"}
+              : 'Never'}
           </div>
         </div>
         <div className="rounded-lg border border-border-default bg-surface-card p-4">
@@ -171,7 +174,7 @@ export function RegistrationInvitationDetailPage() {
       {invitation.revokedAt && (
         <div className="rounded-lg border border-error-border bg-error-bg p-4">
           <div className="text-sm text-error-text">
-            <strong>Revoked</strong> by {invitation.revokedBy} on{" "}
+            <strong>Revoked</strong> by {invitation.revokedBy} on{' '}
             {formatDateTime(invitation.revokedAt)}
           </div>
         </div>
@@ -186,12 +189,12 @@ export function RegistrationInvitationDetailPage() {
           {!editingNote ? (
             <button
               onClick={() => {
-                setNoteValue(invitation.note ?? "");
+                setNoteValue(invitation.note ?? '');
                 setEditingNote(true);
               }}
               className="text-sm text-primary-600 hover:text-primary-800 font-medium transition-colors"
             >
-              {invitation.note ? "Edit" : "Add Note"}
+              {invitation.note ? 'Edit' : 'Add Note'}
             </button>
           ) : (
             <div className="flex gap-2">
@@ -215,7 +218,7 @@ export function RegistrationInvitationDetailPage() {
                 disabled={updateNoteMutation.isPending}
                 className="text-sm text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50 px-3 py-1 rounded-md font-medium transition-colors"
               >
-                {updateNoteMutation.isPending ? "Saving..." : "Save"}
+                {updateNoteMutation.isPending ? 'Saving...' : 'Save'}
               </button>
             </div>
           )}

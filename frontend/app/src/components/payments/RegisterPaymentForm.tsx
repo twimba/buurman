@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, CalendarCheck } from 'lucide-react';
 import { CreatePaymentRequest } from '@/types/payment';
 import { MoneyInput } from '@/components/common/MoneyInput';
-import { RichTextEditor } from '@/components/common/RichTextEditor';
+import { RichTextEditor } from '@buurman/ui';
 import { ContactSelector } from '@/components/common/ContactSelector';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 

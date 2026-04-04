@@ -1,7 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useCallback } from "react";
-import { teamsApi } from "../api/teams";
-import type { AsyncSelectOption } from "../components/AsyncSelect";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useCallback } from 'react';
+import { teamsApi } from '../api/teams';
+import type { AsyncSelectOption } from '../components/AsyncSelect';
 
 interface ListTeamsParams {
   page?: number;
@@ -11,14 +11,14 @@ interface ListTeamsParams {
 
 export const useTeams = (params?: ListTeamsParams) => {
   return useQuery({
-    queryKey: ["teams", params],
+    queryKey: ['teams', params],
     queryFn: () => teamsApi.list(params).then((res) => res.data),
   });
 };
 
 export const useTeam = (identifier: string) => {
   return useQuery({
-    queryKey: ["teams", identifier],
+    queryKey: ['teams', identifier],
     queryFn: () => teamsApi.get(identifier).then((res) => res.data),
     enabled: !!identifier,
   });
@@ -36,9 +36,9 @@ export const useUpdateTeam = () => {
       data: { name: string };
     }) => teamsApi.update(identifier, data).then((res) => res.data),
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["teams"] });
+      queryClient.invalidateQueries({ queryKey: ['teams'] });
       queryClient.invalidateQueries({
-        queryKey: ["teams", variables.identifier],
+        queryKey: ['teams', variables.identifier],
       });
     },
   });
@@ -50,7 +50,7 @@ export const useDeleteTeam = () => {
   return useMutation({
     mutationFn: (identifier: string) => teamsApi.delete(identifier),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["teams"] });
+      queryClient.invalidateQueries({ queryKey: ['teams'] });
     },
   });
 };

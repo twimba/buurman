@@ -6,7 +6,7 @@ import {
   useResendVerification,
   useCurrentUser,
 } from '../hooks/useAuthHooks';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { Mail, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 
 const RESEND_COOLDOWN_SECONDS = 60;

@@ -11,6 +11,8 @@ interface State {
 }
 
 class ErrorBoundary extends Component<Props, State> {
+  static displayName = 'ErrorBoundary';
+
   public state: State = {
     hasError: false,
   };
@@ -20,7 +22,10 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Uncaught error:', error, errorInfo);
+    // TODO: Send to Sentry when integrated: Sentry.captureException(error, { extra: errorInfo });
+    if (import.meta.env.DEV) {
+      console.error('Uncaught error:', error, errorInfo);
+    }
   }
 
   public render() {
@@ -34,7 +39,7 @@ class ErrorBoundary extends Component<Props, State> {
             <p className="text-text-secondary mb-4">
               An error occurred while loading the application.
             </p>
-            {this.state.error && (
+            {this.state.error && import.meta.env.DEV && (
               <details className="mb-4">
                 <summary className="cursor-pointer text-sm text-text-secondary">
                   Error details
@@ -43,6 +48,11 @@ class ErrorBoundary extends Component<Props, State> {
                   {this.state.error.message}
                 </pre>
               </details>
+            )}
+            {!import.meta.env.DEV && (
+              <p className="text-sm text-text-secondary mb-4">
+                If the problem persists, please contact support.
+              </p>
             )}
             <button
               onClick={() => window.location.reload()}

@@ -48,28 +48,31 @@ function applyThemeToDOM(effectiveTheme: Theme) {
   }
 }
 
+function isValidTheme(value: unknown): value is ThemePreference {
+  return value === 'light' || value === 'dark' || value === 'system';
+}
+
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const { data: preferences } = useUserPreferences();
   const [systemTheme, setSystemTheme] = useState<Theme>(getSystemTheme);
-  const [themePreference, setThemePreference] =
-    useState<ThemePreference>(getStoredTheme);
+  const [localTheme, setLocalTheme] = useState<ThemePreference>(getStoredTheme);
 
-  // Sync from backend preferences when they load (adjust state during render)
-  const [prevBackendTheme, setPrevBackendTheme] = useState<string | undefined>(
-    undefined
-  );
-  if (preferences?.theme !== prevBackendTheme) {
-    setPrevBackendTheme(preferences?.theme);
-    if (preferences?.theme) {
-      const backendTheme = preferences.theme as ThemePreference;
-      setThemePreference(backendTheme);
+  // Backend preference takes precedence when available; localStorage is the fallback
+  const themePreference: ThemePreference =
+    preferences?.theme && isValidTheme(preferences.theme)
+      ? preferences.theme
+      : localTheme;
+
+  // Keep localStorage in sync with backend when it loads
+  useEffect(() => {
+    if (preferences?.theme && isValidTheme(preferences.theme)) {
       try {
-        localStorage.setItem(STORAGE_KEY, backendTheme);
+        localStorage.setItem(STORAGE_KEY, preferences.theme);
       } catch {
         // ignore
       }
     }
-  }
+  }, [preferences?.theme]);
 
   // Listen for system theme changes
   useEffect(() => {
@@ -90,7 +93,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   }, [effectiveTheme]);
 
   const setTheme = useCallback((newTheme: ThemePreference) => {
-    setThemePreference(newTheme);
+    setLocalTheme(newTheme);
     try {
       localStorage.setItem(STORAGE_KEY, newTheme);
     } catch {

@@ -1,22 +1,22 @@
-import { useState } from "react";
-import { Search, X, SlidersHorizontal } from "lucide-react";
-import { cn } from "../utils/cn";
+import { useState } from 'react';
+import { Search, X, SlidersHorizontal } from 'lucide-react';
+import { cn } from '../utils/cn';
 
 export type FilterDef =
   | {
-      type: "toggle";
+      type: 'toggle';
       key: string;
       label: string;
       options: { value: string | undefined; label: string }[];
     }
   | {
-      type: "select";
+      type: 'select';
       key: string;
       label: string;
       options: { value: string; label: string }[];
     }
   | {
-      type: "search";
+      type: 'search';
       key: string;
       label: string;
       placeholder?: string;
@@ -46,16 +46,16 @@ export function FilterBar({
   };
 
   const filterContent = (
-    <div className={cn("flex flex-wrap items-center gap-3", className)}>
+    <div className={cn('flex flex-wrap items-center gap-3', className)}>
       {filters.map((filter) => {
-        if (filter.type === "search") {
+        if (filter.type === 'search') {
           return (
             <div key={filter.key} className="relative min-w-[200px] flex-1">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
               <input
                 type="search"
                 placeholder={filter.placeholder || filter.label}
-                value={values[filter.key] || ""}
+                value={values[filter.key] || ''}
                 onChange={(e) => updateFilter(filter.key, e.target.value)}
                 className="h-9 w-full rounded-md border border-border-default bg-surface-card pl-9 pr-3 text-sm text-text-primary placeholder:text-text-muted focus-ring"
               />
@@ -63,11 +63,11 @@ export function FilterBar({
           );
         }
 
-        if (filter.type === "select") {
+        if (filter.type === 'select') {
           return (
             <select
               key={filter.key}
-              value={values[filter.key] || ""}
+              value={values[filter.key] || ''}
               onChange={(e) => updateFilter(filter.key, e.target.value)}
               className="h-9 rounded-md border border-border-default bg-surface-card px-3 text-sm text-text-primary focus-ring"
             >
@@ -81,7 +81,7 @@ export function FilterBar({
           );
         }
 
-        if (filter.type === "toggle") {
+        if (filter.type === 'toggle') {
           return (
             <div
               key={filter.key}
@@ -89,13 +89,13 @@ export function FilterBar({
             >
               {filter.options.map((opt) => (
                 <button
-                  key={opt.value ?? "__all__"}
+                  key={opt.value ?? '__all__'}
                   onClick={() => updateFilter(filter.key, opt.value)}
                   className={cn(
-                    "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                    'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
                     values[filter.key] === opt.value
-                      ? "bg-primary-500 text-white shadow-xs"
-                      : "text-text-secondary hover:text-text-primary",
+                      ? 'bg-primary-500 text-white shadow-xs'
+                      : 'text-text-secondary hover:text-text-primary'
                   )}
                 >
                   {opt.label}
@@ -145,4 +145,4 @@ export function FilterBar({
   );
 }
 
-FilterBar.displayName = "FilterBar";
+FilterBar.displayName = 'FilterBar';

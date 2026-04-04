@@ -1,4 +1,4 @@
-import client from "./client";
+import client from './client';
 
 export interface CacheInfo {
   name: string;
@@ -28,7 +28,7 @@ export interface CacheDetail extends CacheInfo {
 }
 
 export const cachesApi = {
-  list: () => client.get<CacheInfo[]>("/caches"),
+  list: () => client.get<CacheInfo[]>('/caches'),
   getDetail: (cacheName: string) =>
     client.get<CacheDetail>(`/caches/${cacheName}`),
   invalidate: (cacheName: string) =>

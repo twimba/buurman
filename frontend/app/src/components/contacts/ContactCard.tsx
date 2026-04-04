@@ -14,7 +14,7 @@ import {
   CheckCircle2,
   Shield,
 } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { useFormatDate } from '@/hooks/useFormatDate';
 import { useNavigate } from 'react-router-dom';
 import { Avatar } from '@/components/common/Avatar';
 import { StatusBadge } from '@buurman/ui';
@@ -41,6 +41,7 @@ interface ContactCardProps {
 
 export const ContactCard = ({ contact }: ContactCardProps) => {
   const navigate = useNavigate();
+  const { formatRelative } = useFormatDate();
   const tags = contact.tags ?? [];
   const visibleTags = tags.slice(0, MAX_VISIBLE_TAGS);
   const overflowCount = tags.length - MAX_VISIBLE_TAGS;
@@ -194,11 +195,7 @@ export const ContactCard = ({ contact }: ContactCardProps) => {
           title={new Date(contact.createdAt).toLocaleDateString()}
         >
           <Calendar className="h-3.5 w-3.5" />
-          <span className="text-xs">
-            {formatDistanceToNow(new Date(contact.createdAt), {
-              addSuffix: true,
-            })}
-          </span>
+          <span className="text-xs">{formatRelative(contact.createdAt)}</span>
         </div>
       </div>
     </div>

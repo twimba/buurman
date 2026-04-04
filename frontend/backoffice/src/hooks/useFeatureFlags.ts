@@ -1,12 +1,12 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { featureFlagsApi } from "../api/featureFlags";
-import type { UpdateFlagRequest } from "../api/featureFlags";
-import { trackEvent } from "../utils/analytics";
-import { AnalyticsEvent } from "../constants/analyticsEvents";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { featureFlagsApi } from '../api/featureFlags';
+import type { UpdateFlagRequest } from '../api/featureFlags';
+import { trackEvent } from '../utils/analytics';
+import { AnalyticsEvent } from '../constants/analyticsEvents';
 
 export const useAdminStatus = () => {
   return useQuery({
-    queryKey: ["feature-flags", "admin-status"],
+    queryKey: ['feature-flags', 'admin-status'],
     queryFn: () => featureFlagsApi.getAdminStatus().then((res) => res.data),
     staleTime: 5 * 60 * 1000,
   });
@@ -14,16 +14,16 @@ export const useAdminStatus = () => {
 
 export const useGlobalFeatureFlags = () => {
   return useQuery({
-    queryKey: ["feature-flags", "global"],
+    queryKey: ['feature-flags', 'global'],
     queryFn: () => featureFlagsApi.getGlobal().then((res) => res.data),
   });
 };
 
 export const useUserFeatureFlags = (userIdentifier: string | null) => {
   return useQuery({
-    queryKey: ["feature-flags", "user", userIdentifier],
+    queryKey: ['feature-flags', 'user', userIdentifier],
     queryFn: () =>
-      featureFlagsApi.getForUser(userIdentifier ?? "").then((res) => res.data),
+      featureFlagsApi.getForUser(userIdentifier ?? '').then((res) => res.data),
     enabled: !!userIdentifier,
   });
 };
@@ -39,7 +39,7 @@ export const useUpdateGlobalFlag = () => {
       data: UpdateFlagRequest;
     }) => featureFlagsApi.updateGlobalFlag(flagName, data).then((r) => r.data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["feature-flags"] });
+      queryClient.invalidateQueries({ queryKey: ['feature-flags'] });
       trackEvent(AnalyticsEvent.BO_FEATURE_FLAG_UPDATED);
     },
   });
@@ -63,7 +63,7 @@ export const useUpsertIdentityOverride = () => {
         .upsertIdentityOverride(userIdentifier, teamIdentifier, flagName, data)
         .then((r) => r.data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["feature-flags"] });
+      queryClient.invalidateQueries({ queryKey: ['feature-flags'] });
     },
   });
 };
@@ -83,19 +83,19 @@ export const useDeleteIdentityOverride = () => {
       featureFlagsApi.deleteIdentityOverride(
         userIdentifier,
         teamIdentifier,
-        flagName,
+        flagName
       ),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["feature-flags"] });
+      queryClient.invalidateQueries({ queryKey: ['feature-flags'] });
     },
   });
 };
 
 export const useTeamFeatureFlags = (teamIdentifier: string | null) => {
   return useQuery({
-    queryKey: ["feature-flags", "team", teamIdentifier],
+    queryKey: ['feature-flags', 'team', teamIdentifier],
     queryFn: () =>
-      featureFlagsApi.getForTeam(teamIdentifier ?? "").then((res) => res.data),
+      featureFlagsApi.getForTeam(teamIdentifier ?? '').then((res) => res.data),
     enabled: !!teamIdentifier,
   });
 };
@@ -116,7 +116,7 @@ export const useUpsertTeamOverride = () => {
         .upsertTeamOverride(teamIdentifier, flagName, data)
         .then((r) => r.data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["feature-flags"] });
+      queryClient.invalidateQueries({ queryKey: ['feature-flags'] });
     },
   });
 };
@@ -132,14 +132,14 @@ export const useDeleteTeamOverride = () => {
       flagName: string;
     }) => featureFlagsApi.deleteTeamOverride(teamIdentifier, flagName),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["feature-flags"] });
+      queryClient.invalidateQueries({ queryKey: ['feature-flags'] });
     },
   });
 };
 
 export const useSegmentFeatureFlags = () => {
   return useQuery({
-    queryKey: ["feature-flags", "segments"],
+    queryKey: ['feature-flags', 'segments'],
     queryFn: () => featureFlagsApi.getSegments().then((res) => res.data),
   });
 };
@@ -160,7 +160,7 @@ export const useUpsertSegmentOverride = () => {
         .upsertSegmentOverride(segmentId, flagName, data)
         .then((r) => r.data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["feature-flags"] });
+      queryClient.invalidateQueries({ queryKey: ['feature-flags'] });
     },
   });
 };
@@ -176,7 +176,7 @@ export const useDeleteSegmentOverride = () => {
       flagName: string;
     }) => featureFlagsApi.deleteSegmentOverride(segmentId, flagName),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["feature-flags"] });
+      queryClient.invalidateQueries({ queryKey: ['feature-flags'] });
     },
   });
 };

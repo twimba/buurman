@@ -18,9 +18,8 @@ import { useDeletePhoto } from '@/hooks/usePhotoHooks';
 import { useContracts } from '@/hooks/useContractHooks';
 import { CalendarFeedResponseFeedType as CalendarFeedType } from '@/generated/models';
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { LoadingSpinner, RichTextDisplay } from '@buurman/ui';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import { trackEvent } from '@/utils/analytics';
 import { AnalyticsEvent } from '@/constants/analyticsEvents';
 import { DocumentList } from '@/components/properties/DocumentList';
@@ -965,7 +964,10 @@ export const ContactDetailPage = () => {
         {/* ===== Tab: Financials ===== */}
         {activeTab === 'financials' && (
           <div id="tabpanel-financials" role="tabpanel">
-            <ContactFinancialsTab contactIdentifier={id} backTo={`/contacts/${id}?tab=financials`} />
+            <ContactFinancialsTab
+              contactIdentifier={id}
+              backTo={`/contacts/${id}?tab=financials`}
+            />
           </div>
         )}
 

@@ -9,7 +9,7 @@ import { RegisterPaymentForm } from '@/components/payments/RegisterPaymentForm';
 import { ContractSelector } from '@/components/common/ContractSelector';
 import {
   BulkDataGrid,
-  type ColumnDef,
+  type BulkColumnDef,
   type RowData,
 } from '@/components/common/BulkDataGrid';
 import { CurrencySelector } from '@/components/common/CurrencySelector';
@@ -20,7 +20,7 @@ import { getErrorMessage } from '@/utils/errorMessages';
 
 type Mode = 'single' | 'bulk';
 
-const BULK_COLUMNS: ColumnDef[] = [
+const BULK_COLUMNS: BulkColumnDef[] = [
   {
     key: 'date',
     label: 'Date',

@@ -1,14 +1,14 @@
-import * as Dialog from "@radix-ui/react-dialog";
-import { X } from "lucide-react";
-import { useCallback, useEffect } from "react";
-import { cn } from "../utils/cn";
+import * as Dialog from '@radix-ui/react-dialog';
+import { X } from 'lucide-react';
+import { useCallback, useEffect } from 'react';
+import { cn } from '../utils/cn';
 
 interface ModalWrapperProps {
   open: boolean;
   onClose: () => void;
   title: string;
   subtitle?: string;
-  size?: "sm" | "md" | "lg" | "xl" | "full";
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
   children: React.ReactNode;
   footer?: React.ReactNode;
   preventClose?: boolean;
@@ -18,11 +18,11 @@ interface ModalWrapperProps {
 }
 
 const sizeMap = {
-  sm: "max-w-md",
-  md: "max-w-lg",
-  lg: "max-w-2xl",
-  xl: "max-w-4xl",
-  full: "max-w-[calc(100vw-2rem)]",
+  sm: 'max-w-md',
+  md: 'max-w-lg',
+  lg: 'max-w-2xl',
+  xl: 'max-w-4xl',
+  full: 'max-w-[calc(100vw-2rem)]',
 } as const;
 
 export function ModalWrapper({
@@ -30,7 +30,7 @@ export function ModalWrapper({
   onClose,
   title,
   subtitle,
-  size = "md",
+  size = 'md',
   children,
   footer,
   preventClose,
@@ -44,7 +44,7 @@ export function ModalWrapper({
         onClose();
       }
     },
-    [onClose, preventClose],
+    [onClose, preventClose]
   );
 
   // Cmd/Ctrl+Enter to submit
@@ -54,14 +54,14 @@ export function ModalWrapper({
     }
 
     function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        onSubmit!();
+        onSubmit?.();
       }
     }
 
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, [open, onSubmit]);
 
   return (
@@ -70,13 +70,13 @@ export function ModalWrapper({
         <Dialog.Overlay className="fixed inset-0 z-50 bg-surface-overlay data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0" />
         <Dialog.Content
           className={cn(
-            "fixed top-1/2 left-1/2 z-50 w-full -translate-x-1/2 -translate-y-1/2",
-            "bg-surface-card rounded-xl border border-border-default shadow-lg",
-            "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
-            "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
-            "max-h-[85vh] flex flex-col",
+            'fixed top-1/2 left-1/2 z-50 w-full -translate-x-1/2 -translate-y-1/2',
+            'bg-surface-card rounded-xl border border-border-default shadow-lg',
+            'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
+            'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
+            'max-h-[85vh] flex flex-col',
             sizeMap[size],
-            className,
+            className
           )}
           onOpenAutoFocus={(e) => {
             if (initialFocusRef?.current) {
@@ -120,4 +120,4 @@ export function ModalWrapper({
   );
 }
 
-ModalWrapper.displayName = "ModalWrapper";
+ModalWrapper.displayName = 'ModalWrapper';

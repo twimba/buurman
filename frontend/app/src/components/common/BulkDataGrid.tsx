@@ -11,7 +11,7 @@ import {
 
 // --- Types ---
 
-export interface ColumnDef {
+export interface BulkColumnDef {
   key: string;
   label: string;
   type: 'date' | 'number' | 'text' | 'select';
@@ -25,8 +25,6 @@ export type RowData = Record<string, string>;
 
 export type RowStatus = 'pending' | 'submitting' | 'success' | 'error';
 
-let nextRowId = 1;
-
 interface RowState {
   id: number;
   data: RowData;
@@ -37,7 +35,7 @@ interface RowState {
 type DateFormat = 'DD/MM/YYYY' | 'MM/DD/YYYY' | 'YYYY-MM-DD';
 
 interface BulkDataGridProps {
-  columns: ColumnDef[];
+  columns: BulkColumnDef[];
   onSubmit: (
     rows: RowData[],
     callbacks: {
@@ -56,7 +54,7 @@ interface BulkDataGridProps {
 
 function parseClipboard(
   text: string,
-  columns: ColumnDef[],
+  columns: BulkColumnDef[],
   dateFormat?: DateFormat
 ): RowData[] {
   const lines = text
@@ -149,14 +147,14 @@ function matchSelectOption(
   return undefined;
 }
 
-function isRowEmpty(row: RowData, columns: ColumnDef[]): boolean {
+function isRowEmpty(row: RowData, columns: BulkColumnDef[]): boolean {
   return columns.every((col) => {
     const val = row[col.key];
     return !val || val === col.defaultValue;
   });
 }
 
-function isRowValid(row: RowData, columns: ColumnDef[]): boolean {
+function isRowValid(row: RowData, columns: BulkColumnDef[]): boolean {
   return columns.every((col) => {
     if (!col.required) {
       return true;
@@ -185,7 +183,7 @@ function isValidDate(val: string): boolean {
 
 function isCellInvalid(
   value: string,
-  col: ColumnDef,
+  col: BulkColumnDef,
   rowEmpty: boolean
 ): boolean {
   if (rowEmpty) {
@@ -206,7 +204,7 @@ function isCellInvalid(
   return false;
 }
 
-function createEmptyRow(columns: ColumnDef[]): RowData {
+function createEmptyRow(columns: BulkColumnDef[]): RowData {
   const row: RowData = {};
   columns.forEach((col) => (row[col.key] = col.defaultValue ?? ''));
   return row;
@@ -221,8 +219,13 @@ export const BulkDataGrid = ({
   disabled,
   dateFormat,
 }: BulkDataGridProps) => {
+  const nextRowId = useRef(2);
   const [rows, setRows] = useState<RowState[]>([
-    { id: nextRowId++, data: createEmptyRow(columns), status: 'pending' },
+    {
+      id: 1,
+      data: createEmptyRow(columns),
+      status: 'pending',
+    },
   ]);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -263,7 +266,7 @@ export const BulkDataGrid = ({
           (r) => r.status === 'success' || r.status === 'error'
         );
         const newRows = parsed.map((data) => ({
-          id: nextRowId++,
+          id: nextRowId.current++,
           data,
           status: 'pending' as RowStatus,
         }));
@@ -289,7 +292,7 @@ export const BulkDataGrid = ({
       return updated.length === 0
         ? [
             {
-              id: nextRowId++,
+              id: nextRowId.current++,
               data: createEmptyRow(columns),
               status: 'pending',
             },
@@ -301,13 +304,21 @@ export const BulkDataGrid = ({
   const addRow = () => {
     setRows((prev) => [
       ...prev,
-      { id: nextRowId++, data: createEmptyRow(columns), status: 'pending' },
+      {
+        id: nextRowId.current++,
+        data: createEmptyRow(columns),
+        status: 'pending',
+      },
     ]);
   };
 
   const clearAll = () => {
     setRows([
-      { id: nextRowId++, data: createEmptyRow(columns), status: 'pending' },
+      {
+        id: nextRowId.current++,
+        data: createEmptyRow(columns),
+        status: 'pending',
+      },
     ]);
   };
 

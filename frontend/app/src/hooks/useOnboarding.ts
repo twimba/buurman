@@ -7,12 +7,13 @@ import {
   CompleteOnboardingRequest,
   CurrencyChangeRequest,
 } from '../api/onboarding';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
+import { queryKeys } from '../lib/queryKeys';
 
 export const useOnboardingStatus = () => {
   const { isAuthenticated } = useAuth();
   return useQuery({
-    queryKey: ['onboarding-status'],
+    queryKey: queryKeys.onboarding.status(),
     queryFn: getOnboardingStatus,
     enabled: isAuthenticated,
     staleTime: 30_000,
@@ -25,15 +26,17 @@ export const useCompleteOnboarding = () => {
     mutationFn: (request: CompleteOnboardingRequest) =>
       completeOnboarding(request),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['onboarding-status'] });
-      queryClient.invalidateQueries({ queryKey: ['teamSettings'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.onboarding.status(),
+      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.settings() });
     },
   });
 };
 
 export const useCountryCurrencies = () => {
   return useQuery({
-    queryKey: ['country-currencies'],
+    queryKey: queryKeys.onboarding.countryCurrencies(),
     queryFn: getCountryCurrencies,
     staleTime: Infinity,
   });

@@ -1,9 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as broadcastsApi from '../api/broadcasts';
+import { queryKeys } from '../lib/queryKeys';
 
 export const useActiveBroadcasts = (enabled = true) => {
   return useQuery({
-    queryKey: ['broadcasts', 'active'],
+    queryKey: queryKeys.broadcasts.active(),
     queryFn: broadcastsApi.getActiveBroadcasts,
     enabled,
     staleTime: 60_000,
@@ -13,7 +14,7 @@ export const useActiveBroadcasts = (enabled = true) => {
 
 export const usePublicBroadcasts = (context: 'login' | 'register') => {
   return useQuery({
-    queryKey: ['broadcasts', 'public', context],
+    queryKey: queryKeys.broadcasts.public(context),
     queryFn: () => broadcastsApi.getPublicBroadcasts(context),
     staleTime: 60_000,
   });
@@ -24,7 +25,7 @@ export const useDismissBroadcast = () => {
   return useMutation({
     mutationFn: broadcastsApi.dismissBroadcast,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['broadcasts'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.broadcasts.all() });
     },
   });
 };

@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect, useCallback, Fragment } from "react";
-import { createPortal } from "react-dom";
+import { useState, useRef, useEffect, useCallback, Fragment } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Pause,
   Play,
@@ -13,11 +13,11 @@ import {
   Loader2,
   X,
   AlertCircle,
-} from "lucide-react";
-import { formatDateTimeFull } from "../utils/dateFormatting";
-import cronstrue from "cronstrue";
-import { Pagination, ConfirmDialog, RefreshButton } from "@buurman/ui";
-import { SortableHeader } from "../components/SortableHeader";
+} from 'lucide-react';
+import { formatDateTimeFull } from '../utils/dateFormatting';
+import cronstrue from 'cronstrue';
+import { Pagination, ConfirmDialog, RefreshButton } from '@buurman/ui';
+import { SortableHeader } from '../components/SortableHeader';
 import {
   useScheduledJobs,
   usePauseJob,
@@ -25,37 +25,37 @@ import {
   useTriggerJob,
   useRescheduleJob,
   useJobExecutionHistory,
-} from "../hooks/useScheduler";
-import { usePagination } from "../hooks/usePagination";
-import { LoadingSpinner } from "../components/LoadingSpinner";
+} from '../hooks/useScheduler';
+import { usePagination } from '../hooks/usePagination';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 
 const triggerStateBadgeConfig: Record<
   string,
   { label: string; className: string }
 > = {
   NORMAL: {
-    label: "Normal",
-    className: "bg-success-bg text-success-text ring-1 ring-success-border",
+    label: 'Normal',
+    className: 'bg-success-bg text-success-text ring-1 ring-success-border',
   },
   PAUSED: {
-    label: "Paused",
-    className: "bg-warning-bg text-warning-text ring-1 ring-warning-border",
+    label: 'Paused',
+    className: 'bg-warning-bg text-warning-text ring-1 ring-warning-border',
   },
   BLOCKED: {
-    label: "Blocked",
-    className: "bg-info-bg text-info-text ring-1 ring-info-border",
+    label: 'Blocked',
+    className: 'bg-info-bg text-info-text ring-1 ring-info-border',
   },
   COMPLETE: {
-    label: "Complete",
-    className: "bg-slate-50 text-slate-700 ring-1 ring-slate-200",
+    label: 'Complete',
+    className: 'bg-slate-50 text-slate-700 ring-1 ring-slate-200',
   },
   ERROR: {
-    label: "Error",
-    className: "bg-error-bg text-error-text ring-1 ring-error-border",
+    label: 'Error',
+    className: 'bg-error-bg text-error-text ring-1 ring-error-border',
   },
   NONE: {
-    label: "None",
-    className: "bg-slate-50 text-slate-700 ring-1 ring-slate-200",
+    label: 'None',
+    className: 'bg-slate-50 text-slate-700 ring-1 ring-slate-200',
   },
 };
 
@@ -64,16 +64,16 @@ const execStatusBadgeConfig: Record<
   { label: string; className: string }
 > = {
   SUCCESS: {
-    label: "Success",
-    className: "bg-success-bg text-success-text ring-1 ring-success-border",
+    label: 'Success',
+    className: 'bg-success-bg text-success-text ring-1 ring-success-border',
   },
   FAILED: {
-    label: "Failed",
-    className: "bg-error-bg text-error-text ring-1 ring-error-border",
+    label: 'Failed',
+    className: 'bg-error-bg text-error-text ring-1 ring-error-border',
   },
   RUNNING: {
-    label: "Running",
-    className: "bg-info-bg text-info-text ring-1 ring-info-border",
+    label: 'Running',
+    className: 'bg-info-bg text-info-text ring-1 ring-info-border',
   },
 };
 
@@ -82,12 +82,12 @@ const triggerTypeBadgeConfig: Record<
   { label: string; className: string }
 > = {
   cron: {
-    label: "Cron",
-    className: "bg-violet-50 text-violet-700 ring-1 ring-violet-200",
+    label: 'Cron',
+    className: 'bg-violet-50 text-violet-700 ring-1 ring-violet-200',
   },
   simple: {
-    label: "Simple",
-    className: "bg-sky-50 text-sky-700 ring-1 ring-sky-200",
+    label: 'Simple',
+    className: 'bg-sky-50 text-sky-700 ring-1 ring-sky-200',
   },
 };
 
@@ -100,7 +100,7 @@ const StatusBadge = ({
 }) => {
   const c = config[status] ?? {
     label: status,
-    className: "bg-slate-50 text-slate-700 ring-1 ring-slate-200",
+    className: 'bg-slate-50 text-slate-700 ring-1 ring-slate-200',
   };
   return (
     <span
@@ -112,14 +112,14 @@ const StatusBadge = ({
 };
 
 const selectClass =
-  "px-3 py-2 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors";
+  'px-3 py-2 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors';
 
 const thClass =
-  "text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary";
+  'text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary';
 
 const formatDuration = (ms?: number): string => {
   if (ms == null) {
-    return "-";
+    return '-';
   }
   if (ms < 1000) {
     return `${ms}ms`;
@@ -134,7 +134,7 @@ const formatDuration = (ms?: number): string => {
 
 const formatFireTime = (iso?: string): string => {
   if (!iso) {
-    return "-";
+    return '-';
   }
   try {
     return formatDateTimeFull(iso);
@@ -151,15 +151,15 @@ const describeCron = (expr: string): string => {
   }
 };
 
-const CRON_FIELD_LABELS = ["SEC", "MIN", "HOUR", "DAY", "MON", "DOW", "YEAR"];
+const CRON_FIELD_LABELS = ['SEC', 'MIN', 'HOUR', 'DAY', 'MON', 'DOW', 'YEAR'];
 const CRON_FIELD_COLORS = [
-  "from-slate-400 to-slate-500",
-  "from-blue-400 to-blue-500",
-  "from-primary-400 to-primary-500",
-  "from-violet-400 to-violet-500",
-  "from-purple-400 to-purple-500",
-  "from-fuchsia-400 to-fuchsia-500",
-  "from-slate-400 to-slate-500",
+  'from-slate-400 to-slate-500',
+  'from-blue-400 to-blue-500',
+  'from-primary-400 to-primary-500',
+  'from-violet-400 to-violet-500',
+  'from-purple-400 to-purple-500',
+  'from-fuchsia-400 to-fuchsia-500',
+  'from-slate-400 to-slate-500',
 ];
 
 const CronTooltip = ({ expression }: { expression: string }) => {
@@ -206,7 +206,7 @@ const CronTooltip = ({ expression }: { expression: string }) => {
             style={{
               top: pos.top,
               left: pos.left,
-              transform: "translate(-50%, -100%)",
+              transform: 'translate(-50%, -100%)',
             }}
           >
             <div className="mb-2.5">
@@ -240,7 +240,7 @@ const CronTooltip = ({ expression }: { expression: string }) => {
               </div>
             </div>
           </div>,
-          document.body,
+          document.body
         )}
     </span>
   );
@@ -260,7 +260,7 @@ export const SchedulerPage = () => {
   const rescheduleJob = useRescheduleJob();
 
   const [confirmAction, setConfirmAction] = useState<{
-    type: "pause" | "resume" | "trigger";
+    type: 'pause' | 'resume' | 'trigger';
     jobName: string;
     group: string;
   } | null>(null);
@@ -270,11 +270,11 @@ export const SchedulerPage = () => {
     group: string;
     currentExpression: string;
   } | null>(null);
-  const [cronInput, setCronInput] = useState("");
+  const [cronInput, setCronInput] = useState('');
 
   // Execution history
   const [selectedJobs, setSelectedJobs] = useState<string[] | null>(null);
-  const [historyStatusFilter, setHistoryStatusFilter] = useState("");
+  const [historyStatusFilter, setHistoryStatusFilter] = useState('');
   const [expandedErrors, setExpandedErrors] = useState<Set<string>>(new Set());
   const [jobDropdownOpen, setJobDropdownOpen] = useState(false);
   const jobDropdownRef = useRef<HTMLDivElement>(null);
@@ -284,10 +284,10 @@ export const SchedulerPage = () => {
   const uniqueJobNames = [...new Set(allJobs.map((j) => j.jobName))];
   const defaultSelectedJobs = uniqueJobNames.filter(
     (name) =>
-      name !== "notificationOutboxJob" &&
-      name !== "databaseMetricsRefreshJob" &&
-      name !== "thumbnailBackfillJob" &&
-      name !== "impersonationSessionCleanupJob",
+      name !== 'notificationOutboxJob' &&
+      name !== 'databaseMetricsRefreshJob' &&
+      name !== 'thumbnailBackfillJob' &&
+      name !== 'impersonationSessionCleanupJob'
   );
 
   // Use default selection until user interacts
@@ -303,8 +303,8 @@ export const SchedulerPage = () => {
         setJobDropdownOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const toggleJob = (name: string) => {
@@ -332,7 +332,7 @@ export const SchedulerPage = () => {
     handlePageChange,
     handleSizeChange,
     handleSortChange,
-  } = usePagination({ defaultSort: "startedAt" });
+  } = usePagination({ defaultSort: 'startedAt' });
 
   const {
     data: historyData,
@@ -356,33 +356,33 @@ export const SchedulerPage = () => {
     }
     const { type, jobName, group } = confirmAction;
     const mutation =
-      type === "pause" ? pauseJob : type === "resume" ? resumeJob : triggerJob;
+      type === 'pause' ? pauseJob : type === 'resume' ? resumeJob : triggerJob;
     mutation.mutate(
       { jobName, group },
-      { onSuccess: () => setConfirmAction(null) },
+      { onSuccess: () => setConfirmAction(null) }
     );
   };
 
   const confirmLabels = {
     pause: {
-      title: "Pause Job",
-      message: "This will pause the job. It will not execute until resumed.",
-      confirmLabel: "Pause",
-      variant: "danger" as const,
+      title: 'Pause Job',
+      message: 'This will pause the job. It will not execute until resumed.',
+      confirmLabel: 'Pause',
+      variant: 'danger' as const,
     },
     resume: {
-      title: "Resume Job",
+      title: 'Resume Job',
       message:
-        "This will resume the paused job. It will execute on its next scheduled time.",
-      confirmLabel: "Resume",
-      variant: "default" as const,
+        'This will resume the paused job. It will execute on its next scheduled time.',
+      confirmLabel: 'Resume',
+      variant: 'default' as const,
     },
     trigger: {
-      title: "Run Job Now",
+      title: 'Run Job Now',
       message:
-        "This will immediately run the job outside of its normal schedule.",
-      confirmLabel: "Run now",
-      variant: "default" as const,
+        'This will immediately run the job outside of its normal schedule.',
+      confirmLabel: 'Run now',
+      variant: 'default' as const,
     },
   };
 
@@ -406,9 +406,9 @@ export const SchedulerPage = () => {
       <div
         className="mb-6"
         style={{
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "space-between",
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
         }}
       >
         <div>
@@ -424,7 +424,7 @@ export const SchedulerPage = () => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-surface-card rounded-lg border border-border-default p-4">
           <div
-            style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
             className="text-text-secondary text-sm mb-1"
           >
             <Timer className="h-4 w-4" />
@@ -436,38 +436,38 @@ export const SchedulerPage = () => {
         </div>
         <div className="bg-surface-card rounded-lg border border-border-default p-4">
           <div
-            style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
             className="text-text-secondary text-sm mb-1"
           >
             <Play className="h-4 w-4 text-success-text" />
             Active
           </div>
           <div className="text-2xl font-bold text-success-text">
-            {allJobs.filter((j) => j.triggerState === "NORMAL").length}
+            {allJobs.filter((j) => j.triggerState === 'NORMAL').length}
           </div>
         </div>
         <div className="bg-surface-card rounded-lg border border-border-default p-4">
           <div
-            style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
             className="text-text-secondary text-sm mb-1"
           >
             <Pause className="h-4 w-4 text-warning-text" />
             Paused
           </div>
           <div className="text-2xl font-bold text-warning-text">
-            {allJobs.filter((j) => j.triggerState === "PAUSED").length}
+            {allJobs.filter((j) => j.triggerState === 'PAUSED').length}
           </div>
         </div>
         <div className="bg-surface-card rounded-lg border border-border-default p-4">
           <div
-            style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
             className="text-text-secondary text-sm mb-1"
           >
             <Clock className="h-4 w-4 text-info-text" />
             Blocked
           </div>
           <div className="text-2xl font-bold text-info-text">
-            {allJobs.filter((j) => j.triggerState === "BLOCKED").length}
+            {allJobs.filter((j) => j.triggerState === 'BLOCKED').length}
           </div>
         </div>
       </div>
@@ -526,9 +526,9 @@ export const SchedulerPage = () => {
                     <td className="px-4 py-3">
                       <span className="inline-flex items-center">
                         <span className="text-sm text-text-secondary font-mono">
-                          {job.scheduleExpression ?? "-"}
+                          {job.scheduleExpression ?? '-'}
                         </span>
-                        {job.triggerType === "cron" &&
+                        {job.triggerType === 'cron' &&
                           job.scheduleExpression && (
                             <CronTooltip expression={job.scheduleExpression} />
                           )}
@@ -548,17 +548,17 @@ export const SchedulerPage = () => {
                     <td className="px-4 py-3 text-right">
                       <div
                         style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "flex-end",
-                          gap: "0.25rem",
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'flex-end',
+                          gap: '0.25rem',
                         }}
                       >
-                        {job.triggerState === "PAUSED" ? (
+                        {job.triggerState === 'PAUSED' ? (
                           <button
                             onClick={() =>
                               setConfirmAction({
-                                type: "resume",
+                                type: 'resume',
                                 jobName: job.jobName,
                                 group: job.jobGroup,
                               })
@@ -572,7 +572,7 @@ export const SchedulerPage = () => {
                           <button
                             onClick={() =>
                               setConfirmAction({
-                                type: "pause",
+                                type: 'pause',
                                 jobName: job.jobName,
                                 group: job.jobGroup,
                               })
@@ -586,7 +586,7 @@ export const SchedulerPage = () => {
                         <button
                           onClick={() =>
                             setConfirmAction({
-                              type: "trigger",
+                              type: 'trigger',
                               jobName: job.jobName,
                               group: job.jobGroup,
                             })
@@ -596,15 +596,15 @@ export const SchedulerPage = () => {
                         >
                           <PlayCircle className="h-4 w-4" />
                         </button>
-                        {job.triggerType === "cron" && (
+                        {job.triggerType === 'cron' && (
                           <button
                             onClick={() => {
                               setEditingJob({
                                 jobName: job.jobName,
                                 group: job.jobGroup,
-                                currentExpression: job.scheduleExpression ?? "",
+                                currentExpression: job.scheduleExpression ?? '',
                               });
-                              setCronInput(job.scheduleExpression ?? "");
+                              setCronInput(job.scheduleExpression ?? '');
                             }}
                             className="p-2 rounded-lg text-text-secondary hover:text-primary-500 hover:bg-surface-inset transition-colors"
                             title="Edit schedule"
@@ -641,10 +641,10 @@ export const SchedulerPage = () => {
             >
               <span className="truncate">
                 {activeSelectedJobs.length === uniqueJobNames.length
-                  ? "All Jobs"
+                  ? 'All Jobs'
                   : activeSelectedJobs.length === 0
-                    ? "No Jobs"
-                    : `${activeSelectedJobs.length} job${activeSelectedJobs.length > 1 ? "s" : ""} selected`}
+                    ? 'No Jobs'
+                    : `${activeSelectedJobs.length} job${activeSelectedJobs.length > 1 ? 's' : ''} selected`}
               </span>
               <ChevronDown className="h-4 w-4 shrink-0" />
             </button>
@@ -655,7 +655,7 @@ export const SchedulerPage = () => {
                   className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-surface-inset transition-colors border-b border-border-default"
                 >
                   <span
-                    className={`flex items-center justify-center h-4 w-4 rounded border ${activeSelectedJobs.length === uniqueJobNames.length ? "bg-primary-500 border-primary-500 text-white" : "border-border-strong"}`}
+                    className={`flex items-center justify-center h-4 w-4 rounded border ${activeSelectedJobs.length === uniqueJobNames.length ? 'bg-primary-500 border-primary-500 text-white' : 'border-border-strong'}`}
                   >
                     {activeSelectedJobs.length === uniqueJobNames.length && (
                       <Check className="h-3 w-3" />
@@ -672,7 +672,7 @@ export const SchedulerPage = () => {
                     className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-surface-inset transition-colors"
                   >
                     <span
-                      className={`flex items-center justify-center h-4 w-4 rounded border ${activeSelectedJobs.includes(name) ? "bg-primary-500 border-primary-500 text-white" : "border-border-strong"}`}
+                      className={`flex items-center justify-center h-4 w-4 rounded border ${activeSelectedJobs.includes(name) ? 'bg-primary-500 border-primary-500 text-white' : 'border-border-strong'}`}
                     >
                       {activeSelectedJobs.includes(name) && (
                         <Check className="h-3 w-3" />
@@ -748,7 +748,7 @@ export const SchedulerPage = () => {
                   return (
                     <Fragment key={exec.id}>
                       <tr
-                        className={`border-b border-border-default last:border-b-0 hover:bg-surface-page transition-colors ${hasError ? "cursor-pointer" : ""} ${isExpanded ? "!border-b-0" : ""}`}
+                        className={`border-b border-border-default last:border-b-0 hover:bg-surface-page transition-colors ${hasError ? 'cursor-pointer' : ''} ${isExpanded ? '!border-b-0' : ''}`}
                         onClick={
                           hasError
                             ? () => {
@@ -897,15 +897,15 @@ export const SchedulerPage = () => {
                 <p className="text-sm text-text-primary">
                   {cronInput.trim()
                     ? describeCron(cronInput.trim())
-                    : "Enter a cron expression above"}
+                    : 'Enter a cron expression above'}
                 </p>
                 {editingJob.currentExpression !== cronInput.trim() &&
                   cronInput.trim() && (
                     <p className="text-xs text-text-muted mt-2">
-                      Current:{" "}
+                      Current:{' '}
                       <span className="font-mono">
                         {editingJob.currentExpression}
-                      </span>{" "}
+                      </span>{' '}
                       ({describeCron(editingJob.currentExpression)})
                     </p>
                   )}
@@ -916,16 +916,16 @@ export const SchedulerPage = () => {
                   Quartz Cron Format
                 </div>
                 <div className="grid grid-cols-7 gap-1 text-center text-[11px]">
-                  {["SEC", "MIN", "HOUR", "DAY", "MON", "DOW", "YEAR"].map(
+                  {['SEC', 'MIN', 'HOUR', 'DAY', 'MON', 'DOW', 'YEAR'].map(
                     (f) => (
                       <span key={f} className="font-mono text-text-secondary">
                         {f}
                       </span>
-                    ),
+                    )
                   )}
                 </div>
                 <div className="grid grid-cols-7 gap-1 text-center text-[11px] mt-1">
-                  {(cronInput.trim() || "* * * * * ? *")
+                  {(cronInput.trim() || '* * * * * ? *')
                     .split(/\s+/)
                     .slice(0, 7)
                     .map((part, i) => (
@@ -955,7 +955,7 @@ export const SchedulerPage = () => {
                       group: editingJob.group,
                       cronExpression: cronInput.trim(),
                     },
-                    { onSuccess: () => setEditingJob(null) },
+                    { onSuccess: () => setEditingJob(null) }
                   );
                 }}
                 disabled={

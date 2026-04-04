@@ -28,8 +28,6 @@ export const keycloakInitOptions = {
   // Disable login iframe — blocked by third-party cookie restrictions in modern browsers
   checkLoginIframe: false,
   silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
-  // Disable nonce check to avoid validation errors in development
-  useNonce: false,
   // Enable token refresh
   enableLogging: import.meta.env.DEV,
 };

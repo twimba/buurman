@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
   NavLink,
   Outlet,
   useLocation,
   useSearchParams,
-} from "react-router-dom";
+} from 'react-router-dom';
 import {
   LayoutDashboard,
   Users,
@@ -29,9 +29,9 @@ import {
   Loader2,
   ExternalLink,
   Shield,
-} from "lucide-react";
-import { SidebarTooltip } from "@buurman/ui";
-import { useAuth } from "../contexts/AuthContext";
+} from 'lucide-react';
+import { SidebarTooltip } from '@buurman/ui';
+import { useAuth } from '../contexts/AuthContext';
 import {
   GrafanaIcon,
   KeycloakIcon,
@@ -44,10 +44,10 @@ import {
   AwsIcon,
   HetznerIcon,
   BetterStackIcon,
-} from "./ToolIcons";
-import { useGrafanaDashboards } from "../hooks/useGrafanaDashboards";
+} from './ToolIcons';
+import { useGrafanaDashboards } from '../hooks/useGrafanaDashboards';
 
-const STORAGE_KEY = "buurman-backoffice-sidebar-collapsed";
+const STORAGE_KEY = 'buurman-backoffice-sidebar-collapsed';
 
 type NavItem = {
   name: string;
@@ -57,49 +57,49 @@ type NavItem = {
 };
 
 const navigation: NavItem[] = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Teams", href: "/teams", icon: Users },
-  { name: "Users", href: "/users", icon: UserCog },
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Teams', href: '/teams', icon: Users },
+  { name: 'Users', href: '/users', icon: UserCog },
   {
-    name: "Impersonation",
-    href: "/impersonation",
+    name: 'Impersonation',
+    href: '/impersonation',
     icon: UserCheck,
     indent: true,
   },
   {
-    name: "Invitations",
-    href: "/registration-invitations",
+    name: 'Invitations',
+    href: '/registration-invitations',
     icon: Ticket,
     indent: true,
   },
-  { name: "Notifications", href: "/notifications", icon: Bell },
+  { name: 'Notifications', href: '/notifications', icon: Bell },
   {
-    name: "SMS Policy",
-    href: "/sms-policy",
+    name: 'SMS Policy',
+    href: '/sms-policy',
     icon: MessageSquare,
     indent: true,
   },
-  { name: "Broadcasts", href: "/broadcasts", icon: Radio },
-  { name: "Rent Regulations", href: "/rent-regulations", icon: BookOpen },
-  { name: "Feature Flags", href: "/feature-flags", icon: Flag },
-  { name: "Segments", href: "/segments", icon: Layers, indent: true },
+  { name: 'Broadcasts', href: '/broadcasts', icon: Radio },
+  { name: 'Rent Regulations', href: '/rent-regulations', icon: BookOpen },
+  { name: 'Feature Flags', href: '/feature-flags', icon: Flag },
+  { name: 'Segments', href: '/segments', icon: Layers, indent: true },
 ];
 
 const adminNavigation = [
-  { name: "Buurmies", href: "/buurmies", icon: Smile },
+  { name: 'Buurmies', href: '/buurmies', icon: Smile },
   {
-    name: "System",
-    href: "/system",
+    name: 'System',
+    href: '/system',
     icon: Monitor,
-    role: "BACKOFFICE_SYSTEM" as const,
+    role: 'BACKOFFICE_SYSTEM' as const,
   },
-  { name: "Scheduler", href: "/scheduler", icon: Timer, indent: true },
-  { name: "Caches", href: "/caches", icon: Database, indent: true },
-  { name: "Rate Limits", href: "/rate-limits", icon: Shield, indent: true },
-  { name: "Loggers", href: "/loggers", icon: ScrollText, indent: true },
+  { name: 'Scheduler', href: '/scheduler', icon: Timer, indent: true },
+  { name: 'Caches', href: '/caches', icon: Database, indent: true },
+  { name: 'Rate Limits', href: '/rate-limits', icon: Shield, indent: true },
+  { name: 'Loggers', href: '/loggers', icon: ScrollText, indent: true },
 ];
 
-const isLocalEnv = () => window.location.hostname.includes("local.buurman.io");
+const isLocalEnv = () => window.location.hostname.includes('local.buurman.io');
 
 type ToolItem = {
   name: string;
@@ -111,42 +111,42 @@ type ToolItem = {
 const getTools = (): ToolItem[] => {
   const local = isLocalEnv();
   return [
-    { name: "Keycloak", href: "/tools/keycloak", icon: KeycloakIcon },
-    { name: "Prometheus", href: "/tools/prometheus", icon: PrometheusIcon },
+    { name: 'Keycloak', href: '/tools/keycloak', icon: KeycloakIcon },
+    { name: 'Prometheus', href: '/tools/prometheus', icon: PrometheusIcon },
     ...(local
-      ? [{ name: "Traefik", href: "/tools/traefik", icon: TraefikIcon }]
+      ? [{ name: 'Traefik', href: '/tools/traefik', icon: TraefikIcon }]
       : []),
     ...(local
-      ? [{ name: "Mailpit", href: "/tools/mailpit", icon: MailpitIcon }]
+      ? [{ name: 'Mailpit', href: '/tools/mailpit', icon: MailpitIcon }]
       : [
-          { name: "Twilio", href: "/tools/twilio", icon: TwilioIcon },
+          { name: 'Twilio', href: '/tools/twilio', icon: TwilioIcon },
           {
-            name: "SendGrid",
-            href: "https://app.sendgrid.com",
+            name: 'SendGrid',
+            href: 'https://app.sendgrid.com',
             icon: SendGridIcon,
             external: true,
           },
         ]),
 
     ...(local
-      ? [{ name: "SeaweedFS", href: "/tools/seaweedfs", icon: SeaweedFSIcon }]
+      ? [{ name: 'SeaweedFS', href: '/tools/seaweedfs', icon: SeaweedFSIcon }]
       : [
           {
-            name: "AWS S3",
-            href: "https://console.aws.amazon.com/s3",
+            name: 'AWS S3',
+            href: 'https://console.aws.amazon.com/s3',
             icon: AwsIcon,
             external: true,
           },
         ]),
     {
-      name: "Hetzner",
-      href: "https://console.hetzner.cloud/projects",
+      name: 'Hetzner',
+      href: 'https://console.hetzner.cloud/projects',
       icon: HetznerIcon,
       external: true,
     },
     {
-      name: "Better Stack",
-      href: "https://telemetry.betterstack.com/team/t505111/tail?s=1735995",
+      name: 'Better Stack',
+      href: 'https://telemetry.betterstack.com/team/t505111/tail?s=1735995',
       icon: BetterStackIcon,
       external: true,
     },
@@ -156,22 +156,22 @@ const getTools = (): ToolItem[] => {
 const navLinkClass = (isActive: boolean, collapsed: boolean) => `
   flex items-center gap-3 px-3 py-2.5 rounded-lg
   transition-all duration-200
-  ${collapsed ? "justify-center" : ""}
+  ${collapsed ? 'justify-center' : ''}
   ${
     isActive
-      ? "bg-primary-50 text-primary-700 font-semibold"
-      : "text-text-secondary hover:bg-neutral-50 hover:text-text-primary"
+      ? 'bg-primary-50 text-primary-700 font-semibold'
+      : 'text-text-secondary hover:bg-neutral-50 hover:text-text-primary'
   }
 `;
 
 const toolLinkClass = (isActive: boolean, collapsed: boolean) => `
   flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px]
   transition-all duration-200
-  ${collapsed ? "justify-center" : ""}
+  ${collapsed ? 'justify-center' : ''}
   ${
     isActive
-      ? "bg-primary-50 text-primary-700 font-semibold"
-      : "text-text-secondary hover:bg-neutral-50 hover:text-text-secondary"
+      ? 'bg-primary-50 text-primary-700 font-semibold'
+      : 'text-text-secondary hover:bg-neutral-50 hover:text-text-secondary'
   }
 `;
 
@@ -180,20 +180,20 @@ const dashboardLinkClass = (isActive: boolean) => `
   transition-all duration-200
   ${
     isActive
-      ? "bg-primary-50 text-primary-700 font-semibold"
-      : "text-text-secondary hover:bg-neutral-50 hover:text-text-secondary"
+      ? 'bg-primary-50 text-primary-700 font-semibold'
+      : 'text-text-secondary hover:bg-neutral-50 hover:text-text-secondary'
   }
 `;
 
 export const Layout = () => {
   const { logout, keycloak } = useAuth();
-  const userEmail = keycloak.tokenParsed?.email || "Admin";
+  const userEmail = keycloak.tokenParsed?.email || 'Admin';
   const userRoles =
     (keycloak.tokenParsed?.realm_access as { roles?: string[] })?.roles ?? [];
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const isToolRoute = location.pathname.startsWith("/tools/");
-  const isGrafanaRoute = location.pathname === "/tools/grafana";
+  const isToolRoute = location.pathname.startsWith('/tools/');
+  const isGrafanaRoute = location.pathname === '/tools/grafana';
   const { data: dashboards, isLoading: dashboardsLoading } =
     useGrafanaDashboards();
 
@@ -201,7 +201,7 @@ export const Layout = () => {
 
   const [collapsed, setCollapsed] = useState(() => {
     try {
-      return localStorage.getItem(STORAGE_KEY) === "true";
+      return localStorage.getItem(STORAGE_KEY) === 'true';
     } catch {
       return false;
     }
@@ -217,15 +217,15 @@ export const Layout = () => {
     }
   };
 
-  const sidebarWidth = collapsed ? "w-20" : "w-64";
-  const mainMargin = collapsed ? "ml-20" : "ml-64";
+  const sidebarWidth = collapsed ? 'w-20' : 'w-64';
+  const mainMargin = collapsed ? 'ml-20' : 'ml-64';
 
   return (
     <div
       className="theme-backoffice flex overflow-hidden bg-surface-page"
       style={{
-        height: "calc(100vh - var(--env-banner-height, 0px))",
-        marginTop: "var(--env-banner-height, 0px)",
+        height: 'calc(100vh - var(--env-banner-height, 0px))',
+        marginTop: 'var(--env-banner-height, 0px)',
       }}
     >
       <a
@@ -238,17 +238,17 @@ export const Layout = () => {
       <aside
         className={`fixed left-0 ${sidebarWidth} z-40 transition-[width] duration-300 ease-in-out`}
         style={{
-          top: "var(--env-banner-height, 0px)",
-          height: "calc(100vh - var(--env-banner-height, 0px))",
-          background: "var(--color-surface-page)",
-          borderRight: "1px solid var(--color-border-default)",
+          top: 'var(--env-banner-height, 0px)',
+          height: 'calc(100vh - var(--env-banner-height, 0px))',
+          background: 'var(--color-surface-page)',
+          borderRight: '1px solid var(--color-border-default)',
         }}
       >
         <div className="flex flex-col h-full overflow-hidden">
           {/* Logo / Title */}
           <div
             className="flex items-center h-16 border-b border-border-default px-3"
-            style={{ justifyContent: "space-between" }}
+            style={{ justifyContent: 'space-between' }}
           >
             <div className="flex items-center gap-2.5" style={{ minWidth: 0 }}>
               <img
@@ -270,7 +270,7 @@ export const Layout = () => {
             <button
               onClick={toggleCollapsed}
               className="flex-shrink-0 p-1 rounded-md text-text-muted hover:text-text-secondary hover:bg-primary-500/5 transition-colors"
-              title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+              title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
               {collapsed ? (
                 <ChevronsRight className="h-4 w-4" />
@@ -290,10 +290,10 @@ export const Layout = () => {
                       to={item.href}
                       className={({ isActive }) =>
                         item.indent
-                          ? `flex items-center gap-2.5 ${collapsed ? "px-3 py-2 justify-center" : "pl-10 pr-3 py-2"} rounded-lg text-[13px] transition-all duration-200 ${
+                          ? `flex items-center gap-2.5 ${collapsed ? 'px-3 py-2 justify-center' : 'pl-10 pr-3 py-2'} rounded-lg text-[13px] transition-all duration-200 ${
                               isActive
-                                ? "bg-primary-50 text-primary-700 font-semibold"
-                                : "text-text-secondary hover:bg-neutral-50 hover:text-text-primary"
+                                ? 'bg-primary-50 text-primary-700 font-semibold'
+                                : 'text-text-secondary hover:bg-neutral-50 hover:text-text-primary'
                             }`
                           : navLinkClass(isActive, collapsed)
                       }
@@ -301,8 +301,8 @@ export const Layout = () => {
                       <item.icon
                         className={
                           item.indent
-                            ? "h-4 w-4 flex-shrink-0"
-                            : "h-5 w-5 flex-shrink-0"
+                            ? 'h-4 w-4 flex-shrink-0'
+                            : 'h-5 w-5 flex-shrink-0'
                         }
                       />
                       {!collapsed && (
@@ -331,10 +331,10 @@ export const Layout = () => {
                           to={item.href}
                           className={({ isActive }) =>
                             item.indent
-                              ? `flex items-center gap-2.5 ${collapsed ? "px-3 py-2 justify-center" : "pl-10 pr-3 py-2"} rounded-lg text-[13px] transition-all duration-200 ${
+                              ? `flex items-center gap-2.5 ${collapsed ? 'px-3 py-2 justify-center' : 'pl-10 pr-3 py-2'} rounded-lg text-[13px] transition-all duration-200 ${
                                   isActive
-                                    ? "bg-primary-50 text-primary-700 font-semibold"
-                                    : "text-text-secondary hover:bg-neutral-50 hover:text-text-primary"
+                                    ? 'bg-primary-50 text-primary-700 font-semibold'
+                                    : 'text-text-secondary hover:bg-neutral-50 hover:text-text-primary'
                                 }`
                               : navLinkClass(isActive, collapsed)
                           }
@@ -342,8 +342,8 @@ export const Layout = () => {
                           <item.icon
                             className={
                               item.indent
-                                ? "h-4 w-4 flex-shrink-0"
-                                : "h-5 w-5 flex-shrink-0"
+                                ? 'h-4 w-4 flex-shrink-0'
+                                : 'h-5 w-5 flex-shrink-0'
                             }
                           />
                           {!collapsed && (
@@ -371,7 +371,7 @@ export const Layout = () => {
                       <NavLink
                         to="/tools/grafana"
                         className={({ isActive }) =>
-                          toolLinkClass(isActive, collapsed) + " flex-1"
+                          toolLinkClass(isActive, collapsed) + ' flex-1'
                         }
                       >
                         <GrafanaIcon className="h-4 w-4 flex-shrink-0" />
@@ -385,7 +385,7 @@ export const Layout = () => {
                           className="p-1 mr-1 rounded text-text-muted hover:text-text-secondary hover:bg-primary-500/5 transition-colors"
                         >
                           <ChevronDown
-                            className={`h-3.5 w-3.5 transition-transform duration-200 ${grafanaOpen ? "rotate-180" : ""}`}
+                            className={`h-3.5 w-3.5 transition-transform duration-200 ${grafanaOpen ? 'rotate-180' : ''}`}
                           />
                         </button>
                       )}
@@ -402,7 +402,7 @@ export const Layout = () => {
                       <ul className="mt-0.5 space-y-0.5">
                         {dashboards.map((db) => {
                           const dbPath = `/tools/grafana?path=${encodeURIComponent(db.url)}`;
-                          const currentPath = searchParams.get("path");
+                          const currentPath = searchParams.get('path');
                           const isActive =
                             isGrafanaRoute && currentPath === db.url;
                           return (
@@ -470,7 +470,7 @@ export const Layout = () => {
             <SidebarTooltip label="Logout" show={collapsed}>
               <button
                 onClick={logout}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-error-text hover:bg-error-bg transition-all duration-200 ${collapsed ? "justify-center" : ""}`}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-error-text hover:bg-error-bg transition-all duration-200 ${collapsed ? 'justify-center' : ''}`}
               >
                 <LogOut className="h-5 w-5 flex-shrink-0" />
                 {!collapsed && <span className="truncate">Logout</span>}
@@ -485,15 +485,15 @@ export const Layout = () => {
         id="main-content"
         className={`flex-1 overflow-auto ${mainMargin} transition-[margin] duration-300 ease-in-out`}
         style={
-          isToolRoute ? { display: "flex", flexDirection: "column" } : undefined
+          isToolRoute ? { display: 'flex', flexDirection: 'column' } : undefined
         }
       >
         {isToolRoute ? (
           <div
             style={{
               flex: 1,
-              display: "flex",
-              flexDirection: "column",
+              display: 'flex',
+              flexDirection: 'column',
               minHeight: 0,
             }}
           >

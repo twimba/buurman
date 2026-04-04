@@ -15,20 +15,20 @@ import {
 } from '@/types/contact';
 import { useTeam } from '@/context/TeamContext';
 import { ContactSelector } from '@/components/common/ContactSelector';
-import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import {
   Button,
-  ModalWrapper,
-  EmptyState,
   ConfirmDialog,
+  EmptyState,
   FormField,
+  LoadingSpinner,
+  ModalWrapper,
+  RichTextDisplay,
+  RichTextEditor,
   Select,
 } from '@buurman/ui';
-import { RichTextEditor } from '@/components/common/RichTextEditor';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { Avatar } from '@/components/common/Avatar';
 import { Plus, Edit, Trash2, Users, ShieldOff } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { useFormatDate } from '@/hooks/useFormatDate';
 
 interface RelationshipFormData {
   targetContactIdentifier: string;
@@ -51,6 +51,7 @@ export const ContactRelationshipsTab = ({
 }: ContactRelationshipsTabProps) => {
   const navigate = useNavigate();
   const { canEditData } = useTeam();
+  const { formatRelative } = useFormatDate();
   const { data: relationships = [], isLoading } =
     useContactRelationships(contactId);
   const createMutation = useCreateContactRelationship(contactId);
@@ -211,10 +212,7 @@ export const ContactRelationshipsTab = ({
                       </div>
                     )}
                     <p className="text-xs text-text-muted mt-1">
-                      Added{' '}
-                      {formatDistanceToNow(new Date(rel.createdAt), {
-                        addSuffix: true,
-                      })}
+                      Added {formatRelative(rel.createdAt)}
                     </p>
                   </div>
                 </div>

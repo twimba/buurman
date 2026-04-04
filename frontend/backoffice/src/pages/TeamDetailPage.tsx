@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
-import { formatDate, formatDateTime } from "../utils/dateFormatting";
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { formatDate, formatDateTime } from '../utils/dateFormatting';
 import {
   Users,
   Calendar,
@@ -16,13 +16,13 @@ import {
   Crown,
   Clock,
   Mail,
-} from "lucide-react";
-import { PageHeader, Button, ConfirmDialog, RefreshButton } from "@buurman/ui";
-import { useTeam, useUpdateTeam, useDeleteTeam } from "../hooks/useTeams";
-import { LoadingSpinner } from "../components/LoadingSpinner";
-import { TeamFeatureFlags } from "../components/UserFeatureFlags";
-import { trackEvent } from "../utils/analytics";
-import { AnalyticsEvent } from "../constants/analyticsEvents";
+} from 'lucide-react';
+import { PageHeader, Button, ConfirmDialog, RefreshButton } from '@buurman/ui';
+import { useTeam, useUpdateTeam, useDeleteTeam } from '../hooks/useTeams';
+import { LoadingSpinner } from '../components/LoadingSpinner';
+import { TeamFeatureFlags } from '../components/UserFeatureFlags';
+import { trackEvent } from '../utils/analytics';
+import { AnalyticsEvent } from '../constants/analyticsEvents';
 
 function formatMoney(value: number, currencyCode: string | null): string {
   if (!currencyCode) {
@@ -33,7 +33,7 @@ function formatMoney(value: number, currencyCode: string | null): string {
   }
   try {
     return new Intl.NumberFormat(undefined, {
-      style: "currency",
+      style: 'currency',
       currency: currencyCode,
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
@@ -52,12 +52,12 @@ export const TeamDetailPage = () => {
     isFetching,
     error,
     refetch,
-  } = useTeam(identifier ?? "");
+  } = useTeam(identifier ?? '');
   const updateTeam = useUpdateTeam();
   const deleteTeam = useDeleteTeam();
 
   const [isEditing, setIsEditing] = useState(false);
-  const [editName, setEditName] = useState("");
+  const [editName, setEditName] = useState('');
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const teamIdentifier = team?.identifier;
@@ -76,7 +76,7 @@ export const TeamDetailPage = () => {
       <div className="text-center py-12">
         <p className="text-error-text">Failed to load team.</p>
         <button
-          onClick={() => navigate("/teams")}
+          onClick={() => navigate('/teams')}
           className="mt-4 text-sm text-primary-500 hover:underline"
         >
           Back to teams
@@ -92,7 +92,7 @@ export const TeamDetailPage = () => {
 
   const cancelEditing = () => {
     setIsEditing(false);
-    setEditName("");
+    setEditName('');
   };
 
   const handleSave = () => {
@@ -100,16 +100,16 @@ export const TeamDetailPage = () => {
       return;
     }
     updateTeam.mutate(
-      { identifier: identifier ?? "", data: { name: editName.trim() } },
+      { identifier: identifier ?? '', data: { name: editName.trim() } },
       {
         onSuccess: () => setIsEditing(false),
-      },
+      }
     );
   };
 
   const handleDelete = () => {
-    deleteTeam.mutate(identifier ?? "", {
-      onSuccess: () => navigate("/teams"),
+    deleteTeam.mutate(identifier ?? '', {
+      onSuccess: () => navigate('/teams'),
     });
   };
 
@@ -153,10 +153,10 @@ export const TeamDetailPage = () => {
               className="w-full max-w-md px-3 py-2.5 text-sm rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors"
               autoFocus
               onKeyDown={(e) => {
-                if (e.key === "Enter") {
+                if (e.key === 'Enter') {
                   handleSave();
                 }
-                if (e.key === "Escape") {
+                if (e.key === 'Escape') {
                   cancelEditing();
                 }
               }}
@@ -178,10 +178,10 @@ export const TeamDetailPage = () => {
           label="Owner"
           value={
             owner
-              ? `${owner.firstName ?? ""} ${owner.lastName ?? ""}`.trim() ||
+              ? `${owner.firstName ?? ''} ${owner.lastName ?? ''}`.trim() ||
                 owner.email ||
-                "Unknown"
-              : "No owner"
+                'Unknown'
+              : 'No owner'
           }
           subtitle={owner?.email ?? undefined}
           color="amber"
@@ -282,9 +282,9 @@ export const TeamDetailPage = () => {
                 {team.financialSnapshot.currency
                   ? formatMoney(
                       team.financialSnapshot.totalActiveRent,
-                      team.financialSnapshot.currency,
+                      team.financialSnapshot.currency
                     )
-                  : "\u2013"}
+                  : '\u2013'}
               </span>
             </div>
           </div>
@@ -343,7 +343,7 @@ export const TeamDetailPage = () => {
               {team.members.map((member, idx) => (
                 <tr
                   key={idx}
-                  className={`border-b border-border-default last:border-b-0 ${member.disabled ? "opacity-50" : ""}`}
+                  className={`border-b border-border-default last:border-b-0 ${member.disabled ? 'opacity-50' : ''}`}
                 >
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-2">
@@ -352,11 +352,11 @@ export const TeamDetailPage = () => {
                           to={`/users/${member.userIdentifier}`}
                           className="font-medium text-primary-500 hover:underline"
                         >
-                          {member.firstName ?? ""} {member.lastName ?? ""}
+                          {member.firstName ?? ''} {member.lastName ?? ''}
                         </Link>
                       ) : (
                         <span className="font-medium text-text-primary">
-                          {member.firstName ?? ""} {member.lastName ?? ""}
+                          {member.firstName ?? ''} {member.lastName ?? ''}
                         </span>
                       )}
                       {member.isOwner && (
@@ -368,13 +368,13 @@ export const TeamDetailPage = () => {
                     </div>
                   </td>
                   <td className="px-5 py-3 text-text-secondary">
-                    {member.email ?? "—"}
+                    {member.email ?? '—'}
                   </td>
                   <td className="px-5 py-3">
                     <RoleBadge role={member.role} />
                   </td>
                   <td className="px-5 py-3 text-text-secondary">
-                    {member.joinedAt ? formatDate(member.joinedAt) : "—"}
+                    {member.joinedAt ? formatDate(member.joinedAt) : '—'}
                   </td>
                   <td className="px-5 py-3">
                     {member.disabled ? (
@@ -450,7 +450,7 @@ export const TeamDetailPage = () => {
       {/* Feature Flags */}
       <SectionTitle title="Feature Flags" />
       <div className="mb-6">
-        <TeamFeatureFlags teamIdentifier={identifier ?? ""} />
+        <TeamFeatureFlags teamIdentifier={identifier ?? ''} />
       </div>
 
       {/* Delete confirmation dialog */}
@@ -477,34 +477,34 @@ const colorClasses: Record<
   { bg: string; icon: string; value: string }
 > = {
   blue: {
-    bg: "bg-blue-50",
-    icon: "text-blue-600",
-    value: "text-blue-700",
+    bg: 'bg-blue-50',
+    icon: 'text-blue-600',
+    value: 'text-blue-700',
   },
   emerald: {
-    bg: "bg-emerald-50",
-    icon: "text-emerald-600",
-    value: "text-emerald-700",
+    bg: 'bg-emerald-50',
+    icon: 'text-emerald-600',
+    value: 'text-emerald-700',
   },
   purple: {
-    bg: "bg-purple-50",
-    icon: "text-purple-600",
-    value: "text-purple-700",
+    bg: 'bg-purple-50',
+    icon: 'text-purple-600',
+    value: 'text-purple-700',
   },
   amber: {
-    bg: "bg-amber-50",
-    icon: "text-amber-600",
-    value: "text-amber-700",
+    bg: 'bg-amber-50',
+    icon: 'text-amber-600',
+    value: 'text-amber-700',
   },
   teal: {
-    bg: "bg-teal-50",
-    icon: "text-teal-600",
-    value: "text-teal-700",
+    bg: 'bg-teal-50',
+    icon: 'text-teal-600',
+    value: 'text-teal-700',
   },
   slate: {
-    bg: "bg-slate-100",
-    icon: "text-slate-600",
-    value: "text-slate-700",
+    bg: 'bg-slate-100',
+    icon: 'text-slate-600',
+    value: 'text-slate-700',
   },
 };
 
@@ -578,35 +578,35 @@ const SectionTitle = ({ title }: { title: string }) => (
 );
 
 const propertyStatusColors: Record<string, string> = {
-  VACANT: "bg-emerald-100 text-emerald-700",
-  OCCUPIED: "bg-blue-100 text-blue-700",
-  MAINTENANCE: "bg-amber-100 text-amber-700",
-  UNAVAILABLE: "bg-slate-100 text-slate-600",
+  VACANT: 'bg-emerald-100 text-emerald-700',
+  OCCUPIED: 'bg-blue-100 text-blue-700',
+  MAINTENANCE: 'bg-amber-100 text-amber-700',
+  UNAVAILABLE: 'bg-slate-100 text-slate-600',
 };
 
 const propertyCategoryColors: Record<string, string> = {
-  RESIDENTIAL: "bg-blue-100 text-blue-700",
-  COMMERCIAL: "bg-orange-100 text-orange-700",
-  INDUSTRIAL: "bg-purple-100 text-purple-700",
-  AGRICULTURAL: "bg-emerald-100 text-emerald-700",
-  MIXED_USE: "bg-slate-100 text-slate-600",
+  RESIDENTIAL: 'bg-blue-100 text-blue-700',
+  COMMERCIAL: 'bg-orange-100 text-orange-700',
+  INDUSTRIAL: 'bg-purple-100 text-purple-700',
+  AGRICULTURAL: 'bg-emerald-100 text-emerald-700',
+  MIXED_USE: 'bg-slate-100 text-slate-600',
 };
 
 const contractStatusColors: Record<string, string> = {
-  ACTIVE: "bg-emerald-100 text-emerald-700",
-  DRAFT: "bg-slate-100 text-slate-600",
-  PENDING_SIGNATURE: "bg-amber-100 text-amber-700",
-  EXPIRED: "bg-orange-100 text-orange-700",
-  TERMINATED: "bg-red-100 text-red-700",
+  ACTIVE: 'bg-emerald-100 text-emerald-700',
+  DRAFT: 'bg-slate-100 text-slate-600',
+  PENDING_SIGNATURE: 'bg-amber-100 text-amber-700',
+  EXPIRED: 'bg-orange-100 text-orange-700',
+  TERMINATED: 'bg-red-100 text-red-700',
 };
 
 const paymentStatusColors: Record<string, string> = {
-  PAID: "bg-emerald-100 text-emerald-700",
-  PENDING: "bg-amber-100 text-amber-700",
-  OVERDUE: "bg-red-100 text-red-700",
-  LATE: "bg-orange-100 text-orange-700",
-  CANCELLED: "bg-slate-100 text-slate-600",
-  PARTIALLY_PAID: "bg-blue-100 text-blue-700",
+  PAID: 'bg-emerald-100 text-emerald-700',
+  PENDING: 'bg-amber-100 text-amber-700',
+  OVERDUE: 'bg-red-100 text-red-700',
+  LATE: 'bg-orange-100 text-orange-700',
+  CANCELLED: 'bg-slate-100 text-slate-600',
+  PARTIALLY_PAID: 'bg-blue-100 text-blue-700',
 };
 
 const StatusDistribution = ({
@@ -639,7 +639,7 @@ const StatusDistribution = ({
         {entries.map(([status, count]) => (
           <span
             key={status}
-            className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded ${colorMap[status] ?? "bg-slate-100 text-slate-600"}`}
+            className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded ${colorMap[status] ?? 'bg-slate-100 text-slate-600'}`}
           >
             {formatStatus(status)}
             <span className="font-bold">{count}</span>
@@ -651,9 +651,9 @@ const StatusDistribution = ({
 };
 
 const roleColors: Record<string, string> = {
-  TEAM_ADMIN: "bg-purple-100 text-purple-700",
-  TEAM_EDITOR: "bg-blue-100 text-blue-700",
-  TEAM_VIEWER: "bg-slate-100 text-slate-600",
+  TEAM_ADMIN: 'bg-purple-100 text-purple-700',
+  TEAM_EDITOR: 'bg-blue-100 text-blue-700',
+  TEAM_VIEWER: 'bg-slate-100 text-slate-600',
 };
 
 const RoleBadge = ({ role }: { role: string }) => (
@@ -661,7 +661,7 @@ const RoleBadge = ({ role }: { role: string }) => (
     className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${roleColors[role] ?? roleColors.TEAM_VIEWER}`}
   >
     <Shield className="h-3 w-3" />
-    {formatStatus(role.replace("TEAM_", ""))}
+    {formatStatus(role.replace('TEAM_', ''))}
   </span>
 );
 
@@ -680,6 +680,6 @@ const SettingsRow = ({
 
 const formatStatus = (status: string) =>
   status
-    .replace(/_/g, "")
+    .replace(/_/g, '')
     .toLowerCase()
     .replace(/^\w/, (c) => c.toUpperCase());

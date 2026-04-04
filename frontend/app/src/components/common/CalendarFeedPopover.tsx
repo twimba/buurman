@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Copy, Check, X, Link, Calendar } from 'lucide-react';
-import { Button } from '@buurman/ui';
-import { useToast } from '../../context/ToastContext';
+import { Button, useToast } from '@buurman/ui';
 import {
   useCalendarFeeds,
   useCreateCalendarFeed,

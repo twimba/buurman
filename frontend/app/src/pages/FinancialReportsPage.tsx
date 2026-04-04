@@ -32,7 +32,7 @@ import {
   usePropertyComparison,
   useOccupancyTrend,
 } from '@/hooks/useReportHooks';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { LoadingSpinner } from '@buurman/ui';
 import { MetricHint } from '@/components/common/MetricHint';
 import { useTheme } from '@/context/ThemeContext';
 import { useQuery } from '@tanstack/react-query';

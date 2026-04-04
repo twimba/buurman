@@ -15,7 +15,7 @@ import {
   ChevronDown,
   ChevronRight,
 } from 'lucide-react';
-import { Button } from '@buurman/ui';
+import { Button, useToast } from '@buurman/ui';
 import { CalendarPreviewModal } from './CalendarPreviewModal';
 import {
   useCalendarFeeds,
@@ -27,7 +27,6 @@ import {
   CalendarFeedResponseFeedType as CalendarFeedType,
   type CalendarFeedResponse,
 } from '../../generated/models';
-import { useToast } from '../../context/ToastContext';
 
 export const CalendarFeedsSection = () => {
   const { data: feeds = [], isLoading } = useCalendarFeeds();

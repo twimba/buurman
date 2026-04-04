@@ -14,7 +14,11 @@
     "dev:app": "dotenv -e ../.env -- yarn workspace buurman-app dev",
     "dev:backoffice": "dotenv -e ../.env -- yarn workspace buurman-backoffice dev",
     "format": "yarn workspaces foreach -A -p run format",
-    "lint": "yarn workspaces foreach -A -p run lint"
+    "lint": "yarn workspaces foreach -A -p run lint",
+    "test": "yarn workspace buurman-app test"
+  },
+  "engines": {
+    "node": ">=22.0.0"
   },
   "packageManager": "yarn@4.12.0",
   "devDependencies": {

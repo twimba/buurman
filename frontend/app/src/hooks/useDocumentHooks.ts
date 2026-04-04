@@ -7,12 +7,13 @@ import {
 import * as documentsApi from '../api/documents';
 import { SearchDocumentsParams } from '../api/documents';
 import type { PageParams } from '@/types/common';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '@buurman/ui';
 import { getErrorMessage } from '../utils/errorMessages';
+import { queryKeys } from '../lib/queryKeys';
 
 export const useDocuments = (params?: SearchDocumentsParams & PageParams) => {
   return useQuery({
-    queryKey: ['documents', params],
+    queryKey: queryKeys.documents.all(params),
     queryFn: () => documentsApi.searchDocuments(params),
     placeholderData: keepPreviousData,
   });
@@ -20,7 +21,7 @@ export const useDocuments = (params?: SearchDocumentsParams & PageParams) => {
 
 export const useDocument = (id: string | undefined) => {
   return useQuery({
-    queryKey: ['document', id],
+    queryKey: queryKeys.documents.detail(id),
     queryFn: () => documentsApi.getDocument(id ?? ''),
     enabled: !!id,
   });
@@ -32,7 +33,7 @@ export const useDeleteDocument = () => {
   return useMutation({
     mutationFn: (id: string) => documentsApi.deleteDocument(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['documents'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.documents.all() });
       showToast('Document deleted successfully', 'success');
     },
     onError: (error) => {
@@ -76,11 +77,19 @@ export const useUpdateDocument = () => {
       data: { title: string | null; notes: string | null };
     }) => documentsApi.updateDocument(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['documents'] });
-      queryClient.invalidateQueries({ queryKey: ['propertyDocuments'] });
-      queryClient.invalidateQueries({ queryKey: ['contactDocuments'] });
-      queryClient.invalidateQueries({ queryKey: ['propertyAuditLog'] });
-      queryClient.invalidateQueries({ queryKey: ['contactAuditLog'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.documents.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.properties.documents(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contacts.documents(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.properties.auditLog(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contacts.auditLog(),
+      });
       showToast('Document updated successfully', 'success');
     },
     onError: (error) => {

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useState } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   ArrowLeft,
   Save,
@@ -11,58 +11,58 @@ import {
   ChevronDown,
   ChevronRight,
   ExternalLink,
-} from "lucide-react";
+} from 'lucide-react';
 import {
   useSegmentDetail,
   useUpdateSegment,
   useSegmentMatches,
   useSegmentMatchingTeams,
   useSegmentMatchingUsers,
-} from "../hooks/useSegments";
-import { SegmentDetailFeatureFlags } from "../components/UserFeatureFlags";
-import type { SegmentCondition } from "../api/segments";
+} from '../hooks/useSegments';
+import { SegmentDetailFeatureFlags } from '../components/UserFeatureFlags';
+import type { SegmentCondition } from '../api/segments';
 
 const ATTRIBUTES = [
-  { value: "is_demo", label: "Is Demo", type: "boolean" },
-  { value: "is_owner", label: "Is Owner", type: "boolean" },
-  { value: "is_team", label: "Is Team", type: "boolean" },
-  { value: "is_user", label: "Is User", type: "boolean" },
-  { value: "role", label: "Role", type: "role" },
-  { value: "email", label: "Email", type: "string" },
-  { value: "email_verified", label: "Email Verified", type: "boolean" },
-  { value: "property_count", label: "Property Count", type: "number" },
-  { value: "member_count", label: "Member Count", type: "number" },
-  { value: "team_age_days", label: "Team Age (days)", type: "number" },
-  { value: "contract_count", label: "Contract Count", type: "number" },
-  { value: "contact_count", label: "Contact Count", type: "number" },
-  { value: "photo_count", label: "Photo Count", type: "number" },
-  { value: "document_count", label: "Document Count", type: "number" },
-  { value: "expense_count", label: "Expense Count", type: "number" },
-  { value: "payment_count", label: "Payment Count", type: "number" },
+  { value: 'is_demo', label: 'Is Demo', type: 'boolean' },
+  { value: 'is_owner', label: 'Is Owner', type: 'boolean' },
+  { value: 'is_team', label: 'Is Team', type: 'boolean' },
+  { value: 'is_user', label: 'Is User', type: 'boolean' },
+  { value: 'role', label: 'Role', type: 'role' },
+  { value: 'email', label: 'Email', type: 'string' },
+  { value: 'email_verified', label: 'Email Verified', type: 'boolean' },
+  { value: 'property_count', label: 'Property Count', type: 'number' },
+  { value: 'member_count', label: 'Member Count', type: 'number' },
+  { value: 'team_age_days', label: 'Team Age (days)', type: 'number' },
+  { value: 'contract_count', label: 'Contract Count', type: 'number' },
+  { value: 'contact_count', label: 'Contact Count', type: 'number' },
+  { value: 'photo_count', label: 'Photo Count', type: 'number' },
+  { value: 'document_count', label: 'Document Count', type: 'number' },
+  { value: 'expense_count', label: 'Expense Count', type: 'number' },
+  { value: 'payment_count', label: 'Payment Count', type: 'number' },
   {
-    value: "calendar_feed_count",
-    label: "Calendar Feed Count",
-    type: "number",
+    value: 'calendar_feed_count',
+    label: 'Calendar Feed Count',
+    type: 'number',
   },
 ];
 
 const OPERATORS = [
-  { value: "eq", label: "equals" },
-  { value: "neq", label: "not equals" },
-  { value: "in", label: "in" },
-  { value: "not_in", label: "not in" },
-  { value: "gt", label: ">" },
-  { value: "gte", label: ">=" },
-  { value: "lt", label: "<" },
-  { value: "lte", label: "<=" },
-  { value: "contains", label: "contains" },
-  { value: "not_contains", label: "does not contain" },
-  { value: "starts_with", label: "starts with" },
-  { value: "ends_with", label: "ends with" },
-  { value: "regex", label: "matches regex" },
+  { value: 'eq', label: 'equals' },
+  { value: 'neq', label: 'not equals' },
+  { value: 'in', label: 'in' },
+  { value: 'not_in', label: 'not in' },
+  { value: 'gt', label: '>' },
+  { value: 'gte', label: '>=' },
+  { value: 'lt', label: '<' },
+  { value: 'lte', label: '<=' },
+  { value: 'contains', label: 'contains' },
+  { value: 'not_contains', label: 'does not contain' },
+  { value: 'starts_with', label: 'starts with' },
+  { value: 'ends_with', label: 'ends with' },
+  { value: 'regex', label: 'matches regex' },
 ];
 
-const ROLE_VALUES = ["TEAM_ADMIN", "TEAM_EDITOR", "TEAM_VIEWER"];
+const ROLE_VALUES = ['TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER'];
 
 export const SegmentDetailPage = () => {
   const { key } = useParams<{ key: string }>();
@@ -72,24 +72,24 @@ export const SegmentDetailPage = () => {
   const updateSegment = useUpdateSegment();
 
   const [lastSynced, setLastSynced] = useState<string | null>(null);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
   const [priority, setPriority] = useState(0);
   const [conditions, setConditions] = useState<SegmentCondition[]>([]);
   const [dirty, setDirty] = useState(false);
-  const [expandedList, setExpandedList] = useState<"teams" | "users" | null>(
-    null,
+  const [expandedList, setExpandedList] = useState<'teams' | 'users' | null>(
+    null
   );
   const { data: matchingTeams, isLoading: teamsLoading } =
-    useSegmentMatchingTeams(key, expandedList === "teams");
+    useSegmentMatchingTeams(key, expandedList === 'teams');
   const { data: matchingUsers, isLoading: usersLoading } =
-    useSegmentMatchingUsers(key, expandedList === "users");
+    useSegmentMatchingUsers(key, expandedList === 'users');
 
   // Sync form state when segment data loads (state-based tracking)
   if (segment && lastSynced !== segment.key) {
     setLastSynced(segment.key);
     setName(segment.name);
-    setDescription(segment.description ?? "");
+    setDescription(segment.description ?? '');
     setPriority(segment.priority);
     setConditions(segment.conditions.map((c) => ({ ...c })));
     setDirty(false);
@@ -111,14 +111,14 @@ export const SegmentDetailPage = () => {
       },
       {
         onSuccess: () => setDirty(false),
-      },
+      }
     );
   };
 
   const addCondition = () => {
     setConditions([
       ...conditions,
-      { attribute: "is_demo", operator: "eq", value: "true" },
+      { attribute: 'is_demo', operator: 'eq', value: 'true' },
     ]);
     setDirty(true);
   };
@@ -131,27 +131,27 @@ export const SegmentDetailPage = () => {
   const updateCondition = (
     index: number,
     field: keyof SegmentCondition,
-    value: string,
+    value: string
   ) => {
     const updated = [...conditions];
     updated[index] = { ...updated[index], [field]: value };
 
     // Reset value when changing attribute
-    if (field === "attribute") {
+    if (field === 'attribute') {
       const newType = ATTRIBUTES.find((a) => a.value === value)?.type;
-      if (newType === "boolean") {
-        updated[index].value = "true";
-        updated[index].operator = "eq";
-      } else if (newType === "role") {
-        updated[index].value = "TEAM_ADMIN";
-        updated[index].operator = "eq";
-      } else if (newType === "number") {
-        updated[index].value = "0";
-        updated[index].operator = "gte";
+      if (newType === 'boolean') {
+        updated[index].value = 'true';
+        updated[index].operator = 'eq';
+      } else if (newType === 'role') {
+        updated[index].value = 'TEAM_ADMIN';
+        updated[index].operator = 'eq';
+      } else if (newType === 'number') {
+        updated[index].value = '0';
+        updated[index].operator = 'gte';
       } else {
         // string
-        updated[index].value = "";
-        updated[index].operator = "eq";
+        updated[index].value = '';
+        updated[index].operator = 'eq';
       }
     }
 
@@ -181,7 +181,7 @@ export const SegmentDetailPage = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button
-            onClick={() => navigate("/segments")}
+            onClick={() => navigate('/segments')}
             className="p-1.5 rounded-md text-text-muted hover:text-text-primary hover:bg-surface-inset transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />
@@ -284,7 +284,7 @@ export const SegmentDetailPage = () => {
                   <select
                     value={condition.attribute}
                     onChange={(e) =>
-                      updateCondition(index, "attribute", e.target.value)
+                      updateCondition(index, 'attribute', e.target.value)
                     }
                     className="px-3 py-1.5 rounded-lg border border-border-default bg-surface-card text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500/30"
                   >
@@ -297,39 +297,39 @@ export const SegmentDetailPage = () => {
                   <select
                     value={condition.operator}
                     onChange={(e) =>
-                      updateCondition(index, "operator", e.target.value)
+                      updateCondition(index, 'operator', e.target.value)
                     }
                     className="px-3 py-1.5 rounded-lg border border-border-default bg-surface-card text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500/30"
                   >
                     {OPERATORS.filter((op) => {
                       const attrType = ATTRIBUTES.find(
-                        (a) => a.value === condition.attribute,
+                        (a) => a.value === condition.attribute
                       )?.type;
-                      if (attrType === "boolean") {
-                        return op.value === "eq" || op.value === "neq";
+                      if (attrType === 'boolean') {
+                        return op.value === 'eq' || op.value === 'neq';
                       }
-                      if (attrType === "string") {
+                      if (attrType === 'string') {
                         return [
-                          "eq",
-                          "neq",
-                          "in",
-                          "not_in",
-                          "contains",
-                          "not_contains",
-                          "starts_with",
-                          "ends_with",
-                          "regex",
+                          'eq',
+                          'neq',
+                          'in',
+                          'not_in',
+                          'contains',
+                          'not_contains',
+                          'starts_with',
+                          'ends_with',
+                          'regex',
                         ].includes(op.value);
                       }
-                      if (attrType === "role") {
-                        return ["eq", "neq", "in", "not_in"].includes(op.value);
+                      if (attrType === 'role') {
+                        return ['eq', 'neq', 'in', 'not_in'].includes(op.value);
                       }
                       // number type: all except string operators
                       return ![
-                        "contains",
-                        "not_contains",
-                        "starts_with",
-                        "ends_with",
+                        'contains',
+                        'not_contains',
+                        'starts_with',
+                        'ends_with',
                       ].includes(op.value);
                     }).map((op) => (
                       <option key={op.value} value={op.value}>
@@ -339,14 +339,14 @@ export const SegmentDetailPage = () => {
                   </select>
                   {(() => {
                     const attrType = ATTRIBUTES.find(
-                      (a) => a.value === condition.attribute,
+                      (a) => a.value === condition.attribute
                     )?.type;
-                    if (attrType === "boolean") {
+                    if (attrType === 'boolean') {
                       return (
                         <select
                           value={condition.value}
                           onChange={(e) =>
-                            updateCondition(index, "value", e.target.value)
+                            updateCondition(index, 'value', e.target.value)
                           }
                           className="px-3 py-1.5 rounded-lg border border-border-default bg-surface-card text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500/30"
                         >
@@ -355,14 +355,14 @@ export const SegmentDetailPage = () => {
                         </select>
                       );
                     }
-                    if (attrType === "role") {
-                      return condition.operator === "in" ||
-                        condition.operator === "not_in" ? (
+                    if (attrType === 'role') {
+                      return condition.operator === 'in' ||
+                        condition.operator === 'not_in' ? (
                         <input
                           type="text"
                           value={condition.value}
                           onChange={(e) =>
-                            updateCondition(index, "value", e.target.value)
+                            updateCondition(index, 'value', e.target.value)
                           }
                           placeholder="TEAM_ADMIN,TEAM_EDITOR"
                           className="flex-1 px-3 py-1.5 rounded-lg border border-border-default bg-surface-card text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500/30"
@@ -371,7 +371,7 @@ export const SegmentDetailPage = () => {
                         <select
                           value={condition.value}
                           onChange={(e) =>
-                            updateCondition(index, "value", e.target.value)
+                            updateCondition(index, 'value', e.target.value)
                           }
                           className="px-3 py-1.5 rounded-lg border border-border-default bg-surface-card text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500/30"
                         >
@@ -383,13 +383,13 @@ export const SegmentDetailPage = () => {
                         </select>
                       );
                     }
-                    if (attrType === "number") {
+                    if (attrType === 'number') {
                       return (
                         <input
                           type="number"
                           value={condition.value}
                           onChange={(e) =>
-                            updateCondition(index, "value", e.target.value)
+                            updateCondition(index, 'value', e.target.value)
                           }
                           className="flex-1 px-3 py-1.5 rounded-lg border border-border-default bg-surface-card text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500/30"
                         />
@@ -401,12 +401,12 @@ export const SegmentDetailPage = () => {
                         type="text"
                         value={condition.value}
                         onChange={(e) =>
-                          updateCondition(index, "value", e.target.value)
+                          updateCondition(index, 'value', e.target.value)
                         }
                         placeholder={
-                          condition.attribute === "email"
-                            ? "user@buurman.io"
-                            : ""
+                          condition.attribute === 'email'
+                            ? 'user@buurman.io'
+                            : ''
                         }
                         className="flex-1 px-3 py-1.5 rounded-lg border border-border-default bg-surface-card text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500/30"
                       />
@@ -419,36 +419,36 @@ export const SegmentDetailPage = () => {
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
-                {condition.operator === "regex" && (
+                {condition.operator === 'regex' && (
                   <div className="ml-3 bg-surface-inset border border-border-subtle rounded-lg p-3 text-xs text-text-muted space-y-1.5">
                     <p className="font-medium text-text-secondary">
                       Regex Help
                     </p>
                     <p>
-                      Matches the <span className="font-medium">entire</span>{" "}
-                      value. Use{" "}
+                      Matches the <span className="font-medium">entire</span>{' '}
+                      value. Use{' '}
                       <code className="bg-surface-card px-1 rounded">
                         .*pattern.*
-                      </code>{" "}
+                      </code>{' '}
                       for partial match.
                     </p>
                     <div className="flex flex-wrap gap-x-4 gap-y-1">
                       <span>
                         <code className="bg-surface-card px-1 rounded">
                           .*@gmail\.com
-                        </code>{" "}
+                        </code>{' '}
                         ends with @gmail.com
                       </span>
                       <span>
                         <code className="bg-surface-card px-1 rounded">
                           (admin|editor)
-                        </code>{" "}
+                        </code>{' '}
                         admin or editor
                       </span>
                       <span>
                         <code className="bg-surface-card px-1 rounded">
                           ^[A-Z].*
-                        </code>{" "}
+                        </code>{' '}
                         starts with uppercase
                       </span>
                     </div>
@@ -481,11 +481,11 @@ export const SegmentDetailPage = () => {
         <div className="flex items-center gap-6">
           <button
             onClick={() =>
-              setExpandedList((prev) => (prev === "teams" ? null : "teams"))
+              setExpandedList((prev) => (prev === 'teams' ? null : 'teams'))
             }
             className="flex items-center gap-2 text-sm text-text-secondary hover:text-text-primary transition-colors"
           >
-            {expandedList === "teams" ? (
+            {expandedList === 'teams' ? (
               <ChevronDown className="h-4 w-4" />
             ) : (
               <ChevronRight className="h-4 w-4" />
@@ -494,17 +494,17 @@ export const SegmentDetailPage = () => {
             <span>
               <span className="font-semibold text-text-primary">
                 {matches?.matchingTeamCount ?? 0}
-              </span>{" "}
+              </span>{' '}
               teams
             </span>
           </button>
           <button
             onClick={() =>
-              setExpandedList((prev) => (prev === "users" ? null : "users"))
+              setExpandedList((prev) => (prev === 'users' ? null : 'users'))
             }
             className="flex items-center gap-2 text-sm text-text-secondary hover:text-text-primary transition-colors"
           >
-            {expandedList === "users" ? (
+            {expandedList === 'users' ? (
               <ChevronDown className="h-4 w-4" />
             ) : (
               <ChevronRight className="h-4 w-4" />
@@ -513,14 +513,14 @@ export const SegmentDetailPage = () => {
             <span>
               <span className="font-semibold text-text-primary">
                 {matches?.matchingUserCount ?? 0}
-              </span>{" "}
+              </span>{' '}
               users
             </span>
           </button>
         </div>
 
         {/* Teams list */}
-        {expandedList === "teams" && (
+        {expandedList === 'teams' && (
           <div className="mt-3">
             {teamsLoading ? (
               <div className="flex items-center gap-2 text-xs text-text-muted py-4 justify-center">
@@ -563,11 +563,11 @@ export const SegmentDetailPage = () => {
                           <span
                             className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium ${
                               team.demo
-                                ? "bg-green-100 text-green-700"
-                                : "bg-gray-100 text-gray-500"
+                                ? 'bg-green-100 text-green-700'
+                                : 'bg-gray-100 text-gray-500'
                             }`}
                           >
-                            {team.demo ? "demo" : "live"}
+                            {team.demo ? 'demo' : 'live'}
                           </span>
                         </td>
                         <td className="py-2 text-text-muted">
@@ -587,7 +587,7 @@ export const SegmentDetailPage = () => {
         )}
 
         {/* Users list */}
-        {expandedList === "users" && (
+        {expandedList === 'users' && (
           <div className="mt-3">
             {usersLoading ? (
               <div className="flex items-center gap-2 text-xs text-text-muted py-4 justify-center">
@@ -624,16 +624,16 @@ export const SegmentDetailPage = () => {
                         <td className="py-2 text-text-secondary">
                           {[user.firstName, user.lastName]
                             .filter(Boolean)
-                            .join(" ") || "-"}
+                            .join(' ') || '-'}
                         </td>
                         <td className="py-2">
                           <span
                             className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium ${
-                              user.role === "TEAM_ADMIN"
-                                ? "bg-green-100 text-green-700"
-                                : user.role === "TEAM_EDITOR"
-                                  ? "bg-blue-100 text-blue-700"
-                                  : "bg-gray-100 text-gray-500"
+                              user.role === 'TEAM_ADMIN'
+                                ? 'bg-green-100 text-green-700'
+                                : user.role === 'TEAM_EDITOR'
+                                  ? 'bg-blue-100 text-blue-700'
+                                  : 'bg-gray-100 text-gray-500'
                             }`}
                           >
                             {user.role}

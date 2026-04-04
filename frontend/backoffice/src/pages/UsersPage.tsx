@@ -1,15 +1,15 @@
-import { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { Search, Eye, UserX, UserCheck } from "lucide-react";
-import { RefreshButton } from "@buurman/ui";
-import { SortableHeader } from "../components/SortableHeader";
-import { formatDate } from "../utils/dateFormatting";
-import { Pagination, ConfirmDialog } from "@buurman/ui";
-import { useUsers, useDisableUser, useEnableUser } from "../hooks/useUsers";
-import { usePagination } from "../hooks/usePagination";
-import { LoadingSpinner } from "../components/LoadingSpinner";
-import { AsyncSelect, type AsyncSelectOption } from "../components/AsyncSelect";
-import { useTeamSearch } from "../hooks/useTeams";
+import { useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Search, Eye, UserX, UserCheck } from 'lucide-react';
+import { RefreshButton } from '@buurman/ui';
+import { SortableHeader } from '../components/SortableHeader';
+import { formatDate } from '../utils/dateFormatting';
+import { Pagination, ConfirmDialog } from '@buurman/ui';
+import { useUsers, useDisableUser, useEnableUser } from '../hooks/useUsers';
+import { usePagination } from '../hooks/usePagination';
+import { LoadingSpinner } from '../components/LoadingSpinner';
+import { AsyncSelect, type AsyncSelectOption } from '../components/AsyncSelect';
+import { useTeamSearch } from '../hooks/useTeams';
 
 export const UsersPage = () => {
   const navigate = useNavigate();
@@ -21,42 +21,42 @@ export const UsersPage = () => {
     handlePageChange,
     handleSizeChange,
     handleSortChange,
-  } = usePagination({ defaultSort: "createdAt" });
+  } = usePagination({ defaultSort: 'createdAt' });
   const [searchParams, setSearchParams] = useSearchParams();
   const teamSearch = useTeamSearch();
-  const [search, setSearch] = useState("");
-  const [searchInput, setSearchInput] = useState("");
+  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState('');
   const [selectedTeams, setSelectedTeams] = useState<AsyncSelectOption[]>(
     () => {
-      const teamParam = searchParams.get("team") ?? "";
+      const teamParam = searchParams.get('team') ?? '';
       if (!teamParam) {
         return [];
       }
       return teamParam
-        .split(",")
+        .split(',')
         .filter(Boolean)
         .map((id) => ({ value: id, label: id }));
-    },
+    }
   );
   const [actionTarget, setActionTarget] = useState<{
     identifier: string;
-    action: "disable" | "enable";
+    action: 'disable' | 'enable';
   } | null>(null);
 
   const handleTeamFilterChange = (options: AsyncSelectOption[]) => {
     setSelectedTeams(options);
     const newParams = new URLSearchParams(searchParams);
     if (options.length > 0) {
-      newParams.set("team", options.map((o) => o.value).join(","));
+      newParams.set('team', options.map((o) => o.value).join(','));
     } else {
-      newParams.delete("team");
+      newParams.delete('team');
     }
     setSearchParams(newParams, { replace: true });
     handlePageChange(0);
   };
 
   const teamFilterValue =
-    selectedTeams.map((t) => t.value).join(",") || undefined;
+    selectedTeams.map((t) => t.value).join(',') || undefined;
 
   const { data, isLoading, isFetching, error, refetch } = useUsers({
     page,
@@ -80,7 +80,7 @@ export const UsersPage = () => {
       return;
     }
     const mutation =
-      actionTarget.action === "disable" ? disableUser : enableUser;
+      actionTarget.action === 'disable' ? disableUser : enableUser;
     mutation.mutate(actionTarget.identifier, {
       onSuccess: () => setActionTarget(null),
     });
@@ -106,9 +106,9 @@ export const UsersPage = () => {
       <div
         className="mb-6"
         style={{
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "space-between",
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
         }}
       >
         <div>
@@ -216,8 +216,8 @@ export const UsersPage = () => {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <div
-                          className={`h-2 w-2 rounded-full flex-shrink-0 ${user.online ? "bg-emerald-500" : "bg-slate-300"}`}
-                          title={user.online ? "Online" : "Offline"}
+                          className={`h-2 w-2 rounded-full flex-shrink-0 ${user.online ? 'bg-emerald-500' : 'bg-slate-300'}`}
+                          title={user.online ? 'Online' : 'Offline'}
                         />
                         <span className="text-sm text-text-secondary">
                           {user.firstName} {user.lastName}
@@ -226,7 +226,7 @@ export const UsersPage = () => {
                     </td>
                     <td className="px-4 py-3">
                       <span className="text-sm text-text-secondary">
-                        {user.phone || "-"}
+                        {user.phone || '-'}
                       </span>
                     </td>
                     <td className="px-4 py-3">
@@ -269,10 +269,10 @@ export const UsersPage = () => {
                     <td className="px-4 py-3 text-right">
                       <div
                         style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "flex-end",
-                          gap: "0.25rem",
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'flex-end',
+                          gap: '0.25rem',
                         }}
                       >
                         <button
@@ -287,7 +287,7 @@ export const UsersPage = () => {
                             onClick={() =>
                               setActionTarget({
                                 identifier: user.identifier,
-                                action: "enable",
+                                action: 'enable',
                               })
                             }
                             className="p-2 rounded-lg text-text-secondary hover:text-success-text hover:bg-success-bg transition-colors"
@@ -300,7 +300,7 @@ export const UsersPage = () => {
                             onClick={() =>
                               setActionTarget({
                                 identifier: user.identifier,
-                                action: "disable",
+                                action: 'disable',
                               })
                             }
                             className="p-2 rounded-lg text-text-secondary hover:text-error-text hover:bg-error-bg transition-colors"
@@ -337,18 +337,18 @@ export const UsersPage = () => {
       {actionTarget && (
         <ConfirmDialog
           title={
-            actionTarget.action === "disable" ? "Disable User" : "Enable User"
+            actionTarget.action === 'disable' ? 'Disable User' : 'Enable User'
           }
           message={
-            actionTarget.action === "disable"
-              ? "Are you sure you want to disable this user? They will no longer be able to log in."
-              : "Are you sure you want to enable this user? They will be able to log in again."
+            actionTarget.action === 'disable'
+              ? 'Are you sure you want to disable this user? They will no longer be able to log in.'
+              : 'Are you sure you want to enable this user? They will be able to log in again.'
           }
           confirmLabel={
-            actionTarget.action === "disable" ? "Disable" : "Enable"
+            actionTarget.action === 'disable' ? 'Disable' : 'Enable'
           }
           cancelLabel="Cancel"
-          variant={actionTarget.action === "disable" ? "danger" : "default"}
+          variant={actionTarget.action === 'disable' ? 'danger' : 'default'}
           isLoading={disableUser.isPending || enableUser.isPending}
           onConfirm={handleAction}
           onCancel={() => setActionTarget(null)}

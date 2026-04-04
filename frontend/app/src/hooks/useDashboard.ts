@@ -5,10 +5,11 @@ import {
   AuditLogFilters,
 } from '@/api/dashboard';
 import type { PageParams } from '@/types/common';
+import { queryKeys } from '../lib/queryKeys';
 
 export const useDashboardStats = () => {
   return useQuery({
-    queryKey: ['dashboard', 'stats'],
+    queryKey: queryKeys.dashboard.stats(),
     queryFn: getDashboardStats,
     refetchInterval: 60000, // Refetch every minute
   });
@@ -16,7 +17,7 @@ export const useDashboardStats = () => {
 
 export const useAllAuditLogs = (filters?: AuditLogFilters & PageParams) => {
   return useQuery({
-    queryKey: ['auditLogs', filters],
+    queryKey: queryKeys.dashboard.auditLogs(filters),
     queryFn: () => getAllAuditLogs(filters),
     placeholderData: keepPreviousData,
     refetchInterval: 30000, // Refetch every 30 seconds

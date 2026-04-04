@@ -1,5 +1,5 @@
 import { MapPin } from 'lucide-react';
-import { RichTextDisplay } from '@/components/common/RichTextDisplay';
+import { RichTextDisplay } from '@buurman/ui';
 import type { RentRegulationRegionResponse } from '@/types/rentRegulation';
 
 interface RegionSelectorProps {

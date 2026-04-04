@@ -1,9 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { loggersApi } from "../api/loggers";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { loggersApi } from '../api/loggers';
 
 export const useLoggers = () => {
   return useQuery({
-    queryKey: ["loggers"],
+    queryKey: ['loggers'],
     queryFn: () => loggersApi.list().then((res) => res.data),
   });
 };
@@ -19,7 +19,7 @@ export const useSetLogLevel = () => {
       level: string | null;
     }) => loggersApi.setLevel(loggerName, level),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["loggers"] });
+      queryClient.invalidateQueries({ queryKey: ['loggers'] });
     },
   });
 };
@@ -29,7 +29,7 @@ export const useResetAllLogLevels = () => {
   return useMutation({
     mutationFn: () => loggersApi.resetAll(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["loggers"] });
+      queryClient.invalidateQueries({ queryKey: ['loggers'] });
     },
   });
 };

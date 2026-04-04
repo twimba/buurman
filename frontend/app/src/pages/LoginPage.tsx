@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   LogIn,
@@ -15,19 +15,24 @@ import {
 } from 'lucide-react';
 import { PublicBroadcastBanner } from '../components/common/BroadcastBanner';
 
-const DEMO_EMAIL = 'demo.user@demo.buurman.io';
-const DEMO_PASSWORD = 'buurman';
+import { env } from '../config/env';
+
+const DEMO_EMAIL = env('VITE_DEMO_EMAIL') || 'demo.user@demo.buurman.io';
+const DEMO_PASSWORD = env('VITE_DEMO_PASSWORD') || '';
 
 const sanitizeRedirect = (url: string | null): string | null => {
-  if (
-    !url ||
-    !url.startsWith('/') ||
-    url.startsWith('//') ||
-    url.includes('@')
-  ) {
+  if (!url) {
     return null;
   }
-  return url;
+  try {
+    const resolved = new URL(url, window.location.origin);
+    if (resolved.origin !== window.location.origin) {
+      return null;
+    }
+    return resolved.pathname + resolved.search + resolved.hash;
+  } catch {
+    return null;
+  }
 };
 
 const LoginPage: React.FC = () => {

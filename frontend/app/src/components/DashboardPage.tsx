@@ -5,8 +5,7 @@ import { usePayments, useMarkPaymentAsPaid } from '@/hooks/usePaymentHooks';
 import { usePendingExtensions } from '@/hooks/useContractExtensionHooks';
 import * as extensionsApi from '@/api/contractExtensions';
 import { useTeam } from '@/context/TeamContext';
-import { useToast } from '@/context/ToastContext';
-import { LoadingSpinner } from './LoadingSpinner';
+import { Skeleton, useToast } from '@buurman/ui';
 import { MetricHint } from '@/components/common/MetricHint';
 import { ErrorMessage } from './ErrorMessage';
 import { PendingInvitationsPanel } from './dashboard/PendingInvitationsPanel';
@@ -23,13 +22,12 @@ import {
   Clock,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { formatDistanceToNow } from 'date-fns';
 import { useFormatDate } from '@/hooks/useFormatDate';
 
 export const DashboardPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { formatDate } = useFormatDate();
+  const { formatDate, formatRelative } = useFormatDate();
   const { canEditData } = useTeam();
   const { showToast } = useToast();
   const {
@@ -122,8 +120,43 @@ export const DashboardPage = () => {
 
   if (statsLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <LoadingSpinner />
+      <div className="space-y-8">
+        {/* Summary cards skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="bg-surface-card rounded-lg border border-border-default p-6 space-y-3"
+            >
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-4 w-28" />
+                <Skeleton className="h-8 w-8 rounded" />
+              </div>
+              <Skeleton className="h-8 w-20" />
+              <Skeleton className="h-4 w-36" />
+            </div>
+          ))}
+        </div>
+        {/* Payments table skeleton */}
+        <div className="bg-surface-card rounded-lg border border-border-default p-6 space-y-4">
+          <Skeleton className="h-6 w-48" />
+          <div className="space-y-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-12 w-full rounded" />
+            ))}
+          </div>
+        </div>
+        {/* Charts skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-surface-card rounded-lg border border-border-default p-6 space-y-4">
+            <Skeleton className="h-6 w-40" />
+            <Skeleton className="h-48 w-full rounded" />
+          </div>
+          <div className="bg-surface-card rounded-lg border border-border-default p-6 space-y-4">
+            <Skeleton className="h-6 w-40" />
+            <Skeleton className="h-48 w-full rounded" />
+          </div>
+        </div>
       </div>
     );
   }
@@ -382,8 +415,10 @@ export const DashboardPage = () => {
         </div>
 
         {paymentsLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <LoadingSpinner />
+          <div className="space-y-3 py-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className="h-12 w-full rounded" />
+            ))}
           </div>
         ) : unpaidPayments.length > 0 ? (
           <div className="divide-y divide-border-default">
@@ -428,9 +463,10 @@ export const DashboardPage = () => {
                         {isOverdue && (
                           <span className="text-error-text ml-1">
                             (
-                            {formatDistanceToNow(new Date(payment.dueDate), {
-                              addSuffix: false,
-                            })}{' '}
+                            {formatRelative(payment.dueDate).replace(
+                              / ago$/,
+                              ''
+                            )}{' '}
                             overdue)
                           </span>
                         )}
@@ -482,3 +518,5 @@ export const DashboardPage = () => {
     </div>
   );
 };
+
+DashboardPage.displayName = 'DashboardPage';

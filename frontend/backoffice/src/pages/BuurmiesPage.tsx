@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo } from 'react';
 import {
   Search,
   UserPlus,
@@ -11,10 +11,10 @@ import {
   ShieldCheck,
   ShieldOff,
   XCircle,
-} from "lucide-react";
-import { RefreshButton, Pagination, ConfirmDialog, Button } from "@buurman/ui";
-import { useAuth } from "../contexts/AuthContext";
-import { formatDate, formatDateTime } from "../utils/dateFormatting";
+} from 'lucide-react';
+import { RefreshButton, Pagination, ConfirmDialog, Button } from '@buurman/ui';
+import { useAuth } from '../contexts/AuthContext';
+import { formatDate, formatDateTime } from '../utils/dateFormatting';
 import {
   useBuurmies,
   useDisableBuurmy,
@@ -26,23 +26,23 @@ import {
   useUnverifyBuurmy,
   useRemovePasswordReset,
   useRemoveProfileReset,
-} from "../hooks/useBuurmies";
-import { usePagination } from "../hooks/usePagination";
-import { LoadingSpinner } from "../components/LoadingSpinner";
-import { CreateBuurmyModal } from "../components/CreateBuurmyModal";
-import { SortableHeader } from "../components/SortableHeader";
-import type { Buurmy } from "../types";
+} from '../hooks/useBuurmies';
+import { usePagination } from '../hooks/usePagination';
+import { LoadingSpinner } from '../components/LoadingSpinner';
+import { CreateBuurmyModal } from '../components/CreateBuurmyModal';
+import { SortableHeader } from '../components/SortableHeader';
+import type { Buurmy } from '../types';
 
 type ActionType =
-  | "disable"
-  | "enable"
-  | "delete"
-  | "forcePassword"
-  | "forceProfile"
-  | "verify"
-  | "unverify"
-  | "removePasswordReset"
-  | "removeProfileReset";
+  | 'disable'
+  | 'enable'
+  | 'delete'
+  | 'forcePassword'
+  | 'forceProfile'
+  | 'verify'
+  | 'unverify'
+  | 'removePasswordReset'
+  | 'removeProfileReset';
 
 interface ActionTarget {
   buurmy: Buurmy;
@@ -55,82 +55,82 @@ const ACTION_CONFIG: Record<
     title: string;
     message: (email: string) => string;
     confirmLabel: string;
-    variant: "danger" | "default";
+    variant: 'danger' | 'default';
   }
 > = {
   disable: {
-    title: "Disable Buurmy",
+    title: 'Disable Buurmy',
     message: (email) =>
       `Are you sure you want to disable "${email}"? They will not be able to log in.`,
-    confirmLabel: "Disable",
-    variant: "danger",
+    confirmLabel: 'Disable',
+    variant: 'danger',
   },
   enable: {
-    title: "Enable Buurmy",
+    title: 'Enable Buurmy',
     message: (email) =>
       `Are you sure you want to enable "${email}"? They will be able to log in again.`,
-    confirmLabel: "Enable",
-    variant: "default",
+    confirmLabel: 'Enable',
+    variant: 'default',
   },
   delete: {
-    title: "Delete Buurmy",
+    title: 'Delete Buurmy',
     message: (email) =>
       `Are you sure you want to permanently delete "${email}"? This action cannot be undone and the user will lose all access.`,
-    confirmLabel: "Delete permanently",
-    variant: "danger",
+    confirmLabel: 'Delete permanently',
+    variant: 'danger',
   },
   forcePassword: {
-    title: "Reset Password",
+    title: 'Reset Password',
     message: (email) =>
       `"${email}" will be required to set a new password on their next login.`,
-    confirmLabel: "Reset Password",
-    variant: "default",
+    confirmLabel: 'Reset Password',
+    variant: 'default',
   },
   forceProfile: {
-    title: "Reset Profile",
+    title: 'Reset Profile',
     message: (email) =>
       `"${email}" will be required to update their profile on their next login.`,
-    confirmLabel: "Reset Profile",
-    variant: "default",
+    confirmLabel: 'Reset Profile',
+    variant: 'default',
   },
   verify: {
-    title: "Verify Email",
+    title: 'Verify Email',
     message: (email) => `Mark "${email}" as email-verified?`,
-    confirmLabel: "Verify",
-    variant: "default",
+    confirmLabel: 'Verify',
+    variant: 'default',
   },
   unverify: {
-    title: "Unverify Email",
+    title: 'Unverify Email',
     message: (email) =>
       `Mark "${email}" as email-unverified? They may need to re-verify.`,
-    confirmLabel: "Unverify",
-    variant: "danger",
+    confirmLabel: 'Unverify',
+    variant: 'danger',
   },
   removePasswordReset: {
-    title: "Remove Password Reset",
+    title: 'Remove Password Reset',
     message: (email) =>
       `Remove the password reset requirement for "${email}"? They will no longer be prompted to change their password on next login.`,
-    confirmLabel: "Remove",
-    variant: "default",
+    confirmLabel: 'Remove',
+    variant: 'default',
   },
   removeProfileReset: {
-    title: "Remove Profile Reset",
+    title: 'Remove Profile Reset',
     message: (email) =>
       `Remove the profile update requirement for "${email}"? They will no longer be prompted to update their profile on next login.`,
-    confirmLabel: "Remove",
-    variant: "default",
+    confirmLabel: 'Remove',
+    variant: 'default',
   },
 };
 
 const TH_CLASS =
-  "text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary";
+  'text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-text-secondary';
 
 const ACTION_LABELS: Record<string, string> = {
-  UPDATE_PASSWORD: "Password Reset",
-  UPDATE_PROFILE: "Profile Update",
-  VERIFY_EMAIL: "Verify Email",
-  CONFIGURE_TOTP: "Configure OTP",
-  UPDATE_EMAIL: "Update Email",
+  UPDATE_PASSWORD: 'Password Reset',
+  UPDATE_PROFILE: 'Profile Update',
+  VERIFY_EMAIL: 'Verify Email',
+  CONFIGURE_TOTP: 'Configure OTP',
+  UPDATE_EMAIL: 'Update Email',
 };
 
 export const BuurmiesPage = () => {
@@ -144,8 +144,8 @@ export const BuurmiesPage = () => {
     handlePageChange,
     handleSizeChange,
     handleSortChange,
-  } = usePagination({ defaultSort: "email", defaultDirection: "asc" });
-  const [search, setSearch] = useState("");
+  } = usePagination({ defaultSort: 'email', defaultDirection: 'asc' });
+  const [search, setSearch] = useState('');
   const [actionTarget, setActionTarget] = useState<ActionTarget | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
@@ -210,7 +210,7 @@ export const BuurmiesPage = () => {
         b.email?.toLowerCase().includes(q) ||
         b.username?.toLowerCase().includes(q) ||
         b.firstName?.toLowerCase().includes(q) ||
-        b.lastName?.toLowerCase().includes(q),
+        b.lastName?.toLowerCase().includes(q)
     );
   }, [data?.content, search]);
 
@@ -232,9 +232,9 @@ export const BuurmiesPage = () => {
       <div
         className="mb-6"
         style={{
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "space-between",
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
         }}
       >
         <div>
@@ -243,7 +243,7 @@ export const BuurmiesPage = () => {
             Manage users registered in the Keycloak backoffice realm.
           </p>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <RefreshButton onClick={() => refetch()} isRefreshing={isFetching} />
           <Button
             variant="primary"
@@ -366,7 +366,7 @@ export const BuurmiesPage = () => {
         <ConfirmDialog
           title={ACTION_CONFIG[actionTarget.action].title}
           message={ACTION_CONFIG[actionTarget.action].message(
-            actionTarget.buurmy.email,
+            actionTarget.buurmy.email
           )}
           confirmLabel={ACTION_CONFIG[actionTarget.action].confirmLabel}
           cancelLabel="Cancel"
@@ -404,14 +404,14 @@ const BuurmyRow = ({
 }: BuurmyRowProps) => {
   const isOpen = openMenuId === buurmy.id;
   const [menuPos, setMenuPos] = useState<{ top: number; right: number } | null>(
-    null,
+    null
   );
 
   const handleToggle = (id: string) => {
     if (openMenuId !== id) {
       // Opening — snapshot the button position before toggling
       const btn = document.querySelector<HTMLElement>(
-        `[data-menu-trigger="${id}"]`,
+        `[data-menu-trigger="${id}"]`
       );
       if (btn) {
         const rect = btn.getBoundingClientRect();
@@ -463,12 +463,12 @@ const BuurmyRow = ({
       </td>
       <td className="px-4 py-3">
         <span className="text-sm text-text-secondary">
-          {buurmy.createdAt ? formatDate(buurmy.createdAt) : "-"}
+          {buurmy.createdAt ? formatDate(buurmy.createdAt) : '-'}
         </span>
       </td>
       <td className="px-4 py-3">
         <span className="text-sm text-text-secondary">
-          {buurmy.lastLogin ? formatDateTime(buurmy.lastLogin) : "Never"}
+          {buurmy.lastLogin ? formatDateTime(buurmy.lastLogin) : 'Never'}
         </span>
       </td>
       <td className="px-4 py-3">
@@ -505,7 +505,7 @@ const BuurmyRow = ({
             <div
               role="menu"
               style={{
-                position: "fixed",
+                position: 'fixed',
                 top: menuPos.top,
                 right: menuPos.right,
               }}
@@ -516,40 +516,40 @@ const BuurmyRow = ({
                   <MenuButton
                     icon={<UserX className="h-3.5 w-3.5" />}
                     label="Disable"
-                    onClick={() => onAction("disable")}
+                    onClick={() => onAction('disable')}
                     variant="danger"
                   />
                 ) : (
                   <MenuButton
                     icon={<UserCheck className="h-3.5 w-3.5" />}
                     label="Enable"
-                    onClick={() => onAction("enable")}
+                    onClick={() => onAction('enable')}
                     variant="success"
                   />
                 ))}
               <MenuButton
                 icon={<KeyRound className="h-3.5 w-3.5" />}
                 label="Reset Password"
-                onClick={() => onAction("forcePassword")}
+                onClick={() => onAction('forcePassword')}
               />
               <MenuButton
                 icon={<UserPen className="h-3.5 w-3.5" />}
                 label="Reset Profile"
-                onClick={() => onAction("forceProfile")}
+                onClick={() => onAction('forceProfile')}
               />
-              {buurmy.requiredActions?.includes("UPDATE_PASSWORD") && (
+              {buurmy.requiredActions?.includes('UPDATE_PASSWORD') && (
                 <MenuButton
                   icon={<XCircle className="h-3.5 w-3.5" />}
                   label="Clear Password Reset"
-                  onClick={() => onAction("removePasswordReset")}
+                  onClick={() => onAction('removePasswordReset')}
                   variant="success"
                 />
               )}
-              {buurmy.requiredActions?.includes("UPDATE_PROFILE") && (
+              {buurmy.requiredActions?.includes('UPDATE_PROFILE') && (
                 <MenuButton
                   icon={<XCircle className="h-3.5 w-3.5" />}
                   label="Clear Profile Reset"
-                  onClick={() => onAction("removeProfileReset")}
+                  onClick={() => onAction('removeProfileReset')}
                   variant="success"
                 />
               )}
@@ -557,14 +557,14 @@ const BuurmyRow = ({
                 <MenuButton
                   icon={<ShieldOff className="h-3.5 w-3.5" />}
                   label="Unverify Email"
-                  onClick={() => onAction("unverify")}
+                  onClick={() => onAction('unverify')}
                   variant="danger"
                 />
               ) : (
                 <MenuButton
                   icon={<ShieldCheck className="h-3.5 w-3.5" />}
                   label="Verify Email"
-                  onClick={() => onAction("verify")}
+                  onClick={() => onAction('verify')}
                   variant="success"
                 />
               )}
@@ -574,7 +574,7 @@ const BuurmyRow = ({
                   <MenuButton
                     icon={<Trash2 className="h-3.5 w-3.5" />}
                     label="Delete"
-                    onClick={() => onAction("delete")}
+                    onClick={() => onAction('delete')}
                     variant="danger"
                   />
                 </>
@@ -593,19 +593,19 @@ interface MenuButtonProps {
   icon: React.ReactNode;
   label: string;
   onClick: () => void;
-  variant?: "default" | "danger" | "success";
+  variant?: 'default' | 'danger' | 'success';
 }
 
 const MenuButton = ({
   icon,
   label,
   onClick,
-  variant = "default",
+  variant = 'default',
 }: MenuButtonProps) => {
   const colorClasses = {
-    default: "text-text-secondary hover:bg-surface-inset",
-    danger: "text-error-text hover:bg-error-bg",
-    success: "text-success-text hover:bg-success-bg",
+    default: 'text-text-secondary hover:bg-surface-inset',
+    danger: 'text-error-text hover:bg-error-bg',
+    success: 'text-success-text hover:bg-success-bg',
   };
 
   return (
