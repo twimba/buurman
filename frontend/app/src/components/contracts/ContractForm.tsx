@@ -13,7 +13,7 @@ import {
   RentComponentType,
 } from '@/types/contract';
 import { CreateContactRequest } from '@/types/contact';
-import { RichTextEditor } from '@/components/common/RichTextEditor';
+import { RichTextEditor } from '@buurman/ui';
 import { MoneyInput } from '@/components/common/MoneyInput';
 import { PropertySelector } from '@/components/common/PropertySelector';
 import { ContactSelector } from '@/components/common/ContactSelector';

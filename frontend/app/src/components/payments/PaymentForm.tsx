@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { X, Calendar, Save, Info } from 'lucide-react';
 import { PaymentResponse, CreatePaymentRequest } from '@/types/payment';
 import { MoneyInput } from '@/components/common/MoneyInput';
-import { RichTextEditor } from '@/components/common/RichTextEditor';
+import { RichTextEditor } from '@buurman/ui';
 import { ContactSelector } from '@/components/common/ContactSelector';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 import { useCurrencies, getFractionalDigits } from '@/hooks/useCurrencies';

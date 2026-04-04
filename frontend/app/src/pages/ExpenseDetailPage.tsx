@@ -11,7 +11,7 @@ import {
   useDeleteExpenseDocument,
 } from '@/hooks/useExpenseHooks';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { RichTextDisplay } from '@/components/common/RichTextDisplay';
+import { RichTextDisplay } from '@buurman/ui';
 import { formatAuditValue } from '@/utils/formatAuditValue';
 import { ExpenseCategoryBadge } from '@/components/expenses/ExpenseCategoryBadge';
 import { ExpenseForm } from '@/components/expenses/ExpenseForm';

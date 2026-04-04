@@ -1,5 +1,5 @@
 import { Button } from '@buurman/ui';
-import { RichTextDisplay } from '@/components/common/RichTextDisplay';
+import { RichTextDisplay } from '@buurman/ui';
 import {
   OccupancyPeriodResponse,
   OCCUPANCY_TYPE_LABELS,

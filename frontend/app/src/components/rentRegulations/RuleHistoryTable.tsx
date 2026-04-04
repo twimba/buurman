@@ -1,5 +1,5 @@
 import { ExternalLink } from 'lucide-react';
-import { RichTextDisplay } from '@/components/common/RichTextDisplay';
+import { RichTextDisplay } from '@buurman/ui';
 import type { RentRegulationRuleResponse } from '@/types/rentRegulation';
 
 interface RuleHistoryTableProps {

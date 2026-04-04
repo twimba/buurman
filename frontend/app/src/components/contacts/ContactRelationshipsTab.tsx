@@ -15,7 +15,6 @@ import {
 } from '@/types/contact';
 import { useTeam } from '@/context/TeamContext';
 import { ContactSelector } from '@/components/common/ContactSelector';
-import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import {
   Button,
   ConfirmDialog,
@@ -23,9 +22,10 @@ import {
   FormField,
   LoadingSpinner,
   ModalWrapper,
+  RichTextDisplay,
+  RichTextEditor,
   Select,
 } from '@buurman/ui';
-import { RichTextEditor } from '@/components/common/RichTextEditor';
 import { Avatar } from '@/components/common/Avatar';
 import { Plus, Edit, Trash2, Users, ShieldOff } from 'lucide-react';
 import { useFormatDate } from '@/hooks/useFormatDate';

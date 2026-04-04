@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { X, RefreshCw, Loader2, Sparkles } from "lucide-react";
-import { RichTextEditor } from "./RichTextEditor";
+import { RichTextEditor } from "@buurman/ui";
 import {
   useCreateRegistrationInvitation,
   useSuggestCode,

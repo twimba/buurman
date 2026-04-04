@@ -29,7 +29,7 @@ import { GenerateRentChangeModal } from './GenerateRentChangeModal';
 import { COUNTRY_OFFICIAL_LANGUAGES } from './GenerateDocumentsModal';
 import { DocumentPreviewModal } from '@/components/documents/DocumentPreviewModal';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { RichTextDisplay } from '@/components/common/RichTextDisplay';
+import { RichTextDisplay } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import type { DocumentResponse } from '@/types/property';
 

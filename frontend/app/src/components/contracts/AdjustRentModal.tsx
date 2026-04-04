@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { ModalWrapper } from '@buurman/ui';
 import { MoneyInput } from '@/components/common/MoneyInput';
-import { RichTextEditor } from '@/components/common/RichTextEditor';
+import { RichTextEditor } from '@buurman/ui';
 import {
   RentComponentFormItem,
   RentComponentResponseItem,

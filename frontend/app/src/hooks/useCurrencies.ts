@@ -1,9 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { getCurrencies, CurrencyInfo } from '../api/reference';
+import { queryKeys } from '../lib/queryKeys';
 
 export const useCurrencies = () => {
   return useQuery({
-    queryKey: ['currencies'],
+    queryKey: queryKeys.currencies.all(),
     queryFn: getCurrencies,
     staleTime: Infinity,
   });

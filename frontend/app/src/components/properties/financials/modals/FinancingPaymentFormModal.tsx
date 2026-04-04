@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { X } from 'lucide-react';
 import { MoneyInput } from '@/components/common/MoneyInput';
-import { RichTextEditor } from '@/components/common/RichTextEditor';
+import { RichTextEditor } from '@buurman/ui';
 import { DocumentList } from '@/components/properties/DocumentList';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 import {
@@ -63,7 +63,7 @@ export const FinancingPaymentFormModal = ({
   >({
     paymentDate:
       existing?.paymentDate ?? new Date().toISOString().split('T')[0],
-    totalAmount: existing?.totalAmount ?? (undefined as unknown as number),
+    totalAmount: existing?.totalAmount as number | undefined,
     principalAmount: existing?.principalAmount ?? undefined,
     interestAmount: existing?.interestAmount ?? undefined,
     escrowAmount: existing?.escrowAmount ?? undefined,

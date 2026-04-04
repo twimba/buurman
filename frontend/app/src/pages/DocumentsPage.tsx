@@ -31,7 +31,7 @@ import { DocumentResponse } from '@/types/property';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useDocumentSelection } from '@/hooks/useDocumentSelection';
 import { useTeam } from '@/context/TeamContext';
-import { RichTextDisplay } from '@/components/ui/RichTextDisplay';
+import { RichTextDisplay } from '@buurman/ui';
 
 export const DocumentsPage = () => {
   const navigate = useNavigate();

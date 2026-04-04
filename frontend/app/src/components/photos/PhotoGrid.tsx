@@ -17,7 +17,7 @@ import { PhotoResponse } from '@/types/property';
 import { LoadingSpinner } from '@buurman/ui';
 import { ErrorMessage } from '../ErrorMessage';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { RichTextDisplay } from '../ui/RichTextDisplay';
+import { RichTextDisplay } from '@buurman/ui';
 
 interface PhotoGridProps {
   photos: PhotoResponse[];

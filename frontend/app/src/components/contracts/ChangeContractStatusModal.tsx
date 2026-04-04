@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ContractStatus } from '@/types/contract';
 import { X } from 'lucide-react';
-import { RichTextEditor } from '@/components/common/RichTextEditor';
+import { RichTextEditor } from '@buurman/ui';
 
 interface ChangeContractStatusModalProps {
   currentStatus: ContractStatus;

@@ -14,6 +14,7 @@ import type {
 } from '@/generated/models';
 import { useToast } from '@/context/ToastContext';
 import { getErrorMessage } from '@/utils/errorMessages';
+import { queryKeys } from '../lib/queryKeys';
 
 export const useUploadImportFile = () => {
   const { showToast } = useToast();
@@ -47,8 +48,8 @@ export const useExecuteImport = () => {
   return useMutation({
     mutationFn: (request: ImportExecuteRequest) => executeImport(request),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['contacts'] });
-      queryClient.invalidateQueries({ queryKey: ['imports'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.contacts.all() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.imports.all() });
       showToast(
         `Successfully imported ${data.importedCount} contacts`,
         'success'
@@ -62,14 +63,14 @@ export const useExecuteImport = () => {
 
 export const useImports = (page: number, size: number) => {
   return useQuery({
-    queryKey: ['imports', page, size],
+    queryKey: queryKeys.imports.all(page, size),
     queryFn: () => listImports({ page, size }),
   });
 };
 
 export const useImportDetail = (identifier: string | null) => {
   return useQuery({
-    queryKey: ['imports', identifier],
+    queryKey: queryKeys.imports.detail(identifier),
     queryFn: () => getImport(identifier ?? ''),
     enabled: !!identifier,
   });
@@ -81,8 +82,8 @@ export const useRevertImport = () => {
   return useMutation({
     mutationFn: (identifier: string) => revertImport(identifier),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['imports'] });
-      queryClient.invalidateQueries({ queryKey: ['contacts'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.imports.all() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.contacts.all() });
       showToast(
         `Reverted import: ${data.deletedContactCount} contacts deleted`,
         'info'

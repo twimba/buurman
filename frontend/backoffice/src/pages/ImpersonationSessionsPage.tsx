@@ -15,7 +15,7 @@ import {
   useTerminateImpersonation,
 } from "../hooks/useImpersonation";
 import { LoadingSpinner } from "../components/LoadingSpinner";
-import { RichTextDisplay } from "../components/RichTextDisplay";
+import { RichTextDisplay } from "@buurman/ui";
 import { PasswordConfirmationDialog } from "../components/PasswordConfirmationDialog";
 import { SortableHeader } from "../components/SortableHeader";
 import { usePagination } from "../hooks/usePagination";

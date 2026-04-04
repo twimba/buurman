@@ -37,6 +37,12 @@ export type { Environment } from "./components/EnvironmentBanner";
 
 // Hooks
 export { useFilterState } from "./hooks/useFilterState";
+export { usePagination } from "./hooks/usePagination";
+export type { PageParams } from "./hooks/usePagination";
+
+// Rich text
+export { RichTextEditor } from "./components/RichTextEditor";
+export { RichTextDisplay, stripHtml } from "./components/RichTextDisplay";
 
 // Utilities
 export { cn } from "./utils/cn";

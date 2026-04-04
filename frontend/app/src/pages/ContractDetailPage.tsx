@@ -24,7 +24,7 @@ import { ContractPaymentInstructionSection } from '@/components/contracts/Contra
 import { CalendarFeedResponseFeedType as CalendarFeedType } from '@/generated/models';
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { RichTextDisplay } from '@/components/common/RichTextDisplay';
+import { RichTextDisplay } from '@buurman/ui';
 import { formatAuditValue } from '@/utils/formatAuditValue';
 import { DocumentList } from '@/components/properties/DocumentList';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';

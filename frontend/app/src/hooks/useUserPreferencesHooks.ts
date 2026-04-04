@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as usersApi from '../api/users';
 import { useToast } from '../context/ToastContext';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { getErrorMessage } from '../utils/errorMessages';
 
 export const useCurrentUser = () => {

@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { getInvitation } from '../api/teams';
 import { useAcceptInvitation } from '../hooks/useTeamHooks';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
 
 const formatRole = (role: string) => {

@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { RichTextDisplay } from '@/components/common/RichTextDisplay';
+import { RichTextDisplay } from '@buurman/ui';
 import { formatAuditValue } from '@/utils/formatAuditValue';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTabState } from '@/hooks/useTabState';

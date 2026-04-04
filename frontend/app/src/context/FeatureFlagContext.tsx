@@ -1,7 +1,7 @@
 import { createContext, useContext, ReactNode, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getFeatureFlags, FeatureFlagsResponse } from '../api/featureFlags';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from './AuthContext';
 
 interface FeatureFlagContextType {
   flags: FeatureFlagsResponse;

@@ -8,9 +8,7 @@ import {
   Building,
   Loader2,
 } from 'lucide-react';
-import { Button } from '@buurman/ui';
-import { RichTextEditor } from '../common/RichTextEditor';
-import { RichTextDisplay } from '../common/RichTextDisplay';
+import { Button, RichTextEditor, RichTextDisplay } from '@buurman/ui';
 import {
   usePaymentInstructions,
   useCreatePaymentInstruction,

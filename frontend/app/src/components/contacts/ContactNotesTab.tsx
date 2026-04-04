@@ -16,8 +16,6 @@ import {
 } from '@/types/contact';
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { RichTextDisplay } from '@/components/common/RichTextDisplay';
-import { RichTextEditor } from '@/components/common/RichTextEditor';
 import {
   Button,
   ConfirmDialog,
@@ -26,6 +24,8 @@ import {
   Input,
   LoadingSpinner,
   ModalWrapper,
+  RichTextDisplay,
+  RichTextEditor,
   Select,
 } from '@buurman/ui';
 import {

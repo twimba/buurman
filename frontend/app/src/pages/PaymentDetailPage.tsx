@@ -17,9 +17,8 @@ import {
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 import { PaymentForm } from '@/components/payments/PaymentForm';
-import { RichTextDisplay } from '@/components/common/RichTextDisplay';
+import { Button, LoadingSpinner, PageHeader, RichTextDisplay, RichTextEditor } from '@buurman/ui';
 import { DocumentList } from '@/components/properties/DocumentList';
-import { Button, LoadingSpinner, PageHeader } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import {
   Edit,
@@ -55,7 +54,6 @@ import {
 } from '@/types/payment';
 import { getCurrencySymbol } from '@/utils/currencies';
 import { MoneyInput } from '@/components/common/MoneyInput';
-import { RichTextEditor } from '@/components/common/RichTextEditor';
 
 interface ReceivalsTableProps {
   receivals: PaymentReceivalResponse[];

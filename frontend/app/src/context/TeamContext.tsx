@@ -6,7 +6,7 @@ import {
   setDefaultTeam as setDefaultTeamApi,
   UserTeamResponse,
 } from '../api/users';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from './AuthContext';
 import { useImpersonation } from './ImpersonationContext';
 import { trackEvent } from '../utils/analytics';
 import { AnalyticsEvent } from '../constants/analyticsEvents';

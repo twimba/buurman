@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { RichTextDisplay } from '@/components/common/RichTextDisplay';
+import { RichTextDisplay } from '@buurman/ui';
 import { formatAuditValue } from '@/utils/formatAuditValue';
 import { useNavigate } from 'react-router-dom';
 import { useAllAuditLogs } from '@/hooks/useDashboard';

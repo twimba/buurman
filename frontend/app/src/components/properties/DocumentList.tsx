@@ -16,14 +16,12 @@ import {
 } from 'lucide-react';
 import { ErrorMessage } from '../ErrorMessage';
 import { DocumentPreviewModal } from '../documents/DocumentPreviewModal';
-import { ConfirmDialog, LoadingSpinner } from '@buurman/ui';
+import { ConfirmDialog, LoadingSpinner, RichTextDisplay, RichTextEditor } from '@buurman/ui';
 import { EditMetadataModal } from '../ui/EditMetadataModal';
 import { useDocumentSelection } from '@/hooks/useDocumentSelection';
 import { useBulkDownload, useUpdateDocument } from '@/hooks/useDocumentHooks';
 import { getDownloadUrl } from '@/api/documents';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { RichTextDisplay } from '../ui/RichTextDisplay';
-import { RichTextEditor } from '../common/RichTextEditor';
 
 interface DocumentListProps {
   documents: DocumentResponse[];

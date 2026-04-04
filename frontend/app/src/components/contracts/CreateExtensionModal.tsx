@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { X, TrendingUp, TrendingDown } from 'lucide-react';
 import { addMonths, format } from 'date-fns';
 import { MoneyInput } from '@/components/common/MoneyInput';
-import { RichTextEditor } from '@/components/common/RichTextEditor';
+import { RichTextEditor } from '@buurman/ui';
 import type {
   RentAdjustmentType,
   CreateContractExtensionRequest,

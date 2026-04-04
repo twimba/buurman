@@ -18,8 +18,8 @@ import {
   useDeleteBroadcast,
 } from "../hooks/useBroadcasts";
 import { LoadingSpinner } from "../components/LoadingSpinner";
-import { RichTextEditor } from "../components/RichTextEditor";
-import { RichTextDisplay } from "../components/RichTextDisplay";
+import { RichTextEditor } from "@buurman/ui";
+import { RichTextDisplay } from "@buurman/ui";
 import {
   TargetTeamSelector,
   TargetUserSelector,

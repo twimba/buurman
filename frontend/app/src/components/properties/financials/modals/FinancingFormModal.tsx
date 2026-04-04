@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { X } from 'lucide-react';
 import { addMonths, differenceInMonths, parseISO, format } from 'date-fns';
 import { MoneyInput } from '@/components/common/MoneyInput';
-import { RichTextEditor } from '@/components/common/RichTextEditor';
+import { RichTextEditor } from '@buurman/ui';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 import {
   useCreateFinancing,
@@ -44,7 +44,7 @@ export const FinancingFormModal = ({
     lenderName: existing?.lenderName ?? '',
     loanNumber: existing?.loanNumber ?? '',
     originalAmount:
-      existing?.originalAmount ?? (undefined as unknown as number),
+      existing?.originalAmount as number | undefined,
     originalAmountCurrency:
       existing?.originalAmountCurrency ?? defaultCurrency ?? 'EUR',
     currentBalance: existing?.currentBalance ?? undefined,

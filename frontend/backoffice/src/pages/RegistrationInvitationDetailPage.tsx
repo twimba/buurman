@@ -18,8 +18,8 @@ import {
   useRevokeRegistrationInvitation,
   useUpdateRegistrationInvitationNote,
 } from "../hooks/useRegistrationInvitations";
-import { RichTextEditor } from "../components/RichTextEditor";
-import { RichTextDisplay } from "../components/RichTextDisplay";
+import { RichTextEditor } from "@buurman/ui";
+import { RichTextDisplay } from "@buurman/ui";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { SendRegistrationInvitationModal } from "../components/SendRegistrationInvitationModal";
 

@@ -7,7 +7,7 @@ import {
   CONTACT_TYPE_LABELS,
   CreateContactRequest,
 } from '@/types/contact';
-import { RichTextEditor } from '@/components/common/RichTextEditor';
+import { RichTextEditor } from '@buurman/ui';
 import { PhoneInput, validatePhoneE164 } from '@/components/common/PhoneInput';
 import { ConfirmDialog } from '@buurman/ui';
 import { trackEvent } from '@/utils/analytics';

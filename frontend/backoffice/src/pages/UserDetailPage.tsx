@@ -26,7 +26,7 @@ import {
 } from "../hooks/useImpersonation";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { UserFeatureFlags } from "../components/UserFeatureFlags";
-import { RichTextEditor } from "../components/RichTextEditor";
+import { RichTextEditor } from "@buurman/ui";
 import { PasswordConfirmationDialog } from "../components/PasswordConfirmationDialog";
 import { trackEvent } from "../utils/analytics";
 import { AnalyticsEvent } from "../constants/analyticsEvents";

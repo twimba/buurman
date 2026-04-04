@@ -28,7 +28,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { SidebarTooltip } from '@buurman/ui';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { useTeam } from '@/context/TeamContext';
 import { useFeatureFlags } from '@/context/FeatureFlagContext';
 import { FeatureFlags } from '@/constants/featureFlags';

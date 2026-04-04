@@ -7,7 +7,7 @@ import {
   CompleteOnboardingRequest,
   CurrencyChangeRequest,
 } from '../api/onboarding';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 
 export const useOnboardingStatus = () => {
   const { isAuthenticated } = useAuth();

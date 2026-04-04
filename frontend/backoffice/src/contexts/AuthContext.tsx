@@ -70,7 +70,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           };
         }
       } catch (error) {
-        console.error("Keycloak initialization failed:", error);
         setIsLoading(false);
       }
     };
