@@ -35,5 +35,6 @@ public record ContactResponse(
     List<ContactTag> tags,
     DataRetentionStatus dataRetentionStatus,
     List<ContactPropertyAssignment> activeProperties,
+    Optional<ContactBalanceSummary> balanceSummary,
     Instant createdAt,
     Optional<Instant> updatedAt) {}

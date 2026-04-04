@@ -22,6 +22,7 @@ public record ContactListItemResponse(
     Optional<String> mainPhotoThumbnailUrl,
     List<ContactTag> tags,
     int activeContractCount,
+    Optional<ContactBalanceSummary> balanceSummary,
     Optional<String> dataRetentionStatus,
     Instant createdAt,
     Optional<Instant> updatedAt) {}

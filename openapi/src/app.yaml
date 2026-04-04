@@ -1001,6 +1001,43 @@ components:
         - propertyType
         - status
         - street
+    BalanceStatus:
+      type: string
+      description: Balance status indicator for a contact
+      enum:
+        - NONE
+        - ALL_PAID
+        - PENDING
+        - OVERDUE
+    ContactBalanceSummary:
+      type: object
+      description: Outstanding payment balance summary for a contact
+      properties:
+        outstandingAmount:
+          type: number
+          description: Total outstanding amount in major currency units
+        currency:
+          type: string
+          description: ISO 4217 currency code
+          example: EUR
+        status:
+          $ref: '#/components/schemas/BalanceStatus'
+        outstandingPaymentCount:
+          type: integer
+          format: int32
+          description: Number of outstanding payments
+        guaranteedAmount:
+          type: number
+          description: Total amount this contact guarantees (as GUARANTOR on contracts)
+        guaranteedPaymentCount:
+          type: integer
+          format: int32
+          description: Number of payments this contact guarantees
+      required:
+        - currency
+        - outstandingAmount
+        - outstandingPaymentCount
+        - status
     ContactPropertyAssignment:
       type: object
       properties:
@@ -1042,6 +1079,8 @@ components:
           type: integer
           format: int32
           description: Number of active contracts this contact is party to
+        balanceSummary:
+          $ref: '#/components/schemas/ContactBalanceSummary'
         dataRetentionStatus:
           type: string
         createdAt:
@@ -1115,6 +1154,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ContactPropertyAssignment"
+        balanceSummary:
+          $ref: '#/components/schemas/ContactBalanceSummary'
         createdAt:
           type: string
           format: date-time

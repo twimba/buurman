@@ -179,6 +179,17 @@ export interface AddContactTagRequest {
   tag: ContactTag;
 }
 
+export type BalanceStatus = 'NONE' | 'ALL_PAID' | 'PENDING' | 'OVERDUE';
+
+export interface ContactBalanceSummary {
+  outstandingAmount: number;
+  currency: string;
+  status: BalanceStatus;
+  outstandingPaymentCount: number;
+  guaranteedAmount?: number;
+  guaranteedPaymentCount?: number;
+}
+
 export interface ContactPropertyAssignment {
   property: PropertySummary;
   role?: ContractPartyRole;
@@ -196,6 +207,7 @@ export interface ContactListItemResponse {
   mainPhotoThumbnailUrl?: string;
   tags: ContactTag[];
   activeContractCount: number;
+  balanceSummary?: ContactBalanceSummary;
   dataRetentionStatus?: string;
   createdAt: string;
   updatedAt?: string;
@@ -224,6 +236,7 @@ export interface ContactResponse {
   mainPhotoUrl?: string;
   mainPhotoThumbnailUrl?: string;
   activeProperties?: ContactPropertyAssignment[];
+  balanceSummary?: ContactBalanceSummary;
   createdAt: string;
   updatedAt?: string;
 }

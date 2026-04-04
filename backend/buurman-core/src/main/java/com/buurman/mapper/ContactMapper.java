@@ -13,6 +13,7 @@ import com.buurman.domain.Contact;
 import com.buurman.domain.ContactTag;
 import com.buurman.dto.request.CreateContactRequest;
 import com.buurman.dto.request.UpdateContactRequest;
+import com.buurman.dto.response.ContactBalanceSummary;
 import com.buurman.dto.response.ContactListItemResponse;
 import com.buurman.dto.response.ContactResponse;
 import com.buurman.dto.response.ContactSummary;
@@ -21,6 +22,7 @@ import com.buurman.dto.response.ContactSummary;
 public interface ContactMapper {
 
   @Mapping(target = "activeProperties", ignore = true)
+  @Mapping(target = "balanceSummary", ignore = true)
   @Mapping(target = "mainPhotoUrl", ignore = true)
   @Mapping(target = "mainPhotoThumbnailUrl", ignore = true)
   @Mapping(target = "tags", source = "tags")
@@ -36,7 +38,8 @@ public interface ContactMapper {
       Contact contact,
       int activeContractCount,
       List<ContactTag> tags,
-      Optional<String> mainPhotoThumbnailUrl) {
+      Optional<String> mainPhotoThumbnailUrl,
+      Optional<ContactBalanceSummary> balanceSummary) {
     return new ContactListItemResponse(
         contact.getIdentifier().orElseThrow(),
         contact.getContactType(),
@@ -49,6 +52,7 @@ public interface ContactMapper {
         mainPhotoThumbnailUrl,
         List.copyOf(tags),
         activeContractCount,
+        balanceSummary,
         Optional.of(contact.getDataRetentionStatus().name()),
         contact.getCreatedAt(),
         Optional.ofNullable(contact.getUpdatedAt()));
