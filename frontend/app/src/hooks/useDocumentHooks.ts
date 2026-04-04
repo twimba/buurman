@@ -7,7 +7,7 @@ import {
 import * as documentsApi from '../api/documents';
 import { SearchDocumentsParams } from '../api/documents';
 import type { PageParams } from '@/types/common';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '@buurman/ui';
 import { getErrorMessage } from '../utils/errorMessages';
 import { queryKeys } from '../lib/queryKeys';
 

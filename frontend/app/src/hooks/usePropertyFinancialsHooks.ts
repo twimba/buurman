@@ -15,8 +15,9 @@ import {
   CreateFeeRequest,
   UpdateFeeRequest,
 } from '../types/propertyFinancials';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '@buurman/ui';
 import { getErrorMessage } from '../utils/errorMessages';
+import { queryKeys } from '../lib/queryKeys';
 
 // ---------------------------------------------------------------------------
 // Query hooks
@@ -24,7 +25,7 @@ import { getErrorMessage } from '../utils/errorMessages';
 
 export const useFinancialSummary = (propertyId: string | undefined) => {
   return useQuery({
-    queryKey: ['propertyFinancials', propertyId],
+    queryKey: queryKeys.propertyFinancials.summary(propertyId),
     queryFn: () => financialsApi.getFinancialSummary(propertyId ?? ''),
     enabled: !!propertyId,
   });
@@ -32,7 +33,7 @@ export const useFinancialSummary = (propertyId: string | undefined) => {
 
 export const useAcquisition = (propertyId: string | undefined) => {
   return useQuery({
-    queryKey: ['propertyAcquisition', propertyId],
+    queryKey: queryKeys.propertyFinancials.acquisition(propertyId),
     queryFn: () => financialsApi.getAcquisition(propertyId ?? ''),
     enabled: !!propertyId,
   });
@@ -40,7 +41,7 @@ export const useAcquisition = (propertyId: string | undefined) => {
 
 export const useValuations = (propertyId: string | undefined) => {
   return useQuery({
-    queryKey: ['propertyValuations', propertyId],
+    queryKey: queryKeys.propertyFinancials.valuations(propertyId),
     queryFn: () => financialsApi.getValuations(propertyId ?? ''),
     enabled: !!propertyId,
   });
@@ -48,7 +49,7 @@ export const useValuations = (propertyId: string | undefined) => {
 
 export const useLatestValuation = (propertyId: string | undefined) => {
   return useQuery({
-    queryKey: ['propertyValuation', 'latest', propertyId],
+    queryKey: queryKeys.propertyFinancials.latestValuation(propertyId),
     queryFn: () => financialsApi.getLatestValuation(propertyId ?? ''),
     enabled: !!propertyId,
   });
@@ -56,7 +57,7 @@ export const useLatestValuation = (propertyId: string | undefined) => {
 
 export const useFinancings = (propertyId: string | undefined) => {
   return useQuery({
-    queryKey: ['propertyFinancings', propertyId],
+    queryKey: queryKeys.propertyFinancials.financings(propertyId),
     queryFn: () => financialsApi.getFinancings(propertyId ?? ''),
     enabled: !!propertyId,
   });
@@ -67,7 +68,10 @@ export const useFinancingPayments = (
   financingId: string | undefined
 ) => {
   return useQuery({
-    queryKey: ['financingPayments', propertyId, financingId],
+    queryKey: queryKeys.propertyFinancials.financingPayments(
+      propertyId,
+      financingId
+    ),
     queryFn: () =>
       financialsApi.getFinancingPayments(propertyId ?? '', financingId ?? ''),
     enabled: !!propertyId && !!financingId,
@@ -76,7 +80,7 @@ export const useFinancingPayments = (
 
 export const useInsurances = (propertyId: string | undefined) => {
   return useQuery({
-    queryKey: ['propertyInsurances', propertyId],
+    queryKey: queryKeys.propertyFinancials.insurances(propertyId),
     queryFn: () => financialsApi.getInsurances(propertyId ?? ''),
     enabled: !!propertyId,
   });
@@ -84,7 +88,7 @@ export const useInsurances = (propertyId: string | undefined) => {
 
 export const useTaxes = (propertyId: string | undefined) => {
   return useQuery({
-    queryKey: ['propertyTaxes', propertyId],
+    queryKey: queryKeys.propertyFinancials.taxes(propertyId),
     queryFn: () => financialsApi.getTaxes(propertyId ?? ''),
     enabled: !!propertyId,
   });
@@ -92,14 +96,14 @@ export const useTaxes = (propertyId: string | undefined) => {
 
 export const useFees = (propertyId: string | undefined) => {
   return useQuery({
-    queryKey: ['propertyFees', propertyId],
+    queryKey: queryKeys.propertyFinancials.fees(propertyId),
     queryFn: () => financialsApi.getFees(propertyId ?? ''),
     enabled: !!propertyId,
   });
 };
 
 // ---------------------------------------------------------------------------
-// Mutation hooks — Acquisition
+// Mutation hooks -- Acquisition
 // ---------------------------------------------------------------------------
 
 export const useUpsertAcquisition = (propertyId: string) => {
@@ -110,12 +114,14 @@ export const useUpsertAcquisition = (propertyId: string) => {
       financialsApi.upsertAcquisition(propertyId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['propertyAcquisition', propertyId],
+        queryKey: queryKeys.propertyFinancials.acquisition(propertyId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyFinancials', propertyId],
+        queryKey: queryKeys.propertyFinancials.summary(propertyId),
       });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Acquisition saved successfully', 'success');
     },
     onError: (error) => {
@@ -125,7 +131,7 @@ export const useUpsertAcquisition = (propertyId: string) => {
 };
 
 // ---------------------------------------------------------------------------
-// Mutation hooks — Valuations
+// Mutation hooks -- Valuations
 // ---------------------------------------------------------------------------
 
 export const useCreateValuation = (propertyId: string) => {
@@ -136,15 +142,17 @@ export const useCreateValuation = (propertyId: string) => {
       financialsApi.createValuation(propertyId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['propertyValuations', propertyId],
+        queryKey: queryKeys.propertyFinancials.valuations(propertyId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyValuation', 'latest', propertyId],
+        queryKey: queryKeys.propertyFinancials.latestValuation(propertyId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyFinancials', propertyId],
+        queryKey: queryKeys.propertyFinancials.summary(propertyId),
       });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Valuation created successfully', 'success');
     },
     onError: (error) => {
@@ -166,15 +174,17 @@ export const useUpdateValuation = (propertyId: string) => {
     }) => financialsApi.updateValuation(propertyId, valuationId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['propertyValuations', propertyId],
+        queryKey: queryKeys.propertyFinancials.valuations(propertyId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyValuation', 'latest', propertyId],
+        queryKey: queryKeys.propertyFinancials.latestValuation(propertyId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyFinancials', propertyId],
+        queryKey: queryKeys.propertyFinancials.summary(propertyId),
       });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Valuation updated successfully', 'success');
     },
     onError: (error) => {
@@ -191,15 +201,17 @@ export const useDeleteValuation = (propertyId: string) => {
       financialsApi.deleteValuation(propertyId, valuationId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['propertyValuations', propertyId],
+        queryKey: queryKeys.propertyFinancials.valuations(propertyId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyValuation', 'latest', propertyId],
+        queryKey: queryKeys.propertyFinancials.latestValuation(propertyId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyFinancials', propertyId],
+        queryKey: queryKeys.propertyFinancials.summary(propertyId),
       });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Valuation deleted successfully', 'success');
     },
     onError: (error) => {
@@ -209,7 +221,7 @@ export const useDeleteValuation = (propertyId: string) => {
 };
 
 // ---------------------------------------------------------------------------
-// Mutation hooks — Financings
+// Mutation hooks -- Financings
 // ---------------------------------------------------------------------------
 
 export const useCreateFinancing = (propertyId: string) => {
@@ -220,15 +232,17 @@ export const useCreateFinancing = (propertyId: string) => {
       financialsApi.createFinancing(propertyId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['propertyFinancings', propertyId],
+        queryKey: queryKeys.propertyFinancials.financings(propertyId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyTimeline', propertyId],
+        queryKey: queryKeys.occupancyPeriods.timeline(propertyId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyFinancials', propertyId],
+        queryKey: queryKeys.propertyFinancials.summary(propertyId),
       });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Financing created successfully', 'success');
     },
     onError: (error) => {
@@ -250,15 +264,17 @@ export const useUpdateFinancing = (propertyId: string) => {
     }) => financialsApi.updateFinancing(propertyId, financingId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['propertyFinancings', propertyId],
+        queryKey: queryKeys.propertyFinancials.financings(propertyId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyTimeline', propertyId],
+        queryKey: queryKeys.occupancyPeriods.timeline(propertyId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyFinancials', propertyId],
+        queryKey: queryKeys.propertyFinancials.summary(propertyId),
       });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Financing updated successfully', 'success');
     },
     onError: (error) => {
@@ -275,15 +291,17 @@ export const useDeleteFinancing = (propertyId: string) => {
       financialsApi.deleteFinancing(propertyId, financingId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['propertyFinancings', propertyId],
+        queryKey: queryKeys.propertyFinancials.financings(propertyId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyTimeline', propertyId],
+        queryKey: queryKeys.occupancyPeriods.timeline(propertyId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyFinancials', propertyId],
+        queryKey: queryKeys.propertyFinancials.summary(propertyId),
       });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Financing deleted successfully', 'success');
     },
     onError: (error) => {
@@ -293,7 +311,7 @@ export const useDeleteFinancing = (propertyId: string) => {
 };
 
 // ---------------------------------------------------------------------------
-// Mutation hooks — Financing Payments
+// Mutation hooks -- Financing Payments
 // ---------------------------------------------------------------------------
 
 export const useCreateFinancingPayment = (
@@ -307,15 +325,20 @@ export const useCreateFinancingPayment = (
       financialsApi.createFinancingPayment(propertyId, financingId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['financingPayments', propertyId, financingId],
+        queryKey: queryKeys.propertyFinancials.financingPayments(
+          propertyId,
+          financingId
+        ),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyFinancings', propertyId],
+        queryKey: queryKeys.propertyFinancials.financings(propertyId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyFinancials', propertyId],
+        queryKey: queryKeys.propertyFinancials.summary(propertyId),
       });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Payment created successfully', 'success');
     },
     onError: (error) => {
@@ -346,15 +369,20 @@ export const useUpdateFinancingPayment = (
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['financingPayments', propertyId, financingId],
+        queryKey: queryKeys.propertyFinancials.financingPayments(
+          propertyId,
+          financingId
+        ),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyFinancings', propertyId],
+        queryKey: queryKeys.propertyFinancials.financings(propertyId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyFinancials', propertyId],
+        queryKey: queryKeys.propertyFinancials.summary(propertyId),
       });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Payment updated successfully', 'success');
     },
     onError: (error) => {
@@ -374,15 +402,20 @@ export const useDeleteFinancingPayment = (
       financialsApi.deleteFinancingPayment(propertyId, financingId, paymentId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['financingPayments', propertyId, financingId],
+        queryKey: queryKeys.propertyFinancials.financingPayments(
+          propertyId,
+          financingId
+        ),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyFinancings', propertyId],
+        queryKey: queryKeys.propertyFinancials.financings(propertyId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyFinancials', propertyId],
+        queryKey: queryKeys.propertyFinancials.summary(propertyId),
       });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Payment deleted successfully', 'success');
     },
     onError: (error) => {
@@ -401,7 +434,11 @@ export const useFinancingPaymentDocuments = (
   paymentId: string | undefined
 ) => {
   return useQuery({
-    queryKey: ['financingPaymentDocuments', propertyId, financingId, paymentId],
+    queryKey: queryKeys.propertyFinancials.financingPaymentDocuments(
+      propertyId,
+      financingId,
+      paymentId
+    ),
     queryFn: () =>
       financialsApi.getFinancingPaymentDocuments(
         propertyId ?? '',
@@ -439,12 +476,11 @@ export const useUploadFinancingPaymentDocument = (
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [
-          'financingPaymentDocuments',
+        queryKey: queryKeys.propertyFinancials.financingPaymentDocuments(
           propertyId,
           financingId,
-          paymentId,
-        ],
+          paymentId
+        ),
       });
       showToast('Document uploaded successfully', 'success');
     },
@@ -470,12 +506,11 @@ export const useDeleteFinancingPaymentDocument = (
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [
-          'financingPaymentDocuments',
+        queryKey: queryKeys.propertyFinancials.financingPaymentDocuments(
           propertyId,
           financingId,
-          paymentId,
-        ],
+          paymentId
+        ),
       });
       showToast('Document deleted successfully', 'success');
     },
@@ -486,7 +521,7 @@ export const useDeleteFinancingPaymentDocument = (
 };
 
 // ---------------------------------------------------------------------------
-// Mutation hooks — Insurances
+// Mutation hooks -- Insurances
 // ---------------------------------------------------------------------------
 
 export const useCreateInsurance = (propertyId: string) => {
@@ -497,12 +532,14 @@ export const useCreateInsurance = (propertyId: string) => {
       financialsApi.createInsurance(propertyId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['propertyInsurances', propertyId],
+        queryKey: queryKeys.propertyFinancials.insurances(propertyId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyFinancials', propertyId],
+        queryKey: queryKeys.propertyFinancials.summary(propertyId),
       });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Insurance created successfully', 'success');
     },
     onError: (error) => {
@@ -524,12 +561,14 @@ export const useUpdateInsurance = (propertyId: string) => {
     }) => financialsApi.updateInsurance(propertyId, insuranceId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['propertyInsurances', propertyId],
+        queryKey: queryKeys.propertyFinancials.insurances(propertyId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyFinancials', propertyId],
+        queryKey: queryKeys.propertyFinancials.summary(propertyId),
       });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Insurance updated successfully', 'success');
     },
     onError: (error) => {
@@ -546,12 +585,14 @@ export const useDeleteInsurance = (propertyId: string) => {
       financialsApi.deleteInsurance(propertyId, insuranceId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['propertyInsurances', propertyId],
+        queryKey: queryKeys.propertyFinancials.insurances(propertyId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyFinancials', propertyId],
+        queryKey: queryKeys.propertyFinancials.summary(propertyId),
       });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Insurance deleted successfully', 'success');
     },
     onError: (error) => {
@@ -561,7 +602,7 @@ export const useDeleteInsurance = (propertyId: string) => {
 };
 
 // ---------------------------------------------------------------------------
-// Mutation hooks — Taxes
+// Mutation hooks -- Taxes
 // ---------------------------------------------------------------------------
 
 export const useCreateTax = (propertyId: string) => {
@@ -572,12 +613,14 @@ export const useCreateTax = (propertyId: string) => {
       financialsApi.createTax(propertyId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['propertyTaxes', propertyId],
+        queryKey: queryKeys.propertyFinancials.taxes(propertyId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyFinancials', propertyId],
+        queryKey: queryKeys.propertyFinancials.summary(propertyId),
       });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Tax record created successfully', 'success');
     },
     onError: (error) => {
@@ -594,12 +637,14 @@ export const useUpdateTax = (propertyId: string) => {
       financialsApi.updateTax(propertyId, taxId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['propertyTaxes', propertyId],
+        queryKey: queryKeys.propertyFinancials.taxes(propertyId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyFinancials', propertyId],
+        queryKey: queryKeys.propertyFinancials.summary(propertyId),
       });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Tax record updated successfully', 'success');
     },
     onError: (error) => {
@@ -615,12 +660,14 @@ export const useDeleteTax = (propertyId: string) => {
     mutationFn: (taxId: string) => financialsApi.deleteTax(propertyId, taxId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['propertyTaxes', propertyId],
+        queryKey: queryKeys.propertyFinancials.taxes(propertyId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyFinancials', propertyId],
+        queryKey: queryKeys.propertyFinancials.summary(propertyId),
       });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Tax record deleted successfully', 'success');
     },
     onError: (error) => {
@@ -630,7 +677,7 @@ export const useDeleteTax = (propertyId: string) => {
 };
 
 // ---------------------------------------------------------------------------
-// Mutation hooks — Fees
+// Mutation hooks -- Fees
 // ---------------------------------------------------------------------------
 
 export const useCreateFee = (propertyId: string) => {
@@ -641,12 +688,14 @@ export const useCreateFee = (propertyId: string) => {
       financialsApi.createFee(propertyId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['propertyFees', propertyId],
+        queryKey: queryKeys.propertyFinancials.fees(propertyId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyFinancials', propertyId],
+        queryKey: queryKeys.propertyFinancials.summary(propertyId),
       });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Fee created successfully', 'success');
     },
     onError: (error) => {
@@ -663,12 +712,14 @@ export const useUpdateFee = (propertyId: string) => {
       financialsApi.updateFee(propertyId, feeId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['propertyFees', propertyId],
+        queryKey: queryKeys.propertyFinancials.fees(propertyId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyFinancials', propertyId],
+        queryKey: queryKeys.propertyFinancials.summary(propertyId),
       });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Fee updated successfully', 'success');
     },
     onError: (error) => {
@@ -684,12 +735,14 @@ export const useDeleteFee = (propertyId: string) => {
     mutationFn: (feeId: string) => financialsApi.deleteFee(propertyId, feeId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['propertyFees', propertyId],
+        queryKey: queryKeys.propertyFinancials.fees(propertyId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['propertyFinancials', propertyId],
+        queryKey: queryKeys.propertyFinancials.summary(propertyId),
       });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Fee deleted successfully', 'success');
     },
     onError: (error) => {

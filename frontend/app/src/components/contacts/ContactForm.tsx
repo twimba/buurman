@@ -7,9 +7,8 @@ import {
   CONTACT_TYPE_LABELS,
   CreateContactRequest,
 } from '@/types/contact';
-import { RichTextEditor } from '@buurman/ui';
+import { ConfirmDialog, RichTextEditor } from '@buurman/ui';
 import { PhoneInput, validatePhoneE164 } from '@/components/common/PhoneInput';
-import { ConfirmDialog } from '@buurman/ui';
 import { trackEvent } from '@/utils/analytics';
 import { AnalyticsEvent } from '@/constants/analyticsEvents';
 import {

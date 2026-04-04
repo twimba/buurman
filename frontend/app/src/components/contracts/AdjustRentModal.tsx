@@ -8,9 +8,8 @@ import {
   Trash2,
   RotateCcw,
 } from 'lucide-react';
-import { ModalWrapper } from '@buurman/ui';
+import { ModalWrapper, RichTextEditor } from '@buurman/ui';
 import { MoneyInput } from '@/components/common/MoneyInput';
-import { RichTextEditor } from '@buurman/ui';
 import {
   RentComponentFormItem,
   RentComponentResponseItem,

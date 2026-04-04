@@ -13,7 +13,7 @@ import {
   Pencil,
   Crown,
 } from "lucide-react";
-import { PageHeader, Button, ConfirmDialog, ModalWrapper } from "@buurman/ui";
+import { PageHeader, Button, ConfirmDialog, ModalWrapper, RichTextEditor } from "@buurman/ui";
 import {
   useUser,
   useDisableUser,
@@ -26,7 +26,6 @@ import {
 } from "../hooks/useImpersonation";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { UserFeatureFlags } from "../components/UserFeatureFlags";
-import { RichTextEditor } from "@buurman/ui";
 import { PasswordConfirmationDialog } from "../components/PasswordConfirmationDialog";
 import { trackEvent } from "../utils/analytics";
 import { AnalyticsEvent } from "../constants/analyticsEvents";

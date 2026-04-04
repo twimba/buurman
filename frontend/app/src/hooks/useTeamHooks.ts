@@ -1,20 +1,21 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as teamsApi from '../api/teams';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '@buurman/ui';
 import { getErrorMessage } from '../utils/errorMessages';
 import { trackEvent } from '../utils/analytics';
 import { AnalyticsEvent } from '../constants/analyticsEvents';
+import { queryKeys } from '../lib/queryKeys';
 
 export const useCurrentTeam = () => {
   return useQuery({
-    queryKey: ['currentTeam'],
+    queryKey: queryKeys.teams.current(),
     queryFn: teamsApi.getCurrentTeam,
   });
 };
 
 export const useTeamMembers = (teamId: string | undefined) => {
   return useQuery({
-    queryKey: ['teamMembers', teamId],
+    queryKey: queryKeys.teams.members(teamId),
     queryFn: () => teamsApi.getTeamMembers(teamId ?? ''),
     enabled: !!teamId,
   });
@@ -22,7 +23,7 @@ export const useTeamMembers = (teamId: string | undefined) => {
 
 export const useTeamPendingInvitations = (teamId: string | undefined) => {
   return useQuery({
-    queryKey: ['teamPendingInvitations', teamId],
+    queryKey: queryKeys.teams.pendingInvitations(teamId),
     queryFn: () => teamsApi.getTeamPendingInvitations(teamId ?? ''),
     enabled: !!teamId,
   });
@@ -35,9 +36,11 @@ export const useCreateInvitation = (teamId: string) => {
     mutationFn: (data: teamsApi.CreateInvitationRequest) =>
       teamsApi.createInvitation(teamId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['teamMembers', teamId] });
       queryClient.invalidateQueries({
-        queryKey: ['teamPendingInvitations', teamId],
+        queryKey: queryKeys.teams.members(teamId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.teams.pendingInvitations(teamId),
       });
       trackEvent(AnalyticsEvent.TEAM_MEMBER_INVITED);
     },
@@ -54,7 +57,7 @@ export const useResendInvitation = (teamId: string) => {
     mutationFn: (token: string) => teamsApi.resendInvitation(teamId, token),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['teamPendingInvitations', teamId],
+        queryKey: queryKeys.teams.pendingInvitations(teamId),
       });
       showToast('Invitation resent successfully', 'success');
     },
@@ -70,7 +73,9 @@ export const useRemoveMember = (teamId: string) => {
   return useMutation({
     mutationFn: (memberId: string) => teamsApi.removeMember(teamId, memberId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['teamMembers', teamId] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.teams.members(teamId),
+      });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -90,7 +95,9 @@ export const useUpdateMemberRole = (teamId: string) => {
       data: teamsApi.UpdateMemberRoleRequest;
     }) => teamsApi.updateMemberRole(teamId, memberId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['teamMembers', teamId] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.teams.members(teamId),
+      });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -100,7 +107,7 @@ export const useUpdateMemberRole = (teamId: string) => {
 
 export const useInvitation = (token: string | undefined) => {
   return useQuery({
-    queryKey: ['invitation', token],
+    queryKey: queryKeys.teams.invitation(token),
     queryFn: () => teamsApi.getInvitation(token ?? ''),
     enabled: !!token,
     retry: false,
@@ -109,7 +116,7 @@ export const useInvitation = (token: string | undefined) => {
 
 export const usePendingInvitations = () => {
   return useQuery({
-    queryKey: ['pendingInvitations'],
+    queryKey: queryKeys.teams.pending(),
     queryFn: teamsApi.getPendingInvitations,
   });
 };
@@ -120,10 +127,14 @@ export const useAcceptInvitation = () => {
   return useMutation({
     mutationFn: teamsApi.acceptInvitation,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
-      queryClient.invalidateQueries({ queryKey: ['currentTeam'] });
-      queryClient.invalidateQueries({ queryKey: ['pendingInvitations'] });
-      queryClient.invalidateQueries({ queryKey: ['user-teams'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.auth.currentUser(),
+      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.current() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.pending() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.userPreferences.teams(),
+      });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -138,8 +149,12 @@ export const useTransferOwnership = (teamId: string) => {
     mutationFn: (newOwnerId: string) =>
       teamsApi.transferOwnership(teamId, newOwnerId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['teamMembers', teamId] });
-      queryClient.invalidateQueries({ queryKey: ['user-teams'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.teams.members(teamId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.userPreferences.teams(),
+      });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -154,8 +169,10 @@ export const useUpdateTeam = (teamId: string) => {
     mutationFn: (data: teamsApi.UpdateTeamRequest) =>
       teamsApi.updateTeam(teamId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['currentTeam'] });
-      queryClient.invalidateQueries({ queryKey: ['user-teams'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.current() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.userPreferences.teams(),
+      });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');
@@ -165,7 +182,7 @@ export const useUpdateTeam = (teamId: string) => {
 
 export const useTeamSettings = (teamId: string | undefined) => {
   return useQuery({
-    queryKey: ['teamSettings', teamId],
+    queryKey: queryKeys.teams.settings(teamId),
     queryFn: () => teamsApi.getTeamSettings(teamId ?? ''),
     enabled: !!teamId,
   });
@@ -178,7 +195,9 @@ export const useUpdateTeamSettings = (teamId: string) => {
     mutationFn: (data: teamsApi.UpdateTeamSettingsRequest) =>
       teamsApi.updateTeamSettings(teamId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['teamSettings', teamId] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.teams.settings(teamId),
+      });
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');

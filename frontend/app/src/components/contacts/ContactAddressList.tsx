@@ -24,9 +24,8 @@ import {
 import { AddressForm } from './AddressForm';
 import { InteractiveMap } from '../common/InteractiveMap';
 import { useTeam } from '@/context/TeamContext';
-import { useToast } from '@/context/ToastContext';
 import { getErrorMessage } from '@/utils/errorMessages';
-import { ConfirmDialog } from '@buurman/ui';
+import { ConfirmDialog, useToast } from '@buurman/ui';
 
 interface ContactAddressListProps {
   contactId: string;

@@ -12,7 +12,7 @@ import type {
   ImportPreviewRequest,
   ImportExecuteRequest,
 } from '@/generated/models';
-import { useToast } from '@/context/ToastContext';
+import { useToast } from '@buurman/ui';
 import { getErrorMessage } from '@/utils/errorMessages';
 import { queryKeys } from '../lib/queryKeys';
 

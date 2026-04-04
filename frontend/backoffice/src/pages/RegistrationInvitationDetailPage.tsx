@@ -10,7 +10,7 @@ import {
   User,
   Calendar,
 } from "lucide-react";
-import { RefreshButton, ConfirmDialog } from "@buurman/ui";
+import { RefreshButton, ConfirmDialog, RichTextEditor, RichTextDisplay } from "@buurman/ui";
 import { formatDateTime } from "../utils/dateFormatting";
 import { useState } from "react";
 import {
@@ -18,8 +18,6 @@ import {
   useRevokeRegistrationInvitation,
   useUpdateRegistrationInvitationNote,
 } from "../hooks/useRegistrationInvitations";
-import { RichTextEditor } from "@buurman/ui";
-import { RichTextDisplay } from "@buurman/ui";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { SendRegistrationInvitationModal } from "../components/SendRegistrationInvitationModal";
 

@@ -1,10 +1,8 @@
 import { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Pencil, Trash2, Plus, X, CheckCircle, Layers } from "lucide-react";
-import { PageHeader, Button, ConfirmDialog, RefreshButton } from "@buurman/ui";
+import { PageHeader, Button, ConfirmDialog, RefreshButton, RichTextEditor, RichTextDisplay } from "@buurman/ui";
 import { formatDateTime } from "../utils/dateFormatting";
-import { RichTextEditor } from "@buurman/ui";
-import { RichTextDisplay } from "@buurman/ui";
 import {
   useRentRegulationCountries,
   useUpdateCountry,

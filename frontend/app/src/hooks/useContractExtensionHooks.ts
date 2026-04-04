@@ -9,8 +9,9 @@ import {
   CreateContractExtensionRequest,
   DeclineContractExtensionRequest,
 } from '../types/contractExtension';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '@buurman/ui';
 import { getErrorMessage } from '../utils/errorMessages';
+import { queryKeys } from '../lib/queryKeys';
 
 export const useContractExtensions = (
   contractId: string | undefined,
@@ -18,7 +19,7 @@ export const useContractExtensions = (
   size?: number
 ) => {
   return useQuery({
-    queryKey: ['contractExtensions', contractId, page, size],
+    queryKey: queryKeys.contractExtensions.all(contractId, page, size),
     queryFn: () => extensionsApi.listExtensions(contractId ?? '', page, size),
     enabled: !!contractId,
     placeholderData: keepPreviousData,
@@ -30,7 +31,7 @@ export const useContractExtension = (
   extensionId: string | undefined
 ) => {
   return useQuery({
-    queryKey: ['contractExtension', contractId, extensionId],
+    queryKey: queryKeys.contractExtensions.detail(contractId, extensionId),
     queryFn: () =>
       extensionsApi.getExtension(contractId ?? '', extensionId ?? ''),
     enabled: !!contractId && !!extensionId,
@@ -45,14 +46,20 @@ export const useCreateExtension = (contractId: string) => {
       extensionsApi.createExtension(contractId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['contractExtensions', contractId],
+        queryKey: queryKeys.contractExtensions.all(contractId),
       });
-      queryClient.invalidateQueries({ queryKey: ['contract', contractId] });
       queryClient.invalidateQueries({
-        queryKey: ['contractAuditLog', contractId],
+        queryKey: queryKeys.contracts.detail(contractId),
       });
-      queryClient.invalidateQueries({ queryKey: ['upcomingRenewals'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contracts.auditLog(contractId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contractExtensions.upcomingRenewals(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.stats(),
+      });
       showToast('Extension created successfully', 'success');
     },
     onError: (error) => {
@@ -69,15 +76,21 @@ export const useActivateExtension = (contractId: string) => {
       extensionsApi.activateExtension(contractId, extensionId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['contractExtensions', contractId],
+        queryKey: queryKeys.contractExtensions.all(contractId),
       });
-      queryClient.invalidateQueries({ queryKey: ['contract', contractId] });
-      queryClient.invalidateQueries({ queryKey: ['contracts'] });
       queryClient.invalidateQueries({
-        queryKey: ['contractAuditLog', contractId],
+        queryKey: queryKeys.contracts.detail(contractId),
       });
-      queryClient.invalidateQueries({ queryKey: ['upcomingRenewals'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.contracts.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contracts.auditLog(contractId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contractExtensions.upcomingRenewals(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.stats(),
+      });
       showToast('Extension activated successfully', 'success');
     },
     onError: (error) => {
@@ -94,13 +107,17 @@ export const useConfirmExtension = (contractId: string) => {
       extensionsApi.confirmExtension(contractId, extensionId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['contractExtensions', contractId],
+        queryKey: queryKeys.contractExtensions.all(contractId),
       });
-      queryClient.invalidateQueries({ queryKey: ['contract', contractId] });
       queryClient.invalidateQueries({
-        queryKey: ['contractAuditLog', contractId],
+        queryKey: queryKeys.contracts.detail(contractId),
       });
-      queryClient.invalidateQueries({ queryKey: ['upcomingRenewals'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contracts.auditLog(contractId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contractExtensions.upcomingRenewals(),
+      });
       showToast('Extension confirmed successfully', 'success');
     },
     onError: (error) => {
@@ -122,13 +139,17 @@ export const useDeclineExtension = (contractId: string) => {
     }) => extensionsApi.declineExtension(contractId, extensionId, request),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['contractExtensions', contractId],
+        queryKey: queryKeys.contractExtensions.all(contractId),
       });
-      queryClient.invalidateQueries({ queryKey: ['contract', contractId] });
       queryClient.invalidateQueries({
-        queryKey: ['contractAuditLog', contractId],
+        queryKey: queryKeys.contracts.detail(contractId),
       });
-      queryClient.invalidateQueries({ queryKey: ['upcomingRenewals'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contracts.auditLog(contractId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contractExtensions.upcomingRenewals(),
+      });
       showToast('Extension declined', 'success');
     },
     onError: (error) => {
@@ -151,18 +172,24 @@ export const useCancelExtension = (contractId: string) => {
       extensionsApi.cancelExtension(contractId, extensionId, deleteDocuments),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ['contractExtensions', contractId],
+        queryKey: queryKeys.contractExtensions.all(contractId),
       });
-      queryClient.invalidateQueries({ queryKey: ['contract', contractId] });
       queryClient.invalidateQueries({
-        queryKey: ['contractAuditLog', contractId],
+        queryKey: queryKeys.contracts.detail(contractId),
       });
-      queryClient.invalidateQueries({ queryKey: ['upcomingRenewals'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contracts.auditLog(contractId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contractExtensions.upcomingRenewals(),
+      });
       if (variables.deleteDocuments) {
         queryClient.invalidateQueries({
-          queryKey: ['contractDocuments', contractId],
+          queryKey: queryKeys.contracts.documents(contractId),
         });
-        queryClient.invalidateQueries({ queryKey: ['documents'] });
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.documents.all(),
+        });
       }
       showToast('Extension cancelled', 'success');
     },
@@ -190,13 +217,13 @@ export const useGenerateExtensionDocuments = (contractId: string) => {
       ),
     onSuccess: (docs) => {
       queryClient.invalidateQueries({
-        queryKey: ['contractDocuments', contractId],
+        queryKey: queryKeys.contracts.documents(contractId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['documents'],
+        queryKey: queryKeys.documents.all(),
       });
       queryClient.invalidateQueries({
-        queryKey: ['contractAuditLog', contractId],
+        queryKey: queryKeys.contracts.auditLog(contractId),
       });
       showToast(`${docs.length} document(s) generated successfully`, 'success');
     },
@@ -208,14 +235,14 @@ export const useGenerateExtensionDocuments = (contractId: string) => {
 
 export const useUpcomingRenewals = () => {
   return useQuery({
-    queryKey: ['upcomingRenewals'],
+    queryKey: queryKeys.contractExtensions.upcomingRenewals(),
     queryFn: () => extensionsApi.getUpcomingRenewals(),
   });
 };
 
 export const usePendingExtensions = () => {
   return useQuery({
-    queryKey: ['pendingExtensions'],
+    queryKey: queryKeys.contractExtensions.pendingExtensions(),
     queryFn: () => extensionsApi.getPendingExtensions(),
   });
 };
@@ -227,13 +254,12 @@ export const useJurisdictionDefaults = (
   furnished?: boolean
 ) => {
   return useQuery({
-    queryKey: [
-      'jurisdictionDefaults',
+    queryKey: queryKeys.contractExtensions.jurisdictionDefaults(
       countryCode,
       regionCode,
       landlordType,
-      furnished,
-    ],
+      furnished
+    ),
     queryFn: () =>
       extensionsApi.getJurisdictionDefaults(
         countryCode ?? '',

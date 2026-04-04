@@ -3,7 +3,6 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { TeamProvider } from './context/TeamContext';
 import { ImpersonationProvider } from './context/ImpersonationContext';
-import { ToastProvider } from './context/ToastContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { FeatureFlagProvider } from './context/FeatureFlagContext';
 import { AnalyticsInitializer } from './components/AnalyticsInitializer';
@@ -12,7 +11,7 @@ import { FeatureFlags } from './constants/featureFlags';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
 import { Layout } from './components/Layout';
-import { LoadingSpinner } from '@buurman/ui';
+import { LoadingSpinner, ToastProvider } from '@buurman/ui';
 import { EnvironmentBanner } from './components/common/EnvironmentBanner';
 import { ImpersonationBanner } from './components/ImpersonationBanner';
 

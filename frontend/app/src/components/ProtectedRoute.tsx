@@ -46,4 +46,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   return children ? <>{children}</> : <Outlet />;
 };
 
+ProtectedRoute.displayName = 'ProtectedRoute';
+
 export default ProtectedRoute;

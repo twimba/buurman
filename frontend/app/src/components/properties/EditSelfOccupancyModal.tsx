@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { Button } from '@buurman/ui';
-import { RichTextEditor } from '@buurman/ui';
+import { Button, RichTextEditor } from '@buurman/ui';
 import { useUpdateOccupancyPeriod } from '@/hooks/useOccupancyPeriodHooks';
 import {
   OccupancyType,

@@ -7,12 +7,13 @@ import {
 import * as photosApi from '../api/photos';
 import { SearchPhotosParams } from '../api/photos';
 import type { PageParams } from '@/types/common';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '@buurman/ui';
 import { getErrorMessage } from '../utils/errorMessages';
+import { queryKeys } from '../lib/queryKeys';
 
 export const usePhotos = (params?: SearchPhotosParams & PageParams) => {
   return useQuery({
-    queryKey: ['photos', params],
+    queryKey: queryKeys.photos.all(params),
     queryFn: () => photosApi.searchPhotos(params),
     placeholderData: keepPreviousData,
   });
@@ -20,7 +21,7 @@ export const usePhotos = (params?: SearchPhotosParams & PageParams) => {
 
 export const usePhoto = (id: string | undefined) => {
   return useQuery({
-    queryKey: ['photo', id],
+    queryKey: queryKeys.photos.detail(id),
     queryFn: () => photosApi.getPhoto(id ?? ''),
     enabled: !!id,
   });
@@ -32,10 +33,12 @@ export const useDeletePhoto = () => {
   return useMutation({
     mutationFn: (id: string) => photosApi.deletePhoto(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['photos'] });
-      queryClient.invalidateQueries({ queryKey: ['propertyPhotos'] });
-      queryClient.invalidateQueries({ queryKey: ['contactPhotos'] });
-      queryClient.invalidateQueries({ queryKey: ['properties'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.photos.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.properties.photos(),
+      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.contacts.photos() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.properties.all() });
       showToast('Photo deleted successfully', 'success');
     },
     onError: (error) => {
@@ -77,12 +80,18 @@ export const useUpdatePhoto = () => {
       data: { title: string | null; notes: string | null };
     }) => photosApi.updatePhoto(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['photos'] });
-      queryClient.invalidateQueries({ queryKey: ['propertyPhotos'] });
-      queryClient.invalidateQueries({ queryKey: ['contactPhotos'] });
-      queryClient.invalidateQueries({ queryKey: ['properties'] });
-      queryClient.invalidateQueries({ queryKey: ['propertyAuditLog'] });
-      queryClient.invalidateQueries({ queryKey: ['contactAuditLog'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.photos.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.properties.photos(),
+      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.contacts.photos() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.properties.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.properties.auditLog(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contacts.auditLog(),
+      });
       showToast('Photo updated successfully', 'success');
     },
     onError: (error) => {

@@ -207,3 +207,5 @@ export const TeamSwitcher = () => {
     </div>
   );
 };
+
+TeamSwitcher.displayName = 'TeamSwitcher';

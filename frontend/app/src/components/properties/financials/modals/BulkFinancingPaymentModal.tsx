@@ -9,7 +9,7 @@ import {
 import { CurrencySelector } from '@/components/common/CurrencySelector';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 import { bulkCreateFinancingPayments } from '@/api/propertyFinancials';
-import { useToast } from '@/context/ToastContext';
+import { useToast } from '@buurman/ui';
 import { getErrorMessage } from '@/utils/errorMessages';
 import {
   PaymentStatus,

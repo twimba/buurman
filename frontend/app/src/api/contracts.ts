@@ -177,6 +177,15 @@ export interface GeneratePaymentsResponse {
   markedAsPaid?: number;
 }
 
+export const downloadContractBooklet = async (
+  contractId: string
+): Promise<Blob> => {
+  const response = await client.get(`/booklets/contract/${contractId}`, {
+    responseType: 'blob',
+  });
+  return new Blob([response.data], { type: 'application/pdf' });
+};
+
 export const generateContractPayments = async (
   contractId: string,
   data: GeneratePaymentsRequest

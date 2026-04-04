@@ -69,3 +69,5 @@ export const Layout = ({ children }: LayoutProps) => {
     </div>
   );
 };
+
+Layout.displayName = 'Layout';

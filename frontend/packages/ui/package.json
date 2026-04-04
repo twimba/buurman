@@ -35,6 +35,8 @@
     "typescript": "6.0.2"
   },
   "peerDependencies": {
+    "keycloak-js": "^26.0.0",
+    "posthog-js": "^1.0.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-router-dom": "7.0.0"

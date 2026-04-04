@@ -7,6 +7,7 @@ import {
   StatusBadge,
   Pagination,
   RefreshButton,
+  RichTextDisplay,
 } from "@buurman/ui";
 import type { BadgeColorVariant } from "@buurman/ui";
 import {
@@ -15,7 +16,6 @@ import {
   useTerminateImpersonation,
 } from "../hooks/useImpersonation";
 import { LoadingSpinner } from "../components/LoadingSpinner";
-import { RichTextDisplay } from "@buurman/ui";
 import { PasswordConfirmationDialog } from "../components/PasswordConfirmationDialog";
 import { SortableHeader } from "../components/SortableHeader";
 import { usePagination } from "../hooks/usePagination";

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Save, Plus, Trash2, UserPlus } from 'lucide-react';
 import {
@@ -25,7 +25,7 @@ import CountryMetadataForm, {
 import { RenewalConfigForm } from '@/components/contracts/RenewalConfigForm';
 import { RentBreakdown } from '@/components/contracts/RentBreakdown';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
-import { useProperties } from '@/hooks/usePropertyHooks';
+import { useProperty } from '@/hooks/usePropertyHooks';
 import {
   useAddContractParty,
   useRemoveContractParty,
@@ -186,15 +186,7 @@ export const ContractForm = ({
   );
 
   // Look up selected property's country for metadata form
-  const { data: propertiesPage } = useProperties();
-  const selectedProperty = useMemo(() => {
-    if (!propertiesPage?.content || !formData.propertyIdentifier) {
-      return undefined;
-    }
-    return propertiesPage.content.find(
-      (p) => p.identifier === formData.propertyIdentifier
-    );
-  }, [propertiesPage, formData.propertyIdentifier]);
+  const { data: selectedProperty } = useProperty(formData.propertyIdentifier);
   const propertyCountryCode =
     contract?.countryCode || selectedProperty?.countryCode || undefined;
   const countryName = useCountryName(propertyCountryCode);

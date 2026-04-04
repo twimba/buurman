@@ -5,8 +5,7 @@ import {
   ContactActivityItem,
 } from '@/types/contact';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { RichTextDisplay } from '@buurman/ui';
-import { LoadingSpinner, Pagination } from '@buurman/ui';
+import { LoadingSpinner, Pagination, RichTextDisplay } from '@buurman/ui';
 import { usePagination } from '@/hooks/usePagination';
 import {
   Activity,

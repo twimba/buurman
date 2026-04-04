@@ -12,3 +12,5 @@ export const ErrorMessage = ({ message }: ErrorMessageProps) => {
     </div>
   );
 };
+
+ErrorMessage.displayName = 'ErrorMessage';

@@ -5,12 +5,13 @@ import {
   CreateRentPeriodRequest,
   UpdateRentPeriodRequest,
 } from '../types/contract';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '@buurman/ui';
 import { getErrorMessage } from '../utils/errorMessages';
+import { queryKeys } from '../lib/queryKeys';
 
 export const useRentPeriods = (contractId: string | undefined) => {
   return useQuery({
-    queryKey: ['rentPeriods', contractId],
+    queryKey: queryKeys.rentPeriods.all(contractId),
     queryFn: () => rentPeriodsApi.getRentPeriods(contractId ?? ''),
     enabled: !!contractId,
   });
@@ -23,18 +24,26 @@ export const useAddRentPeriod = (contractId: string) => {
     mutationFn: (data: CreateRentPeriodRequest) =>
       rentPeriodsApi.addRentPeriod(contractId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['rentPeriods', contractId] });
-      queryClient.invalidateQueries({ queryKey: ['contract', contractId] });
-      queryClient.invalidateQueries({ queryKey: ['contracts'] });
       queryClient.invalidateQueries({
-        queryKey: ['contractAuditLog', contractId],
+        queryKey: queryKeys.rentPeriods.all(contractId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['paymentsByContract', contractId],
+        queryKey: queryKeys.contracts.detail(contractId),
       });
-      queryClient.invalidateQueries({ queryKey: ['payments'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.contracts.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contracts.auditLog(contractId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contracts.paymentsByContract(contractId),
+      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.stats(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Rent period added successfully', 'success');
     },
     onError: (error) => {
@@ -55,18 +64,26 @@ export const useUpdateRentPeriod = (contractId: string) => {
       data: UpdateRentPeriodRequest;
     }) => rentPeriodsApi.updateRentPeriod(contractId, periodIdentifier, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['rentPeriods', contractId] });
-      queryClient.invalidateQueries({ queryKey: ['contract', contractId] });
-      queryClient.invalidateQueries({ queryKey: ['contracts'] });
       queryClient.invalidateQueries({
-        queryKey: ['contractAuditLog', contractId],
+        queryKey: queryKeys.rentPeriods.all(contractId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['paymentsByContract', contractId],
+        queryKey: queryKeys.contracts.detail(contractId),
       });
-      queryClient.invalidateQueries({ queryKey: ['payments'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.contracts.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contracts.auditLog(contractId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contracts.paymentsByContract(contractId),
+      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.stats(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Rent period updated successfully', 'success');
     },
     onError: (error) => {
@@ -82,18 +99,26 @@ export const useDeleteRentPeriod = (contractId: string) => {
     mutationFn: (periodIdentifier: string) =>
       rentPeriodsApi.deleteRentPeriod(contractId, periodIdentifier),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['rentPeriods', contractId] });
-      queryClient.invalidateQueries({ queryKey: ['contract', contractId] });
-      queryClient.invalidateQueries({ queryKey: ['contracts'] });
       queryClient.invalidateQueries({
-        queryKey: ['contractAuditLog', contractId],
+        queryKey: queryKeys.rentPeriods.all(contractId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['paymentsByContract', contractId],
+        queryKey: queryKeys.contracts.detail(contractId),
       });
-      queryClient.invalidateQueries({ queryKey: ['payments'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.contracts.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contracts.auditLog(contractId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contracts.paymentsByContract(contractId),
+      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.stats(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.propertyDashboard(),
+      });
       showToast('Rent period deleted successfully', 'success');
     },
     onError: (error) => {
@@ -116,10 +141,10 @@ export const useGenerateRentChangeDocuments = (contractId: string) => {
       rentPeriodsApi.generateRentChangeDocuments(contractId, periodId, request),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['contractDocuments', contractId],
+        queryKey: queryKeys.contracts.documents(contractId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['contractAuditLog', contractId],
+        queryKey: queryKeys.contracts.auditLog(contractId),
       });
       showToast('Documents generated successfully', 'success');
     },

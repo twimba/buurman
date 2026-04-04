@@ -371,6 +371,8 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
   );
 };
 
+Sidebar.displayName = 'Sidebar';
+
 // ── Collapsible nav group (parent + children) ───────────────────────
 
 function NavGroup({

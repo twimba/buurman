@@ -24,14 +24,13 @@ import {
   useUpdateDocument,
 } from '@/hooks/useDocumentHooks';
 import { usePagination } from '@/hooks/usePagination';
-import { ConfirmDialog, LoadingSpinner, Pagination, RefreshButton } from '@buurman/ui';
+import { ConfirmDialog, LoadingSpinner, Pagination, RefreshButton, RichTextDisplay } from '@buurman/ui';
 import { DocumentPreviewModal } from '@/components/documents/DocumentPreviewModal';
 import { EditMetadataModal } from '@/components/ui/EditMetadataModal';
 import { DocumentResponse } from '@/types/property';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useDocumentSelection } from '@/hooks/useDocumentSelection';
 import { useTeam } from '@/context/TeamContext';
-import { RichTextDisplay } from '@buurman/ui';
 
 export const DocumentsPage = () => {
   const navigate = useNavigate();

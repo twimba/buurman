@@ -1,179 +1,161 @@
+/**
+ * Strips trailing `undefined` values from an array so that
+ * `key('properties')` called with no extra args produces `['properties']`
+ * (a valid prefix for invalidation) instead of `['properties', undefined]`.
+ */
+function k<T extends readonly unknown[]>(...parts: T): T {
+  let end = parts.length;
+  while (end > 0 && parts[end - 1] === undefined) {
+    end--;
+  }
+  return parts.slice(0, end) as unknown as T;
+}
+
 export const queryKeys = {
   // --- Auth ---
   auth: {
-    currentUser: () => ['currentUser'] as const,
-    registrationConfig: () => ['registrationConfig'] as const,
+    currentUser: () => k('currentUser'),
+    registrationConfig: () => k('registrationConfig'),
   },
 
   // --- User Preferences ---
   userPreferences: {
-    profile: () => ['userProfile'] as const,
-    phonePolicy: () => ['phonePolicy'] as const,
-    preferences: () => ['userPreferences'] as const,
-    notificationTypePreferences: () =>
-      ['notificationTypePreferences'] as const,
-    teams: () => ['user-teams'] as const,
+    profile: () => k('userProfile'),
+    phonePolicy: () => k('phonePolicy'),
+    preferences: () => k('userPreferences'),
+    notificationTypePreferences: () => k('notificationTypePreferences'),
+    teams: () => k('user-teams'),
   },
 
   // --- Teams ---
   teams: {
-    current: () => ['currentTeam'] as const,
-    members: (teamId?: string) => ['teamMembers', teamId] as const,
+    current: () => k('currentTeam'),
+    members: (teamId?: string) => k('teamMembers', teamId),
     pendingInvitations: (teamId?: string) =>
-      ['teamPendingInvitations', teamId] as const,
-    invitation: (token?: string) => ['invitation', token] as const,
-    pending: () => ['pendingInvitations'] as const,
-    settings: (teamId?: string) => ['teamSettings', teamId] as const,
+      k('teamPendingInvitations', teamId),
+    invitation: (token?: string) => k('invitation', token),
+    pending: () => k('pendingInvitations'),
+    settings: (teamId?: string) => k('teamSettings', teamId),
   },
 
   // --- Properties ---
   properties: {
-    all: (params?: unknown) => ['properties', params] as const,
-    detail: (id?: string) => ['property', id] as const,
-    documents: (propertyId?: string) =>
-      ['propertyDocuments', propertyId] as const,
-    auditLog: (propertyId?: string) =>
-      ['propertyAuditLog', propertyId] as const,
-    photos: (propertyId?: string) => ['propertyPhotos', propertyId] as const,
-    outdoorAreas: (propertyId?: string) =>
-      ['outdoor-areas', propertyId] as const,
-    amenities: (propertyId?: string) =>
-      ['property-amenities', propertyId] as const,
-    amenitiesCatalog: (category?: string) => ['amenities', category] as const,
+    all: (params?: unknown) => k('properties', params),
+    detail: (id?: string) => k('property', id),
+    documents: (propertyId?: string) => k('propertyDocuments', propertyId),
+    auditLog: (propertyId?: string) => k('propertyAuditLog', propertyId),
+    photos: (propertyId?: string) => k('propertyPhotos', propertyId),
+    outdoorAreas: (propertyId?: string) => k('outdoor-areas', propertyId),
+    amenities: (propertyId?: string) => k('property-amenities', propertyId),
+    amenitiesCatalog: (category?: string) => k('amenities', category),
     dashboard: (propertyId?: string, months?: number) =>
-      ['propertyDashboard', propertyId, months] as const,
+      k('propertyDashboard', propertyId, months),
   },
 
   // --- Property Financials ---
   propertyFinancials: {
-    summary: (propertyId?: string) =>
-      ['propertyFinancials', propertyId] as const,
+    summary: (propertyId?: string) => k('propertyFinancials', propertyId),
     acquisition: (propertyId?: string) =>
-      ['propertyAcquisition', propertyId] as const,
-    valuations: (propertyId?: string) =>
-      ['propertyValuations', propertyId] as const,
+      k('propertyAcquisition', propertyId),
+    valuations: (propertyId?: string) => k('propertyValuations', propertyId),
     latestValuation: (propertyId?: string) =>
-      ['propertyValuation', 'latest', propertyId] as const,
-    financings: (propertyId?: string) =>
-      ['propertyFinancings', propertyId] as const,
+      k('propertyValuation', 'latest', propertyId),
+    financings: (propertyId?: string) => k('propertyFinancings', propertyId),
     financingPayments: (propertyId?: string, financingId?: string) =>
-      ['financingPayments', propertyId, financingId] as const,
+      k('financingPayments', propertyId, financingId),
     financingPaymentDocuments: (
       propertyId?: string,
       financingId?: string,
       paymentId?: string
-    ) =>
-      [
-        'financingPaymentDocuments',
-        propertyId,
-        financingId,
-        paymentId,
-      ] as const,
-    insurances: (propertyId?: string) =>
-      ['propertyInsurances', propertyId] as const,
-    taxes: (propertyId?: string) => ['propertyTaxes', propertyId] as const,
-    fees: (propertyId?: string) => ['propertyFees', propertyId] as const,
+    ) => k('financingPaymentDocuments', propertyId, financingId, paymentId),
+    insurances: (propertyId?: string) => k('propertyInsurances', propertyId),
+    taxes: (propertyId?: string) => k('propertyTaxes', propertyId),
+    fees: (propertyId?: string) => k('propertyFees', propertyId),
   },
 
   // --- Contacts ---
   contacts: {
-    all: (params?: unknown) => ['contacts', params] as const,
-    detail: (id?: string) => ['contact', id] as const,
-    history: (contactId?: string) => ['contactHistory', contactId] as const,
-    auditLog: (contactId?: string) =>
-      ['contactAuditLog', contactId] as const,
-    documents: (contactId?: string) =>
-      ['contactDocuments', contactId] as const,
-    photos: (contactId?: string) => ['contactPhotos', contactId] as const,
-    addresses: (contactId?: string) =>
-      ['contactAddresses', contactId] as const,
-    notes: (contactId?: string) => ['contactNotes', contactId] as const,
+    all: (params?: unknown) => k('contacts', params),
+    detail: (id?: string) => k('contact', id),
+    history: (contactId?: string) => k('contactHistory', contactId),
+    auditLog: (contactId?: string) => k('contactAuditLog', contactId),
+    documents: (contactId?: string) => k('contactDocuments', contactId),
+    photos: (contactId?: string) => k('contactPhotos', contactId),
+    addresses: (contactId?: string) => k('contactAddresses', contactId),
+    notes: (contactId?: string) => k('contactNotes', contactId),
     relationships: (contactId?: string) =>
-      ['contactRelationships', contactId] as const,
+      k('contactRelationships', contactId),
     activity: (contactId?: string, params?: unknown) =>
-      ['contactActivity', contactId, params] as const,
+      k('contactActivity', contactId, params),
   },
 
   // --- Contracts ---
   contracts: {
-    all: (params?: unknown) => ['contracts', params] as const,
-    detail: (id?: string) => ['contract', id] as const,
-    documents: (contractId?: string) =>
-      ['contractDocuments', contractId] as const,
-    auditLog: (contractId?: string) =>
-      ['contractAuditLog', contractId] as const,
+    all: (params?: unknown) => k('contracts', params),
+    detail: (id?: string) => k('contract', id),
+    documents: (contractId?: string) => k('contractDocuments', contractId),
+    auditLog: (contractId?: string) => k('contractAuditLog', contractId),
     metadataSchema: (countryCode?: string) =>
-      ['contract-metadata-schema', countryCode] as const,
+      k('contract-metadata-schema', countryCode),
     paymentsByContract: (contractId?: string) =>
-      ['paymentsByContract', contractId] as const,
+      k('paymentsByContract', contractId),
   },
 
   // --- Contract Extensions ---
   contractExtensions: {
     all: (contractId?: string, page?: number, size?: number) =>
-      ['contractExtensions', contractId, page, size] as const,
+      k('contractExtensions', contractId, page, size),
     detail: (contractId?: string, extensionId?: string) =>
-      ['contractExtension', contractId, extensionId] as const,
-    upcomingRenewals: () => ['upcomingRenewals'] as const,
-    pendingExtensions: () => ['pendingExtensions'] as const,
+      k('contractExtension', contractId, extensionId),
+    upcomingRenewals: () => k('upcomingRenewals'),
+    pendingExtensions: () => k('pendingExtensions'),
     jurisdictionDefaults: (
       countryCode?: string,
       regionCode?: string,
       landlordType?: string,
       furnished?: boolean
     ) =>
-      [
-        'jurisdictionDefaults',
-        countryCode,
-        regionCode,
-        landlordType,
-        furnished,
-      ] as const,
+      k('jurisdictionDefaults', countryCode, regionCode, landlordType, furnished),
   },
 
   // --- Payments ---
   payments: {
-    all: (params?: unknown) => ['payments', params] as const,
-    stats: () => ['paymentStats'] as const,
-    detail: (id?: string) => ['payment', id] as const,
-    overdue: () => ['payments', 'overdue'] as const,
+    all: (params?: unknown) => k('payments', params),
+    stats: () => k('paymentStats'),
+    detail: (id?: string) => k('payment', id),
+    overdue: () => k('payments', 'overdue'),
     byContract: (contractId?: string) =>
-      ['payments', 'contract', contractId] as const,
-    documents: (paymentId?: string) =>
-      ['paymentDocuments', paymentId] as const,
-    auditLog: (paymentId?: string) =>
-      ['paymentAuditLog', paymentId] as const,
-    receivals: (paymentId?: string) =>
-      ['paymentReceivals', paymentId] as const,
+      k('payments', 'contract', contractId),
+    documents: (paymentId?: string) => k('paymentDocuments', paymentId),
+    auditLog: (paymentId?: string) => k('paymentAuditLog', paymentId),
+    receivals: (paymentId?: string) => k('paymentReceivals', paymentId),
   },
 
   // --- Payment Instructions ---
   paymentInstructions: {
-    all: () => ['paymentInstructions'] as const,
-    detail: (id?: string) => ['paymentInstruction', id] as const,
+    all: () => k('paymentInstructions'),
+    detail: (id?: string) => k('paymentInstruction', id),
     byContract: (contractId?: string) =>
-      ['contractPaymentInstructions', contractId] as const,
+      k('contractPaymentInstructions', contractId),
     currentByContract: (contractId?: string) =>
-      ['currentContractPaymentInstruction', contractId] as const,
+      k('currentContractPaymentInstruction', contractId),
   },
 
   // --- Expenses ---
   expenses: {
-    all: (params?: unknown) => ['expenses', params] as const,
-    stats: () => ['expenseStats'] as const,
-    detail: (id?: string) => ['expense', id] as const,
+    all: (params?: unknown) => k('expenses', params),
+    stats: () => k('expenseStats'),
+    detail: (id?: string) => k('expense', id),
     byProperty: (propertyId?: string) =>
-      ['expenses', 'property', propertyId] as const,
-    summary: (period?: string) => ['expenses', 'summary', period] as const,
-    documents: (expenseId?: string) =>
-      ['expenseDocuments', expenseId] as const,
-    auditLog: (expenseId?: string) =>
-      ['expenseAuditLog', expenseId] as const,
+      k('expenses', 'property', propertyId),
+    summary: (period?: string) => k('expenses', 'summary', period),
+    documents: (expenseId?: string) => k('expenseDocuments', expenseId),
+    auditLog: (expenseId?: string) => k('expenseAuditLog', expenseId),
   },
 
   // --- Rent Periods ---
   rentPeriods: {
-    all: (contractId?: string) => ['rentPeriods', contractId] as const,
+    all: (contractId?: string) => k('rentPeriods', contractId),
   },
 
   // --- Rent Increases ---
@@ -181,142 +163,132 @@ export const queryKeys = {
 
   // --- Rent Regulation ---
   rentRegulation: {
-    countries: () => ['rentRegulationCountries'] as const,
-    countryDetail: (code?: string) =>
-      ['rentRegulationCountry', code] as const,
-    currentRules: (code?: string) =>
-      ['rentRegulationCurrentRules', code] as const,
+    countries: () => k('rentRegulationCountries'),
+    countryDetail: (code?: string) => k('rentRegulationCountry', code),
+    currentRules: (code?: string) => k('rentRegulationCurrentRules', code),
     rulesByYear: (code?: string, year?: number) =>
-      ['rentRegulationRules', code, year] as const,
+      k('rentRegulationRules', code, year),
     regionRules: (code?: string, regionCode?: string) =>
-      ['rentRegulationRegionRules', code, regionCode] as const,
+      k('rentRegulationRegionRules', code, regionCode),
   },
 
   // --- Documents ---
   documents: {
-    all: (params?: unknown) => ['documents', params] as const,
-    detail: (id?: string) => ['document', id] as const,
+    all: (params?: unknown) => k('documents', params),
+    detail: (id?: string) => k('document', id),
   },
 
   // --- Photos ---
   photos: {
-    all: (params?: unknown) => ['photos', params] as const,
-    detail: (id?: string) => ['photo', id] as const,
+    all: (params?: unknown) => k('photos', params),
+    detail: (id?: string) => k('photo', id),
   },
 
   // --- Dashboard ---
   dashboard: {
-    stats: () => ['dashboard', 'stats'] as const,
-    auditLogs: (filters?: unknown) => ['auditLogs', filters] as const,
-    portfolio: (months?: number) => ['portfolioDashboard', months] as const,
-    propertyDashboard: () => ['propertyDashboard'] as const,
+    stats: () => k('dashboard', 'stats'),
+    auditLogs: (filters?: unknown) => k('auditLogs', filters),
+    portfolio: (months?: number) => k('portfolioDashboard', months),
+    propertyDashboard: () => k('propertyDashboard'),
   },
 
   // --- Reports ---
   reports: {
-    dataDateRange: () => ['data-date-range'] as const,
+    dataDateRange: () => k('data-date-range'),
     financialOverview: (
       startDate?: string,
       endDate?: string,
       propertyIds?: string[],
       currency?: string
     ) =>
-      [
-        'financial-overview',
-        startDate,
-        endDate,
-        propertyIds,
-        currency,
-      ] as const,
+      k('financial-overview', startDate, endDate, propertyIds, currency),
     incomeTrend: (
       startDate?: string,
       endDate?: string,
       propertyIds?: string[]
-    ) => ['income-trend', startDate, endDate, propertyIds] as const,
+    ) => k('income-trend', startDate, endDate, propertyIds),
     expenseBreakdown: (
       startDate?: string,
       endDate?: string,
       propertyIds?: string[]
-    ) => ['expense-breakdown', startDate, endDate, propertyIds] as const,
+    ) => k('expense-breakdown', startDate, endDate, propertyIds),
     propertyComparison: (
       startDate?: string,
       endDate?: string,
       propertyIds?: string[]
-    ) => ['property-comparison', startDate, endDate, propertyIds] as const,
+    ) => k('property-comparison', startDate, endDate, propertyIds),
     occupancyTrend: (startDate?: string, endDate?: string) =>
-      ['occupancy-trend', startDate, endDate] as const,
-    taxSummary: (year?: number) => ['tax-summary', year] as const,
+      k('occupancy-trend', startDate, endDate),
+    taxSummary: (year?: number) => k('tax-summary', year),
   },
 
   // --- Notifications ---
   notifications: {
-    all: (params?: unknown) => ['notifications', params] as const,
-    detail: (identifier?: string) => ['notification', identifier] as const,
-    stats: () => ['notification-stats'] as const,
+    all: (params?: unknown) => k('notifications', params),
+    detail: (identifier?: string) => k('notification', identifier),
+    stats: () => k('notification-stats'),
   },
 
   // --- Occupancy Periods ---
   occupancyPeriods: {
     all: (propertyIdentifier?: string) =>
-      ['occupancyPeriods', propertyIdentifier] as const,
+      k('occupancyPeriods', propertyIdentifier),
     detail: (propertyIdentifier?: string, periodIdentifier?: string) =>
-      ['occupancyPeriod', propertyIdentifier, periodIdentifier] as const,
+      k('occupancyPeriod', propertyIdentifier, periodIdentifier),
     timeline: (propertyIdentifier?: string) =>
-      ['propertyTimeline', propertyIdentifier] as const,
+      k('propertyTimeline', propertyIdentifier),
   },
 
   // --- Onboarding ---
   onboarding: {
-    status: () => ['onboarding-status'] as const,
-    countryCurrencies: () => ['country-currencies'] as const,
+    status: () => k('onboarding-status'),
+    countryCurrencies: () => k('country-currencies'),
   },
 
   // --- Broadcasts ---
   broadcasts: {
-    active: () => ['broadcasts', 'active'] as const,
+    active: () => k('broadcasts', 'active'),
     public: (context: 'login' | 'register') =>
-      ['broadcasts', 'public', context] as const,
-    all: () => ['broadcasts'] as const,
+      k('broadcasts', 'public', context),
+    all: () => k('broadcasts'),
   },
 
   // --- Health ---
   health: {
-    status: () => ['health'] as const,
-    info: () => ['info'] as const,
+    status: () => k('health'),
+    info: () => k('info'),
   },
 
   // --- Imports ---
   imports: {
-    all: (page?: number, size?: number) => ['imports', page, size] as const,
-    detail: (identifier?: string | null) =>
-      ['imports', identifier] as const,
+    all: (page?: number, size?: number) => k('imports', page, size),
+    detail: (identifier?: string | null) => k('imports', identifier),
   },
 
   // --- Currencies ---
   currencies: {
-    all: () => ['currencies'] as const,
+    all: () => k('currencies'),
   },
 
   // --- Calendar Feeds ---
   calendarFeeds: {
-    all: () => ['calendarFeeds'] as const,
+    all: () => k('calendarFeeds'),
   },
 
   // --- Takeouts ---
   takeouts: {
     root: ['takeouts'] as const,
-    list: () => ['takeouts', 'list'] as const,
-    detail: (identifier: string) =>
-      ['takeouts', 'detail', identifier] as const,
+    list: () => k('takeouts', 'list'),
+    detail: (identifier: string) => k('takeouts', 'detail', identifier),
   },
 
   // --- WWS ---
   wws: {
     preFill: (propertyIdentifier?: string) =>
-      ['wwsPreFill', propertyIdentifier] as const,
+      k('wwsPreFill', propertyIdentifier),
     calculations: (propertyIdentifier?: string) =>
-      ['wwsCalculations', propertyIdentifier] as const,
+      k('wwsCalculations', propertyIdentifier),
     latest: (propertyIdentifier?: string) =>
-      ['wwsLatest', propertyIdentifier] as const,
+      k('wwsLatest', propertyIdentifier),
   },
 } as const;

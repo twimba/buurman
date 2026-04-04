@@ -5,8 +5,7 @@ import { usePayments, useMarkPaymentAsPaid } from '@/hooks/usePaymentHooks';
 import { usePendingExtensions } from '@/hooks/useContractExtensionHooks';
 import * as extensionsApi from '@/api/contractExtensions';
 import { useTeam } from '@/context/TeamContext';
-import { useToast } from '@/context/ToastContext';
-import { LoadingSpinner } from '@buurman/ui';
+import { LoadingSpinner, useToast } from '@buurman/ui';
 import { MetricHint } from '@/components/common/MetricHint';
 import { ErrorMessage } from './ErrorMessage';
 import { PendingInvitationsPanel } from './dashboard/PendingInvitationsPanel';
@@ -480,3 +479,5 @@ export const DashboardPage = () => {
     </div>
   );
 };
+
+DashboardPage.displayName = 'DashboardPage';

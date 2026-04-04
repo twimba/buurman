@@ -76,3 +76,5 @@ export function ImpersonationBanner() {
     </div>
   );
 }
+
+ImpersonationBanner.displayName = 'ImpersonationBanner';

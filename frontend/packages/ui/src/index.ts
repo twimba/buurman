@@ -39,6 +39,7 @@ export type { Environment } from "./components/EnvironmentBanner";
 export { useFilterState } from "./hooks/useFilterState";
 export { usePagination } from "./hooks/usePagination";
 export type { PageParams } from "./hooks/usePagination";
+export { useTabState } from "./hooks/useTabState";
 
 // Rich text
 export { RichTextEditor } from "./components/RichTextEditor";
@@ -46,3 +47,10 @@ export { RichTextDisplay, stripHtml } from "./components/RichTextDisplay";
 
 // Utilities
 export { cn } from "./utils/cn";
+
+// Auth
+export { createAuthProvider } from "./auth/createAuthProvider";
+export type { AuthContextType, AuthProviderOptions } from "./auth/createAuthProvider";
+
+// Analytics
+export { createAnalytics } from "./utils/analytics";

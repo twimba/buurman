@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
-import { RichTextDisplay } from '@buurman/ui';
+import { LoadingSpinner, Pagination, RefreshButton, RichTextDisplay } from '@buurman/ui';
 import { formatAuditValue } from '@/utils/formatAuditValue';
 import { useNavigate } from 'react-router-dom';
 import { useAllAuditLogs } from '@/hooks/useDashboard';
 import { usePagination } from '@/hooks/usePagination';
-import { LoadingSpinner, Pagination, RefreshButton } from '@buurman/ui';
 import type { RecentActivity } from '@/api/dashboard';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import {

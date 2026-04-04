@@ -6,21 +6,22 @@ import {
   CreateContractPaymentInstructionRequest,
   UpdateContractPaymentInstructionRequest,
 } from '../types/paymentInstruction';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '@buurman/ui';
 import { getErrorMessage } from '../utils/errorMessages';
+import { queryKeys } from '../lib/queryKeys';
 
 // Team-level template hooks
 
 export const usePaymentInstructions = () => {
   return useQuery({
-    queryKey: ['paymentInstructions'],
+    queryKey: queryKeys.paymentInstructions.all(),
     queryFn: () => api.getPaymentInstructions(),
   });
 };
 
 export const usePaymentInstruction = (id: string | undefined) => {
   return useQuery({
-    queryKey: ['paymentInstruction', id],
+    queryKey: queryKeys.paymentInstructions.detail(id),
     queryFn: () => api.getPaymentInstruction(id ?? ''),
     enabled: !!id,
   });
@@ -33,7 +34,9 @@ export const useCreatePaymentInstruction = () => {
     mutationFn: (data: CreatePaymentInstructionRequest) =>
       api.createPaymentInstruction(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['paymentInstructions'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.paymentInstructions.all(),
+      });
       showToast('Payment instruction created successfully', 'success');
     },
     onError: (error) => {
@@ -49,8 +52,12 @@ export const useUpdatePaymentInstruction = (id: string) => {
     mutationFn: (data: UpdatePaymentInstructionRequest) =>
       api.updatePaymentInstruction(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['paymentInstructions'] });
-      queryClient.invalidateQueries({ queryKey: ['paymentInstruction', id] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.paymentInstructions.all(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.paymentInstructions.detail(id),
+      });
       showToast('Payment instruction updated successfully', 'success');
     },
     onError: (error) => {
@@ -65,7 +72,9 @@ export const useDeletePaymentInstruction = () => {
   return useMutation({
     mutationFn: (id: string) => api.deletePaymentInstruction(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['paymentInstructions'] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.paymentInstructions.all(),
+      });
       showToast('Payment instruction deleted successfully', 'success');
     },
     onError: (error) => {
@@ -80,7 +89,7 @@ export const useContractPaymentInstructions = (
   contractId: string | undefined
 ) => {
   return useQuery({
-    queryKey: ['contractPaymentInstructions', contractId],
+    queryKey: queryKeys.paymentInstructions.byContract(contractId),
     queryFn: () => api.getContractPaymentInstructions(contractId ?? ''),
     enabled: !!contractId,
   });
@@ -90,7 +99,7 @@ export const useCurrentContractPaymentInstruction = (
   contractId: string | undefined
 ) => {
   return useQuery({
-    queryKey: ['currentContractPaymentInstruction', contractId],
+    queryKey: queryKeys.paymentInstructions.currentByContract(contractId),
     queryFn: () => api.getCurrentContractPaymentInstruction(contractId ?? ''),
     enabled: !!contractId,
   });
@@ -104,14 +113,16 @@ export const useCreateContractPaymentInstruction = (contractId: string) => {
       api.createContractPaymentInstruction(contractId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['contractPaymentInstructions', contractId],
+        queryKey: queryKeys.paymentInstructions.byContract(contractId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['currentContractPaymentInstruction', contractId],
+        queryKey: queryKeys.paymentInstructions.currentByContract(contractId),
       });
-      queryClient.invalidateQueries({ queryKey: ['contract', contractId] });
       queryClient.invalidateQueries({
-        queryKey: ['contractAuditLog', contractId],
+        queryKey: queryKeys.contracts.detail(contractId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contracts.auditLog(contractId),
       });
       showToast('Payment instruction assigned successfully', 'success');
     },
@@ -134,14 +145,16 @@ export const useUpdateContractPaymentInstruction = (contractId: string) => {
     }) => api.updateContractPaymentInstruction(contractId, instructionId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['contractPaymentInstructions', contractId],
+        queryKey: queryKeys.paymentInstructions.byContract(contractId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['currentContractPaymentInstruction', contractId],
+        queryKey: queryKeys.paymentInstructions.currentByContract(contractId),
       });
-      queryClient.invalidateQueries({ queryKey: ['contract', contractId] });
       queryClient.invalidateQueries({
-        queryKey: ['contractAuditLog', contractId],
+        queryKey: queryKeys.contracts.detail(contractId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contracts.auditLog(contractId),
       });
       showToast('Payment instruction updated successfully', 'success');
     },
@@ -159,12 +172,14 @@ export const useDeleteContractPaymentInstruction = (contractId: string) => {
       api.deleteContractPaymentInstruction(contractId, instructionId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['contractPaymentInstructions', contractId],
+        queryKey: queryKeys.paymentInstructions.byContract(contractId),
       });
       queryClient.invalidateQueries({
-        queryKey: ['currentContractPaymentInstruction', contractId],
+        queryKey: queryKeys.paymentInstructions.currentByContract(contractId),
       });
-      queryClient.invalidateQueries({ queryKey: ['contract', contractId] });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.contracts.detail(contractId),
+      });
       showToast('Payment instruction deleted successfully', 'success');
     },
     onError: (error) => {

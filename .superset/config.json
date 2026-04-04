@@ -1,0 +1,9 @@
+{
+  "setup": [
+    ".conductor/setup-workspace.sh"
+  ],
+  "teardown": [
+    ".conductor/teardown-workspace.sh"
+  ],
+  "run": []
+}

@@ -12,8 +12,7 @@ import {
   Clock,
   Globe,
 } from "lucide-react";
-import { RefreshButton, Button, ConfirmDialog } from "@buurman/ui";
-import { RichTextEditor } from "@buurman/ui";
+import { RefreshButton, Button, ConfirmDialog, RichTextEditor } from "@buurman/ui";
 import { formatDistanceToNow } from "date-fns";
 import { formatDate, formatDateTime } from "../utils/dateFormatting";
 import {

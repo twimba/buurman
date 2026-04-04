@@ -15,3 +15,5 @@ export const FeatureGate = ({
   const { isEnabled } = useFeatureFlags();
   return isEnabled(flag) ? <>{children}</> : <>{fallback}</>;
 };
+
+FeatureGate.displayName = 'FeatureGate';

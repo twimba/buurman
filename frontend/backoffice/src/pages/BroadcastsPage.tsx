@@ -9,7 +9,7 @@ import {
   AlertTriangle,
   AlertCircle,
 } from "lucide-react";
-import { RefreshButton, ConfirmDialog, Button } from "@buurman/ui";
+import { RefreshButton, ConfirmDialog, Button, RichTextEditor, RichTextDisplay } from "@buurman/ui";
 import { format, isPast, isFuture, parseISO } from "date-fns";
 import {
   useBroadcasts,
@@ -18,8 +18,6 @@ import {
   useDeleteBroadcast,
 } from "../hooks/useBroadcasts";
 import { LoadingSpinner } from "../components/LoadingSpinner";
-import { RichTextEditor } from "@buurman/ui";
-import { RichTextDisplay } from "@buurman/ui";
 import {
   TargetTeamSelector,
   TargetUserSelector,

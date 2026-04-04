@@ -24,10 +24,8 @@ import {
   useDeleteFee,
 } from '@/hooks/usePropertyFinancialsHooks';
 import { deleteFinancingPayment as deleteFinancingPaymentApi } from '@/api/propertyFinancials';
-import { useToast } from '@/context/ToastContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { LoadingSpinner } from '@buurman/ui';
-import { RichTextDisplay } from '@buurman/ui';
+import { LoadingSpinner, RichTextDisplay, useToast } from '@buurman/ui';
 import type {
   PropertyFinancialSummaryResponse,
   PropertyAcquisitionResponse,

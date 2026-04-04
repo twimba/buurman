@@ -11,6 +11,8 @@ interface State {
 }
 
 class ErrorBoundary extends Component<Props, State> {
+  static displayName = 'ErrorBoundary';
+
   public state: State = {
     hasError: false,
   };

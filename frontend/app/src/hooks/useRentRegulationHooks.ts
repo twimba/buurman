@@ -1,18 +1,19 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '@buurman/ui';
 import { getErrorMessage } from '../utils/errorMessages';
 import * as rentRegulationsApi from '../api/rentRegulations';
+import { queryKeys } from '../lib/queryKeys';
 
 export const useRentRegulationCountries = () => {
   return useQuery({
-    queryKey: ['rentRegulationCountries'],
+    queryKey: queryKeys.rentRegulation.countries(),
     queryFn: rentRegulationsApi.getCountries,
   });
 };
 
 export const useRentRegulationCountryDetail = (code: string | undefined) => {
   return useQuery({
-    queryKey: ['rentRegulationCountry', code],
+    queryKey: queryKeys.rentRegulation.countryDetail(code),
     queryFn: () => rentRegulationsApi.getCountryDetail(code ?? ''),
     enabled: !!code,
   });
@@ -20,7 +21,7 @@ export const useRentRegulationCountryDetail = (code: string | undefined) => {
 
 export const useRentRegulationCurrentRules = (code: string | undefined) => {
   return useQuery({
-    queryKey: ['rentRegulationCurrentRules', code],
+    queryKey: queryKeys.rentRegulation.currentRules(code),
     queryFn: () => rentRegulationsApi.getCurrentRules(code ?? ''),
     enabled: !!code,
   });
@@ -31,7 +32,7 @@ export const useRentRegulationRulesByYear = (
   year: number | undefined
 ) => {
   return useQuery({
-    queryKey: ['rentRegulationRules', code, year],
+    queryKey: queryKeys.rentRegulation.rulesByYear(code, year),
     queryFn: () => rentRegulationsApi.getRulesByYear(code ?? '', year ?? 0),
     enabled: !!code && !!year,
   });
@@ -42,7 +43,7 @@ export const useRentRegulationRegionRules = (
   regionCode: string | undefined
 ) => {
   return useQuery({
-    queryKey: ['rentRegulationRegionRules', code, regionCode],
+    queryKey: queryKeys.rentRegulation.regionRules(code, regionCode),
     queryFn: () =>
       rentRegulationsApi.getRegionCurrentRules(code ?? '', regionCode ?? ''),
     enabled: !!code && !!regionCode,
