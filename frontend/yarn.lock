@@ -209,15 +209,28 @@ __metadata:
   dependencies:
     "@radix-ui/react-dialog": "npm:^1.1.14"
     "@tailwindcss/postcss": "npm:4.2.2"
+    "@tiptap/core": "npm:3.22.1"
+    "@tiptap/extension-highlight": "npm:3.22.1"
+    "@tiptap/extension-link": "npm:3.22.1"
+    "@tiptap/extension-placeholder": "npm:3.22.1"
+    "@tiptap/extension-text-align": "npm:3.22.1"
+    "@tiptap/extension-underline": "npm:3.22.1"
+    "@tiptap/pm": "npm:3.22.1"
+    "@tiptap/react": "npm:3.22.1"
+    "@tiptap/starter-kit": "npm:3.22.1"
+    "@types/dompurify": "npm:3.2.0"
     "@types/react": "npm:19.2.14"
     "@types/react-dom": "npm:19.2.3"
     clsx: "npm:^2.1.1"
+    dompurify: "npm:3.3.3"
     lucide-react: "npm:1.7.0"
     prettier: "npm:3.8.1"
     tailwind-merge: "npm:^3.3.0"
     tailwindcss: "npm:4.2.2"
     typescript: "npm:6.0.2"
   peerDependencies:
+    keycloak-js: ^26.0.0
+    posthog-js: ^1.0.0
     react: 19.0.0
     react-dom: 19.0.0
     react-router-dom: 7.0.0
@@ -3074,7 +3087,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/google.maps@npm:^3.53.1, @types/google.maps@npm:^3.54.10":
+"@types/google.maps@npm:3.58.1, @types/google.maps@npm:^3.53.1, @types/google.maps@npm:^3.54.10":
   version: 3.58.1
   resolution: "@types/google.maps@npm:3.58.1"
   checksum: 10c0/0247c61d2aeb216d04ab9392602ef41d58328c6336ed4e9a4e9e69834002e82c116a34def2bf4ceb31c4292f14899815058da4bb8d803147295c6b47c1162621
@@ -3766,6 +3779,7 @@ __metadata:
     "@tiptap/react": "npm:3.22.1"
     "@tiptap/starter-kit": "npm:3.22.1"
     "@types/dompurify": "npm:3.2.0"
+    "@types/google.maps": "npm:3.58.1"
     "@types/react": "npm:19.2.14"
     "@types/react-dom": "npm:19.2.3"
     "@types/react-is": "npm:19.2.0"

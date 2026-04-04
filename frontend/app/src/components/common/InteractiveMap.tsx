@@ -1,3 +1,4 @@
+/// <reference types="@types/google.maps" />
 import { useState, useCallback } from 'react';
 import {
   APIProvider,

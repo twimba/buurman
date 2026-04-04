@@ -124,7 +124,10 @@ export const DashboardPage = () => {
         {/* Summary cards skeleton */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-surface-card rounded-lg border border-border-default p-6 space-y-3">
+            <div
+              key={i}
+              className="bg-surface-card rounded-lg border border-border-default p-6 space-y-3"
+            >
               <div className="flex items-center justify-between">
                 <Skeleton className="h-4 w-28" />
                 <Skeleton className="h-8 w-8 rounded" />
@@ -412,8 +415,10 @@ export const DashboardPage = () => {
         </div>
 
         {paymentsLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <LoadingSpinner />
+          <div className="space-y-3 py-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className="h-12 w-full rounded" />
+            ))}
           </div>
         ) : unpaidPayments.length > 0 ? (
           <div className="divide-y divide-border-default">
@@ -458,8 +463,10 @@ export const DashboardPage = () => {
                         {isOverdue && (
                           <span className="text-error-text ml-1">
                             (
-                            {formatRelative(payment.dueDate)
-                              .replace(/ ago$/, '')}{' '}
+                            {formatRelative(payment.dueDate).replace(
+                              / ago$/,
+                              ''
+                            )}{' '}
                             overdue)
                           </span>
                         )}
