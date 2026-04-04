@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTabState } from '@/hooks/useTabState';
 import {
   usePayment,
@@ -331,6 +331,8 @@ const ReceivalsTable = ({
 export const PaymentDetailPage = () => {
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const backTo = (location.state as { backTo?: string })?.backTo ?? '/payments';
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
   const [isEditing, setIsEditing] = useState(false);
@@ -483,7 +485,7 @@ export const PaymentDetailPage = () => {
         <PageHeader
           title={`Payment #${payment.identifier}`}
           subtitle={`Contract #${payment.contract.identifier}`}
-          backTo="/payments"
+          backTo={backTo}
           badge={<PaymentStatusBadge status={payment.status} />}
           actions={
             <>

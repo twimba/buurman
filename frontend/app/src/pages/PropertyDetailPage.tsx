@@ -2213,7 +2213,9 @@ export const PropertyDetailPage = () => {
                             key={expense.identifier}
                             className="hover:bg-primary-50 cursor-pointer"
                             onClick={() =>
-                              navigate(`/expenses/${expense.identifier}`)
+                              navigate(`/expenses/${expense.identifier}`, {
+                                state: { backTo: `/properties/${id}?tab=expenses` },
+                              })
                             }
                           >
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-500 dark:text-primary-300">

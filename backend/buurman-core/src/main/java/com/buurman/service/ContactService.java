@@ -2,10 +2,12 @@ package com.buurman.service;
 
 import static com.buurman.util.SidGenerator.newContactId;
 
+import java.math.BigDecimal;
 import java.net.URL;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -41,8 +43,10 @@ import com.buurman.dto.request.DuplicateCheckRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateContactAddressRequest;
 import com.buurman.dto.request.UpdateContactRequest;
+import com.buurman.dto.response.BalanceStatus;
 import com.buurman.dto.response.ContactActivityItem;
 import com.buurman.dto.response.ContactAddressResponse;
+import com.buurman.dto.response.ContactBalanceSummary;
 import com.buurman.dto.response.ContactListItemResponse;
 import com.buurman.dto.response.ContactPropertyAssignment;
 import com.buurman.dto.response.ContactResponse;
@@ -67,6 +71,7 @@ import com.buurman.repository.ContactTagRepository;
 import com.buurman.repository.ContractPartyRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.DocumentRepository;
+import com.buurman.repository.PaymentRepository;
 import com.buurman.repository.PhotoRepository;
 import com.buurman.repository.PropertyContactHistoryRepository;
 import com.buurman.repository.PropertyRepository;
@@ -102,6 +107,7 @@ public class ContactService {
   private final ContactTagRepository contactTagRepository;
   private final ContactNoteRepository contactNoteRepository;
   private final ContactRelationshipRepository contactRelationshipRepository;
+  private final PaymentRepository paymentRepository;
   private final MetricsService metricsService;
   private final Clock clock;
 
@@ -187,6 +193,10 @@ public class ContactService {
     Map<UUID, Optional<String>> thumbnailsByContactId =
         resolveMainPhotoThumbnails(contactIds, teamId);
 
+    // Batch-load balance data for all contacts on the page
+    Map<UUID, ContactBalanceSummary> balancesByContactId =
+        resolveBalanceSummaries(contactIds, teamId);
+
     List<ContactListItemResponse> responses =
         result.items().stream()
             .map(
@@ -196,8 +206,14 @@ public class ContactService {
                       tagsByContactId.getOrDefault(contact.getId(), List.of());
                   Optional<String> thumbnailUrl =
                       thumbnailsByContactId.getOrDefault(contact.getId(), Optional.empty());
+                  Optional<ContactBalanceSummary> balance =
+                      Optional.ofNullable(balancesByContactId.get(contact.getId()))
+                          .filter(
+                              b ->
+                                  b.status() != BalanceStatus.ALL_PAID
+                                      || cwc.activeContractCount() > 0);
                   return contactMapper.toListItem(
-                      contact, cwc.activeContractCount(), contactTags, thumbnailUrl);
+                      contact, cwc.activeContractCount(), contactTags, thumbnailUrl, balance);
                 })
             .toList();
     return PageResponse.of(
@@ -232,6 +248,92 @@ public class ContactService {
       result.put(contactId, thumbnailUrl);
     }
     return result;
+  }
+
+  /**
+   * Combines outstanding balances, "all paid" detection, and guarantor balances into a single map.
+   * Returns a ContactBalanceSummary for each contact that has any payment history or guarantor
+   * role.
+   */
+  private Map<UUID, ContactBalanceSummary> resolveBalanceSummaries(
+      List<UUID> contactIds, UUID teamId) {
+    if (contactIds.isEmpty()) {
+      return Map.of();
+    }
+
+    // 1. Outstanding balances (PENDING/PARTIALLY_PAID/OVERDUE, due today or past)
+    Map<UUID, ContactBalanceSummary> outstanding =
+        paymentRepository.getOutstandingBalancesByContactIds(contactIds, teamId);
+
+    // 2. Contacts with any payment history (for "all paid" detection)
+    Set<UUID> withHistory = paymentRepository.getContactIdsWithPaymentHistory(contactIds, teamId);
+
+    // 3. Guaranteed balances (GUARANTOR role via contract_parties)
+    Map<UUID, PaymentRepository.GuaranteedBalance> guaranteed =
+        paymentRepository.getGuaranteedBalancesByContactIds(contactIds, teamId);
+
+    // Merge: outstanding takes precedence, then all-paid, then guarantor-only
+    Map<UUID, ContactBalanceSummary> merged = new HashMap<>(outstanding);
+
+    // Add "all paid" entries for contacts with history but no outstanding balance
+    // Only fetch team currency if we actually need it (lazy)
+    Optional<String> teamCurrency = Optional.empty();
+    for (UUID contactId : withHistory) {
+      if (!merged.containsKey(contactId)) {
+        if (teamCurrency.isEmpty()) {
+          teamCurrency = paymentRepository.findCurrencyByTeamId(teamId);
+        }
+        Optional<PaymentRepository.GuaranteedBalance> g =
+            Optional.ofNullable(guaranteed.get(contactId));
+        merged.put(
+            contactId,
+            new ContactBalanceSummary(
+                BigDecimal.ZERO,
+                teamCurrency.orElse("EUR"),
+                BalanceStatus.ALL_PAID,
+                0,
+                g.map(PaymentRepository.GuaranteedBalance::amount),
+                g.map(PaymentRepository.GuaranteedBalance::paymentCount)));
+      }
+    }
+
+    // Merge guarantor data into existing outstanding entries
+    for (var entry : guaranteed.entrySet()) {
+      Optional.ofNullable(merged.get(entry.getKey()))
+          .filter(existing -> existing.guaranteedAmount().isEmpty())
+          .ifPresent(
+              existing -> {
+                PaymentRepository.GuaranteedBalance g = entry.getValue();
+                merged.put(
+                    entry.getKey(),
+                    new ContactBalanceSummary(
+                        existing.outstandingAmount(),
+                        existing.currency(),
+                        existing.status(),
+                        existing.outstandingPaymentCount(),
+                        Optional.of(g.amount()),
+                        Optional.of(g.paymentCount())));
+              });
+    }
+
+    // Add guarantor-only contacts (no payment history as primary tenant). These contacts
+    // haven't directly owed anything, so status is NONE (not ALL_PAID).
+    for (var entry : guaranteed.entrySet()) {
+      if (!merged.containsKey(entry.getKey())) {
+        PaymentRepository.GuaranteedBalance g = entry.getValue();
+        merged.put(
+            entry.getKey(),
+            new ContactBalanceSummary(
+                BigDecimal.ZERO,
+                g.currency(),
+                BalanceStatus.NONE,
+                0,
+                Optional.of(g.amount()),
+                Optional.of(g.paymentCount())));
+      }
+    }
+
+    return merged;
   }
 
   @PreAuthorize("hasRole('TEAM_VIEWER')")
@@ -697,6 +799,14 @@ public class ContactService {
                 Collectors.toMap(
                     ContractParty::getContractId, party -> party.getRole().name(), (a, b) -> a));
 
+    // Load balance summary (outstanding + all-paid + guaranteed)
+    // Suppress ALL_PAID indicator for contacts with no active contracts
+    Optional<ContactBalanceSummary> balanceSummary =
+        Optional.ofNullable(
+                resolveBalanceSummaries(List.of(contact.getId()), teamId).get(contact.getId()))
+            .filter(
+                b -> b.status() != BalanceStatus.ALL_PAID || !activeContracts.isEmpty());
+
     List<ContactPropertyAssignment> activeProperties = new ArrayList<>();
     for (Contract activeContract : activeContracts) {
       Property property = propertiesById.get(activeContract.getPropertyId());
@@ -739,6 +849,7 @@ public class ContactService {
         response.tags(),
         response.dataRetentionStatus(),
         activeProperties,
+        balanceSummary,
         response.createdAt(),
         response.updatedAt());
   }

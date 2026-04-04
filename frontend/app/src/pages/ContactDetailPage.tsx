@@ -38,7 +38,13 @@ import {
   ContractPartyRole,
   PARTY_ROLE_LABELS,
 } from '@/types/contract';
-import { Button, ConfirmDialog, ModalWrapper, PageHeader } from '@buurman/ui';
+import {
+  Button,
+  ConfirmDialog,
+  ModalWrapper,
+  PageHeader,
+  StatusBadge,
+} from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import {
   Edit,
@@ -61,6 +67,8 @@ import {
   Calendar,
   Building2,
   ShieldAlert,
+  CheckCircle2,
+  Shield,
 } from 'lucide-react';
 import client from '@/api/client';
 import { useFormatDate } from '@/hooks/useFormatDate';
@@ -77,6 +85,13 @@ const CONTACT_TYPE_LABELS: Record<string, string> = {
   COMPANY: 'Company',
   SERVICE_PROVIDER: 'Service Provider',
 };
+
+const formatCurrency = (amount: number, currency: string) =>
+  new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency,
+    minimumFractionDigits: 2,
+  }).format(amount);
 
 const RoleBadge = ({ role }: { role: ContractPartyRole }) => (
   <span
@@ -493,10 +508,28 @@ export const ContactDetailPage = () => {
         {activeTab === 'overview' && (
           <div id="tabpanel-overview" role="tabpanel" className="space-y-6">
             {/* Contextual Alerts */}
-            {(overdueFollowUps.length > 0 ||
+            {(contact.balanceSummary?.status === 'OVERDUE' ||
+              overdueFollowUps.length > 0 ||
               expiringContracts.length > 0 ||
               missingFields.length > 0) && (
               <div className="space-y-2">
+                {contact.balanceSummary?.status === 'OVERDUE' && (
+                  <div className="flex items-center gap-2 bg-error-bg text-error-text px-4 py-3 rounded-lg">
+                    <Wallet className="h-4 w-4 flex-shrink-0" />
+                    <span className="text-sm font-medium">
+                      {formatCurrency(
+                        contact.balanceSummary.outstandingAmount,
+                        contact.balanceSummary.currency
+                      )}{' '}
+                      overdue ({contact.balanceSummary.outstandingPaymentCount}{' '}
+                      payment
+                      {contact.balanceSummary.outstandingPaymentCount !== 1
+                        ? 's'
+                        : ''}
+                      )
+                    </span>
+                  </div>
+                )}
                 {overdueFollowUps.length > 0 && (
                   <div className="flex items-center gap-2 bg-error-bg text-error-text px-4 py-3 rounded-lg">
                     <AlertCircle className="h-4 w-4 flex-shrink-0" />
@@ -526,6 +559,123 @@ export const ContactDetailPage = () => {
                 )}
               </div>
             )}
+
+            {/* Balance Summary */}
+            {contact.balanceSummary?.status === 'ALL_PAID' && (
+              <div
+                className="rounded-lg shadow-sm border border-success-border bg-success-bg/30 p-4 flex items-center justify-between"
+                role="status"
+                aria-label="All payments are up to date"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-success-bg text-success-text">
+                    <CheckCircle2 className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-text-secondary">
+                      Payment Status
+                    </p>
+                    <p className="text-xl font-semibold text-text-primary">
+                      All Paid
+                    </p>
+                  </div>
+                </div>
+                <StatusBadge label="All paid" color="green" size="sm" />
+              </div>
+            )}
+            {contact.balanceSummary &&
+              (contact.balanceSummary.status === 'PENDING' ||
+                contact.balanceSummary.status === 'OVERDUE') && (
+                <div
+                  className={`rounded-lg shadow-sm border p-4 flex items-center justify-between ${
+                    contact.balanceSummary.status === 'OVERDUE'
+                      ? 'border-error-border bg-error-bg/30'
+                      : 'border-warning-border bg-warning-bg/30'
+                  }`}
+                  role="status"
+                  aria-label={`Outstanding balance: ${formatCurrency(contact.balanceSummary.outstandingAmount, contact.balanceSummary.currency)}, ${contact.balanceSummary.outstandingPaymentCount} payment${contact.balanceSummary.outstandingPaymentCount !== 1 ? 's' : ''} ${contact.balanceSummary.status === 'OVERDUE' ? 'overdue' : 'pending'}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`p-2 rounded-lg ${
+                        contact.balanceSummary.status === 'OVERDUE'
+                          ? 'bg-error-bg text-error-text'
+                          : 'bg-warning-bg text-warning-text'
+                      }`}
+                    >
+                      <Wallet className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-text-secondary">
+                        Outstanding Balance
+                      </p>
+                      <p className="text-xl font-semibold text-text-primary">
+                        {formatCurrency(
+                          contact.balanceSummary.outstandingAmount,
+                          contact.balanceSummary.currency
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <StatusBadge
+                      label={
+                        contact.balanceSummary.status === 'OVERDUE'
+                          ? 'Overdue'
+                          : 'Pending'
+                      }
+                      color={
+                        contact.balanceSummary.status === 'OVERDUE'
+                          ? 'red'
+                          : 'amber'
+                      }
+                      size="sm"
+                    />
+                    <p className="text-xs text-text-muted mt-1">
+                      {contact.balanceSummary.outstandingPaymentCount} payment
+                      {contact.balanceSummary.outstandingPaymentCount !== 1
+                        ? 's'
+                        : ''}
+                    </p>
+                  </div>
+                </div>
+              )}
+            {contact.balanceSummary?.guaranteedAmount != null &&
+              contact.balanceSummary.guaranteedAmount > 0 && (
+                <div
+                  className="rounded-lg shadow-sm border border-info-border bg-info-bg/30 p-4 flex items-center justify-between"
+                  role="status"
+                  aria-label={`Guarantees ${formatCurrency(contact.balanceSummary.guaranteedAmount, contact.balanceSummary.currency)}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-info-bg text-info-text">
+                      <Shield className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-text-secondary">
+                        Guaranteed Amount
+                      </p>
+                      <p className="text-xl font-semibold text-text-primary">
+                        {formatCurrency(
+                          contact.balanceSummary.guaranteedAmount,
+                          contact.balanceSummary.currency
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <StatusBadge label="Guarantor" color="blue" size="sm" />
+                    <p className="text-xs text-text-muted mt-1">
+                      {contact.balanceSummary.guaranteedPaymentCount ?? 0}{' '}
+                      payment
+                      {(contact.balanceSummary.guaranteedPaymentCount ?? 0) !==
+                      1
+                        ? 's'
+                        : ''}
+                    </p>
+                  </div>
+                </div>
+              )}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Contact Information */}
@@ -815,7 +965,7 @@ export const ContactDetailPage = () => {
         {/* ===== Tab: Financials ===== */}
         {activeTab === 'financials' && (
           <div id="tabpanel-financials" role="tabpanel">
-            <ContactFinancialsTab contactIdentifier={id} />
+            <ContactFinancialsTab contactIdentifier={id} backTo={`/contacts/${id}?tab=financials`} />
           </div>
         )}
 

@@ -5,7 +5,15 @@ import {
   ContactType,
   CONTACT_TYPE_LABELS,
 } from '@/types/contact';
-import { Mail, Phone, FileText, Calendar } from 'lucide-react';
+import {
+  Mail,
+  Phone,
+  FileText,
+  Calendar,
+  Wallet,
+  CheckCircle2,
+  Shield,
+} from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { Avatar } from '@/components/common/Avatar';
@@ -20,6 +28,13 @@ const CONTACT_TYPE_COLORS: Record<ContactType, BadgeColorVariant> = {
 
 const MAX_VISIBLE_TAGS = 3;
 
+const formatCurrency = (amount: number, currency: string) =>
+  new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency,
+    minimumFractionDigits: 2,
+  }).format(amount);
+
 interface ContactCardProps {
   contact: ContactListItemResponse;
 }
@@ -29,6 +44,7 @@ export const ContactCard = ({ contact }: ContactCardProps) => {
   const tags = contact.tags ?? [];
   const visibleTags = tags.slice(0, MAX_VISIBLE_TAGS);
   const overflowCount = tags.length - MAX_VISIBLE_TAGS;
+  const balance = contact.balanceSummary;
 
   return (
     <div
@@ -103,6 +119,65 @@ export const ContactCard = ({ contact }: ContactCardProps) => {
           </a>
         )}
       </div>
+
+      {/* Balance Indicator */}
+      {balance && balance.status === 'ALL_PAID' && (
+        <div
+          className="flex items-center justify-between gap-2 px-3 py-2 mb-2 rounded bg-success-bg text-success-text"
+          role="status"
+          aria-label="All payments are up to date"
+        >
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4" />
+            <span className="text-sm font-medium">All paid</span>
+          </div>
+        </div>
+      )}
+      {balance &&
+        (balance.status === 'PENDING' || balance.status === 'OVERDUE') && (
+          <div
+            className={`flex items-center justify-between gap-2 px-3 py-2 mb-2 rounded ${
+              balance.status === 'OVERDUE'
+                ? 'bg-error-bg text-error-text'
+                : 'bg-warning-bg text-warning-text'
+            }`}
+            role="status"
+            aria-label={`Outstanding balance: ${formatCurrency(balance.outstandingAmount, balance.currency)}, ${balance.outstandingPaymentCount} payment${balance.outstandingPaymentCount !== 1 ? 's' : ''} ${balance.status === 'OVERDUE' ? 'overdue' : 'pending'}`}
+          >
+            <div className="flex items-center gap-2">
+              <Wallet className="h-4 w-4" />
+              <span className="text-sm font-medium">
+                {formatCurrency(balance.outstandingAmount, balance.currency)}
+              </span>
+            </div>
+            <span className="text-xs">
+              {balance.outstandingPaymentCount} payment
+              {balance.outstandingPaymentCount !== 1 ? 's' : ''}
+              {balance.status === 'OVERDUE' ? ' overdue' : ' pending'}
+            </span>
+          </div>
+        )}
+      {balance &&
+        balance.guaranteedAmount != null &&
+        balance.guaranteedAmount > 0 && (
+          <div
+            className="flex items-center justify-between gap-2 px-3 py-2 mb-2 rounded bg-info-bg text-info-text"
+            role="status"
+            aria-label={`Guarantees ${formatCurrency(balance.guaranteedAmount, balance.currency)}`}
+          >
+            <div className="flex items-center gap-2">
+              <Shield className="h-4 w-4" />
+              <span className="text-sm font-medium">
+                Guarantees{' '}
+                {formatCurrency(balance.guaranteedAmount, balance.currency)}
+              </span>
+            </div>
+            <span className="text-xs">
+              {balance.guaranteedPaymentCount ?? 0} payment
+              {(balance.guaranteedPaymentCount ?? 0) !== 1 ? 's' : ''}
+            </span>
+          </div>
+        )}
 
       {/* Footer: Active Contracts + Created Date */}
       <div className="flex items-center justify-between gap-2 text-text-secondary px-3 py-2 bg-surface-inset rounded">

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTabState } from '@/hooks/useTabState';
 import {
   useExpense,
@@ -45,6 +45,8 @@ import {
 export const ExpenseDetailPage = () => {
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const backTo = (location.state as { backTo?: string })?.backTo ?? '/expenses';
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
   const [isEditing, setIsEditing] = useState(false);
@@ -124,7 +126,7 @@ export const ExpenseDetailPage = () => {
         <PageHeader
           title={`Expense #${expense.identifier}`}
           subtitle={expense.description}
-          backTo="/expenses"
+          backTo={backTo}
           badge={<ExpenseCategoryBadge category={expense.category} />}
           actions={
             <>

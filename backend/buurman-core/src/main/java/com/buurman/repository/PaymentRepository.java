@@ -1,29 +1,37 @@
 package com.buurman.repository;
 
+import static com.buurman.domain.Payment.PaymentStatus.OVERDUE;
 import static com.buurman.domain.Payment.PaymentStatus.PAID;
 import static com.buurman.domain.Payment.PaymentStatus.PARTIALLY_PAID;
 import static com.buurman.domain.Payment.PaymentStatus.PENDING;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static java.time.ZoneOffset.UTC;
+import static java.util.Objects.requireNonNull;
 import static org.jooq.impl.DSL.count;
+import static org.jooq.impl.DSL.countDistinct;
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.min;
 import static org.jooq.impl.DSL.sum;
 import static org.jooq.impl.DSL.table;
 
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jooq.Table;
+import org.jooq.impl.DSL;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
@@ -32,14 +40,19 @@ import com.buurman.domain.MonthlyAmount;
 import com.buurman.domain.Payment;
 import com.buurman.domain.Sid;
 import com.buurman.dto.request.PageRequest;
+import com.buurman.dto.response.BalanceStatus;
+import com.buurman.dto.response.ContactBalanceSummary;
 import com.buurman.exception.NotFoundException;
 import com.buurman.mapper.PaymentRecordMapper;
+import com.buurman.util.MoneyAmount;
 import com.buurman.util.PaginationHelper;
 import com.buurman.util.PaginationHelper.PaginatedResult;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Repository
+@Slf4j
 @RequiredArgsConstructor
 public class PaymentRepository {
 
@@ -438,6 +451,247 @@ public class PaymentRepository {
         .where(PAYMENTS.ID.eq(id).and(PAYMENTS.TEAM_ID.eq(teamId)))
         .execute();
   }
+
+  /**
+   * Batch-loads outstanding balance per contact for a collection of contact IDs. Outstanding =
+   * sum(payment amounts) - sum(receivals) for PENDING/PARTIALLY_PAID/OVERDUE payments whose due
+   * date is today or in the past. Uses payments.contact_id (PRIMARY_TENANT link only, no
+   * double-counting via contract_parties).
+   */
+  public Map<UUID, ContactBalanceSummary> getOutstandingBalancesByContactIds(
+      Collection<UUID> contactIds, UUID teamId) {
+    if (contactIds.isEmpty()) {
+      return Map.of();
+    }
+
+    LocalDate today = LocalDate.now(clock);
+
+    // Raw table/field refs — payment_receivals and contract_parties have no JOOQ generated class
+    Table<?> receivalsTable = table("payment_receivals");
+    Field<UUID> rPaymentId = field("payment_id", UUID.class);
+    Field<UUID> rTeamId = field("team_id", UUID.class);
+    Field<Long> rAmount = field("amount", Long.class);
+    Field<LocalDateTime> rDeletedAt = field("deleted_at", LocalDateTime.class);
+
+    Table<?> cpTable = table("contract_parties");
+    Field<UUID> cpContactId = field("contract_parties.contact_id", UUID.class);
+    Field<UUID> cpContractId = field("contract_parties.contract_id", UUID.class);
+    Field<UUID> cpTeamId = field("contract_parties.team_id", UUID.class);
+    Field<String> cpRole = field("contract_parties.role", String.class);
+    Field<LocalDateTime> cpDeletedAt = field("contract_parties.deleted_at", LocalDateTime.class);
+
+    Field<UUID> rPaymentIdAlias = rPaymentId.as("r_payment_id");
+    Field<BigDecimal> receivedAlias = sum(rAmount).as("received");
+
+    var receivalsSubquery =
+        dsl.select(rPaymentIdAlias, receivedAlias)
+            .from(receivalsTable)
+            .where(rDeletedAt.isNull().and(rTeamId.eq(teamId)))
+            .groupBy(rPaymentId)
+            .asTable("r");
+
+    Field<UUID> joinField = requireNonNull(receivalsSubquery.field(rPaymentIdAlias));
+    Field<BigDecimal> receivedField = requireNonNull(receivalsSubquery.field(receivedAlias));
+
+    var result =
+        dsl.select(
+                cpContactId.as("cp_contact_id"),
+                PAYMENTS.CURRENCY,
+                sum(PAYMENTS.AMOUNT).as("total_owed"),
+                DSL.coalesce(sum(receivedField), BigDecimal.ZERO).as("total_received"),
+                DSL.max(
+                        DSL.when(PAYMENTS.DUE_DATE.lt(today), DSL.inline(1))
+                            .otherwise(DSL.inline(0)))
+                    .as("has_overdue"),
+                countDistinct(PAYMENTS.ID).as("payment_count"))
+            .from(PAYMENTS)
+            .join(cpTable)
+            .on(
+                cpContractId.eq(PAYMENTS.CONTRACT_ID)
+                    .and(cpTeamId.eq(teamId))
+                    .and(cpRole.eq("PRIMARY_TENANT"))
+                    .and(cpDeletedAt.isNull()))
+            .leftJoin(receivalsSubquery)
+            .on(joinField.eq(PAYMENTS.ID))
+            .where(
+                cpContactId
+                    .in(contactIds)
+                    .and(PAYMENTS.TEAM_ID.eq(teamId))
+                    .and(PAYMENTS.STATUS.in(PENDING.name(), PARTIALLY_PAID.name(), OVERDUE.name()))
+                    .and(PAYMENTS.DUE_DATE.le(today))
+                    .and(PAYMENTS.DELETED_AT.isNull()))
+            .groupBy(cpContactId, PAYMENTS.CURRENCY)
+            .fetch();
+
+    Map<UUID, ContactBalanceSummary> balances = new HashMap<>();
+    for (var row : result) {
+      UUID contactId = row.get("cp_contact_id", UUID.class);
+      if (balances.containsKey(contactId)) {
+        log.warn(
+            "Contact {} has outstanding payments in multiple currencies; showing first only",
+            contactId);
+        continue;
+      }
+      String currency = row.get(PAYMENTS.CURRENCY);
+      BigDecimal totalOwed = row.get("total_owed", BigDecimal.class);
+      BigDecimal totalReceived = row.get("total_received", BigDecimal.class);
+      Integer hasOverdueFlag = row.get("has_overdue", Integer.class);
+      Integer paymentCount = row.get("payment_count", Integer.class);
+
+      BigDecimal outstanding =
+          MoneyAmount.sumToMajorUnits(totalOwed, currency)
+              .subtract(MoneyAmount.sumToMajorUnits(totalReceived, currency));
+
+      if (outstanding.compareTo(BigDecimal.ZERO) > 0) {
+        boolean overdue = hasOverdueFlag != null && hasOverdueFlag > 0;
+        balances.put(
+            contactId,
+            new ContactBalanceSummary(
+                outstanding,
+                currency,
+                overdue ? BalanceStatus.OVERDUE : BalanceStatus.PENDING,
+                paymentCount != null ? paymentCount : 0,
+                Optional.empty(),
+                Optional.empty()));
+      }
+    }
+    return balances;
+  }
+
+  /**
+   * Returns the subset of contactIds that have at least one non-deleted, non-cancelled payment (any
+   * status). Used to distinguish "all paid" contacts from "no financial data" contacts.
+   */
+  public Set<UUID> getContactIdsWithPaymentHistory(Collection<UUID> contactIds, UUID teamId) {
+    if (contactIds.isEmpty()) {
+      return Set.of();
+    }
+
+    Table<?> cpTable = table("contract_parties");
+    Field<UUID> cpContactId = field("contract_parties.contact_id", UUID.class);
+    Field<UUID> cpContractId = field("contract_parties.contract_id", UUID.class);
+    Field<UUID> cpTeamId = field("contract_parties.team_id", UUID.class);
+    Field<String> cpRole = field("contract_parties.role", String.class);
+    Field<LocalDateTime> cpDeletedAt = field("contract_parties.deleted_at", LocalDateTime.class);
+
+    return new java.util.HashSet<>(
+        dsl.select(cpContactId)
+            .from(PAYMENTS)
+            .join(cpTable)
+            .on(
+                cpContractId.eq(PAYMENTS.CONTRACT_ID)
+                    .and(cpTeamId.eq(teamId))
+                    .and(cpRole.eq("PRIMARY_TENANT"))
+                    .and(cpDeletedAt.isNull()))
+            .where(
+                cpContactId
+                    .in(contactIds)
+                    .and(PAYMENTS.TEAM_ID.eq(teamId))
+                    .and(PAYMENTS.STATUS.ne("CANCELLED"))
+                    .and(PAYMENTS.DELETED_AT.isNull()))
+            .groupBy(cpContactId)
+            .fetch(cpContactId));
+  }
+
+  /**
+   * Batch-loads guaranteed balance per contact for contacts who are GUARANTOR on contracts. Joins
+   * contract_parties (GUARANTOR role) → contracts → payments, subtracting receivals to get net
+   * outstanding guaranteed amount.
+   */
+  public Map<UUID, GuaranteedBalance> getGuaranteedBalancesByContactIds(
+      Collection<UUID> contactIds, UUID teamId) {
+    if (contactIds.isEmpty()) {
+      return Map.of();
+    }
+
+    LocalDate today = LocalDate.now(clock);
+
+    Table<?> cpTable = table("contract_parties");
+    Field<UUID> cpContactId = field("contract_parties.contact_id", UUID.class);
+    Field<UUID> cpContractId = field("contract_parties.contract_id", UUID.class);
+    Field<UUID> cpTeamId = field("contract_parties.team_id", UUID.class);
+    Field<String> cpRole = field("contract_parties.role", String.class);
+    Field<LocalDateTime> cpDeletedAt = field("contract_parties.deleted_at", LocalDateTime.class);
+
+    // Receivals subquery (same as outstanding query)
+    Table<?> receivalsTable = table("payment_receivals");
+    Field<UUID> rPaymentId = field("payment_id", UUID.class);
+    Field<UUID> rTeamId = field("team_id", UUID.class);
+    Field<Long> rAmount = field("amount", Long.class);
+    Field<LocalDateTime> rDeletedAt = field("deleted_at", LocalDateTime.class);
+
+    Field<UUID> rPaymentIdAlias = rPaymentId.as("gr_payment_id");
+    Field<BigDecimal> receivedAlias = sum(rAmount).as("gr_received");
+
+    var receivalsSubquery =
+        dsl.select(rPaymentIdAlias, receivedAlias)
+            .from(receivalsTable)
+            .where(rDeletedAt.isNull().and(rTeamId.eq(teamId)))
+            .groupBy(rPaymentId)
+            .asTable("gr");
+
+    Field<UUID> joinField = requireNonNull(receivalsSubquery.field(rPaymentIdAlias));
+    Field<BigDecimal> receivedField = requireNonNull(receivalsSubquery.field(receivedAlias));
+
+    var result =
+        dsl.select(
+                cpContactId.as("guarantor_contact_id"),
+                PAYMENTS.CURRENCY,
+                sum(PAYMENTS.AMOUNT).as("total_owed"),
+                DSL.coalesce(sum(receivedField), BigDecimal.ZERO).as("total_received"),
+                countDistinct(PAYMENTS.ID).as("payment_count"))
+            .from(cpTable)
+            .join(PAYMENTS)
+            .on(
+                PAYMENTS
+                    .CONTRACT_ID
+                    .eq(cpContractId)
+                    .and(PAYMENTS.TEAM_ID.eq(teamId))
+                    .and(PAYMENTS.STATUS.in(PENDING.name(), PARTIALLY_PAID.name(), OVERDUE.name()))
+                    .and(PAYMENTS.DUE_DATE.le(today))
+                    .and(PAYMENTS.DELETED_AT.isNull()))
+            .leftJoin(receivalsSubquery)
+            .on(joinField.eq(PAYMENTS.ID))
+            .where(
+                cpContactId
+                    .in(contactIds)
+                    .and(cpTeamId.eq(teamId))
+                    .and(cpRole.eq("GUARANTOR"))
+                    .and(cpDeletedAt.isNull()))
+            .groupBy(cpContactId, PAYMENTS.CURRENCY)
+            .fetch();
+
+    Map<UUID, GuaranteedBalance> guarantees = new HashMap<>();
+    for (var row : result) {
+      UUID contactId = row.get("guarantor_contact_id", UUID.class);
+      if (guarantees.containsKey(contactId)) {
+        log.warn(
+            "Guarantor {} has guaranteed payments in multiple currencies; showing first only",
+            contactId);
+        continue;
+      }
+      String currency = row.get(PAYMENTS.CURRENCY);
+      BigDecimal totalOwed = row.get("total_owed", BigDecimal.class);
+      BigDecimal totalReceived = row.get("total_received", BigDecimal.class);
+      Integer paymentCount = row.get("payment_count", Integer.class);
+
+      BigDecimal guaranteed =
+          MoneyAmount.sumToMajorUnits(totalOwed, currency)
+              .subtract(MoneyAmount.sumToMajorUnits(totalReceived, currency));
+
+      if (guaranteed.compareTo(BigDecimal.ZERO) > 0) {
+        guarantees.put(
+            contactId,
+            new GuaranteedBalance(guaranteed, currency, paymentCount != null ? paymentCount : 0));
+      }
+    }
+    return guarantees;
+  }
+
+  /**
+   * Lightweight container for guaranteed balance data before merging into ContactBalanceSummary.
+   */
+  public record GuaranteedBalance(BigDecimal amount, String currency, int paymentCount) {}
 
   /**
    * Matches payments explicitly linked to a contact OR payments from contracts where the contact is
