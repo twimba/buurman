@@ -26,6 +26,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [token, setToken] = useState<string | undefined>(undefined);
+  const [initError, setInitError] = useState<string | null>(null);
   const initStarted = useRef(false);
 
   useEffect(() => {
@@ -69,7 +70,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             setToken(undefined);
           };
         }
-      } catch (error) {
+      } catch {
+        setInitError(
+          "Authentication service is currently unavailable. Please try again later."
+        );
         setIsLoading(false);
       }
     };
@@ -97,6 +101,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     token,
     keycloak,
   };
+
+  if (initError) {
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem" }}>
+        <div style={{ textAlign: "center", maxWidth: "28rem" }}>
+          <h1 style={{ fontSize: "1.25rem", fontWeight: 600, marginBottom: "0.5rem" }}>
+            Service Unavailable
+          </h1>
+          <p style={{ color: "#6b7280", marginBottom: "1rem" }}>{initError}</p>
+          <button
+            onClick={() => window.location.reload()}
+            style={{ padding: "0.5rem 1rem", background: "#3b82f6", color: "white", border: "none", borderRadius: "0.5rem", cursor: "pointer" }}
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

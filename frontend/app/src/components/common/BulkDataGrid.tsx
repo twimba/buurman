@@ -11,7 +11,7 @@ import {
 
 // --- Types ---
 
-export interface BulkBulkColumnDef {
+export interface BulkColumnDef {
   key: string;
   label: string;
   type: 'date' | 'number' | 'text' | 'select';
@@ -36,7 +36,7 @@ interface RowState {
 type DateFormat = 'DD/MM/YYYY' | 'MM/DD/YYYY' | 'YYYY-MM-DD';
 
 interface BulkDataGridProps {
-  columns: BulkBulkColumnDef[];
+  columns: BulkColumnDef[];
   onSubmit: (
     rows: RowData[],
     callbacks: {
@@ -55,7 +55,7 @@ interface BulkDataGridProps {
 
 function parseClipboard(
   text: string,
-  columns: BulkBulkColumnDef[],
+  columns: BulkColumnDef[],
   dateFormat?: DateFormat
 ): RowData[] {
   const lines = text
