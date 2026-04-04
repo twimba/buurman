@@ -19,7 +19,7 @@
     "@types/react-dom": "19.2.3",
     "prettier": "3.8.1",
     "tailwindcss": "4.2.2",
-    "typescript": "5.9.3"
+    "typescript": "6.0.2"
   },
   "peerDependencies": {
     "react": "19.0.0",
