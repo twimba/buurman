@@ -3,6 +3,7 @@ package com.buurman.domain;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -85,6 +86,7 @@ public class Contract {
   @Builder.Default private Optional<BigDecimal> rentAdjustmentValue = Optional.empty();
   @Builder.Default private Optional<LandlordType> landlordType = Optional.empty();
   @Builder.Default private Optional<String> regionCode = Optional.empty();
+  @Builder.Default private List<String> documentLanguages = List.of("en");
   private Instant createdAt;
   private Instant updatedAt;
   private UUID createdBy;

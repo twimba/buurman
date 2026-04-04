@@ -93,8 +93,9 @@ public class ContractExtensionController {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void cancelExtension(
       @PathVariable ContractIdentifier contractId,
-      @PathVariable ContractExtensionIdentifier extensionId) {
+      @PathVariable ContractExtensionIdentifier extensionId,
+      @RequestParam(defaultValue = "false") boolean deleteDocuments) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    extensionService.cancelExtension(contractId, extensionId, principal);
+    extensionService.cancelExtension(contractId, extensionId, deleteDocuments, principal);
   }
 }

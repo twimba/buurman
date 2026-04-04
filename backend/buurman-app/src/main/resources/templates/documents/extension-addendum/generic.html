@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"/>
+<style>
+@page { margin: 40px 50px 70px 50px;
+  @bottom-center { content: element(running-footer); }
+  @bottom-right { content: 'Page ' counter(page) ' of ' counter(pages); font-size: 9px;
+    color: #a8a29e; font-family: 'Satoshi', 'Helvetica Neue', Helvetica, Arial, sans-serif; } }
+@page:first { margin: 0; @bottom-center { content: none; } @bottom-right { content: none; } }
+.running-footer { position: running(running-footer); width: 100%; border-top: 1px solid
+  #e7e5e4; padding-top: 8px; font-size: 9px; color: #a8a29e; }
+body { font-family: 'Satoshi', 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0;
+  color: #292524; font-size: 13px; line-height: 1.5; }
+
+/* Cover page */
+.cover { page-break-after: always; padding: 0; height: 100vh; }
+.cover-accent { height: 6px; background-color: #0c4a6e; width: 100%; }
+.cover-body { padding: 120px 60px 60px 60px; }
+.cover-title { font-size: 36px; font-weight: 700; color: #0c4a6e; letter-spacing: 2px;
+  margin-bottom: 6px; }
+.cover-subtitle { font-size: 14px; color: #78716c; letter-spacing: 1.5px;
+  text-transform: uppercase; margin-bottom: 4px; }
+.cover-id { font-size: 12px; color: #a8a29e; margin-bottom: 40px; }
+.cover-divider { border: none; border-top: 1px solid #e7e5e4; margin: 0 0 30px 0; }
+.cover-summary { width: 100%; border-collapse: collapse; margin-top: 0; }
+.cover-summary td { padding: 14px 20px; vertical-align: top; width: 50%; }
+.cs-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px;
+  color: #78716c; font-weight: 600; margin-bottom: 4px; }
+.cs-value { font-size: 15px; color: #292524; font-weight: 500; }
+.cover-footer { margin-top: 60px; font-size: 11px; color: #a8a29e; }
+
+/* Content pages */
+.page { page-break-before: always; }
+.page-header { border-bottom: 2px solid #0c4a6e; padding-bottom: 10px; margin-bottom: 24px;
+  font-size: 20px; font-weight: 700; color: #0c4a6e; }
+.section-title { font-size: 16px; font-weight: 700; color: #0c4a6e; margin: 28px 0 14px 0;
+  padding-left: 12px; border-left: 4px solid #0284c7; }
+.preamble { font-size: 13px; color: #292524; line-height: 1.7; margin-bottom: 20px; }
+.detail-grid { width: 100%; border-collapse: collapse; }
+.detail-grid td { padding: 10px 16px; vertical-align: top; width: 50%; }
+.fg-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px;
+  color: #78716c; font-weight: 600; margin-bottom: 3px; }
+.fg-value { font-size: 14px; color: #292524; }
+.text-block { background-color: #fafaf9; border: 1px solid #e7e5e4;
+  padding: 16px; font-size: 13px; color: #44403c; line-height: 1.6; margin-top: 8px; }
+
+/* Agreement & terms */
+.agreement-text { font-size: 13px; color: #292524; line-height: 1.7; margin: 12px 0 8px 0; }
+.term-item { font-size: 13px; color: #292524; line-height: 1.6; margin: 6px 0 6px 20px;
+  padding-left: 8px; }
+.term-bullet { color: #0c4a6e; font-weight: 700; margin-right: 6px; }
+
+/* Legal clause */
+.legal-clause { margin-top: 20px; padding: 12px 16px; background-color: #f0f9ff;
+  border: 1px solid #bae6fd; font-size: 12px; color: #0c4a6e; line-height: 1.5; }
+
+/* Signatures */
+.acknowledgment { font-size: 13px; color: #292524; line-height: 1.6; margin: 16px 0 24px 0;
+  font-style: italic; }
+.signature-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+.signature-table td { vertical-align: top; padding: 0; }
+.signature-cell { width: 45%; padding: 20px 16px; }
+.signature-spacer { width: 10%; }
+.signature-role { font-size: 14px; font-weight: 700; color: #0c4a6e; margin-bottom: 50px;
+  text-transform: uppercase; letter-spacing: 1px; }
+.signature-line { border-bottom: 1px solid #292524; height: 1px; margin-bottom: 6px; }
+.sig-field-row { margin-bottom: 14px; }
+.sig-field-label { font-size: 11px; color: #57534e; display: inline; }
+.sig-field-line { display: inline-block; width: 75%; border-bottom: 1px solid #78716c;
+  margin-left: 4px; height: 14px; vertical-align: bottom; }
+
+/* Footer elements */
+.disclaimer { margin-top: 40px; padding: 16px; background-color: #fafaf9;
+  border: 1px solid #e7e5e4; font-size: 11px; color: #78716c; line-height: 1.5;
+  font-style: italic; }
+.generated-date { text-align: center; margin-top: 20px; font-size: 11px; color: #a8a29e; }
+</style>
+</head>
+<body>
+
+<!-- Running footer -->
+<div class="running-footer" th:text="#{addendum.footer}"></div>
+
+<!-- Page 1: Cover -->
+<div class="cover">
+  <div class="cover-accent"></div>
+  <div class="cover-body">
+    <div class="cover-title" th:text="#{addendum.title(${extensionNumber})}">CONTRACT EXTENSION ADDENDUM #1</div>
+    <div class="cover-subtitle" th:text="#{addendum.subtitle}">Extension Document</div>
+    <div class="cover-id" th:text="${extensionIdentifier}"></div>
+
+    <hr class="cover-divider"/>
+
+    <table class="cover-summary">
+      <tr>
+        <td>
+          <div class="cs-label" th:text="#{addendum.summary.property}">Property</div>
+          <div class="cs-value" th:text="${propertyAddress}"></div>
+        </td>
+        <td>
+          <div class="cs-label" th:text="#{addendum.summary.primaryContact}">Primary Contact</div>
+          <div class="cs-value" th:text="${primaryContactName}"></div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="cs-label" th:text="#{addendum.summary.contract}">Contract</div>
+          <div class="cs-value" th:text="${contractIdentifier}"></div>
+        </td>
+        <td>
+          <div class="cs-label" th:text="#{addendum.summary.contractType}">Contract Type</div>
+          <div class="cs-value" th:text="${contractType}"></div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="cs-label" th:text="#{addendum.summary.previousRent}">Previous Rent</div>
+          <div class="cs-value" th:text="${previousRent}"></div>
+        </td>
+        <td>
+          <div class="cs-label" th:text="#{addendum.summary.newRent}">New Rent</div>
+          <div class="cs-value" th:text="${newRent}"></div>
+        </td>
+      </tr>
+    </table>
+
+    <div class="cover-footer" th:text="${generatedDate}"></div>
+  </div>
+</div>
+
+<!-- Page 2: Preamble + Terms of Extension -->
+<div class="page">
+  <div class="page-header" th:text="#{addendum.title(${extensionNumber})}">Contract Extension Addendum #1</div>
+
+  <!-- Preamble -->
+  <p class="preamble" th:text="#{addendum.preamble(${contractIdentifier}, ${contractStartDate}, ${propertyFullAddress})}"></p>
+
+  <!-- Parties -->
+  <div class="section-title" th:text="#{addendum.section.parties}">Parties</div>
+  <table class="detail-grid">
+    <tr>
+      <td>
+        <div class="fg-label" th:text="#{addendum.signature.landlord}">Landlord</div>
+        <div class="fg-value">&#8212;</div>
+      </td>
+      <td>
+        <div class="fg-label" th:text="#{addendum.signature.tenant}">Tenant</div>
+        <div class="fg-value" th:text="${contactNames}"></div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div class="fg-label" th:text="#{addendum.field.propertyAddress}">Property Address</div>
+        <div class="fg-value" th:text="${propertyFullAddress}"></div>
+      </td>
+      <td>
+        <div class="fg-label" th:text="#{addendum.field.contractRef}">Contract Reference</div>
+        <div class="fg-value" th:text="${contractIdentifier}"></div>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Terms of Extension -->
+  <div class="section-title" th:text="#{addendum.section.termsOfExtension}">Terms of Extension</div>
+
+  <p class="agreement-text" th:text="#{addendum.agreement}"></p>
+
+  <div class="term-item">
+    <span class="term-bullet">1.</span>
+    <span th:text="#{addendum.term.endDate(${previousEndDate}, ${newEndDate})}"></span>
+  </div>
+  <div class="term-item">
+    <span class="term-bullet">2.</span>
+    <span th:text="#{addendum.term.rent(${previousRent}, ${newRent})}"></span>
+  </div>
+
+  <!-- Extension details grid -->
+  <table class="detail-grid" style="margin-top: 16px;">
+    <tr>
+      <td>
+        <div class="fg-label" th:text="#{addendum.field.extensionNumber}">Extension Number</div>
+        <div class="fg-value" th:text="${extensionNumber}"></div>
+      </td>
+      <td>
+        <div class="fg-label" th:text="#{addendum.field.adjustmentType}">Rent Adjustment Type</div>
+        <div class="fg-value" th:text="${adjustmentType}"></div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div class="fg-label" th:text="#{addendum.field.adjustmentValue}">Adjustment Value</div>
+        <div class="fg-value" th:text="${adjustmentValue}"></div>
+      </td>
+      <td>
+        <div class="fg-label" th:text="#{addendum.field.activated}">Activated</div>
+        <div class="fg-value" th:text="${activatedDate}"></div>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Notes -->
+  <div th:if="${notes != null and !notes.isBlank()}">
+    <div class="section-title" th:text="#{addendum.section.notes}">Notes</div>
+    <div class="text-block" th:text="${notes}"></div>
+  </div>
+</div>
+
+<!-- Page 3: Legal + Signatures -->
+<div class="page">
+  <div class="page-header" th:text="#{addendum.section.signatures}">Signatures</div>
+
+  <!-- Country-specific legal clause -->
+  <div th:if="${legalClause != null}" class="legal-clause">
+    <strong th:text="#{addendum.section.legalClauses}">Legal References</strong><br/>
+    <span th:text="${legalClause}"></span>
+  </div>
+
+  <!-- Acknowledgment -->
+  <p class="acknowledgment" th:text="#{addendum.acknowledgment}"></p>
+
+  <!-- Signature blocks using table layout -->
+  <table class="signature-table">
+    <tr>
+      <td class="signature-cell">
+        <div class="signature-role" th:text="#{addendum.signature.landlord}">Landlord</div>
+        <div class="signature-line"></div>
+        <div style="font-size: 10px; color: #78716c; margin-bottom: 20px;" th:text="#{addendum.signature.signatureLabel}">Signature</div>
+        <div class="sig-field-row">
+          <span class="sig-field-label" th:text="#{addendum.signature.name}">Name:</span>
+          <span class="sig-field-line"></span>
+        </div>
+        <div class="sig-field-row">
+          <span class="sig-field-label" th:text="#{addendum.signature.date}">Date:</span>
+          <span class="sig-field-line"></span>
+        </div>
+      </td>
+      <td class="signature-spacer"></td>
+      <td class="signature-cell">
+        <div class="signature-role" th:text="#{addendum.signature.tenant}">Tenant</div>
+        <div class="signature-line"></div>
+        <div style="font-size: 10px; color: #78716c; margin-bottom: 20px;" th:text="#{addendum.signature.signatureLabel}">Signature</div>
+        <div class="sig-field-row">
+          <span class="sig-field-label" th:text="#{addendum.signature.name}">Name:</span>
+          <span class="sig-field-line"></span>
+        </div>
+        <div class="sig-field-row">
+          <span class="sig-field-label" th:text="#{addendum.signature.date}">Date:</span>
+          <span class="sig-field-line"></span>
+        </div>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Disclaimer -->
+  <div class="disclaimer" th:text="#{addendum.disclaimer}"></div>
+
+  <!-- Generated date -->
+  <div class="generated-date" th:text="#{addendum.generated(${generatedDate})}"></div>
+</div>
+
+</body>
+</html>

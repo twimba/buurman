@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as rentPeriodsApi from '../api/rentPeriods';
+import type { GenerateRentChangeDocumentsRequest } from '../api/rentPeriods';
 import {
   CreateRentPeriodRequest,
   UpdateRentPeriodRequest,
@@ -94,6 +95,33 @@ export const useDeleteRentPeriod = (contractId: string) => {
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['propertyDashboard'] });
       showToast('Rent period deleted successfully', 'success');
+    },
+    onError: (error) => {
+      showToast(getErrorMessage(error), 'error');
+    },
+  });
+};
+
+export const useGenerateRentChangeDocuments = (contractId: string) => {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  return useMutation({
+    mutationFn: ({
+      periodId,
+      request,
+    }: {
+      periodId: string;
+      request: GenerateRentChangeDocumentsRequest;
+    }) =>
+      rentPeriodsApi.generateRentChangeDocuments(contractId, periodId, request),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['contractDocuments', contractId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['contractAuditLog', contractId],
+      });
+      showToast('Documents generated successfully', 'success');
     },
     onError: (error) => {
       showToast(getErrorMessage(error), 'error');

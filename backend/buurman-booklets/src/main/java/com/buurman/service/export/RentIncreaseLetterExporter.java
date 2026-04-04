@@ -1,382 +1,169 @@
 package com.buurman.service.export;
 
-import static com.buurman.service.export.BookletHelper.appendDocumentEnd;
-import static com.buurman.service.export.BookletHelper.appendDocumentStart;
-import static com.buurman.service.export.BookletHelper.escapeHtml;
-import static com.buurman.service.export.BookletHelper.formatDate;
 import static com.buurman.service.export.BookletHelper.formatEnumValue;
-import static java.util.stream.Collectors.toMap;
 
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.MessageSource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Contact;
 import com.buurman.domain.ContactAddress;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
-import com.buurman.domain.ContractParty;
-import com.buurman.domain.ContractPartyRole;
 import com.buurman.domain.Property;
 import com.buurman.domain.identifier.ContractExtensionIdentifier;
-import com.buurman.repository.ContactAddressRepository;
-import com.buurman.repository.ContactRepository;
+import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.PropertyRepository;
-import com.buurman.service.ContractPartyService;
 import com.buurman.util.CurrencyUtils;
 
-import lombok.RequiredArgsConstructor;
-
 @Component
-@RequiredArgsConstructor
 public class RentIncreaseLetterExporter {
 
   private final ContractExtensionRepository extensionRepository;
   private final ContractRepository contractRepository;
   private final PropertyRepository propertyRepository;
-  private final ContactRepository contactRepository;
-  private final ContactAddressRepository contactAddressRepository;
-  private final ContractPartyService contractPartyService;
-  private final PdfRenderer pdfRenderer;
+  private final DocumentExporterHelper helper;
+  private final DocumentTemplateService documentTemplateService;
+  private final MessageSource messageSource;
   private final Clock clock;
 
+  public RentIncreaseLetterExporter(
+      ContractExtensionRepository extensionRepository,
+      ContractRepository contractRepository,
+      PropertyRepository propertyRepository,
+      DocumentExporterHelper helper,
+      DocumentTemplateService documentTemplateService,
+      @Qualifier("documentMessageSource") MessageSource messageSource,
+      Clock clock) {
+    this.extensionRepository = extensionRepository;
+    this.contractRepository = contractRepository;
+    this.propertyRepository = propertyRepository;
+    this.helper = helper;
+    this.documentTemplateService = documentTemplateService;
+    this.messageSource = messageSource;
+    this.clock = clock;
+  }
+
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
   public byte[] generate(ContractExtensionIdentifier extensionIdentifier, UUID teamId) {
+    return generate(Optional.empty(), extensionIdentifier, teamId, "en");
+  }
+
+  @PreAuthorize("hasAnyRole('TEAM_ADMIN', 'TEAM_EDITOR', 'TEAM_VIEWER')")
+  public byte[] generate(
+      Optional<ContractIdentifier> contractIdentifier,
+      ContractExtensionIdentifier extensionIdentifier,
+      UUID teamId,
+      String lang) {
     ContractExtension extension =
         extensionRepository.getByIdentifierAndTeamId(extensionIdentifier, teamId);
     Contract contract = contractRepository.getByIdAndTeamId(extension.getContractId(), teamId);
+    DocumentExporterHelper.validateContractOwnership(contractIdentifier, contract, "Extension");
     Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
 
-    List<ContractParty> parties =
-        contractPartyService.getPartiesForContract(contract.getId(), teamId);
-    Set<UUID> contactIds = new HashSet<>();
-    for (ContractParty party : parties) {
-      party.getContactId().ifPresent(contactIds::add);
-    }
-    Map<UUID, Contact> contactMap =
-        contactRepository.findByIdsAndTeamId(contactIds, teamId).stream()
-            .collect(toMap(Contact::getId, t -> t));
+    DocumentExporterHelper.PartyData partyData = helper.loadPartyData(contract.getId(), teamId);
 
-    // Find primary contact and their mailing/current address
-    Optional<Contact> primaryContact = findPrimaryContact(parties, contactMap);
-    Optional<ContactAddress> contactAddress =
-        primaryContact.flatMap(t -> findMailingAddress(t.getId(), teamId));
+    Optional<Contact> primaryContact =
+        helper.findPrimaryContact(partyData.parties(), partyData.contactMap());
+    Optional<ContactAddress> address =
+        primaryContact.flatMap(c -> helper.findMailingAddress(c.getId(), teamId));
 
-    String html = buildHtml(extension, contract, property, primaryContact, contactAddress);
-    return pdfRenderer.renderHtml(html);
+    Locale locale = DocumentTemplateService.resolveLocale(lang);
+    Map<String, Object> variables =
+        buildTemplateVariables(extension, contract, property, primaryContact, address, locale);
+
+    return documentTemplateService.renderToPdf("rent-increase-letter", locale, variables);
   }
 
-  // ── HTML building ───────────────────────────────────────────────
-
-  private String buildHtml(
-      ContractExtension extension,
-      Contract contract,
-      Property property,
-      Optional<Contact> primaryContact,
-      Optional<ContactAddress> contactAddress) {
-    DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH);
-    String generatedDate = LocalDate.now(clock).format(dateFmt);
-    String ccy = extension.getNewRentAmount().currency();
-
-    String css = letterCss();
-
-    StringBuilder html = new StringBuilder(4096);
-    appendDocumentStart(html, css);
-
-    appendLetterContent(
-        html,
-        extension,
-        contract,
-        property,
-        primaryContact,
-        contactAddress,
-        ccy,
-        dateFmt,
-        generatedDate);
-
-    appendDocumentEnd(html);
-    return html.toString();
-  }
-
-  // ── Letter content ──────────────────────────────────────────────
-
-  private void appendLetterContent(
-      StringBuilder html,
+  private Map<String, Object> buildTemplateVariables(
       ContractExtension extension,
       Contract contract,
       Property property,
       Optional<Contact> primaryContact,
       Optional<ContactAddress> contactAddress,
-      String ccy,
-      DateTimeFormatter dateFmt,
-      String generatedDate) {
-    html.append("<div class='letter'>");
+      Locale locale) {
+    DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", locale);
+    String generatedDate = LocalDate.now(clock).format(dateFmt);
+    String ccy = extension.getNewRentAmount().currency();
 
-    // Header with date and reference
-    html.append("<div class='letter-header'>");
-    html.append("<div class='letter-date'>").append(generatedDate).append("</div>");
-    html.append("<div class='letter-ref'>Ref: ")
-        .append(escapeHtml(extension.getIdentifier().orElseThrow().value()))
-        .append("</div>");
-    html.append("</div>");
+    Map<String, Object> vars = new HashMap<>();
+
+    vars.put("generatedDate", generatedDate);
+    vars.put(
+        "extensionIdentifier",
+        extension
+            .getIdentifier()
+            .orElseThrow(() -> new IllegalStateException("Extension missing identifier"))
+            .value());
+    vars.put("extensionNumber", extension.getExtensionNumber());
 
     // Addressee
-    html.append("<div class='letter-addressee'>");
-    primaryContact.ifPresentOrElse(
-        tenant -> {
-          html.append("<div class='addressee-name'>");
-          html.append(escapeHtml(tenant.getDisplayName()));
-          html.append("</div>");
-          contactAddress.ifPresent(
-              addr -> {
-                html.append("<div>").append(escapeHtml(addr.getStreet())).append("</div>");
-                html.append("<div>")
-                    .append(escapeHtml(addr.getPostalCode()))
-                    .append(" ")
-                    .append(escapeHtml(addr.getCity()))
-                    .append("</div>");
-                html.append("<div>").append(escapeHtml(addr.getCountryCode())).append("</div>");
-              });
-        },
-        () -> html.append("<div class='addressee-name'>Resident</div>"));
-    html.append("</div>");
+    vars.put("primaryContactName", primaryContact.map(Contact::getDisplayName).orElse(null));
+    vars.put("contactAddress", helper.buildAddressMap(contactAddress).orElse(null));
 
-    // Subject line
-    html.append("<div class='letter-subject'>Re: Notice of Rent Adjustment</div>");
-
-    // Salutation
-    String salutation =
-        primaryContact.map(t -> "Dear " + escapeHtml(t.getDisplayName())).orElse("Dear Resident");
-    html.append("<div class='letter-body'>");
-    html.append("<p>").append(salutation).append(",</p>");
-
-    // Body paragraph 1 — notification
+    // Property
     String propertyAddress =
-        escapeHtml(property.getStreet())
-            + ", "
-            + escapeHtml(property.getPostalCode())
-            + " "
-            + escapeHtml(property.getCity());
-    String oldRent = CurrencyUtils.formatCurrency(extension.getPreviousRentAmount().value(), ccy);
-    String newRent = CurrencyUtils.formatCurrency(extension.getNewRentAmount().value(), ccy);
-    String effectiveDate =
+        property.getStreet() + ", " + property.getPostalCode() + " " + property.getCity();
+    vars.put("propertyAddress", propertyAddress);
+
+    // Rent
+    vars.put(
+        "previousRent",
+        CurrencyUtils.formatCurrency(extension.getPreviousRentAmount().value(), ccy));
+    vars.put("newRent", CurrencyUtils.formatCurrency(extension.getNewRentAmount().value(), ccy));
+
+    // Effective date: day after previous end date
+    String rentEffectiveDate =
+        BookletHelper.formatDate(extension.getPreviousEndDate().plusDays(1), dateFmt);
+    vars.put("rentEffectiveDate", rentEffectiveDate);
+
+    // Adjustment
+    vars.put("adjustmentType", formatEnumValue(extension.getRentAdjustmentType().name()));
+    vars.put(
+        "adjustmentBasis",
+        helper.buildAdjustmentBasis(messageSource, "letter.body.adjustment.", extension, locale));
+    vars.put(
+        "adjustmentValue",
         extension
-            .getNewEndDate()
-            .map(d -> formatDate(extension.getPreviousEndDate(), dateFmt))
-            .orElse(formatDate(extension.getPreviousEndDate(), dateFmt));
-    // The effective date for rent change is the day after previous end date
-    // (i.e., the start of the new extension period)
-    String rentEffectiveDate = formatDate(extension.getPreviousEndDate().plusDays(1), dateFmt);
+            .getRentAdjustmentValue()
+            .map(
+                v ->
+                    DocumentExporterHelper.formatAdjustmentDisplay(
+                        v, extension.getRentAdjustmentType()))
+            .orElse(null));
 
-    html.append(
-            "<p>This letter is to inform you that the monthly rent for the property at <strong>")
-        .append(propertyAddress)
-        .append("</strong> will be adjusted from <strong>")
-        .append(oldRent)
-        .append("</strong> to <strong>")
-        .append(newRent)
-        .append("</strong>, effective <strong>")
-        .append(rentEffectiveDate)
-        .append("</strong>.</p>");
+    // End date
+    vars.put(
+        "newEndDate",
+        extension.getNewEndDate().map(d -> BookletHelper.formatDate(d, dateFmt)).orElse(null));
 
-    // Body paragraph 2 — adjustment basis
-    String adjustmentBasis = buildAdjustmentBasis(extension);
-    html.append("<p>").append(adjustmentBasis).append("</p>");
+    // Contract
+    vars.put(
+        "contractIdentifier",
+        contract
+            .getIdentifier()
+            .orElseThrow(() -> new IllegalStateException("Contract missing identifier"))
+            .value());
 
-    // Body paragraph 3 — contract extension details
-    html.append("<p>This adjustment is part of contract extension #")
-        .append(extension.getExtensionNumber());
-    extension
-        .getNewEndDate()
-        .ifPresentOrElse(
-            endDate ->
-                html.append(", extending your lease until <strong>")
-                    .append(formatDate(endDate, dateFmt))
-                    .append("</strong>."),
-            () -> html.append(", for an indefinite contract period."));
-    html.append("</p>");
+    // Country-specific legal clause
+    Optional<String> countryCode = contract.getCountryCode();
+    vars.put("countryCode", countryCode.orElse(null));
+    vars.put(
+        "legalClause",
+        helper.resolveLegalClause(messageSource, "legal.", countryCode, locale).orElse(null));
 
-    // Summary table
-    html.append("<table class='summary-table'>");
-    html.append("<tr><td class='st-label'>Contract Reference</td><td class='st-value'>")
-        .append(contract.getIdentifier().orElseThrow().value())
-        .append("</td></tr>");
-    html.append("<tr><td class='st-label'>Property</td><td class='st-value'>")
-        .append(propertyAddress)
-        .append("</td></tr>");
-    html.append("<tr><td class='st-label'>Previous Rent</td><td class='st-value'>")
-        .append(oldRent)
-        .append("</td></tr>");
-    html.append("<tr><td class='st-label'>New Rent</td><td class='st-value'><strong>")
-        .append(newRent)
-        .append("</strong></td></tr>");
-    html.append("<tr><td class='st-label'>Adjustment Type</td><td class='st-value'>")
-        .append(formatEnumValue(extension.getRentAdjustmentType().name()))
-        .append("</td></tr>");
-    extension
-        .getRentAdjustmentValue()
-        .ifPresent(
-            v ->
-                html.append("<tr><td class='st-label'>Adjustment Value</td><td class='st-value'>")
-                    .append(formatAdjustmentDisplay(v, extension.getRentAdjustmentType()))
-                    .append("</td></tr>"));
-    html.append("<tr><td class='st-label'>Effective Date</td><td class='st-value'>")
-        .append(rentEffectiveDate)
-        .append("</td></tr>");
-    extension
-        .getNewEndDate()
-        .ifPresent(
-            d ->
-                html.append("<tr><td class='st-label'>New Lease End Date</td><td class='st-value'>")
-                    .append(formatDate(d, dateFmt))
-                    .append("</td></tr>"));
-    html.append("</table>");
-
-    // Closing
-    html.append("<p>Should you have any questions regarding this adjustment, please do not ")
-        .append("hesitate to contact us.</p>");
-    html.append("<p>Kind regards,</p>");
-
-    html.append("</div>");
-
-    // Signature block
-    html.append("<div class='letter-signature'>");
-    html.append("<div class='sig-line'></div>");
-    html.append("<div class='sig-label'>Landlord / Property Manager</div>");
-    html.append("<div class='sig-date'>Date: ____________________________</div>");
-    html.append("</div>");
-
-    // Disclaimer
-    html.append("<div class='letter-disclaimer'>");
-    html.append(
-        "This document is informational and does not constitute a legally binding agreement. "
-            + "The rent adjustment is subject to the terms and conditions of the existing lease "
-            + "agreement and applicable local regulations.");
-    html.append("</div>");
-
-    // Generated footer
-    html.append("<div class='letter-footer'>");
-    html.append("Document generated on ").append(generatedDate);
-    html.append(" &mdash; Buurman Property Management");
-    html.append("</div>");
-
-    html.append("</div>");
-  }
-
-  // ── Helpers ─────────────────────────────────────────────────────
-
-  private Optional<Contact> findPrimaryContact(
-      List<ContractParty> parties, Map<UUID, Contact> contactMap) {
-    return parties.stream()
-        .filter(p -> p.getRole() == ContractPartyRole.PRIMARY_TENANT)
-        .findFirst()
-        .flatMap(p -> p.getContactId().map(contactMap::get));
-  }
-
-  private Optional<ContactAddress> findMailingAddress(UUID contactId, UUID teamId) {
-    List<ContactAddress> addresses = contactAddressRepository.findByContactId(contactId, teamId);
-    // Prefer MAILING address, fall back to CURRENT
-    return addresses.stream()
-        .filter(
-            a ->
-                a.getAddressType() == ContactAddress.AddressType.MAILING
-                    && a.getStatus() == ContactAddress.AddressStatus.ACTIVE)
-        .findFirst()
-        .or(
-            () ->
-                addresses.stream()
-                    .filter(
-                        a ->
-                            a.getAddressType() == ContactAddress.AddressType.CURRENT
-                                && a.getStatus() == ContactAddress.AddressStatus.ACTIVE)
-                    .findFirst());
-  }
-
-  private String buildAdjustmentBasis(ContractExtension extension) {
-    return switch (extension.getRentAdjustmentType()) {
-      case FIXED_PERCENTAGE -> {
-        String pct =
-            extension
-                .getRentAdjustmentValue()
-                .map(v -> v.stripTrailingZeros().toPlainString() + "%")
-                .orElse("a percentage");
-        yield "The adjustment is based on a fixed percentage increase of " + pct + ".";
-      }
-      case FIXED_AMOUNT -> {
-        String amt =
-            extension
-                .getRentAdjustmentValue()
-                .map(v -> CurrencyUtils.formatCurrency(v, extension.getNewRentAmount().currency()))
-                .orElse("a fixed amount");
-        yield "The adjustment is based on a fixed increase of " + amt + ".";
-      }
-      case MANUAL -> "The rent has been manually adjusted as part of the contract extension.";
-      case NONE -> "No rent adjustment has been applied for this extension period.";
-    };
-  }
-
-  private String formatAdjustmentDisplay(
-      java.math.BigDecimal value, ContractExtension.RentAdjustmentType type) {
-    return switch (type) {
-      case FIXED_PERCENTAGE -> value.stripTrailingZeros().toPlainString() + "%";
-      case FIXED_AMOUNT -> value.stripTrailingZeros().toPlainString();
-      default -> value.stripTrailingZeros().toPlainString();
-    };
-  }
-
-  // ── CSS ─────────────────────────────────────────────────────────
-
-  private static String letterCss() {
-    return """
-    @page { margin: 60px 60px 70px 60px; size: A4; }
-    body { font-family: 'Satoshi', 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; \
-    padding: 0; color: #292524; font-size: 13px; line-height: 1.6; }
-
-    .letter { max-width: 100%; }
-
-    .letter-header { margin-bottom: 40px; }
-    .letter-date { font-size: 14px; color: #292524; font-weight: 500; }
-    .letter-ref { font-size: 12px; color: #78716c; margin-top: 4px; letter-spacing: 0.5px; }
-
-    .letter-addressee { margin-bottom: 30px; line-height: 1.5; font-size: 14px; color: #292524; }
-    .addressee-name { font-weight: 600; font-size: 15px; }
-
-    .letter-subject { font-size: 16px; font-weight: 700; color: #0c4a6e; \
-    margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid #0c4a6e; }
-
-    .letter-body { font-size: 13px; color: #292524; line-height: 1.7; }
-    .letter-body p { margin: 0 0 14px 0; }
-    .letter-body strong { font-weight: 600; }
-
-    .summary-table { width: 100%; border-collapse: collapse; margin: 20px 0 24px 0; \
-    border: 1px solid #e7e5e4; border-radius: 6px; }
-    .summary-table tr { border-bottom: 1px solid #e7e5e4; }
-    .summary-table tr:last-child { border-bottom: none; }
-    .st-label { padding: 10px 16px; font-size: 11px; text-transform: uppercase; \
-    letter-spacing: 0.8px; color: #78716c; font-weight: 600; width: 40%; \
-    background-color: #fafaf9; vertical-align: top; }
-    .st-value { padding: 10px 16px; font-size: 13px; color: #292524; vertical-align: top; }
-
-    .letter-signature { margin-top: 50px; width: 50%; }
-    .sig-line { border-bottom: 1px solid #292524; margin-bottom: 8px; height: 40px; }
-    .sig-label { font-size: 13px; color: #57534e; font-weight: 500; }
-    .sig-date { font-size: 12px; color: #57534e; margin-top: 16px; }
-
-    .letter-disclaimer { margin-top: 40px; padding: 14px 16px; background-color: #fafaf9; \
-    border: 1px solid #e7e5e4; border-radius: 6px; font-size: 11px; color: #78716c; \
-    line-height: 1.5; font-style: italic; }
-
-    .letter-footer { text-align: center; margin-top: 30px; font-size: 10px; color: #a8a29e; }
-    """;
+    return vars;
   }
 }

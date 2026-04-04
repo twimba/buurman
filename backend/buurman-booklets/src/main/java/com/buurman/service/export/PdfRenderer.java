@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream;
 
 import org.springframework.stereotype.Component;
 
-import com.buurman.exception.ExternalServiceException;
+import com.buurman.exception.DocumentRenderException;
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.kernel.geom.PageSize;
@@ -27,7 +27,7 @@ class PdfRenderer {
 
       return baos.toByteArray();
     } catch (Exception e) {
-      throw new ExternalServiceException("Failed to generate PDF", e);
+      throw new DocumentRenderException("Failed to generate PDF", e);
     }
   }
 }

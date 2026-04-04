@@ -35,6 +35,7 @@ import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractExtension.RentAdjustmentType;
 import com.buurman.domain.ContractRentPeriod;
+import com.buurman.domain.Document;
 import com.buurman.domain.Property;
 import com.buurman.domain.Sid;
 import com.buurman.domain.identifier.ContractExtensionIdentifier;
@@ -49,6 +50,7 @@ import com.buurman.exception.BusinessRuleException;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRentPeriodRepository;
 import com.buurman.repository.ContractRepository;
+import com.buurman.repository.DocumentRepository;
 import com.buurman.repository.PropertyRepository;
 import com.buurman.repository.TeamRepository;
 import com.buurman.security.UserPrincipal;
@@ -65,12 +67,16 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ContractExtensionService {
 
+  private static final String ENTITY_TYPE_CONTRACT = "CONTRACT";
+
   private final ContractExtensionRepository extensionRepository;
   private final ContractRepository contractRepository;
   private final ContractRentPeriodRepository rentPeriodRepository;
+  private final DocumentRepository documentRepository;
   private final PropertyRepository propertyRepository;
   private final TeamRepository teamRepository;
   private final NotificationService notificationService;
+  private final S3StorageService s3StorageService;
   private final AuditService auditService;
   private final TransactionTemplate transactionTemplate;
   private final AppProperties appProperties;
@@ -317,6 +323,7 @@ public class ContractExtensionService {
   public void cancelExtension(
       ContractIdentifier contractIdentifier,
       ContractExtensionIdentifier extensionIdentifier,
+      boolean deleteDocuments,
       UserPrincipal principal) {
     UUID teamId = principal.requireTeamId();
     UUID userId = principal.getUserId();
@@ -327,8 +334,34 @@ public class ContractExtensionService {
     validateExtensionBelongsToContract(extension, contract);
     validateStatus(extension, DRAFT, "cancel");
 
+    if (deleteDocuments) {
+      deleteExtensionDocuments(contract, extension, teamId);
+    }
+
     extensionRepository.cancelByIdAndTeamId(extension.getId(), teamId, userId);
     auditService.logDelete(teamId, "CONTRACT_EXTENSION", extension.getId(), userId, extension);
+  }
+
+  private void deleteExtensionDocuments(
+      Contract contract, ContractExtension extension, UUID teamId) {
+    String filenamePattern = "%-" + extension.getExtensionNumber() + "-%.pdf";
+    List<Document> documents =
+        documentRepository.findByEntityAndFileNamePatternAndTeamId(
+            ENTITY_TYPE_CONTRACT, contract.getId(), filenamePattern, teamId);
+
+    for (Document doc : documents) {
+      documentRepository.softDeleteByIdAndTeamId(doc.getId(), teamId);
+      s3StorageService.deleteFile(doc.getFileKey());
+      log.info("Deleted extension document: {}", doc.getFileName());
+    }
+
+    if (!documents.isEmpty()) {
+      log.info(
+          "Deleted {} documents for extension #{} on contract {}",
+          documents.size(),
+          extension.getExtensionNumber(),
+          contract.getIdentifier().orElseThrow().value());
+    }
   }
 
   // ── Auto-Extension Job ───────────────────────────────────────────────
