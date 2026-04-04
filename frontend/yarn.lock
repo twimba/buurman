@@ -216,7 +216,7 @@ __metadata:
     prettier: "npm:3.8.1"
     tailwind-merge: "npm:^3.3.0"
     tailwindcss: "npm:4.2.2"
-    typescript: "npm:5.9.3"
+    typescript: "npm:6.0.2"
   peerDependencies:
     react: 19.0.0
     react-dom: 19.0.0
@@ -2604,21 +2604,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:5.96.1":
-  version: 5.96.1
-  resolution: "@tanstack/query-core@npm:5.96.1"
-  checksum: 10c0/8489d0c53438083a1b318a0d8c8cb3ff88cd89bfa576be56ea26b04e124bef32595ee877828e89c73d0f827cd71a18787f43410f7408058645d5beaf4ee8cb25
+"@tanstack/query-core@npm:5.96.2":
+  version: 5.96.2
+  resolution: "@tanstack/query-core@npm:5.96.2"
+  checksum: 10c0/a856fb9f35ae994e855023d980ac32ce4a1eec5fd94afa3e360cc795f84494a950d0afbf465f726bd8186889d3c457762ec2f627c2fd84fc23f5f4e1d3491d89
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:5.96.1":
-  version: 5.96.1
-  resolution: "@tanstack/react-query@npm:5.96.1"
+"@tanstack/react-query@npm:5.96.2":
+  version: 5.96.2
+  resolution: "@tanstack/react-query@npm:5.96.2"
   dependencies:
-    "@tanstack/query-core": "npm:5.96.1"
+    "@tanstack/query-core": "npm:5.96.2"
   peerDependencies:
     react: ^18 || ^19
-  checksum: 10c0/69bd95d1d4242f0d863b02ff2dc785fac8a6008f59b1581ae9cac51ec9b87cccf4dc71628f4633bf7fe5f11a527a07520248d56a1e7f085cd41a6fb829484212
+  checksum: 10c0/68528558fc208d921dde98ded3c140409ca55836623efb4e79ee9bd308cefe567c1e9e4cce5bebaa9a72a32e5397febb484b8b6842658b2cdff28de957c11f67
   languageName: node
   linkType: hard
 
@@ -3783,7 +3783,7 @@ __metadata:
     "@fullcalendar/react": "npm:^6.1.20"
     "@react-keycloak/web": "npm:3.4.0"
     "@tailwindcss/postcss": "npm:4.2.2"
-    "@tanstack/react-query": "npm:5.96.1"
+    "@tanstack/react-query": "npm:5.96.2"
     "@tiptap/core": "npm:3.22.1"
     "@tiptap/extension-font-family": "npm:3.22.1"
     "@tiptap/extension-highlight": "npm:3.22.1"
@@ -3822,7 +3822,7 @@ __metadata:
     recharts: "npm:3.8.1"
     swagger-ui-react: "npm:^5.32.1"
     tailwindcss: "npm:4.2.2"
-    typescript: "npm:5.9.3"
+    typescript: "npm:6.0.2"
     typescript-eslint: "npm:8.58.0"
     vite: "npm:8.0.3"
   languageName: unknown
@@ -3836,7 +3836,7 @@ __metadata:
     "@eslint/compat": "npm:2.0.3"
     "@eslint/js": "npm:10.0.1"
     "@tailwindcss/postcss": "npm:4.2.2"
-    "@tanstack/react-query": "npm:5.96.1"
+    "@tanstack/react-query": "npm:5.96.2"
     "@tiptap/core": "npm:3.22.1"
     "@tiptap/extension-highlight": "npm:3.22.1"
     "@tiptap/extension-link": "npm:3.22.1"
@@ -8591,16 +8591,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:5.9.3":
-  version: 5.9.3
-  resolution: "typescript@npm:5.9.3"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10c0/6bd7552ce39f97e711db5aa048f6f9995b53f1c52f7d8667c1abdc1700c68a76a308f579cd309ce6b53646deb4e9a1be7c813a93baaf0a28ccd536a30270e1c5
-  languageName: node
-  linkType: hard
-
 "typescript@npm:6.0.2":
   version: 6.0.2
   resolution: "typescript@npm:6.0.2"
@@ -8608,16 +8598,6 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 10c0/4b860b0bf87cc0fee0f66d8ef2640b5a8a8a8c74d1129adb82e389e5f97124383823c47946bef8a73ede371461143a3aa8544399d2133c7b2e4f07e81860af7f
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>":
-  version: 5.9.3
-  resolution: "typescript@patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10c0/ad09fdf7a756814dce65bc60c1657b40d44451346858eea230e10f2e95a289d9183b6e32e5c11e95acc0ccc214b4f36289dcad4bf1886b0adb84d711d336a430
   languageName: node
   linkType: hard
 
