@@ -1,5 +1,5 @@
 import { usePropertyTimeline } from '@/hooks/useOccupancyPeriodHooks';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { LoadingSpinner } from '@buurman/ui';
 import { Home, FileText, AlertCircle } from 'lucide-react';
 import { useFormatDate } from '@/hooks/useFormatDate';
 

@@ -12,7 +12,7 @@ import { FeatureFlags } from './constants/featureFlags';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
 import { Layout } from './components/Layout';
-import { LoadingSpinner } from './components/LoadingSpinner';
+import { LoadingSpinner } from '@buurman/ui';
 import { EnvironmentBanner } from './components/common/EnvironmentBanner';
 import { ImpersonationBanner } from './components/ImpersonationBanner';
 
@@ -549,7 +549,7 @@ function App() {
                           }
                         />
                         <Route
-                          path="/payment-instructions"
+                          path="/admin/payment-instructions"
                           element={
                             <ProtectedRoute>
                               <Layout>
@@ -637,6 +637,15 @@ function App() {
                           path="/audit-log"
                           element={
                             <Navigate to="/admin/activity-log" replace />
+                          }
+                        />
+                        <Route
+                          path="/payment-instructions"
+                          element={
+                            <Navigate
+                              to="/admin/payment-instructions"
+                              replace
+                            />
                           }
                         />
 

@@ -46,7 +46,6 @@ import {
   PROPERTY_CATEGORY_LABELS,
   PROPERTY_STATUS_LABELS,
 } from '@/types/property';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { PropertyDashboardTab } from '@/components/properties/dashboard/PropertyDashboardTab';
 import { PropertyFinancialsTab } from '@/components/properties/financials/PropertyFinancialsTab';
 import { FeatureGate } from '@/components/FeatureGate';
@@ -56,7 +55,7 @@ import { DocumentList } from '@/components/properties/DocumentList';
 import { PhotoGallery } from '@/components/properties/PhotoGallery';
 import { InteractiveMap } from '@/components/common/InteractiveMap';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
-import { Button, PageHeader } from '@buurman/ui';
+import { Button, LoadingSpinner, PageHeader } from '@buurman/ui';
 import { trackEvent } from '@/utils/analytics';
 import { AnalyticsEvent } from '@/constants/analyticsEvents';
 import { useTeam } from '@/context/TeamContext';

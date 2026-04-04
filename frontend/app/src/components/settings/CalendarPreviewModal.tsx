@@ -2,8 +2,7 @@ import { useState, useMemo, useCallback, useRef } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import iCalendarPlugin from '@fullcalendar/icalendar';
-import { ModalWrapper, Button, Select } from '@buurman/ui';
-import { LoadingSpinner } from '../LoadingSpinner';
+import { Button, LoadingSpinner, ModalWrapper, Select } from '@buurman/ui';
 import { AlertTriangle, ChevronLeft, ChevronRight } from 'lucide-react';
 import './fullcalendar-theme.css';
 

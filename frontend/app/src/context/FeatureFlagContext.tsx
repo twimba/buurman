@@ -20,7 +20,7 @@ export const FeatureFlagProvider = ({ children }: { children: ReactNode }) => {
   const { data: flags = {}, isLoading } = useQuery({
     queryKey: ['feature-flags'],
     queryFn: getFeatureFlags,
-    staleTime: 15_000,
+    staleTime: 60_000,
     enabled: isAuthenticated,
   });
 

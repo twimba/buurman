@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useContacts, useCreateContact } from '@/hooks/useContactHooks';
 import * as contactsApi from '@/api/contacts';
 import { ContactCard } from '@/components/contacts/ContactCard';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import {
   Plus,
@@ -19,7 +18,7 @@ import {
 } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
-import { Pagination, RefreshButton, EmptyState } from '@buurman/ui';
+import { EmptyState, LoadingSpinner, Pagination, RefreshButton } from '@buurman/ui';
 import {
   ContactType,
   ContactTag,

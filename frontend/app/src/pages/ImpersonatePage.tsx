@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useImpersonation } from '../context/ImpersonationContext';
 import { exchangeImpersonationToken } from '../generated/api/impersonation/impersonation';
-import { LoadingSpinner } from '../components/LoadingSpinner';
+import { LoadingSpinner } from '@buurman/ui';
 
 export function ImpersonatePage() {
   const [searchParams] = useSearchParams();

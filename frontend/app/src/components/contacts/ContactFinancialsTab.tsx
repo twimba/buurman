@@ -5,7 +5,7 @@ import { usePayments } from '@/hooks/usePaymentHooks';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { formatExpenseCategory } from '@/types/expense';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { LoadingSpinner } from '@buurman/ui';
 import { getCurrencySymbol } from '@/utils/currencies';
 import { Receipt, CreditCard, ExternalLink } from 'lucide-react';
 

@@ -14,10 +14,9 @@ import {
   Check,
   Loader2,
 } from 'lucide-react';
-import { LoadingSpinner } from '../LoadingSpinner';
 import { ErrorMessage } from '../ErrorMessage';
 import { DocumentPreviewModal } from '../documents/DocumentPreviewModal';
-import { ConfirmDialog } from '@buurman/ui';
+import { ConfirmDialog, LoadingSpinner } from '@buurman/ui';
 import { EditMetadataModal } from '../ui/EditMetadataModal';
 import { useDocumentSelection } from '@/hooks/useDocumentSelection';
 import { useBulkDownload, useUpdateDocument } from '@/hooks/useDocumentHooks';

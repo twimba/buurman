@@ -34,7 +34,7 @@ import {
   exportPropertyDashboardCSV,
   exportPropertyDashboardExcel,
 } from '@/api/properties';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { LoadingSpinner } from '@buurman/ui';
 import { ExportDropdown } from '@/components/common/ExportDropdown';
 import { MetricHint } from '@/components/common/MetricHint';
 import type {

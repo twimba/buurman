@@ -160,7 +160,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.28.4, @babel/runtime@npm:^7.9.0":
+"@babel/runtime@npm:^7.28.4":
   version: 7.28.6
   resolution: "@babel/runtime@npm:7.28.6"
   checksum: 10c0/358cf2429992ac1c466df1a21c1601d595c46930a13c1d4662fde908d44ee78ec3c183aaff513ecb01ef8c55c3624afe0309eeeb34715672dbfadb7feedb2c0d
@@ -1457,36 +1457,6 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 10c0/9f98fdaba008dfc58050de60a77670b885792df473cf82c1cef8daee919a5dd5a77d270209f5f0b0abfaac78cb1627396e3ff56c81b735be550409426fe8b040
-  languageName: node
-  linkType: hard
-
-"@react-keycloak/core@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "@react-keycloak/core@npm:3.2.0"
-  dependencies:
-    react-fast-compare: "npm:^3.2.0"
-  peerDependencies:
-    react: ">=16"
-  checksum: 10c0/1bfc5fcab4e50ee6785bd5715f8e0fc109360bafcf74a664c1df37e69685e82e452eee7a2c2d8cbb0c69d7b09e77e8044f00122396ae560f03ab533b75b9aa84
-  languageName: node
-  linkType: hard
-
-"@react-keycloak/web@npm:3.4.0":
-  version: 3.4.0
-  resolution: "@react-keycloak/web@npm:3.4.0"
-  dependencies:
-    "@babel/runtime": "npm:^7.9.0"
-    "@react-keycloak/core": "npm:^3.2.0"
-    hoist-non-react-statics: "npm:^3.3.2"
-  peerDependencies:
-    keycloak-js: ">=9.0.2"
-    react: ">=16.8"
-    react-dom: ">=16.8"
-    typescript: ">=3.8"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 10c0/f38b1682d31a999706b624f47927168ef9ecacd827fd9422ad060fdc4eb2ceb6253b87172a4a3cf079efff48b13d5acc8fc5e2f8f9cfb41f255642e6d83e5f99
   languageName: node
   linkType: hard
 
@@ -3781,7 +3751,6 @@ __metadata:
     "@fullcalendar/daygrid": "npm:^6.1.20"
     "@fullcalendar/icalendar": "npm:^6.1.20"
     "@fullcalendar/react": "npm:^6.1.20"
-    "@react-keycloak/web": "npm:3.4.0"
     "@tailwindcss/postcss": "npm:4.2.2"
     "@tanstack/react-query": "npm:5.96.2"
     "@tiptap/core": "npm:3.22.1"
@@ -3813,7 +3782,7 @@ __metadata:
     keycloak-js: "npm:26.2.3"
     libphonenumber-js: "npm:1.12.41"
     lucide-react: "npm:1.7.0"
-    posthog-js: "npm:^1.364.7"
+    posthog-js: "npm:1.364.7"
     prettier: "npm:3.8.1"
     react: "npm:19.2.4"
     react-dom: "npm:19.2.4"
@@ -3860,7 +3829,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.0.1"
     keycloak-js: "npm:26.2.3"
     lucide-react: "npm:1.7.0"
-    posthog-js: "npm:^1.364.7"
+    posthog-js: "npm:1.364.7"
     prettier: "npm:3.8.1"
     react: "npm:19.2.4"
     react-dom: "npm:19.2.4"
@@ -5417,15 +5386,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hoist-non-react-statics@npm:^3.3.2":
-  version: 3.3.2
-  resolution: "hoist-non-react-statics@npm:3.3.2"
-  dependencies:
-    react-is: "npm:^16.7.0"
-  checksum: 10c0/fe0889169e845d738b59b64badf5e55fa3cf20454f9203d1eb088df322d49d4318df774828e789898dcb280e8a5521bb59b3203385662ca5e9218a6ca5820e74
-  languageName: node
-  linkType: hard
-
 "http-cache-semantics@npm:^4.1.1":
   version: 4.2.0
   resolution: "http-cache-semantics@npm:4.2.0"
@@ -6962,7 +6922,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-js@npm:^1.364.7":
+"posthog-js@npm:1.364.7":
   version: 1.364.7
   resolution: "posthog-js@npm:1.364.7"
   dependencies:
@@ -7390,13 +7350,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-fast-compare@npm:^3.2.0":
-  version: 3.2.2
-  resolution: "react-fast-compare@npm:3.2.2"
-  checksum: 10c0/0bbd2f3eb41ab2ff7380daaa55105db698d965c396df73e6874831dbafec8c4b5b08ba36ff09df01526caa3c61595247e3269558c284e37646241cba2b90a367
-  languageName: node
-  linkType: hard
-
 "react-immutable-proptypes@npm:2.2.0":
   version: 2.2.0
   resolution: "react-immutable-proptypes@npm:2.2.0"
@@ -7435,7 +7388,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-is@npm:^16.13.1, react-is@npm:^16.7.0":
+"react-is@npm:^16.13.1":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
   checksum: 10c0/33977da7a5f1a287936a0c85639fec6ca74f4f15ef1e59a6bc20338fc73dc69555381e211f7a3529b8150a1f71e4225525b41b60b52965bda53ce7d47377ada1

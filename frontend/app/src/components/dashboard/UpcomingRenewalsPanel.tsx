@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { CalendarClock } from 'lucide-react';
 import { useUpcomingRenewals } from '@/hooks/useContractExtensionHooks';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { LoadingSpinner } from '@buurman/ui';
 import type { RenewalMode } from '@/types/contractExtension';
 
 const RENEWAL_MODE_LABELS: Record<RenewalMode, string> = {

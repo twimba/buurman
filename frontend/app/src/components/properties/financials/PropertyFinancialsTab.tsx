@@ -26,7 +26,7 @@ import {
 import { deleteFinancingPayment as deleteFinancingPaymentApi } from '@/api/propertyFinancials';
 import { useToast } from '@/context/ToastContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { LoadingSpinner } from '@buurman/ui';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import type {
   PropertyFinancialSummaryResponse,

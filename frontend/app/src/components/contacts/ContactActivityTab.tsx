@@ -6,8 +6,7 @@ import {
 } from '@/types/contact';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { Pagination } from '@buurman/ui';
+import { LoadingSpinner, Pagination } from '@buurman/ui';
 import { usePagination } from '@/hooks/usePagination';
 import {
   Activity,

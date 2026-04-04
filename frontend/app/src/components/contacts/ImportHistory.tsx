@@ -8,8 +8,7 @@ import {
   ChevronUp,
   AlertTriangle,
 } from 'lucide-react';
-import { ConfirmDialog, Pagination, EmptyState } from '@buurman/ui';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { ConfirmDialog, EmptyState, LoadingSpinner, Pagination } from '@buurman/ui';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import {
   useImports,

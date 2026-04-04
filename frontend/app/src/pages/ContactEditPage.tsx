@@ -2,7 +2,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useContact, useUpdateContact } from '@/hooks/useContactHooks';
 import { ContactForm } from '@/components/contacts/ContactForm';
 import { UpdateContactRequest } from '@/types/contact';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { LoadingSpinner } from '@buurman/ui';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { ArrowLeft } from 'lucide-react';
 

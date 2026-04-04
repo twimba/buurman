@@ -20,11 +20,9 @@ import {
   useDeletePayment,
 } from '@/hooks/usePaymentHooks';
 import { useContractExtensions } from '@/hooks/useContractExtensionHooks';
-import { ConfirmDialog } from '@buurman/ui';
 import { ContractPaymentInstructionSection } from '@/components/contracts/ContractPaymentInstructionSection';
 import { CalendarFeedResponseFeedType as CalendarFeedType } from '@/generated/models';
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import { formatAuditValue } from '@/utils/formatAuditValue';
@@ -34,7 +32,7 @@ import { ChangeContractStatusModal } from '@/components/contracts/ChangeContract
 import GeneratePaymentsModal from '@/components/contracts/GeneratePaymentsModal';
 import { RentTimeline } from '@/components/contracts/RentTimeline';
 import { ExtensionTimeline } from '@/components/contracts/ExtensionTimeline';
-import { Button, PageHeader } from '@buurman/ui';
+import { Button, ConfirmDialog, LoadingSpinner, PageHeader } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import { trackEvent } from '@/utils/analytics';
 import { AnalyticsEvent } from '@/constants/analyticsEvents';

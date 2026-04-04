@@ -67,7 +67,7 @@ const navigation: NavItem[] = [
       },
       {
         name: 'Payment Instructions',
-        href: '/payment-instructions',
+        href: '/admin/payment-instructions',
         icon: CreditCard,
       },
     ],

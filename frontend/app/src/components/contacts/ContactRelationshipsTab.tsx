@@ -18,14 +18,14 @@ import { ContactSelector } from '@/components/common/ContactSelector';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import {
   Button,
-  ModalWrapper,
-  EmptyState,
   ConfirmDialog,
+  EmptyState,
   FormField,
+  LoadingSpinner,
+  ModalWrapper,
   Select,
 } from '@buurman/ui';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { Avatar } from '@/components/common/Avatar';
 import { Plus, Edit, Trash2, Users, ShieldOff } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';

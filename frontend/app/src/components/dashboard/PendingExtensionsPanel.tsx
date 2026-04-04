@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Check, XCircle, FileStack } from 'lucide-react';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { useTeam } from '@/context/TeamContext';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { LoadingSpinner } from '@buurman/ui';
 import type { ContractExtensionResponse } from '@/types/contractExtension';
 
 interface PendingExtensionsPanelProps {

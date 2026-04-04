@@ -8,12 +8,11 @@ import {
 } from '@/types/property';
 import { useProperties } from '@/hooks/usePropertyHooks';
 import { PropertyCard } from '@/components/properties/PropertyCard';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { Plus, Home, Filter, Search, X } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
-import { Pagination, RefreshButton } from '@buurman/ui';
+import { LoadingSpinner, Pagination, RefreshButton } from '@buurman/ui';
 
 const categoryFilters: {
   value: PropertyCategory | undefined;

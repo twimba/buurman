@@ -6,11 +6,10 @@ import {
   usePaymentStats,
   useDeletePayment,
 } from '@/hooks/usePaymentHooks';
-import { ConfirmDialog, Pagination } from '@buurman/ui';
+import { ConfirmDialog, LoadingSpinner, Pagination, RefreshButton } from '@buurman/ui';
 import { usePagination } from '@/hooks/usePagination';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 import { ContractCell } from '@/components/contracts/ContractCell';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { ContractSelector } from '@/components/common/ContractSelector';
 import { PropertySelector } from '@/components/common/PropertySelector';
@@ -42,7 +41,6 @@ import {
 } from 'recharts';
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { RefreshButton } from '@buurman/ui';
 
 const statusFilters = [
   { value: undefined, label: 'All Statuses' },

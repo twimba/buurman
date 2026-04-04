@@ -6,11 +6,10 @@ import {
   useExpenseStats,
   useDeleteExpense,
 } from '@/hooks/useExpenseHooks';
-import { ConfirmDialog, Pagination } from '@buurman/ui';
+import { ConfirmDialog, LoadingSpinner, Pagination, RefreshButton } from '@buurman/ui';
 import { usePagination } from '@/hooks/usePagination';
 import { ExpenseCategoryBadge } from '@/components/expenses/ExpenseCategoryBadge';
 import { PropertyCell } from '@/components/properties/PropertyCell';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import {
   Plus,
@@ -25,7 +24,6 @@ import {
 } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { RefreshButton } from '@buurman/ui';
 import { PropertySelector } from '@/components/common/PropertySelector';
 import {
   PeriodFilter,

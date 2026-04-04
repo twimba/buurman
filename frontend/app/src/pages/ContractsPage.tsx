@@ -3,12 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { ContractStatus } from '@/types/contract';
 import { useContracts } from '@/hooks/useContractHooks';
 import { ContractCard } from '@/components/contracts/ContractCard';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { Plus, FileText, Filter } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
-import { Pagination, RefreshButton } from '@buurman/ui';
+import { LoadingSpinner, Pagination, RefreshButton } from '@buurman/ui';
 
 const statusFilters = [
   { value: undefined, label: 'All Statuses' },

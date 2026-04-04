@@ -14,13 +14,12 @@ import {
   useUpdatePaymentReceival,
   useDeletePaymentReceival,
 } from '@/hooks/usePaymentHooks';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 import { PaymentForm } from '@/components/payments/PaymentForm';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import { DocumentList } from '@/components/properties/DocumentList';
-import { Button, PageHeader } from '@buurman/ui';
+import { Button, LoadingSpinner, PageHeader } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import {
   Edit,

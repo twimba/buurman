@@ -10,14 +10,13 @@ import {
   useUploadExpenseDocument,
   useDeleteExpenseDocument,
 } from '@/hooks/useExpenseHooks';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import { formatAuditValue } from '@/utils/formatAuditValue';
 import { ExpenseCategoryBadge } from '@/components/expenses/ExpenseCategoryBadge';
 import { ExpenseForm } from '@/components/expenses/ExpenseForm';
 import { DocumentList } from '@/components/properties/DocumentList';
-import { Button, PageHeader } from '@buurman/ui';
+import { Button, LoadingSpinner, PageHeader } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import {
   Edit,

@@ -20,14 +20,14 @@ import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import { RichTextEditor } from '@/components/common/RichTextEditor';
 import {
   Button,
-  ModalWrapper,
-  EmptyState,
   ConfirmDialog,
+  EmptyState,
   FormField,
-  Select,
   Input,
+  LoadingSpinner,
+  ModalWrapper,
+  Select,
 } from '@buurman/ui';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
 import {
   Plus,
   Pin,
