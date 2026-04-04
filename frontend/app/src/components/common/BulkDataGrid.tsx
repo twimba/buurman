@@ -25,7 +25,6 @@ export type RowData = Record<string, string>;
 
 export type RowStatus = 'pending' | 'submitting' | 'success' | 'error';
 
-
 interface RowState {
   id: number;
   data: RowData;
@@ -220,9 +219,13 @@ export const BulkDataGrid = ({
   disabled,
   dateFormat,
 }: BulkDataGridProps) => {
-  const nextRowId = useRef(1);
+  const nextRowId = useRef(2);
   const [rows, setRows] = useState<RowState[]>([
-    { id: nextRowId.current++, data: createEmptyRow(columns), status: 'pending' },
+    {
+      id: 1,
+      data: createEmptyRow(columns),
+      status: 'pending',
+    },
   ]);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -301,13 +304,21 @@ export const BulkDataGrid = ({
   const addRow = () => {
     setRows((prev) => [
       ...prev,
-      { id: nextRowId.current++, data: createEmptyRow(columns), status: 'pending' },
+      {
+        id: nextRowId.current++,
+        data: createEmptyRow(columns),
+        status: 'pending',
+      },
     ]);
   };
 
   const clearAll = () => {
     setRows([
-      { id: nextRowId.current++, data: createEmptyRow(columns), status: 'pending' },
+      {
+        id: nextRowId.current++,
+        data: createEmptyRow(columns),
+        status: 'pending',
+      },
     ]);
   };
 

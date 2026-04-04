@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
   Shield,
   Clock,
@@ -8,24 +8,24 @@ import {
   Loader2,
   ChevronLeft,
   ChevronRight,
-} from "lucide-react";
-import { RefreshButton, ConfirmDialog } from "@buurman/ui";
+} from 'lucide-react';
+import { RefreshButton, ConfirmDialog } from '@buurman/ui';
 import {
   useRateLimitSummary,
   useRateLimitBuckets,
   useDeleteRateLimitBucket,
   useDeleteRateLimitBucketsByConfigKey,
-} from "../hooks/useRateLimitBuckets";
+} from '../hooks/useRateLimitBuckets';
 import type {
   RateLimitConfigSummary,
   RateLimitBucketEntry,
-} from "../api/rateLimitBuckets";
+} from '../api/rateLimitBuckets';
 
 // Format future relative time ("in 45s", "in 2m", "in 1h")
 const formatExpiresIn = (isoString: string): string => {
   const diff = new Date(isoString).getTime() - Date.now();
   if (diff <= 0) {
-    return "expired";
+    return 'expired';
   }
   const seconds = Math.floor(diff / 1000);
   if (seconds < 60) {
@@ -43,23 +43,23 @@ const formatExpiresIn = (isoString: string): string => {
 const tokenColor = (available: number, max: number): string => {
   const pct = available / max;
   if (pct > 0.5) {
-    return "text-success-text";
+    return 'text-success-text';
   }
   if (pct > 0.2) {
-    return "text-warning-text";
+    return 'text-warning-text';
   }
-  return "text-error-text";
+  return 'text-error-text';
 };
 
 const tokenBarBg = (available: number, max: number): string => {
   const pct = available / max;
   if (pct > 0.5) {
-    return "bg-success-text";
+    return 'bg-success-text';
   }
   if (pct > 0.2) {
-    return "bg-warning-text";
+    return 'bg-warning-text';
   }
-  return "bg-error-text";
+  return 'bg-error-text';
 };
 
 // Config summary card
@@ -85,11 +85,11 @@ const ConfigSummaryCard = ({
           <span
             className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
               config.enabled
-                ? "bg-success-bg text-success-text border-success-border"
-                : "bg-neutral-50 text-text-muted border-border-default"
+                ? 'bg-success-bg text-success-text border-success-border'
+                : 'bg-neutral-50 text-text-muted border-border-default'
             }`}
           >
-            {config.enabled ? "Enabled" : "Disabled"}
+            {config.enabled ? 'Enabled' : 'Disabled'}
           </span>
         </div>
         {config.activeBuckets > 0 && (
@@ -104,13 +104,13 @@ const ConfigSummaryCard = ({
       </div>
       <div className="flex items-center gap-6 text-xs text-text-muted">
         <span>
-          Limit:{" "}
+          Limit:{' '}
           <span className="font-medium text-text-secondary">
             {config.maxRequests} req / {config.periodSeconds}s
           </span>
         </span>
         <span>
-          Active buckets:{" "}
+          Active buckets:{' '}
           <span className="font-medium text-text-secondary">
             {config.activeBuckets}
           </span>
@@ -169,13 +169,13 @@ const BucketRow = ({
         {hasTokenInfo ? (
           <div className="flex items-center gap-2">
             <span
-              className={`text-xs font-medium ${tokenColor(bucket.availableTokens!, bucket.maxTokens!)}`}
+              className={`text-xs font-medium ${tokenColor(bucket.availableTokens ?? 0, bucket.maxTokens ?? 0)}`}
             >
               {bucket.availableTokens} / {bucket.maxTokens}
             </span>
             <div className="w-16 h-1.5 bg-surface-inset rounded-full overflow-hidden">
               <div
-                className={`h-full rounded-full transition-all ${tokenBarBg(bucket.availableTokens!, bucket.maxTokens!)}`}
+                className={`h-full rounded-full transition-all ${tokenBarBg(bucket.availableTokens ?? 0, bucket.maxTokens ?? 0)}`}
                 style={{ width: `${Math.max(pct * 100, 2)}%` }}
               />
             </div>
@@ -222,8 +222,8 @@ const BucketRow = ({
 
 // Main page
 export const RateLimitBucketsPage = () => {
-  const [configKeyFilter, setConfigKeyFilter] = useState<string>("");
-  const [clientIpFilter, setClientIpFilter] = useState("");
+  const [configKeyFilter, setConfigKeyFilter] = useState<string>('');
+  const [clientIpFilter, setClientIpFilter] = useState('');
   const [page, setPage] = useState(0);
   const pageSize = 20;
 
@@ -285,9 +285,9 @@ export const RateLimitBucketsPage = () => {
             <Shield className="h-3.5 w-3.5" />
             <span>
               {summary.totalActiveBuckets} active bucket
-              {summary.totalActiveBuckets !== 1 ? "s" : ""} across{" "}
+              {summary.totalActiveBuckets !== 1 ? 's' : ''} across{' '}
               {summary.configs.length} config
-              {summary.configs.length !== 1 ? "s" : ""}
+              {summary.configs.length !== 1 ? 's' : ''}
             </span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -386,7 +386,7 @@ export const RateLimitBucketsPage = () => {
           {totalPages > 1 && (
             <div className="flex items-center justify-between px-4 py-3 border-t border-border-default bg-surface-inset">
               <span className="text-xs text-text-muted">
-                Page {page + 1} of {totalPages} ({bucketsData.totalElements}{" "}
+                Page {page + 1} of {totalPages} ({bucketsData.totalElements}{' '}
                 total)
               </span>
               <div className="flex items-center gap-2">

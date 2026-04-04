@@ -207,6 +207,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@buurman/ui@workspace:packages/ui"
   dependencies:
+    "@eslint/compat": "npm:2.0.4"
+    "@eslint/js": "npm:10.0.1"
     "@radix-ui/react-dialog": "npm:^1.1.14"
     "@tailwindcss/postcss": "npm:4.2.2"
     "@tiptap/core": "npm:3.22.1"
@@ -223,11 +225,15 @@ __metadata:
     "@types/react-dom": "npm:19.2.3"
     clsx: "npm:^2.1.1"
     dompurify: "npm:3.3.3"
+    eslint: "npm:10.2.0"
+    eslint-plugin-react: "npm:7.37.5"
+    eslint-plugin-react-hooks: "npm:7.0.1"
     lucide-react: "npm:1.7.0"
     prettier: "npm:3.8.1"
     tailwind-merge: "npm:^3.3.0"
     tailwindcss: "npm:4.2.2"
     typescript: "npm:6.0.2"
+    typescript-eslint: "npm:8.58.0"
   peerDependencies:
     keycloak-js: ^26.0.0
     posthog-js: ^1.0.0

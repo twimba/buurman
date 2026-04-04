@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
-    "lint": "echo 'No ESLint config yet — skipping'",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "typecheck": "tsc --noEmit"
   },
   "main": "src/index.ts",
@@ -26,13 +26,19 @@
     "tailwind-merge": "^3.3.0"
   },
   "devDependencies": {
+    "@eslint/compat": "2.0.4",
+    "@eslint/js": "10.0.1",
     "@tailwindcss/postcss": "4.2.2",
     "@types/dompurify": "3.2.0",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
+    "eslint": "10.2.0",
+    "eslint-plugin-react": "7.37.5",
+    "eslint-plugin-react-hooks": "7.0.1",
     "prettier": "3.8.1",
     "tailwindcss": "4.2.2",
-    "typescript": "6.0.2"
+    "typescript": "6.0.2",
+    "typescript-eslint": "8.58.0"
   },
   "peerDependencies": {
     "keycloak-js": "^26.0.0",

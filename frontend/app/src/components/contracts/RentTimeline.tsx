@@ -243,9 +243,13 @@ function RentPeriodRow({
   onRegenerateDocuments: () => void;
 }) {
   const hasDocuments = documents.length > 0;
-  const officialLangs = countryCode
-    ? (COUNTRY_OFFICIAL_LANGUAGES[countryCode.toUpperCase()] ?? [])
-    : [];
+  const officialLangs = useMemo(
+    () =>
+      countryCode
+        ? (COUNTRY_OFFICIAL_LANGUAGES[countryCode.toUpperCase()] ?? [])
+        : [],
+    [countryCode]
+  );
   const [previewIndex, setPreviewIndex] = useState<number | null>(null);
 
   // Sort docs: official languages first, then alphabetically
