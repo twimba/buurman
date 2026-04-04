@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   ChevronDown,
   ChevronUp,
@@ -7,6 +7,10 @@ import {
   DollarSign,
   Plus,
   Trash2,
+  FileText,
+  FolderDown,
+  RefreshCw,
+  Shield,
 } from 'lucide-react';
 import {
   RentPeriodResponse,
@@ -17,12 +21,17 @@ import {
 import {
   useRentPeriods,
   useDeleteRentPeriod,
+  useAddRentPeriod,
 } from '@/hooks/useRentPeriodHooks';
+import { useContractDocuments } from '@/hooks/useContractHooks';
 import { AdjustRentModal } from './AdjustRentModal';
-import { useAddRentPeriod } from '@/hooks/useRentPeriodHooks';
+import { GenerateRentChangeModal } from './GenerateRentChangeModal';
+import { COUNTRY_OFFICIAL_LANGUAGES } from './GenerateDocumentsModal';
+import { DocumentPreviewModal } from '@/components/documents/DocumentPreviewModal';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { RichTextDisplay } from '@/components/common/RichTextDisplay';
 import { useTeam } from '@/context/TeamContext';
+import type { DocumentResponse } from '@/types/property';
 
 interface RentTimelineProps {
   contractIdentifier: string;
@@ -31,10 +40,17 @@ interface RentTimelineProps {
   currentRentAmount: number;
   currentComponents: RentComponentResponseItem[];
   paymentFrequency: string;
+  documentLanguages?: string[];
+  countryCode?: string;
 }
 
 function isFuturePeriod(effectiveFrom: string): boolean {
   return new Date(effectiveFrom) > new Date();
+}
+
+function extractLang(fileName: string): string {
+  const match = fileName.match(/-([a-z]{2})\.pdf$/);
+  return match ? match[1] : '??';
 }
 
 export const RentTimeline = ({
@@ -44,15 +60,45 @@ export const RentTimeline = ({
   currentRentAmount,
   currentComponents,
   paymentFrequency,
+  documentLanguages,
+  countryCode,
 }: RentTimelineProps) => {
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
   const [isExpanded, setIsExpanded] = useState(false);
   const [showAdjustModal, setShowAdjustModal] = useState(false);
+  const [generateTarget, setGenerateTarget] = useState<{
+    period: RentPeriodResponse;
+    regenerate: boolean;
+  } | null>(null);
 
   const { data: periods = [], isLoading } = useRentPeriods(contractIdentifier);
+  const { data: allDocuments } = useContractDocuments(contractIdentifier);
   const addRentPeriod = useAddRentPeriod(contractIdentifier);
   const deleteRentPeriod = useDeleteRentPeriod(contractIdentifier);
+
+  /** Map period identifier -> documents matching that period's filename pattern */
+  const documentsByPeriod = useMemo(() => {
+    const map = new Map<string, DocumentResponse[]>();
+    if (!allDocuments) {
+      return map;
+    }
+    for (const doc of allDocuments) {
+      if (!doc.fileName.startsWith('rent-change-')) {
+        continue;
+      }
+      // Match rent-change-{periodIdentifier}-{lang}.pdf
+      for (const period of periods) {
+        if (doc.fileName.startsWith(`rent-change-${period.identifier}-`)) {
+          const list = map.get(period.identifier) ?? [];
+          list.push(doc);
+          map.set(period.identifier, list);
+          break;
+        }
+      }
+    }
+    return map;
+  }, [allDocuments, periods]);
 
   const handleAddRentPeriod = (
     rentAmount: number,
@@ -123,12 +169,21 @@ export const RentTimeline = ({
                   <RentPeriodRow
                     key={period.identifier}
                     period={period}
+                    documents={documentsByPeriod.get(period.identifier) ?? []}
+                    countryCode={countryCode}
                     currency={currency}
                     formatDate={formatDate}
+                    canEdit={canEditData}
                     onDelete={
                       canEditData && isFuturePeriod(period.effectiveFrom)
                         ? () => handleDeletePeriod(period.identifier)
                         : undefined
+                    }
+                    onGenerateDocuments={() =>
+                      setGenerateTarget({ period, regenerate: false })
+                    }
+                    onRegenerateDocuments={() =>
+                      setGenerateTarget({ period, regenerate: true })
                     }
                   />
                 ))
@@ -150,21 +205,63 @@ export const RentTimeline = ({
           isLoading={addRentPeriod.isPending}
         />
       )}
+
+      {/* Generate Documents Modal */}
+      {generateTarget && (
+        <GenerateRentChangeModal
+          contractIdentifier={contractIdentifier}
+          periodIdentifier={generateTarget.period.identifier}
+          defaultLanguages={documentLanguages ?? ['en']}
+          countryCode={countryCode}
+          regenerate={generateTarget.regenerate}
+          onClose={() => setGenerateTarget(null)}
+        />
+      )}
     </>
   );
 };
 
 function RentPeriodRow({
   period,
+  documents,
+  countryCode,
   currency,
   formatDate,
+  canEdit,
   onDelete,
+  onGenerateDocuments,
+  onRegenerateDocuments,
 }: {
   period: RentPeriodResponse;
+  documents: DocumentResponse[];
+  countryCode?: string;
   currency: string;
   formatDate: (date: string) => string;
+  canEdit: boolean;
   onDelete?: () => void;
+  onGenerateDocuments: () => void;
+  onRegenerateDocuments: () => void;
 }) {
+  const hasDocuments = documents.length > 0;
+  const officialLangs = countryCode
+    ? (COUNTRY_OFFICIAL_LANGUAGES[countryCode.toUpperCase()] ?? [])
+    : [];
+  const [previewIndex, setPreviewIndex] = useState<number | null>(null);
+
+  // Sort docs: official languages first, then alphabetically
+  const sortedDocs = useMemo(() => {
+    return [...documents].sort((a, b) => {
+      const langA = extractLang(a.fileName);
+      const langB = extractLang(b.fileName);
+      const aOfficial = officialLangs.includes(langA) ? 0 : 1;
+      const bOfficial = officialLangs.includes(langB) ? 0 : 1;
+      if (aOfficial !== bOfficial) {
+        return aOfficial - bOfficial;
+      }
+      return langA.localeCompare(langB);
+    });
+  }, [documents, officialLangs]);
+
   return (
     <div className="flex items-start gap-3 p-3 bg-surface-page rounded-lg">
       <div className="flex-1 min-w-0">
@@ -186,6 +283,78 @@ function RentPeriodRow({
           <div className="mt-1 text-xs text-text-secondary">
             <RichTextDisplay content={period.notes} />
           </div>
+        )}
+
+        {/* Generated documents — compact language badges */}
+        {hasDocuments ? (
+          <div className="mt-2 flex items-center gap-2 flex-wrap">
+            <FileText className="h-3.5 w-3.5 text-primary-500 shrink-0" />
+            <span className="text-[11px] font-medium text-text-secondary shrink-0">
+              Rent Change
+            </span>
+            <div className="flex items-center gap-1 flex-wrap">
+              {sortedDocs.map((doc) => {
+                const lang = extractLang(doc.fileName);
+                const isOfficial = officialLangs.includes(lang);
+                return (
+                  <button
+                    key={doc.identifier}
+                    type="button"
+                    onClick={() => setPreviewIndex(documents.indexOf(doc))}
+                    className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded font-mono text-[11px] font-medium uppercase transition-colors cursor-pointer ${
+                      isOfficial
+                        ? 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-400/40 hover:bg-amber-500/20'
+                        : 'bg-surface-inset text-text-secondary border border-transparent hover:bg-border-default hover:text-text-primary'
+                    }`}
+                    title={`${doc.title ?? doc.fileName}${isOfficial ? ' (official)' : ''}`}
+                  >
+                    {lang}
+                    {isOfficial && <Shield className="h-2.5 w-2.5" />}
+                  </button>
+                );
+              })}
+            </div>
+            {canEdit && (
+              <button
+                onClick={onRegenerateDocuments}
+                className="flex items-center gap-1 px-2 py-1 text-[11px] font-medium text-text-muted rounded hover:text-primary-500 hover:bg-primary-500/5 transition-colors ml-auto"
+              >
+                <RefreshCw className="h-3 w-3" />
+                Regenerate
+              </button>
+            )}
+          </div>
+        ) : canEdit ? (
+          <div className="mt-2">
+            <button
+              onClick={onGenerateDocuments}
+              className="flex items-center gap-1 px-2 py-1 text-[11px] font-medium text-primary-500 bg-primary-500/10 rounded hover:bg-primary-500/20 transition-colors"
+              title="Generate rent change document"
+            >
+              <FolderDown className="h-3 w-3" />
+              Generate Document
+            </button>
+          </div>
+        ) : null}
+
+        {/* Document preview modal */}
+        {previewIndex !== null && documents[previewIndex] && (
+          <DocumentPreviewModal
+            document={documents[previewIndex]}
+            onClose={() => setPreviewIndex(null)}
+            onPrevious={
+              previewIndex > 0
+                ? () => setPreviewIndex(previewIndex - 1)
+                : undefined
+            }
+            onNext={
+              previewIndex < documents.length - 1
+                ? () => setPreviewIndex(previewIndex + 1)
+                : undefined
+            }
+            currentIndex={previewIndex}
+            totalCount={documents.length}
+          />
         )}
       </div>
       {onDelete && (

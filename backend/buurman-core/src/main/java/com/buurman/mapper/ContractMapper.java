@@ -30,8 +30,7 @@ public interface ContractMapper {
   @Mapping(target = "terminationNoticeDays", defaultExpression = "java(30)")
   @Mapping(
       target = "documentLanguages",
-      expression =
-          "java(request.documentLanguages().orElse(java.util.List.of(\"en\")))")
+      expression = "java(request.documentLanguages().orElse(java.util.List.of(\"en\")))")
   @Mapping(
       target = "rentAmount",
       expression =
@@ -94,8 +93,7 @@ public interface ContractMapper {
   @Mapping(target = "countryMetadata", ignore = true)
   @Mapping(
       target = "documentLanguages",
-      expression =
-          "java(request.documentLanguages().orElse(contract.getDocumentLanguages()))")
+      expression = "java(request.documentLanguages().orElse(contract.getDocumentLanguages()))")
   @Mapping(
       target = "rentAmount",
       expression =

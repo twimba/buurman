@@ -17,7 +17,10 @@ import {
   Trash2,
 } from 'lucide-react';
 import * as extensionsApi from '@/api/contractExtensions';
-import { GenerateDocumentsModal, COUNTRY_OFFICIAL_LANGUAGES } from './GenerateDocumentsModal';
+import {
+  GenerateDocumentsModal,
+  COUNTRY_OFFICIAL_LANGUAGES,
+} from './GenerateDocumentsModal';
 import { ExtensionStatusBadge } from './ExtensionStatusBadge';
 import { CreateExtensionModal } from './CreateExtensionModal';
 import { DocumentPreviewModal } from '@/components/documents/DocumentPreviewModal';
@@ -39,7 +42,6 @@ import type {
 } from '@/types/contractExtension';
 import type { ContractResponseStatus } from '@/generated/models';
 import type { DocumentResponse } from '@/types/property';
-
 
 interface ExtensionTimelineProps {
   contractIdentifier: string;
@@ -108,10 +110,15 @@ export const ExtensionTimeline = ({
   const extensions = extensionsPage?.content ?? [];
   const canCreate = canEditData && contractStatus === 'ACTIVE';
 
-  const downloadPdf = async (fetcher: () => Promise<Blob>, filename: string) => {
+  const downloadPdf = async (
+    fetcher: () => Promise<Blob>,
+    filename: string
+  ) => {
     try {
       const blob = await fetcher();
-      const url = window.URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
+      const url = window.URL.createObjectURL(
+        new Blob([blob], { type: 'application/pdf' })
+      );
       const link = document.createElement('a');
       link.href = url;
       link.download = filename;
@@ -223,18 +230,30 @@ export const ExtensionTimeline = ({
               onCancel={() => setCancelTarget(ext.identifier)}
               onDownloadAddendum={() =>
                 downloadPdf(
-                  () => extensionsApi.downloadAddendum(contractIdentifier, ext.identifier),
+                  () =>
+                    extensionsApi.downloadAddendum(
+                      contractIdentifier,
+                      ext.identifier
+                    ),
                   `addendum-${ext.extensionNumber}.pdf`
                 )
               }
               onDownloadLetter={() =>
                 downloadPdf(
-                  () => extensionsApi.downloadRentIncreaseLetter(contractIdentifier, ext.identifier),
+                  () =>
+                    extensionsApi.downloadRentIncreaseLetter(
+                      contractIdentifier,
+                      ext.identifier
+                    ),
                   `rent-increase-letter-${ext.extensionNumber}.pdf`
                 )
               }
-              onGenerateDocuments={() => setGenerateTarget({ extension: ext, regenerate: false })}
-              onRegenerateDocuments={() => setGenerateTarget({ extension: ext, regenerate: true })}
+              onGenerateDocuments={() =>
+                setGenerateTarget({ extension: ext, regenerate: false })
+              }
+              onRegenerateDocuments={() =>
+                setGenerateTarget({ extension: ext, regenerate: true })
+              }
               isActivating={activateExtension.isPending}
               isConfirming={confirmExtension.isPending}
             />

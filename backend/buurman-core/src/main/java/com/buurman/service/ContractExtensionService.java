@@ -35,6 +35,7 @@ import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
 import com.buurman.domain.ContractExtension.RentAdjustmentType;
 import com.buurman.domain.ContractRentPeriod;
+import com.buurman.domain.Document;
 import com.buurman.domain.Property;
 import com.buurman.domain.Sid;
 import com.buurman.domain.identifier.ContractExtensionIdentifier;
@@ -46,7 +47,6 @@ import com.buurman.dto.response.ContractExtensionResponse;
 import com.buurman.dto.response.PageResponse;
 import com.buurman.exception.BadRequestException;
 import com.buurman.exception.BusinessRuleException;
-import com.buurman.domain.Document;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRentPeriodRepository;
 import com.buurman.repository.ContractRepository;
@@ -345,8 +345,9 @@ public class ContractExtensionService {
   private void deleteExtensionDocuments(
       Contract contract, ContractExtension extension, UUID teamId) {
     String filenamePattern = "%-" + extension.getExtensionNumber() + "-%.pdf";
-    List<Document> documents = documentRepository.findByEntityAndFileNamePatternAndTeamId(
-        ENTITY_TYPE_CONTRACT, contract.getId(), filenamePattern, teamId);
+    List<Document> documents =
+        documentRepository.findByEntityAndFileNamePatternAndTeamId(
+            ENTITY_TYPE_CONTRACT, contract.getId(), filenamePattern, teamId);
 
     for (Document doc : documents) {
       documentRepository.softDeleteByIdAndTeamId(doc.getId(), teamId);

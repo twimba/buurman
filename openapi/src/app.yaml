@@ -175,6 +175,8 @@ paths:
     $ref: 'paths/contracts.yaml#/rent-periods-item'
   /contracts/{contractIdentifier}/rent-periods/{periodIdentifier}/document:
     $ref: 'paths/contracts.yaml#/rent-periods-document'
+  /contracts/{contractIdentifier}/rent-periods/{periodIdentifier}/generate-documents:
+    $ref: 'paths/contracts.yaml#/rent-periods-generate-documents'
   /contracts/{contractIdentifier}/payment-instructions/{instructionIdentifier}:
     $ref: 'paths/contracts.yaml#/payment-instructions-item'
   /auth/me:
@@ -8372,6 +8374,18 @@ components:
           description: Delete existing extension documents before generating new ones
       required:
         - documentTypes
+    GenerateRentChangeDocumentsRequest:
+      type: object
+      properties:
+        languages:
+          type: array
+          items:
+            type: string
+          description: ISO 639-1 language codes (defaults to contract's documentLanguages)
+        replaceExisting:
+          type: boolean
+          default: false
+          description: Delete existing rent change documents before generating new ones
     DeclineContractExtensionRequest:
       type: object
       properties:

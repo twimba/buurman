@@ -71,12 +71,10 @@ public class ContractExtensionAddendumExporter {
     ContractExtension extension =
         extensionRepository.getByIdentifierAndTeamId(extensionIdentifier, teamId);
     Contract contract = contractRepository.getByIdAndTeamId(extension.getContractId(), teamId);
-    DocumentExporterHelper.validateContractOwnership(
-        contractIdentifier, contract, "Extension");
+    DocumentExporterHelper.validateContractOwnership(contractIdentifier, contract, "Extension");
     Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
 
-    DocumentExporterHelper.PartyData partyData =
-        helper.loadPartyData(contract.getId(), teamId);
+    DocumentExporterHelper.PartyData partyData = helper.loadPartyData(contract.getId(), teamId);
 
     Locale locale = DocumentTemplateService.resolveLocale(lang);
     Map<String, Object> variables =
@@ -158,7 +156,10 @@ public class ContractExtensionAddendumExporter {
         "adjustmentValue",
         extension
             .getRentAdjustmentValue()
-            .map(v -> DocumentExporterHelper.formatAdjustmentDisplay(v, extension.getRentAdjustmentType()))
+            .map(
+                v ->
+                    DocumentExporterHelper.formatAdjustmentDisplay(
+                        v, extension.getRentAdjustmentType()))
             .orElse("\u2014"));
     vars.put(
         "activatedDate",

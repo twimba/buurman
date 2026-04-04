@@ -26,8 +26,7 @@ public class DocumentTemplateService {
   private final PdfRenderer pdfRenderer;
 
   public DocumentTemplateService(
-      @Qualifier("documentTemplateEngine") TemplateEngine templateEngine,
-      PdfRenderer pdfRenderer) {
+      @Qualifier("documentTemplateEngine") TemplateEngine templateEngine, PdfRenderer pdfRenderer) {
     this.templateEngine = templateEngine;
     this.pdfRenderer = pdfRenderer;
   }

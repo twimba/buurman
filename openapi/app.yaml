@@ -4277,6 +4277,73 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
       security:
         - bearer-jwt: []
+  /contracts/{contractIdentifier}/rent-periods/{periodIdentifier}/generate-documents:
+    post:
+      tags:
+        - Contract Documents
+      summary: Generate and persist rent change documents
+      description: Generate rent change PDF documents for a rent period and save them to S3 storage
+      operationId: generateRentChangeDocuments
+      parameters:
+        - name: contractIdentifier
+          in: path
+          description: Contract identifier
+          required: true
+          schema:
+            type: string
+        - name: periodIdentifier
+          in: path
+          description: Rent period identifier
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateRentChangeDocumentsRequest'
+      responses:
+        "200":
+          description: Generated documents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DocumentResponse'
+        "400":
+          description: Bad request - validation error or malformed input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "401":
+          description: Unauthorized - missing or invalid JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "403":
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+      security:
+        - bearer-jwt: []
   /contracts/{contractIdentifier}/payment-instructions/{instructionIdentifier}:
     put:
       tags:
@@ -26328,6 +26395,18 @@ components:
           description: Delete existing extension documents before generating new ones
       required:
         - documentTypes
+    GenerateRentChangeDocumentsRequest:
+      type: object
+      properties:
+        languages:
+          type: array
+          items:
+            type: string
+          description: ISO 639-1 language codes (defaults to contract's documentLanguages)
+        replaceExisting:
+          type: boolean
+          default: false
+          description: Delete existing rent change documents before generating new ones
     DeclineContractExtensionRequest:
       type: object
       properties:

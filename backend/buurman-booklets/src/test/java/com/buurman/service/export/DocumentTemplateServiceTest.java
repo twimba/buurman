@@ -123,8 +123,7 @@ class DocumentTemplateServiceTest {
     @Test
     @DisplayName("throws on non-existent template")
     void throwsOnMissingTemplate() {
-      assertThatThrownBy(
-              () -> service.renderToHtml("non-existent", Locale.ENGLISH, Map.of()))
+      assertThatThrownBy(() -> service.renderToHtml("non-existent", Locale.ENGLISH, Map.of()))
           .isInstanceOf(TemplateInputException.class);
     }
   }
@@ -156,8 +155,7 @@ class DocumentTemplateServiceTest {
     }
 
     @ParameterizedTest(name = "renders PDF for locale ''{0}'' with valid header")
-    @MethodSource(
-        "com.buurman.service.export.DocumentTemplateServiceTest#supportedLocalesForPdf")
+    @MethodSource("com.buurman.service.export.DocumentTemplateServiceTest#supportedLocalesForPdf")
     void rendersValidPdfForAllSupportedLocales(Locale locale) {
       byte[] pdf =
           service.renderToPdf("test-doc", locale, Map.of("name", "Test", "showExtra", false));
@@ -167,7 +165,6 @@ class DocumentTemplateServiceTest {
   }
 
   static Stream<Locale> supportedLocalesForPdf() {
-    return Stream.of("en", "nl", "de", "fr", "pt", "es", "sv", "it")
-        .map(Locale::forLanguageTag);
+    return Stream.of("en", "nl", "de", "fr", "pt", "es", "sv", "it").map(Locale::forLanguageTag);
   }
 }

@@ -70,12 +70,10 @@ public class RentIncreaseLetterExporter {
     ContractExtension extension =
         extensionRepository.getByIdentifierAndTeamId(extensionIdentifier, teamId);
     Contract contract = contractRepository.getByIdAndTeamId(extension.getContractId(), teamId);
-    DocumentExporterHelper.validateContractOwnership(
-        contractIdentifier, contract, "Extension");
+    DocumentExporterHelper.validateContractOwnership(contractIdentifier, contract, "Extension");
     Property property = propertyRepository.getByIdAndTeamId(contract.getPropertyId(), teamId);
 
-    DocumentExporterHelper.PartyData partyData =
-        helper.loadPartyData(contract.getId(), teamId);
+    DocumentExporterHelper.PartyData partyData = helper.loadPartyData(contract.getId(), teamId);
 
     Optional<Contact> primaryContact =
         helper.findPrimaryContact(partyData.parties(), partyData.contactMap());
@@ -112,8 +110,7 @@ public class RentIncreaseLetterExporter {
     vars.put("extensionNumber", extension.getExtensionNumber());
 
     // Addressee
-    vars.put(
-        "primaryContactName", primaryContact.map(Contact::getDisplayName).orElse(null));
+    vars.put("primaryContactName", primaryContact.map(Contact::getDisplayName).orElse(null));
     vars.put("contactAddress", helper.buildAddressMap(contactAddress).orElse(null));
 
     // Property
@@ -136,8 +133,7 @@ public class RentIncreaseLetterExporter {
     vars.put("adjustmentType", formatEnumValue(extension.getRentAdjustmentType().name()));
     vars.put(
         "adjustmentBasis",
-        helper.buildAdjustmentBasis(
-            messageSource, "letter.body.adjustment.", extension, locale));
+        helper.buildAdjustmentBasis(messageSource, "letter.body.adjustment.", extension, locale));
     vars.put(
         "adjustmentValue",
         extension

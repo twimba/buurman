@@ -147,7 +147,8 @@ export const useCancelExtension = (contractId: string) => {
     }: {
       extensionId: string;
       deleteDocuments?: boolean;
-    }) => extensionsApi.cancelExtension(contractId, extensionId, deleteDocuments),
+    }) =>
+      extensionsApi.cancelExtension(contractId, extensionId, deleteDocuments),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: ['contractExtensions', contractId],
@@ -181,7 +182,12 @@ export const useGenerateExtensionDocuments = (contractId: string) => {
     }: {
       extensionId: string;
       request: extensionsApi.GenerateExtensionDocumentsRequest;
-    }) => extensionsApi.generateExtensionDocuments(contractId, extensionId, request),
+    }) =>
+      extensionsApi.generateExtensionDocuments(
+        contractId,
+        extensionId,
+        request
+      ),
     onSuccess: (docs) => {
       queryClient.invalidateQueries({
         queryKey: ['contractDocuments', contractId],

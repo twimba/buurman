@@ -20,6 +20,7 @@ import com.buurman.domain.identifier.ContractIdentifier;
 import com.buurman.domain.identifier.ContractRentPeriodIdentifier;
 import com.buurman.domain.identifier.PropertyIdentifier;
 import com.buurman.dto.request.GenerateExtensionDocumentsRequest;
+import com.buurman.dto.request.GenerateRentChangeDocumentsRequest;
 import com.buurman.dto.response.DocumentResponse;
 import com.buurman.generated.api.BookletsApi;
 import com.buurman.security.SecurityUtils;
@@ -28,6 +29,7 @@ import com.buurman.service.ExportService;
 import com.buurman.service.export.ContractExtensionAddendumExporter;
 import com.buurman.service.export.ExtensionDocumentGenerationService;
 import com.buurman.service.export.RentChangeDocumentExporter;
+import com.buurman.service.export.RentChangeDocumentGenerationService;
 import com.buurman.service.export.RentIncreaseLetterExporter;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -42,6 +44,7 @@ public class BookletController implements BookletsApi {
   private final RentIncreaseLetterExporter rentIncreaseLetterExporter;
   private final RentChangeDocumentExporter rentChangeDocumentExporter;
   private final ExtensionDocumentGenerationService extensionDocumentGenerationService;
+  private final RentChangeDocumentGenerationService rentChangeDocumentGenerationService;
   private final HttpServletResponse httpServletResponse;
 
   @Override
@@ -143,5 +146,15 @@ public class BookletController implements BookletsApi {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
     return extensionDocumentGenerationService.generateAndPersist(
         contractId, extensionId, request, principal);
+  }
+
+  @PostMapping("/contracts/{contractId}/rent-periods/{periodId}/generate-documents")
+  public List<DocumentResponse> generateRentChangeDocuments(
+      @PathVariable ContractIdentifier contractId,
+      @PathVariable ContractRentPeriodIdentifier periodId,
+      @RequestBody GenerateRentChangeDocumentsRequest request) {
+    UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    return rentChangeDocumentGenerationService.generateAndPersist(
+        contractId, periodId, request, principal);
   }
 }

@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { FileText, FileDown, Languages, Shield, Globe } from 'lucide-react';
-import { useGenerateExtensionDocuments } from '@/hooks/useContractExtensionHooks';
-import type { GenerateExtensionDocumentsRequest } from '@/api/contractExtensions';
+import { Languages, Shield, Globe } from 'lucide-react';
+import { useGenerateRentChangeDocuments } from '@/hooks/useRentPeriodHooks';
+import { COUNTRY_OFFICIAL_LANGUAGES } from './GenerateDocumentsModal';
+import type { GenerateRentChangeDocumentsRequest } from '@/api/rentPeriods';
 
 const SUPPORTED_LANGUAGES = [
   { code: 'en', label: 'English' },
@@ -14,66 +15,26 @@ const SUPPORTED_LANGUAGES = [
   { code: 'it', label: 'Italiano' },
 ] as const;
 
-/** Maps country codes to their official/mandatory language(s) for legal documents. */
-export const COUNTRY_OFFICIAL_LANGUAGES: Record<string, string[]> = {
-  NL: ['nl'],
-  BE: ['nl', 'fr', 'de'],
-  DE: ['de'],
-  AT: ['de'],
-  CH: ['de', 'fr', 'it'],
-  FR: ['fr'],
-  PT: ['pt'],
-  BR: ['pt'],
-  ES: ['es'],
-  SE: ['sv'],
-  IT: ['it'],
-  GB: ['en'],
-  IE: ['en'],
-  US: ['en'],
-  CA: ['en', 'fr'],
-  LU: ['fr', 'de'],
-};
-
-const DOCUMENT_TYPES = [
-  {
-    value: 'EXTENSION_ADDENDUM' as const,
-    label: 'Extension Addendum',
-    icon: FileText,
-    description: 'Formal contract extension agreement',
-  },
-  {
-    value: 'RENT_INCREASE_LETTER' as const,
-    label: 'Rent Increase Letter',
-    icon: FileDown,
-    description: 'Tenant notification of rent changes',
-  },
-];
-
-interface GenerateDocumentsModalProps {
+interface GenerateRentChangeModalProps {
   contractIdentifier: string;
-  extensionIdentifier: string;
-  extensionNumber: number;
+  periodIdentifier: string;
   defaultLanguages: string[];
   countryCode?: string;
   regenerate?: boolean;
   onClose: () => void;
 }
 
-export const GenerateDocumentsModal = ({
+export const GenerateRentChangeModal = ({
   contractIdentifier,
-  extensionIdentifier,
-  extensionNumber,
+  periodIdentifier,
   defaultLanguages,
   countryCode,
   regenerate = false,
   onClose,
-}: GenerateDocumentsModalProps) => {
+}: GenerateRentChangeModalProps) => {
   const officialLanguages = countryCode
     ? (COUNTRY_OFFICIAL_LANGUAGES[countryCode.toUpperCase()] ?? [])
     : [];
-  const [selectedTypes, setSelectedTypes] = useState<Set<string>>(
-    new Set(['EXTENSION_ADDENDUM', 'RENT_INCREASE_LETTER'])
-  );
   const [selectedLanguages, setSelectedLanguages] = useState<Set<string>>(
     () => {
       const initial = defaultLanguages.length > 0 ? defaultLanguages : ['en'];
@@ -81,19 +42,7 @@ export const GenerateDocumentsModal = ({
     }
   );
 
-  const generateDocs = useGenerateExtensionDocuments(contractIdentifier);
-
-  const toggleType = (type: string) => {
-    setSelectedTypes((prev) => {
-      const next = new Set(prev);
-      if (next.has(type)) {
-        next.delete(type);
-      } else {
-        next.add(type);
-      }
-      return next;
-    });
-  };
+  const generateDocs = useGenerateRentChangeDocuments(contractIdentifier);
 
   const toggleLanguage = (lang: string) => {
     if (officialLanguages.includes(lang)) {
@@ -112,18 +61,15 @@ export const GenerateDocumentsModal = ({
     });
   };
 
-  const totalDocuments = selectedTypes.size * selectedLanguages.size;
+  const totalDocuments = selectedLanguages.size;
 
   const handleGenerate = () => {
-    const request: GenerateExtensionDocumentsRequest = {
-      documentTypes: Array.from(
-        selectedTypes
-      ) as GenerateExtensionDocumentsRequest['documentTypes'],
+    const request: GenerateRentChangeDocumentsRequest = {
       languages: Array.from(selectedLanguages),
       ...(regenerate && { replaceExisting: true }),
     };
     generateDocs.mutate(
-      { extensionId: extensionIdentifier, request },
+      { periodId: periodIdentifier, request },
       { onSuccess: () => onClose() }
     );
   };
@@ -134,89 +80,18 @@ export const GenerateDocumentsModal = ({
         {/* Header */}
         <div className="p-4 border-b border-border-default">
           <h3 className="text-lg font-semibold text-text-primary">
-            {regenerate ? 'Regenerate Documents' : 'Generate Documents'}
+            {regenerate
+              ? 'Regenerate Rent Change Document'
+              : 'Generate Rent Change Document'}
           </h3>
           <p className="text-sm text-text-secondary mt-1">
-            Extension #{extensionNumber} —{' '}
             {regenerate
               ? 'Existing documents will be replaced'
-              : 'Select document types and languages'}
+              : 'Select languages for the rent change notification'}
           </p>
         </div>
 
         <div className="p-4 space-y-5">
-          {/* Document Types */}
-          <div>
-            <label className="block text-sm font-medium text-text-primary mb-2">
-              Document Types
-            </label>
-            <div className="space-y-2">
-              {DOCUMENT_TYPES.map((type) => {
-                const Icon = type.icon;
-                const isSelected = selectedTypes.has(type.value);
-                return (
-                  <button
-                    key={type.value}
-                    type="button"
-                    onClick={() => toggleType(type.value)}
-                    className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-colors text-left ${
-                      isSelected
-                        ? 'border-primary-500 bg-primary-500/5'
-                        : 'border-border-default hover:border-border-strong'
-                    }`}
-                  >
-                    <div
-                      className={`flex items-center justify-center w-8 h-8 rounded-md ${
-                        isSelected
-                          ? 'bg-primary-500/10 text-primary-500'
-                          : 'bg-surface-inset text-text-muted'
-                      }`}
-                    >
-                      <Icon className="h-4 w-4" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p
-                        className={`text-sm font-medium ${
-                          isSelected
-                            ? 'text-text-primary'
-                            : 'text-text-secondary'
-                        }`}
-                      >
-                        {type.label}
-                      </p>
-                      <p className="text-xs text-text-muted">
-                        {type.description}
-                      </p>
-                    </div>
-                    <div
-                      className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
-                        isSelected
-                          ? 'border-primary-500 bg-primary-500'
-                          : 'border-border-strong'
-                      }`}
-                    >
-                      {isSelected && (
-                        <svg
-                          className="w-3 h-3 text-white"
-                          viewBox="0 0 12 12"
-                          fill="none"
-                        >
-                          <path
-                            d="M2 6L5 9L10 3"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      )}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
           {/* Languages */}
           <div>
             <label className="flex items-center gap-1.5 text-sm font-medium text-text-primary mb-2">
@@ -319,7 +194,7 @@ export const GenerateDocumentsModal = ({
           <button
             type="button"
             onClick={handleGenerate}
-            disabled={selectedTypes.size === 0 || generateDocs.isPending}
+            disabled={selectedLanguages.size === 0 || generateDocs.isPending}
             className="px-4 py-2 text-sm font-medium text-white bg-primary-500 rounded-md hover:bg-primary-600 disabled:opacity-50 transition-colors"
           >
             {generateDocs.isPending

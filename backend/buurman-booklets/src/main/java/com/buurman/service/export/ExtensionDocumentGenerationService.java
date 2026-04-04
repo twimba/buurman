@@ -59,15 +59,17 @@ public class ExtensionDocumentGenerationService {
       throw new BadRequestException("Extension does not belong to this contract");
     }
 
-    List<String> languages = Optional.ofNullable(request.languages())
-        .flatMap(opt -> opt)
-        .filter(list -> !list.isEmpty())
-        .orElseGet(() -> {
-          List<String> contractLangs = contract.getDocumentLanguages();
-          return (contractLangs != null && !contractLangs.isEmpty())
-              ? contractLangs
-              : List.of("en");
-        });
+    List<String> languages =
+        Optional.ofNullable(request.languages())
+            .flatMap(opt -> opt)
+            .filter(list -> !list.isEmpty())
+            .orElseGet(
+                () -> {
+                  List<String> contractLangs = contract.getDocumentLanguages();
+                  return (contractLangs != null && !contractLangs.isEmpty())
+                      ? contractLangs
+                      : List.of("en");
+                });
 
     List<String> validTypes = List.of("EXTENSION_ADDENDUM", "RENT_INCREASE_LETTER");
     for (String type : request.documentTypes()) {
@@ -185,8 +187,9 @@ public class ExtensionDocumentGenerationService {
   private void deleteExistingExtensionDocuments(
       Contract contract, int extensionNumber, UUID teamId) {
     String filenamePattern = "%-" + extensionNumber + "-%.pdf";
-    List<Document> existing = documentRepository.findByEntityAndFileNamePatternAndTeamId(
-        ENTITY_TYPE, contract.getId(), filenamePattern, teamId);
+    List<Document> existing =
+        documentRepository.findByEntityAndFileNamePatternAndTeamId(
+            ENTITY_TYPE, contract.getId(), filenamePattern, teamId);
 
     for (Document doc : existing) {
       documentRepository.softDeleteByIdAndTeamId(doc.getId(), teamId);

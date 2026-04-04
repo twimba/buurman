@@ -85,8 +85,7 @@ public class ContractRecordMapper {
     }
 
     // document_languages column (added in V048)
-    String[] docLangs =
-        record.get(org.jooq.impl.DSL.field("document_languages", String[].class));
+    String[] docLangs = record.get(org.jooq.impl.DSL.field("document_languages", String[].class));
     contract.setDocumentLanguages(
         docLangs != null ? List.copyOf(Arrays.asList(docLangs)) : List.of("en"));
 

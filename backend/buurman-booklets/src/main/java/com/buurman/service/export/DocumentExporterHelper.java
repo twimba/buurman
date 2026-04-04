@@ -30,8 +30,8 @@ import com.buurman.service.ContractPartyService;
 import com.buurman.util.CurrencyUtils;
 
 /**
- * Shared helper methods for document exporters. Eliminates duplication of contact resolution, address
- * lookup, legal clause resolution, and contract validation across exporters.
+ * Shared helper methods for document exporters. Eliminates duplication of contact resolution,
+ * address lookup, legal clause resolution, and contract validation across exporters.
  */
 @Component
 class DocumentExporterHelper {
@@ -65,8 +65,7 @@ class DocumentExporterHelper {
   }
 
   /** Finds the primary tenant contact from a list of contract parties. */
-  Optional<Contact> findPrimaryContact(
-      List<ContractParty> parties, Map<UUID, Contact> contactMap) {
+  Optional<Contact> findPrimaryContact(List<ContractParty> parties, Map<UUID, Contact> contactMap) {
     return parties.stream()
         .filter(p -> p.getRole() == ContractPartyRole.PRIMARY_TENANT)
         .findFirst()
@@ -75,9 +74,7 @@ class DocumentExporterHelper {
 
   /** Finds the primary tenant's display name, or em dash if not found. */
   String findPrimaryContactName(List<ContractParty> parties, Map<UUID, Contact> contactMap) {
-    return findPrimaryContact(parties, contactMap)
-        .map(Contact::getDisplayName)
-        .orElse("\u2014");
+    return findPrimaryContact(parties, contactMap).map(Contact::getDisplayName).orElse("\u2014");
   }
 
   /** Builds a comma-separated list of all contact names. */
@@ -137,10 +134,7 @@ class DocumentExporterHelper {
    * @return the legal clause text, or empty if not found
    */
   Optional<String> resolveLegalClause(
-      MessageSource messageSource,
-      String keyPrefix,
-      Optional<String> countryCode,
-      Locale locale) {
+      MessageSource messageSource, String keyPrefix, Optional<String> countryCode, Locale locale) {
     return countryCode.flatMap(
         code -> {
           String key = keyPrefix + code.toUpperCase(Locale.ROOT);
@@ -164,10 +158,7 @@ class DocumentExporterHelper {
    * @return the adjustment basis description
    */
   String buildAdjustmentBasis(
-      MessageSource messageSource,
-      String keyPrefix,
-      ContractExtension extension,
-      Locale locale) {
+      MessageSource messageSource, String keyPrefix, ContractExtension extension, Locale locale) {
     return switch (extension.getRentAdjustmentType()) {
       case FIXED_PERCENTAGE -> {
         String pct =
@@ -181,9 +172,7 @@ class DocumentExporterHelper {
         String amt =
             extension
                 .getRentAdjustmentValue()
-                .map(
-                    v ->
-                        CurrencyUtils.formatCurrency(v, extension.getNewRentAmount().currency()))
+                .map(v -> CurrencyUtils.formatCurrency(v, extension.getNewRentAmount().currency()))
                 .orElse("a fixed amount");
         yield messageSource.getMessage(keyPrefix + "fixedAmount", new Object[] {amt}, locale);
       }
@@ -209,9 +198,7 @@ class DocumentExporterHelper {
    * @param errorPrefix error message prefix (e.g., "Extension" or "Rent period")
    */
   static void validateContractOwnership(
-      Optional<ContractIdentifier> contractIdentifier,
-      Contract contract,
-      String errorPrefix) {
+      Optional<ContractIdentifier> contractIdentifier, Contract contract, String errorPrefix) {
     contractIdentifier.ifPresent(
         expected ->
             contract
@@ -220,9 +207,7 @@ class DocumentExporterHelper {
                     actual -> {
                       if (!actual.equals(expected)) {
                         throw new BadRequestException(
-                            errorPrefix
-                                + " does not belong to contract: "
-                                + expected.value());
+                            errorPrefix + " does not belong to contract: " + expected.value());
                       }
                     }));
   }

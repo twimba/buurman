@@ -23,7 +23,6 @@ import com.buurman.domain.Contact;
 import com.buurman.domain.ContactAddress;
 import com.buurman.domain.Contract;
 import com.buurman.domain.ContractExtension;
-import com.buurman.domain.ContractParty;
 import com.buurman.domain.ContractRentPeriod;
 import com.buurman.domain.Property;
 import com.buurman.domain.RentRegulationCountry;
@@ -104,8 +103,7 @@ public class RentChangeDocumentExporter {
     Optional<ContractExtension> linkedExtension = findLinkedExtension(period, contract, teamId);
 
     // Load contacts
-    DocumentExporterHelper.PartyData partyData =
-        helper.loadPartyData(contract.getId(), teamId);
+    DocumentExporterHelper.PartyData partyData = helper.loadPartyData(contract.getId(), teamId);
 
     Optional<Contact> primaryContact =
         helper.findPrimaryContact(partyData.parties(), partyData.contactMap());
@@ -160,8 +158,7 @@ public class RentChangeDocumentExporter {
             .value());
 
     // Addressee
-    vars.put(
-        "primaryContactName", primaryContact.map(Contact::getDisplayName).orElse(null));
+    vars.put("primaryContactName", primaryContact.map(Contact::getDisplayName).orElse(null));
     vars.put("contactAddress", helper.buildAddressMap(contactAddress).orElse(null));
 
     // Property
@@ -180,9 +177,7 @@ public class RentChangeDocumentExporter {
     }
 
     // Effective date
-    vars.put(
-        "effectiveDate",
-        BookletHelper.formatDate(currentPeriod.getEffectiveFrom(), dateFmt));
+    vars.put("effectiveDate", BookletHelper.formatDate(currentPeriod.getEffectiveFrom(), dateFmt));
 
     // Percentage change
     if (!isInitialRent) {
@@ -219,8 +214,7 @@ public class RentChangeDocumentExporter {
           if (!isInitialRent) {
             vars.put(
                 "adjustmentBasis",
-                messageSource.getMessage(
-                    "rentchange.body.adjustment.standalone", null, locale));
+                messageSource.getMessage("rentchange.body.adjustment.standalone", null, locale));
           } else {
             vars.put("adjustmentBasis", null);
           }
@@ -232,9 +226,7 @@ public class RentChangeDocumentExporter {
           vars.put("extensionNumber", ext.getExtensionNumber());
           vars.put(
               "extensionNewEndDate",
-              ext.getNewEndDate()
-                  .map(d -> BookletHelper.formatDate(d, dateFmt))
-                  .orElse(null));
+              ext.getNewEndDate().map(d -> BookletHelper.formatDate(d, dateFmt)).orElse(null));
         },
         () -> {
           vars.put("extensionNumber", null);
@@ -271,9 +263,7 @@ public class RentChangeDocumentExporter {
           regMap.put("indexName", rule.getIndexName().orElse(null));
           regMap.put(
               "indexValue",
-              rule.getIndexValue()
-                  .map(v -> v.stripTrailingZeros().toPlainString())
-                  .orElse(null));
+              rule.getIndexValue().map(v -> v.stripTrailingZeros().toPlainString()).orElse(null));
           regMap.put("noticePeriodDays", rule.getNoticePeriodDays().orElse(null));
           regMap.put("additionalConditions", rule.getAdditionalConditions().orElse(null));
           regMap.put("sourceUrl", rule.getSourceUrl().orElse(null));

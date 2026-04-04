@@ -6,5 +6,4 @@ import java.util.Optional;
 public record GenerateExtensionDocumentsRequest(
     List<String> documentTypes,
     Optional<List<String>> languages,
-    Optional<Boolean> replaceExisting
-) {}
+    Optional<Boolean> replaceExisting) {}

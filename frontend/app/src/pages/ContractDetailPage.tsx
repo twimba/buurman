@@ -908,6 +908,8 @@ export const ContractDetailPage = () => {
                   currentRentAmount={contract.rentAmount}
                   currentComponents={contract.rentComponents ?? []}
                   paymentFrequency={contract.paymentFrequency}
+                  documentLanguages={contract.documentLanguages}
+                  countryCode={contract.countryCode}
                 />
                 {contract.rentComponents &&
                   contract.rentComponents.length > 0 && (
