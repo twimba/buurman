@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useContracts } from '@/hooks/useContractHooks';
+import { useDebounce } from '@/hooks/useDebounce';
 import {
   useOccupancyPeriods,
   useDeleteOccupancyPeriod,
@@ -32,12 +33,7 @@ interface PropertyContractsTabProps {
   propertyId: string;
 }
 
-type ContractSortField =
-  | 'startDate'
-  | 'rentAmount'
-  | 'status'
-  | 'contact'
-  | 'contractType';
+type ContractSortField = 'startDate' | 'rentAmount' | 'status' | 'contractType';
 
 export const PropertyContractsTab = ({
   propertyId,
@@ -46,11 +42,12 @@ export const PropertyContractsTab = ({
   const { canEditData, canManageMembers } = useTeam();
   const { formatDate } = useFormatDate();
 
-  // Contracts table state
+  // Contracts table state — server-side sort/pagination, client-side search
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearch = useDebounce(searchTerm, 300);
   const [sortField, setSortField] = useState<ContractSortField>('startDate');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
   const perPage = 10;
 
   // Self-occupancy modal state
@@ -67,89 +64,42 @@ export const PropertyContractsTab = ({
   >(null);
   const [editFinancingId, setEditFinancingId] = useState<string | null>(null);
 
-  // Data fetching
+  // Data fetching — server-side sort and pagination
   const {
     data: contractsData,
     isLoading: contractsLoading,
     error: contractsError,
   } = useContracts(
-    propertyId ? { propertyIdentifier: propertyId } : undefined
+    propertyId
+      ? {
+          propertyIdentifier: propertyId,
+          page: currentPage,
+          size: perPage,
+          sort: sortField,
+          direction: sortOrder,
+        }
+      : undefined
   );
-  const contracts = useMemo(
-    () => contractsData?.content ?? [],
-    [contractsData]
-  );
+  const contracts = contractsData?.content ?? [];
+  const totalPages = contractsData?.totalPages ?? 0;
+
   const { data: occupancyPeriods = [] } = useOccupancyPeriods(propertyId);
   const { data: financings = [] } = useFinancings(propertyId);
   const deleteOccupancyMutation = useDeleteOccupancyPeriod(propertyId);
 
-  // Filtering, sorting, and pagination
-  const filteredAndSortedContracts = useMemo(() => {
-    if (!contracts) {
-      return [];
-    }
-
-    let filtered = [...contracts];
-
-    if (searchTerm) {
-      const search = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (contract) =>
+  // Client-side search filter (API doesn't support text search for contracts)
+  const displayedContracts = debouncedSearch
+    ? contracts.filter((contract) => {
+        const search = debouncedSearch.toLowerCase();
+        return (
           contract.identifier.toLowerCase().includes(search) ||
           `${contract.primaryContact.firstName} ${contract.primaryContact.lastName}`
             .toLowerCase()
             .includes(search) ||
           contract.contractType.toLowerCase().includes(search)
-      );
-    }
-
-    filtered.sort((a, b) => {
-      let aVal: string | number, bVal: string | number;
-
-      switch (sortField) {
-        case 'startDate':
-          aVal = new Date(a.startDate).getTime();
-          bVal = new Date(b.startDate).getTime();
-          break;
-        case 'rentAmount':
-          aVal = a.rentAmount;
-          bVal = b.rentAmount;
-          break;
-        case 'status':
-          aVal = a.status;
-          bVal = b.status;
-          break;
-        case 'contact':
-          aVal = `${a.primaryContact.firstName} ${a.primaryContact.lastName}`;
-          bVal = `${b.primaryContact.firstName} ${b.primaryContact.lastName}`;
-          break;
-        case 'contractType':
-          aVal = a.contractType;
-          bVal = b.contractType;
-          break;
-        default:
-          return 0;
-      }
-
-      if (aVal < bVal) {
-        return sortOrder === 'asc' ? -1 : 1;
-      }
-      if (aVal > bVal) {
-        return sortOrder === 'asc' ? 1 : -1;
-      }
-      return 0;
-    });
-
-    return filtered;
-  }, [contracts, searchTerm, sortField, sortOrder]);
-
-  const paginatedContracts = useMemo(() => {
-    const startIndex = (currentPage - 1) * perPage;
-    const endIndex = startIndex + perPage;
-    return filteredAndSortedContracts.slice(startIndex, endIndex);
-  }, [filteredAndSortedContracts, currentPage]);
-
-  const totalPages = Math.ceil(filteredAndSortedContracts.length / perPage);
+        );
+      })
+    : contracts;
 
   const handleSort = (field: ContractSortField) => {
     if (sortField === field) {
@@ -158,6 +108,7 @@ export const PropertyContractsTab = ({
       setSortField(field);
       setSortOrder('asc');
     }
+    setCurrentPage(0);
   };
 
   const renderSortIcon = (field: ContractSortField) => {
@@ -176,7 +127,7 @@ export const PropertyContractsTab = ({
       <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-text-primary">
-            Contracts ({filteredAndSortedContracts.length})
+            Contracts ({contractsData?.totalElements ?? 0})
           </h2>
           <button
             onClick={() => navigate(`/contracts/new?propertyId=${propertyId}`)}
@@ -238,18 +189,11 @@ export const PropertyContractsTab = ({
                       onClick={() => handleSort('startDate')}
                     >
                       <div className="flex items-center gap-1">
-                        Contract #
-                        {renderSortIcon('startDate')}
+                        Contract #{renderSortIcon('startDate')}
                       </div>
                     </th>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
-                      onClick={() => handleSort('contact')}
-                    >
-                      <div className="flex items-center gap-1">
-                        Contact
-                        {renderSortIcon('contact')}
-                      </div>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                      Contact
                     </th>
                     <th
                       className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
@@ -293,7 +237,7 @@ export const PropertyContractsTab = ({
                   </tr>
                 </thead>
                 <tbody className="bg-surface-card divide-y divide-border-default">
-                  {paginatedContracts.length === 0 ? (
+                  {displayedContracts.length === 0 ? (
                     <tr>
                       <td
                         colSpan={7}
@@ -303,7 +247,7 @@ export const PropertyContractsTab = ({
                       </td>
                     </tr>
                   ) : (
-                    paginatedContracts.map((contract) => (
+                    displayedContracts.map((contract) => (
                       <tr
                         key={contract.identifier}
                         onClick={() =>
@@ -362,27 +306,27 @@ export const PropertyContractsTab = ({
             {totalPages > 1 && (
               <div className="flex items-center justify-between mt-4 pt-4 border-t border-border-default">
                 <div className="text-sm text-text-secondary">
-                  Showing {(currentPage - 1) * perPage + 1} to{' '}
+                  Showing {currentPage * perPage + 1} to{' '}
                   {Math.min(
-                    currentPage * perPage,
-                    filteredAndSortedContracts.length
+                    (currentPage + 1) * perPage,
+                    contractsData?.totalElements ?? 0
                   )}{' '}
-                  of {filteredAndSortedContracts.length} contracts
+                  of {contractsData?.totalElements ?? 0} contracts
                 </div>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setCurrentPage(currentPage - 1)}
-                    disabled={currentPage === 1}
+                    disabled={currentPage === 0}
                     className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
                   >
                     Previous
                   </button>
                   <span className="px-3 py-1 text-sm text-text-secondary">
-                    Page {currentPage} of {totalPages}
+                    Page {currentPage + 1} of {totalPages}
                   </span>
                   <button
                     onClick={() => setCurrentPage(currentPage + 1)}
-                    disabled={currentPage === totalPages}
+                    disabled={currentPage + 1 >= totalPages}
                     className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
                   >
                     Next
@@ -459,8 +403,7 @@ export const PropertyContractsTab = ({
                 <tbody className="bg-surface-card divide-y divide-border-default">
                   {occupancyPeriods.map((period) => {
                     const isPeriodActive =
-                      !period.endDate ||
-                      new Date(period.endDate) >= new Date();
+                      !period.endDate || new Date(period.endDate) >= new Date();
                     return (
                       <tr
                         key={period.identifier}
