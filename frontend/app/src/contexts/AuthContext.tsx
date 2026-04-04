@@ -29,6 +29,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [token, setToken] = useState<string | undefined>(undefined);
+  const [initError, setInitError] = useState<string | null>(null);
   const initStarted = useRef(false);
 
   useEffect(() => {
@@ -54,36 +55,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         if (authenticated) {
           // Update token every time it's refreshed
           keycloak.onTokenExpired = () => {
-            console.log('Token expired, refreshing...');
             keycloak
               .updateToken(30)
               .then((refreshed) => {
                 if (refreshed) {
-                  console.log('Token refreshed');
                   setToken(keycloak.token);
                 }
               })
               .catch(() => {
-                console.error('Failed to refresh token');
                 setIsAuthenticated(false);
               });
           };
 
-          // Update token state when it changes
           keycloak.onAuthSuccess = () => {
-            console.log('Auth success');
             setIsAuthenticated(true);
             setToken(keycloak.token);
           };
 
           keycloak.onAuthLogout = () => {
-            console.log('Auth logout');
             setIsAuthenticated(false);
             setToken(undefined);
           };
         }
-      } catch (error) {
-        console.error('Keycloak initialization failed:', error);
+      } catch {
+        setInitError(
+          'Authentication service is currently unavailable. Please try again later.'
+        );
         setIsLoading(false);
       }
     };
@@ -112,6 +109,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     token,
     keycloak,
   };
+
+  if (initError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <h1 className="text-xl font-semibold text-text-primary mb-2">
+            Service Unavailable
+          </h1>
+          <p className="text-text-secondary mb-4">{initError}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -50,7 +50,7 @@ export const InvitationPage = () => {
   const acceptMutation = useAcceptInvitation();
 
   const handleAcceptSuccess = useCallback(() => {
-    localStorage.removeItem('pendingInvitation');
+    sessionStorage.removeItem('pendingInvitation');
     // Clear all cached queries so the dashboard loads with fresh team data
     queryClient.clear();
     window.location.href = '/dashboard';
@@ -66,7 +66,7 @@ export const InvitationPage = () => {
       !invitation.isAccepted &&
       !invitation.isExpired
     ) {
-      const pendingToken = localStorage.getItem('pendingInvitation');
+      const pendingToken = sessionStorage.getItem('pendingInvitation');
       if (pendingToken === token) {
         autoAcceptTriggered.current = true;
         acceptMutation.mutate(token, {
@@ -78,13 +78,13 @@ export const InvitationPage = () => {
 
   const handleLogin = () => {
     // Store the invitation token for auto-accept after login
-    localStorage.setItem('pendingInvitation', token);
+    sessionStorage.setItem('pendingInvitation', token);
     login(`${window.location.origin}/invitation/${token}`);
   };
 
   const handleRegister = () => {
     // Store the invitation token to redirect back after registration
-    localStorage.setItem('pendingInvitation', token);
+    sessionStorage.setItem('pendingInvitation', token);
     navigate(`/register?invitation=${token}`);
   };
 
@@ -100,7 +100,7 @@ export const InvitationPage = () => {
       !isLoading &&
       (error || !invitation || invitation.isAccepted || invitation.isExpired)
     ) {
-      localStorage.removeItem('pendingInvitation');
+      sessionStorage.removeItem('pendingInvitation');
     }
   }, [isLoading, error, invitation]);
 

@@ -57,7 +57,6 @@ import {
   Eye,
   Repeat,
 } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import {
   AddContractPartyRequest,
@@ -80,7 +79,7 @@ export const ContractDetailPage = () => {
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData } = useTeam();
-  const { formatDate } = useFormatDate();
+  const { formatDate, formatRelative } = useFormatDate();
   const [activeTab, setActiveTab] = useTabState('overview', [
     'overview',
     'payments',
@@ -1579,12 +1578,7 @@ export const ContractDetailPage = () => {
                           </p>
                           <div className="flex items-center gap-2 mt-1">
                             <p className="text-xs text-text-secondary">
-                              {formatDistanceToNow(
-                                new Date(activity.timestamp),
-                                {
-                                  addSuffix: true,
-                                }
-                              )}
+                              {formatRelative(activity.timestamp)}
                             </p>
                             {activity.impersonatedBy && (
                               <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-warning-bg text-warning-text">

@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "format": "prettier --write \"src/**/*.{ts,tsx,css}\""
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
+    "lint": "echo 'No ESLint config yet — skipping'",
+    "typecheck": "tsc --noEmit"
   },
   "main": "src/index.ts",
   "types": "src/index.ts",

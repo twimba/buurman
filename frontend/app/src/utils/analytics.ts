@@ -69,7 +69,7 @@ export function trackEvent(
 
 /**
  * Suppress or resume analytics capture during admin impersonation sessions.
- * Stub for BUUR-20 — wire into ImpersonationContext when implemented.
+ * Wired into ImpersonationContext — called automatically on state changes.
  */
 export function setImpersonating(active: boolean): void {
   if (!initialized) {

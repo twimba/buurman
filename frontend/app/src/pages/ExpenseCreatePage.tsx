@@ -8,7 +8,7 @@ import { PropertySelector } from '@/components/common/PropertySelector';
 import { CurrencySelector } from '@/components/common/CurrencySelector';
 import {
   BulkDataGrid,
-  type ColumnDef,
+  type BulkColumnDef,
   type RowData,
 } from '@/components/common/BulkDataGrid';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
@@ -27,7 +27,7 @@ const CATEGORY_OPTIONS = Object.values(ExpenseCategory).map((cat) => ({
   label: formatExpenseCategory(cat),
 }));
 
-const BULK_COLUMNS: ColumnDef[] = [
+const BULK_COLUMNS: BulkColumnDef[] = [
   {
     key: 'date',
     label: 'Date',

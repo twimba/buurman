@@ -1,5 +1,5 @@
 import { useTeam } from '../context/TeamContext';
-import { useCurrentTeam, useTeamSettings } from './useTeamHooks';
+import { useTeamSettings } from './useTeamHooks';
 
 /**
  * Hook that provides team-level default values for currency and country.
@@ -8,8 +8,7 @@ import { useCurrentTeam, useTeamSettings } from './useTeamHooks';
  */
 export const useTeamDefaults = () => {
   const { activeTeam } = useTeam();
-  const { data: team } = useCurrentTeam();
-  const { data: settings } = useTeamSettings(team?.identifier);
+  const { data: settings } = useTeamSettings(activeTeam?.identifier);
 
   return {
     defaultCurrency: settings?.regional?.defaultCurrency || 'EUR',

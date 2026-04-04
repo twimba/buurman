@@ -2,6 +2,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
   useCallback,
   ReactNode,
@@ -54,13 +55,14 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [themePreference, setThemePreference] =
     useState<ThemePreference>(getStoredTheme);
 
-  // Sync from backend preferences when they load (adjust state during render)
-  const [prevBackendTheme, setPrevBackendTheme] = useState<string | undefined>(
-    undefined
-  );
-  if (preferences?.theme !== prevBackendTheme) {
-    setPrevBackendTheme(preferences?.theme);
-    if (preferences?.theme) {
+  // Sync from backend preferences when they load
+  const prevBackendTheme = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    if (
+      preferences?.theme &&
+      preferences.theme !== prevBackendTheme.current
+    ) {
+      prevBackendTheme.current = preferences.theme;
       const backendTheme = preferences.theme as ThemePreference;
       setThemePreference(backendTheme);
       try {
@@ -69,7 +71,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
         // ignore
       }
     }
-  }
+  }, [preferences?.theme]);
 
   // Listen for system theme changes
   useEffect(() => {

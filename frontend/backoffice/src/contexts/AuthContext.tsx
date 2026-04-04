@@ -47,17 +47,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         // Set up token refresh
         if (authenticated) {
           keycloak.onTokenExpired = () => {
-            console.log("Token expired, refreshing...");
             keycloak
               .updateToken(30)
               .then((refreshed) => {
                 if (refreshed) {
-                  console.log("Token refreshed");
                   setToken(keycloak.token);
                 }
               })
               .catch(() => {
-                console.error("Failed to refresh token");
                 setIsAuthenticated(false);
               });
           };

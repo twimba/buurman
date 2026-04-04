@@ -12,6 +12,7 @@ import { ErrorMessage } from '@/components/ErrorMessage';
 import { Plus, Home, Filter, Search, X } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
+import { useDebounce } from '@/hooks/useDebounce';
 import { LoadingSpinner, Pagination, RefreshButton } from '@buurman/ui';
 
 const categoryFilters: {
@@ -43,7 +44,7 @@ export const PropertyListPage = () => {
     PropertyCategory | undefined
   >(undefined);
   const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const debouncedQuery = useDebounce(searchQuery, 300);
 
   const {
     pageParams,
@@ -53,21 +54,6 @@ export const PropertyListPage = () => {
     handleSizeChange,
     resetPage,
   } = usePagination({ defaultSize: 12 });
-
-  // Debounce search input
-  const [debounceTimer, setDebounceTimer] =
-    useState<ReturnType<typeof setTimeout>>();
-  const handleSearchChange = (value: string) => {
-    setSearchQuery(value);
-    if (debounceTimer) {
-      clearTimeout(debounceTimer);
-    }
-    const timer = setTimeout(() => {
-      setDebouncedQuery(value);
-      resetPage();
-    }, 400);
-    setDebounceTimer(timer);
-  };
 
   const {
     data: propertiesData,
@@ -145,7 +131,10 @@ export const PropertyListPage = () => {
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => handleSearchChange(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                resetPage();
+              }}
               placeholder="Search by address, city, postal code, or type..."
               className="w-full pl-10 pr-10 py-2 border border-border-strong rounded focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
             />
@@ -153,7 +142,6 @@ export const PropertyListPage = () => {
               <button
                 onClick={() => {
                   setSearchQuery('');
-                  setDebouncedQuery('');
                   resetPage();
                 }}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-secondary"

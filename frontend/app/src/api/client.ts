@@ -84,6 +84,15 @@ client.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    // Surface rate-limit errors with specific guidance
+    if (error.response?.status === 429) {
+      const retryAfter = error.response.headers?.['retry-after'];
+      const message = retryAfter
+        ? `Too many requests. Please wait ${retryAfter} seconds before retrying.`
+        : 'Too many requests. Please wait a moment before retrying.';
+      error.message = message;
+    }
+
     return Promise.reject(error);
   }
 );

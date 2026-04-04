@@ -47,6 +47,8 @@ export function ImpersonatePage() {
           targetTeamIdentifier: data.targetTeamIdentifier ?? undefined,
         });
 
+        // Remove the session token from browser history before navigating
+        window.history.replaceState({}, '', '/impersonate');
         navigate('/dashboard', { replace: true });
       } catch (err) {
         setError(

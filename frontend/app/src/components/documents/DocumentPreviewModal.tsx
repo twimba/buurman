@@ -187,6 +187,7 @@ export const DocumentPreviewModal = ({
                       src={document.downloadUrl ?? undefined}
                       alt={document.title || document.fileName}
                       className="max-w-full h-auto rounded-lg shadow-lg"
+                      loading="lazy"
                       crossOrigin="anonymous"
                     />
                   </div>

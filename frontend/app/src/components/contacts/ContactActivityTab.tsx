@@ -20,7 +20,6 @@ import {
   MoreHorizontal,
   Pin,
 } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
 
 const EVENT_TYPE_ICONS: Record<string, React.ReactNode> = {
   AUDIT: <FileText className="h-4 w-4" />,
@@ -47,7 +46,7 @@ interface ContactActivityTabProps {
 }
 
 export const ContactActivityTab = ({ contactId }: ContactActivityTabProps) => {
-  const { formatDate } = useFormatDate();
+  const { formatDate, formatRelative } = useFormatDate();
   const { pageParams, page, size, handlePageChange, handleSizeChange } =
     usePagination({ defaultSize: 25 });
 
@@ -149,9 +148,7 @@ export const ContactActivityTab = ({ contactId }: ContactActivityTabProps) => {
 
                     <div className="flex items-center gap-2 mt-1 text-xs text-text-muted">
                       <span>
-                        {formatDistanceToNow(new Date(item.occurredAt), {
-                          addSuffix: true,
-                        })}
+                        {formatRelative(item.occurredAt)}
                       </span>
                       <span>·</span>
                       <span>{formatDate(item.occurredAt)}</span>

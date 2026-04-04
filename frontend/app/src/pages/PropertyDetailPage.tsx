@@ -85,7 +85,6 @@ import {
   Eye,
 } from 'lucide-react';
 import DOMPurify from 'dompurify';
-import { formatDistanceToNow } from 'date-fns';
 import { useFormatDate } from '@/hooks/useFormatDate';
 
 const statusColors: Record<string, string> = {
@@ -103,7 +102,7 @@ export const PropertyDetailPage = () => {
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData, canManageMembers } = useTeam();
-  const { formatDate } = useFormatDate();
+  const { formatDate, formatRelative } = useFormatDate();
   const [activeTab, setActiveTab] = useTabState('info', [
     'info',
     'financials',
@@ -2351,12 +2350,7 @@ export const PropertyDetailPage = () => {
                           </p>
                           <div className="flex items-center gap-2 mt-1">
                             <p className="text-xs text-text-secondary">
-                              {formatDistanceToNow(
-                                new Date(activity.timestamp),
-                                {
-                                  addSuffix: true,
-                                }
-                              )}
+                              {formatRelative(activity.timestamp)}
                             </p>
                             {activity.impersonatedBy && (
                               <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-warning-bg text-warning-text">

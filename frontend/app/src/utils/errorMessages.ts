@@ -128,6 +128,6 @@ const formatErrorMessage = (message: string): string => {
     }
   }
 
-  // Return the original message if no mapping found
-  return message;
+  // Return a generic message for unmapped backend errors to avoid leaking internals
+  return 'An error occurred. Please try again or contact support.';
 };

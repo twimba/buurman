@@ -28,7 +28,7 @@ import {
 import { RichTextEditor } from '@/components/common/RichTextEditor';
 import { Avatar } from '@/components/common/Avatar';
 import { Plus, Edit, Trash2, Users, ShieldOff } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { useFormatDate } from '@/hooks/useFormatDate';
 
 interface RelationshipFormData {
   targetContactIdentifier: string;
@@ -51,6 +51,7 @@ export const ContactRelationshipsTab = ({
 }: ContactRelationshipsTabProps) => {
   const navigate = useNavigate();
   const { canEditData } = useTeam();
+  const { formatRelative } = useFormatDate();
   const { data: relationships = [], isLoading } =
     useContactRelationships(contactId);
   const createMutation = useCreateContactRelationship(contactId);
@@ -212,9 +213,7 @@ export const ContactRelationshipsTab = ({
                     )}
                     <p className="text-xs text-text-muted mt-1">
                       Added{' '}
-                      {formatDistanceToNow(new Date(rel.createdAt), {
-                        addSuffix: true,
-                      })}
+                      {formatRelative(rel.createdAt)}
                     </p>
                   </div>
                 </div>

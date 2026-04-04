@@ -23,13 +23,12 @@ import {
   Clock,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { formatDistanceToNow } from 'date-fns';
 import { useFormatDate } from '@/hooks/useFormatDate';
 
 export const DashboardPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { formatDate } = useFormatDate();
+  const { formatDate, formatRelative } = useFormatDate();
   const { canEditData } = useTeam();
   const { showToast } = useToast();
   const {
@@ -428,9 +427,8 @@ export const DashboardPage = () => {
                         {isOverdue && (
                           <span className="text-error-text ml-1">
                             (
-                            {formatDistanceToNow(new Date(payment.dueDate), {
-                              addSuffix: false,
-                            })}{' '}
+                            {formatRelative(payment.dueDate)
+                              .replace(/ ago$/, '')}{' '}
                             overdue)
                           </span>
                         )}
