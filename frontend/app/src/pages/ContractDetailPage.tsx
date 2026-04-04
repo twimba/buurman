@@ -1381,7 +1381,9 @@ export const ContractDetailPage = () => {
                             key={payment.identifier}
                             className="hover:bg-primary-50 cursor-pointer"
                             onClick={() =>
-                              navigate(`/payments/${payment.identifier}`)
+                              navigate(`/payments/${payment.identifier}`, {
+                                state: { backTo: `/contracts/${id}?tab=payments` },
+                              })
                             }
                           >
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-500 dark:text-primary-300">

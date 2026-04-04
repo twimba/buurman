@@ -1,4 +1,4 @@
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
 import { useCallback } from 'react';
 
 export function useTabState<T extends string>(
@@ -6,6 +6,7 @@ export function useTabState<T extends string>(
   validTabs?: readonly T[]
 ): [T, (tab: T) => void] {
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
   const raw = searchParams.get('tab');
   const activeTab =
     raw && (!validTabs || (validTabs as readonly string[]).includes(raw))
@@ -23,10 +24,10 @@ export function useTabState<T extends string>(
           }
           return prev;
         },
-        { replace: true }
+        { replace: true, state: location.state }
       );
     },
-    [defaultTab, setSearchParams]
+    [defaultTab, setSearchParams, location.state]
   );
 
   return [activeTab, setActiveTab];

@@ -517,7 +517,10 @@ export const ContactDetailPage = () => {
                   <div className="flex items-center gap-2 bg-error-bg text-error-text px-4 py-3 rounded-lg">
                     <Wallet className="h-4 w-4 flex-shrink-0" />
                     <span className="text-sm font-medium">
-                      {formatCurrency(contact.balanceSummary.outstandingAmount, contact.balanceSummary.currency)}{' '}
+                      {formatCurrency(
+                        contact.balanceSummary.outstandingAmount,
+                        contact.balanceSummary.currency
+                      )}{' '}
                       overdue ({contact.balanceSummary.outstandingPaymentCount}{' '}
                       payment
                       {contact.balanceSummary.outstandingPaymentCount !== 1
@@ -962,7 +965,7 @@ export const ContactDetailPage = () => {
         {/* ===== Tab: Financials ===== */}
         {activeTab === 'financials' && (
           <div id="tabpanel-financials" role="tabpanel">
-            <ContactFinancialsTab contactIdentifier={id} />
+            <ContactFinancialsTab contactIdentifier={id} backTo={`/contacts/${id}?tab=financials`} />
           </div>
         )}
 

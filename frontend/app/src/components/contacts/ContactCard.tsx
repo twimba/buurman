@@ -133,47 +133,51 @@ export const ContactCard = ({ contact }: ContactCardProps) => {
           </div>
         </div>
       )}
-      {balance && (balance.status === 'PENDING' || balance.status === 'OVERDUE') && (
-        <div
-          className={`flex items-center justify-between gap-2 px-3 py-2 mb-2 rounded ${
-            balance.status === 'OVERDUE'
-              ? 'bg-error-bg text-error-text'
-              : 'bg-warning-bg text-warning-text'
-          }`}
-          role="status"
-          aria-label={`Outstanding balance: ${formatCurrency(balance.outstandingAmount, balance.currency)}, ${balance.outstandingPaymentCount} payment${balance.outstandingPaymentCount !== 1 ? 's' : ''} ${balance.status === 'OVERDUE' ? 'overdue' : 'pending'}`}
-        >
-          <div className="flex items-center gap-2">
-            <Wallet className="h-4 w-4" />
-            <span className="text-sm font-medium">
-              {formatCurrency(balance.outstandingAmount, balance.currency)}
+      {balance &&
+        (balance.status === 'PENDING' || balance.status === 'OVERDUE') && (
+          <div
+            className={`flex items-center justify-between gap-2 px-3 py-2 mb-2 rounded ${
+              balance.status === 'OVERDUE'
+                ? 'bg-error-bg text-error-text'
+                : 'bg-warning-bg text-warning-text'
+            }`}
+            role="status"
+            aria-label={`Outstanding balance: ${formatCurrency(balance.outstandingAmount, balance.currency)}, ${balance.outstandingPaymentCount} payment${balance.outstandingPaymentCount !== 1 ? 's' : ''} ${balance.status === 'OVERDUE' ? 'overdue' : 'pending'}`}
+          >
+            <div className="flex items-center gap-2">
+              <Wallet className="h-4 w-4" />
+              <span className="text-sm font-medium">
+                {formatCurrency(balance.outstandingAmount, balance.currency)}
+              </span>
+            </div>
+            <span className="text-xs">
+              {balance.outstandingPaymentCount} payment
+              {balance.outstandingPaymentCount !== 1 ? 's' : ''}
+              {balance.status === 'OVERDUE' ? ' overdue' : ' pending'}
             </span>
           </div>
-          <span className="text-xs">
-            {balance.outstandingPaymentCount} payment
-            {balance.outstandingPaymentCount !== 1 ? 's' : ''}
-            {balance.status === 'OVERDUE' ? ' overdue' : ' pending'}
-          </span>
-        </div>
-      )}
-      {balance && balance.guaranteedAmount != null && balance.guaranteedAmount > 0 && (
-        <div
-          className="flex items-center justify-between gap-2 px-3 py-2 mb-2 rounded bg-info-bg text-info-text"
-          role="status"
-          aria-label={`Guarantees ${formatCurrency(balance.guaranteedAmount, balance.currency)}`}
-        >
-          <div className="flex items-center gap-2">
-            <Shield className="h-4 w-4" />
-            <span className="text-sm font-medium">
-              Guarantees {formatCurrency(balance.guaranteedAmount, balance.currency)}
+        )}
+      {balance &&
+        balance.guaranteedAmount != null &&
+        balance.guaranteedAmount > 0 && (
+          <div
+            className="flex items-center justify-between gap-2 px-3 py-2 mb-2 rounded bg-info-bg text-info-text"
+            role="status"
+            aria-label={`Guarantees ${formatCurrency(balance.guaranteedAmount, balance.currency)}`}
+          >
+            <div className="flex items-center gap-2">
+              <Shield className="h-4 w-4" />
+              <span className="text-sm font-medium">
+                Guarantees{' '}
+                {formatCurrency(balance.guaranteedAmount, balance.currency)}
+              </span>
+            </div>
+            <span className="text-xs">
+              {balance.guaranteedPaymentCount ?? 0} payment
+              {(balance.guaranteedPaymentCount ?? 0) !== 1 ? 's' : ''}
             </span>
           </div>
-          <span className="text-xs">
-            {balance.guaranteedPaymentCount ?? 0} payment
-            {(balance.guaranteedPaymentCount ?? 0) !== 1 ? 's' : ''}
-          </span>
-        </div>
-      )}
+        )}
 
       {/* Footer: Active Contracts + Created Date */}
       <div className="flex items-center justify-between gap-2 text-text-secondary px-3 py-2 bg-surface-inset rounded">

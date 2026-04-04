@@ -7,6 +7,7 @@ import static com.buurman.domain.Payment.PaymentStatus.PENDING;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static java.time.ZoneOffset.UTC;
+import static java.util.Objects.requireNonNull;
 import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.countDistinct;
 import static org.jooq.impl.DSL.field;
@@ -18,8 +19,6 @@ import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import static java.util.Objects.requireNonNull;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -467,12 +466,19 @@ public class PaymentRepository {
 
     LocalDate today = LocalDate.now(clock);
 
-    // Raw table/field refs — payment_receivals has no JOOQ generated class
+    // Raw table/field refs — payment_receivals and contract_parties have no JOOQ generated class
     Table<?> receivalsTable = table("payment_receivals");
     Field<UUID> rPaymentId = field("payment_id", UUID.class);
     Field<UUID> rTeamId = field("team_id", UUID.class);
     Field<Long> rAmount = field("amount", Long.class);
     Field<LocalDateTime> rDeletedAt = field("deleted_at", LocalDateTime.class);
+
+    Table<?> cpTable = table("contract_parties");
+    Field<UUID> cpContactId = field("contract_parties.contact_id", UUID.class);
+    Field<UUID> cpContractId = field("contract_parties.contract_id", UUID.class);
+    Field<UUID> cpTeamId = field("contract_parties.team_id", UUID.class);
+    Field<String> cpRole = field("contract_parties.role", String.class);
+    Field<LocalDateTime> cpDeletedAt = field("contract_parties.deleted_at", LocalDateTime.class);
 
     Field<UUID> rPaymentIdAlias = rPaymentId.as("r_payment_id");
     Field<BigDecimal> receivedAlias = sum(rAmount).as("received");
@@ -489,7 +495,7 @@ public class PaymentRepository {
 
     var result =
         dsl.select(
-                PAYMENTS.CONTACT_ID,
+                cpContactId.as("cp_contact_id"),
                 PAYMENTS.CURRENCY,
                 sum(PAYMENTS.AMOUNT).as("total_owed"),
                 DSL.coalesce(sum(receivedField), BigDecimal.ZERO).as("total_received"),
@@ -499,26 +505,30 @@ public class PaymentRepository {
                     .as("has_overdue"),
                 countDistinct(PAYMENTS.ID).as("payment_count"))
             .from(PAYMENTS)
+            .join(cpTable)
+            .on(
+                cpContractId.eq(PAYMENTS.CONTRACT_ID)
+                    .and(cpTeamId.eq(teamId))
+                    .and(cpRole.eq("PRIMARY_TENANT"))
+                    .and(cpDeletedAt.isNull()))
             .leftJoin(receivalsSubquery)
             .on(joinField.eq(PAYMENTS.ID))
             .where(
-                PAYMENTS
-                    .CONTACT_ID
+                cpContactId
                     .in(contactIds)
                     .and(PAYMENTS.TEAM_ID.eq(teamId))
-                    .and(
-                        PAYMENTS.STATUS.in(
-                            PENDING.name(), PARTIALLY_PAID.name(), OVERDUE.name()))
+                    .and(PAYMENTS.STATUS.in(PENDING.name(), PARTIALLY_PAID.name(), OVERDUE.name()))
                     .and(PAYMENTS.DUE_DATE.le(today))
                     .and(PAYMENTS.DELETED_AT.isNull()))
-            .groupBy(PAYMENTS.CONTACT_ID, PAYMENTS.CURRENCY)
+            .groupBy(cpContactId, PAYMENTS.CURRENCY)
             .fetch();
 
     Map<UUID, ContactBalanceSummary> balances = new HashMap<>();
     for (var row : result) {
-      UUID contactId = row.get(PAYMENTS.CONTACT_ID);
+      UUID contactId = row.get("cp_contact_id", UUID.class);
       if (balances.containsKey(contactId)) {
-        log.warn("Contact {} has outstanding payments in multiple currencies; showing first only",
+        log.warn(
+            "Contact {} has outstanding payments in multiple currencies; showing first only",
             contactId);
         continue;
       }
@@ -549,25 +559,38 @@ public class PaymentRepository {
   }
 
   /**
-   * Returns the subset of contactIds that have at least one non-deleted, non-cancelled payment
-   * (any status). Used to distinguish "all paid" contacts from "no financial data" contacts.
+   * Returns the subset of contactIds that have at least one non-deleted, non-cancelled payment (any
+   * status). Used to distinguish "all paid" contacts from "no financial data" contacts.
    */
   public Set<UUID> getContactIdsWithPaymentHistory(Collection<UUID> contactIds, UUID teamId) {
     if (contactIds.isEmpty()) {
       return Set.of();
     }
+
+    Table<?> cpTable = table("contract_parties");
+    Field<UUID> cpContactId = field("contract_parties.contact_id", UUID.class);
+    Field<UUID> cpContractId = field("contract_parties.contract_id", UUID.class);
+    Field<UUID> cpTeamId = field("contract_parties.team_id", UUID.class);
+    Field<String> cpRole = field("contract_parties.role", String.class);
+    Field<LocalDateTime> cpDeletedAt = field("contract_parties.deleted_at", LocalDateTime.class);
+
     return new java.util.HashSet<>(
-        dsl.select(PAYMENTS.CONTACT_ID)
+        dsl.select(cpContactId)
             .from(PAYMENTS)
+            .join(cpTable)
+            .on(
+                cpContractId.eq(PAYMENTS.CONTRACT_ID)
+                    .and(cpTeamId.eq(teamId))
+                    .and(cpRole.eq("PRIMARY_TENANT"))
+                    .and(cpDeletedAt.isNull()))
             .where(
-                PAYMENTS
-                    .CONTACT_ID
+                cpContactId
                     .in(contactIds)
                     .and(PAYMENTS.TEAM_ID.eq(teamId))
                     .and(PAYMENTS.STATUS.ne("CANCELLED"))
                     .and(PAYMENTS.DELETED_AT.isNull()))
-            .groupBy(PAYMENTS.CONTACT_ID)
-            .fetch(PAYMENTS.CONTACT_ID));
+            .groupBy(cpContactId)
+            .fetch(cpContactId));
   }
 
   /**
@@ -588,8 +611,7 @@ public class PaymentRepository {
     Field<UUID> cpContractId = field("contract_parties.contract_id", UUID.class);
     Field<UUID> cpTeamId = field("contract_parties.team_id", UUID.class);
     Field<String> cpRole = field("contract_parties.role", String.class);
-    Field<LocalDateTime> cpDeletedAt =
-        field("contract_parties.deleted_at", LocalDateTime.class);
+    Field<LocalDateTime> cpDeletedAt = field("contract_parties.deleted_at", LocalDateTime.class);
 
     // Receivals subquery (same as outstanding query)
     Table<?> receivalsTable = table("payment_receivals");
@@ -625,9 +647,7 @@ public class PaymentRepository {
                     .CONTRACT_ID
                     .eq(cpContractId)
                     .and(PAYMENTS.TEAM_ID.eq(teamId))
-                    .and(
-                        PAYMENTS.STATUS.in(
-                            PENDING.name(), PARTIALLY_PAID.name(), OVERDUE.name()))
+                    .and(PAYMENTS.STATUS.in(PENDING.name(), PARTIALLY_PAID.name(), OVERDUE.name()))
                     .and(PAYMENTS.DUE_DATE.le(today))
                     .and(PAYMENTS.DELETED_AT.isNull()))
             .leftJoin(receivalsSubquery)
@@ -662,14 +682,15 @@ public class PaymentRepository {
       if (guaranteed.compareTo(BigDecimal.ZERO) > 0) {
         guarantees.put(
             contactId,
-            new GuaranteedBalance(
-                guaranteed, currency, paymentCount != null ? paymentCount : 0));
+            new GuaranteedBalance(guaranteed, currency, paymentCount != null ? paymentCount : 0));
       }
     }
     return guarantees;
   }
 
-  /** Lightweight container for guaranteed balance data before merging into ContactBalanceSummary. */
+  /**
+   * Lightweight container for guaranteed balance data before merging into ContactBalanceSummary.
+   */
   public record GuaranteedBalance(BigDecimal amount, String currency, int paymentCount) {}
 
   /**

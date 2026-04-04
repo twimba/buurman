@@ -11,10 +11,12 @@ import { Receipt, CreditCard, ExternalLink } from 'lucide-react';
 
 interface ContactFinancialsTabProps {
   contactIdentifier: string;
+  backTo: string;
 }
 
 export const ContactFinancialsTab = ({
   contactIdentifier,
+  backTo,
 }: ContactFinancialsTabProps) => {
   const { formatDate } = useFormatDate();
 
@@ -123,6 +125,7 @@ export const ContactFinancialsTab = ({
                       <td className="py-2.5 pl-2">
                         <Link
                           to={`/expenses/${expense.identifier}`}
+                          state={{ backTo }}
                           className="text-text-muted hover:text-primary-500 transition-colors"
                         >
                           <ExternalLink className="h-4 w-4" />
@@ -215,6 +218,7 @@ export const ContactFinancialsTab = ({
                       <td className="py-2.5 pl-2">
                         <Link
                           to={`/payments/${payment.identifier}`}
+                          state={{ backTo }}
                           className="text-text-muted hover:text-primary-500 transition-colors"
                         >
                           <ExternalLink className="h-4 w-4" />

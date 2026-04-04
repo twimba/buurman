@@ -43,9 +43,9 @@ import com.buurman.dto.request.DuplicateCheckRequest;
 import com.buurman.dto.request.PageRequest;
 import com.buurman.dto.request.UpdateContactAddressRequest;
 import com.buurman.dto.request.UpdateContactRequest;
+import com.buurman.dto.response.BalanceStatus;
 import com.buurman.dto.response.ContactActivityItem;
 import com.buurman.dto.response.ContactAddressResponse;
-import com.buurman.dto.response.BalanceStatus;
 import com.buurman.dto.response.ContactBalanceSummary;
 import com.buurman.dto.response.ContactListItemResponse;
 import com.buurman.dto.response.ContactPropertyAssignment;
@@ -207,7 +207,11 @@ public class ContactService {
                   Optional<String> thumbnailUrl =
                       thumbnailsByContactId.getOrDefault(contact.getId(), Optional.empty());
                   Optional<ContactBalanceSummary> balance =
-                      Optional.ofNullable(balancesByContactId.get(contact.getId()));
+                      Optional.ofNullable(balancesByContactId.get(contact.getId()))
+                          .filter(
+                              b ->
+                                  b.status() != BalanceStatus.ALL_PAID
+                                      || cwc.activeContractCount() > 0);
                   return contactMapper.toListItem(
                       contact, cwc.activeContractCount(), contactTags, thumbnailUrl, balance);
                 })
@@ -248,7 +252,8 @@ public class ContactService {
 
   /**
    * Combines outstanding balances, "all paid" detection, and guarantor balances into a single map.
-   * Returns a ContactBalanceSummary for each contact that has any payment history or guarantor role.
+   * Returns a ContactBalanceSummary for each contact that has any payment history or guarantor
+   * role.
    */
   private Map<UUID, ContactBalanceSummary> resolveBalanceSummaries(
       List<UUID> contactIds, UUID teamId) {
@@ -795,9 +800,12 @@ public class ContactService {
                     ContractParty::getContractId, party -> party.getRole().name(), (a, b) -> a));
 
     // Load balance summary (outstanding + all-paid + guaranteed)
+    // Suppress ALL_PAID indicator for contacts with no active contracts
     Optional<ContactBalanceSummary> balanceSummary =
         Optional.ofNullable(
-            resolveBalanceSummaries(List.of(contact.getId()), teamId).get(contact.getId()));
+                resolveBalanceSummaries(List.of(contact.getId()), teamId).get(contact.getId()))
+            .filter(
+                b -> b.status() != BalanceStatus.ALL_PAID || !activeContracts.isEmpty());
 
     List<ContactPropertyAssignment> activeProperties = new ArrayList<>();
     for (Contract activeContract : activeContracts) {
