@@ -8,6 +8,7 @@ const apiBaseUrl = `${window.location.protocol}//${apiHostname}${apiPort}`;
 
 const client = axios.create({
   baseURL: apiBaseUrl,
+  timeout: 15_000,
   headers: {
     'Content-Type': 'application/json',
   },

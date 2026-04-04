@@ -18,7 +18,7 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
+    sourcemap: process.env.VITE_ENVIRONMENT === 'production' ? 'hidden' : true,
     rollupOptions: {
       output: {
         manualChunks(id) {

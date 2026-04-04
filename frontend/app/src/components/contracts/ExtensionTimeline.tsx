@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import DOMPurify from 'dompurify';
 import {
   Plus,
   Check,
@@ -537,7 +538,7 @@ function ExtensionCard({
           {extension.notes && (
             <div
               className="text-xs text-text-muted mt-2 prose prose-xs dark:prose-invert max-w-none"
-              dangerouslySetInnerHTML={{ __html: extension.notes }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(extension.notes) }}
             />
           )}
 

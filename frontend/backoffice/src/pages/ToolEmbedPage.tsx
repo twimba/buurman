@@ -47,8 +47,10 @@ export const ToolEmbedPage = () => {
   }
 
   const baseUrl = tool.subdomain ? getToolUrl(tool.subdomain) : tool.url;
-  const path = searchParams.get("path");
-  const url = path ? `${baseUrl}${path}?kiosk` : baseUrl;
+  const rawPath = searchParams.get("path");
+  // Only allow simple path segments — no traversal, query strings, or fragments
+  const safePath = rawPath && /^\/[a-zA-Z0-9\-_/]+$/.test(rawPath) ? rawPath : null;
+  const url = safePath ? `${baseUrl}${safePath}?kiosk` : baseUrl;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
