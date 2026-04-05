@@ -16,6 +16,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 import javax.imageio.ImageIO;
 
 import org.jspecify.annotations.Nullable;
@@ -24,6 +27,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Photo;
+import com.buurman.domain.Sid;
 import com.buurman.repository.PhotoRepository;
 import com.buurman.service.S3StorageService;
 
@@ -54,6 +58,24 @@ public class DemoPhotoGenerator {
 
   @SuppressWarnings("ArrayRecordComponent") // Private data holder, never compared
   private record PhotoFile(byte[] data, String mimeType) {}
+
+  /** Describes an S3 upload to be executed in parallel. */
+  @SuppressWarnings("ArrayRecordComponent")
+  private record PhotoUploadTask(
+      byte[] data,
+      String contentType,
+      Sid teamIdentifier,
+      String entityType,
+      Sid entityIdentifier,
+      String fileName,
+      UUID teamId,
+      UUID propertyId,
+      UUID uploadedBy,
+      String title,
+      boolean isMain) {}
+
+  /** Result of a successful S3 upload. */
+  private record PhotoUploadResult(PhotoUploadTask task, String fileKey) {}
 
   /** Photo pool loaded once from classpath, keyed by room category. */
   private final Map<String, List<PhotoFile>> photoPool;
@@ -229,7 +251,8 @@ public class DemoPhotoGenerator {
       return;
     }
 
-    int totalPhotos = 0;
+    // 1. Collect all upload tasks
+    List<PhotoUploadTask> uploadTasks = new ArrayList<>();
 
     for (var teamEntry : ctx.getTeamIds().entrySet()) {
       String teamKey = teamEntry.getKey();
@@ -247,28 +270,51 @@ public class DemoPhotoGenerator {
       for (int pi = 0; pi < propertyIds.size(); pi++) {
         UUID propertyId = propertyIds.get(pi);
         String category = ctx.getPropertyCategory(propertyId);
-        totalPhotos +=
-            generatePropertyPhotos(
-                teamId,
-                ctx.getIdentifier(teamId),
-                propertyId,
-                ctx.getIdentifier(propertyId),
-                uploadedBy,
-                category,
-                pi);
+        collectPhotoUploadTasks(
+            uploadTasks,
+            teamId,
+            ctx.getIdentifier(teamId),
+            propertyId,
+            ctx.getIdentifier(propertyId),
+            uploadedBy,
+            category,
+            pi);
       }
-
-      log.info("Uploaded photos for {} properties in team {}", propertyIds.size(), teamKey);
     }
 
-    log.info("Total property photos created: {}", totalPhotos);
+    if (uploadTasks.isEmpty()) {
+      return;
+    }
+
+    // 2. Upload in parallel using virtual threads
+    List<PhotoUploadResult> results = executeParallelUploads(uploadTasks);
+
+    // 3. Batch-save all Photo entities to DB
+    for (PhotoUploadResult result : results) {
+      PhotoUploadTask task = result.task();
+      Photo photo = new Photo();
+      photo.setTeamId(task.teamId());
+      photo.setEntityType("PROPERTY");
+      photo.setEntityId(task.propertyId());
+      photo.setFileKey(result.fileKey());
+      photo.setFileName(task.fileName());
+      photo.setFileSize((long) task.data().length);
+      photo.setMimeType(task.contentType());
+      photo.setTitle(Optional.of(task.title()));
+      photo.setIsMainPhoto(task.isMain());
+      photo.setUploadedBy(task.uploadedBy());
+      photoRepository.save(photo);
+    }
+
+    log.info("Total property photos created: {} (from {} upload tasks)", results.size(), uploadTasks.size());
   }
 
-  private int generatePropertyPhotos(
+  private void collectPhotoUploadTasks(
+      List<PhotoUploadTask> tasks,
       UUID teamId,
-      com.buurman.domain.Sid teamIdentifier,
+      Sid teamIdentifier,
       UUID propertyId,
-      com.buurman.domain.Sid propertyIdentifier,
+      Sid propertyIdentifier,
       UUID uploadedBy,
       String propertyCategory,
       int propertyIndex) {
@@ -311,46 +357,77 @@ public class DemoPhotoGenerator {
                   new PhotoSlot("living-rooms", "Dining area", false));
         };
 
-    int count = 0;
     for (PhotoSlot slot : slots) {
       PhotoFile photoFile = pickPhoto(slot.category, slot.title, propertyIndex);
       if (photoFile == null) {
         continue;
       }
 
-      try {
-        String ext = photoFile.mimeType.equals("image/png") ? ".png" : ".jpg";
-        String fileName = slot.title.toLowerCase(Locale.ROOT).replace(" ", "-") + ext;
-        String fileKey =
-            s3StorageService.uploadFile(
-                photoFile.data,
-                photoFile.mimeType,
-                teamIdentifier,
-                "PROPERTY",
-                propertyIdentifier,
-                fileName);
+      String ext = photoFile.mimeType.equals("image/png") ? ".png" : ".jpg";
+      String fileName = slot.title.toLowerCase(Locale.ROOT).replace(" ", "-") + ext;
 
-        Photo photo = new Photo();
-        photo.setTeamId(teamId);
-        photo.setEntityType("PROPERTY");
-        photo.setEntityId(propertyId);
-        photo.setFileKey(fileKey);
-
-        photo.setFileName(fileName);
-        photo.setFileSize((long) photoFile.data.length);
-        photo.setMimeType(photoFile.mimeType);
-        photo.setTitle(Optional.of(slot.title));
-        photo.setIsMainPhoto(slot.isMain);
-        photo.setUploadedBy(uploadedBy);
-
-        // Thumbnail will be generated asynchronously by ThumbnailBackfillJob
-        photoRepository.save(photo);
-        count++;
-      } catch (Exception e) {
-        log.warn("Failed to upload photo for property {}: {}", propertyId, e.getMessage());
-      }
+      tasks.add(
+          new PhotoUploadTask(
+              photoFile.data,
+              photoFile.mimeType,
+              teamIdentifier,
+              "PROPERTY",
+              propertyIdentifier,
+              fileName,
+              teamId,
+              propertyId,
+              uploadedBy,
+              slot.title,
+              slot.isMain));
     }
-    return count;
+  }
+
+  @SuppressWarnings("NullAway")
+  private List<PhotoUploadResult> executeParallelUploads(List<PhotoUploadTask> tasks) {
+    Semaphore semaphore = new Semaphore(20);
+
+    try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+      List<CompletableFuture<PhotoUploadResult>> futures =
+          tasks.stream()
+              .map(
+                  task ->
+                      CompletableFuture.supplyAsync(
+                          () -> {
+                            try {
+                              semaphore.acquire();
+                              try {
+                                String fileKey =
+                                    s3StorageService.uploadFile(
+                                        task.data(),
+                                        task.contentType(),
+                                        task.teamIdentifier(),
+                                        task.entityType(),
+                                        task.entityIdentifier(),
+                                        task.fileName());
+                                return new PhotoUploadResult(task, fileKey);
+                              } finally {
+                                semaphore.release();
+                              }
+                            } catch (InterruptedException e) {
+                              Thread.currentThread().interrupt();
+                              throw new RuntimeException(e);
+                            }
+                          },
+                          executor))
+              .toList();
+
+      CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
+
+      List<PhotoUploadResult> results = new ArrayList<>(futures.size());
+      for (CompletableFuture<PhotoUploadResult> future : futures) {
+        try {
+          results.add(future.join());
+        } catch (Exception e) {
+          log.warn("Photo upload failed: {}", e.getMessage());
+        }
+      }
+      return results;
+    }
   }
 
   @SuppressWarnings("NullAway")

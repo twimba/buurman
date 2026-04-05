@@ -315,6 +315,9 @@ public class DemoContactGenerator {
       UUID createdBy = ctx.getAdminUserForTeam(teamKey).orElse(null);
       List<UUID> contactIds = new ArrayList<>();
 
+      List<Object[]> contactRecords = new ArrayList<>();
+      List<Object[]> addressRecords = new ArrayList<>();
+
       for (int i = 0; i < CONTACTS_PER_TEAM; i++) {
         UUID contactId = UUID.randomUUID();
         String country = COUNTRY_CODES[i % COUNTRY_CODES.length];
@@ -407,31 +410,32 @@ public class DemoContactGenerator {
         }
 
         Sid contactIdentifier = newContactId();
-        dsl.insertInto(CONTACTS)
-            .set(CONTACTS.ID, contactId)
-            .set(CONTACTS.IDENTIFIER, contactIdentifier)
-            .set(CONTACTS.TEAM_ID, teamId)
-            .set(CONTACTS.CONTACT_TYPE, contactType.name())
-            .set(CONTACTS.DISPLAY_NAME, displayName)
-            .set(CONTACTS.FIRST_NAME, firstName)
-            .set(CONTACTS.LAST_NAME, lastName)
-            .set(CONTACTS.COMPANY_NAME, companyName)
-            .set(CONTACTS.TRADE_NAME, tradeName)
-            .set(CONTACTS.INDUSTRY, industry)
-            .set(CONTACTS.WEBSITE, website)
-            .set(CONTACTS.EMAIL, email)
-            .set(CONTACTS.PHONE, phone)
-            .set(CONTACTS.TAX_NUMBER, taxNumber)
-            .set(CONTACTS.ID_NUMBER, String.format("%09d", random.nextInt(100000000, 999999999)))
-            .set(CONTACTS.DATE_OF_BIRTH, dateOfBirth)
-            .set(CONTACTS.ID_EXPIRY_DATE, idExpiryDate)
-            .set(CONTACTS.NOTES, notes)
-            .set(CONTACTS.DATA_RETENTION_STATUS, "ACTIVE")
-            .set(CONTACTS.CREATED_AT, now.minusDays(random.nextInt(30, 3650)))
-            .set(CONTACTS.UPDATED_AT, now)
-            .set(CONTACTS.CREATED_BY, createdBy)
-            .set(CONTACTS.UPDATED_BY, createdBy)
-            .execute();
+        contactRecords.add(
+            new Object[] {
+              contactId,
+              contactIdentifier,
+              teamId,
+              contactType.name(),
+              displayName,
+              firstName,
+              lastName,
+              companyName,
+              tradeName,
+              industry,
+              website,
+              email,
+              phone,
+              taxNumber,
+              String.format("%09d", random.nextInt(100000000, 999999999)),
+              dateOfBirth,
+              idExpiryDate,
+              notes,
+              "ACTIVE",
+              now.minusDays(random.nextInt(30, 3650)),
+              now,
+              createdBy,
+              createdBy
+            });
 
         // Add CURRENT address for each contact (one active per contact allowed)
         String[] cities = Objects.requireNonNull(COUNTRY_CITIES.get(country));
@@ -440,30 +444,105 @@ public class DemoContactGenerator {
         String postalCode = postalCodeForCountry(country, random);
         BigDecimal[] latLon = latLonForCountry(country, random);
 
-        dsl.insertInto(CONTACT_ADDRESSES)
-            .set(CONTACT_ADDRESSES.ID, UUID.randomUUID())
-            .set(CONTACT_ADDRESSES.IDENTIFIER, newContactAddressId())
-            .set(CONTACT_ADDRESSES.CONTACT_ID, contactId)
-            .set(CONTACT_ADDRESSES.TEAM_ID, teamId)
-            .set(CONTACT_ADDRESSES.STREET, countryFaker.address().streetName() + " " + houseNum)
-            .set(CONTACT_ADDRESSES.CITY, city)
-            .set(CONTACT_ADDRESSES.POSTAL_CODE, postalCode)
-            .set(CONTACT_ADDRESSES.COUNTRY_CODE, country)
-            .set(CONTACT_ADDRESSES.ADDRESS_TYPE, "CURRENT")
-            .set(CONTACT_ADDRESSES.STATUS, "ACTIVE")
-            .set(CONTACT_ADDRESSES.LATITUDE, latLon[0])
-            .set(CONTACT_ADDRESSES.LONGITUDE, latLon[1])
-            .set(CONTACT_ADDRESSES.CREATED_AT, now)
-            .set(CONTACT_ADDRESSES.UPDATED_AT, now)
-            .set(CONTACT_ADDRESSES.CREATED_BY, createdBy)
-            .set(CONTACT_ADDRESSES.UPDATED_BY, createdBy)
-            .execute();
+        addressRecords.add(
+            new Object[] {
+              UUID.randomUUID(),
+              newContactAddressId(),
+              contactId,
+              teamId,
+              countryFaker.address().streetName() + " " + houseNum,
+              city,
+              postalCode,
+              country,
+              "CURRENT",
+              "ACTIVE",
+              latLon[0],
+              latLon[1],
+              now,
+              now,
+              createdBy,
+              createdBy
+            });
 
         contactIds.add(contactId);
         ctx.putIdentifier(contactId, contactIdentifier);
         ctx.putBusinessContactFlag(contactId, isBusiness);
         ctx.putContactType(contactId, contactType);
         ctx.incrementContacts();
+      }
+
+      // Batch insert contacts
+      if (!contactRecords.isEmpty()) {
+        var contactInsert =
+            dsl.insertInto(CONTACTS)
+                .columns(
+                    CONTACTS.ID,
+                    CONTACTS.IDENTIFIER,
+                    CONTACTS.TEAM_ID,
+                    CONTACTS.CONTACT_TYPE,
+                    CONTACTS.DISPLAY_NAME,
+                    CONTACTS.FIRST_NAME,
+                    CONTACTS.LAST_NAME,
+                    CONTACTS.COMPANY_NAME,
+                    CONTACTS.TRADE_NAME,
+                    CONTACTS.INDUSTRY,
+                    CONTACTS.WEBSITE,
+                    CONTACTS.EMAIL,
+                    CONTACTS.PHONE,
+                    CONTACTS.TAX_NUMBER,
+                    CONTACTS.ID_NUMBER,
+                    CONTACTS.DATE_OF_BIRTH,
+                    CONTACTS.ID_EXPIRY_DATE,
+                    CONTACTS.NOTES,
+                    CONTACTS.DATA_RETENTION_STATUS,
+                    CONTACTS.CREATED_AT,
+                    CONTACTS.UPDATED_AT,
+                    CONTACTS.CREATED_BY,
+                    CONTACTS.UPDATED_BY)
+                .values(
+                    (UUID) null, (Sid) null, (UUID) null, (String) null, (String) null,
+                    (String) null, (String) null, (String) null, (String) null, (String) null,
+                    (String) null, (String) null, (String) null, (String) null, (String) null,
+                    (LocalDate) null, (LocalDate) null, (String) null, (String) null,
+                    (LocalDateTime) null, (LocalDateTime) null, (UUID) null, (UUID) null);
+        var contactBatch = dsl.batch(contactInsert);
+        for (Object[] r : contactRecords) {
+          contactBatch = contactBatch.bind(r);
+        }
+        contactBatch.execute();
+      }
+
+      // Batch insert addresses
+      if (!addressRecords.isEmpty()) {
+        var addressInsert =
+            dsl.insertInto(CONTACT_ADDRESSES)
+                .columns(
+                    CONTACT_ADDRESSES.ID,
+                    CONTACT_ADDRESSES.IDENTIFIER,
+                    CONTACT_ADDRESSES.CONTACT_ID,
+                    CONTACT_ADDRESSES.TEAM_ID,
+                    CONTACT_ADDRESSES.STREET,
+                    CONTACT_ADDRESSES.CITY,
+                    CONTACT_ADDRESSES.POSTAL_CODE,
+                    CONTACT_ADDRESSES.COUNTRY_CODE,
+                    CONTACT_ADDRESSES.ADDRESS_TYPE,
+                    CONTACT_ADDRESSES.STATUS,
+                    CONTACT_ADDRESSES.LATITUDE,
+                    CONTACT_ADDRESSES.LONGITUDE,
+                    CONTACT_ADDRESSES.CREATED_AT,
+                    CONTACT_ADDRESSES.UPDATED_AT,
+                    CONTACT_ADDRESSES.CREATED_BY,
+                    CONTACT_ADDRESSES.UPDATED_BY)
+                .values(
+                    (UUID) null, (Sid) null, (UUID) null, (UUID) null, (String) null,
+                    (String) null, (String) null, (String) null, (String) null, (String) null,
+                    (BigDecimal) null, (BigDecimal) null, (LocalDateTime) null,
+                    (LocalDateTime) null, (UUID) null, (UUID) null);
+        var addressBatch = dsl.batch(addressInsert);
+        for (Object[] r : addressRecords) {
+          addressBatch = addressBatch.bind(r);
+        }
+        addressBatch.execute();
       }
 
       ctx.getContactIdsByTeam().put(teamId, contactIds);

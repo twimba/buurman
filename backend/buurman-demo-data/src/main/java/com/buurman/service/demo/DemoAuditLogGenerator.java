@@ -8,7 +8,9 @@ import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -39,17 +41,41 @@ public class DemoAuditLogGenerator {
       UUID teamId = teamEntry.getValue();
       String currency = ctx.getCurrencyForTeam(teamKey);
 
-      total += generatePropertyAuditLogs(teamId);
-      total += generateContactAuditLogs(teamId);
-      total += generateContractAuditLogs(teamId, currency);
-      total += generatePaymentAuditLogs(teamId, currency);
-      total += generateExpenseAuditLogs(teamId, currency);
+      List<Object[]> auditRecords = new ArrayList<>();
+
+      collectPropertyAuditLogs(teamId, auditRecords);
+      collectContactAuditLogs(teamId, auditRecords);
+      collectContractAuditLogs(teamId, currency, auditRecords);
+      collectPaymentAuditLogs(teamId, currency, auditRecords);
+      collectExpenseAuditLogs(teamId, currency, auditRecords);
+
+      if (!auditRecords.isEmpty()) {
+        var insert =
+            dsl.insertInto(AUDIT_LOG)
+                .columns(
+                    AUDIT_LOG.ID,
+                    AUDIT_LOG.TEAM_ID,
+                    AUDIT_LOG.ENTITY_TYPE,
+                    AUDIT_LOG.ENTITY_ID,
+                    AUDIT_LOG.ACTION,
+                    AUDIT_LOG.NEW_VALUES,
+                    AUDIT_LOG.USER_ID,
+                    AUDIT_LOG.TIMESTAMP)
+                .values((UUID) null, null, null, null, null, null, null, null);
+        var batch = dsl.batch(insert);
+        for (Object[] r : auditRecords) {
+          batch = batch.bind(r);
+        }
+        batch.execute();
+      }
+
+      total += auditRecords.size();
     }
 
     log.info("Created {} audit log entries", total);
   }
 
-  private int generatePropertyAuditLogs(UUID teamId) {
+  private void collectPropertyAuditLogs(UUID teamId, List<Object[]> auditRecords) {
     var records =
         dsl.select(
                 PROPERTIES.ID,
@@ -86,7 +112,8 @@ public class DemoAuditLogGenerator {
       values.put("heatingType", r.get(PROPERTIES.HEATING_TYPE));
       values.put("energyEfficiencyRating", r.get(PROPERTIES.ENERGY_EFFICIENCY_RATING));
 
-      insertAuditLog(
+      collectAuditLog(
+          auditRecords,
           teamId,
           "PROPERTY",
           r.get(PROPERTIES.ID),
@@ -94,11 +121,9 @@ public class DemoAuditLogGenerator {
           r.get(PROPERTIES.CREATED_AT),
           values);
     }
-
-    return records.size();
   }
 
-  private int generateContactAuditLogs(UUID teamId) {
+  private void collectContactAuditLogs(UUID teamId, List<Object[]> auditRecords) {
     var records =
         dsl.select(
                 CONTACTS.ID,
@@ -119,7 +144,8 @@ public class DemoAuditLogGenerator {
       values.put("email", r.get(CONTACTS.EMAIL));
       values.put("phone", r.get(CONTACTS.PHONE));
 
-      insertAuditLog(
+      collectAuditLog(
+          auditRecords,
           teamId,
           "CONTACT",
           r.get(CONTACTS.ID),
@@ -127,11 +153,10 @@ public class DemoAuditLogGenerator {
           r.get(CONTACTS.CREATED_AT),
           values);
     }
-
-    return records.size();
   }
 
-  private int generateContractAuditLogs(UUID teamId, String teamCurrency) {
+  private void collectContractAuditLogs(
+      UUID teamId, String teamCurrency, List<Object[]> auditRecords) {
     var records =
         dsl.select(
                 CONTRACTS.ID,
@@ -164,7 +189,8 @@ public class DemoAuditLogGenerator {
       values.put("paymentFrequency", r.get(CONTRACTS.PAYMENT_FREQUENCY));
       values.put("depositAmount", r.get(CONTRACTS.DEPOSIT_AMOUNT));
 
-      insertAuditLog(
+      collectAuditLog(
+          auditRecords,
           teamId,
           "CONTRACT",
           r.get(CONTRACTS.ID),
@@ -172,11 +198,10 @@ public class DemoAuditLogGenerator {
           r.get(CONTRACTS.CREATED_AT),
           values);
     }
-
-    return records.size();
   }
 
-  private int generatePaymentAuditLogs(UUID teamId, String teamCurrency) {
+  private void collectPaymentAuditLogs(
+      UUID teamId, String teamCurrency, List<Object[]> auditRecords) {
     var records =
         dsl.select(
                 PAYMENTS.ID,
@@ -201,7 +226,8 @@ public class DemoAuditLogGenerator {
       values.put("status", r.get(PAYMENTS.STATUS));
       values.put("paymentDate", Objects.toString(r.get(PAYMENTS.PAYMENT_DATE), null));
 
-      insertAuditLog(
+      collectAuditLog(
+          auditRecords,
           teamId,
           "PAYMENT",
           r.get(PAYMENTS.ID),
@@ -209,11 +235,10 @@ public class DemoAuditLogGenerator {
           r.get(PAYMENTS.CREATED_AT),
           values);
     }
-
-    return records.size();
   }
 
-  private int generateExpenseAuditLogs(UUID teamId, String teamCurrency) {
+  private void collectExpenseAuditLogs(
+      UUID teamId, String teamCurrency, List<Object[]> auditRecords) {
     var records =
         dsl.select(
                 EXPENSES.ID,
@@ -238,7 +263,8 @@ public class DemoAuditLogGenerator {
       values.put("expenseDate", Objects.toString(r.get(EXPENSES.EXPENSE_DATE), null));
       values.put("description", r.get(EXPENSES.DESCRIPTION));
 
-      insertAuditLog(
+      collectAuditLog(
+          auditRecords,
           teamId,
           "EXPENSE",
           r.get(EXPENSES.ID),
@@ -246,11 +272,10 @@ public class DemoAuditLogGenerator {
           r.get(EXPENSES.CREATED_AT),
           values);
     }
-
-    return records.size();
   }
 
-  private void insertAuditLog(
+  private void collectAuditLog(
+      List<Object[]> auditRecords,
       UUID teamId,
       String entityType,
       UUID entityId,
@@ -260,16 +285,11 @@ public class DemoAuditLogGenerator {
     try {
       JSONB newValuesJsonb = JSONB.valueOf(objectMapper.writeValueAsString(newValues));
 
-      dsl.insertInto(AUDIT_LOG)
-          .set(AUDIT_LOG.ID, UUID.randomUUID())
-          .set(AUDIT_LOG.TEAM_ID, teamId)
-          .set(AUDIT_LOG.ENTITY_TYPE, entityType)
-          .set(AUDIT_LOG.ENTITY_ID, entityId)
-          .set(AUDIT_LOG.ACTION, "CREATE")
-          .set(AUDIT_LOG.NEW_VALUES, newValuesJsonb)
-          .set(AUDIT_LOG.USER_ID, userId)
-          .set(AUDIT_LOG.TIMESTAMP, timestamp)
-          .execute();
+      auditRecords.add(
+          new Object[] {
+            UUID.randomUUID(), teamId, entityType, entityId, "CREATE", newValuesJsonb, userId,
+            timestamp
+          });
     } catch (JsonProcessingException e) {
       log.error("Failed to serialize audit log values for {} {}", entityType, entityId, e);
     }

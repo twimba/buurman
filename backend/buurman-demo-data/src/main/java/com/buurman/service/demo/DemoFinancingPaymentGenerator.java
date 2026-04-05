@@ -9,6 +9,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -43,6 +44,8 @@ public class DemoFinancingPaymentGenerator {
       if (financingIds == null || financingIds.isEmpty()) {
         continue;
       }
+
+      List<Object[]> paymentRecords = new ArrayList<>();
 
       for (UUID financingId : financingIds) {
         Record financing =
@@ -138,24 +141,25 @@ public class DemoFinancingPaymentGenerator {
           long totalAmount =
               "MISSED".equals(paymentStatus) ? monthlyPayment : principalAmount + interestAmount;
 
-          dsl.insertInto(FINANCING_PAYMENTS)
-              .set(FINANCING_PAYMENTS.ID, UUID.randomUUID())
-              .set(FINANCING_PAYMENTS.IDENTIFIER, newFinancingPaymentId())
-              .set(FINANCING_PAYMENTS.FINANCING_ID, financingId)
-              .set(FINANCING_PAYMENTS.TEAM_ID, teamId)
-              .set(FINANCING_PAYMENTS.PAYMENT_DATE, paymentDate)
-              .set(FINANCING_PAYMENTS.TOTAL_AMOUNT, BigDecimal.valueOf(totalAmount))
-              .set(FINANCING_PAYMENTS.PRINCIPAL_AMOUNT, BigDecimal.valueOf(principalAmount))
-              .set(FINANCING_PAYMENTS.INTEREST_AMOUNT, BigDecimal.valueOf(interestAmount))
-              .set(FINANCING_PAYMENTS.CURRENCY, paymentCurrency)
-              .set(FINANCING_PAYMENTS.STATUS, paymentStatus)
-              .set(FINANCING_PAYMENTS.BALANCE_DEDUCTED, balanceDeducted)
-              .set(FINANCING_PAYMENTS.NOTES, notes)
-              .set(FINANCING_PAYMENTS.CREATED_AT, now)
-              .set(FINANCING_PAYMENTS.UPDATED_AT, now)
-              .set(FINANCING_PAYMENTS.CREATED_BY, createdBy)
-              .set(FINANCING_PAYMENTS.UPDATED_BY, createdBy)
-              .execute();
+          paymentRecords.add(
+              new Object[] {
+                UUID.randomUUID(),
+                newFinancingPaymentId(),
+                financingId,
+                teamId,
+                paymentDate,
+                BigDecimal.valueOf(totalAmount),
+                BigDecimal.valueOf(principalAmount),
+                BigDecimal.valueOf(interestAmount),
+                paymentCurrency,
+                paymentStatus,
+                balanceDeducted,
+                notes,
+                now,
+                now,
+                createdBy,
+                createdBy
+              });
 
           teamPayments++;
         }
@@ -167,6 +171,37 @@ public class DemoFinancingPaymentGenerator {
             .execute();
 
         totalPayments += teamPayments;
+      }
+
+      // Batch insert all financing payments for this team
+      if (!paymentRecords.isEmpty()) {
+        var insert =
+            dsl.insertInto(FINANCING_PAYMENTS)
+                .columns(
+                    FINANCING_PAYMENTS.ID,
+                    FINANCING_PAYMENTS.IDENTIFIER,
+                    FINANCING_PAYMENTS.FINANCING_ID,
+                    FINANCING_PAYMENTS.TEAM_ID,
+                    FINANCING_PAYMENTS.PAYMENT_DATE,
+                    FINANCING_PAYMENTS.TOTAL_AMOUNT,
+                    FINANCING_PAYMENTS.PRINCIPAL_AMOUNT,
+                    FINANCING_PAYMENTS.INTEREST_AMOUNT,
+                    FINANCING_PAYMENTS.CURRENCY,
+                    FINANCING_PAYMENTS.STATUS,
+                    FINANCING_PAYMENTS.BALANCE_DEDUCTED,
+                    FINANCING_PAYMENTS.NOTES,
+                    FINANCING_PAYMENTS.CREATED_AT,
+                    FINANCING_PAYMENTS.UPDATED_AT,
+                    FINANCING_PAYMENTS.CREATED_BY,
+                    FINANCING_PAYMENTS.UPDATED_BY)
+                .values(
+                    (UUID) null, null, null, null, null, null, null, null, null, null, null, null,
+                    null, null, null, null);
+        var batch = dsl.batch(insert);
+        for (Object[] r : paymentRecords) {
+          batch = batch.bind(r);
+        }
+        batch.execute();
       }
 
       log.info("Created financing payments for team {}", teamKey);

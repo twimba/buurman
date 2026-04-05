@@ -51,7 +51,9 @@ import java.util.UUID;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.buurman.config.models.DemoDataProperties;
 import com.buurman.service.S3StorageService;
@@ -86,9 +88,9 @@ public class DemoDataService {
   private final DemoFinancingPaymentGenerator financingPaymentGenerator;
   private final DemoAuditLogGenerator auditLogGenerator;
   private final S3StorageService s3StorageService;
+  private final PlatformTransactionManager transactionManager;
   private final Clock clock;
 
-  @Transactional
   public void generate() {
     long startTime = clock.millis();
     log.info("Starting demo data generation...");
@@ -136,27 +138,46 @@ public class DemoDataService {
         ctx.getDocumentsCreated());
   }
 
-  @Transactional
   public void generateDatabaseRecords(DemoDataContext ctx) {
-    teamGenerator.generate(ctx);
-    userGenerator.generate(ctx);
-    teamMemberGenerator.generate(ctx);
-    propertyGenerator.generate(ctx);
-    financingPaymentGenerator.generate(ctx);
-    contactGenerator.generate(ctx);
-    contactTagGenerator.generate(ctx);
-    contactNoteGenerator.generate(ctx);
-    contactRelationshipGenerator.generate(ctx);
-    contractGenerator.generate(ctx);
-    contractExtensionGenerator.generate(ctx);
-    paymentInstructionGenerator.generate(ctx);
-    paymentGenerator.generate(ctx);
-    expenseGenerator.generate(ctx);
-    notificationGenerator.generate(ctx);
-    auditLogGenerator.generate(ctx);
+    TransactionTemplate tx = new TransactionTemplate(transactionManager);
+
+    // Group 1: Foundation (teams, users, memberships)
+    tx.executeWithoutResult(status -> {
+      teamGenerator.generate(ctx);
+      userGenerator.generate(ctx);
+      teamMemberGenerator.generate(ctx);
+    });
+
+    // Group 2: Properties + financing
+    tx.executeWithoutResult(status -> {
+      propertyGenerator.generate(ctx);
+      financingPaymentGenerator.generate(ctx);
+    });
+
+    // Group 3: Contacts
+    tx.executeWithoutResult(status -> {
+      contactGenerator.generate(ctx);
+      contactTagGenerator.generate(ctx);
+      contactNoteGenerator.generate(ctx);
+      contactRelationshipGenerator.generate(ctx);
+    });
+
+    // Group 4: Contracts + payments + expenses
+    tx.executeWithoutResult(status -> {
+      contractGenerator.generate(ctx);
+      contractExtensionGenerator.generate(ctx);
+      paymentInstructionGenerator.generate(ctx);
+      paymentGenerator.generate(ctx);
+      expenseGenerator.generate(ctx);
+    });
+
+    // Group 5: Notifications + audit
+    tx.executeWithoutResult(status -> {
+      notificationGenerator.generate(ctx);
+      auditLogGenerator.generate(ctx);
+    });
   }
 
-  @Transactional
   public void cleanup() {
     log.info("Cleaning up existing demo data...");
 
@@ -548,19 +569,26 @@ public class DemoDataService {
   }
 
   private void deleteS3Files(List<String> keys) {
-    int deleted = 0;
-    for (String key : keys) {
-      try {
-        s3StorageService.deleteFile(key);
-        deleted++;
-      } catch (Exception e) {
-        log.warn("Failed to delete S3 file {}: {}", key, e.getMessage());
-      }
+    if (keys.isEmpty()) {
+      return;
     }
-    log.info("Deleted {}/{} S3 files", deleted, keys.size());
+    try {
+      s3StorageService.deleteFiles(keys);
+    } catch (Exception e) {
+      log.warn("S3 batch delete failed, falling back to individual deletes: {}", e.getMessage());
+      int deleted = 0;
+      for (String key : keys) {
+        try {
+          s3StorageService.deleteFile(key);
+          deleted++;
+        } catch (Exception ex) {
+          log.warn("Failed to delete S3 file {}: {}", key, ex.getMessage());
+        }
+      }
+      log.info("Fallback: deleted {}/{} S3 files individually", deleted, keys.size());
+    }
   }
 
-  @Transactional
   public void scheduledRegenerate() {
     if (!properties.enabled()) {
       return;

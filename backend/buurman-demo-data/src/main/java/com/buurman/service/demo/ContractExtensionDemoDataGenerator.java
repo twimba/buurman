@@ -11,6 +11,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -31,6 +32,7 @@ public class ContractExtensionDemoDataGenerator {
   private final Clock clock;
   private final Random random = new Random(42);
 
+  @SuppressWarnings("NullAway")
   public void generate(DemoDataContext ctx) {
     LocalDateTime now = LocalDateTime.now(clock);
     LocalDate today = LocalDate.now(clock);
@@ -46,6 +48,7 @@ public class ContractExtensionDemoDataGenerator {
       }
 
       int extensionsCreated = 0;
+      List<Object[]> records = new ArrayList<>();
 
       // Find contracts with AUTOMATIC or MANUAL renewal_mode
       var renewableContracts =
@@ -152,36 +155,38 @@ public class ContractExtensionDemoDataGenerator {
             }
           }
 
-          dsl.insertInto(table("contract_extensions"))
-              .set(field("id", UUID.class), UUID.randomUUID())
-              .set(field("identifier", String.class), newContractExtensionId().value())
-              .set(field("team_id", UUID.class), teamId)
-              .set(field("contract_id", UUID.class), contractId)
-              .set(field("extension_number", Integer.class), extNum)
-              .set(field("previous_end_date", LocalDate.class), previousEndDate)
-              .set(field("new_end_date", LocalDate.class), newEndDate)
-              .set(field("previous_rent_amount", Long.class), previousRentMinor)
-              .set(field("previous_rent_currency", String.class), currency)
-              .set(field("new_rent_amount", Long.class), newRentMinor)
-              .set(field("new_rent_currency", String.class), currency)
-              .set(field("rent_adjustment_type", String.class), "FIXED_PERCENTAGE")
-              .set(field("rent_adjustment_value", BigDecimal.class), increasePercent)
-              .set(field("status", String.class), status)
-              .set(field("trigger_type", String.class), triggerType)
-              .set(
-                  field("notes", String.class),
-                  buildNotes(extNum, increasePercent, status, previousEndDate))
-              .set(
-                  field("declined_reason", String.class),
-                  "DECLINED".equals(status) ? "Tenant declined the proposed rent increase" : null)
-              .set(field("activated_at", LocalDateTime.class), activatedAt)
-              .set(field("activated_by", UUID.class), activatedBy)
-              .set(field("superseded_at", LocalDateTime.class), supersededAt)
-              .set(field("created_at", LocalDateTime.class), now.minusDays(random.nextInt(30, 365)))
-              .set(field("updated_at", LocalDateTime.class), now)
-              .set(field("created_by", UUID.class), createdBy)
-              .set(field("updated_by", UUID.class), createdBy)
-              .execute();
+          String notes = buildNotes(extNum, increasePercent, status, previousEndDate);
+          String declinedReason =
+              "DECLINED".equals(status) ? "Tenant declined the proposed rent increase" : null;
+          LocalDateTime createdAt = now.minusDays(random.nextInt(30, 365));
+
+          records.add(
+              new Object[] {
+                UUID.randomUUID(),
+                newContractExtensionId().value(),
+                teamId,
+                contractId,
+                extNum,
+                previousEndDate,
+                newEndDate,
+                previousRentMinor,
+                currency,
+                newRentMinor,
+                currency,
+                "FIXED_PERCENTAGE",
+                increasePercent,
+                status,
+                triggerType,
+                notes,
+                declinedReason,
+                activatedAt,
+                activatedBy,
+                supersededAt,
+                createdAt,
+                now,
+                createdBy,
+                createdBy
+              });
 
           extensionsCreated++;
 
@@ -189,6 +194,48 @@ public class ContractExtensionDemoDataGenerator {
           previousEndDate = newEndDate;
           currentRentMajor = newRentMajor;
         }
+      }
+
+      if (!records.isEmpty()) {
+        var insert =
+            dsl.insertInto(table("contract_extensions"))
+                .columns(
+                    field("id", UUID.class),
+                    field("identifier", String.class),
+                    field("team_id", UUID.class),
+                    field("contract_id", UUID.class),
+                    field("extension_number", Integer.class),
+                    field("previous_end_date", LocalDate.class),
+                    field("new_end_date", LocalDate.class),
+                    field("previous_rent_amount", Long.class),
+                    field("previous_rent_currency", String.class),
+                    field("new_rent_amount", Long.class),
+                    field("new_rent_currency", String.class),
+                    field("rent_adjustment_type", String.class),
+                    field("rent_adjustment_value", BigDecimal.class),
+                    field("status", String.class),
+                    field("trigger_type", String.class),
+                    field("notes", String.class),
+                    field("declined_reason", String.class),
+                    field("activated_at", LocalDateTime.class),
+                    field("activated_by", UUID.class),
+                    field("superseded_at", LocalDateTime.class),
+                    field("created_at", LocalDateTime.class),
+                    field("updated_at", LocalDateTime.class),
+                    field("created_by", UUID.class),
+                    field("updated_by", UUID.class))
+                .values(
+                    (UUID) null, (String) null, (UUID) null, (UUID) null, (Integer) null,
+                    (LocalDate) null, (LocalDate) null, (Long) null, (String) null, (Long) null,
+                    (String) null, (String) null, (BigDecimal) null, (String) null, (String) null,
+                    (String) null, (String) null, (LocalDateTime) null, (UUID) null,
+                    (LocalDateTime) null, (LocalDateTime) null, (LocalDateTime) null, (UUID) null,
+                    (UUID) null);
+        var batch = dsl.batch(insert);
+        for (Object[] r : records) {
+          batch = batch.bind(r);
+        }
+        batch.execute();
       }
 
       log.info("Created {} contract extensions for team {}", extensionsCreated, teamKey);

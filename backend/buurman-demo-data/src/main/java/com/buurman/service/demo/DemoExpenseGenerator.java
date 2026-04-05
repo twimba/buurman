@@ -8,6 +8,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -46,6 +47,7 @@ public class DemoExpenseGenerator {
         continue;
       }
 
+      List<Object[]> expenseRecords = new ArrayList<>();
       int teamExpenses = 0;
 
       for (UUID propertyId : propertyIds) {
@@ -69,7 +71,8 @@ public class DemoExpenseGenerator {
           // === RECURRING ANNUAL EXPENSES ===
 
           // 1. Insurance premium (every year)
-          insertExpense(
+          collectExpense(
+              expenseRecords,
               propertyId,
               teamId,
               createdBy,
@@ -84,7 +87,8 @@ public class DemoExpenseGenerator {
           ctx.incrementExpenses();
 
           // 2. Property tax (every year)
-          insertExpense(
+          collectExpense(
+              expenseRecords,
               propertyId,
               teamId,
               createdBy,
@@ -105,7 +109,8 @@ public class DemoExpenseGenerator {
           }
 
           // 3. Annual maintenance/inspection
-          insertExpense(
+          collectExpense(
+              expenseRecords,
               propertyId,
               teamId,
               createdBy,
@@ -129,7 +134,8 @@ public class DemoExpenseGenerator {
           int cleaningCount =
               "COMMERCIAL".equals(propCategory) ? 2 : (random.nextInt(3) == 0 ? 1 : 0);
           for (int c = 0; c < cleaningCount; c++) {
-            insertExpense(
+            collectExpense(
+                expenseRecords,
                 propertyId,
                 teamId,
                 createdBy,
@@ -151,7 +157,8 @@ public class DemoExpenseGenerator {
           // 5. Landscaping (if residential/agricultural, ~50% of years)
           if (("RESIDENTIAL".equals(propCategory) || "AGRICULTURAL".equals(propCategory))
               && random.nextBoolean()) {
-            insertExpense(
+            collectExpense(
+                expenseRecords,
                 propertyId,
                 teamId,
                 createdBy,
@@ -181,7 +188,8 @@ public class DemoExpenseGenerator {
             repairCount++;
           }
           for (int r = 0; r < repairCount; r++) {
-            insertExpense(
+            collectExpense(
+                expenseRecords,
                 propertyId,
                 teamId,
                 createdBy,
@@ -206,7 +214,8 @@ public class DemoExpenseGenerator {
 
           // 7. Major repair every ~7 years (for properties older than 7 years)
           if (propertyAge > 0 && propertyAge % 7 == 0) {
-            insertExpense(
+            collectExpense(
+                expenseRecords,
                 propertyId,
                 teamId,
                 createdBy,
@@ -233,7 +242,8 @@ public class DemoExpenseGenerator {
           if ("COMMERCIAL".equals(propCategory)
               || "INDUSTRIAL".equals(propCategory)
               || random.nextBoolean()) {
-            insertExpense(
+            collectExpense(
+                expenseRecords,
                 propertyId,
                 teamId,
                 createdBy,
@@ -250,7 +260,8 @@ public class DemoExpenseGenerator {
 
           // 9. Legal/fees (occasional, ~15% of years)
           if (random.nextInt(100) < 15) {
-            insertExpense(
+            collectExpense(
+                expenseRecords,
                 propertyId,
                 teamId,
                 createdBy,
@@ -273,7 +284,8 @@ public class DemoExpenseGenerator {
 
           // 10. Property management fee (~40% of years)
           if (random.nextInt(100) < 40) {
-            insertExpense(
+            collectExpense(
+                expenseRecords,
                 propertyId,
                 teamId,
                 createdBy,
@@ -292,6 +304,36 @@ public class DemoExpenseGenerator {
           }
         }
       }
+
+      // Batch insert all expenses for this team
+      if (!expenseRecords.isEmpty()) {
+        var insert =
+            dsl.insertInto(EXPENSES)
+                .columns(
+                    EXPENSES.ID,
+                    EXPENSES.IDENTIFIER,
+                    EXPENSES.TEAM_ID,
+                    EXPENSES.PROPERTY_ID,
+                    EXPENSES.CATEGORY,
+                    EXPENSES.AMOUNT,
+                    EXPENSES.CURRENCY,
+                    EXPENSES.EXPENSE_DATE,
+                    EXPENSES.DESCRIPTION,
+                    EXPENSES.NOTES,
+                    EXPENSES.CREATED_AT,
+                    EXPENSES.UPDATED_AT,
+                    EXPENSES.CREATED_BY,
+                    EXPENSES.UPDATED_BY)
+                .values(
+                    (UUID) null, null, null, null, null, null, null, null, null, null, null, null,
+                    null, null);
+        var batch = dsl.batch(insert);
+        for (Object[] r : expenseRecords) {
+          batch = batch.bind(r);
+        }
+        batch.execute();
+      }
+
       log.info("Created {} expenses for team {}", teamExpenses, teamKey);
     }
   }
@@ -314,7 +356,8 @@ public class DemoExpenseGenerator {
   }
 
   @SuppressWarnings("NullAway")
-  private void insertExpense(
+  private void collectExpense(
+      List<Object[]> records,
       UUID propertyId,
       UUID teamId,
       @Nullable UUID createdBy,
@@ -331,22 +374,23 @@ public class DemoExpenseGenerator {
       createdAt = now;
     }
 
-    dsl.insertInto(EXPENSES)
-        .set(EXPENSES.ID, UUID.randomUUID())
-        .set(EXPENSES.IDENTIFIER, newExpenseId())
-        .set(EXPENSES.TEAM_ID, teamId)
-        .set(EXPENSES.PROPERTY_ID, propertyId)
-        .set(EXPENSES.CATEGORY, category)
-        .set(EXPENSES.AMOUNT, amount)
-        .set(EXPENSES.CURRENCY, currency)
-        .set(EXPENSES.EXPENSE_DATE, expenseDate)
-        .set(EXPENSES.DESCRIPTION, description)
-        .set(EXPENSES.NOTES, notes)
-        .set(EXPENSES.CREATED_AT, createdAt)
-        .set(EXPENSES.UPDATED_AT, now)
-        .set(EXPENSES.CREATED_BY, createdBy)
-        .set(EXPENSES.UPDATED_BY, createdBy)
-        .execute();
+    records.add(
+        new Object[] {
+          UUID.randomUUID(),
+          newExpenseId(),
+          teamId,
+          propertyId,
+          category,
+          amount,
+          currency,
+          expenseDate,
+          description,
+          notes,
+          createdAt,
+          now,
+          createdBy,
+          createdBy
+        });
   }
 
   private String pick(String... options) {

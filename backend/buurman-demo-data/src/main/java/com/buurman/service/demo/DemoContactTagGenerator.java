@@ -11,7 +11,6 @@ import java.util.Random;
 import java.util.UUID;
 
 import org.jooq.DSLContext;
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.ContactTag;
@@ -59,6 +58,8 @@ public class DemoContactTagGenerator {
 
       List<UUID> contactIds = ctx.getContactIdsByTeam().getOrDefault(teamId, List.of());
 
+      List<Object[]> records = new ArrayList<>();
+
       for (UUID contactId : contactIds) {
         ContactType contactType = ctx.getContactType(contactId);
 
@@ -83,27 +84,43 @@ public class DemoContactTagGenerator {
           if (added >= tagCount) {
             break;
           }
-          insertTag(contactId, teamId, tag, now, createdBy);
+          records.add(
+              new Object[] {
+                UUID.randomUUID(),
+                teamId,
+                contactId,
+                tag.name(),
+                now.minusDays(random.nextInt(0, 365)),
+                createdBy
+              });
           added++;
           totalTags++;
         }
+      }
+
+      if (!records.isEmpty()) {
+        var insert =
+            dsl.insertInto(CONTACT_TAGS)
+                .columns(
+                    CONTACT_TAGS.ID,
+                    CONTACT_TAGS.TEAM_ID,
+                    CONTACT_TAGS.CONTACT_ID,
+                    CONTACT_TAGS.TAG,
+                    CONTACT_TAGS.CREATED_AT,
+                    CONTACT_TAGS.CREATED_BY)
+                .values(
+                    (UUID) null, (UUID) null, (UUID) null, (String) null, (LocalDateTime) null,
+                    (UUID) null);
+        var batch = dsl.batch(insert);
+        for (Object[] r : records) {
+          batch = batch.bind(r);
+        }
+        batch.execute();
       }
 
       log.info("Created contact tags for team {}", teamKey);
     }
 
     log.info("Created {} contact tags total", totalTags);
-  }
-
-  private void insertTag(
-      UUID contactId, UUID teamId, ContactTag tag, LocalDateTime now, @Nullable UUID createdBy) {
-    dsl.insertInto(CONTACT_TAGS)
-        .set(CONTACT_TAGS.ID, UUID.randomUUID())
-        .set(CONTACT_TAGS.TEAM_ID, teamId)
-        .set(CONTACT_TAGS.CONTACT_ID, contactId)
-        .set(CONTACT_TAGS.TAG, tag.name())
-        .set(CONTACT_TAGS.CREATED_AT, now.minusDays(random.nextInt(0, 365)))
-        .set(CONTACT_TAGS.CREATED_BY, createdBy)
-        .execute();
   }
 }

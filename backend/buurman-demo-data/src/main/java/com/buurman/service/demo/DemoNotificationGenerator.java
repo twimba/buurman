@@ -1,6 +1,7 @@
 package com.buurman.service.demo;
 
 import static com.buurman.jooq.generated.Tables.CONTACTS;
+import static com.buurman.jooq.generated.Tables.CONTRACT_PARTIES;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
 import static com.buurman.jooq.generated.Tables.NOTIFICATIONS;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
@@ -9,27 +10,24 @@ import static com.buurman.jooq.generated.Tables.TEAM_MEMBERS;
 import static com.buurman.jooq.generated.Tables.USERS;
 import static com.buurman.util.SidGenerator.newNotificationId;
 import static java.time.temporal.ChronoUnit.DAYS;
-import static org.jooq.impl.DSL.field;
-import static org.jooq.impl.DSL.table;
 
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.jooq.Record;
-import org.jspecify.annotations.Nullable;
+
 import org.springframework.stereotype.Component;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 
 import com.buurman.config.models.AppProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -42,7 +40,6 @@ import lombok.extern.slf4j.Slf4j;
 public class DemoNotificationGenerator {
 
   private final DSLContext dsl;
-  private final TemplateEngine templateEngine;
   private final ObjectMapper objectMapper;
   private final String baseUrl;
   private final Clock clock;
@@ -50,19 +47,68 @@ public class DemoNotificationGenerator {
 
   public DemoNotificationGenerator(
       DSLContext dsl,
-      TemplateEngine templateEngine,
       ObjectMapper objectMapper,
       AppProperties appProperties,
       Clock clock) {
     this.dsl = dsl;
-    this.templateEngine = templateEngine;
     this.objectMapper = objectMapper;
     this.baseUrl = appProperties.email().baseUrl();
     this.clock = clock;
   }
 
+  @SuppressWarnings("NullAway")
   public void generate(DemoDataContext ctx) {
     LocalDateTime now = LocalDateTime.now(clock);
+
+    // --- Prefetch all data upfront to eliminate N+1 queries ---
+    Collection<UUID> allTeamIds = ctx.getTeamIds().values();
+
+    var usersById = dsl.selectFrom(USERS).fetchMap(USERS.ID);
+
+    var propertiesById = dsl.selectFrom(PROPERTIES)
+        .where(PROPERTIES.TEAM_ID.in(allTeamIds))
+        .fetchMap(PROPERTIES.ID);
+
+    var contractsById = dsl.selectFrom(CONTRACTS)
+        .where(CONTRACTS.TEAM_ID.in(allTeamIds))
+        .fetchMap(CONTRACTS.ID);
+
+    var contactsById = dsl.selectFrom(CONTACTS)
+        .where(CONTACTS.TEAM_ID.in(allTeamIds))
+        .fetchMap(CONTACTS.ID);
+
+    var paymentsById = dsl.selectFrom(PAYMENTS)
+        .where(PAYMENTS.TEAM_ID.in(allTeamIds))
+        .fetchMap(PAYMENTS.ID);
+
+    // team_member user IDs per team
+    Map<UUID, List<UUID>> memberUserIdsByTeam = new HashMap<>();
+    dsl.select(TEAM_MEMBERS.TEAM_ID, TEAM_MEMBERS.USER_ID)
+        .from(TEAM_MEMBERS)
+        .where(TEAM_MEMBERS.TEAM_ID.in(allTeamIds))
+        .fetch()
+        .forEach(r -> memberUserIdsByTeam
+            .computeIfAbsent(r.get(TEAM_MEMBERS.TEAM_ID), k -> new ArrayList<>())
+            .add(r.get(TEAM_MEMBERS.USER_ID)));
+
+    // contract_parties: contract_id -> primary tenant contact_id
+    Map<UUID, UUID> primaryContactByContract = new HashMap<>();
+    dsl.select(CONTRACT_PARTIES.CONTRACT_ID, CONTRACT_PARTIES.CONTACT_ID)
+        .from(CONTRACT_PARTIES)
+        .where(CONTRACT_PARTIES.ROLE.eq("PRIMARY_TENANT"))
+        .and(CONTRACT_PARTIES.DELETED_AT.isNull())
+        .fetch()
+        .forEach(r -> primaryContactByContract
+            .putIfAbsent(r.get(CONTRACT_PARTIES.CONTRACT_ID), r.get(CONTRACT_PARTIES.CONTACT_ID)));
+
+    // contact_id -> first contract_id (for failed notification section)
+    Map<UUID, UUID> firstContractByContact = new HashMap<>();
+    dsl.select(CONTRACT_PARTIES.CONTACT_ID, CONTRACT_PARTIES.CONTRACT_ID)
+        .from(CONTRACT_PARTIES)
+        .where(CONTRACT_PARTIES.DELETED_AT.isNull())
+        .fetch()
+        .forEach(r -> firstContractByContact
+            .putIfAbsent(r.get(CONTRACT_PARTIES.CONTACT_ID), r.get(CONTRACT_PARTIES.CONTRACT_ID)));
 
     for (var teamEntry : ctx.getTeamIds().entrySet()) {
       String teamKey = teamEntry.getKey();
@@ -74,18 +120,18 @@ public class DemoNotificationGenerator {
       List<UUID> propertyIds = ctx.getPropertyIdsByTeam().getOrDefault(teamId, List.of());
       List<UUID> contactIds = ctx.getContactIdsByTeam().getOrDefault(teamId, List.of());
 
-      int teamNotifications = 0;
+      // Collect all notifications for this team, then batch insert
+      List<Object[]> pending = new ArrayList<>();
+
+      // Resolve admin once per team
+      Record adminRecord = createdBy != null ? usersById.get(createdBy) : null;
+      String adminEmail = adminRecord != null ? adminRecord.get(USERS.EMAIL) : "admin@demo.buurman.io";
+      String adminName = adminRecord != null ? adminRecord.get(USERS.FIRST_NAME) : "Admin";
 
       // --- Welcome emails for all team members ---
-      var members =
-          dsl.select(TEAM_MEMBERS.USER_ID)
-              .from(TEAM_MEMBERS)
-              .where(TEAM_MEMBERS.TEAM_ID.eq(teamId))
-              .fetch();
-
-      for (var member : members) {
-        UUID userId = member.get(TEAM_MEMBERS.USER_ID);
-        Record user = dsl.selectFrom(USERS).where(USERS.ID.eq(userId)).fetchOne();
+      List<UUID> memberUserIds = memberUserIdsByTeam.getOrDefault(teamId, List.of());
+      for (UUID userId : memberUserIds) {
+        Record user = usersById.get(userId);
         if (user == null) {
           continue;
         }
@@ -98,39 +144,24 @@ public class DemoNotificationGenerator {
                 "userName", firstName,
                 "baseUrl", baseUrl);
 
-        insertRenderedNotification(
-            teamId,
-            createdBy,
+        addEmailNotification(
+            pending, teamId, createdBy,
             now.minusDays(random.nextInt(60, 90)),
-            "WELCOME",
-            "EMAIL",
-            "welcome",
-            vars,
-            email,
-            null,
-            userId,
-            null,
-            "DELIVERED",
-            "delivered",
-            null);
-        teamNotifications++;
+            "WELCOME", "welcome", vars,
+            email, userId, null,
+            "DELIVERED", "delivered", null);
       }
 
       // --- Property created notifications ---
       for (int i = 0; i < Math.min(propertyIds.size(), 3); i++) {
         UUID propertyId = propertyIds.get(i);
-        Record property = dsl.selectFrom(PROPERTIES).where(PROPERTIES.ID.eq(propertyId)).fetchOne();
+        Record property = propertiesById.get(propertyId);
         if (property == null) {
           continue;
         }
 
-        String street = property.get(PROPERTIES.STREET);
-        String city = property.get(PROPERTIES.CITY);
-        String propertyName = street + ", " + city;
+        String propertyName = property.get(PROPERTIES.STREET) + ", " + property.get(PROPERTIES.CITY);
         String propertyType = property.get(PROPERTIES.PROPERTY_TYPE);
-
-        Record admin = dsl.selectFrom(USERS).where(USERS.ID.eq(createdBy)).fetchOne();
-        String adminEmail = admin != null ? admin.get(USERS.EMAIL) : "admin@demo.buurman.io";
 
         Map<String, Object> vars =
             Map.of(
@@ -139,52 +170,37 @@ public class DemoNotificationGenerator {
                 "propertyType", propertyType != null ? propertyType : "N/A",
                 "baseUrl", baseUrl);
 
-        insertRenderedNotification(
-            teamId,
-            createdBy,
+        addEmailNotification(
+            pending, teamId, createdBy,
             now.minusDays(random.nextInt(30, 60)),
-            "PROPERTY_CREATED",
-            "EMAIL",
-            "property-created",
-            vars,
-            adminEmail,
-            null,
-            createdBy,
-            null,
-            "DELIVERED",
-            "delivered",
-            null);
-        teamNotifications++;
+            "PROPERTY_CREATED", "property-created", vars,
+            adminEmail, createdBy, null,
+            "DELIVERED", "delivered", null);
       }
 
       // --- Contract created + status change notifications ---
       for (UUID contractId : contractIds) {
-        Record contract = dsl.selectFrom(CONTRACTS).where(CONTRACTS.ID.eq(contractId)).fetchOne();
+        Record contract = contractsById.get(contractId);
         if (contract == null) {
           continue;
         }
 
-        Optional<UUID> contactIdOpt = findPrimaryContactId(contractId);
+        UUID primaryContactId = primaryContactByContract.get(contractId);
         UUID propertyId = contract.get(CONTRACTS.PROPERTY_ID);
         String status = contract.get(CONTRACTS.STATUS);
-        if (contactIdOpt.isEmpty()) {
+        if (primaryContactId == null) {
           continue;
         }
-        UUID contactId = contactIdOpt.get();
-        Record contact = dsl.selectFrom(CONTACTS).where(CONTACTS.ID.eq(contactId)).fetchOne();
-        Record property = dsl.selectFrom(PROPERTIES).where(PROPERTIES.ID.eq(propertyId)).fetchOne();
+        Record contact = contactsById.get(primaryContactId);
+        Record property = propertiesById.get(propertyId);
         if (contact == null || property == null) {
           continue;
         }
 
         String contactName =
             contact.get(CONTACTS.FIRST_NAME) + " " + contact.get(CONTACTS.LAST_NAME);
-        String street = property.get(PROPERTIES.STREET);
-        String city = property.get(PROPERTIES.CITY);
-        String propertyName = street + ", " + city;
-
-        Record admin = dsl.selectFrom(USERS).where(USERS.ID.eq(createdBy)).fetchOne();
-        String adminEmail = admin != null ? admin.get(USERS.EMAIL) : "admin@demo.buurman.io";
+        String propertyName =
+            property.get(PROPERTIES.STREET) + ", " + property.get(PROPERTIES.CITY);
 
         // Contract created notification
         var startDate = contract.get(CONTRACTS.START_DATE);
@@ -203,22 +219,12 @@ public class DemoNotificationGenerator {
         contractVars.put("endDate", endDate != null ? endDate.toString() : "");
         contractVars.put("baseUrl", baseUrl);
 
-        insertRenderedNotification(
-            teamId,
-            createdBy,
+        addEmailNotification(
+            pending, teamId, createdBy,
             now.minusDays(random.nextInt(20, 50)),
-            "CONTRACT_CREATED",
-            "EMAIL",
-            "contract-created",
-            contractVars,
-            adminEmail,
-            null,
-            createdBy,
-            null,
-            "DELIVERED",
-            "delivered",
-            null);
-        teamNotifications++;
+            "CONTRACT_CREATED", "contract-created", contractVars,
+            adminEmail, createdBy, null,
+            "DELIVERED", "delivered", null);
 
         // Contract status change notification for non-draft, non-active contracts
         if (!"DRAFT".equals(status) && !"ACTIVE".equals(status)) {
@@ -230,41 +236,30 @@ public class DemoNotificationGenerator {
                   "newStatus", status,
                   "baseUrl", baseUrl);
 
-          insertRenderedNotification(
-              teamId,
-              createdBy,
+          addEmailNotification(
+              pending, teamId, createdBy,
               now.minusDays(random.nextInt(5, 30)),
-              "CONTRACT_STATUS_CHANGED",
-              "EMAIL",
-              "contract-status-changed",
-              statusVars,
-              adminEmail,
-              null,
-              createdBy,
-              null,
-              "DELIVERED",
-              "delivered",
-              null);
-          teamNotifications++;
+              "CONTRACT_STATUS_CHANGED", "contract-status-changed", statusVars,
+              adminEmail, createdBy, null,
+              "DELIVERED", "delivered", null);
         }
       }
 
       // --- Payment reminder notifications (for upcoming/overdue payments) ---
       for (UUID contractId : contractIds) {
         List<UUID> paymentIds = ctx.getPaymentIdsByContract().getOrDefault(contractId, List.of());
-        Record contract = dsl.selectFrom(CONTRACTS).where(CONTRACTS.ID.eq(contractId)).fetchOne();
+        Record contract = contractsById.get(contractId);
         if (contract == null) {
           continue;
         }
 
-        Optional<UUID> contactIdOpt = findPrimaryContactId(contractId);
+        UUID primaryContactId = primaryContactByContract.get(contractId);
         UUID propertyId = contract.get(CONTRACTS.PROPERTY_ID);
-        if (contactIdOpt.isEmpty()) {
+        if (primaryContactId == null) {
           continue;
         }
-        UUID contactId = contactIdOpt.get();
-        Record contact = dsl.selectFrom(CONTACTS).where(CONTACTS.ID.eq(contactId)).fetchOne();
-        Record property = dsl.selectFrom(PROPERTIES).where(PROPERTIES.ID.eq(propertyId)).fetchOne();
+        Record contact = contactsById.get(primaryContactId);
+        Record property = propertiesById.get(propertyId);
         if (contact == null || property == null) {
           continue;
         }
@@ -281,7 +276,7 @@ public class DemoNotificationGenerator {
           if (reminderCount >= 2) {
             break;
           }
-          Record payment = dsl.selectFrom(PAYMENTS).where(PAYMENTS.ID.eq(paymentId)).fetchOne();
+          Record payment = paymentsById.get(paymentId);
           if (payment == null) {
             continue;
           }
@@ -304,39 +299,21 @@ public class DemoNotificationGenerator {
                     "baseUrl", baseUrl);
 
             // Email reminder
-            insertRenderedNotification(
-                teamId,
-                createdBy,
+            addEmailNotification(
+                pending, teamId, createdBy,
                 now.minusDays(random.nextInt(1, 10)),
-                "PAYMENT_REMINDER",
-                "EMAIL",
-                "payment-reminder",
-                vars,
-                contactEmail,
-                null,
-                null,
-                contactId,
-                "DELIVERED",
-                "delivered",
-                null);
-            teamNotifications++;
+                "PAYMENT_REMINDER", "payment-reminder", vars,
+                contactEmail, null, primaryContactId,
+                "DELIVERED", "delivered", null);
 
             // SMS reminder for overdue
             if ("OVERDUE".equals(paymentStatus) && contactPhone != null) {
-              insertSmsNotification(
-                  teamId,
-                  createdBy,
+              addSmsNotification(
+                  pending, teamId, createdBy,
                   now.minusDays(random.nextInt(1, 5)),
-                  "PAYMENT_REMINDER",
-                  "payment-reminder",
-                  vars,
-                  contactPhone,
-                  null,
-                  contactId,
-                  "SENT",
-                  "sent",
-                  null);
-              teamNotifications++;
+                  "PAYMENT_REMINDER", "payment-reminder", vars,
+                  contactPhone, null, primaryContactId,
+                  "SENT", "sent", null);
             }
 
             reminderCount++;
@@ -351,19 +328,18 @@ public class DemoNotificationGenerator {
           break;
         }
         List<UUID> paymentIds = ctx.getPaymentIdsByContract().getOrDefault(contractId, List.of());
-        Record contract = dsl.selectFrom(CONTRACTS).where(CONTRACTS.ID.eq(contractId)).fetchOne();
+        Record contract = contractsById.get(contractId);
         if (contract == null) {
           continue;
         }
 
-        Optional<UUID> contactIdOpt = findPrimaryContactId(contractId);
+        UUID primaryContactId = primaryContactByContract.get(contractId);
         UUID propertyId = contract.get(CONTRACTS.PROPERTY_ID);
-        if (contactIdOpt.isEmpty()) {
+        if (primaryContactId == null) {
           continue;
         }
-        UUID contactId = contactIdOpt.get();
-        Record contact = dsl.selectFrom(CONTACTS).where(CONTACTS.ID.eq(contactId)).fetchOne();
-        Record property = dsl.selectFrom(PROPERTIES).where(PROPERTIES.ID.eq(propertyId)).fetchOne();
+        Record contact = contactsById.get(primaryContactId);
+        Record property = propertiesById.get(propertyId);
         if (contact == null || property == null) {
           continue;
         }
@@ -377,7 +353,7 @@ public class DemoNotificationGenerator {
           if (paidCount >= 4) {
             break;
           }
-          Record payment = dsl.selectFrom(PAYMENTS).where(PAYMENTS.ID.eq(paymentId)).fetchOne();
+          Record payment = paymentsById.get(paymentId);
           if (payment == null || !"PAID".equals(payment.get(PAYMENTS.STATUS))) {
             continue;
           }
@@ -388,8 +364,6 @@ public class DemoNotificationGenerator {
                   : teamCurrency;
           String amount = rcptCurrency + " " + payment.get(PAYMENTS.AMOUNT).toPlainString();
           var paymentDate = payment.get(PAYMENTS.PAYMENT_DATE);
-          Record admin = dsl.selectFrom(USERS).where(USERS.ID.eq(createdBy)).fetchOne();
-          String adminEmail = admin != null ? admin.get(USERS.EMAIL) : "admin@demo.buurman.io";
 
           Map<String, Object> vars =
               Map.of(
@@ -399,29 +373,19 @@ public class DemoNotificationGenerator {
                   "paymentDate", paymentDate != null ? paymentDate.toString() : "N/A",
                   "baseUrl", baseUrl);
 
-          insertRenderedNotification(
-              teamId,
-              createdBy,
+          addEmailNotification(
+              pending, teamId, createdBy,
               now.minusDays(random.nextInt(1, 30)),
-              "PAYMENT_PAID",
-              "EMAIL",
-              "payment-paid",
-              vars,
-              adminEmail,
-              null,
-              createdBy,
-              null,
-              "DELIVERED",
-              "delivered",
-              null);
-          teamNotifications++;
+              "PAYMENT_PAID", "payment-paid", vars,
+              adminEmail, createdBy, null,
+              "DELIVERED", "delivered", null);
           paidCount++;
         }
       }
 
       // --- Contract expiry notifications (for contracts expiring soon) ---
       for (UUID contractId : contractIds) {
-        Record contract = dsl.selectFrom(CONTRACTS).where(CONTRACTS.ID.eq(contractId)).fetchOne();
+        Record contract = contractsById.get(contractId);
         if (contract == null || !"ACTIVE".equals(contract.get(CONTRACTS.STATUS))) {
           continue;
         }
@@ -431,23 +395,19 @@ public class DemoNotificationGenerator {
           continue;
         }
 
-        Optional<UUID> contactIdOpt = findPrimaryContactId(contractId);
+        UUID primaryContactId = primaryContactByContract.get(contractId);
         UUID propertyId = contract.get(CONTRACTS.PROPERTY_ID);
-        if (contactIdOpt.isEmpty()) {
+        if (primaryContactId == null) {
           continue;
         }
-        UUID contactId = contactIdOpt.get();
-        Record contact = dsl.selectFrom(CONTACTS).where(CONTACTS.ID.eq(contactId)).fetchOne();
-        Record property = dsl.selectFrom(PROPERTIES).where(PROPERTIES.ID.eq(propertyId)).fetchOne();
+        Record contact = contactsById.get(primaryContactId);
+        Record property = propertiesById.get(propertyId);
         if (contact == null || property == null) {
           continue;
         }
 
         String propertyName =
             property.get(PROPERTIES.STREET) + ", " + property.get(PROPERTIES.CITY);
-        Record admin = dsl.selectFrom(USERS).where(USERS.ID.eq(createdBy)).fetchOne();
-        String adminEmail = admin != null ? admin.get(USERS.EMAIL) : "admin@demo.buurman.io";
-        String adminName = admin != null ? admin.get(USERS.FIRST_NAME) : "Admin";
         long daysUntilExpiry = DAYS.between(LocalDate.now(clock), endDate);
 
         Map<String, Object> vars =
@@ -458,57 +418,33 @@ public class DemoNotificationGenerator {
                 "expiryDate", endDate.toString(),
                 "baseUrl", baseUrl);
 
-        insertRenderedNotification(
-            teamId,
-            createdBy,
+        addEmailNotification(
+            pending, teamId, createdBy,
             now.minusDays(random.nextInt(1, 14)),
-            "CONTRACT_EXPIRY",
-            "EMAIL",
-            "contract-expiry",
-            vars,
-            adminEmail,
-            null,
-            createdBy,
-            null,
-            "DELIVERED",
-            "delivered",
-            null);
-        teamNotifications++;
+            "CONTRACT_EXPIRY", "contract-expiry", vars,
+            adminEmail, createdBy, null,
+            "DELIVERED", "delivered", null);
       }
 
       // --- A couple of failed notifications for realism ---
       if (!contactIds.isEmpty()) {
         UUID failedContactId = contactIds.get(random.nextInt(contactIds.size()));
-        Record failedContact =
-            dsl.selectFrom(CONTACTS).where(CONTACTS.ID.eq(failedContactId)).fetchOne();
+        Record failedContact = contactsById.get(failedContactId);
         if (failedContact != null) {
           String contactEmail = failedContact.get(CONTACTS.EMAIL);
           String contactName =
               failedContact.get(CONTACTS.FIRST_NAME) + " " + failedContact.get(CONTACTS.LAST_NAME);
 
-          // Find a property for this contact via contract_parties
+          // Find a property for this contact via prefetched contract_parties
           String propertyName = "your property";
-          var contactContractId =
-              dsl.select(field("contract_id", UUID.class))
-                  .from(table("contract_parties"))
-                  .where(field("contact_id", UUID.class).eq(failedContactId))
-                  .and(field("deleted_at").isNull())
-                  .limit(1)
-                  .fetchOptional(field("contract_id", UUID.class))
-                  .orElse(null);
-          var contactContract =
-              contactContractId != null
-                  ? dsl.selectFrom(CONTRACTS)
-                      .where(CONTRACTS.ID.eq(contactContractId).and(CONTRACTS.TEAM_ID.eq(teamId)))
-                      .fetchOne()
-                  : null;
-          if (contactContract != null) {
-            Record prop =
-                dsl.selectFrom(PROPERTIES)
-                    .where(PROPERTIES.ID.eq(contactContract.get(CONTRACTS.PROPERTY_ID)))
-                    .fetchOne();
-            if (prop != null) {
-              propertyName = prop.get(PROPERTIES.STREET) + ", " + prop.get(PROPERTIES.CITY);
+          UUID contactContractId = firstContractByContact.get(failedContactId);
+          if (contactContractId != null) {
+            Record contactContract = contractsById.get(contactContractId);
+            if (contactContract != null && teamId.equals(contactContract.get(CONTRACTS.TEAM_ID))) {
+              Record prop = propertiesById.get(contactContract.get(CONTRACTS.PROPERTY_ID));
+              if (prop != null) {
+                propertyName = prop.get(PROPERTIES.STREET) + ", " + prop.get(PROPERTIES.CITY);
+              }
             }
           }
 
@@ -521,127 +457,122 @@ public class DemoNotificationGenerator {
                   "baseUrl", baseUrl);
 
           // Bounced email
-          insertRenderedNotification(
-              teamId,
-              createdBy,
+          addEmailNotification(
+              pending, teamId, createdBy,
               now.minusDays(random.nextInt(5, 20)),
-              "PAYMENT_REMINDER",
-              "EMAIL",
-              "payment-reminder",
-              vars,
-              contactEmail,
-              null,
-              null,
-              failedContactId,
-              "BOUNCED",
-              null,
+              "PAYMENT_REMINDER", "payment-reminder", vars,
+              contactEmail, null, failedContactId,
+              "BOUNCED", null,
               "550 5.1.1 The email account does not exist");
-          teamNotifications++;
 
           // Failed SMS
-          insertSmsNotification(
-              teamId,
-              createdBy,
+          addSmsNotification(
+              pending, teamId, createdBy,
               now.minusDays(random.nextInt(3, 15)),
-              "PAYMENT_REMINDER",
-              "payment-reminder",
-              vars,
-              "+31600000000",
-              null,
-              failedContactId,
-              "FAILED",
-              null,
-              "Invalid phone number");
-          teamNotifications++;
+              "PAYMENT_REMINDER", "payment-reminder", vars,
+              "+31600000000", null, failedContactId,
+              "FAILED", null, "Invalid phone number");
         }
       }
 
-      ctx.incrementNotifications(teamNotifications);
-      log.info("Created {} notifications for team {}", teamNotifications, teamKey);
+      // --- Batch insert all notifications for this team ---
+      if (!pending.isEmpty()) {
+        batchInsertNotifications(pending);
+      }
+
+      ctx.incrementNotifications(pending.size());
+      log.info("Created {} notifications for team {}", pending.size(), teamKey);
     }
   }
 
-  /** Renders the Thymeleaf email template, derives the subject, and inserts the notification. */
-  private void insertRenderedNotification(
+  /** Collects an email notification row into the pending batch. */
+  private void addEmailNotification(
+      List<Object[]> pending,
       UUID teamId,
-      @Nullable UUID createdBy,
+      UUID createdBy,
       LocalDateTime createdAt,
       String type,
-      String channel,
       String template,
       Map<String, Object> templateVars,
-      @Nullable String recipientEmail,
-      @Nullable String recipientPhone,
-      @Nullable UUID recipientUserId,
-      @Nullable UUID recipientContactId,
+      String recipientEmail,
+      UUID recipientUserId,
+      UUID recipientContactId,
       String status,
-      @Nullable String providerStatus,
-      @Nullable String providerError) {
+      String providerStatus,
+      String providerError) {
     String subject = deriveSubject(template, templateVars);
-    String body = renderTemplate(template, templateVars);
+    String body = renderSimpleBody(subject);
     String varsJson = toJson(templateVars);
+    LocalDateTime statusUpdatedAt = createdAt.plusMinutes(random.nextInt(1, 30));
 
-    insertNotification(
-        teamId,
-        createdBy,
-        createdAt,
-        type,
-        channel,
-        template,
-        subject,
-        body,
-        recipientEmail,
-        recipientPhone,
-        recipientUserId,
-        recipientContactId,
-        varsJson,
-        status,
-        providerStatus,
-        providerError);
+    pending.add(new Object[] {
+        UUID.randomUUID(), newNotificationId(), teamId, type, "EMAIL", template,
+        subject, body, recipientEmail, null, recipientUserId, recipientContactId,
+        varsJson != null ? JSONB.jsonb(varsJson) : null,
+        status, providerStatus, providerError, statusUpdatedAt, createdAt, createdBy
+    });
   }
 
-  /** Inserts an SMS notification with a simple text body (no Thymeleaf rendering). */
-  private void insertSmsNotification(
+  /** Collects an SMS notification row into the pending batch. */
+  private void addSmsNotification(
+      List<Object[]> pending,
       UUID teamId,
-      @Nullable UUID createdBy,
+      UUID createdBy,
       LocalDateTime createdAt,
       String type,
       String template,
       Map<String, Object> templateVars,
       String recipientPhone,
-      @Nullable UUID recipientUserId,
-      @Nullable UUID recipientContactId,
+      UUID recipientUserId,
+      UUID recipientContactId,
       String status,
-      @Nullable String providerStatus,
-      @Nullable String providerError) {
+      String providerStatus,
+      String providerError) {
     String smsBody = renderSmsBody(template, templateVars);
     String varsJson = toJson(templateVars);
+    LocalDateTime statusUpdatedAt = createdAt.plusMinutes(random.nextInt(1, 30));
 
-    insertNotification(
-        teamId,
-        createdBy,
-        createdAt,
-        type,
-        "SMS",
-        template,
-        null,
-        smsBody,
-        null,
-        recipientPhone,
-        recipientUserId,
-        recipientContactId,
-        varsJson,
-        status,
-        providerStatus,
-        providerError);
+    pending.add(new Object[] {
+        UUID.randomUUID(), newNotificationId(), teamId, type, "SMS", template,
+        null, smsBody, null, recipientPhone, recipientUserId, recipientContactId,
+        varsJson != null ? JSONB.jsonb(varsJson) : null,
+        status, providerStatus, providerError, statusUpdatedAt, createdAt, createdBy
+    });
   }
 
-  private String renderTemplate(String templateName, Map<String, Object> variables) {
-    Context context = new Context();
-    if (variables != null) {
-      variables.forEach(context::setVariable);
-    }
-    return templateEngine.process("email/" + templateName, context);
+  /** Batch inserts all collected notification rows in a single round-trip. */
+  @SuppressWarnings("unchecked")
+  private void batchInsertNotifications(List<Object[]> rows) {
+    var queries = rows.stream()
+        .map(r -> dsl.insertInto(NOTIFICATIONS)
+            .set(NOTIFICATIONS.ID, (UUID) r[0])
+            .set(NOTIFICATIONS.IDENTIFIER, (com.buurman.domain.Sid) r[1])
+            .set(NOTIFICATIONS.TEAM_ID, (UUID) r[2])
+            .set(NOTIFICATIONS.NOTIFICATION_TYPE, (String) r[3])
+            .set(NOTIFICATIONS.CHANNEL, (String) r[4])
+            .set(NOTIFICATIONS.CONTENT_TEMPLATE, (String) r[5])
+            .set(NOTIFICATIONS.SUBJECT, (String) r[6])
+            .set(NOTIFICATIONS.BODY, (String) r[7])
+            .set(NOTIFICATIONS.RECIPIENT_EMAIL, (String) r[8])
+            .set(NOTIFICATIONS.RECIPIENT_PHONE, (String) r[9])
+            .set(NOTIFICATIONS.RECIPIENT_USER_ID, (UUID) r[10])
+            .set(NOTIFICATIONS.RECIPIENT_CONTACT_ID, (UUID) r[11])
+            .set(NOTIFICATIONS.CONTENT_VARIABLES, (JSONB) r[12])
+            .set(NOTIFICATIONS.STATUS, (String) r[13])
+            .set(NOTIFICATIONS.PROVIDER_STATUS, (String) r[14])
+            .set(NOTIFICATIONS.PROVIDER_ERROR, (String) r[15])
+            .set(NOTIFICATIONS.STATUS_UPDATED_AT, (LocalDateTime) r[16])
+            .set(NOTIFICATIONS.CREATED_AT, (LocalDateTime) r[17])
+            .set(NOTIFICATIONS.CREATED_BY, (UUID) r[18]))
+        .toList();
+    dsl.batch(queries).execute();
+  }
+
+  /** Simple static HTML body — skips Thymeleaf rendering for demo data. */
+  private String renderSimpleBody(String subject) {
+    return "<div style='font-family:sans-serif;padding:20px'>"
+        + "<h2>" + subject + "</h2>"
+        + "<p>This is a demo notification.</p></div>";
   }
 
   private String deriveSubject(String templateName, Map<String, Object> variables) {
@@ -676,9 +607,6 @@ public class DemoNotificationGenerator {
   }
 
   private String getVar(Map<String, Object> variables, String key, String defaultValue) {
-    if (variables == null) {
-      return defaultValue;
-    }
     Object val = variables.get(key);
     return val != null ? val.toString() : defaultValue;
   }
@@ -690,58 +618,5 @@ public class DemoNotificationGenerator {
       log.warn("Failed to serialize template variables: {}", e.getMessage());
       return "{}";
     }
-  }
-
-  private Optional<UUID> findPrimaryContactId(UUID contractId) {
-    return dsl.select(field("contact_id", UUID.class))
-        .from(table("contract_parties"))
-        .where(field("contract_id", UUID.class).eq(contractId))
-        .and(field("role", String.class).eq("PRIMARY_TENANT"))
-        .and(field("deleted_at").isNull())
-        .fetchOptional(field("contact_id", UUID.class));
-  }
-
-  private void insertNotification(
-      UUID teamId,
-      @Nullable UUID createdBy,
-      LocalDateTime createdAt,
-      String type,
-      String channel,
-      String template,
-      @Nullable String subject,
-      String body,
-      @Nullable String recipientEmail,
-      @Nullable String recipientPhone,
-      @Nullable UUID recipientUserId,
-      @Nullable UUID recipientContactId,
-      @Nullable String contentVariablesJson,
-      String status,
-      @Nullable String providerStatus,
-      @Nullable String providerError) {
-    LocalDateTime statusUpdatedAt = createdAt.plusMinutes(random.nextInt(1, 30));
-
-    dsl.insertInto(NOTIFICATIONS)
-        .set(NOTIFICATIONS.ID, UUID.randomUUID())
-        .set(NOTIFICATIONS.IDENTIFIER, newNotificationId())
-        .set(NOTIFICATIONS.TEAM_ID, teamId)
-        .set(NOTIFICATIONS.NOTIFICATION_TYPE, type)
-        .set(NOTIFICATIONS.CHANNEL, channel)
-        .set(NOTIFICATIONS.CONTENT_TEMPLATE, template)
-        .set(NOTIFICATIONS.SUBJECT, subject)
-        .set(NOTIFICATIONS.BODY, body)
-        .set(NOTIFICATIONS.RECIPIENT_EMAIL, recipientEmail)
-        .set(NOTIFICATIONS.RECIPIENT_PHONE, recipientPhone)
-        .set(NOTIFICATIONS.RECIPIENT_USER_ID, recipientUserId)
-        .set(NOTIFICATIONS.RECIPIENT_CONTACT_ID, recipientContactId)
-        .set(
-            NOTIFICATIONS.CONTENT_VARIABLES,
-            contentVariablesJson != null ? JSONB.jsonb(contentVariablesJson) : null)
-        .set(NOTIFICATIONS.STATUS, status)
-        .set(NOTIFICATIONS.PROVIDER_STATUS, providerStatus)
-        .set(NOTIFICATIONS.PROVIDER_ERROR, providerError)
-        .set(NOTIFICATIONS.STATUS_UPDATED_AT, statusUpdatedAt)
-        .set(NOTIFICATIONS.CREATED_AT, createdAt)
-        .set(NOTIFICATIONS.CREATED_BY, createdBy)
-        .execute();
   }
 }
