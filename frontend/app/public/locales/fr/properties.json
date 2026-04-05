@@ -57,7 +57,9 @@
       "country": "Pays",
       "location": "Emplacement"
     },
-    "characteristics": { "title": "Caractéristiques du bien" },
+    "characteristics": {
+      "title": "Caractéristiques du bien"
+    },
     "construction": {
       "title": "Construction et structure",
       "yearBuilt": "Année de construction",
@@ -96,8 +98,12 @@
       "parkingSpaces": "Places de stationnement",
       "parkingType": "Type de stationnement"
     },
-    "outdoorAreas": { "title": "Espaces extérieurs" },
-    "amenities": { "title": "Équipements" },
+    "outdoorAreas": {
+      "title": "Espaces extérieurs"
+    },
+    "amenities": {
+      "title": "Équipements"
+    },
     "safety": {
       "title": "Sécurité et protection",
       "smokeDetectors": "Détecteurs de fumée",
@@ -171,14 +177,25 @@
       "areaPositive": "La surface doit être supérieure à 0"
     }
   },
-  "collapsible": { "filledCount": "{{filled}} sur {{total}} remplis" },
+  "collapsible": {
+    "filledCount": "{{filled}} sur {{total}} remplis"
+  },
   "documents": {
     "title": "Documents",
     "uploadButton": "Téléverser un document",
     "empty": "Aucun document téléversé",
     "failedToLoad": "Échec du chargement des documents",
-    "table": { "document": "Document", "size": "Taille", "uploaded": "Téléversé", "actions": "Actions" },
-    "selection": { "selected": "{{selected}} sur {{total}} sélectionnés", "count_one": "{{count}} document", "count_other": "{{count}} documents" },
+    "table": {
+      "document": "Document",
+      "size": "Taille",
+      "uploaded": "Téléversé",
+      "actions": "Actions"
+    },
+    "selection": {
+      "selected": "{{selected}} sur {{total}} sélectionnés",
+      "count_one": "{{count}} document",
+      "count_other": "{{count}} documents"
+    },
     "preview": "Aperçu",
     "editTitleNotes": "Modifier le titre et les notes",
     "upload": {
@@ -235,21 +252,42 @@
     "createFirst": "Créer le premier contrat",
     "searchPlaceholder": "Rechercher par nº de contrat, contact, type...",
     "noMatchingSearch": "Aucun contrat trouvé pour votre recherche",
-    "table": { "contractNumber": "Contrat #", "contact": "Contact", "type": "Type", "startDate": "Date de début", "endDate": "Date de fin", "rentAmount": "Montant du loyer", "status": "Statut" },
-    "pagination": { "showing": "Affichage de {{from}} à {{to}} sur {{total}} contrats" },
+    "table": {
+      "contractNumber": "Contrat #",
+      "contact": "Contact",
+      "type": "Type",
+      "startDate": "Date de début",
+      "endDate": "Date de fin",
+      "rentAmount": "Montant du loyer",
+      "status": "Statut"
+    },
+    "pagination": {
+      "showing": "Affichage de {{from}} à {{to}} sur {{total}} contrats"
+    },
     "selfOccupancy": {
       "title": "Périodes d'usage personnel",
       "addButton": "Ajouter un usage personnel",
       "empty": "Aucune période d'usage personnel enregistrée",
       "recordPeriod": "Enregistrer une période d'usage personnel",
-      "table": { "period": "Période", "type": "Type", "occupant": "Occupant", "status": "Statut", "actions": "Actions" },
+      "table": {
+        "period": "Période",
+        "type": "Type",
+        "occupant": "Occupant",
+        "status": "Statut",
+        "actions": "Actions"
+      },
       "ongoing": "En cours",
       "active": "Actif",
       "ended": "Terminé",
       "endOccupancy": "Terminer l'occupation",
       "deleteTitle": "Supprimer la période d'usage personnel",
       "deleteMessage": "Êtes-vous sûr de vouloir supprimer cette période d'usage personnel ?",
-      "deleteWarning": "Cette action est irréversible."
+      "deleteWarning": "Cette action est irréversible.",
+      "takenPeriods": {
+        "selfUse": "Usage personnel : {{period}}",
+        "contract": "Contrat {{identifier}} : {{period}}",
+        "ongoing": "En cours"
+      }
     }
   },
   "expenses": {
@@ -260,13 +298,24 @@
     "failedToLoad": "Échec du chargement des dépenses",
     "searchPlaceholder": "Rechercher par nº de dépense, description, catégorie...",
     "noMatchingSearch": "Aucune dépense trouvée pour votre recherche",
-    "table": { "expenseNumber": "Dépense #", "date": "Date", "description": "Description", "category": "Catégorie", "amount": "Montant" },
-    "pagination": { "showing": "Affichage de {{from}} à {{to}} sur {{total}} dépenses" }
+    "table": {
+      "expenseNumber": "Dépense #",
+      "date": "Date",
+      "description": "Description",
+      "category": "Catégorie",
+      "amount": "Montant"
+    },
+    "pagination": {
+      "showing": "Affichage de {{from}} à {{to}} sur {{total}} dépenses"
+    }
   },
   "audit": {
     "title": "Historique du bien",
     "failedToLoad": "Échec du chargement de l'historique",
-    "empty": { "title": "Aucun historique disponible", "description": "Les modifications de ce bien apparaîtront ici" },
+    "empty": {
+      "title": "Aucun historique disponible",
+      "description": "Les modifications de ce bien apparaîtront ici"
+    },
     "impersonated": "Usurpé",
     "clickToHide": "Cliquez pour masquer les modifications",
     "clickToView": "Cliquez pour voir les modifications",
@@ -306,6 +355,17 @@
       "reason": "Motif",
       "reasonPlaceholder": "Sélectionner un motif...",
       "alreadyTakenPeriods": "Périodes déjà prises"
+    },
+    "occupancyTypes": {
+      "PERSONAL": "Personnel",
+      "FAMILY": "Famille",
+      "BUSINESS": "Professionnel"
+    },
+    "endReasons": {
+      "CONVERTING_TO_RENTAL": "Conversion en location",
+      "SELLING": "Vente",
+      "RENOVATION": "Rénovation",
+      "OTHER": "Autre"
     }
   },
   "map": {
@@ -352,46 +412,224 @@
     "valuationHistory": "Historique des évaluations",
     "payments": "Paiements",
     "bulkAdd": "Ajout en masse",
-    "sections": { "acquisition": "Acquisition", "valuations": "Évaluations", "financings": "Financements" },
-    "empty": {
-      "noAcquisition": "Aucune donnée d'acquisition enregistrée.",
-      "noValuation": "Aucune donnée d'évaluation enregistrée.",
-      "noFinancing": "Aucun instrument de financement enregistré.",
-      "noPayments": "Aucun paiement enregistré."
+    "sections": {
+      "acquisition": "Acquisition",
+      "valuations": "Évaluations",
+      "financings": "Financements",
+      "recurringCosts": "Coûts récurrents"
     },
-    "metrics": { "netWorth": "Valeur nette", "totalAnnualCosts": "Coûts annuels totaux", "totalFinancingBalance": "Solde total de financement", "latestValuation": "Dernière évaluation" },
+    "metrics": {
+      "netWorth": "Valeur nette",
+      "totalAnnualCosts": "Coûts annuels totaux",
+      "totalFinancingBalance": "Solde total de financement",
+      "latestValuation": "Dernière évaluation"
+    },
     "modals": {
-      "addTax": "Ajouter un impôt", "editTax": "Modifier l'impôt",
-      "addFee": "Ajouter des frais", "editFee": "Modifier les frais",
-      "addFinancing": "Ajouter un financement", "editFinancing": "Modifier le financement",
-      "addInsurance": "Ajouter une assurance", "editInsurance": "Modifier l'assurance",
-      "addValuation": "Ajouter une évaluation", "editValuation": "Modifier l'évaluation",
-      "addAcquisition": "Ajouter une acquisition", "editAcquisition": "Modifier l'acquisition",
-      "editPayment": "Modifier le paiement", "recordPayment": "Enregistrer un paiement",
+      "addTax": "Ajouter un impôt",
+      "editTax": "Modifier l'impôt",
+      "addFee": "Ajouter des frais",
+      "editFee": "Modifier les frais",
+      "addFinancing": "Ajouter un financement",
+      "editFinancing": "Modifier le financement",
+      "addInsurance": "Ajouter une assurance",
+      "editInsurance": "Modifier l'assurance",
+      "addValuation": "Ajouter une évaluation",
+      "editValuation": "Modifier l'évaluation",
+      "addAcquisition": "Ajouter une acquisition",
+      "editAcquisition": "Modifier l'acquisition",
+      "editPayment": "Modifier le paiement",
+      "recordPayment": "Enregistrer un paiement",
       "bulkAddPayments": "Ajout en masse de paiements"
     },
     "labels": {
-      "taxType": "Type d'impôt", "authority": "Autorité", "annualAmount": "Montant annuel",
-      "paymentFrequency": "Fréquence de paiement", "taxYear": "Année fiscale", "dueMonths": "Mois d'échéance",
-      "startDate": "Date de début", "endDate": "Date de fin", "status": "Statut", "notes": "Notes",
-      "feeType": "Type de frais", "name": "Nom", "financingType": "Type de financement",
-      "rateType": "Type de taux", "lenderName": "Nom du prêteur", "loanNumber": "Numéro de prêt",
-      "originalAmount": "Montant initial", "currentBalance": "Solde actuel", "interestRate": "Taux d'intérêt",
-      "monthlyPayment": "Paiement mensuel", "variablePayment": "Paiement variable", "termMonths": "Durée (mois)",
-      "insuranceType": "Type d'assurance", "provider": "Fournisseur", "policyNumber": "Numéro de police",
-      "coverageAmount": "Montant de couverture", "annualPremium": "Prime annuelle",
-      "valuationType": "Type d'évaluation", "valuationDate": "Date d'évaluation", "amount": "Montant",
-      "source": "Source", "acquisitionType": "Type d'acquisition", "acquisitionDate": "Date d'acquisition",
-      "purchasePrice": "Prix d'achat", "closingCosts": "Frais de notaire", "renovationCosts": "Coûts de rénovation",
-      "landValue": "Valeur du terrain", "depreciationMethod": "Méthode d'amortissement",
-      "depreciationYears": "Années d'amortissement", "paymentDate": "Date de paiement",
-      "totalAmount": "Montant total", "principal": "Capital", "interest": "Intérêts",
-      "escrow": "Séquestre", "extraPayment": "Paiement supplémentaire",
+      "taxType": "Type d'impôt",
+      "authority": "Autorité",
+      "annualAmount": "Montant annuel",
+      "paymentFrequency": "Fréquence de paiement",
+      "taxYear": "Année fiscale",
+      "dueMonths": "Mois d'échéance",
+      "startDate": "Date de début",
+      "endDate": "Date de fin",
+      "status": "Statut",
+      "notes": "Notes",
+      "feeType": "Type de frais",
+      "name": "Nom",
+      "financingType": "Type de financement",
+      "rateType": "Type de taux",
+      "lenderName": "Nom du prêteur",
+      "loanNumber": "Numéro de prêt",
+      "originalAmount": "Montant initial",
+      "currentBalance": "Solde actuel",
+      "interestRate": "Taux d'intérêt",
+      "monthlyPayment": "Paiement mensuel",
+      "variablePayment": "Paiement variable",
+      "termMonths": "Durée (mois)",
+      "insuranceType": "Type d'assurance",
+      "provider": "Fournisseur",
+      "policyNumber": "Numéro de police",
+      "coverageAmount": "Montant de couverture",
+      "annualPremium": "Prime annuelle",
+      "valuationType": "Type d'évaluation",
+      "valuationDate": "Date d'évaluation",
+      "amount": "Montant",
+      "source": "Source",
+      "acquisitionType": "Type d'acquisition",
+      "acquisitionDate": "Date d'acquisition",
+      "purchasePrice": "Prix d'achat",
+      "closingCosts": "Frais de notaire",
+      "renovationCosts": "Coûts de rénovation",
+      "landValue": "Valeur du terrain",
+      "depreciationMethod": "Méthode d'amortissement",
+      "depreciationYears": "Années d'amortissement",
+      "paymentDate": "Date de paiement",
+      "totalAmount": "Montant total",
+      "principal": "Capital",
+      "interest": "Intérêts",
+      "escrow": "Séquestre",
+      "extraPayment": "Paiement supplémentaire",
       "deductFromBalance": "Déduire le capital du solde de financement",
-      "documents": "Documents", "currency": "Devise", "type": "Type", "date": "Date"
+      "documents": "Documents",
+      "currency": "Devise",
+      "type": "Type",
+      "date": "Date"
     },
-    "placeholders": { "addNotes": "Ajouter des notes...", "source": "ex., Agent immobilier, Outil en ligne" },
-    "units": { "years": "ans", "months": "mois" }
+    "placeholders": {
+      "addNotes": "Ajouter des notes...",
+      "source": "ex., Agent immobilier, Outil en ligne"
+    },
+    "units": {
+      "years": "ans",
+      "months": "mois"
+    }
   },
-  "lifecycle": { "openContract": "Ouvrir le contrat", "clickToEdit": "Cliquez pour modifier" }
+  "lifecycle": {
+    "openContract": "Ouvrir le contrat",
+    "clickToEdit": "Cliquez pour modifier"
+  },
+  "enums": {
+    "categories": {
+      "RESIDENTIAL": "Résidentiel",
+      "COMMERCIAL": "Commercial",
+      "INDUSTRIAL": "Industriel",
+      "AGRICULTURAL": "Agricole",
+      "MIXED_USE": "Usage Mixte"
+    },
+    "types": {
+      "APARTMENT": "Appartement",
+      "HOUSE": "Maison",
+      "STUDIO": "Studio",
+      "ROOM": "Chambre",
+      "VILLA": "Villa",
+      "TOWNHOUSE": "Maison de ville",
+      "OTHER_RESIDENTIAL": "Autre",
+      "OFFICE": "Bureau",
+      "RETAIL": "Commerce",
+      "RESTAURANT": "Restaurant",
+      "HOTEL": "Hôtel",
+      "SHOWROOM": "Showroom",
+      "AUTO_DEALERSHIP": "Concession auto",
+      "SNACKBAR": "Snack-bar",
+      "CAFE": "Café",
+      "MOTEL": "Motel",
+      "BAR": "Bar",
+      "BED_AND_BREAKFAST": "Chambre d'hôtes",
+      "OTHER_COMMERCIAL": "Autre",
+      "WAREHOUSE": "Entrepôt",
+      "WORKSHOP": "Atelier",
+      "FACTORY": "Usine",
+      "DATA_CENTER": "Centre de données",
+      "COLD_STORAGE": "Chambre froide",
+      "GARAGE": "Garage",
+      "OTHER_INDUSTRIAL": "Autre",
+      "FARMLAND": "Terre agricole",
+      "RANCH": "Ferme",
+      "GREENHOUSE": "Serre",
+      "ORCHARD": "Verger",
+      "VINEYARD": "Vignoble",
+      "OTHER_AGRICULTURAL": "Autre",
+      "MIXED_USE": "Usage Mixte",
+      "COMMERCIAL": "Commercial"
+    },
+    "statuses": {
+      "VACANT": "Vacant",
+      "OCCUPIED": "Occupé",
+      "SELF_OCCUPIED": "Usage Personnel",
+      "MAINTENANCE": "Maintenance",
+      "UNAVAILABLE": "Indisponible",
+      "UNDER_RENOVATION": "En Rénovation",
+      "FALLOW": "En Jachère",
+      "LISTED": "En Annonce"
+    }
+  },
+  "dashboard": {
+    "failedToLoad": "Impossible de charger les données du tableau de bord.",
+    "retry": "Réessayer",
+    "exporting": "Exportation...",
+    "allTime": "Toute la période",
+    "custom": "Personnalisé",
+    "to": "au",
+    "resetZoom": "Réinitialiser le zoom",
+    "charts": {
+      "monthlyCashFlow": "Flux de trésorerie mensuel",
+      "occupancyIncomeTrend": "Tendance d'occupation et de revenus",
+      "expenseBreakdown": "Répartition des dépenses",
+      "sixMonthProjection": "Projection à 6 mois",
+      "equityOverview": "Aperçu des capitaux propres"
+    },
+    "summary": {
+      "totalRoi": "ROI total",
+      "annualizedRoi": "ROI annualisé",
+      "capRate": "Taux de capitalisation",
+      "cashOnCash": "Cash-on-Cash",
+      "monthlyCashFlow": "Flux de trésorerie mensuel",
+      "annualNoi": "NOI annuel",
+      "totalEquity": "Capitaux propres totaux",
+      "equityGrowth": "Croissance des capitaux propres",
+      "occupancy": "Occupation",
+      "grossRentMultiplier": "Multiplicateur de loyer brut"
+    },
+    "cashFlow": {
+      "income": "Revenus",
+      "expenses": "Dépenses",
+      "mortgage": "Hypothèque",
+      "net": "Net",
+      "noData": "Aucune donnée de transaction"
+    },
+    "occupancy": {
+      "label": "Occupation",
+      "contact": "Locataire",
+      "selfOccupied": "Usage personnel",
+      "vacant": "Vacant",
+      "contactOccupied": "Occupé par locataire",
+      "netIncomeTrend": "Tendance du revenu net",
+      "netIncome": "Revenu net",
+      "noData": "Aucune donnée de contrat"
+    },
+    "expense": {
+      "noData": "Aucune donnée de dépense"
+    },
+    "equity": {
+      "purchasePrice": "Prix d'achat",
+      "marketValue": "Valeur marchande",
+      "mortgage": "Hypothèque",
+      "equity": "Capitaux propres",
+      "noData": "Ajoutez le prix d'achat et la valeur marchande pour voir les capitaux propres"
+    },
+    "completeness": {
+      "title": "Complétude des données : {{percent}}%",
+      "purchasePrice": "Prix d'achat",
+      "marketValue": "Valeur marchande",
+      "mortgageInfo": "Informations hypothécaires",
+      "operatingCosts": "Charges d'exploitation",
+      "contracts": "Contrats",
+      "payments": "Paiements",
+      "expenses": "Dépenses"
+    },
+    "projection": {
+      "description": "Revenus et dépenses projetés basés sur les contrats actifs et les charges d'exploitation",
+      "expectedIncome": "Revenus attendus",
+      "expectedExpenses": "Dépenses attendues",
+      "expectedNet": "Net attendu"
+    }
+  }
 }

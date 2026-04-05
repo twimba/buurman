@@ -2,12 +2,8 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { getProperties } from '@/api/properties';
-import {
-  PropertyCategory,
-  PROPERTY_CATEGORY_LABELS,
-  PROPERTY_TYPE_LABELS,
-  PropertyResponse,
-} from '@/types/property';
+import { PropertyCategory, PropertyResponse } from '@/types/property';
+import { usePropertyLabels } from '@/hooks/usePropertyLabels';
 import { ChevronDown } from 'lucide-react';
 import {
   PROPERTY_CATEGORY_ICONS,
@@ -40,6 +36,7 @@ export const PropertySelector = ({
   placeholder,
 }: PropertySelectorProps) => {
   const { t } = useTranslation('common');
+  const { typeLabel, categoryLabel } = usePropertyLabels();
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -222,8 +219,7 @@ export const PropertySelector = ({
               #{property.identifier}
             </span>
             <span className="text-[10px] bg-surface-inset text-text-secondary px-1.5 py-0.5 rounded">
-              {PROPERTY_TYPE_LABELS[property.propertyType] ??
-                property.propertyType}
+              {typeLabel(property.propertyType)}
             </span>
           </div>
         </div>
@@ -309,9 +305,7 @@ export const PropertySelector = ({
                     className="px-3 py-2 text-xs font-semibold text-text-secondary uppercase tracking-wide bg-surface-page sticky top-0 border-b border-border-default flex items-center gap-1.5"
                   >
                     <CatIcon size={11} />
-                    {PROPERTY_CATEGORY_LABELS[
-                      group.category as PropertyCategory
-                    ] ?? group.category}
+                    {categoryLabel(group.category)}
                   </div>
                 ) : null;
 

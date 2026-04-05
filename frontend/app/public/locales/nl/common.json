@@ -429,7 +429,33 @@
       "passwordRequired": "Wachtwoord is verplicht",
       "passwordRequirements": "Wachtwoord voldoet niet aan alle vereisten",
       "passwordsMismatch": "Wachtwoorden komen niet overeen"
+    },
+    "copyright": "© 2026 Buurman. Alle rechten voorbehouden.",
+    "freeForSmallLandlords": "Gratis voor kleine verhuurders",
+    "welcomeBack": "Welkom terug",
+    "propertiesWaiting": "Je panden wachten op je",
+    "signIn": "Inloggen",
+    "or": "of",
+    "demo": {
+      "badge": "Demomodus",
+      "title": "Probeer Buurman",
+      "subtitle": "Verken met een demo-account — geen registratie nodig",
+      "credentials": "Demo-inloggegevens",
+      "email": "E-mail",
+      "password": "Wachtwoord",
+      "launch": "Demo starten",
+      "keycloakHint": "Je wordt automatisch ingelogd via Keycloak",
+      "orCreateAccount": "of maak je eigen account aan",
+      "getStartedFree": "Gratis aan de slag"
     }
+  },
+  "calendarFeed": {
+    "button": "Agendafeed",
+    "title": "Agenda Feed URL",
+    "copied": "Feed URL gekopieerd naar klembord",
+    "copyFailed": "Kopiëren van URL mislukt",
+    "instructions": "Voeg deze URL toe aan je agenda-app (Google Calendar, Apple Calendar, Outlook) om updates te ontvangen.",
+    "manageFeeds": "Agendafeeds beheren"
   },
   "metricHints": {
     "totalROI": "Rendement op investering — totale winst ten opzichte van totale kosten",

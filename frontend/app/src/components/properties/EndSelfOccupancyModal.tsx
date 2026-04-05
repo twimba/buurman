@@ -2,10 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, RichTextEditor } from '@buurman/ui';
 import { useEndOccupancyPeriod } from '@/hooks/useOccupancyPeriodHooks';
-import {
-  OccupancyEndReason,
-  OCCUPANCY_END_REASON_LABELS,
-} from '@/types/occupancyPeriod';
+import { OccupancyEndReason } from '@/types/occupancyPeriod';
 import { X } from 'lucide-react';
 
 interface EndSelfOccupancyModalProps {
@@ -87,7 +84,7 @@ export const EndSelfOccupancyModal = ({
               </option>
               {Object.values(OccupancyEndReason).map((r) => (
                 <option key={r} value={r}>
-                  {OCCUPANCY_END_REASON_LABELS[r]}
+                  {t(`selfOccupancy.endReasons.${r}`)}
                 </option>
               ))}
             </select>

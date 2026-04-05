@@ -1,11 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Button, RichTextDisplay } from '@buurman/ui';
-import {
-  OccupancyPeriodResponse,
-  OCCUPANCY_TYPE_LABELS,
-  OCCUPANCY_END_REASON_LABELS,
-  OccupancyEndReason,
-} from '@/types/occupancyPeriod';
+import { OccupancyPeriodResponse } from '@/types/occupancyPeriod';
 import {
   Home,
   Calendar,
@@ -91,7 +86,7 @@ export const SelfOccupancyCard = ({
               {t('selfOccupancy.type')}
             </div>
             <div className="text-sm text-text-primary">
-              {OCCUPANCY_TYPE_LABELS[period.type]}
+              {t(`selfOccupancy.occupancyTypes.${period.type}`)}
             </div>
           </div>
         </div>
@@ -135,11 +130,7 @@ export const SelfOccupancyCard = ({
                 {t('selfOccupancy.endReason')}
               </div>
               <div className="text-sm text-text-primary">
-                {
-                  OCCUPANCY_END_REASON_LABELS[
-                    period.endReason as OccupancyEndReason
-                  ]
-                }
+                {t(`selfOccupancy.endReasons.${period.endReason}`)}
               </div>
             </div>
           </div>

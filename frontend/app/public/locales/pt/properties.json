@@ -145,7 +145,263 @@
       "at": "às"
     },
     "yes": "Sim",
-    "no": "Não"
+    "no": "Não",
+    "deleteProperty": "Eliminar Imóvel",
+    "deletePropertyConfirm": "Tem a certeza de que pretende eliminar este imóvel?",
+    "cannotBeUndone": "Esta ação não pode ser revertida.",
+    "deleteWwsConfirm": "Eliminar cálculo WWS?",
+    "deleteWwsMessage": "Isto irá remover permanentemente o cálculo guardado deste imóvel.",
+    "deleteWwsHistoryMessage": "Isto irá remover permanentemente este cálculo histórico."
+  },
+  "enums": {
+    "categories": {
+      "RESIDENTIAL": "Residencial",
+      "COMMERCIAL": "Comercial",
+      "INDUSTRIAL": "Industrial",
+      "AGRICULTURAL": "Agrícola",
+      "MIXED_USE": "Uso Misto"
+    },
+    "types": {
+      "APARTMENT": "Apartamento",
+      "HOUSE": "Moradia",
+      "STUDIO": "Estúdio",
+      "ROOM": "Quarto",
+      "VILLA": "Vivenda",
+      "TOWNHOUSE": "Moradia Geminada",
+      "OTHER_RESIDENTIAL": "Outro",
+      "OFFICE": "Escritório",
+      "RETAIL": "Retalho",
+      "RESTAURANT": "Restaurante",
+      "HOTEL": "Hotel",
+      "SHOWROOM": "Showroom",
+      "AUTO_DEALERSHIP": "Concessionário",
+      "SNACKBAR": "Snack-bar",
+      "CAFE": "Café",
+      "MOTEL": "Motel",
+      "BAR": "Bar",
+      "BED_AND_BREAKFAST": "Alojamento Local",
+      "OTHER_COMMERCIAL": "Outro",
+      "WAREHOUSE": "Armazém",
+      "WORKSHOP": "Oficina",
+      "FACTORY": "Fábrica",
+      "DATA_CENTER": "Centro de Dados",
+      "COLD_STORAGE": "Câmara Frigorífica",
+      "GARAGE": "Garagem",
+      "OTHER_INDUSTRIAL": "Outro",
+      "FARMLAND": "Terreno Agrícola",
+      "RANCH": "Herdade",
+      "GREENHOUSE": "Estufa",
+      "ORCHARD": "Pomar",
+      "VINEYARD": "Vinha",
+      "OTHER_AGRICULTURAL": "Outro",
+      "MIXED_USE": "Uso Misto",
+      "COMMERCIAL": "Comercial"
+    },
+    "statuses": {
+      "VACANT": "Vago",
+      "OCCUPIED": "Ocupado",
+      "SELF_OCCUPIED": "Uso Próprio",
+      "MAINTENANCE": "Manutenção",
+      "UNAVAILABLE": "Indisponível",
+      "UNDER_RENOVATION": "Em Renovação",
+      "FALLOW": "Em Pousio",
+      "LISTED": "Listado"
+    }
+  },
+  "dashboard": {
+    "failedToLoad": "Falha ao carregar dados do painel.",
+    "retry": "Tentar novamente",
+    "exporting": "A exportar...",
+    "allTime": "Todo o Período",
+    "custom": "Personalizado",
+    "to": "até",
+    "resetZoom": "Repor zoom",
+    "charts": {
+      "monthlyCashFlow": "Fluxo de Caixa Mensal",
+      "occupancyIncomeTrend": "Tendência de Ocupação e Rendimento",
+      "expenseBreakdown": "Decomposição de Despesas",
+      "sixMonthProjection": "Projeção a 6 Meses",
+      "equityOverview": "Visão Geral do Capital"
+    },
+    "summary": {
+      "totalRoi": "ROI Total",
+      "annualizedRoi": "ROI Anualizado",
+      "capRate": "Taxa de Capitalização",
+      "cashOnCash": "Retorno sobre Capital",
+      "monthlyCashFlow": "Fluxo de Caixa Mensal",
+      "annualNoi": "NOI Anual",
+      "totalEquity": "Capital Total",
+      "equityGrowth": "Crescimento do Capital",
+      "occupancy": "Ocupação",
+      "grossRentMultiplier": "Multiplicador de Renda Bruta"
+    },
+    "cashFlow": {
+      "income": "Rendimento",
+      "expenses": "Despesas",
+      "mortgage": "Hipoteca",
+      "net": "Líquido",
+      "noData": "Sem dados de transações"
+    },
+    "occupancy": {
+      "label": "Ocupação",
+      "contact": "Inquilino",
+      "selfOccupied": "Uso próprio",
+      "vacant": "Vago",
+      "contactOccupied": "Ocupado por inquilino",
+      "netIncomeTrend": "Tendência de Rendimento Líquido",
+      "netIncome": "Rendimento Líquido",
+      "noData": "Sem dados de contratos"
+    },
+    "expense": {
+      "noData": "Sem dados de despesas"
+    },
+    "equity": {
+      "purchasePrice": "Preço de Compra",
+      "marketValue": "Valor de Mercado",
+      "mortgage": "Hipoteca",
+      "equity": "Capital Próprio",
+      "noData": "Adicione o preço de compra e o valor de mercado para ver o capital"
+    },
+    "completeness": {
+      "title": "Completude dos Dados: {{percent}}%",
+      "purchasePrice": "Preço de compra",
+      "marketValue": "Valor de mercado",
+      "mortgageInfo": "Informação de hipoteca",
+      "operatingCosts": "Custos operacionais",
+      "contracts": "Contratos",
+      "payments": "Pagamentos",
+      "expenses": "Despesas"
+    },
+    "projection": {
+      "description": "Rendimento e despesas projetados com base em contratos ativos e custos operacionais",
+      "expectedIncome": "Rendimento Esperado",
+      "expectedExpenses": "Despesas Esperadas",
+      "expectedNet": "Líquido Esperado"
+    }
+  },
+  "characteristics": {
+    "selectPlaceholder": "-- Selecionar --",
+    "residential": {
+      "title": "Detalhes Residenciais",
+      "bedrooms": "Quartos",
+      "bathrooms": "Casas de Banho",
+      "furnished": "Mobilado",
+      "petPolicy": "Política de Animais"
+    },
+    "commercial": {
+      "title": "Detalhes Comerciais",
+      "usableArea": "Área Útil",
+      "commonArea": "Área Comum",
+      "floorLevel": "Piso",
+      "ceilingHeight": "Altura do Teto",
+      "maxOccupancy": "Ocupação Máxima",
+      "restroomCount": "Número de WC",
+      "zoningClassification": "Classificação de Zonamento",
+      "zoningPlaceholder": "p. ex., C-2, Comercial Misto",
+      "hasStorefront": "Tem Montra",
+      "signageRights": "Direitos de Sinalização",
+      "kitchenFacility": "Instalação de Cozinha",
+      "accessibilityCompliant": "Conforme Acessibilidade"
+    },
+    "industrial": {
+      "title": "Detalhes Industriais",
+      "clearHeight": "Altura Livre",
+      "loadingDocks": "Cais de Carga",
+      "driveInDoors": "Portas de Acesso Direto",
+      "floorLoadCapacity": "Capacidade de Carga do Piso",
+      "powerCapacity": "Capacidade Elétrica",
+      "craneCapacity": "Capacidade do Guindaste",
+      "yardArea": "Área do Pátio",
+      "zoningClassification": "Classificação de Zonamento",
+      "zoningPlaceholder": "p. ex., I-1, Industrial Ligeiro",
+      "threePhasePower": "Corrente Trifásica",
+      "craneAvailable": "Guindaste Disponível",
+      "hazmatCertified": "Certificação Hazmat",
+      "ventilationSystem": "Sistema de Ventilação",
+      "climateControl": "Controlo Climático"
+    },
+    "agricultural": {
+      "title": "Detalhes Agrícolas",
+      "totalLandArea": "Área Total do Terreno",
+      "arableArea": "Área Arável",
+      "soilType": "Tipo de Solo",
+      "waterSource": "Fonte de Água",
+      "irrigationType": "Tipo de Irrigação",
+      "fencingType": "Tipo de Vedação",
+      "currentUse": "Uso Atual",
+      "currentUsePlaceholder": "p. ex., Agricultura, Pastoreio",
+      "zoningClassification": "Classificação de Zonamento",
+      "zoningPlaceholder": "p. ex., A-1, Agrícola",
+      "waterRights": "Direitos de Água",
+      "hasOutbuildings": "Tem Dependências",
+      "outbuildingDetails": "Detalhes das Dependências",
+      "outbuildingPlaceholder": "p. ex., Celeiro, Armazém, Garagem de equipamento"
+    },
+    "construction": {
+      "yearBuilt": "Ano de Construção",
+      "yearLastRenovated": "Última Renovação",
+      "constructionType": "Tipo de Construção",
+      "foundationType": "Tipo de Fundação",
+      "roofType": "Tipo de Telhado",
+      "wallConstruction": "Construção das Paredes",
+      "flooringType": "Tipo de Pavimento",
+      "windowType": "Tipo de Janelas",
+      "numberOfFloors": "Número de Pisos",
+      "structuralNotes": "Notas Estruturais",
+      "structuralNotesTooltip": "Detalhes estruturais, renovações ou problemas notáveis"
+    },
+    "energy": {
+      "energyEfficiencyRating": "Classificação Energética",
+      "energyRatingTooltip": "Etiqueta energética oficial (A++ a G)",
+      "certificateExpiry": "Validade do Certificado Energético",
+      "certificateExpiryTooltip": "Quando o certificado energético atual expira",
+      "heatingType": "Tipo de Aquecimento",
+      "coolingType": "Tipo de Arrefecimento",
+      "hotWaterSystem": "Sistema de Água Quente",
+      "insulationNotes": "Notas de Isolamento",
+      "insulationTooltip": "Detalhes de isolamento de paredes, telhado e piso"
+    },
+    "utilities": {
+      "electricityConnection": "Ligação Elétrica",
+      "electricityCapacity": "Capacidade Elétrica",
+      "electricityCapacityTooltip": "Capacidade do fusível principal",
+      "waterConnection": "Ligação de Água",
+      "hasGasConnection": "Tem Ligação de Gás",
+      "sewageType": "Tipo de Esgotos",
+      "internetConnection": "Ligação de Internet",
+      "internetMaxSpeed": "Velocidade Máxima de Internet",
+      "internetStatus": "Estado da Internet"
+    },
+    "parking": {
+      "parkingSpaces": "Lugares de Estacionamento",
+      "parkingType": "Tipo de Estacionamento"
+    },
+    "safety": {
+      "smokeDetectors": "Detetores de Fumo",
+      "coDetectors": "Detetores de CO",
+      "fireExtinguisher": "Extintor de Incêndio",
+      "sprinklerSystem": "Sistema de Sprinklers",
+      "alarmSystem": "Sistema de Alarme",
+      "securityCameras": "Câmaras de Segurança",
+      "secureEntry": "Entrada Segura",
+      "safetyNotes": "Notas de Segurança",
+      "safetyNotesTooltip": "Rotas de fuga, data da última inspeção, etc."
+    },
+    "accessibility": {
+      "wheelchairAccessible": "Acessível a Cadeira de Rodas",
+      "elevator": "Elevador",
+      "stepFreeEntrance": "Entrada Sem Degraus",
+      "adaptedBathroom": "Casa de Banho Adaptada",
+      "accessibilityNotes": "Notas de Acessibilidade",
+      "accessibilityNotesTooltip": "Largura de portas, disponibilidade de rampa, etc."
+    },
+    "outdoorAreas": {
+      "type": "Tipo",
+      "area": "Área",
+      "unit": "Unidade",
+      "add": "Adicionar",
+      "addOutdoorArea": "Adicionar área exterior"
+    }
   },
   "form": {
     "address": "Morada",
@@ -282,7 +538,12 @@
       "endOccupancy": "Terminar ocupação",
       "deleteTitle": "Eliminar Período de Uso Próprio",
       "deleteMessage": "Tem a certeza de que pretende eliminar este período de uso próprio?",
-      "deleteWarning": "Esta ação não pode ser revertida."
+      "deleteWarning": "Esta ação não pode ser revertida.",
+      "takenPeriods": {
+        "selfUse": "Uso próprio: {{period}}",
+        "contract": "Contrato {{identifier}}: {{period}}",
+        "ongoing": "Em curso"
+      }
     }
   },
   "expenses": {
@@ -350,6 +611,17 @@
       "reason": "Motivo",
       "reasonPlaceholder": "Selecione um motivo...",
       "alreadyTakenPeriods": "Períodos já ocupados"
+    },
+    "occupancyTypes": {
+      "PERSONAL": "Pessoal",
+      "FAMILY": "Família",
+      "BUSINESS": "Negócio"
+    },
+    "endReasons": {
+      "CONVERTING_TO_RENTAL": "Conversão para Arrendamento",
+      "SELLING": "Venda",
+      "RENOVATION": "Renovação",
+      "OTHER": "Outro"
     }
   },
   "map": {
@@ -399,13 +671,8 @@
     "sections": {
       "acquisition": "Aquisição",
       "valuations": "Avaliações",
-      "financings": "Financiamentos"
-    },
-    "empty": {
-      "noAcquisition": "Sem dados de aquisição registados.",
-      "noValuation": "Sem dados de avaliação registados.",
-      "noFinancing": "Sem instrumentos de financiamento registados.",
-      "noPayments": "Sem pagamentos registados ainda."
+      "financings": "Financiamentos",
+      "recurringCosts": "Custos Recorrentes"
     },
     "metrics": {
       "netWorth": "Valor Líquido",
@@ -488,11 +755,215 @@
     },
     "units": {
       "years": "anos",
-      "months": "meses"
+      "months": "meses",
+      "perYear": "/ano"
+    },
+    "recurringCosts": "Custos Recorrentes",
+    "insurances": "Seguros",
+    "taxes": "Impostos",
+    "fees": "Taxas",
+    "na": "N/D",
+    "all": "Todos",
+    "term": "Prazo",
+    "frequency": "Frequência",
+    "actions": "Ações",
+    "total": "Total",
+    "empty": {
+      "noAcquisition": "Sem dados de aquisição registados.",
+      "noValuation": "Sem dados de avaliação registados.",
+      "noFinancing": "Sem instrumentos de financiamento registados.",
+      "noPayments": "Sem pagamentos registados ainda.",
+      "noInsurances": "Sem seguros.",
+      "noTaxes": "Sem impostos.",
+      "noFees": "Sem taxas."
+    },
+    "delete": {
+      "title": "Eliminar {{label}}?",
+      "message": "Tem a certeza de que pretende eliminar este(a) {{label}}? Esta ação não pode ser revertida.",
+      "valuation": "avaliação {{type}}",
+      "payment": "pagamento ({{date}})",
+      "insurance": "seguro {{type}}",
+      "tax": "imposto {{type}}",
+      "fee": "taxa {{type}}"
+    },
+    "toast": {
+      "paymentDeleted": "Pagamento eliminado com sucesso",
+      "paymentDeleteFailed": "Falha ao eliminar pagamento",
+      "paymentsCreated_one": "{{count}} pagamento criado com sucesso",
+      "paymentsCreated_other": "{{count}} pagamentos criados com sucesso"
+    },
+    "months": {
+      "jan": "Jan",
+      "feb": "Fev",
+      "mar": "Mar",
+      "apr": "Abr",
+      "may": "Mai",
+      "jun": "Jun",
+      "jul": "Jul",
+      "aug": "Ago",
+      "sep": "Set",
+      "oct": "Out",
+      "nov": "Nov",
+      "dec": "Dez"
+    },
+    "acquisitionTypes": {
+      "PURCHASE": "Compra",
+      "INHERITANCE": "Herança",
+      "GIFT": "Doação",
+      "FORECLOSURE": "Execução Hipotecária",
+      "AUCTION": "Leilão",
+      "OTHER": "Outro"
+    },
+    "depreciationMethods": {
+      "STRAIGHT_LINE": "Linha Reta",
+      "DECLINING_BALANCE": "Saldo Decrescente",
+      "NONE": "Nenhum"
+    },
+    "valuationTypes": {
+      "MARKET": "Mercado",
+      "APPRAISAL": "Avaliação Pericial",
+      "TAX_ASSESSED": "Valor Patrimonial Tributário",
+      "PURCHASE": "Compra",
+      "INSURANCE": "Seguro",
+      "USER_ESTIMATE": "Estimativa do Utilizador"
+    },
+    "financingTypes": {
+      "MORTGAGE": "Hipoteca",
+      "LEASING": "Leasing",
+      "LOAN": "Empréstimo",
+      "LINE_OF_CREDIT": "Linha de Crédito",
+      "PRIVATE_FINANCING": "Financiamento Privado",
+      "OTHER": "Outro"
+    },
+    "rateTypes": {
+      "FIXED": "Fixa",
+      "VARIABLE": "Variável",
+      "INTEREST_ONLY": "Só Juros",
+      "HYBRID": "Híbrida"
+    },
+    "financingStatuses": {
+      "ACTIVE": "Ativo",
+      "PAID_OFF": "Liquidado",
+      "REFINANCED": "Refinanciado",
+      "DEFAULTED": "Em Incumprimento"
+    },
+    "paymentStatuses": {
+      "SCHEDULED": "Agendado",
+      "COMPLETED": "Concluído",
+      "MISSED": "Falhado",
+      "LATE": "Atrasado"
+    },
+    "insuranceTypes": {
+      "BUILDING": "Edifício",
+      "LIABILITY": "Responsabilidade Civil",
+      "CONTENTS": "Recheio",
+      "FLOOD": "Inundação",
+      "EARTHQUAKE": "Terramoto",
+      "UMBRELLA": "Guarda-chuva",
+      "RENT_GUARANTEE": "Garantia de Renda",
+      "OTHER": "Outro"
+    },
+    "insuranceStatuses": {
+      "ACTIVE": "Ativo",
+      "EXPIRED": "Expirado",
+      "CANCELLED": "Cancelado"
+    },
+    "taxTypes": {
+      "PROPERTY": "Propriedade",
+      "MUNICIPAL": "Municipal",
+      "STATE": "Estadual",
+      "LOCAL": "Local",
+      "LAND": "Terreno",
+      "SPECIAL_ASSESSMENT": "Avaliação Especial",
+      "OTHER": "Outro"
+    },
+    "taxStatuses": {
+      "ACTIVE": "Ativo",
+      "EXPIRED": "Expirado",
+      "EXEMPT": "Isento"
+    },
+    "feeTypes": {
+      "HOA": "Condomínio",
+      "MANAGEMENT": "Gestão",
+      "MAINTENANCE_RESERVE": "Fundo de Reserva",
+      "CLEANING": "Limpeza",
+      "GARDENING": "Jardinagem",
+      "SECURITY": "Segurança",
+      "WASTE_MANAGEMENT": "Gestão de Resíduos",
+      "WATER": "Água",
+      "UTILITIES": "Serviços Públicos",
+      "OTHER": "Outro"
+    },
+    "feeStatuses": {
+      "ACTIVE": "Ativo",
+      "EXPIRED": "Expirado",
+      "CANCELLED": "Cancelado"
+    },
+    "paymentFrequencies": {
+      "MONTHLY": "Mensal",
+      "QUARTERLY": "Trimestral",
+      "SEMI_ANNUALLY": "Semestral",
+      "ANNUALLY": "Anual",
+      "CUSTOM": "Personalizado"
     }
   },
   "lifecycle": {
     "openContract": "Abrir contrato",
     "clickToEdit": "Clique para editar"
+  },
+  "enums": {
+    "categories": {
+      "RESIDENTIAL": "Residencial",
+      "COMMERCIAL": "Comercial",
+      "INDUSTRIAL": "Industrial",
+      "AGRICULTURAL": "Agrícola",
+      "MIXED_USE": "Uso Misto"
+    },
+    "types": {
+      "APARTMENT": "Apartamento",
+      "HOUSE": "Moradia",
+      "STUDIO": "Estúdio",
+      "ROOM": "Quarto",
+      "VILLA": "Vivenda",
+      "TOWNHOUSE": "Moradia em Banda",
+      "OTHER_RESIDENTIAL": "Outro",
+      "OFFICE": "Escritório",
+      "RETAIL": "Comércio",
+      "RESTAURANT": "Restaurante",
+      "HOTEL": "Hotel",
+      "SHOWROOM": "Showroom",
+      "AUTO_DEALERSHIP": "Concessionário",
+      "SNACKBAR": "Snack-bar",
+      "CAFE": "Café",
+      "MOTEL": "Motel",
+      "BAR": "Bar",
+      "BED_AND_BREAKFAST": "Alojamento Local",
+      "OTHER_COMMERCIAL": "Outro",
+      "WAREHOUSE": "Armazém",
+      "WORKSHOP": "Oficina",
+      "FACTORY": "Fábrica",
+      "DATA_CENTER": "Centro de Dados",
+      "COLD_STORAGE": "Câmara Frigorífica",
+      "GARAGE": "Garagem",
+      "OTHER_INDUSTRIAL": "Outro",
+      "FARMLAND": "Terreno Agrícola",
+      "RANCH": "Quinta",
+      "GREENHOUSE": "Estufa",
+      "ORCHARD": "Pomar",
+      "VINEYARD": "Vinha",
+      "OTHER_AGRICULTURAL": "Outro",
+      "MIXED_USE": "Uso Misto",
+      "COMMERCIAL": "Comercial"
+    },
+    "statuses": {
+      "VACANT": "Vago",
+      "OCCUPIED": "Ocupado",
+      "SELF_OCCUPIED": "Uso Próprio",
+      "MAINTENANCE": "Manutenção",
+      "UNAVAILABLE": "Indisponível",
+      "UNDER_RENOVATION": "Em Renovação",
+      "FALLOW": "Em Pousio",
+      "LISTED": "Anunciado"
+    }
   }
 }

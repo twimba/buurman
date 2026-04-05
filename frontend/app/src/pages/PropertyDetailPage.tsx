@@ -23,13 +23,7 @@ import { CalendarFeedResponseFeedType as CalendarFeedType } from '@/generated/mo
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
 import { WwsCalculatorModal } from '@/components/wws/WwsCalculatorModal';
 import { InteractiveMap } from '@/components/common/InteractiveMap';
-import {
-  PropertyStatus,
-  PropertyCategory,
-  PROPERTY_TYPE_LABELS,
-  PROPERTY_CATEGORY_LABELS,
-  PROPERTY_STATUS_LABELS,
-} from '@/types/property';
+import { usePropertyLabels } from '@/hooks/usePropertyLabels';
 import { PropertyDashboardTab } from '@/components/properties/dashboard/PropertyDashboardTab';
 import { PropertyFinancialsTab } from '@/components/properties/financials/PropertyFinancialsTab';
 import { PropertyContractsTab } from '@/components/properties/PropertyContractsTab';
@@ -91,8 +85,9 @@ const formatEnumValue = (value: string | null): string => {
 };
 
 export const PropertyDetailPage = () => {
-  const { t } = useTranslation('properties');
+  const { t } = useTranslation(['properties', 'common']);
   const { id = '' } = useParams<{ id: string }>();
+  const { statusLabel, typeLabel, categoryLabel } = usePropertyLabels();
   const navigate = useNavigate();
   const { canEditData, canManageMembers } = useTeam();
   const { formatDate } = useFormatDate();
@@ -254,8 +249,7 @@ export const PropertyDetailPage = () => {
             <span
               className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[property.status] ?? 'bg-gray-100 text-gray-800'}`}
             >
-              {PROPERTY_STATUS_LABELS[property.status as PropertyStatus] ??
-                property.status}
+              {statusLabel(property.status)}
             </span>
           }
           actions={
@@ -279,7 +273,7 @@ export const PropertyDetailPage = () => {
                 onClick={() => navigate(`/properties/${id}/edit`)}
                 disabled={!canEditData}
               >
-                Edit
+                {t('common:buttons.edit')}
               </Button>
               <Button
                 variant="danger"
@@ -287,7 +281,7 @@ export const PropertyDetailPage = () => {
                 onClick={() => setShowDeleteModal(true)}
                 disabled={!canEditData}
               >
-                Delete
+                {t('common:buttons.delete')}
               </Button>
             </>
           }
@@ -465,9 +459,7 @@ export const PropertyDetailPage = () => {
                     }`}
                   />
                   <span className="font-semibold text-text-primary">
-                    {PROPERTY_STATUS_LABELS[
-                      property.status as PropertyStatus
-                    ] ?? property.status}
+                    {statusLabel(property.status)}
                   </span>
                 </div>
                 <span className="text-text-disabled">{'\u00b7'}</span>
@@ -476,15 +468,12 @@ export const PropertyDetailPage = () => {
                     category={property.propertyCategory}
                     size={13}
                   />
-                  {PROPERTY_CATEGORY_LABELS[
-                    property.propertyCategory as PropertyCategory
-                  ] ?? property.propertyCategory}
+                  {categoryLabel(property.propertyCategory)}
                 </span>
                 <span className="text-text-disabled">{'\u00b7'}</span>
                 <span className="inline-flex items-center gap-1 text-text-secondary">
                   <PropertyTypeIcon type={property.propertyType} size={13} />
-                  {PROPERTY_TYPE_LABELS[property.propertyType] ??
-                    property.propertyType}
+                  {typeLabel(property.propertyType)}
                 </span>
               </div>
 
@@ -541,8 +530,7 @@ export const PropertyDetailPage = () => {
                     </span>
                   </div>
                   <p className="text-lg font-semibold text-text-primary">
-                    {PROPERTY_TYPE_LABELS[property.propertyType] ??
-                      property.propertyType}
+                    {typeLabel(property.propertyType)}
                   </p>
                 </div>
 

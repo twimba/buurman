@@ -53,7 +53,11 @@
     "cancelExtension": "Cancel Extension",
     "cancelConfirmMessage": "Are you sure you want to cancel this extension? This action cannot be undone.",
     "deleteGeneratedDocuments": "Delete generated documents",
-    "keepExtension": "Keep Extension"
+    "keepExtension": "Keep Extension",
+    "contractTypes": {
+      "FIXED_TERM": "Fixed Term",
+      "INDEFINITE": "Indefinite"
+    }
   },
   "overview": {
     "contractParties": "Contract Parties",
@@ -91,6 +95,47 @@
     "noParties": "No parties assigned to this contract.",
     "paymentInstruction": "Payment Instruction",
     "noPaymentInstruction": "No payment instruction configured.",
+    "paymentInstructions": {
+      "title": "Payment Instructions",
+      "loading": "Loading payment instructions...",
+      "template": "Template",
+      "custom": "Custom",
+      "iban": "IBAN",
+      "account": "Account",
+      "routing": "Routing",
+      "holder": "Holder",
+      "ref": "Ref",
+      "effectiveFrom": "Effective from {{date}}",
+      "hideHistory": "Hide",
+      "viewHistory": "View",
+      "historyCount": "History ({{count}} entries)",
+      "historyTitle": "Payment Instruction History",
+      "current": "Current",
+      "present": "Present",
+      "changeTitle": "Change Payment Instructions",
+      "setTitle": "Set Payment Instructions",
+      "useTemplate": "Use Template",
+      "customOption": "Custom",
+      "selectTemplate": "Select Template *",
+      "choosePlaceholder": "Choose a payment method...",
+      "default": "Default",
+      "name": "Name *",
+      "method": "Method *",
+      "description": "Description",
+      "bankName": "Bank Name",
+      "accountHolder": "Account Holder",
+      "ibanField": "IBAN",
+      "bicSwift": "BIC / SWIFT",
+      "accountNumber": "Account Number",
+      "routingNumber": "Routing Number",
+      "paymentReference": "Payment Reference",
+      "effectiveFromField": "Effective From *",
+      "notesField": "Notes (reason for change)",
+      "notesPlaceholder": "Optional reason...",
+      "saving": "Saving...",
+      "changeInstructions": "Change Instructions",
+      "setInstructions": "Set Instructions"
+    },
     "notes": "Notes",
     "renewalConfig": {
       "title": "Renewal Configuration",
@@ -362,5 +407,24 @@
   "generateRentChange": {
     "title": "Generate Rent Change",
     "description": "Generate a rent change notification."
+  },
+  "enums": {
+    "partyRoles": {
+      "PRIMARY_TENANT": "Primary Contact",
+      "GUARANTOR": "Guarantor",
+      "COSIGNER": "Co-signer",
+      "EXTRA_TENANT": "Additional Contact"
+    },
+    "rentComponents": {
+      "BASE_RENT": "Base Rent",
+      "UTILITIES_ADVANCE": "Utilities Advance",
+      "SERVICE_COSTS": "Service Costs",
+      "HOA_FEES": "HOA / Condo Fees",
+      "FURNITURE_RENTAL": "Furniture Rental",
+      "PARKING": "Parking",
+      "STORAGE": "Storage",
+      "GARBAGE_COLLECTION": "Garbage Collection",
+      "OTHER": "Other"
+    }
   }
 }

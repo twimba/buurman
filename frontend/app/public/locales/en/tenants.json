@@ -431,5 +431,39 @@
       "FAILED": "Failed",
       "REVERTED": "Reverted"
     }
+  },
+  "enums": {
+    "contactTypes": {
+      "INDIVIDUAL": "Individual",
+      "COMPANY": "Company",
+      "SERVICE_PROVIDER": "Service Provider"
+    },
+    "interactionTypes": {
+      "PHONE_CALL": "Phone Call",
+      "MEETING": "Meeting",
+      "VIEWING": "Viewing",
+      "KEY_HANDOVER": "Key Handover",
+      "INSPECTION": "Inspection",
+      "NOTE": "Note",
+      "OTHER": "Other"
+    },
+    "relationshipTypes": {
+      "GUARANTOR_FOR": "Guarantor for",
+      "FAMILY_OF": "Family of",
+      "PARTNER_OF": "Partner of",
+      "WORKS_FOR": "Works for",
+      "CONTACT_PERSON_FOR": "Contact person for",
+      "OTHER": "Other"
+    },
+    "contactTags": {
+      "VIP": "VIP",
+      "PROSPECT": "Prospect",
+      "LATE_PAYER": "Late Payer",
+      "LONG_TERM": "Long Term",
+      "KEY_HOLDER": "Key Holder",
+      "DO_NOT_CONTACT": "Do Not Contact",
+      "FORMER_TENANT": "Former Tenant",
+      "REFERRED": "Referred"
+    }
   }
 }

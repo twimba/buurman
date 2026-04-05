@@ -431,5 +431,39 @@
       "FAILED": "Fehlgeschlagen",
       "REVERTED": "Rückgängig gemacht"
     }
+  },
+  "enums": {
+    "contactTypes": {
+      "INDIVIDUAL": "Privatperson",
+      "COMPANY": "Unternehmen",
+      "SERVICE_PROVIDER": "Dienstleister"
+    },
+    "interactionTypes": {
+      "PHONE_CALL": "Telefonat",
+      "MEETING": "Besprechung",
+      "VIEWING": "Besichtigung",
+      "KEY_HANDOVER": "Schlüsselübergabe",
+      "INSPECTION": "Inspektion",
+      "NOTE": "Notiz",
+      "OTHER": "Sonstige"
+    },
+    "relationshipTypes": {
+      "GUARANTOR_FOR": "Bürge für",
+      "FAMILY_OF": "Familie von",
+      "PARTNER_OF": "Partner von",
+      "WORKS_FOR": "Arbeitet für",
+      "CONTACT_PERSON_FOR": "Ansprechpartner für",
+      "OTHER": "Sonstige"
+    },
+    "contactTags": {
+      "VIP": "VIP",
+      "PROSPECT": "Interessent",
+      "LATE_PAYER": "Spätzahler",
+      "LONG_TERM": "Langzeitmieter",
+      "KEY_HOLDER": "Schlüsselinhaber",
+      "DO_NOT_CONTACT": "Nicht Kontaktieren",
+      "FORMER_TENANT": "Ehemaliger Mieter",
+      "REFERRED": "Empfohlen"
+    }
   }
 }

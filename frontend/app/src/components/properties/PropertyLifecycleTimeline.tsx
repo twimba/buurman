@@ -5,8 +5,6 @@ import { Home } from 'lucide-react';
 import { usePropertyTimeline } from '@/hooks/useOccupancyPeriodHooks';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import {
-  OccupancyType,
-  OCCUPANCY_TYPE_LABELS,
   type TimelineEntry,
   type FinancingTimelineEntry,
 } from '@/types/occupancyPeriod';
@@ -247,8 +245,7 @@ const BarTooltip = ({
   // For SELF_OCCUPANCY: description = type name, metadata = occupant name
   // For CONTRACT: description = status, metadata = contract type
   const typeLabel = isSelfOccupancy
-    ? (OCCUPANCY_TYPE_LABELS[entry.description as OccupancyType] ??
-      entry.description)
+    ? (t(`selfOccupancy.occupancyTypes.${entry.description}`, { defaultValue: entry.description }))
     : null;
 
   const occupantName = isSelfOccupancy ? entry.metadata : null;

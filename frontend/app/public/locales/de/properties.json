@@ -282,7 +282,12 @@
       "endOccupancy": "Nutzung beenden",
       "deleteTitle": "Eigennutzungsperiode löschen",
       "deleteMessage": "Sind Sie sicher, dass Sie diese Eigennutzungsperiode löschen möchten?",
-      "deleteWarning": "Diese Aktion kann nicht rückgängig gemacht werden."
+      "deleteWarning": "Diese Aktion kann nicht rückgängig gemacht werden.",
+      "takenPeriods": {
+        "selfUse": "Eigennutzung: {{period}}",
+        "contract": "Vertrag {{identifier}}: {{period}}",
+        "ongoing": "Laufend"
+      }
     }
   },
   "expenses": {
@@ -350,6 +355,17 @@
       "reason": "Grund",
       "reasonPlaceholder": "Grund auswählen...",
       "alreadyTakenPeriods": "Bereits belegte Zeiträume"
+    },
+    "occupancyTypes": {
+      "PERSONAL": "Persönlich",
+      "FAMILY": "Familie",
+      "BUSINESS": "Geschäftlich"
+    },
+    "endReasons": {
+      "CONVERTING_TO_RENTAL": "Umwandlung in Vermietung",
+      "SELLING": "Verkauf",
+      "RENOVATION": "Renovierung",
+      "OTHER": "Sonstiges"
     }
   },
   "map": {
@@ -399,13 +415,8 @@
     "sections": {
       "acquisition": "Erwerb",
       "valuations": "Bewertungen",
-      "financings": "Finanzierungen"
-    },
-    "empty": {
-      "noAcquisition": "Keine Erwerbsdaten erfasst.",
-      "noValuation": "Keine Bewertungsdaten erfasst.",
-      "noFinancing": "Keine Finanzierungsinstrumente erfasst.",
-      "noPayments": "Noch keine Zahlungen erfasst."
+      "financings": "Finanzierungen",
+      "recurringCosts": "Wiederkehrende Kosten"
     },
     "metrics": {
       "netWorth": "Nettovermögen",
@@ -488,11 +499,286 @@
     },
     "units": {
       "years": "Jahre",
-      "months": "Monate"
+      "months": "Monate",
+      "perYear": "/Jahr"
+    },
+    "recurringCosts": "Wiederkehrende Kosten",
+    "insurances": "Versicherungen",
+    "taxes": "Steuern",
+    "fees": "Gebühren",
+    "na": "K.A.",
+    "all": "Alle",
+    "term": "Laufzeit",
+    "frequency": "Häufigkeit",
+    "actions": "Aktionen",
+    "total": "Gesamt",
+    "empty": {
+      "noAcquisition": "Keine Erwerbsdaten erfasst.",
+      "noValuation": "Keine Bewertungsdaten erfasst.",
+      "noFinancing": "Keine Finanzierungsinstrumente erfasst.",
+      "noPayments": "Noch keine Zahlungen erfasst.",
+      "noInsurances": "Keine Versicherungen.",
+      "noTaxes": "Keine Steuern.",
+      "noFees": "Keine Gebühren."
+    },
+    "delete": {
+      "title": "{{label}} löschen?",
+      "message": "Sind Sie sicher, dass Sie diese(n) {{label}} löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "valuation": "{{type}}-Bewertung",
+      "payment": "Zahlung ({{date}})",
+      "insurance": "{{type}}-Versicherung",
+      "tax": "{{type}}-Steuer",
+      "fee": "{{type}}-Gebühr"
+    },
+    "toast": {
+      "paymentDeleted": "Zahlung erfolgreich gelöscht",
+      "paymentDeleteFailed": "Zahlung konnte nicht gelöscht werden",
+      "paymentsCreated_one": "{{count}} Zahlung erfolgreich erstellt",
+      "paymentsCreated_other": "{{count}} Zahlungen erfolgreich erstellt"
+    },
+    "months": {
+      "jan": "Jan",
+      "feb": "Feb",
+      "mar": "Mär",
+      "apr": "Apr",
+      "may": "Mai",
+      "jun": "Jun",
+      "jul": "Jul",
+      "aug": "Aug",
+      "sep": "Sep",
+      "oct": "Okt",
+      "nov": "Nov",
+      "dec": "Dez"
+    },
+    "acquisitionTypes": {
+      "PURCHASE": "Kauf",
+      "INHERITANCE": "Erbschaft",
+      "GIFT": "Schenkung",
+      "FORECLOSURE": "Zwangsversteigerung",
+      "AUCTION": "Auktion",
+      "OTHER": "Sonstiges"
+    },
+    "depreciationMethods": {
+      "STRAIGHT_LINE": "Linear",
+      "DECLINING_BALANCE": "Degressiv",
+      "NONE": "Keine"
+    },
+    "valuationTypes": {
+      "MARKET": "Marktwert",
+      "APPRAISAL": "Gutachten",
+      "TAX_ASSESSED": "Steuerlich bewertet",
+      "PURCHASE": "Kaufpreis",
+      "INSURANCE": "Versicherung",
+      "USER_ESTIMATE": "Eigene Schätzung"
+    },
+    "financingTypes": {
+      "MORTGAGE": "Hypothek",
+      "LEASING": "Leasing",
+      "LOAN": "Darlehen",
+      "LINE_OF_CREDIT": "Kreditlinie",
+      "PRIVATE_FINANCING": "Privatfinanzierung",
+      "OTHER": "Sonstiges"
+    },
+    "rateTypes": {
+      "FIXED": "Fest",
+      "VARIABLE": "Variabel",
+      "INTEREST_ONLY": "Nur Zinsen",
+      "HYBRID": "Hybrid"
+    },
+    "financingStatuses": {
+      "ACTIVE": "Aktiv",
+      "PAID_OFF": "Abbezahlt",
+      "REFINANCED": "Umfinanziert",
+      "DEFAULTED": "Ausgefallen"
+    },
+    "paymentStatuses": {
+      "SCHEDULED": "Geplant",
+      "COMPLETED": "Abgeschlossen",
+      "MISSED": "Verpasst",
+      "LATE": "Verspätet"
+    },
+    "insuranceTypes": {
+      "BUILDING": "Gebäude",
+      "LIABILITY": "Haftpflicht",
+      "CONTENTS": "Hausrat",
+      "FLOOD": "Hochwasser",
+      "EARTHQUAKE": "Erdbeben",
+      "UMBRELLA": "Dachversicherung",
+      "RENT_GUARANTEE": "Mietgarantie",
+      "OTHER": "Sonstiges"
+    },
+    "insuranceStatuses": {
+      "ACTIVE": "Aktiv",
+      "EXPIRED": "Abgelaufen",
+      "CANCELLED": "Storniert"
+    },
+    "taxTypes": {
+      "PROPERTY": "Grundsteuer",
+      "MUNICIPAL": "Kommunal",
+      "STATE": "Landessteuer",
+      "LOCAL": "Lokal",
+      "LAND": "Grundstück",
+      "SPECIAL_ASSESSMENT": "Sonderbewertung",
+      "OTHER": "Sonstiges"
+    },
+    "taxStatuses": {
+      "ACTIVE": "Aktiv",
+      "EXPIRED": "Abgelaufen",
+      "EXEMPT": "Befreit"
+    },
+    "feeTypes": {
+      "HOA": "Hausgeld",
+      "MANAGEMENT": "Verwaltung",
+      "MAINTENANCE_RESERVE": "Instandhaltungsrücklage",
+      "CLEANING": "Reinigung",
+      "GARDENING": "Gartenpflege",
+      "SECURITY": "Sicherheit",
+      "WASTE_MANAGEMENT": "Abfallentsorgung",
+      "WATER": "Wasser",
+      "UTILITIES": "Nebenkosten",
+      "OTHER": "Sonstiges"
+    },
+    "feeStatuses": {
+      "ACTIVE": "Aktiv",
+      "EXPIRED": "Abgelaufen",
+      "CANCELLED": "Storniert"
+    },
+    "paymentFrequencies": {
+      "MONTHLY": "Monatlich",
+      "QUARTERLY": "Vierteljährlich",
+      "SEMI_ANNUALLY": "Halbjährlich",
+      "ANNUALLY": "Jährlich",
+      "CUSTOM": "Benutzerdefiniert"
     }
   },
   "lifecycle": {
     "openContract": "Vertrag öffnen",
     "clickToEdit": "Klicken zum Bearbeiten"
+  },
+  "enums": {
+    "categories": {
+      "RESIDENTIAL": "Wohnimmobilie",
+      "COMMERCIAL": "Gewerbe",
+      "INDUSTRIAL": "Industrie",
+      "AGRICULTURAL": "Landwirtschaft",
+      "MIXED_USE": "Mischnutzung"
+    },
+    "types": {
+      "APARTMENT": "Wohnung",
+      "HOUSE": "Haus",
+      "STUDIO": "Studio",
+      "ROOM": "Zimmer",
+      "VILLA": "Villa",
+      "TOWNHOUSE": "Reihenhaus",
+      "OTHER_RESIDENTIAL": "Sonstige",
+      "OFFICE": "Büro",
+      "RETAIL": "Einzelhandel",
+      "RESTAURANT": "Restaurant",
+      "HOTEL": "Hotel",
+      "SHOWROOM": "Showroom",
+      "AUTO_DEALERSHIP": "Autohaus",
+      "SNACKBAR": "Imbiss",
+      "CAFE": "Café",
+      "MOTEL": "Motel",
+      "BAR": "Bar",
+      "BED_AND_BREAKFAST": "Pension",
+      "OTHER_COMMERCIAL": "Sonstige",
+      "WAREHOUSE": "Lager",
+      "WORKSHOP": "Werkstatt",
+      "FACTORY": "Fabrik",
+      "DATA_CENTER": "Rechenzentrum",
+      "COLD_STORAGE": "Kühllager",
+      "GARAGE": "Garage",
+      "OTHER_INDUSTRIAL": "Sonstige",
+      "FARMLAND": "Ackerland",
+      "RANCH": "Bauernhof",
+      "GREENHOUSE": "Gewächshaus",
+      "ORCHARD": "Obstgarten",
+      "VINEYARD": "Weinberg",
+      "OTHER_AGRICULTURAL": "Sonstige",
+      "MIXED_USE": "Mischnutzung",
+      "COMMERCIAL": "Gewerbe"
+    },
+    "statuses": {
+      "VACANT": "Leer",
+      "OCCUPIED": "Vermietet",
+      "SELF_OCCUPIED": "Eigennutzung",
+      "MAINTENANCE": "Wartung",
+      "UNAVAILABLE": "Nicht Verfügbar",
+      "UNDER_RENOVATION": "In Renovierung",
+      "FALLOW": "Brach",
+      "LISTED": "Inseriert"
+    }
+  },
+  "dashboard": {
+    "failedToLoad": "Dashboard-Daten konnten nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "exporting": "Wird exportiert...",
+    "allTime": "Gesamter Zeitraum",
+    "custom": "Benutzerdefiniert",
+    "to": "bis",
+    "resetZoom": "Zoom zurücksetzen",
+    "charts": {
+      "monthlyCashFlow": "Monatlicher Cashflow",
+      "occupancyIncomeTrend": "Belegungs- & Einkommenstrend",
+      "expenseBreakdown": "Kostenaufschlüsselung",
+      "sixMonthProjection": "6-Monats-Prognose",
+      "equityOverview": "Eigenkapitalübersicht"
+    },
+    "summary": {
+      "totalRoi": "Gesamt-ROI",
+      "annualizedRoi": "Annualisierter ROI",
+      "capRate": "Kapitalisierungsrate",
+      "cashOnCash": "Cash-on-Cash",
+      "monthlyCashFlow": "Monatlicher Cashflow",
+      "annualNoi": "Jährlicher NOI",
+      "totalEquity": "Gesamteigenkapital",
+      "equityGrowth": "Eigenkapitalwachstum",
+      "occupancy": "Belegung",
+      "grossRentMultiplier": "Bruttomietmultiplikator"
+    },
+    "cashFlow": {
+      "income": "Einnahmen",
+      "expenses": "Ausgaben",
+      "mortgage": "Hypothek",
+      "net": "Netto",
+      "noData": "Keine Transaktionsdaten"
+    },
+    "occupancy": {
+      "label": "Belegung",
+      "contact": "Mieter",
+      "selfOccupied": "Eigennutzung",
+      "vacant": "Leerstand",
+      "contactOccupied": "Vermietet",
+      "netIncomeTrend": "Nettoeinkommenstrend",
+      "netIncome": "Nettoeinkommen",
+      "noData": "Keine Vertragsdaten"
+    },
+    "expense": {
+      "noData": "Keine Kostendaten"
+    },
+    "equity": {
+      "purchasePrice": "Kaufpreis",
+      "marketValue": "Marktwert",
+      "mortgage": "Hypothek",
+      "equity": "Eigenkapital",
+      "noData": "Kaufpreis und Marktwert eingeben, um das Eigenkapital zu sehen"
+    },
+    "completeness": {
+      "title": "Datenvollständigkeit: {{percent}}%",
+      "purchasePrice": "Kaufpreis",
+      "marketValue": "Marktwert",
+      "mortgageInfo": "Hypothekeninformationen",
+      "operatingCosts": "Betriebskosten",
+      "contracts": "Verträge",
+      "payments": "Zahlungen",
+      "expenses": "Ausgaben"
+    },
+    "projection": {
+      "description": "Prognostizierte Einnahmen & Ausgaben basierend auf aktiven Verträgen und Betriebskosten",
+      "expectedIncome": "Erwartete Einnahmen",
+      "expectedExpenses": "Erwartete Ausgaben",
+      "expectedNet": "Erwartetes Netto"
+    }
   }
 }

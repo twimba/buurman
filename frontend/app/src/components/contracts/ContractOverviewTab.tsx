@@ -115,7 +115,7 @@ export const ContractOverviewTab = ({
       <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-text-primary">
-            Contract Parties
+            {t('overview.contractParties')}
           </h2>
           {canEditData && (
             <button
@@ -123,7 +123,7 @@ export const ContractOverviewTab = ({
               className="flex items-center gap-1 text-sm text-primary-500 hover:text-primary-600 transition-colors"
             >
               <Plus className="h-4 w-4" />
-              Add Party
+              {t('overview.addParty')}
             </button>
           )}
         </div>
@@ -188,7 +188,7 @@ export const ContractOverviewTab = ({
             <div className="border border-border-strong rounded-lg p-4 space-y-3 bg-surface-page">
               <div>
                 <label className="block text-xs font-medium text-text-secondary mb-1">
-                  Role
+                  {t('overview.addPartyForm.role')}
                 </label>
                 <select
                   value={addPartyRole}
@@ -215,7 +215,7 @@ export const ContractOverviewTab = ({
                       : 'bg-surface-inset text-text-secondary hover:bg-surface-card'
                   }`}
                 >
-                  Select existing
+                  {t('overview.addPartyForm.selectExisting')}
                 </button>
                 <button
                   type="button"
@@ -226,14 +226,14 @@ export const ContractOverviewTab = ({
                       : 'bg-surface-inset text-text-secondary hover:bg-surface-card'
                   }`}
                 >
-                  Create new
+                  {t('overview.addPartyForm.createNew')}
                 </button>
               </div>
 
               {addPartyMode === 'select' ? (
                 <div>
                   <label className="block text-xs font-medium text-text-secondary mb-1">
-                    Contact
+                    {t('overview.addPartyForm.contact')}
                   </label>
                   <ContactSelector
                     value={selectedContactId}
@@ -262,7 +262,7 @@ export const ContractOverviewTab = ({
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-text-secondary mb-1">
-                      Last Name
+                      {t('overview.addPartyForm.lastName')}
                     </label>
                     <input
                       type="text"
@@ -279,7 +279,7 @@ export const ContractOverviewTab = ({
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-text-secondary mb-1">
-                      Email
+                      {t('overview.addPartyForm.email')}
                     </label>
                     <input
                       type="email"
@@ -296,7 +296,7 @@ export const ContractOverviewTab = ({
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-text-secondary mb-1">
-                      Phone
+                      {t('overview.addPartyForm.phone')}
                     </label>
                     <PhoneInput
                       value={newContactData.phone ?? null}
@@ -317,7 +317,7 @@ export const ContractOverviewTab = ({
                   onClick={() => setShowAddParty(false)}
                   className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary transition-colors"
                 >
-                  Cancel
+                  {t('common:buttons.cancel')}
                 </button>
                 <button
                   type="button"
@@ -360,7 +360,7 @@ export const ContractOverviewTab = ({
       <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-text-primary">
-            Important Dates
+            {t('overview.importantDates')}
           </h2>
           {contract && (
             <CalendarFeedButton
@@ -415,7 +415,7 @@ export const ContractOverviewTab = ({
               <div className="flex items-center gap-2 mb-3">
                 <Calendar className="h-5 w-5 text-text-muted" />
                 <p className="text-sm text-text-secondary">
-                  End Date
+                  {t('overview.endDate')}
                   <span className="ml-1.5 px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-info-bg text-info-text">
                     {t('overview.extended', { count: contract.extensionCount })}
                   </span>
@@ -430,7 +430,7 @@ export const ContractOverviewTab = ({
                   <div className="absolute left-[-13px] top-[5px] w-[7px] h-[7px] rounded-full border-2 border-border-strong bg-surface-card z-10" />
                   <div className="min-w-0">
                     <p className="text-[11px] font-medium uppercase tracking-wider text-text-muted">
-                      Original
+                      {t('overview.original')}
                     </p>
                     <p className="text-sm font-medium text-text-secondary line-through decoration-text-muted/40">
                       {formatDate(contract.endDate)}
@@ -463,7 +463,7 @@ export const ContractOverviewTab = ({
                           </span>
                           {ext.triggerType === 'AUTO' && (
                             <span className="inline-flex items-center px-1 py-px text-[9px] font-semibold uppercase tracking-wider rounded bg-info-bg text-info-text">
-                              Auto
+                              {t('overview.auto')}
                             </span>
                           )}
                         </div>
@@ -492,7 +492,7 @@ export const ContractOverviewTab = ({
       {/* Financial Terms */}
       <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
         <h2 className="text-lg font-semibold text-text-primary mb-4">
-          Financial Terms
+          {t('overview.financialTerms')}
         </h2>
         <div className="space-y-4">
           <RentTimeline
@@ -508,7 +508,7 @@ export const ContractOverviewTab = ({
           {contract.rentComponents && contract.rentComponents.length > 0 && (
             <div>
               <h4 className="text-sm font-medium text-text-secondary mb-2">
-                Rent Breakdown
+                {t('overview.rentBreakdown')}
               </h4>
               <div className="bg-surface-secondary rounded-lg p-3 space-y-2">
                 {contract.rentComponents.map((comp) => (
@@ -596,7 +596,7 @@ export const ContractOverviewTab = ({
           <div className="flex items-center gap-2 mb-4">
             <Repeat className="h-5 w-5 text-text-muted" />
             <h2 className="text-lg font-semibold text-text-primary">
-              Renewal Configuration
+              {t('overview.renewalConfig.title')}
             </h2>
           </div>
           <div className="space-y-3">
@@ -635,8 +635,8 @@ export const ContractOverviewTab = ({
                 </p>
                 <p className="text-sm font-medium text-text-primary">
                   {contract.extensionsRemaining != null
-                    ? `${contract.extensionsRemaining} of ${contract.maxRenewals} remaining`
-                    : `${contract.maxRenewals} max`}
+                    ? t('overview.renewalConfig.remaining', { remaining: contract.extensionsRemaining, max: contract.maxRenewals })
+                    : t('overview.renewalConfig.max', { max: contract.maxRenewals })}
                 </p>
               </div>
             )}
@@ -646,7 +646,7 @@ export const ContractOverviewTab = ({
                   {t('overview.renewalConfig.extensions')}
                 </p>
                 <p className="text-sm font-medium text-text-primary">
-                  Unlimited
+                  {t('overview.renewalConfig.unlimited')}
                 </p>
               </div>
             )}
@@ -664,7 +664,7 @@ export const ContractOverviewTab = ({
                           contract.rentAdjustmentValue != null
                         ? `+${contract.rentAmountCurrency} ${contract.rentAdjustmentValue.toFixed(2)}`
                         : contract.rentAdjustmentType === 'MANUAL'
-                          ? 'Manual'
+                          ? t('overview.renewalConfig.manual')
                           : '—'}
                   </p>
                 </div>
@@ -673,7 +673,7 @@ export const ContractOverviewTab = ({
               contract.contactNoticeDays != null) && (
               <div className="pt-2 border-t border-border-default">
                 <p className="text-[11px] font-medium uppercase tracking-wider text-text-muted mb-2">
-                  Notice Periods
+                  {t('overview.renewalConfig.noticePeriods')}
                 </p>
                 <div className="space-y-2">
                   {contract.landlordNoticeDays != null && (
@@ -706,10 +706,10 @@ export const ContractOverviewTab = ({
             {contract.requiresContactConfirmation && (
               <div className="flex items-center justify-between pt-2 border-t border-border-default">
                 <p className="text-sm text-text-secondary">
-                  Contact Confirmation
+                  {t('overview.renewalConfig.contactConfirmation')}
                 </p>
                 <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-warning-bg text-warning-text">
-                  Required
+                  {t('overview.renewalConfig.required')}
                 </span>
               </div>
             )}
@@ -721,13 +721,13 @@ export const ContractOverviewTab = ({
       {(contract.terminationNoticeDays || contract.lateFeePercentage) && (
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
           <h2 className="text-lg font-semibold text-text-primary mb-4">
-            Additional Terms
+            {t('overview.additionalTerms')}
           </h2>
           <div className="space-y-3">
             {contract.terminationNoticeDays && (
               <div>
                 <p className="text-sm text-text-secondary">
-                  Termination Notice
+                  {t('overview.terminationNotice')}
                 </p>
                 <p className="font-medium text-text-primary">
                   {t('overview.renewalConfig.days', {
@@ -754,7 +754,7 @@ export const ContractOverviewTab = ({
       {contract.termsAndConditions && (
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 lg:col-span-2">
           <h2 className="text-lg font-semibold text-text-primary mb-4">
-            Terms and Conditions
+            {t('overview.termsAndConditions')}
           </h2>
           <RichTextDisplay content={contract.termsAndConditions} />
         </div>
@@ -764,7 +764,7 @@ export const ContractOverviewTab = ({
       {contract.notes && (
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 lg:col-span-2">
           <h2 className="text-lg font-semibold text-text-primary mb-4">
-            Notes
+            {t('overview.notes')}
           </h2>
           <RichTextDisplay content={contract.notes} />
         </div>

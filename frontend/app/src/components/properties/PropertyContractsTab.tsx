@@ -8,7 +8,6 @@ import {
   useDeleteOccupancyPeriod,
 } from '@/hooks/useOccupancyPeriodHooks';
 import { useFinancings } from '@/hooks/usePropertyFinancialsHooks';
-import { OCCUPANCY_TYPE_LABELS } from '@/types/occupancyPeriod';
 import { SelfOccupancyModal } from '@/components/properties/SelfOccupancyModal';
 import { EndSelfOccupancyModal } from '@/components/properties/EndSelfOccupancyModal';
 import { EditSelfOccupancyModal } from '@/components/properties/EditSelfOccupancyModal';
@@ -39,7 +38,7 @@ type ContractSortField = 'startDate' | 'rentAmount' | 'status' | 'contractType';
 export const PropertyContractsTab = ({
   propertyId,
 }: PropertyContractsTabProps) => {
-  const { t } = useTranslation('properties');
+  const { t } = useTranslation(['properties', 'common']);
   const navigate = useNavigate();
   const { canEditData, canManageMembers } = useTeam();
   const { formatDate } = useFormatDate();
@@ -129,7 +128,7 @@ export const PropertyContractsTab = ({
       <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-text-primary">
-            Contracts ({contractsData?.totalElements ?? 0})
+            {t('contracts.title')} ({contractsData?.totalElements ?? 0})
           </h2>
           <button
             onClick={() => navigate(`/contracts/new?propertyId=${propertyId}`)}
@@ -189,18 +188,18 @@ export const PropertyContractsTab = ({
                       onClick={() => handleSort('startDate')}
                     >
                       <div className="flex items-center gap-1">
-                        Contract #{renderSortIcon('startDate')}
+                        {t('contracts.table.contractNumber')}{renderSortIcon('startDate')}
                       </div>
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      Contact
+                      {t('contracts.table.contact')}
                     </th>
                     <th
                       className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                       onClick={() => handleSort('contractType')}
                     >
                       <div className="flex items-center gap-1">
-                        Type
+                        {t('contracts.table.type')}
                         {renderSortIcon('contractType')}
                       </div>
                     </th>
@@ -209,19 +208,19 @@ export const PropertyContractsTab = ({
                       onClick={() => handleSort('startDate')}
                     >
                       <div className="flex items-center gap-1">
-                        Start Date
+                        {t('contracts.table.startDate')}
                         {renderSortIcon('startDate')}
                       </div>
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      End Date
+                      {t('contracts.table.endDate')}
                     </th>
                     <th
                       className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                       onClick={() => handleSort('rentAmount')}
                     >
                       <div className="flex items-center gap-1">
-                        Rent Amount
+                        {t('contracts.table.rentAmount')}
                         {renderSortIcon('rentAmount')}
                       </div>
                     </th>
@@ -230,7 +229,7 @@ export const PropertyContractsTab = ({
                       onClick={() => handleSort('status')}
                     >
                       <div className="flex items-center gap-1">
-                        Status
+                        {t('contracts.table.status')}
                         {renderSortIcon('status')}
                       </div>
                     </th>
@@ -243,7 +242,7 @@ export const PropertyContractsTab = ({
                         colSpan={7}
                         className="px-6 py-12 text-center text-text-secondary"
                       >
-                        No contracts found matching your search
+                        {t('contracts.noMatchingSearch')}
                       </td>
                     </tr>
                   ) : (
@@ -306,12 +305,14 @@ export const PropertyContractsTab = ({
             {totalPages > 1 && (
               <div className="flex items-center justify-between mt-4 pt-4 border-t border-border-default">
                 <div className="text-sm text-text-secondary">
-                  Showing {currentPage * perPage + 1} to{' '}
-                  {Math.min(
-                    (currentPage + 1) * perPage,
-                    contractsData?.totalElements ?? 0
-                  )}{' '}
-                  of {contractsData?.totalElements ?? 0} contracts
+                  {t('contracts.pagination.showing', {
+                    from: currentPage * perPage + 1,
+                    to: Math.min(
+                      (currentPage + 1) * perPage,
+                      contractsData?.totalElements ?? 0
+                    ),
+                    total: contractsData?.totalElements ?? 0,
+                  })}
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -319,17 +320,17 @@ export const PropertyContractsTab = ({
                     disabled={currentPage === 0}
                     className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
                   >
-                    Previous
+                    {t('pagination.previous', { ns: 'common' })}
                   </button>
                   <span className="px-3 py-1 text-sm text-text-secondary">
-                    Page {currentPage + 1} of {totalPages}
+                    {t('pagination.page', { ns: 'common' })} {currentPage + 1} {t('pagination.of', { ns: 'common' })} {totalPages}
                   </span>
                   <button
                     onClick={() => setCurrentPage(currentPage + 1)}
                     disabled={currentPage + 1 >= totalPages}
                     className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
                   >
-                    Next
+                    {t('pagination.next', { ns: 'common' })}
                   </button>
                 </div>
               </div>
@@ -343,7 +344,7 @@ export const PropertyContractsTab = ({
             <div className="flex items-center gap-2">
               <Home className="h-5 w-5 text-info-text" />
               <h2 className="text-lg font-semibold text-text-primary">
-                Self-Occupancy Periods
+                {t('contracts.selfOccupancy.title')}
               </h2>
               {occupancyPeriods.length > 0 && (
                 <span className="text-sm text-text-secondary">
@@ -357,7 +358,7 @@ export const PropertyContractsTab = ({
                 className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 text-sm"
               >
                 <Plus className="h-4 w-4" />
-                Add Self-Occupancy
+                {t('contracts.selfOccupancy.addButton')}
               </button>
             )}
           </div>
@@ -366,7 +367,7 @@ export const PropertyContractsTab = ({
             <div className="text-center py-8 border border-dashed border-border-default rounded-lg">
               <Home className="h-10 w-10 text-text-disabled mx-auto mb-3" />
               <p className="text-text-secondary text-sm mb-3">
-                No self-occupancy periods recorded
+                {t('contracts.selfOccupancy.empty')}
               </p>
               {canEditData && (
                 <button
@@ -374,7 +375,7 @@ export const PropertyContractsTab = ({
                   className="text-primary-500 hover:underline text-sm font-medium inline-flex items-center gap-1"
                 >
                   <Plus className="h-3.5 w-3.5" />
-                  Record a self-occupancy period
+                  {t('contracts.selfOccupancy.recordPeriod')}
                 </button>
               )}
             </div>
@@ -384,19 +385,19 @@ export const PropertyContractsTab = ({
                 <thead className="bg-surface-page">
                   <tr>
                     <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      Period
+                      {t('contracts.selfOccupancy.table.period')}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      Type
+                      {t('contracts.selfOccupancy.table.type')}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      Occupant
+                      {t('contracts.selfOccupancy.table.occupant')}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      Status
+                      {t('contracts.selfOccupancy.table.status')}
                     </th>
                     <th className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      Actions
+                      {t('contracts.selfOccupancy.table.actions')}
                     </th>
                   </tr>
                 </thead>
@@ -413,10 +414,10 @@ export const PropertyContractsTab = ({
                           {formatDate(period.startDate)} &mdash;{' '}
                           {period.endDate
                             ? formatDate(period.endDate)
-                            : 'Ongoing'}
+                            : t('contracts.selfOccupancy.ongoing')}
                         </td>
                         <td className="px-4 py-3 text-sm text-text-secondary">
-                          {OCCUPANCY_TYPE_LABELS[period.type]}
+                          {t(`selfOccupancy.occupancyTypes.${period.type}`)}
                         </td>
                         <td className="px-4 py-3 text-sm text-text-secondary">
                           {period.occupantName ?? (
@@ -427,11 +428,11 @@ export const PropertyContractsTab = ({
                           {isPeriodActive ? (
                             <span className="inline-flex items-center gap-1.5 text-xs font-medium text-info-text">
                               <span className="w-1.5 h-1.5 rounded-full bg-primary-500 animate-pulse" />
-                              Active
+                              {t('contracts.selfOccupancy.active')}
                             </span>
                           ) : (
                             <span className="text-xs font-medium text-text-secondary">
-                              Ended
+                              {t('contracts.selfOccupancy.ended')}
                             </span>
                           )}
                         </td>
@@ -441,7 +442,7 @@ export const PropertyContractsTab = ({
                               onClick={() =>
                                 setEditOccupancyPeriodId(period.identifier)
                               }
-                              title="Edit"
+                              title={t('buttons.edit', { ns: 'common' })}
                               className="p-1.5 rounded-lg hover:bg-surface-inset text-text-secondary hover:text-primary-500 transition-colors"
                             >
                               <Edit className="h-4 w-4" />
@@ -452,7 +453,7 @@ export const PropertyContractsTab = ({
                                   setEndOccupancyPeriodId(period.identifier);
                                   setShowEndOccupancyModal(true);
                                 }}
-                                title="End occupancy"
+                                title={t('contracts.selfOccupancy.endOccupancy')}
                                 className="p-1.5 rounded-lg hover:bg-warning-bg text-text-secondary hover:text-warning-text transition-colors"
                               >
                                 <Square className="h-4 w-4" />
@@ -463,7 +464,7 @@ export const PropertyContractsTab = ({
                                 onClick={() =>
                                   setDeleteOccupancyPeriodId(period.identifier)
                                 }
-                                title="Delete"
+                                title={t('buttons.delete', { ns: 'common' })}
                                 className="p-1.5 rounded-lg hover:bg-error-bg text-text-secondary hover:text-error-text transition-colors"
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -532,13 +533,13 @@ export const PropertyContractsTab = ({
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-surface-card rounded-lg p-6 max-w-md w-full mx-4">
             <h3 className="text-lg font-semibold text-text-primary mb-4">
-              Delete Self-Occupancy Period
+              {t('contracts.selfOccupancy.deleteTitle')}
             </h3>
             <p className="text-text-secondary mb-2">
-              Are you sure you want to delete this self-occupancy period?
+              {t('contracts.selfOccupancy.deleteMessage')}
             </p>
             <p className="text-sm text-error-text mb-6">
-              This action cannot be undone.
+              {t('contracts.selfOccupancy.deleteWarning')}
             </p>
             <div className="flex gap-3 justify-end">
               <Button
@@ -546,7 +547,7 @@ export const PropertyContractsTab = ({
                 onClick={() => setDeleteOccupancyPeriodId(null)}
                 disabled={deleteOccupancyMutation.isPending}
               >
-                Cancel
+                {t('buttons.cancel', { ns: 'common' })}
               </Button>
               <Button
                 variant="danger"
@@ -558,7 +559,7 @@ export const PropertyContractsTab = ({
                 }}
                 isLoading={deleteOccupancyMutation.isPending}
               >
-                Delete
+                {t('buttons.delete', { ns: 'common' })}
               </Button>
             </div>
           </div>

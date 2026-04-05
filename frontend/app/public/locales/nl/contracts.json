@@ -53,7 +53,11 @@
     "cancelExtension": "Verlenging annuleren",
     "cancelConfirmMessage": "Weet u zeker dat u deze verlenging wilt annuleren? Deze actie kan niet ongedaan worden gemaakt.",
     "deleteGeneratedDocuments": "Gegenereerde documenten verwijderen",
-    "keepExtension": "Verlenging behouden"
+    "keepExtension": "Verlenging behouden",
+    "contractTypes": {
+      "FIXED_TERM": "Bepaalde Tijd",
+      "INDEFINITE": "Onbepaalde Tijd"
+    }
   },
   "overview": {
     "contractParties": "Contractpartijen",
@@ -91,6 +95,47 @@
     "noParties": "Geen partijen toegewezen aan dit contract.",
     "paymentInstruction": "Betaalinstructie",
     "noPaymentInstruction": "Geen betaalinstructie geconfigureerd.",
+    "paymentInstructions": {
+      "title": "Betalingsinstructies",
+      "loading": "Betalingsinstructies laden...",
+      "template": "Sjabloon",
+      "custom": "Aangepast",
+      "iban": "IBAN",
+      "account": "Rekening",
+      "routing": "Routing",
+      "holder": "Rekeninghouder",
+      "ref": "Ref",
+      "effectiveFrom": "Effectief vanaf {{date}}",
+      "hideHistory": "Verbergen",
+      "viewHistory": "Bekijken",
+      "historyCount": "Geschiedenis ({{count}} items)",
+      "historyTitle": "Betalingsinstructie Geschiedenis",
+      "current": "Huidig",
+      "present": "Heden",
+      "changeTitle": "Betalingsinstructies Wijzigen",
+      "setTitle": "Betalingsinstructies Instellen",
+      "useTemplate": "Sjabloon Gebruiken",
+      "customOption": "Aangepast",
+      "selectTemplate": "Selecteer Sjabloon *",
+      "choosePlaceholder": "Kies een betaalmethode...",
+      "default": "Standaard",
+      "name": "Naam *",
+      "method": "Methode *",
+      "description": "Beschrijving",
+      "bankName": "Banknaam",
+      "accountHolder": "Rekeninghouder",
+      "ibanField": "IBAN",
+      "bicSwift": "BIC / SWIFT",
+      "accountNumber": "Rekeningnummer",
+      "routingNumber": "Routingnummer",
+      "paymentReference": "Betalingsreferentie",
+      "effectiveFromField": "Effectief Vanaf *",
+      "notesField": "Notities (reden voor wijziging)",
+      "notesPlaceholder": "Optionele reden...",
+      "saving": "Opslaan...",
+      "changeInstructions": "Instructies Wijzigen",
+      "setInstructions": "Instructies Instellen"
+    },
     "notes": "Notities",
     "renewalConfig": {
       "title": "Verlengingsconfiguratie",
@@ -362,5 +407,24 @@
   "generateRentChange": {
     "title": "Huurwijziging genereren",
     "description": "Genereer een huurwijzigingsmelding."
+  },
+  "enums": {
+    "partyRoles": {
+      "PRIMARY_TENANT": "Hoofdcontact",
+      "GUARANTOR": "Borg",
+      "COSIGNER": "Medeondertekenaar",
+      "EXTRA_TENANT": "Extra Contact"
+    },
+    "rentComponents": {
+      "BASE_RENT": "Kale Huur",
+      "UTILITIES_ADVANCE": "Voorschot Nutsvoorzieningen",
+      "SERVICE_COSTS": "Servicekosten",
+      "HOA_FEES": "VvE-bijdrage",
+      "FURNITURE_RENTAL": "Meubilairverhuur",
+      "PARKING": "Parkeren",
+      "STORAGE": "Opslag",
+      "GARBAGE_COLLECTION": "Afvalinzameling",
+      "OTHER": "Overig"
+    }
   }
 }

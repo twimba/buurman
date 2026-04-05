@@ -429,7 +429,33 @@
       "passwordRequired": "Password is required",
       "passwordRequirements": "Password does not meet all requirements",
       "passwordsMismatch": "Passwords do not match"
+    },
+    "copyright": "© 2026 Buurman. All rights reserved.",
+    "freeForSmallLandlords": "Free for small landlords",
+    "welcomeBack": "Welcome back",
+    "propertiesWaiting": "Your properties are waiting for you",
+    "signIn": "Sign in",
+    "or": "or",
+    "demo": {
+      "badge": "Demo Mode",
+      "title": "Try Buurman",
+      "subtitle": "Explore with a demo account — no sign-up needed",
+      "credentials": "Demo Credentials",
+      "email": "Email",
+      "password": "Password",
+      "launch": "Launch Demo",
+      "keycloakHint": "You'll be signed in automatically via Keycloak",
+      "orCreateAccount": "or create your own account",
+      "getStartedFree": "Get started for free"
     }
+  },
+  "calendarFeed": {
+    "button": "Calendar Feed",
+    "title": "Calendar Feed URL",
+    "copied": "Feed URL copied to clipboard",
+    "copyFailed": "Failed to copy URL",
+    "instructions": "Add this URL to your calendar app (Google Calendar, Apple Calendar, Outlook) to subscribe to updates.",
+    "manageFeeds": "Manage calendar feeds"
   },
   "metricHints": {
     "totalROI": "Return on Investment — total profit relative to total cost",

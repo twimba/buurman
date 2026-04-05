@@ -53,7 +53,11 @@
     "cancelExtension": "Verlängerung stornieren",
     "cancelConfirmMessage": "Sind Sie sicher, dass Sie diese Verlängerung stornieren möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
     "deleteGeneratedDocuments": "Generierte Dokumente löschen",
-    "keepExtension": "Verlängerung beibehalten"
+    "keepExtension": "Verlängerung beibehalten",
+    "contractTypes": {
+      "FIXED_TERM": "Befristet",
+      "INDEFINITE": "Unbefristet"
+    }
   },
   "overview": {
     "contractParties": "Vertragsparteien",
@@ -91,6 +95,47 @@
     "noParties": "Keine Parteien diesem Vertrag zugeordnet.",
     "paymentInstruction": "Zahlungsanweisung",
     "noPaymentInstruction": "Keine Zahlungsanweisung konfiguriert.",
+    "paymentInstructions": {
+      "title": "Zahlungsanweisungen",
+      "loading": "Zahlungsanweisungen werden geladen...",
+      "template": "Vorlage",
+      "custom": "Benutzerdefiniert",
+      "iban": "IBAN",
+      "account": "Konto",
+      "routing": "Bankleitzahl",
+      "holder": "Kontoinhaber",
+      "ref": "Ref",
+      "effectiveFrom": "Gültig ab {{date}}",
+      "hideHistory": "Ausblenden",
+      "viewHistory": "Anzeigen",
+      "historyCount": "Verlauf ({{count}} Einträge)",
+      "historyTitle": "Zahlungsanweisungs-Verlauf",
+      "current": "Aktuell",
+      "present": "Gegenwärtig",
+      "changeTitle": "Zahlungsanweisungen Ändern",
+      "setTitle": "Zahlungsanweisungen Festlegen",
+      "useTemplate": "Vorlage Verwenden",
+      "customOption": "Benutzerdefiniert",
+      "selectTemplate": "Vorlage Auswählen *",
+      "choosePlaceholder": "Zahlungsmethode wählen...",
+      "default": "Standard",
+      "name": "Name *",
+      "method": "Methode *",
+      "description": "Beschreibung",
+      "bankName": "Bankname",
+      "accountHolder": "Kontoinhaber",
+      "ibanField": "IBAN",
+      "bicSwift": "BIC / SWIFT",
+      "accountNumber": "Kontonummer",
+      "routingNumber": "Bankleitzahl",
+      "paymentReference": "Zahlungsreferenz",
+      "effectiveFromField": "Gültig Ab *",
+      "notesField": "Notizen (Änderungsgrund)",
+      "notesPlaceholder": "Optionaler Grund...",
+      "saving": "Speichern...",
+      "changeInstructions": "Anweisungen Ändern",
+      "setInstructions": "Anweisungen Festlegen"
+    },
     "notes": "Notizen",
     "renewalConfig": {
       "title": "Verlängerungskonfiguration",
@@ -362,5 +407,24 @@
   "generateRentChange": {
     "title": "Mietänderung generieren",
     "description": "Eine Mietänderungsbenachrichtigung generieren."
+  },
+  "enums": {
+    "partyRoles": {
+      "PRIMARY_TENANT": "Hauptkontakt",
+      "GUARANTOR": "Bürge",
+      "COSIGNER": "Mitunterzeichner",
+      "EXTRA_TENANT": "Weiterer Kontakt"
+    },
+    "rentComponents": {
+      "BASE_RENT": "Kaltmiete",
+      "UTILITIES_ADVANCE": "Nebenkostenvorauszahlung",
+      "SERVICE_COSTS": "Betriebskosten",
+      "HOA_FEES": "Hausgeld",
+      "FURNITURE_RENTAL": "Möbelmiete",
+      "PARKING": "Stellplatz",
+      "STORAGE": "Lager",
+      "GARBAGE_COLLECTION": "Müllabfuhr",
+      "OTHER": "Sonstige"
+    }
   }
 }

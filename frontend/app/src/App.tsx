@@ -214,8 +214,8 @@ function App() {
               <AnalyticsInitializer />
               <FeatureFlagProvider>
                 <ThemeProvider>
-                  <LocaleProvider>
-                    <ToastProvider>
+                  <ToastProvider>
+                    <LocaleProvider>
                       <ImpersonationBanner />
                       <Suspense fallback={<LoadingSpinner />}>
                         <Routes>
@@ -456,8 +456,8 @@ function App() {
                           />
                         </Routes>
                       </Suspense>
-                    </ToastProvider>
-                  </LocaleProvider>
+                    </LocaleProvider>
+                  </ToastProvider>
                 </ThemeProvider>
               </FeatureFlagProvider>
             </TeamProvider>

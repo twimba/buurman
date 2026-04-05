@@ -37,7 +37,7 @@ const sanitizeRedirect = (url: string | null): string | null => {
 };
 
 const LoginPage: React.FC = () => {
-  const { t } = useTranslation('admin');
+  const { t } = useTranslation('common');
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -67,7 +67,7 @@ const LoginPage: React.FC = () => {
             </h1>
           </div>
           <p className="text-xl text-primary-200 mb-12">
-            {t('common:login.tagline')}
+            {t('auth.tagline')}
           </p>
 
           {/* Features */}
@@ -78,10 +78,10 @@ const LoginPage: React.FC = () => {
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">
-                  {t('common:login.features.manageProperties')}
+                  {t('auth.features.manageProperties')}
                 </h3>
                 <p className="text-primary-200">
-                  {t('common:login.features.managePropertiesDesc')}
+                  {t('auth.features.managePropertiesDesc')}
                 </p>
               </div>
             </div>
@@ -92,10 +92,10 @@ const LoginPage: React.FC = () => {
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">
-                  {t('common:login.features.trackContacts')}
+                  {t('auth.features.trackContacts')}
                 </h3>
                 <p className="text-primary-200">
-                  {t('common:login.features.trackContactsDesc')}
+                  {t('auth.features.trackContactsDesc')}
                 </p>
               </div>
             </div>
@@ -106,10 +106,10 @@ const LoginPage: React.FC = () => {
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">
-                  {t('common:login.features.handleFinances')}
+                  {t('auth.features.handleFinances')}
                 </h3>
                 <p className="text-primary-200">
-                  {t('common:login.features.handleFinancesDesc')}
+                  {t('auth.features.handleFinancesDesc')}
                 </p>
               </div>
             </div>
@@ -120,10 +120,10 @@ const LoginPage: React.FC = () => {
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">
-                  {t('common:login.features.growBusiness')}
+                  {t('auth.features.growBusiness')}
                 </h3>
                 <p className="text-primary-200">
-                  {t('common:login.features.growBusinessDesc')}
+                  {t('auth.features.growBusinessDesc')}
                 </p>
               </div>
             </div>
@@ -131,7 +131,7 @@ const LoginPage: React.FC = () => {
         </div>
 
         <div className="text-sm text-primary-300">
-          {t('common:login.copyright')}
+          {t('auth.copyright')}
         </div>
       </div>
 
@@ -150,7 +150,7 @@ const LoginPage: React.FC = () => {
               Buurman
             </h1>
             <p className="text-text-secondary mt-2 text-center">
-              {t('common:login.mobileTagline')}
+              {t('auth.taglineShort')}
             </p>
           </div>
 
@@ -163,25 +163,25 @@ const LoginPage: React.FC = () => {
                 <div className="mb-6 text-center">
                   <div className="inline-flex items-center gap-1.5 bg-warning-bg text-warning-text px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-warning-border">
                     <Play className="h-3.5 w-3.5" />
-                    {t('common:login.demo.badge')}
+                    {t('auth.demo.badge')}
                   </div>
                   <h2 className="text-2xl font-bold text-text-primary mb-2">
-                    {t('common:login.demo.title')}
+                    {t('auth.demo.title')}
                   </h2>
                   <p className="text-text-secondary">
-                    {t('common:login.demo.subtitle')}
+                    {t('auth.demo.subtitle')}
                   </p>
                 </div>
 
                 <div className="bg-warning-bg border border-warning-border rounded-xl p-4 mb-6 text-left">
                   <p className="text-xs font-semibold text-warning-text uppercase tracking-wider mb-3">
-                    {t('common:login.demo.credentials')}
+                    {t('auth.demo.credentials')}
                   </p>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between bg-surface-card rounded-lg px-3 py-2 border border-warning-border">
                       <div>
                         <span className="text-[10px] text-warning-text font-medium uppercase tracking-wider">
-                          {t('common:login.demo.email')}
+                          {t('auth.demo.email')}
                         </span>
                         <p className="text-sm font-mono font-semibold text-text-primary">
                           {DEMO_EMAIL}
@@ -191,7 +191,7 @@ const LoginPage: React.FC = () => {
                     <div className="flex items-center justify-between bg-surface-card rounded-lg px-3 py-2 border border-warning-border">
                       <div>
                         <span className="text-[10px] text-warning-text font-medium uppercase tracking-wider">
-                          {t('common:login.demo.password')}
+                          {t('auth.demo.password')}
                         </span>
                         <p className="text-sm font-mono font-semibold text-text-primary">
                           {showPassword ? DEMO_PASSWORD : '••••••••'}
@@ -217,12 +217,12 @@ const LoginPage: React.FC = () => {
                   className="group w-full bg-gradient-to-r from-red-500 to-amber-500 text-white py-3.5 px-6 rounded-xl hover:from-red-600 hover:to-amber-600 transition-all duration-200 font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                 >
                   <Play className="h-5 w-5" />
-                  {t('common:login.demo.launch')}
+                  {t('auth.demo.launch')}
                   <ArrowRight className="h-4 w-4 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200" />
                 </button>
 
                 <p className="text-center text-xs text-text-secondary mt-3 italic">
-                  {t('common:login.demo.keycloakHint')}
+                  {t('auth.demo.keycloakHint')}
                 </p>
 
                 <div className="mt-5 relative">
@@ -231,7 +231,7 @@ const LoginPage: React.FC = () => {
                   </div>
                   <div className="relative flex justify-center text-xs">
                     <span className="bg-surface-card px-3 text-text-secondary">
-                      {t('common:login.demo.orCreateAccount')}
+                      {t('auth.demo.orCreateAccount')}
                     </span>
                   </div>
                 </div>
@@ -240,7 +240,7 @@ const LoginPage: React.FC = () => {
                   href="/register"
                   className="mt-5 w-full py-3 px-6 rounded-lg border-2 border-border-default text-text-secondary font-semibold flex items-center justify-center gap-2 hover:border-primary-500 hover:text-primary-500 transition-all duration-200 hover:bg-primary-50"
                 >
-                  {t('common:login.demo.getStartedFree')}
+                  {t('auth.demo.getStartedFree')}
                   <ArrowRight className="h-4 w-4" />
                 </a>
               </>
@@ -249,13 +249,13 @@ const LoginPage: React.FC = () => {
                 <div className="mb-8 text-center">
                   <div className="inline-flex items-center gap-1.5 bg-primary-500/10 text-primary-600 px-3 py-1 rounded-full text-xs font-medium mb-4">
                     <Sparkles className="h-3.5 w-3.5" />
-                    {t('common:login.freeForSmallLandlords')}
+                    {t('auth.freeForSmallLandlords')}
                   </div>
                   <h2 className="text-2xl font-bold text-text-primary mb-2">
-                    {t('common:login.welcomeBack')}
+                    {t('auth.welcomeBack')}
                   </h2>
                   <p className="text-text-secondary">
-                    {t('common:login.propertiesWaiting')}
+                    {t('auth.propertiesWaiting')}
                   </p>
                 </div>
 
@@ -270,7 +270,7 @@ const LoginPage: React.FC = () => {
                   className="group w-full bg-gradient-to-r from-primary-600 to-primary-500 text-white py-3.5 px-6 rounded-xl hover:from-primary-700 hover:to-primary-600 transition-all duration-200 font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                 >
                   <LogIn className="h-5 w-5" />
-                  {t('common:login.signIn')}
+                  {t('auth.signIn')}
                   <ArrowRight className="h-4 w-4 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200" />
                 </button>
 
@@ -280,7 +280,7 @@ const LoginPage: React.FC = () => {
                   </div>
                   <div className="relative flex justify-center text-xs">
                     <span className="bg-surface-card px-3 text-text-secondary">
-                      {t('common:login.or')}
+                      {t('auth.or')}
                     </span>
                   </div>
                 </div>
@@ -289,7 +289,7 @@ const LoginPage: React.FC = () => {
                   href="/register"
                   className="mt-6 w-full py-3 px-6 rounded-lg border-2 border-border-default text-text-secondary font-semibold flex items-center justify-center gap-2 hover:border-primary-500 hover:text-primary-500 transition-all duration-200 hover:bg-primary-50"
                 >
-                  {t('common:login.createFreeAccount')}
+                  {t('auth.createFreeAccount')}
                   <ArrowRight className="h-4 w-4" />
                 </a>
               </>
@@ -299,14 +299,14 @@ const LoginPage: React.FC = () => {
           {/* Additional Info */}
           <div className="mt-6 text-center">
             <p className="text-sm text-text-secondary">
-              {t('common:login.needHelp')}{' '}
+              {t('auth.needHelp')}{' '}
               <a
                 href="https://www.buurman.io/support"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary-500 hover:underline"
               >
-                {t('common:login.contactSupport')}
+                {t('auth.contactSupport')}
               </a>
             </p>
           </div>

@@ -4,7 +4,6 @@ import { Button, RichTextEditor } from '@buurman/ui';
 import { useUpdateOccupancyPeriod } from '@/hooks/useOccupancyPeriodHooks';
 import {
   OccupancyType,
-  OCCUPANCY_TYPE_LABELS,
   OccupancyPeriodResponse,
 } from '@/types/occupancyPeriod';
 import { X } from 'lucide-react';
@@ -105,9 +104,9 @@ export const EditSelfOccupancyModal = ({
               required
               className="w-full px-3 py-2 rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
-              {Object.values(OccupancyType).map((t) => (
-                <option key={t} value={t}>
-                  {OCCUPANCY_TYPE_LABELS[t]}
+              {Object.values(OccupancyType).map((ot) => (
+                <option key={ot} value={ot}>
+                  {t(`selfOccupancy.occupancyTypes.${ot}`)}
                 </option>
               ))}
             </select>

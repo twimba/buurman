@@ -145,7 +145,263 @@
       "at": "at"
     },
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "deleteProperty": "Delete Property",
+    "deletePropertyConfirm": "Are you sure you want to delete this property?",
+    "cannotBeUndone": "This action cannot be undone.",
+    "deleteWwsConfirm": "Delete WWS calculation?",
+    "deleteWwsMessage": "This will permanently remove the saved calculation from this property.",
+    "deleteWwsHistoryMessage": "This will permanently remove this historic calculation."
+  },
+  "enums": {
+    "categories": {
+      "RESIDENTIAL": "Residential",
+      "COMMERCIAL": "Commercial",
+      "INDUSTRIAL": "Industrial",
+      "AGRICULTURAL": "Agricultural",
+      "MIXED_USE": "Mixed-Use"
+    },
+    "types": {
+      "APARTMENT": "Apartment",
+      "HOUSE": "House",
+      "STUDIO": "Studio",
+      "ROOM": "Room",
+      "VILLA": "Villa",
+      "TOWNHOUSE": "Townhouse",
+      "OTHER_RESIDENTIAL": "Other",
+      "OFFICE": "Office",
+      "RETAIL": "Retail",
+      "RESTAURANT": "Restaurant",
+      "HOTEL": "Hotel",
+      "SHOWROOM": "Showroom",
+      "AUTO_DEALERSHIP": "Auto Dealership",
+      "SNACKBAR": "Snackbar",
+      "CAFE": "Café",
+      "MOTEL": "Motel",
+      "BAR": "Bar",
+      "BED_AND_BREAKFAST": "B&B",
+      "OTHER_COMMERCIAL": "Other",
+      "WAREHOUSE": "Warehouse",
+      "WORKSHOP": "Workshop",
+      "FACTORY": "Factory",
+      "DATA_CENTER": "Data Center",
+      "COLD_STORAGE": "Cold Storage",
+      "GARAGE": "Garage",
+      "OTHER_INDUSTRIAL": "Other",
+      "FARMLAND": "Farmland",
+      "RANCH": "Ranch",
+      "GREENHOUSE": "Greenhouse",
+      "ORCHARD": "Orchard",
+      "VINEYARD": "Vineyard",
+      "OTHER_AGRICULTURAL": "Other",
+      "MIXED_USE": "Mixed-Use",
+      "COMMERCIAL": "Commercial"
+    },
+    "statuses": {
+      "VACANT": "Vacant",
+      "OCCUPIED": "Occupied",
+      "SELF_OCCUPIED": "Self-Occupied",
+      "MAINTENANCE": "Maintenance",
+      "UNAVAILABLE": "Unavailable",
+      "UNDER_RENOVATION": "Under Renovation",
+      "FALLOW": "Fallow",
+      "LISTED": "Listed"
+    }
+  },
+  "dashboard": {
+    "failedToLoad": "Failed to load dashboard data.",
+    "retry": "Retry",
+    "exporting": "Exporting...",
+    "allTime": "All Time",
+    "custom": "Custom",
+    "to": "to",
+    "resetZoom": "Reset zoom",
+    "charts": {
+      "monthlyCashFlow": "Monthly Cash Flow",
+      "occupancyIncomeTrend": "Occupancy & Income Trend",
+      "expenseBreakdown": "Expense Breakdown",
+      "sixMonthProjection": "6-Month Projection",
+      "equityOverview": "Equity Overview"
+    },
+    "summary": {
+      "totalRoi": "Total ROI",
+      "annualizedRoi": "Annualized ROI",
+      "capRate": "Cap Rate",
+      "cashOnCash": "Cash-on-Cash",
+      "monthlyCashFlow": "Monthly Cash Flow",
+      "annualNoi": "Annual NOI",
+      "totalEquity": "Total Equity",
+      "equityGrowth": "Equity Growth",
+      "occupancy": "Occupancy",
+      "grossRentMultiplier": "Gross Rent Multiplier"
+    },
+    "cashFlow": {
+      "income": "Income",
+      "expenses": "Expenses",
+      "mortgage": "Mortgage",
+      "net": "Net",
+      "noData": "No transaction data"
+    },
+    "occupancy": {
+      "label": "Occupancy",
+      "contact": "Contact",
+      "selfOccupied": "Self-occupied",
+      "vacant": "Vacant",
+      "contactOccupied": "Contact occupied",
+      "netIncomeTrend": "Net Income Trend",
+      "netIncome": "Net Income",
+      "noData": "No contract data"
+    },
+    "expense": {
+      "noData": "No expense data"
+    },
+    "equity": {
+      "purchasePrice": "Purchase Price",
+      "marketValue": "Market Value",
+      "mortgage": "Mortgage",
+      "equity": "Equity",
+      "noData": "Add purchase price and market value to see equity"
+    },
+    "completeness": {
+      "title": "Data Completeness: {{percent}}%",
+      "purchasePrice": "Purchase price",
+      "marketValue": "Market value",
+      "mortgageInfo": "Mortgage info",
+      "operatingCosts": "Operating costs",
+      "contracts": "Contracts",
+      "payments": "Payments",
+      "expenses": "Expenses"
+    },
+    "projection": {
+      "description": "Projected income & expenses based on active contracts and operating costs",
+      "expectedIncome": "Expected Income",
+      "expectedExpenses": "Expected Expenses",
+      "expectedNet": "Expected Net"
+    }
+  },
+  "characteristics": {
+    "selectPlaceholder": "-- Select --",
+    "residential": {
+      "title": "Residential Details",
+      "bedrooms": "Bedrooms",
+      "bathrooms": "Bathrooms",
+      "furnished": "Furnished",
+      "petPolicy": "Pet Policy"
+    },
+    "commercial": {
+      "title": "Commercial Details",
+      "usableArea": "Usable Area",
+      "commonArea": "Common Area",
+      "floorLevel": "Floor Level",
+      "ceilingHeight": "Ceiling Height",
+      "maxOccupancy": "Max Occupancy",
+      "restroomCount": "Restroom Count",
+      "zoningClassification": "Zoning Classification",
+      "zoningPlaceholder": "e.g. C-2, Mixed Commercial",
+      "hasStorefront": "Has Storefront",
+      "signageRights": "Signage Rights",
+      "kitchenFacility": "Kitchen Facility",
+      "accessibilityCompliant": "Accessibility Compliant"
+    },
+    "industrial": {
+      "title": "Industrial Details",
+      "clearHeight": "Clear Height",
+      "loadingDocks": "Loading Docks",
+      "driveInDoors": "Drive-in Doors",
+      "floorLoadCapacity": "Floor Load Capacity",
+      "powerCapacity": "Power Capacity",
+      "craneCapacity": "Crane Capacity",
+      "yardArea": "Yard Area",
+      "zoningClassification": "Zoning Classification",
+      "zoningPlaceholder": "e.g. I-1, Light Industrial",
+      "threePhasePower": "Three-Phase Power",
+      "craneAvailable": "Crane Available",
+      "hazmatCertified": "Hazmat Certified",
+      "ventilationSystem": "Ventilation System",
+      "climateControl": "Climate Control"
+    },
+    "agricultural": {
+      "title": "Agricultural Details",
+      "totalLandArea": "Total Land Area",
+      "arableArea": "Arable Area",
+      "soilType": "Soil Type",
+      "waterSource": "Water Source",
+      "irrigationType": "Irrigation Type",
+      "fencingType": "Fencing Type",
+      "currentUse": "Current Use",
+      "currentUsePlaceholder": "e.g. Crop farming, Livestock grazing",
+      "zoningClassification": "Zoning Classification",
+      "zoningPlaceholder": "e.g. A-1, Agricultural",
+      "waterRights": "Water Rights",
+      "hasOutbuildings": "Has Outbuildings",
+      "outbuildingDetails": "Outbuilding Details",
+      "outbuildingPlaceholder": "e.g. Barn, Storage shed, Equipment garage"
+    },
+    "construction": {
+      "yearBuilt": "Year Built",
+      "yearLastRenovated": "Year Last Renovated",
+      "constructionType": "Construction Type",
+      "foundationType": "Foundation Type",
+      "roofType": "Roof Type",
+      "wallConstruction": "Wall Construction",
+      "flooringType": "Flooring Type",
+      "windowType": "Window Type",
+      "numberOfFloors": "Number of Floors",
+      "structuralNotes": "Structural Notes",
+      "structuralNotesTooltip": "Any notable structural details, renovations, or issues"
+    },
+    "energy": {
+      "energyEfficiencyRating": "Energy Efficiency Rating",
+      "energyRatingTooltip": "Official energy label (A++ to G)",
+      "certificateExpiry": "Energy Certificate Expiry",
+      "certificateExpiryTooltip": "When the current energy certificate expires",
+      "heatingType": "Heating Type",
+      "coolingType": "Cooling Type",
+      "hotWaterSystem": "Hot Water System",
+      "insulationNotes": "Insulation Notes",
+      "insulationTooltip": "Wall, roof, floor insulation details"
+    },
+    "utilities": {
+      "electricityConnection": "Electricity Connection",
+      "electricityCapacity": "Electricity Capacity",
+      "electricityCapacityTooltip": "Main fuse capacity",
+      "waterConnection": "Water Connection",
+      "hasGasConnection": "Has Gas Connection",
+      "sewageType": "Sewage Type",
+      "internetConnection": "Internet Connection",
+      "internetMaxSpeed": "Internet Max Speed",
+      "internetStatus": "Internet Status"
+    },
+    "parking": {
+      "parkingSpaces": "Parking Spaces",
+      "parkingType": "Parking Type"
+    },
+    "safety": {
+      "smokeDetectors": "Smoke Detectors",
+      "coDetectors": "CO Detectors",
+      "fireExtinguisher": "Fire Extinguisher",
+      "sprinklerSystem": "Sprinkler System",
+      "alarmSystem": "Alarm System",
+      "securityCameras": "Security Cameras",
+      "secureEntry": "Secure Entry",
+      "safetyNotes": "Safety Notes",
+      "safetyNotesTooltip": "Fire escape routes, last inspection date, etc."
+    },
+    "accessibility": {
+      "wheelchairAccessible": "Wheelchair Accessible",
+      "elevator": "Elevator",
+      "stepFreeEntrance": "Step-free Entrance",
+      "adaptedBathroom": "Adapted Bathroom",
+      "accessibilityNotes": "Accessibility Notes",
+      "accessibilityNotesTooltip": "Door widths, ramp availability, etc."
+    },
+    "outdoorAreas": {
+      "type": "Type",
+      "area": "Area",
+      "unit": "Unit",
+      "add": "Add",
+      "addOutdoorArea": "Add outdoor area"
+    }
   },
   "form": {
     "address": "Address",
@@ -282,7 +538,12 @@
       "endOccupancy": "End occupancy",
       "deleteTitle": "Delete Self-Occupancy Period",
       "deleteMessage": "Are you sure you want to delete this self-occupancy period?",
-      "deleteWarning": "This action cannot be undone."
+      "deleteWarning": "This action cannot be undone.",
+      "takenPeriods": {
+        "selfUse": "Self-use: {{period}}",
+        "contract": "Contract {{identifier}}: {{period}}",
+        "ongoing": "Ongoing"
+      }
     }
   },
   "expenses": {
@@ -350,6 +611,17 @@
       "reason": "Reason",
       "reasonPlaceholder": "Select a reason...",
       "alreadyTakenPeriods": "Already taken periods"
+    },
+    "occupancyTypes": {
+      "PERSONAL": "Personal",
+      "FAMILY": "Family",
+      "BUSINESS": "Business"
+    },
+    "endReasons": {
+      "CONVERTING_TO_RENTAL": "Converting to Rental",
+      "SELLING": "Selling",
+      "RENOVATION": "Renovation",
+      "OTHER": "Other"
     }
   },
   "map": {
@@ -399,13 +671,8 @@
     "sections": {
       "acquisition": "Acquisition",
       "valuations": "Valuations",
-      "financings": "Financings"
-    },
-    "empty": {
-      "noAcquisition": "No acquisition data recorded.",
-      "noValuation": "No valuation data recorded.",
-      "noFinancing": "No financing instruments recorded.",
-      "noPayments": "No payments recorded yet."
+      "financings": "Financings",
+      "recurringCosts": "Recurring Costs"
     },
     "metrics": {
       "netWorth": "Net Worth",
@@ -488,7 +755,156 @@
     },
     "units": {
       "years": "years",
-      "months": "months"
+      "months": "months",
+      "perYear": "/yr"
+    },
+    "recurringCosts": "Recurring Costs",
+    "insurances": "Insurances",
+    "taxes": "Taxes",
+    "fees": "Fees",
+    "na": "N/A",
+    "all": "All",
+    "term": "Term",
+    "frequency": "Frequency",
+    "actions": "Actions",
+    "total": "Total",
+    "empty": {
+      "noAcquisition": "No acquisition data recorded.",
+      "noValuation": "No valuation data recorded.",
+      "noFinancing": "No financing instruments recorded.",
+      "noPayments": "No payments recorded yet.",
+      "noInsurances": "No insurances.",
+      "noTaxes": "No taxes.",
+      "noFees": "No fees."
+    },
+    "delete": {
+      "title": "Delete {{label}}?",
+      "message": "Are you sure you want to delete this {{label}}? This action cannot be undone.",
+      "valuation": "{{type}} valuation",
+      "payment": "payment ({{date}})",
+      "insurance": "{{type}} insurance",
+      "tax": "{{type}} tax",
+      "fee": "{{type}} fee"
+    },
+    "toast": {
+      "paymentDeleted": "Payment deleted successfully",
+      "paymentDeleteFailed": "Failed to delete payment",
+      "paymentsCreated_one": "{{count}} payment created successfully",
+      "paymentsCreated_other": "{{count}} payments created successfully"
+    },
+    "months": {
+      "jan": "Jan",
+      "feb": "Feb",
+      "mar": "Mar",
+      "apr": "Apr",
+      "may": "May",
+      "jun": "Jun",
+      "jul": "Jul",
+      "aug": "Aug",
+      "sep": "Sep",
+      "oct": "Oct",
+      "nov": "Nov",
+      "dec": "Dec"
+    },
+    "acquisitionTypes": {
+      "PURCHASE": "Purchase",
+      "INHERITANCE": "Inheritance",
+      "GIFT": "Gift",
+      "FORECLOSURE": "Foreclosure",
+      "AUCTION": "Auction",
+      "OTHER": "Other"
+    },
+    "depreciationMethods": {
+      "STRAIGHT_LINE": "Straight Line",
+      "DECLINING_BALANCE": "Declining Balance",
+      "NONE": "None"
+    },
+    "valuationTypes": {
+      "MARKET": "Market",
+      "APPRAISAL": "Appraisal",
+      "TAX_ASSESSED": "Tax Assessed",
+      "PURCHASE": "Purchase",
+      "INSURANCE": "Insurance",
+      "USER_ESTIMATE": "User Estimate"
+    },
+    "financingTypes": {
+      "MORTGAGE": "Mortgage",
+      "LEASING": "Leasing",
+      "LOAN": "Loan",
+      "LINE_OF_CREDIT": "Line of Credit",
+      "PRIVATE_FINANCING": "Private Financing",
+      "OTHER": "Other"
+    },
+    "rateTypes": {
+      "FIXED": "Fixed",
+      "VARIABLE": "Variable",
+      "INTEREST_ONLY": "Interest Only",
+      "HYBRID": "Hybrid"
+    },
+    "financingStatuses": {
+      "ACTIVE": "Active",
+      "PAID_OFF": "Paid Off",
+      "REFINANCED": "Refinanced",
+      "DEFAULTED": "Defaulted"
+    },
+    "paymentStatuses": {
+      "SCHEDULED": "Scheduled",
+      "COMPLETED": "Completed",
+      "MISSED": "Missed",
+      "LATE": "Late"
+    },
+    "insuranceTypes": {
+      "BUILDING": "Building",
+      "LIABILITY": "Liability",
+      "CONTENTS": "Contents",
+      "FLOOD": "Flood",
+      "EARTHQUAKE": "Earthquake",
+      "UMBRELLA": "Umbrella",
+      "RENT_GUARANTEE": "Rent Guarantee",
+      "OTHER": "Other"
+    },
+    "insuranceStatuses": {
+      "ACTIVE": "Active",
+      "EXPIRED": "Expired",
+      "CANCELLED": "Cancelled"
+    },
+    "taxTypes": {
+      "PROPERTY": "Property",
+      "MUNICIPAL": "Municipal",
+      "STATE": "State",
+      "LOCAL": "Local",
+      "LAND": "Land",
+      "SPECIAL_ASSESSMENT": "Special Assessment",
+      "OTHER": "Other"
+    },
+    "taxStatuses": {
+      "ACTIVE": "Active",
+      "EXPIRED": "Expired",
+      "EXEMPT": "Exempt"
+    },
+    "feeTypes": {
+      "HOA": "HOA",
+      "MANAGEMENT": "Management",
+      "MAINTENANCE_RESERVE": "Maintenance Reserve",
+      "CLEANING": "Cleaning",
+      "GARDENING": "Gardening",
+      "SECURITY": "Security",
+      "WASTE_MANAGEMENT": "Waste Management",
+      "WATER": "Water",
+      "UTILITIES": "Utilities",
+      "OTHER": "Other"
+    },
+    "feeStatuses": {
+      "ACTIVE": "Active",
+      "EXPIRED": "Expired",
+      "CANCELLED": "Cancelled"
+    },
+    "paymentFrequencies": {
+      "MONTHLY": "Monthly",
+      "QUARTERLY": "Quarterly",
+      "SEMI_ANNUALLY": "Semi-Annually",
+      "ANNUALLY": "Annually",
+      "CUSTOM": "Custom"
     }
   },
   "lifecycle": {

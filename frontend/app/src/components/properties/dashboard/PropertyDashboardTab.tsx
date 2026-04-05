@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ComposedChart,
   BarChart,
@@ -209,16 +210,20 @@ function useChartZoom<T extends { month: string }>(chartData: T[]) {
 
 type PeriodType = 'ytd' | '3' | '6' | '12' | '24' | '36' | 'all' | 'custom';
 
-const PERIOD_OPTIONS: { value: PeriodType; label: string }[] = [
-  { value: 'ytd', label: 'YTD' },
-  { value: '3', label: '3M' },
-  { value: '6', label: '6M' },
-  { value: '12', label: '12M' },
-  { value: '24', label: '24M' },
-  { value: '36', label: '36M' },
-  { value: 'all', label: 'All Time' },
-  { value: 'custom', label: 'Custom' },
-];
+function getPeriodOptions(
+  t: (key: string) => string
+): { value: PeriodType; label: string }[] {
+  return [
+    { value: 'ytd', label: 'YTD' },
+    { value: '3', label: '3M' },
+    { value: '6', label: '6M' },
+    { value: '12', label: '12M' },
+    { value: '24', label: '24M' },
+    { value: '36', label: '36M' },
+    { value: 'all', label: t('dashboard.allTime') },
+    { value: 'custom', label: t('dashboard.custom') },
+  ];
+}
 
 function computeMonths(
   periodType: PeriodType,
@@ -266,6 +271,7 @@ interface PropertyDashboardTabProps {
 export const PropertyDashboardTab = ({
   propertyId,
 }: PropertyDashboardTabProps) => {
+  const { t } = useTranslation('properties');
   const [periodType, setPeriodType] = useState<PeriodType>('12');
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
@@ -344,12 +350,12 @@ export const PropertyDashboardTab = ({
   if (error) {
     return (
       <div className="bg-error-bg border border-error-border text-error-text px-4 py-3 rounded-lg text-sm">
-        Failed to load dashboard data.{' '}
+        {t('dashboard.failedToLoad')}{' '}
         <button
           onClick={() => refetch()}
           className="inline-flex items-center gap-1 underline hover:no-underline"
         >
-          <RefreshCw className="h-3 w-3" /> Retry
+          <RefreshCw className="h-3 w-3" /> {t('dashboard.retry')}
         </button>
       </div>
     );
@@ -375,7 +381,7 @@ export const PropertyDashboardTab = ({
         <div className="flex items-center gap-2 flex-wrap">
           <Calendar className="h-4 w-4 text-text-secondary shrink-0" />
           <div className="flex gap-1 flex-wrap">
-            {PERIOD_OPTIONS.map((opt) => (
+            {getPeriodOptions(t).map((opt) => (
               <button
                 key={opt.value}
                 onClick={() => handlePeriodChange(opt.value)}
@@ -400,7 +406,7 @@ export const PropertyDashboardTab = ({
                 }}
                 className="px-2 py-1.5 border border-border-strong rounded-md text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-surface-card text-text-primary"
               />
-              <span className="text-xs text-text-secondary">to</span>
+              <span className="text-xs text-text-secondary">{t('dashboard.to')}</span>
               <input
                 type="date"
                 value={customEndDate}
@@ -429,7 +435,7 @@ export const PropertyDashboardTab = ({
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-border-default text-text-secondary hover:bg-surface-inset transition-colors disabled:opacity-50"
           >
             <Download className="h-3.5 w-3.5" />
-            {exporting === 'pdf' ? 'Exporting...' : 'PDF'}
+            {exporting === 'pdf' ? t('dashboard.exporting') : 'PDF'}
           </button>
         </div>
       </div>
@@ -445,7 +451,7 @@ export const PropertyDashboardTab = ({
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ChartCard
-          title="Monthly Cash Flow"
+          title={t('dashboard.charts.monthlyCashFlow')}
           icon={<BarChart3 className="h-5 w-5" />}
         >
           <CashFlowChart
@@ -457,7 +463,7 @@ export const PropertyDashboardTab = ({
         </ChartCard>
 
         <ChartCard
-          title="Occupancy & Income Trend"
+          title={t('dashboard.charts.occupancyIncomeTrend')}
           icon={<TrendingUp className="h-5 w-5" />}
         >
           <OccupancyAndTrendChart
@@ -470,7 +476,7 @@ export const PropertyDashboardTab = ({
         </ChartCard>
 
         <ChartCard
-          title="Expense Breakdown"
+          title={t('dashboard.charts.expenseBreakdown')}
           icon={<DollarSign className="h-5 w-5" />}
         >
           <ExpenseTimelineChart
@@ -483,7 +489,7 @@ export const PropertyDashboardTab = ({
 
         {futureTrend && futureTrend.months.length > 0 && (
           <ChartCard
-            title="6-Month Projection"
+            title={t('dashboard.charts.sixMonthProjection')}
             icon={<TrendingUp className="h-5 w-5" />}
           >
             <FutureTrendChart
@@ -496,7 +502,7 @@ export const PropertyDashboardTab = ({
         )}
 
         <ChartCard
-          title="Equity Overview"
+          title={t('dashboard.charts.equityOverview')}
           icon={<TrendingUp className="h-5 w-5" />}
         >
           <EquityBreakdownCard data={equity} currency={summary.currency} />
@@ -509,6 +515,7 @@ export const PropertyDashboardTab = ({
 // --- Summary Cards ---
 
 function SummaryCards({ metrics }: { metrics: DashboardSummaryMetrics }) {
+  const { t } = useTranslation('properties');
   const cur = metrics.currency || '';
   const fmtMoney = (val: number | null | undefined) => formatCurrency(val, cur);
   const fmtPct = (val: number | null | undefined) =>
@@ -516,55 +523,55 @@ function SummaryCards({ metrics }: { metrics: DashboardSummaryMetrics }) {
 
   const cards = [
     {
-      label: 'Total ROI',
+      label: t('dashboard.summary.totalRoi'),
       value: fmtPct(metrics.totalRoiPercent),
       icon: <TrendingUp className="h-5 w-5" />,
       positive: (metrics.totalRoiPercent ?? 0) >= 0,
     },
     {
-      label: 'Annualized ROI',
+      label: t('dashboard.summary.annualizedRoi'),
       value: fmtPct(metrics.annualizedRoiPercent),
       icon: <Percent className="h-5 w-5" />,
       positive: (metrics.annualizedRoiPercent ?? 0) >= 0,
     },
     {
-      label: 'Cap Rate',
+      label: t('dashboard.summary.capRate'),
       value: fmtPct(metrics.capRatePercent),
       icon: <Percent className="h-5 w-5" />,
       positive: (metrics.capRatePercent ?? 0) >= 0,
     },
     {
-      label: 'Cash-on-Cash',
+      label: t('dashboard.summary.cashOnCash'),
       value: fmtPct(metrics.cashOnCashPercent),
       icon: <Percent className="h-5 w-5" />,
       positive: (metrics.cashOnCashPercent ?? 0) >= 0,
     },
     {
-      label: 'Monthly Cash Flow',
+      label: t('dashboard.summary.monthlyCashFlow'),
       value: fmtMoney(metrics.monthlyCashFlow),
       icon: <DollarSign className="h-5 w-5" />,
       positive: (metrics.monthlyCashFlow ?? 0) >= 0,
     },
     {
-      label: 'Annual NOI',
+      label: t('dashboard.summary.annualNoi'),
       value: fmtMoney(metrics.annualNoi),
       icon: <DollarSign className="h-5 w-5" />,
       positive: (metrics.annualNoi ?? 0) >= 0,
     },
     {
-      label: 'Total Equity',
+      label: t('dashboard.summary.totalEquity'),
       value: fmtMoney(metrics.totalEquity),
       icon: <Home className="h-5 w-5" />,
       positive: (metrics.totalEquity ?? 0) >= 0,
     },
     {
-      label: 'Equity Growth',
+      label: t('dashboard.summary.equityGrowth'),
       value: fmtPct(metrics.equityGrowthPercent),
       icon: <TrendingUp className="h-5 w-5" />,
       positive: (metrics.equityGrowthPercent ?? 0) >= 0,
     },
     {
-      label: 'Occupancy',
+      label: t('dashboard.summary.occupancy'),
       value:
         metrics.occupancyRatePercent != null
           ? `${metrics.occupancyRatePercent.toFixed(1)}%`
@@ -573,7 +580,7 @@ function SummaryCards({ metrics }: { metrics: DashboardSummaryMetrics }) {
       positive: (metrics.occupancyRatePercent ?? 0) >= 50,
     },
     {
-      label: 'Gross Rent Multiplier',
+      label: t('dashboard.summary.grossRentMultiplier'),
       value:
         metrics.grossRentMultiplier != null
           ? `${metrics.grossRentMultiplier.toFixed(1)}x`
@@ -658,6 +665,7 @@ function CashFlowChart({
   isDark: boolean;
   currency: string;
 }) {
+  const { t } = useTranslation('properties');
   const chartData = useMemo(
     () =>
       data.months.map((d) => ({
@@ -697,7 +705,7 @@ function CashFlowChart({
   );
 
   if (!data.months.length) {
-    return <EmptyChart message="No transaction data" />;
+    return <EmptyChart message={t('dashboard.cashFlow.noData')} />;
   }
 
   return (
@@ -721,10 +729,10 @@ function CashFlowChart({
           labelFormatter={(label) => formatMonthTick(String(label))}
           formatter={(value, name) => {
             const labels: Record<string, string> = {
-              income: 'Income',
-              negExpenses: 'Expenses',
-              negMortgage: 'Mortgage',
-              net: 'Net',
+              income: t('dashboard.cashFlow.income'),
+              negExpenses: t('dashboard.cashFlow.expenses'),
+              negMortgage: t('dashboard.cashFlow.mortgage'),
+              net: t('dashboard.cashFlow.net'),
             };
             const num = typeof value === 'number' ? value : Number(value);
             const display =
@@ -740,10 +748,10 @@ function CashFlowChart({
         <Legend
           formatter={(value) => {
             const labels: Record<string, string> = {
-              income: 'Income',
-              negExpenses: 'Expenses',
-              negMortgage: 'Mortgage',
-              net: 'Net',
+              income: t('dashboard.cashFlow.income'),
+              negExpenses: t('dashboard.cashFlow.expenses'),
+              negMortgage: t('dashboard.cashFlow.mortgage'),
+              net: t('dashboard.cashFlow.net'),
             };
             return labels[value] ?? value;
           }}
@@ -789,8 +797,10 @@ function OccupancyAndTrendChart({
   isDark: boolean;
   currency: string;
 }) {
+  const { t } = useTranslation('properties');
+
   if (!occupancy.months.length && !cashFlow.months.length) {
-    return <EmptyChart message="No contract data" />;
+    return <EmptyChart message={t('dashboard.occupancy.noData')} />;
   }
 
   const vacantColor = isDark ? '#2a2e3f' : '#e2e6f0';
@@ -801,7 +811,7 @@ function OccupancyAndTrendChart({
       {occupancy.months.length > 0 && (
         <div>
           <p className="text-xs text-text-secondary mb-1.5 font-medium">
-            Occupancy
+            {t('dashboard.occupancy.label')}
           </p>
           <div className="flex h-6 rounded overflow-hidden">
             {occupancy.months.map((m) => {
@@ -812,12 +822,12 @@ function OccupancyAndTrendChart({
               const selfShare = totalPct > 0 ? selfPct / totalPct : 0;
               const tooltipLabel =
                 contactPct > 0 && selfPct > 0
-                  ? `${formatMonthTick(m.month)}: Contact ${contactPct.toFixed(0)}% · Self ${selfPct.toFixed(0)}%`
+                  ? `${formatMonthTick(m.month)}: ${t('dashboard.occupancy.contact')} ${contactPct.toFixed(0)}% · ${t('dashboard.occupancy.selfOccupied')} ${selfPct.toFixed(0)}%`
                   : contactPct > 0
-                    ? `${formatMonthTick(m.month)}: Contact occupied ${contactPct.toFixed(0)}%`
+                    ? `${formatMonthTick(m.month)}: ${t('dashboard.occupancy.contactOccupied')} ${contactPct.toFixed(0)}%`
                     : selfPct > 0
-                      ? `${formatMonthTick(m.month)}: Self-occupied ${selfPct.toFixed(0)}%`
-                      : `${formatMonthTick(m.month)}: Vacant`;
+                      ? `${formatMonthTick(m.month)}: ${t('dashboard.occupancy.selfOccupied')} ${selfPct.toFixed(0)}%`
+                      : `${formatMonthTick(m.month)}: ${t('dashboard.occupancy.vacant')}`;
               return (
                 <div
                   key={m.month}
@@ -885,21 +895,21 @@ function OccupancyAndTrendChart({
                 className="inline-block w-2.5 h-2.5 rounded-sm"
                 style={{ backgroundColor: COLORS.income }}
               />
-              Contact
+              {t('dashboard.occupancy.contact')}
             </span>
             <span className="inline-flex items-center gap-1 text-[10px] text-text-secondary">
               <span
                 className="inline-block w-2.5 h-2.5 rounded-sm"
                 style={{ backgroundColor: '#6366f1' }}
               />
-              Self-occupied
+              {t('dashboard.occupancy.selfOccupied')}
             </span>
             <span className="inline-flex items-center gap-1 text-[10px] text-text-secondary">
               <span
                 className="inline-block w-2.5 h-2.5 rounded-sm"
                 style={{ backgroundColor: vacantColor }}
               />
-              Vacant
+              {t('dashboard.occupancy.vacant')}
             </span>
           </div>
         </div>
@@ -909,7 +919,7 @@ function OccupancyAndTrendChart({
       {cashFlow.months.length > 0 && (
         <div>
           <p className="text-xs text-text-secondary mb-1.5 font-medium">
-            Net Income Trend
+            {t('dashboard.occupancy.netIncomeTrend')}
           </p>
           <ResponsiveContainer width="100%" height={220}>
             <LineChart
@@ -936,7 +946,7 @@ function OccupancyAndTrendChart({
                     typeof value === 'number' ? value : Number(value),
                     currency
                   ),
-                  'Net Income',
+                  t('dashboard.occupancy.netIncome'),
                 ]}
               />
               <ReferenceLine
@@ -947,7 +957,7 @@ function OccupancyAndTrendChart({
               <Line
                 type="monotone"
                 dataKey="net"
-                name="Net Income"
+                name={t('dashboard.occupancy.netIncome')}
                 stroke={COLORS.net}
                 strokeWidth={2}
                 dot={{ fill: COLORS.net, r: 3 }}
@@ -984,6 +994,7 @@ function ExpenseTimelineChart({
   isDark: boolean;
   currency: string;
 }) {
+  const { t } = useTranslation('properties');
   const allCategories = data.categories.map((c) => c.category);
   const [enabled, setEnabled] = useState<Set<string>>(
     () => new Set(allCategories)
@@ -1031,7 +1042,7 @@ function ExpenseTimelineChart({
   );
 
   if (!data.categories.length) {
-    return <EmptyChart message="No expense data" />;
+    return <EmptyChart message={t('dashboard.expense.noData')} />;
   }
 
   const enabledCategories = allCategories.filter((c) => enabled.has(c));
@@ -1052,7 +1063,7 @@ function ExpenseTimelineChart({
               }}
             >
               <RefreshCw className="h-3 w-3" />
-              Reset zoom
+              {t('dashboard.resetZoom')}
             </button>
           </div>
         )}
@@ -1178,6 +1189,7 @@ function EquityBreakdownCard({
   data: EquityChartData;
   currency: string | null | undefined;
 }) {
+  const { t } = useTranslation('properties');
   const cur = currency || '';
   const fmt = (v: number | null | undefined) => formatCurrency(v, cur);
 
@@ -1185,7 +1197,7 @@ function EquityBreakdownCard({
 
   if (purchasePrice == null && currentMarketValue == null) {
     return (
-      <EmptyChart message="Add purchase price and market value to see equity" />
+      <EmptyChart message={t('dashboard.equity.noData')} />
     );
   }
 
@@ -1197,10 +1209,10 @@ function EquityBreakdownCard({
   const maxVal = Math.max(purchasePrice ?? 0, currentMarketValue ?? 0);
 
   const bars = [
-    { label: 'Purchase Price', value: purchasePrice, color: '#6b7194' },
-    { label: 'Market Value', value: currentMarketValue, color: '#3B82F6' },
-    { label: 'Mortgage', value: mortgageBalance, color: '#8B5CF6' },
-    { label: 'Equity', value: equity, color: '#10B981' },
+    { label: t('dashboard.equity.purchasePrice'), value: purchasePrice, color: '#6b7194' },
+    { label: t('dashboard.equity.marketValue'), value: currentMarketValue, color: '#3B82F6' },
+    { label: t('dashboard.equity.mortgage'), value: mortgageBalance, color: '#8B5CF6' },
+    { label: t('dashboard.equity.equity'), value: equity, color: '#10B981' },
   ];
 
   return (
@@ -1234,14 +1246,15 @@ function EquityBreakdownCard({
 // --- Data Completeness Card ---
 
 function DataCompletenessCard({ data }: { data: DashboardDataCompleteness }) {
+  const { t } = useTranslation('properties');
   const items = [
-    { label: 'Purchase price', done: data.hasPurchasePrice },
-    { label: 'Market value', done: data.hasMarketValue },
-    { label: 'Mortgage info', done: data.hasMortgageInfo },
-    { label: 'Operating costs', done: data.hasOperatingCosts },
-    { label: 'Contracts', done: data.hasContracts },
-    { label: 'Payments', done: data.hasPayments },
-    { label: 'Expenses', done: data.hasExpenses },
+    { label: t('dashboard.completeness.purchasePrice'), done: data.hasPurchasePrice },
+    { label: t('dashboard.completeness.marketValue'), done: data.hasMarketValue },
+    { label: t('dashboard.completeness.mortgageInfo'), done: data.hasMortgageInfo },
+    { label: t('dashboard.completeness.operatingCosts'), done: data.hasOperatingCosts },
+    { label: t('dashboard.completeness.contracts'), done: data.hasContracts },
+    { label: t('dashboard.completeness.payments'), done: data.hasPayments },
+    { label: t('dashboard.completeness.expenses'), done: data.hasExpenses },
   ];
 
   return (
@@ -1249,7 +1262,7 @@ function DataCompletenessCard({ data }: { data: DashboardDataCompleteness }) {
       <div className="flex items-center gap-2 mb-3">
         <AlertCircle className="h-5 w-5 text-warning-text" />
         <span className="font-semibold text-warning-text text-sm">
-          Data Completeness: {data.completenessPercent}%
+          {t('dashboard.completeness.title', { percent: data.completenessPercent })}
         </span>
       </div>
       <div className="h-2 bg-warning-border rounded-full mb-3">
@@ -1294,6 +1307,7 @@ function FutureTrendChart({
   isDark: boolean;
   currency: string;
 }) {
+  const { t } = useTranslation('properties');
   const chartData = data.months.map((d) => ({
     ...d,
     expectedExpenses: -d.expectedExpenses,
@@ -1302,8 +1316,7 @@ function FutureTrendChart({
   return (
     <div>
       <p className="text-xs text-text-secondary mb-2 font-medium">
-        Projected income & expenses based on active contracts and operating
-        costs
+        {t('dashboard.projection.description')}
       </p>
       <ResponsiveContainer width="100%" height={280}>
         <AreaChart
@@ -1338,7 +1351,7 @@ function FutureTrendChart({
           <Area
             type="monotone"
             dataKey="expectedIncome"
-            name="Expected Income"
+            name={t('dashboard.projection.expectedIncome')}
             stroke="#10B981"
             fill="#10B981"
             fillOpacity={0.15}
@@ -1347,7 +1360,7 @@ function FutureTrendChart({
           <Area
             type="monotone"
             dataKey="expectedExpenses"
-            name="Expected Expenses"
+            name={t('dashboard.projection.expectedExpenses')}
             stroke="#EF4444"
             fill="#EF4444"
             fillOpacity={0.15}
@@ -1356,7 +1369,7 @@ function FutureTrendChart({
           <Line
             type="monotone"
             dataKey="expectedNet"
-            name="Expected Net"
+            name={t('dashboard.projection.expectedNet')}
             stroke="#3B82F6"
             strokeWidth={2}
             strokeDasharray="5 5"

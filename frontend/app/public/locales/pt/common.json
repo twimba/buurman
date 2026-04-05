@@ -429,7 +429,33 @@
       "passwordRequired": "A palavra-passe é obrigatória",
       "passwordRequirements": "A palavra-passe não cumpre todos os requisitos",
       "passwordsMismatch": "As palavras-passe não coincidem"
+    },
+    "copyright": "© 2026 Buurman. Todos os direitos reservados.",
+    "freeForSmallLandlords": "Grátis para pequenos senhorios",
+    "welcomeBack": "Bem-vindo de volta",
+    "propertiesWaiting": "Os seus imóveis estão à sua espera",
+    "signIn": "Iniciar sessão",
+    "or": "ou",
+    "demo": {
+      "badge": "Modo Demo",
+      "title": "Experimente o Buurman",
+      "subtitle": "Explore com uma conta demo — sem registo necessário",
+      "credentials": "Credenciais de Demo",
+      "email": "Email",
+      "password": "Palavra-passe",
+      "launch": "Iniciar Demo",
+      "keycloakHint": "Será autenticado automaticamente via Keycloak",
+      "orCreateAccount": "ou crie a sua própria conta",
+      "getStartedFree": "Comece gratuitamente"
     }
+  },
+  "calendarFeed": {
+    "button": "Calendário",
+    "title": "URL do Calendário",
+    "copied": "URL copiado para a área de transferência",
+    "copyFailed": "Falha ao copiar URL",
+    "instructions": "Adicione este URL à sua aplicação de calendário (Google Calendar, Apple Calendar, Outlook) para subscrever atualizações.",
+    "manageFeeds": "Gerir feeds de calendário"
   },
   "metricHints": {
     "totalROI": "Retorno sobre o Investimento — lucro total relativo ao custo total",

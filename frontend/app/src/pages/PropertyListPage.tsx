@@ -1,12 +1,8 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import {
-  PropertyStatus,
-  PropertyCategory,
-  PROPERTY_STATUS_LABELS,
-  PROPERTY_CATEGORY_LABELS,
-} from '@/types/property';
+import { PropertyStatus, PropertyCategory } from '@/types/property';
+import { usePropertyLabels } from '@/hooks/usePropertyLabels';
 import { useProperties } from '@/hooks/usePropertyHooks';
 import { PropertyCard } from '@/components/properties/PropertyCard';
 import { ErrorMessage } from '@/components/ErrorMessage';
@@ -20,6 +16,7 @@ export const PropertyListPage = () => {
   const { t } = useTranslation('properties');
   const navigate = useNavigate();
   const { canEditData } = useTeam();
+  const { statusLabel, categoryLabel } = usePropertyLabels();
 
   const categoryFilters = useMemo<
     { value: PropertyCategory | undefined; label: string }[]
@@ -28,10 +25,10 @@ export const PropertyListPage = () => {
       { value: undefined, label: t('list.allCategories') },
       ...Object.values(PropertyCategory).map((cat) => ({
         value: cat,
-        label: PROPERTY_CATEGORY_LABELS[cat],
+        label: categoryLabel(cat),
       })),
     ],
-    [t]
+    [t, categoryLabel]
   );
 
   const statusFilters = useMemo<
@@ -41,10 +38,10 @@ export const PropertyListPage = () => {
       { value: undefined, label: t('list.allStatuses') },
       ...Object.values(PropertyStatus).map((status) => ({
         value: status,
-        label: PROPERTY_STATUS_LABELS[status],
+        label: statusLabel(status),
       })),
     ],
-    [t]
+    [t, statusLabel]
   );
   const [statusFilter, setStatusFilter] = useState<PropertyStatus | undefined>(
     undefined

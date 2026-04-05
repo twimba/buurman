@@ -282,7 +282,12 @@
       "endOccupancy": "Bewoning beëindigen",
       "deleteTitle": "Eigen bewoningsperiode verwijderen",
       "deleteMessage": "Weet u zeker dat u deze eigen bewoningsperiode wilt verwijderen?",
-      "deleteWarning": "Deze actie kan niet ongedaan worden gemaakt."
+      "deleteWarning": "Deze actie kan niet ongedaan worden gemaakt.",
+      "takenPeriods": {
+        "selfUse": "Eigen bewoning: {{period}}",
+        "contract": "Contract {{identifier}}: {{period}}",
+        "ongoing": "Lopend"
+      }
     }
   },
   "expenses": {
@@ -350,6 +355,17 @@
       "reason": "Reden",
       "reasonPlaceholder": "Selecteer een reden...",
       "alreadyTakenPeriods": "Reeds bezette perioden"
+    },
+    "occupancyTypes": {
+      "PERSONAL": "Persoonlijk",
+      "FAMILY": "Familie",
+      "BUSINESS": "Zakelijk"
+    },
+    "endReasons": {
+      "CONVERTING_TO_RENTAL": "Omzetting naar verhuur",
+      "SELLING": "Verkoop",
+      "RENOVATION": "Renovatie",
+      "OTHER": "Overig"
     }
   },
   "map": {
@@ -399,13 +415,8 @@
     "sections": {
       "acquisition": "Aankoop",
       "valuations": "Taxaties",
-      "financings": "Financieringen"
-    },
-    "empty": {
-      "noAcquisition": "Geen aankoopgegevens vastgelegd.",
-      "noValuation": "Geen taxatiegegevens vastgelegd.",
-      "noFinancing": "Geen financieringsinstrumenten vastgelegd.",
-      "noPayments": "Nog geen betalingen vastgelegd."
+      "financings": "Financieringen",
+      "recurringCosts": "Terugkerende kosten"
     },
     "metrics": {
       "netWorth": "Nettovermogen",
@@ -488,11 +499,286 @@
     },
     "units": {
       "years": "jaar",
-      "months": "maanden"
+      "months": "maanden",
+      "perYear": "/jr"
+    },
+    "recurringCosts": "Terugkerende kosten",
+    "insurances": "Verzekeringen",
+    "taxes": "Belastingen",
+    "fees": "Kosten",
+    "na": "N.v.t.",
+    "all": "Alle",
+    "term": "Looptijd",
+    "frequency": "Frequentie",
+    "actions": "Acties",
+    "total": "Totaal",
+    "empty": {
+      "noAcquisition": "Geen aankoopgegevens vastgelegd.",
+      "noValuation": "Geen taxatiegegevens vastgelegd.",
+      "noFinancing": "Geen financieringsinstrumenten vastgelegd.",
+      "noPayments": "Nog geen betalingen vastgelegd.",
+      "noInsurances": "Geen verzekeringen.",
+      "noTaxes": "Geen belastingen.",
+      "noFees": "Geen kosten."
+    },
+    "delete": {
+      "title": "{{label}} verwijderen?",
+      "message": "Weet u zeker dat u dit(e) {{label}} wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+      "valuation": "{{type}} taxatie",
+      "payment": "betaling ({{date}})",
+      "insurance": "{{type}} verzekering",
+      "tax": "{{type}} belasting",
+      "fee": "{{type}} kosten"
+    },
+    "toast": {
+      "paymentDeleted": "Betaling succesvol verwijderd",
+      "paymentDeleteFailed": "Betaling verwijderen mislukt",
+      "paymentsCreated_one": "{{count}} betaling succesvol aangemaakt",
+      "paymentsCreated_other": "{{count}} betalingen succesvol aangemaakt"
+    },
+    "months": {
+      "jan": "Jan",
+      "feb": "Feb",
+      "mar": "Mrt",
+      "apr": "Apr",
+      "may": "Mei",
+      "jun": "Jun",
+      "jul": "Jul",
+      "aug": "Aug",
+      "sep": "Sep",
+      "oct": "Okt",
+      "nov": "Nov",
+      "dec": "Dec"
+    },
+    "acquisitionTypes": {
+      "PURCHASE": "Aankoop",
+      "INHERITANCE": "Erfenis",
+      "GIFT": "Schenking",
+      "FORECLOSURE": "Executieverkoop",
+      "AUCTION": "Veiling",
+      "OTHER": "Overig"
+    },
+    "depreciationMethods": {
+      "STRAIGHT_LINE": "Lineair",
+      "DECLINING_BALANCE": "Degressief",
+      "NONE": "Geen"
+    },
+    "valuationTypes": {
+      "MARKET": "Markt",
+      "APPRAISAL": "Taxatie",
+      "TAX_ASSESSED": "WOZ-waarde",
+      "PURCHASE": "Aankoop",
+      "INSURANCE": "Verzekering",
+      "USER_ESTIMATE": "Eigen schatting"
+    },
+    "financingTypes": {
+      "MORTGAGE": "Hypotheek",
+      "LEASING": "Leasing",
+      "LOAN": "Lening",
+      "LINE_OF_CREDIT": "Kredietlijn",
+      "PRIVATE_FINANCING": "Particuliere financiering",
+      "OTHER": "Overig"
+    },
+    "rateTypes": {
+      "FIXED": "Vast",
+      "VARIABLE": "Variabel",
+      "INTEREST_ONLY": "Aflossingsvrij",
+      "HYBRID": "Hybride"
+    },
+    "financingStatuses": {
+      "ACTIVE": "Actief",
+      "PAID_OFF": "Afgelost",
+      "REFINANCED": "Geherfinancierd",
+      "DEFAULTED": "In gebreke"
+    },
+    "paymentStatuses": {
+      "SCHEDULED": "Gepland",
+      "COMPLETED": "Voltooid",
+      "MISSED": "Gemist",
+      "LATE": "Te laat"
+    },
+    "insuranceTypes": {
+      "BUILDING": "Opstal",
+      "LIABILITY": "Aansprakelijkheid",
+      "CONTENTS": "Inboedel",
+      "FLOOD": "Waterschade",
+      "EARTHQUAKE": "Aardbeving",
+      "UMBRELLA": "Paraplu",
+      "RENT_GUARANTEE": "Huurgarantie",
+      "OTHER": "Overig"
+    },
+    "insuranceStatuses": {
+      "ACTIVE": "Actief",
+      "EXPIRED": "Verlopen",
+      "CANCELLED": "Geannuleerd"
+    },
+    "taxTypes": {
+      "PROPERTY": "Onroerend goed",
+      "MUNICIPAL": "Gemeentelijk",
+      "STATE": "Provinciaal",
+      "LOCAL": "Lokaal",
+      "LAND": "Grond",
+      "SPECIAL_ASSESSMENT": "Bijzondere aanslag",
+      "OTHER": "Overig"
+    },
+    "taxStatuses": {
+      "ACTIVE": "Actief",
+      "EXPIRED": "Verlopen",
+      "EXEMPT": "Vrijgesteld"
+    },
+    "feeTypes": {
+      "HOA": "VvE",
+      "MANAGEMENT": "Beheer",
+      "MAINTENANCE_RESERVE": "Onderhoudsreserve",
+      "CLEANING": "Schoonmaak",
+      "GARDENING": "Tuinonderhoud",
+      "SECURITY": "Beveiliging",
+      "WASTE_MANAGEMENT": "Afvalverwerking",
+      "WATER": "Water",
+      "UTILITIES": "Nutsvoorzieningen",
+      "OTHER": "Overig"
+    },
+    "feeStatuses": {
+      "ACTIVE": "Actief",
+      "EXPIRED": "Verlopen",
+      "CANCELLED": "Geannuleerd"
+    },
+    "paymentFrequencies": {
+      "MONTHLY": "Maandelijks",
+      "QUARTERLY": "Kwartaal",
+      "SEMI_ANNUALLY": "Halfjaarlijks",
+      "ANNUALLY": "Jaarlijks",
+      "CUSTOM": "Aangepast"
     }
   },
   "lifecycle": {
     "openContract": "Contract openen",
     "clickToEdit": "Klik om te bewerken"
+  },
+  "enums": {
+    "categories": {
+      "RESIDENTIAL": "Residentieel",
+      "COMMERCIAL": "Commercieel",
+      "INDUSTRIAL": "Industrieel",
+      "AGRICULTURAL": "Agrarisch",
+      "MIXED_USE": "Gemengd Gebruik"
+    },
+    "types": {
+      "APARTMENT": "Appartement",
+      "HOUSE": "Woning",
+      "STUDIO": "Studio",
+      "ROOM": "Kamer",
+      "VILLA": "Villa",
+      "TOWNHOUSE": "Rijwoning",
+      "OTHER_RESIDENTIAL": "Overig",
+      "OFFICE": "Kantoor",
+      "RETAIL": "Winkel",
+      "RESTAURANT": "Restaurant",
+      "HOTEL": "Hotel",
+      "SHOWROOM": "Showroom",
+      "AUTO_DEALERSHIP": "Autodealer",
+      "SNACKBAR": "Snackbar",
+      "CAFE": "Café",
+      "MOTEL": "Motel",
+      "BAR": "Bar",
+      "BED_AND_BREAKFAST": "B&B",
+      "OTHER_COMMERCIAL": "Overig",
+      "WAREHOUSE": "Magazijn",
+      "WORKSHOP": "Werkplaats",
+      "FACTORY": "Fabriek",
+      "DATA_CENTER": "Datacenter",
+      "COLD_STORAGE": "Koelopslag",
+      "GARAGE": "Garage",
+      "OTHER_INDUSTRIAL": "Overig",
+      "FARMLAND": "Landbouwgrond",
+      "RANCH": "Boerderij",
+      "GREENHOUSE": "Kas",
+      "ORCHARD": "Boomgaard",
+      "VINEYARD": "Wijngaard",
+      "OTHER_AGRICULTURAL": "Overig",
+      "MIXED_USE": "Gemengd Gebruik",
+      "COMMERCIAL": "Commercieel"
+    },
+    "statuses": {
+      "VACANT": "Leeg",
+      "OCCUPIED": "Bewoond",
+      "SELF_OCCUPIED": "Eigen Bewoning",
+      "MAINTENANCE": "Onderhoud",
+      "UNAVAILABLE": "Niet Beschikbaar",
+      "UNDER_RENOVATION": "In Renovatie",
+      "FALLOW": "Braakliggend",
+      "LISTED": "Te Huur"
+    }
+  },
+  "dashboard": {
+    "failedToLoad": "Dashboardgegevens konden niet worden geladen.",
+    "retry": "Opnieuw proberen",
+    "exporting": "Exporteren...",
+    "allTime": "Gehele periode",
+    "custom": "Aangepast",
+    "to": "tot",
+    "resetZoom": "Zoom resetten",
+    "charts": {
+      "monthlyCashFlow": "Maandelijkse cashflow",
+      "occupancyIncomeTrend": "Bezettings- & inkomstentrend",
+      "expenseBreakdown": "Kostenspecificatie",
+      "sixMonthProjection": "6-maanden prognose",
+      "equityOverview": "Overzicht eigen vermogen"
+    },
+    "summary": {
+      "totalRoi": "Totaal ROI",
+      "annualizedRoi": "Geannualiseerd ROI",
+      "capRate": "Kapitalisatievoet",
+      "cashOnCash": "Cash-on-Cash",
+      "monthlyCashFlow": "Maandelijkse cashflow",
+      "annualNoi": "Jaarlijkse NOI",
+      "totalEquity": "Totaal eigen vermogen",
+      "equityGrowth": "Groei eigen vermogen",
+      "occupancy": "Bezetting",
+      "grossRentMultiplier": "Bruto huurmultiplicator"
+    },
+    "cashFlow": {
+      "income": "Inkomsten",
+      "expenses": "Uitgaven",
+      "mortgage": "Hypotheek",
+      "net": "Netto",
+      "noData": "Geen transactiegegevens"
+    },
+    "occupancy": {
+      "label": "Bezetting",
+      "contact": "Huurder",
+      "selfOccupied": "Eigen gebruik",
+      "vacant": "Leegstand",
+      "contactOccupied": "Verhuurd",
+      "netIncomeTrend": "Netto-inkomstentrend",
+      "netIncome": "Netto-inkomen",
+      "noData": "Geen contractgegevens"
+    },
+    "expense": {
+      "noData": "Geen kostengegevens"
+    },
+    "equity": {
+      "purchasePrice": "Aankoopprijs",
+      "marketValue": "Marktwaarde",
+      "mortgage": "Hypotheek",
+      "equity": "Eigen vermogen",
+      "noData": "Voeg aankoopprijs en marktwaarde toe om het eigen vermogen te zien"
+    },
+    "completeness": {
+      "title": "Volledigheid gegevens: {{percent}}%",
+      "purchasePrice": "Aankoopprijs",
+      "marketValue": "Marktwaarde",
+      "mortgageInfo": "Hypotheekinformatie",
+      "operatingCosts": "Exploitatiekosten",
+      "contracts": "Contracten",
+      "payments": "Betalingen",
+      "expenses": "Uitgaven"
+    },
+    "projection": {
+      "description": "Verwachte inkomsten en uitgaven op basis van actieve contracten en exploitatiekosten",
+      "expectedIncome": "Verwachte inkomsten",
+      "expectedExpenses": "Verwachte uitgaven",
+      "expectedNet": "Verwacht netto"
+    }
   }
 }

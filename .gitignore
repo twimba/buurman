@@ -52,3 +52,4 @@ venv/
 tests/bdd/.env.bdd
 htmlcov/
 .coverage
+.playwright-mcp/

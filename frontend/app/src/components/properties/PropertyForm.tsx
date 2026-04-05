@@ -13,10 +13,8 @@ import {
   AmenityResponse,
   PropertyAmenityResponse,
   PROPERTY_TYPES_BY_CATEGORY,
-  PROPERTY_CATEGORY_LABELS,
-  PROPERTY_TYPE_LABELS,
-  PROPERTY_STATUS_LABELS,
 } from '@/types/property';
+import { usePropertyLabels } from '@/hooks/usePropertyLabels';
 import { InteractiveMap } from '../common/InteractiveMap';
 import { PropertyCharacteristicsForm } from './PropertyCharacteristicsForm';
 import { CountrySelector } from '../common/CountrySelector';
@@ -68,6 +66,7 @@ export const PropertyForm = ({
   const { t } = useTranslation('properties');
   const navigate = useNavigate();
   const { defaultCountryCode } = useTeamDefaults();
+  const { statusLabel, typeLabel, categoryLabel } = usePropertyLabels();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const geocodeMutation = useGeocode();
   const [addressDirty, setAddressDirty] = useState(false);
@@ -191,7 +190,7 @@ export const PropertyForm = ({
     () =>
       Object.values(PropertyCategory).map((cat) => ({
         value: cat,
-        label: PROPERTY_CATEGORY_LABELS[cat],
+        label: categoryLabel(cat),
         Icon: PROPERTY_CATEGORY_ICONS[cat],
       })),
     []
@@ -201,7 +200,7 @@ export const PropertyForm = ({
     () =>
       availableTypes.map((type) => ({
         value: type,
-        label: PROPERTY_TYPE_LABELS[type] ?? type,
+        label: typeLabel(type),
         Icon: PROPERTY_TYPE_ICONS[type],
       })),
     [availableTypes]
@@ -583,11 +582,9 @@ export const PropertyForm = ({
                     <CatIcon size={14} className="text-text-muted" />
                   ) : null;
                 })()}
-                {
-                  PROPERTY_CATEGORY_LABELS[
-                    formData.propertyCategory ?? PropertyCategory.RESIDENTIAL
-                  ]
-                }
+                {categoryLabel(
+                  formData.propertyCategory ?? PropertyCategory.RESIDENTIAL
+                )}
                 <span className="text-xs text-text-muted ml-1">
                   {t('form.categoryCannotChange')}
                 </span>
@@ -627,7 +624,7 @@ export const PropertyForm = ({
             >
               {Object.values(PropertyStatus).map((status) => (
                 <option key={status} value={status}>
-                  {PROPERTY_STATUS_LABELS[status]}
+                  {statusLabel(status)}
                 </option>
               ))}
             </select>

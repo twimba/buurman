@@ -53,7 +53,11 @@
     "cancelExtension": "Cancelar Extensión",
     "cancelConfirmMessage": "¿Está seguro de que desea cancelar esta extensión? Esta acción no se puede deshacer.",
     "deleteGeneratedDocuments": "Eliminar documentos generados",
-    "keepExtension": "Mantener Extensión"
+    "keepExtension": "Mantener Extensión",
+    "contractTypes": {
+      "FIXED_TERM": "Plazo Fijo",
+      "INDEFINITE": "Indefinido"
+    }
   },
   "overview": {
     "contractParties": "Partes del Contrato",
@@ -91,6 +95,47 @@
     "noParties": "Sin partes asignadas a este contrato.",
     "paymentInstruction": "Instrucción de Pago",
     "noPaymentInstruction": "Sin instrucción de pago configurada.",
+    "paymentInstructions": {
+      "title": "Instrucciones de Pago",
+      "loading": "Cargando instrucciones de pago...",
+      "template": "Plantilla",
+      "custom": "Personalizado",
+      "iban": "IBAN",
+      "account": "Cuenta",
+      "routing": "Ruta",
+      "holder": "Titular",
+      "ref": "Ref",
+      "effectiveFrom": "Efectivo desde {{date}}",
+      "hideHistory": "Ocultar",
+      "viewHistory": "Ver",
+      "historyCount": "Historial ({{count}} entradas)",
+      "historyTitle": "Historial de Instrucciones de Pago",
+      "current": "Actual",
+      "present": "Presente",
+      "changeTitle": "Cambiar Instrucciones de Pago",
+      "setTitle": "Establecer Instrucciones de Pago",
+      "useTemplate": "Usar Plantilla",
+      "customOption": "Personalizado",
+      "selectTemplate": "Seleccionar Plantilla *",
+      "choosePlaceholder": "Elige un método de pago...",
+      "default": "Predeterminado",
+      "name": "Nombre *",
+      "method": "Método *",
+      "description": "Descripción",
+      "bankName": "Nombre del Banco",
+      "accountHolder": "Titular de la Cuenta",
+      "ibanField": "IBAN",
+      "bicSwift": "BIC / SWIFT",
+      "accountNumber": "Número de Cuenta",
+      "routingNumber": "Número de Ruta",
+      "paymentReference": "Referencia de Pago",
+      "effectiveFromField": "Efectivo Desde *",
+      "notesField": "Notas (motivo del cambio)",
+      "notesPlaceholder": "Motivo opcional...",
+      "saving": "Guardando...",
+      "changeInstructions": "Cambiar Instrucciones",
+      "setInstructions": "Establecer Instrucciones"
+    },
     "notes": "Notas",
     "renewalConfig": {
       "title": "Configuración de Renovación",
@@ -362,5 +407,24 @@
   "generateRentChange": {
     "title": "Generar Cambio de Alquiler",
     "description": "Generar una notificación de cambio de alquiler."
+  },
+  "enums": {
+    "partyRoles": {
+      "PRIMARY_TENANT": "Contacto Principal",
+      "GUARANTOR": "Avalista",
+      "COSIGNER": "Cofirmante",
+      "EXTRA_TENANT": "Contacto Adicional"
+    },
+    "rentComponents": {
+      "BASE_RENT": "Alquiler Base",
+      "UTILITIES_ADVANCE": "Adelanto de Servicios",
+      "SERVICE_COSTS": "Gastos de Servicio",
+      "HOA_FEES": "Gastos de Comunidad",
+      "FURNITURE_RENTAL": "Alquiler de Muebles",
+      "PARKING": "Aparcamiento",
+      "STORAGE": "Almacén",
+      "GARBAGE_COLLECTION": "Recogida de Basura",
+      "OTHER": "Otro"
+    }
   }
 }

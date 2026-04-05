@@ -431,5 +431,39 @@
       "FAILED": "Falhado",
       "REVERTED": "Revertido"
     }
+  },
+  "enums": {
+    "contactTypes": {
+      "INDIVIDUAL": "Individual",
+      "COMPANY": "Empresa",
+      "SERVICE_PROVIDER": "Prestador de Serviços"
+    },
+    "interactionTypes": {
+      "PHONE_CALL": "Chamada Telefónica",
+      "MEETING": "Reunião",
+      "VIEWING": "Visita",
+      "KEY_HANDOVER": "Entrega de Chaves",
+      "INSPECTION": "Inspeção",
+      "NOTE": "Nota",
+      "OTHER": "Outro"
+    },
+    "relationshipTypes": {
+      "GUARANTOR_FOR": "Fiador de",
+      "FAMILY_OF": "Familiar de",
+      "PARTNER_OF": "Parceiro de",
+      "WORKS_FOR": "Trabalha para",
+      "CONTACT_PERSON_FOR": "Pessoa de contacto de",
+      "OTHER": "Outro"
+    },
+    "contactTags": {
+      "VIP": "VIP",
+      "PROSPECT": "Potencial",
+      "LATE_PAYER": "Mau Pagador",
+      "LONG_TERM": "Longo Prazo",
+      "KEY_HOLDER": "Detentor de Chaves",
+      "DO_NOT_CONTACT": "Não Contactar",
+      "FORMER_TENANT": "Antigo Inquilino",
+      "REFERRED": "Referenciado"
+    }
   }
 }

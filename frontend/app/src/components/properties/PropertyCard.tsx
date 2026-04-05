@@ -1,10 +1,5 @@
-import {
-  PropertyResponse,
-  PropertyStatus,
-  PROPERTY_TYPE_LABELS,
-  PROPERTY_CATEGORY_LABELS,
-  PROPERTY_STATUS_LABELS,
-} from '@/types/property';
+import { PropertyResponse } from '@/types/property';
+import { usePropertyLabels } from '@/hooks/usePropertyLabels';
 import { Bed, Bath, Ruler } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { PropertyTypeIcon } from '@/components/common/PropertyTypeIcon';
@@ -30,6 +25,7 @@ const statusColors: Record<string, string> = {
 
 export const PropertyCard = ({ property }: PropertyCardProps) => {
   const navigate = useNavigate();
+  const { statusLabel, typeLabel, categoryLabel } = usePropertyLabels();
   const PlaceholderIcon =
     PROPERTY_TYPE_ICONS[property.propertyType] ??
     PROPERTY_CATEGORY_ICONS[property.propertyCategory] ??
@@ -59,8 +55,7 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
           <span
             className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[property.status] ?? 'bg-gray-100 text-gray-800'}`}
           >
-            {PROPERTY_STATUS_LABELS[property.status as PropertyStatus] ??
-              property.status}
+            {statusLabel(property.status)}
           </span>
         </div>
       </div>
@@ -111,8 +106,7 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
               size={11}
               className="flex-shrink-0"
             />
-            {PROPERTY_CATEGORY_LABELS[property.propertyCategory] ??
-              property.propertyCategory}
+            {categoryLabel(property.propertyCategory)}
           </span>
           <span className="inline-flex items-center gap-1 text-xs bg-surface-inset text-text-secondary px-2 py-1 rounded">
             <PropertyTypeIcon
@@ -120,8 +114,7 @@ export const PropertyCard = ({ property }: PropertyCardProps) => {
               size={11}
               className="flex-shrink-0"
             />
-            {PROPERTY_TYPE_LABELS[property.propertyType] ??
-              property.propertyType}
+            {typeLabel(property.propertyType)}
           </span>
         </div>
       </div>

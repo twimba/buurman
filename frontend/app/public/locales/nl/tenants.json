@@ -431,5 +431,39 @@
       "FAILED": "Mislukt",
       "REVERTED": "Ongedaan gemaakt"
     }
+  },
+  "enums": {
+    "contactTypes": {
+      "INDIVIDUAL": "Particulier",
+      "COMPANY": "Bedrijf",
+      "SERVICE_PROVIDER": "Dienstverlener"
+    },
+    "interactionTypes": {
+      "PHONE_CALL": "Telefoongesprek",
+      "MEETING": "Vergadering",
+      "VIEWING": "Bezichtiging",
+      "KEY_HANDOVER": "Sleuteloverdracht",
+      "INSPECTION": "Inspectie",
+      "NOTE": "Notitie",
+      "OTHER": "Overig"
+    },
+    "relationshipTypes": {
+      "GUARANTOR_FOR": "Borg voor",
+      "FAMILY_OF": "Familie van",
+      "PARTNER_OF": "Partner van",
+      "WORKS_FOR": "Werkt voor",
+      "CONTACT_PERSON_FOR": "Contactpersoon voor",
+      "OTHER": "Overig"
+    },
+    "contactTags": {
+      "VIP": "VIP",
+      "PROSPECT": "Prospect",
+      "LATE_PAYER": "Slechte Betaler",
+      "LONG_TERM": "Langetermijn",
+      "KEY_HOLDER": "Sleutelhouder",
+      "DO_NOT_CONTACT": "Niet Contacteren",
+      "FORMER_TENANT": "Voormalig Huurder",
+      "REFERRED": "Doorverwezen"
+    }
   }
 }

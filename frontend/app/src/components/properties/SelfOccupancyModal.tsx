@@ -6,7 +6,7 @@ import {
   useOccupancyPeriods,
 } from '@/hooks/useOccupancyPeriodHooks';
 import { useContracts } from '@/hooks/useContractHooks';
-import { OccupancyType, OCCUPANCY_TYPE_LABELS } from '@/types/occupancyPeriod';
+import { OccupancyType } from '@/types/occupancyPeriod';
 import { ContractStatus } from '@/types/contract';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { X, Info } from 'lucide-react';
@@ -117,8 +117,9 @@ export const SelfOccupancyModal = ({
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 flex-shrink-0" />
                     <span>
-                      Self-use: {formatDate(p.startDate)} —{' '}
-                      {p.endDate ? formatDate(p.endDate) : 'Ongoing'}
+                      {t('contracts.selfOccupancy.takenPeriods.selfUse', {
+                        period: `${formatDate(p.startDate)} — ${p.endDate ? formatDate(p.endDate) : t('contracts.selfOccupancy.takenPeriods.ongoing')}`,
+                      })}
                       {p.occupantName && ` (${p.occupantName})`}
                     </span>
                   </div>
@@ -130,8 +131,10 @@ export const SelfOccupancyModal = ({
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
                     <span>
-                      Contract {c.identifier}: {formatDate(c.startDate)} —{' '}
-                      {c.endDate ? formatDate(c.endDate) : 'Ongoing'}
+                      {t('contracts.selfOccupancy.takenPeriods.contract', {
+                        identifier: c.identifier,
+                        period: `${formatDate(c.startDate)} — ${c.endDate ? formatDate(c.endDate) : t('contracts.selfOccupancy.takenPeriods.ongoing')}`,
+                      })}
                     </span>
                   </div>
                 ))}
@@ -149,9 +152,9 @@ export const SelfOccupancyModal = ({
               required
               className="w-full px-3 py-2 rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
-              {Object.values(OccupancyType).map((t) => (
-                <option key={t} value={t}>
-                  {OCCUPANCY_TYPE_LABELS[t]}
+              {Object.values(OccupancyType).map((ot) => (
+                <option key={ot} value={ot}>
+                  {t(`selfOccupancy.occupancyTypes.${ot}`)}
                 </option>
               ))}
             </select>

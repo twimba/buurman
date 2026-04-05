@@ -189,7 +189,7 @@ export const ContractDetailPage = () => {
         {/* Header */}
         <PageHeader
           title={t('detail.title', { id: contract.identifier })}
-          subtitle={contract.contractType.replace('_', '')}
+          subtitle={t(`detail.contractTypes.${contract.contractType}`)}
           backTo="/contracts"
           badge={<ContractStatusBadge status={contract.status} />}
           actions={
