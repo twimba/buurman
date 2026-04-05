@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Globe, Send, X, MessageCircleHeart } from 'lucide-react';
 import { useRequestCountryRegulation } from '@/hooks/useRentRegulationHooks';
 
 export const RequestCountryCard = () => {
+  const { t } = useTranslation('contracts');
   const [isOpen, setIsOpen] = useState(false);
   const [countryName, setCountryName] = useState('');
   const [notes, setNotes] = useState('');
@@ -36,12 +38,11 @@ export const RequestCountryCard = () => {
             <Globe className="h-5 w-5" />
           </span>
           <span className="font-semibold text-text-secondary group-hover:text-primary-500 transition-colors">
-            Missing a country?
+            {t('rentRegulations.requestCountry.triggerTitle')}
           </span>
         </div>
         <p className="text-sm text-text-muted leading-relaxed">
-          Don&apos;t see your country listed? Let us know and we&apos;ll work on
-          adding it!
+          {t('rentRegulations.requestCountry.triggerDescription')}
         </p>
       </button>
 
@@ -58,7 +59,7 @@ export const RequestCountryCard = () => {
               <div className="flex items-center gap-2">
                 <MessageCircleHeart className="h-5 w-5 text-primary-500 dark:text-primary-300" />
                 <h3 className="font-semibold text-text-primary">
-                  Request a Country
+                  {t('rentRegulations.requestCountry.modalTitle')}
                 </h3>
               </div>
               <button
@@ -72,20 +73,20 @@ export const RequestCountryCard = () => {
             {/* Body */}
             <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
               <p className="text-sm text-text-secondary leading-relaxed">
-                We&apos;re always expanding our coverage. Tell us which country
-                you&apos;d like regulation data for, and we&apos;ll bump it up
-                the priority list!
+                {t('rentRegulations.requestCountry.modalDescription')}
               </p>
 
               <div>
                 <label className="block text-xs font-semibold text-text-secondary mb-1.5">
-                  Country name
+                  {t('rentRegulations.requestCountry.countryName')}
                 </label>
                 <input
                   type="text"
                   value={countryName}
                   onChange={(e) => setCountryName(e.target.value)}
-                  placeholder="e.g. Germany, Brazil, Japan..."
+                  placeholder={t(
+                    'rentRegulations.requestCountry.countryPlaceholder'
+                  )}
                   autoFocus
                   required
                   maxLength={255}
@@ -95,15 +96,17 @@ export const RequestCountryCard = () => {
 
               <div>
                 <label className="block text-xs font-semibold text-text-secondary mb-1.5">
-                  Anything else we should know?{' '}
+                  {t('rentRegulations.requestCountry.anythingElse')}{' '}
                   <span className="font-normal text-text-muted">
-                    (optional)
+                    ({t('rentRegulations.requestCountry.optional')})
                   </span>
                 </label>
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Specific regions, property types, urgency..."
+                  placeholder={t(
+                    'rentRegulations.requestCountry.notesPlaceholder'
+                  )}
                   rows={3}
                   maxLength={1000}
                   className="w-full px-3 py-2 rounded-lg border border-border-default bg-surface-card text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-colors resize-none"
@@ -116,7 +119,7 @@ export const RequestCountryCard = () => {
                   onClick={() => setIsOpen(false)}
                   className="px-4 py-2 rounded-lg text-sm font-medium text-text-secondary hover:bg-surface-inset transition-colors"
                 >
-                  Cancel
+                  {t('common:buttons.cancel')}
                 </button>
                 <button
                   type="submit"
@@ -124,7 +127,9 @@ export const RequestCountryCard = () => {
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-gradient-to-b from-primary-500 to-primary-600 text-white border border-primary-600 shadow-sm shadow-primary-500/20 hover:from-primary-400 hover:to-primary-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Send className="h-3.5 w-3.5" />
-                  {mutation.isPending ? 'Sending...' : 'Send Request'}
+                  {mutation.isPending
+                    ? t('rentRegulations.requestCountry.sending')
+                    : t('rentRegulations.requestCountry.sendRequest')}
                 </button>
               </div>
             </form>

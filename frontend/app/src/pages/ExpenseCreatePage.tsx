@@ -13,20 +13,17 @@ import {
   type RowData,
 } from '@/components/common/BulkDataGrid';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
-import {
-  CreateExpenseRequest,
-  ExpenseCategory,
-  formatExpenseCategory,
-} from '@/types/expense';
+import { CreateExpenseRequest, ExpenseCategory } from '@/types/expense';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
 import { getErrorMessage } from '@/utils/errorMessages';
 
 type Mode = 'single' | 'bulk';
 
-const CATEGORY_OPTIONS = Object.values(ExpenseCategory).map((cat) => ({
-  value: cat,
-  label: formatExpenseCategory(cat),
-}));
+const getCategoryOptions = (t: (key: string) => string) =>
+  Object.values(ExpenseCategory).map((cat) => ({
+    value: cat,
+    label: t(`category.${cat}`),
+  }));
 
 const getBulkColumns = (t: (key: string) => string): BulkColumnDef[] => [
   {
@@ -55,7 +52,7 @@ const getBulkColumns = (t: (key: string) => string): BulkColumnDef[] => [
     label: t('table.category'),
     type: 'select',
     required: true,
-    options: CATEGORY_OPTIONS,
+    options: getCategoryOptions(t),
     defaultValue: ExpenseCategory.MAINTENANCE,
   },
 ];

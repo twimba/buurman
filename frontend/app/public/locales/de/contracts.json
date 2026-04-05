@@ -222,7 +222,32 @@
     "empty": "Keine Verlängerungen erfasst.",
     "renewalConfig": "Verlängerungskonfiguration",
     "createExtension": "Verlängerung erstellen",
-    "newEndDate": "Neues Enddatum"
+    "newEndDate": "Neues Enddatum",
+    "newExtension": "Neue Verlängerung",
+    "extensionNumber": "Verlängerung #{{number}}",
+    "auto": "Auto",
+    "manual": "Manuell",
+    "declined": "Abgelehnt: {{reason}}",
+    "created": "Erstellt am {{date}}",
+    "activated": "Aktiviert am {{date}}",
+    "confirmed": "Bestätigt am {{date}}",
+    "addendum": "Nachtrag",
+    "rentLetter": "Mietschreiben",
+    "regenerate": "Regenerieren",
+    "generateAndSave": "Generieren & Speichern",
+    "activate": "Aktivieren",
+    "confirm": "Bestätigen",
+    "decline": "Ablehnen",
+    "cancel": "Stornieren",
+    "declineTitle": "Verlängerung ablehnen",
+    "reasonOptional": "Grund (Optional)",
+    "reasonPlaceholder": "Grund für die Ablehnung...",
+    "declining": "Ablehnung...",
+    "cancelTitle": "Verlängerung stornieren",
+    "deleteGeneratedDocs": "Generierte Dokumente löschen",
+    "deleteGeneratedDocsHelp": "Nachtrag- und Mietschreiben-PDFs dieser Verlängerung entfernen",
+    "downloadFailed": "Dokument konnte nicht heruntergeladen werden. Bitte versuchen Sie es erneut.",
+    "addRole": "{{role}} hinzufügen"
   },
   "documents": {
     "title": "Dokumente"
@@ -372,7 +397,40 @@
     "noRules": "Keine Regeln für diese Auswahl gefunden.",
     "noData": "Keine Regulierungsdaten verfügbar",
     "noDataDescription": "Regulierungsdaten können über das Backoffice verwaltet werden",
-    "failedToLoad": "Mietregulierung konnte nicht geladen werden"
+    "failedToLoad": "Mietregulierung konnte nicht geladen werden",
+    "regions": "Regionen",
+    "national": "National",
+    "regional": "Regional",
+    "regionalVariations": "Regionale Abweichungen",
+    "reviewed": "Überprüft am {{date}}",
+    "overview": "Übersicht",
+    "category": "Kategorie",
+    "source": "Quelle",
+    "current": "Aktuell",
+    "notes": "Anmerkungen",
+    "disclaimer": "Regulierungsdaten dienen nur zu Informationszwecken. Überprüfen Sie stets offizielle Rechtsquellen und holen Sie professionelle Beratung ein, bevor Sie Mietanpassungen vornehmen. Wir übernehmen keine Haftung für Fehler oder Auslassungen.",
+    "requestCountry": {
+      "triggerTitle": "Land fehlt?",
+      "triggerDescription": "Ihr Land ist nicht aufgeführt? Teilen Sie es uns mit und wir arbeiten daran, es hinzuzufügen!",
+      "modalTitle": "Land anfragen",
+      "modalDescription": "Wir erweitern unsere Abdeckung ständig. Teilen Sie uns mit, für welches Land Sie Regulierungsdaten benötigen, und wir erhöhen die Priorität!",
+      "countryName": "Ländername",
+      "countryPlaceholder": "z.B. Deutschland, Brasilien, Japan...",
+      "anythingElse": "Gibt es noch etwas, das wir wissen sollten?",
+      "optional": "optional",
+      "notesPlaceholder": "Bestimmte Regionen, Immobilientypen, Dringlichkeit...",
+      "sending": "Wird gesendet...",
+      "sendRequest": "Anfrage senden"
+    },
+    "increaseTypes": {
+      "FIXED_PERCENTAGE": "Fester Prozentsatz",
+      "CPI_LINKED": "VPI-gebunden",
+      "INDEX_LINKED": "Indexgebunden",
+      "MARKET_RENT": "Marktmiete",
+      "NEGOTIATED": "Verhandelt",
+      "FROZEN": "Eingefroren",
+      "OTHER": "Sonstige"
+    }
   },
   "rentIncrease": {
     "title": "Mietanpassungsassistent",
@@ -387,7 +445,56 @@
     "nextAdjustIncreases": "Weiter: Erhöhungen anpassen",
     "nextReview": "Weiter: Überprüfen",
     "applied": "Angewendet",
-    "backToAdjust": "Zurück zum Anpassen"
+    "backToAdjust": "Zurück zum Anpassen",
+    "contract_one": "{{count}} Vertrag",
+    "contract_other": "{{count}} Verträge",
+    "adjustmentStrategy": "Anpassungsstrategie",
+    "strategies": {
+      "maximum": "Maximum",
+      "medium": "Mittel",
+      "minimum": "Minimum",
+      "custom": "Benutzerdefiniert"
+    },
+    "strategyDescriptions": {
+      "maximum": "Max. regulierten % anwenden",
+      "medium": "Durchschnitt von Min & Max",
+      "minimum": "Min. regulierten % anwenden",
+      "custom": "Pro Objekt festlegen"
+    },
+    "bulkEffectiveDate": "Sammel-Wirksamkeitsdatum",
+    "contractsAdjusted": "{{active}} von {{total}} Verträgen angepasst",
+    "avgChange": "Durchschn. Änderung:",
+    "warning_one": "{{count}} Warnung",
+    "warning_other": "{{count}} Warnungen",
+    "retroactive": "rückwirkend",
+    "retroactiveTooltip": "Für bereits abgewickelte Zahlungen, die von rückwirkenden Datumsänderungen betroffen sind, werden Anpassungszahlungen erstellt.",
+    "exceedsMax": "Überschreitet die maximale regulierte Erhöhung von {{max}}%",
+    "belowMin": "Unter der minimalen regulierten Erhöhung von {{min}}%",
+    "tableHeaders": {
+      "property": "Immobilie",
+      "currentRent": "Aktuelle Miete",
+      "regulatedRange": "Regulierter Bereich",
+      "adjustment": "Anpassung",
+      "newRent": "Neue Miete",
+      "effectiveDate": "Wirksamkeitsdatum"
+    },
+    "noData": "Keine Daten",
+    "portfolioTotals": "Portfolio-Summen für {{year}}",
+    "previous": "Vorherig",
+    "new": "Neu",
+    "increase": "Erhöhung",
+    "contractsToUpdate": "Zu aktualisierende Verträge ({{count}})",
+    "unchangedContracts": "Unveränderte Verträge ({{count}})",
+    "applying": "Wird angewendet...",
+    "applyAdjustments_one": "{{count}} Anpassung anwenden",
+    "applyAdjustments_other": "{{count}} Anpassungen anwenden",
+    "allSuccess": "Alle Mietanpassungen erfolgreich angewendet",
+    "partialSuccess": "{{success}} von {{total}} Anpassungen angewendet",
+    "increasesFailed_one": "{{count}} Erhöhung fehlgeschlagen",
+    "increasesFailed_other": "{{count}} Erhöhungen fehlgeschlagen",
+    "adjustmentPayments_one": "{{count}} Anpassungszahlung für rückwirkende Änderungen erstellt",
+    "adjustmentPayments_other": "{{count}} Anpassungszahlungen für rückwirkende Änderungen erstellt",
+    "status": "Status"
   },
   "card": {
     "start": "Start",
@@ -425,6 +532,17 @@
       "STORAGE": "Lager",
       "GARBAGE_COLLECTION": "Müllabfuhr",
       "OTHER": "Sonstige"
+    },
+    "extensionStatuses": {
+      "DRAFT": "Entwurf",
+      "ACTIVE": "Aktiv",
+      "SUPERSEDED": "Ersetzt",
+      "CANCELLED": "Storniert",
+      "DECLINED": "Abgelehnt"
     }
+  },
+  "countryMetadata": {
+    "noFields": "Keine länderspezifischen Felder für {{countryCode}} verfügbar.",
+    "selectPlaceholder": "— Auswählen —"
   }
 }

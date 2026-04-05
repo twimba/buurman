@@ -296,7 +296,9 @@
     },
     "default": "Default",
     "holder": "Holder:",
-    "account": "Account:"
+    "account": "Account:",
+    "routing": "Routing:",
+    "loading": "Loading..."
   },
   "calendarFeeds": {
     "title": "Calendar Feeds",

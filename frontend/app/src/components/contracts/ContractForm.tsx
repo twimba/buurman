@@ -8,7 +8,6 @@ import {
   ContractPartyRole,
   ContractPartyRequest,
   PaymentFrequency,
-  PARTY_ROLE_LABELS,
   RentComponentFormItem,
   RentComponentType,
 } from '@/types/contract';
@@ -622,7 +621,7 @@ export const ContractForm = ({
                         >
                           {ADDITIONAL_ROLES.map((role) => (
                             <option key={role} value={role}>
-                              {PARTY_ROLE_LABELS[role]}
+                              {t(`enums.partyRoles.${role}`, role)}
                             </option>
                           ))}
                         </select>
@@ -670,7 +669,7 @@ export const ContractForm = ({
                         >
                           {ADDITIONAL_ROLES.map((role) => (
                             <option key={role} value={role}>
-                              {PARTY_ROLE_LABELS[role]}
+                              {t(`enums.partyRoles.${role}`, role)}
                             </option>
                           ))}
                         </select>
@@ -715,7 +714,8 @@ export const ContractForm = ({
                     disabled={isLoading}
                   >
                     <Plus className="h-4 w-4" />
-                    Add {PARTY_ROLE_LABELS[role]}
+                    {t('common:buttons.add')}{' '}
+                    {t(`enums.partyRoles.${role}`, role)}
                   </button>
                 ))}
               </div>
@@ -1138,6 +1138,7 @@ const ContractPartiesEditor = ({
   contract: ContractResponse;
   isLoading: boolean;
 }) => {
+  const { t } = useTranslation('contracts');
   const [showAddForm, setShowAddForm] = useState(false);
   const [addMode, setAddMode] = useState<'select' | 'create'>('select');
   const [changingPrimary, setChangingPrimary] = useState(false);
@@ -1276,7 +1277,7 @@ const ContractPartiesEditor = ({
               {party.contact.firstName} {party.contact.lastName}
             </span>
             <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-neutral-100 text-text-secondary">
-              {PARTY_ROLE_LABELS[party.role]}
+              {t(`enums.partyRoles.${party.role}`, party.role)}
             </span>
           </div>
           {party.role === ContractPartyRole.PRIMARY_TENANT ? (
@@ -1414,7 +1415,7 @@ const ContractPartiesEditor = ({
                 >
                   {ADDITIONAL_ROLES.map((role) => (
                     <option key={role} value={role}>
-                      {PARTY_ROLE_LABELS[role]}
+                      {t(`enums.partyRoles.${role}`, role)}
                     </option>
                   ))}
                 </select>
@@ -1461,7 +1462,7 @@ const ContractPartiesEditor = ({
                 >
                   {ADDITIONAL_ROLES.map((role) => (
                     <option key={role} value={role}>
-                      {PARTY_ROLE_LABELS[role]}
+                      {t(`enums.partyRoles.${role}`, role)}
                     </option>
                   ))}
                 </select>
@@ -1536,7 +1537,7 @@ const ContractPartiesEditor = ({
               disabled={isBusy}
             >
               <Plus className="h-4 w-4" />
-              Add {PARTY_ROLE_LABELS[role]}
+              {t('common:buttons.add')} {t(`enums.partyRoles.${role}`, role)}
             </button>
           ))}
         </div>

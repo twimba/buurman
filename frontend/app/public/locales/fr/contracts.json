@@ -222,7 +222,32 @@
     "empty": "Aucune prolongation enregistrée.",
     "renewalConfig": "Configuration du renouvellement",
     "createExtension": "Créer une prolongation",
-    "newEndDate": "Nouvelle date de fin"
+    "newEndDate": "Nouvelle date de fin",
+    "newExtension": "Nouvelle prolongation",
+    "extensionNumber": "Prolongation #{{number}}",
+    "auto": "Auto",
+    "manual": "Manuel",
+    "declined": "Refusé : {{reason}}",
+    "created": "Créé le {{date}}",
+    "activated": "Activé le {{date}}",
+    "confirmed": "Confirmé le {{date}}",
+    "addendum": "Avenant",
+    "rentLetter": "Lettre de loyer",
+    "regenerate": "Régénérer",
+    "generateAndSave": "Générer et sauvegarder",
+    "activate": "Activer",
+    "confirm": "Confirmer",
+    "decline": "Refuser",
+    "cancel": "Annuler",
+    "declineTitle": "Refuser la prolongation",
+    "reasonOptional": "Motif (Facultatif)",
+    "reasonPlaceholder": "Motif du refus...",
+    "declining": "Refus en cours...",
+    "cancelTitle": "Annuler la prolongation",
+    "deleteGeneratedDocs": "Supprimer les documents générés",
+    "deleteGeneratedDocsHelp": "Supprimer les PDF d'avenant et de lettre de loyer générés pour cette prolongation",
+    "downloadFailed": "Échec du téléchargement du document. Veuillez réessayer.",
+    "addRole": "Ajouter {{role}}"
   },
   "documents": {
     "title": "Documents"
@@ -372,7 +397,40 @@
     "noRules": "Aucune règle trouvée pour cette sélection.",
     "noData": "Aucune donnée de réglementation disponible",
     "noDataDescription": "Les données de réglementation peuvent être gérées depuis le backoffice",
-    "failedToLoad": "Échec du chargement des réglementations de loyer"
+    "failedToLoad": "Échec du chargement des réglementations de loyer",
+    "regions": "Régions",
+    "national": "National",
+    "regional": "Régional",
+    "regionalVariations": "Variations régionales",
+    "reviewed": "Révisé le {{date}}",
+    "overview": "Aperçu",
+    "category": "Catégorie",
+    "source": "Source",
+    "current": "Actuel",
+    "notes": "Notes",
+    "disclaimer": "Les données de réglementation sont fournies à titre informatif uniquement. Vérifiez toujours auprès des sources juridiques officielles et consultez un professionnel avant d'appliquer des ajustements de loyer. Nous ne sommes pas responsables des erreurs ou omissions.",
+    "requestCountry": {
+      "triggerTitle": "Un pays manque ?",
+      "triggerDescription": "Vous ne voyez pas votre pays dans la liste ? Dites-le-nous et nous travaillerons à l'ajouter !",
+      "modalTitle": "Demander un pays",
+      "modalDescription": "Nous élargissons constamment notre couverture. Dites-nous pour quel pays vous souhaitez des données réglementaires et nous augmenterons sa priorité !",
+      "countryName": "Nom du pays",
+      "countryPlaceholder": "p. ex. Allemagne, Brésil, Japon...",
+      "anythingElse": "Autre chose à nous signaler ?",
+      "optional": "facultatif",
+      "notesPlaceholder": "Régions spécifiques, types de propriété, urgence...",
+      "sending": "Envoi...",
+      "sendRequest": "Envoyer la demande"
+    },
+    "increaseTypes": {
+      "FIXED_PERCENTAGE": "Pourcentage fixe",
+      "CPI_LINKED": "Lié à l'IPC",
+      "INDEX_LINKED": "Lié à un indice",
+      "MARKET_RENT": "Loyer du marché",
+      "NEGOTIATED": "Négocié",
+      "FROZEN": "Gelé",
+      "OTHER": "Autre"
+    }
   },
   "rentIncrease": {
     "title": "Assistant d'ajustement de loyer",
@@ -387,7 +445,56 @@
     "nextAdjustIncreases": "Suivant : Ajuster les augmentations",
     "nextReview": "Suivant : Vérifier",
     "applied": "Appliqué",
-    "backToAdjust": "Retour à l'ajustement"
+    "backToAdjust": "Retour à l'ajustement",
+    "contract_one": "{{count}} contrat",
+    "contract_other": "{{count}} contrats",
+    "adjustmentStrategy": "Stratégie d'ajustement",
+    "strategies": {
+      "maximum": "Maximum",
+      "medium": "Moyen",
+      "minimum": "Minimum",
+      "custom": "Personnalisé"
+    },
+    "strategyDescriptions": {
+      "maximum": "Appliquer le % max. réglementé",
+      "medium": "Moyenne du min. et max.",
+      "minimum": "Appliquer le % min. réglementé",
+      "custom": "Définir par propriété"
+    },
+    "bulkEffectiveDate": "Date d'effet groupée",
+    "contractsAdjusted": "{{active}} sur {{total}} contrats ajustés",
+    "avgChange": "Variation moyenne :",
+    "warning_one": "{{count}} avertissement",
+    "warning_other": "{{count}} avertissements",
+    "retroactive": "rétroactif",
+    "retroactiveTooltip": "Des paiements d'ajustement seront créés pour tous les paiements déjà réglés affectés par des modifications de date rétroactives.",
+    "exceedsMax": "Dépasse l'augmentation maximale réglementée de {{max}}%",
+    "belowMin": "En dessous de l'augmentation minimale réglementée de {{min}}%",
+    "tableHeaders": {
+      "property": "Propriété",
+      "currentRent": "Loyer actuel",
+      "regulatedRange": "Plage réglementée",
+      "adjustment": "Ajustement",
+      "newRent": "Nouveau loyer",
+      "effectiveDate": "Date d'effet"
+    },
+    "noData": "Pas de données",
+    "portfolioTotals": "Totaux du portefeuille pour {{year}}",
+    "previous": "Précédent",
+    "new": "Nouveau",
+    "increase": "Augmentation",
+    "contractsToUpdate": "Contrats à mettre à jour ({{count}})",
+    "unchangedContracts": "Contrats inchangés ({{count}})",
+    "applying": "Application...",
+    "applyAdjustments_one": "Appliquer {{count}} ajustement",
+    "applyAdjustments_other": "Appliquer {{count}} ajustements",
+    "allSuccess": "Tous les ajustements de loyer ont été appliqués avec succès",
+    "partialSuccess": "{{success}} sur {{total}} ajustements appliqués",
+    "increasesFailed_one": "{{count}} augmentation échouée",
+    "increasesFailed_other": "{{count}} augmentations échouées",
+    "adjustmentPayments_one": "{{count}} paiement d'ajustement créé pour les modifications rétroactives",
+    "adjustmentPayments_other": "{{count}} paiements d'ajustement créés pour les modifications rétroactives",
+    "status": "Statut"
   },
   "card": {
     "start": "Début",
@@ -425,6 +532,17 @@
       "STORAGE": "Stockage",
       "GARBAGE_COLLECTION": "Ordures Ménagères",
       "OTHER": "Autre"
+    },
+    "extensionStatuses": {
+      "DRAFT": "Brouillon",
+      "ACTIVE": "Actif",
+      "SUPERSEDED": "Remplacé",
+      "CANCELLED": "Annulé",
+      "DECLINED": "Refusé"
     }
+  },
+  "countryMetadata": {
+    "noFields": "Aucun champ spécifique au pays disponible pour {{countryCode}}.",
+    "selectPlaceholder": "— Sélectionner —"
   }
 }

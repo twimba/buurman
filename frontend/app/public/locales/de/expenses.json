@@ -128,6 +128,10 @@
     "message": "Sind Sie sicher, dass Sie diese Ausgabe löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
     "messageWithRelated": "Sind Sie sicher, dass Sie diese Ausgabe löschen möchten? Alle zugehörigen Dokumente werden ebenfalls gelöscht. Diese Aktion kann nicht rückgängig gemacht werden."
   },
+  "tooltips": {
+    "viewExpense": "Ausgabe anzeigen",
+    "deleteExpense": "Ausgabe löschen"
+  },
   "errors": {
     "loadFailed": "Ausgaben konnten nicht geladen werden",
     "loadExpenseFailed": "Ausgabe konnte nicht geladen werden",

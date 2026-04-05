@@ -173,7 +173,7 @@ export const AuditLogPage = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-background p-8">
-        <ErrorMessage message="Failed to load activity logs" />
+        <ErrorMessage message={t('auditLog.failedToLoad')} />
       </div>
     );
   }

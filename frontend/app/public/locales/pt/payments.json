@@ -151,7 +151,10 @@
     "changedFields": "Campos Alterados",
     "old": "Anterior:",
     "new": "Novo:",
-    "impersonated": "Personificado"
+    "impersonated": "Personificado",
+    "na": "N/D",
+    "none": "Nenhum",
+    "receivalOn": "{{amount}} em {{date}}"
   },
   "deleteDialog": {
     "title": "Eliminar Pagamento",

@@ -14,21 +14,15 @@ import { RuleHistoryTable } from '@/components/rentRegulations/RuleHistoryTable'
 import { LoadingSpinner } from '@buurman/ui';
 import { ErrorMessage } from '@/components/ErrorMessage';
 
-const humanizeEnum = (value: string): string => {
-  const labels: Record<string, string> = {
-    FIXED_PERCENTAGE: 'Fixed Percentage',
-    CPI_LINKED: 'CPI Linked',
-    INDEX_LINKED: 'Index Linked',
-    MARKET_RENT: 'Market Rent',
-    NEGOTIATED: 'Negotiated',
-    FROZEN: 'Frozen',
-    OTHER: 'Other',
-  };
-  return (
-    labels[value] ??
-    value.replace(/_/g, '').replace(/\b\w/g, (c) => c.toUpperCase())
-  );
-};
+const INCREASE_TYPE_KEYS = [
+  'FIXED_PERCENTAGE',
+  'CPI_LINKED',
+  'INDEX_LINKED',
+  'MARKET_RENT',
+  'NEGOTIATED',
+  'FROZEN',
+  'OTHER',
+];
 
 export const RentRegulationsPage = () => {
   const { t } = useTranslation('contracts');
@@ -166,7 +160,15 @@ export const RentRegulationsPage = () => {
                             {t('rentRegulations.type')}
                           </p>
                           <p className="text-sm font-semibold text-text-primary">
-                            {humanizeEnum(currentYearRule.maxIncreaseType)}
+                            {INCREASE_TYPE_KEYS.includes(
+                              currentYearRule.maxIncreaseType
+                            )
+                              ? t(
+                                  `rentRegulations.increaseTypes.${currentYearRule.maxIncreaseType}`
+                                )
+                              : currentYearRule.maxIncreaseType
+                                  .replace(/_/g, ' ')
+                                  .replace(/\b\w/g, (c) => c.toUpperCase())}
                           </p>
                         </div>
                         <div>

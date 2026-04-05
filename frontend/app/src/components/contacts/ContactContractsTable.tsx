@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, ChevronUp, ChevronDown } from 'lucide-react';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
-import { ContractPartyRole, PARTY_ROLE_LABELS } from '@/types/contract';
+import { ContractPartyRole } from '@/types/contract';
 import type { ContractResponse } from '@/types/contract';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { getCurrencySymbol } from '@/utils/currencies';
@@ -15,11 +15,17 @@ const ROLE_COLORS: Record<ContractPartyRole, string> = {
   [ContractPartyRole.EXTRA_TENANT]: 'bg-success-bg text-success-text',
 };
 
-const RoleBadge = ({ role }: { role: ContractPartyRole }) => (
+const RoleBadge = ({
+  role,
+  label,
+}: {
+  role: ContractPartyRole;
+  label: string;
+}) => (
   <span
     className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full ${ROLE_COLORS[role] ?? 'bg-surface-inset text-text-primary'}`}
   >
-    {PARTY_ROLE_LABELS[role] ?? role}
+    {label}
   </span>
 );
 
@@ -147,17 +153,17 @@ export const ContactContractsTable = ({
                 className="px-4 py-2 text-left text-xs font-medium text-text-secondary uppercase cursor-pointer hover:bg-surface-inset"
                 onClick={() => handleSort('property')}
               >
-                Property
+                {t('contractsTable.property')}
               </th>
               <th className="px-4 py-2 text-left text-xs font-medium text-text-secondary uppercase">
-                Role
+                {t('contractsTable.role')}
               </th>
               <th
                 className="px-4 py-2 text-left text-xs font-medium text-text-secondary uppercase cursor-pointer hover:bg-surface-inset"
                 onClick={() => handleSort('startDate')}
               >
                 <div className="flex items-center gap-1">
-                  Period
+                  {t('contractsTable.period')}
                   {sortField === 'startDate' &&
                     (sortOrder === 'asc' ? (
                       <ChevronUp className="h-3 w-3" />
@@ -170,13 +176,13 @@ export const ContactContractsTable = ({
                 className="px-4 py-2 text-left text-xs font-medium text-text-secondary uppercase cursor-pointer hover:bg-surface-inset"
                 onClick={() => handleSort('rentAmount')}
               >
-                Rent
+                {t('contractsTable.rent')}
               </th>
               <th
                 className="px-4 py-2 text-left text-xs font-medium text-text-secondary uppercase cursor-pointer hover:bg-surface-inset"
                 onClick={() => handleSort('status')}
               >
-                Status
+                {t('contractsTable.status')}
               </th>
             </tr>
           </thead>
@@ -194,7 +200,13 @@ export const ContactContractsTable = ({
                   <td className="px-4 py-3">{contract.property.street}</td>
                   <td className="px-4 py-3">
                     {party?.role ? (
-                      <RoleBadge role={party.role} />
+                      <RoleBadge
+                        role={party.role}
+                        label={t(
+                          `contracts:enums.partyRoles.${party.role}`,
+                          party.role
+                        )}
+                      />
                     ) : (
                       <span className="text-text-muted">-</span>
                     )}
@@ -236,14 +248,14 @@ export const ContactContractsTable = ({
               disabled={currentPage === 1}
               className="px-2 py-1 border border-border-strong rounded text-xs disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
             >
-              Previous
+              {t('common:pagination.previous')}
             </button>
             <button
               onClick={() => setCurrentPage(currentPage + 1)}
               disabled={currentPage === totalPages}
               className="px-2 py-1 border border-border-strong rounded text-xs disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
             >
-              Next
+              {t('common:pagination.next')}
             </button>
           </div>
         </div>

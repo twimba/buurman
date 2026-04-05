@@ -552,9 +552,7 @@ const ValuationSection = ({
       <SectionHeader
         icon={Building2}
         title={t('financials.sections.valuations')}
-        action={
-          <AddButton label={t('common:buttons.add')} onClick={onAdd} />
-        }
+        action={<AddButton label={t('common:buttons.add')} onClick={onAdd} />}
       />
       {latest ? (
         <div className="space-y-4">
@@ -581,9 +579,7 @@ const ValuationSection = ({
               <div>
                 <DetailRow
                   label={t('financials.labels.type')}
-                  value={t(
-                    `financials.valuationTypes.${latest.valuationType}`
-                  )}
+                  value={t(`financials.valuationTypes.${latest.valuationType}`)}
                 />
                 <DetailRow
                   label={t('financials.labels.date')}
@@ -650,9 +646,7 @@ const ValuationSection = ({
                             {formatDate(v.valuationDate)}
                           </td>
                           <td className="py-2 pr-4 text-text-primary">
-                            {t(
-                              `financials.valuationTypes.${v.valuationType}`
-                            )}
+                            {t(`financials.valuationTypes.${v.valuationType}`)}
                           </td>
                           <td className="py-2 pr-4 text-right font-medium text-text-primary">
                             {formatMoney(v.amount, v.currency)}
@@ -875,9 +869,7 @@ const FinancingCard = ({
                   <th className="pb-2 font-medium">
                     {t('financials.labels.date')}
                   </th>
-                  <th className="pb-2 font-medium">
-                    {t('financials.total')}
-                  </th>
+                  <th className="pb-2 font-medium">{t('financials.total')}</th>
                   <th className="pb-2 font-medium">
                     {t('financials.labels.principal')}
                   </th>
@@ -980,9 +972,7 @@ const FinancingsSection = ({
       <SectionHeader
         icon={Landmark}
         title={t('financials.sections.financings')}
-        action={
-          <AddButton label={t('common:buttons.add')} onClick={onAdd} />
-        }
+        action={<AddButton label={t('common:buttons.add')} onClick={onAdd} />}
       />
       {financings.length > 0 ? (
         <div className="space-y-4">
@@ -1067,9 +1057,7 @@ const InsuranceCard = ({
       />
       <DetailRow
         label={t('financials.frequency')}
-        value={t(
-          `financials.paymentFrequencies.${insurance.paymentFrequency}`
-        )}
+        value={t(`financials.paymentFrequencies.${insurance.paymentFrequency}`)}
       />
       {insurance.startDate && (
         <DetailRow
@@ -1353,10 +1341,7 @@ const RecurringCostsSection = ({
                   {t('financials.units.perYear')}
                 </span>
               )}
-              <AddButton
-                label={t('common:buttons.add')}
-                onClick={onAddTax}
-              />
+              <AddButton label={t('common:buttons.add')} onClick={onAddTax} />
             </div>
           </div>
           {taxes.length > 0 ? (
@@ -1392,10 +1377,7 @@ const RecurringCostsSection = ({
                   {t('financials.units.perYear')}
                 </span>
               )}
-              <AddButton
-                label={t('common:buttons.add')}
-                onClick={onAddFee}
-              />
+              <AddButton label={t('common:buttons.add')} onClick={onAddFee} />
             </div>
           </div>
           {fees.length > 0 ? (

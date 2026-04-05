@@ -25,7 +25,7 @@
   "category": {
     "MAINTENANCE": "Manutenção",
     "REPAIR": "Reparação",
-    "UTILITY": "Utilidades",
+    "UTILITY": "Serviços",
     "TAX": "Imposto",
     "INSURANCE": "Seguro",
     "LEGAL": "Jurídico",
@@ -34,7 +34,7 @@
     "LANDSCAPING": "Jardinagem",
     "PROPERTY_MANAGEMENT": "Gestão de Imóveis",
     "FEES": "Taxas",
-    "PROPERTY_TAX": "Imposto sobre Imóveis",
+    "PROPERTY_TAX": "Impostos sobre Imóveis",
     "OTHER": "Outro"
   },
   "table": {
@@ -127,6 +127,10 @@
     "title": "Eliminar Despesa",
     "message": "Tem a certeza de que pretende eliminar esta despesa? Esta ação não pode ser revertida.",
     "messageWithRelated": "Tem a certeza de que pretende eliminar esta despesa? Todos os documentos relacionados também serão eliminados. Esta ação não pode ser revertida."
+  },
+  "tooltips": {
+    "viewExpense": "Ver despesa",
+    "deleteExpense": "Eliminar despesa"
   },
   "errors": {
     "loadFailed": "Falha ao carregar despesas",

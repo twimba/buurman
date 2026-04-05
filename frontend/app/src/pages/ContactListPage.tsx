@@ -20,13 +20,7 @@ import {
 import { useTeam } from '@/context/TeamContext';
 import { usePagination } from '@/hooks/usePagination';
 import { EmptyState, Pagination, RefreshButton, Skeleton } from '@buurman/ui';
-import {
-  ContactType,
-  ContactTag,
-  CreateContactRequest,
-  CONTACT_TYPE_LABELS,
-  CONTACT_TAG_LABELS,
-} from '@/types/contact';
+import { ContactType, ContactTag, CreateContactRequest } from '@/types/contact';
 import { PhoneInput, validatePhoneE164 } from '@/components/common/PhoneInput';
 import {
   useDuplicateCheck,
@@ -442,7 +436,7 @@ export const ContactListPage = () => {
                         : 'border-border-strong text-text-secondary hover:border-primary-400'
                     }`}
                   >
-                    {CONTACT_TYPE_LABELS[type]}
+                    {t(`enums.contactTypes.${type}`)}
                   </button>
                 ))}
               </div>
@@ -464,7 +458,7 @@ export const ContactListPage = () => {
                         : 'border-border-strong text-text-secondary hover:border-primary-400'
                     }`}
                   >
-                    {CONTACT_TAG_LABELS[tag]}
+                    {t(`enums.contactTags.${tag}`)}
                   </button>
                 ))}
               </div>
@@ -504,7 +498,7 @@ export const ContactListPage = () => {
                         : 'border-border-strong text-text-secondary hover:border-primary-400'
                     }`}
                   >
-                    {CONTACT_TYPE_LABELS[type]}
+                    {t(`enums.contactTypes.${type}`)}
                   </button>
                 ))}
               </div>
@@ -668,7 +662,7 @@ export const ContactListPage = () => {
           <div className="flex flex-wrap gap-2 mb-4">
             {contactTypeFilter && (
               <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-primary-50 text-primary-700 dark:bg-primary-950 dark:text-primary-300">
-                {CONTACT_TYPE_LABELS[contactTypeFilter]}
+                {t(`enums.contactTypes.${contactTypeFilter}`)}
                 <button
                   onClick={() => handleContactTypeChange(undefined)}
                   className="hover:text-primary-900"
@@ -682,7 +676,7 @@ export const ContactListPage = () => {
                 key={tag}
                 className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-surface-inset text-text-secondary"
               >
-                {CONTACT_TAG_LABELS[tag]}
+                {t(`enums.contactTags.${tag}`)}
                 <button
                   onClick={() => toggleTag(tag)}
                   className="hover:text-text-primary"

@@ -83,24 +83,24 @@ const SelectField = ({
 }: SelectFieldProps) => {
   const { t } = useTranslation('properties');
   return (
-  <div>
-    <label className={labelCls}>
-      {label}
-      {tooltip && <Tooltip text={tooltip} />}
-    </label>
-    <select
-      value={value ?? ''}
-      onChange={(e) => onChange(e.target.value || null)}
-      className={inputCls}
-    >
-      <option value="">{t('characteristics.selectPlaceholder')}</option>
-      {Object.entries(options).map(([k, v]) => (
-        <option key={k} value={k}>
-          {v}
-        </option>
-      ))}
-    </select>
-  </div>
+    <div>
+      <label className={labelCls}>
+        {label}
+        {tooltip && <Tooltip text={tooltip} />}
+      </label>
+      <select
+        value={value ?? ''}
+        onChange={(e) => onChange(e.target.value || null)}
+        className={inputCls}
+      >
+        <option value="">{t('characteristics.selectPlaceholder')}</option>
+        {Object.entries(options).map(([k, v]) => (
+          <option key={k} value={k}>
+            {v}
+          </option>
+        ))}
+      </select>
+    </div>
   );
 };
 
@@ -455,7 +455,9 @@ export const PropertyCharacteristicsForm = ({
           <div>
             <label className={labelCls}>
               {t('characteristics.energy.certificateExpiry')}
-              <Tooltip text={t('characteristics.energy.certificateExpiryTooltip')} />
+              <Tooltip
+                text={t('characteristics.energy.certificateExpiryTooltip')}
+              />
             </label>
             <input
               type="date"
@@ -984,7 +986,9 @@ const CommercialDetailsSection = ({
           step={1}
         />
         <div>
-          <label className={labelCls}>{t('characteristics.commercial.zoningClassification')}</label>
+          <label className={labelCls}>
+            {t('characteristics.commercial.zoningClassification')}
+          </label>
           <input
             type="text"
             value={details.zoningClassification ?? ''}
@@ -1125,7 +1129,9 @@ const IndustrialDetailsSection = ({
           onUnitChange={(u) => update('yardAreaUnit', u)}
         />
         <div>
-          <label className={labelCls}>{t('characteristics.industrial.zoningClassification')}</label>
+          <label className={labelCls}>
+            {t('characteristics.industrial.zoningClassification')}
+          </label>
           <input
             type="text"
             value={details.zoningClassification ?? ''}
@@ -1286,17 +1292,23 @@ const AgriculturalDetailsSection = ({
           onChange={(v) => update('fencingType', v)}
         />
         <div>
-          <label className={labelCls}>{t('characteristics.agricultural.currentUse')}</label>
+          <label className={labelCls}>
+            {t('characteristics.agricultural.currentUse')}
+          </label>
           <input
             type="text"
             value={details.currentUse ?? ''}
             onChange={(e) => update('currentUse', e.target.value || null)}
             className={inputCls}
-            placeholder={t('characteristics.agricultural.currentUsePlaceholder')}
+            placeholder={t(
+              'characteristics.agricultural.currentUsePlaceholder'
+            )}
           />
         </div>
         <div>
-          <label className={labelCls}>{t('characteristics.agricultural.zoningClassification')}</label>
+          <label className={labelCls}>
+            {t('characteristics.agricultural.zoningClassification')}
+          </label>
           <input
             type="text"
             value={details.zoningClassification ?? ''}
@@ -1322,7 +1334,9 @@ const AgriculturalDetailsSection = ({
       </div>
       {details.hasOutbuildings && (
         <div className="mt-3">
-          <label className={labelCls}>{t('characteristics.agricultural.outbuildingDetails')}</label>
+          <label className={labelCls}>
+            {t('characteristics.agricultural.outbuildingDetails')}
+          </label>
           <input
             type="text"
             value={details.outbuildingDetails ?? ''}
@@ -1330,7 +1344,9 @@ const AgriculturalDetailsSection = ({
               update('outbuildingDetails', e.target.value || null)
             }
             className={inputCls}
-            placeholder={t('characteristics.agricultural.outbuildingPlaceholder')}
+            placeholder={t(
+              'characteristics.agricultural.outbuildingPlaceholder'
+            )}
           />
         </div>
       )}

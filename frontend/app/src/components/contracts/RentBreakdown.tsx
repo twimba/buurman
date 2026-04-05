@@ -1,11 +1,7 @@
 import { useMemo } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { MoneyInput } from '@/components/common/MoneyInput';
-import {
-  RentComponentFormItem,
-  RentComponentType,
-  RENT_COMPONENT_LABELS,
-} from '@/types/contract';
+import { RentComponentFormItem, RentComponentType } from '@/types/contract';
 import { useTranslation } from 'react-i18next';
 
 interface RentBreakdownProps {
@@ -177,7 +173,7 @@ export const RentBreakdown = ({
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-text-secondary min-w-[140px]">
-                    {RENT_COMPONENT_LABELS[comp.componentType]}
+                    {t(`enums.rentComponents.${comp.componentType}`)}
                   </span>
                   <div className="flex-1">
                     <MoneyInput
@@ -274,11 +270,11 @@ function AddComponentButton({
         value=""
       >
         <option value="" disabled>
-          + Add component
+          {t('adjustRent.addComponent')}
         </option>
         {availableTypes.map((type) => (
           <option key={type} value={type}>
-            {RENT_COMPONENT_LABELS[type]}
+            {t(`enums.rentComponents.${type}`)}
           </option>
         ))}
       </select>

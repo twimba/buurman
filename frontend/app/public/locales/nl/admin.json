@@ -292,6 +292,14 @@
       "title": "Bezettingstrend",
       "subtitle": "Maandelijks bezettingspercentage",
       "occupancyRate": "Bezettingsgraad (%)"
-    }
+    },
+    "netProfit": "Nettowinst",
+    "income": "Inkomsten",
+    "expenses": "Uitgaven",
+    "amount": "Bedrag",
+    "downloadPdf": "PDF downloaden"
+  },
+  "auditLog": {
+    "failedToLoad": "Activiteitenlogboek laden mislukt"
   }
 }

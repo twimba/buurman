@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { ExpenseCategory, formatExpenseCategory } from '@/types/expense';
+import { ExpenseCategory } from '@/types/expense';
 import {
   useExpenses,
   useExpenseStats,
@@ -45,21 +45,21 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-const categoryFilters = [
-  { value: undefined, label: 'All Categories' },
-  { value: ExpenseCategory.MAINTENANCE, label: 'Maintenance' },
-  { value: ExpenseCategory.REPAIR, label: 'Repair' },
-  { value: ExpenseCategory.UTILITY, label: 'Utility' },
-  { value: ExpenseCategory.TAX, label: 'Tax' },
-  { value: ExpenseCategory.INSURANCE, label: 'Insurance' },
-  { value: ExpenseCategory.LEGAL, label: 'Legal' },
-  { value: ExpenseCategory.MARKETING, label: 'Marketing' },
-  { value: ExpenseCategory.CLEANING, label: 'Cleaning' },
-  { value: ExpenseCategory.LANDSCAPING, label: 'Landscaping' },
-  { value: ExpenseCategory.PROPERTY_MANAGEMENT, label: 'Property Management' },
-  { value: ExpenseCategory.FEES, label: 'Fees' },
-  { value: ExpenseCategory.PROPERTY_TAX, label: 'Property Taxes' },
-  { value: ExpenseCategory.OTHER, label: 'Other' },
+const categoryFilterValues = [
+  undefined,
+  ExpenseCategory.MAINTENANCE,
+  ExpenseCategory.REPAIR,
+  ExpenseCategory.UTILITY,
+  ExpenseCategory.TAX,
+  ExpenseCategory.INSURANCE,
+  ExpenseCategory.LEGAL,
+  ExpenseCategory.MARKETING,
+  ExpenseCategory.CLEANING,
+  ExpenseCategory.LANDSCAPING,
+  ExpenseCategory.PROPERTY_MANAGEMENT,
+  ExpenseCategory.FEES,
+  ExpenseCategory.PROPERTY_TAX,
+  ExpenseCategory.OTHER,
 ];
 
 export const ExpensesPage = () => {
@@ -216,8 +216,12 @@ export const ExpensesPage = () => {
                 </p>
                 <p className="text-sm text-text-secondary mt-1">
                   {categoryFilter
-                    ? `in ${formatExpenseCategory(categoryFilter)}`
-                    : `across ${expenseStats.topCategories.length} categories`}
+                    ? t('stats.categorySummary', {
+                        category: t(`category.${categoryFilter}`),
+                      })
+                    : t('stats.categorySummaryAll', {
+                        count: expenseStats.topCategories.length,
+                      })}
                 </p>
               </div>
             </div>
@@ -247,7 +251,7 @@ export const ExpensesPage = () => {
                         }`}
                       />
                       <span className="text-sm text-text-secondary truncate">
-                        {formatExpenseCategory(cat.category as ExpenseCategory)}
+                        {t(`category.${cat.category}`)}
                       </span>
                     </div>
                     <span className="text-sm font-semibold text-text-primary">
@@ -257,7 +261,7 @@ export const ExpensesPage = () => {
                 ))}
                 {expenseStats.topCategories.length === 0 && (
                   <p className="text-sm text-text-secondary">
-                    No data available
+                    {t('stats.noData')}
                   </p>
                 )}
               </div>
@@ -297,7 +301,7 @@ export const ExpensesPage = () => {
                       typeof value === 'number'
                         ? fmtMoney(value, statsCurrency)
                         : 'N/A',
-                      'Expenses',
+                      t('stats.tooltipExpenses'),
                     ]}
                     contentStyle={{ fontSize: 12 }}
                   />
@@ -329,7 +333,7 @@ export const ExpensesPage = () => {
             <div className="flex flex-col lg:flex-row gap-4 items-end">
               <div className="lg:w-96">
                 <label className="block text-xs font-medium text-text-secondary mb-1">
-                  Property
+                  {t('filters.property')}
                 </label>
                 <PropertySelector
                   value={propertyFilter ?? ''}
@@ -356,23 +360,25 @@ export const ExpensesPage = () => {
             {/* Row 2: Category filter */}
             <div>
               <label className="block text-xs font-medium text-text-secondary mb-1">
-                Category
+                {t('filters.category')}
               </label>
               <div className="flex gap-2 flex-wrap">
-                {categoryFilters.map((filter) => (
+                {categoryFilterValues.map((value) => (
                   <button
-                    key={filter.label}
+                    key={value ?? 'all'}
                     onClick={() => {
-                      setCategoryFilter(filter.value);
+                      setCategoryFilter(value);
                       resetPage();
                     }}
                     className={`px-4 py-2 rounded transition-colors text-sm ${
-                      categoryFilter === filter.value
+                      categoryFilter === value
                         ? 'bg-primary-500 text-white'
                         : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
                     }`}
                   >
-                    {filter.label}
+                    {value
+                      ? t(`category.${value}`)
+                      : t('filters.allCategories')}
                   </button>
                 ))}
               </div>
@@ -392,34 +398,34 @@ export const ExpensesPage = () => {
                       onClick={() => handleSortChange('expenseDate')}
                     >
                       <div className="flex items-center gap-1">
-                        Date
+                        {t('table.date')}
                         <ArrowUpDown className="h-4 w-4" />
                       </div>
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      Expense #
+                      {t('table.expenseNumber')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      Description
+                      {t('table.description')}
                     </th>
                     <th
                       className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                       onClick={() => handleSortChange('category')}
                     >
                       <div className="flex items-center gap-1">
-                        Category
+                        {t('table.category')}
                         <ArrowUpDown className="h-4 w-4" />
                       </div>
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider min-w-[220px]">
-                      Property
+                      {t('table.property')}
                     </th>
                     <th
                       className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                       onClick={() => handleSortChange('amount')}
                     >
                       <div className="flex items-center justify-end gap-1">
-                        Amount
+                        {t('table.amount')}
                         <ArrowUpDown className="h-4 w-4" />
                       </div>
                     </th>
@@ -470,7 +476,7 @@ export const ExpensesPage = () => {
                               navigate(`/expenses/${expense.identifier}`);
                             }}
                             className="p-1.5 rounded hover:bg-neutral-100 text-text-secondary hover:text-primary-500 transition-colors"
-                            title="View expense"
+                            title={t('tooltips.viewExpense')}
                           >
                             <Eye className="h-4 w-4" />
                           </button>
@@ -481,7 +487,7 @@ export const ExpensesPage = () => {
                                 setDeleteTarget(expense.identifier);
                               }}
                               className="p-1.5 rounded hover:bg-error-bg text-text-secondary hover:text-error-text transition-colors"
-                              title="Delete expense"
+                              title={t('tooltips.deleteExpense')}
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>

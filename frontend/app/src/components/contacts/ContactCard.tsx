@@ -1,10 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import {
   ContactListItemResponse,
-  CONTACT_TAG_LABELS,
   TAG_COLORS,
   ContactType,
-  CONTACT_TYPE_LABELS,
 } from '@/types/contact';
 import {
   Mail,
@@ -68,9 +66,10 @@ export const ContactCard = ({ contact }: ContactCardProps) => {
           </h3>
           <div className="flex items-center gap-2 mt-0.5">
             <StatusBadge
-              label={
-                CONTACT_TYPE_LABELS[contact.contactType] ?? contact.contactType
-              }
+              label={t(
+                `enums.contactTypes.${contact.contactType}`,
+                contact.contactType
+              )}
               color={CONTACT_TYPE_COLORS[contact.contactType] ?? 'gray'}
               size="sm"
             />
@@ -84,7 +83,7 @@ export const ContactCard = ({ contact }: ContactCardProps) => {
           {visibleTags.map((tag) => (
             <StatusBadge
               key={tag}
-              label={CONTACT_TAG_LABELS[tag] ?? tag}
+              label={t(`enums.contactTags.${tag}`, tag)}
               color={TAG_COLORS[tag] ?? 'gray'}
               size="sm"
             />

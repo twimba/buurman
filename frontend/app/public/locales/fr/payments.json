@@ -151,7 +151,10 @@
     "changedFields": "Champs modifiés",
     "old": "Ancien :",
     "new": "Nouveau :",
-    "impersonated": "Usurpé"
+    "impersonated": "Usurpé",
+    "na": "N/D",
+    "none": "Aucun",
+    "receivalOn": "{{amount}} le {{date}}"
   },
   "deleteDialog": {
     "title": "Supprimer le paiement",

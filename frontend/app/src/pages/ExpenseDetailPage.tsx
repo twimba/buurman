@@ -39,11 +39,7 @@ import {
   User,
 } from 'lucide-react';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import {
-  UpdateExpenseRequest,
-  CreateExpenseRequest,
-  formatExpenseCategory,
-} from '@/types/expense';
+import { UpdateExpenseRequest, CreateExpenseRequest } from '@/types/expense';
 
 export const ExpenseDetailPage = () => {
   const { t } = useTranslation('expenses');
@@ -128,7 +124,7 @@ export const ExpenseDetailPage = () => {
       <div className="px-4 py-8">
         {/* Header */}
         <PageHeader
-          title={`Expense #${expense.identifier}`}
+          title={t('detail.titlePrefix', { id: expense.identifier })}
           subtitle={expense.description}
           backTo={backTo}
           badge={<ExpenseCategoryBadge category={expense.category} />}
@@ -144,7 +140,7 @@ export const ExpenseDetailPage = () => {
                   }}
                   disabled={!canEditData}
                 >
-                  Edit
+                  {t('common:buttons.edit')}
                 </Button>
               )}
               <Button
@@ -250,7 +246,7 @@ export const ExpenseDetailPage = () => {
                         {t('detail.category')}
                       </p>
                       <p className="font-medium text-text-primary">
-                        {formatExpenseCategory(expense.category)}
+                        {t(`category.${expense.category}`)}
                       </p>
                     </div>
                   </div>
@@ -358,7 +354,7 @@ export const ExpenseDetailPage = () => {
                         {t('detail.created')}
                       </span>{' '}
                       <span className="text-text-primary">
-                        {formatDate(expense.createdAt)} at{' '}
+                        {formatDate(expense.createdAt)}{' '}
                         {new Date(expense.createdAt).toLocaleTimeString()}
                       </span>
                     </div>
@@ -367,7 +363,7 @@ export const ExpenseDetailPage = () => {
                         {t('detail.lastUpdated')}
                       </span>{' '}
                       <span className="text-text-primary">
-                        {formatDate(expense.updatedAt)} at{' '}
+                        {formatDate(expense.updatedAt)}{' '}
                         {new Date(expense.updatedAt).toLocaleTimeString()}
                       </span>
                     </div>
@@ -471,7 +467,7 @@ export const ExpenseDetailPage = () => {
                             {activity.impersonatedBy && (
                               <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-warning-bg text-warning-text">
                                 <Eye className="h-3 w-3" />
-                                Impersonated
+                                {t('history.impersonated')}
                               </span>
                             )}
                           </div>

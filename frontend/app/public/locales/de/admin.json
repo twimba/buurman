@@ -292,6 +292,14 @@
       "title": "Belegungstrend",
       "subtitle": "Monatliche Belegungsrate in Prozent",
       "occupancyRate": "Belegungsrate (%)"
-    }
+    },
+    "netProfit": "Nettogewinn",
+    "income": "Einnahmen",
+    "expenses": "Ausgaben",
+    "amount": "Betrag",
+    "downloadPdf": "PDF herunterladen"
+  },
+  "auditLog": {
+    "failedToLoad": "Aktivitätsprotokolle konnten nicht geladen werden"
   }
 }

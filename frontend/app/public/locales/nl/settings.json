@@ -296,7 +296,9 @@
     },
     "default": "Standaard",
     "holder": "Houder:",
-    "account": "Rekening:"
+    "account": "Rekening:",
+    "routing": "Routing:",
+    "loading": "Laden..."
   },
   "calendarFeeds": {
     "title": "Agendafeeds",

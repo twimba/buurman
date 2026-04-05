@@ -18,11 +18,7 @@ import {
 } from '@/hooks/useImportHooks';
 import { useFeatureFlags } from '@/context/FeatureFlagContext';
 import { FeatureFlags } from '@/constants/featureFlags';
-import {
-  ContactTag,
-  CONTACT_TYPE_LABELS,
-  CONTACT_TAG_LABELS,
-} from '@/types/contact';
+import { ContactTag } from '@/types/contact';
 import { trackEvent } from '@/utils/analytics';
 import { AnalyticsEvent } from '@/constants/analyticsEvents';
 import type {
@@ -54,13 +50,10 @@ const CONTACT_FIELDS = [
   { value: 'notes', label: 'Notes' },
 ] as const;
 
-const CONTACT_TYPES: {
-  value: ImportPreviewRequestContactType;
-  label: string;
-}[] = [
-  { value: 'INDIVIDUAL', label: CONTACT_TYPE_LABELS.INDIVIDUAL },
-  { value: 'COMPANY', label: CONTACT_TYPE_LABELS.COMPANY },
-  { value: 'SERVICE_PROVIDER', label: CONTACT_TYPE_LABELS.SERVICE_PROVIDER },
+const CONTACT_TYPE_VALUES: ImportPreviewRequestContactType[] = [
+  'INDIVIDUAL',
+  'COMPANY',
+  'SERVICE_PROVIDER',
 ];
 
 const STATUS_BADGE_CLASSES: Record<string, string> = {
@@ -492,21 +485,21 @@ export const ImportWizard = ({ open, onClose }: ImportWizardProps) => {
           {/* Contact type */}
           <div>
             <label className="text-sm font-medium text-text-secondary mb-2 block">
-              Contact Type
+              {t('import.contactType')}
             </label>
             <div className="flex gap-2">
-              {CONTACT_TYPES.map((ct) => (
+              {CONTACT_TYPE_VALUES.map((value) => (
                 <button
-                  key={ct.value}
+                  key={value}
                   type="button"
-                  onClick={() => setContactType(ct.value)}
+                  onClick={() => setContactType(value)}
                   className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
-                    contactType === ct.value
+                    contactType === value
                       ? 'border-primary-500 bg-primary-50 text-primary-600 dark:bg-primary-950 dark:text-primary-300'
                       : 'border-border-strong text-text-secondary hover:border-primary-400'
                   }`}
                 >
-                  {ct.label}
+                  {t(`enums.contactTypes.${value}`)}
                 </button>
               ))}
             </div>
@@ -529,7 +522,7 @@ export const ImportWizard = ({ open, onClose }: ImportWizardProps) => {
                       : 'border-border-strong text-text-secondary hover:border-primary-400'
                   }`}
                 >
-                  {CONTACT_TAG_LABELS[tag]}
+                  {t(`enums.contactTags.${tag}`)}
                 </button>
               ))}
             </div>

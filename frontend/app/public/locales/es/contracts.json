@@ -222,7 +222,32 @@
     "empty": "Sin extensiones registradas.",
     "renewalConfig": "Configuración de Renovación",
     "createExtension": "Crear Extensión",
-    "newEndDate": "Nueva Fecha de Fin"
+    "newEndDate": "Nueva Fecha de Fin",
+    "newExtension": "Nueva Extensión",
+    "extensionNumber": "Extensión #{{number}}",
+    "auto": "Auto",
+    "manual": "Manual",
+    "declined": "Rechazado: {{reason}}",
+    "created": "Creado el {{date}}",
+    "activated": "Activado el {{date}}",
+    "confirmed": "Confirmado el {{date}}",
+    "addendum": "Adenda",
+    "rentLetter": "Carta de Alquiler",
+    "regenerate": "Regenerar",
+    "generateAndSave": "Generar y Guardar",
+    "activate": "Activar",
+    "confirm": "Confirmar",
+    "decline": "Rechazar",
+    "cancel": "Cancelar",
+    "declineTitle": "Rechazar Extensión",
+    "reasonOptional": "Motivo (Opcional)",
+    "reasonPlaceholder": "Motivo del rechazo...",
+    "declining": "Rechazando...",
+    "cancelTitle": "Cancelar Extensión",
+    "deleteGeneratedDocs": "Eliminar documentos generados",
+    "deleteGeneratedDocsHelp": "Eliminar PDFs de adenda y carta de alquiler generados para esta extensión",
+    "downloadFailed": "Error al descargar el documento. Inténtelo de nuevo.",
+    "addRole": "Añadir {{role}}"
   },
   "documents": {
     "title": "Documentos"
@@ -372,7 +397,40 @@
     "noRules": "No se encontraron reglas para esta selección.",
     "noData": "Sin datos de regulación disponibles",
     "noDataDescription": "Los datos de regulación se pueden gestionar desde el backoffice",
-    "failedToLoad": "Error al cargar regulaciones de alquiler"
+    "failedToLoad": "Error al cargar regulaciones de alquiler",
+    "regions": "Regiones",
+    "national": "Nacional",
+    "regional": "Regional",
+    "regionalVariations": "Variaciones regionales",
+    "reviewed": "Revisado el {{date}}",
+    "overview": "Resumen",
+    "category": "Categoría",
+    "source": "Fuente",
+    "current": "Actual",
+    "notes": "Notas",
+    "disclaimer": "Los datos de regulación se proporcionan solo con fines informativos. Verifique siempre con fuentes legales oficiales y busque asesoramiento profesional antes de aplicar ajustes de alquiler. No somos responsables de errores u omisiones.",
+    "requestCountry": {
+      "triggerTitle": "¿Falta un país?",
+      "triggerDescription": "¿No ve su país en la lista? ¡Díganos y trabajaremos para añadirlo!",
+      "modalTitle": "Solicitar un País",
+      "modalDescription": "Estamos ampliando constantemente nuestra cobertura. ¡Díganos para qué país desea datos de regulación y aumentaremos su prioridad!",
+      "countryName": "Nombre del país",
+      "countryPlaceholder": "p. ej. Alemania, Brasil, Japón...",
+      "anythingElse": "¿Algo más que debamos saber?",
+      "optional": "opcional",
+      "notesPlaceholder": "Regiones específicas, tipos de propiedad, urgencia...",
+      "sending": "Enviando...",
+      "sendRequest": "Enviar Solicitud"
+    },
+    "increaseTypes": {
+      "FIXED_PERCENTAGE": "Porcentaje Fijo",
+      "CPI_LINKED": "Vinculado al IPC",
+      "INDEX_LINKED": "Vinculado a Índice",
+      "MARKET_RENT": "Alquiler de Mercado",
+      "NEGOTIATED": "Negociado",
+      "FROZEN": "Congelado",
+      "OTHER": "Otro"
+    }
   },
   "rentIncrease": {
     "title": "Asistente de Ajuste de Alquiler",
@@ -387,7 +445,56 @@
     "nextAdjustIncreases": "Siguiente: Ajustar Aumentos",
     "nextReview": "Siguiente: Revisar",
     "applied": "Aplicado",
-    "backToAdjust": "Volver al Ajuste"
+    "backToAdjust": "Volver al Ajuste",
+    "contract_one": "{{count}} contrato",
+    "contract_other": "{{count}} contratos",
+    "adjustmentStrategy": "Estrategia de Ajuste",
+    "strategies": {
+      "maximum": "Máximo",
+      "medium": "Medio",
+      "minimum": "Mínimo",
+      "custom": "Personalizado"
+    },
+    "strategyDescriptions": {
+      "maximum": "Aplicar % máx. regulado",
+      "medium": "Promedio de mín. y máx.",
+      "minimum": "Aplicar % mín. regulado",
+      "custom": "Configurar por propiedad"
+    },
+    "bulkEffectiveDate": "Fecha efectiva masiva",
+    "contractsAdjusted": "{{active}} de {{total}} contratos ajustados",
+    "avgChange": "Cambio promedio:",
+    "warning_one": "{{count}} advertencia",
+    "warning_other": "{{count}} advertencias",
+    "retroactive": "retroactivo",
+    "retroactiveTooltip": "Se crearán pagos de ajuste para cualquier pago ya liquidado afectado por cambios retroactivos de fecha.",
+    "exceedsMax": "Excede el aumento máximo regulado de {{max}}%",
+    "belowMin": "Por debajo del aumento mínimo regulado de {{min}}%",
+    "tableHeaders": {
+      "property": "Propiedad",
+      "currentRent": "Alquiler Actual",
+      "regulatedRange": "Rango Regulado",
+      "adjustment": "Ajuste",
+      "newRent": "Nuevo Alquiler",
+      "effectiveDate": "Fecha Efectiva"
+    },
+    "noData": "Sin datos",
+    "portfolioTotals": "Totales del Portafolio para {{year}}",
+    "previous": "Anterior",
+    "new": "Nuevo",
+    "increase": "Aumento",
+    "contractsToUpdate": "Contratos a Actualizar ({{count}})",
+    "unchangedContracts": "Contratos Sin Cambios ({{count}})",
+    "applying": "Aplicando...",
+    "applyAdjustments_one": "Aplicar {{count}} Ajuste",
+    "applyAdjustments_other": "Aplicar {{count}} Ajustes",
+    "allSuccess": "Todos los ajustes de alquiler se aplicaron correctamente",
+    "partialSuccess": "{{success}} de {{total}} ajustes aplicados",
+    "increasesFailed_one": "{{count}} aumento falló",
+    "increasesFailed_other": "{{count}} aumentos fallaron",
+    "adjustmentPayments_one": "{{count}} pago de ajuste creado para cambios retroactivos",
+    "adjustmentPayments_other": "{{count}} pagos de ajuste creados para cambios retroactivos",
+    "status": "Estado"
   },
   "card": {
     "start": "Inicio",
@@ -425,6 +532,17 @@
       "STORAGE": "Almacén",
       "GARBAGE_COLLECTION": "Recogida de Basura",
       "OTHER": "Otro"
+    },
+    "extensionStatuses": {
+      "DRAFT": "Borrador",
+      "ACTIVE": "Activo",
+      "SUPERSEDED": "Reemplazado",
+      "CANCELLED": "Cancelado",
+      "DECLINED": "Rechazado"
     }
+  },
+  "countryMetadata": {
+    "noFields": "No hay campos específicos del país disponibles para {{countryCode}}.",
+    "selectPlaceholder": "— Seleccionar —"
   }
 }

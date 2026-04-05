@@ -16,7 +16,6 @@ import {
   RentComponentResponseItem,
   RentComponentType,
   RentPeriodResponse,
-  RENT_COMPONENT_LABELS,
 } from '@/types/contract';
 
 interface AdjustRentModalProps {
@@ -434,7 +433,7 @@ export const AdjustRentModal = ({
                       <div className="flex items-center gap-2">
                         <div className={labelCol}>
                           <span className="text-xs text-text-secondary truncate block">
-                            {RENT_COMPONENT_LABELS[comp.componentType]}
+                            {t(`enums.rentComponents.${comp.componentType}`)}
                           </span>
                           {current && (
                             <span className="text-[10px] text-text-muted">
@@ -515,7 +514,7 @@ export const AdjustRentModal = ({
                     <div className="flex items-center gap-2">
                       <div className={labelCol}>
                         <span className="text-xs text-text-muted line-through truncate block">
-                          {RENT_COMPONENT_LABELS[orig.componentType]}
+                          {t(`enums.rentComponents.${orig.componentType}`)}
                         </span>
                       </div>
                       <div className="flex-1 min-w-0 overflow-hidden relative">
@@ -593,7 +592,7 @@ export const AdjustRentModal = ({
                       </option>
                       {availableTypes.map((type) => (
                         <option key={type} value={type}>
-                          {RENT_COMPONENT_LABELS[type]}
+                          {t(`enums.rentComponents.${type}`)}
                         </option>
                       ))}
                     </select>

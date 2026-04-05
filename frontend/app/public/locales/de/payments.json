@@ -151,7 +151,10 @@
     "changedFields": "Geänderte Felder",
     "old": "Alt:",
     "new": "Neu:",
-    "impersonated": "Impersoniert"
+    "impersonated": "Impersoniert",
+    "na": "N/V",
+    "none": "Keine",
+    "receivalOn": "{{amount}} am {{date}}"
   },
   "deleteDialog": {
     "title": "Zahlung löschen",

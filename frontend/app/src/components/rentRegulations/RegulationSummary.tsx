@@ -1,4 +1,5 @@
 import { Clock, Globe, MapPin } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { RichTextDisplay } from '@buurman/ui';
 import type { RentRegulationCountryDetailResponse } from '@/types/rentRegulation';
 import { RegulationDisclaimer } from './StalenessWarning';
@@ -16,6 +17,7 @@ interface RegulationSummaryProps {
 }
 
 export const RegulationSummary = ({ country }: RegulationSummaryProps) => {
+  const { t } = useTranslation('contracts');
   return (
     <div className="space-y-4">
       <RegulationDisclaimer />
@@ -35,21 +37,22 @@ export const RegulationSummary = ({ country }: RegulationSummaryProps) => {
                 {country.hasRegionalRegulations && (
                   <span className="inline-flex items-center gap-1 text-xs text-text-secondary">
                     <MapPin className="h-3 w-3" />
-                    Regional variations
+                    {t('rentRegulations.regionalVariations')}
                   </span>
                 )}
                 {country.lastReviewedAt && (
                   <span className="inline-flex items-center gap-1 text-xs text-text-muted">
                     <Clock className="h-3 w-3" />
-                    Reviewed{' '}
-                    {new Date(country.lastReviewedAt).toLocaleDateString(
-                      undefined,
-                      {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                      }
-                    )}
+                    {t('rentRegulations.reviewed', {
+                      date: new Date(country.lastReviewedAt).toLocaleDateString(
+                        undefined,
+                        {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        }
+                      ),
+                    })}
                   </span>
                 )}
               </div>
@@ -62,7 +65,7 @@ export const RegulationSummary = ({ country }: RegulationSummaryProps) => {
           <div className="px-6 py-5">
             <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-text-muted mb-3">
               <Globe className="h-3.5 w-3.5" />
-              Overview
+              {t('rentRegulations.overview')}
             </div>
             <RichTextDisplay
               content={country.summary}

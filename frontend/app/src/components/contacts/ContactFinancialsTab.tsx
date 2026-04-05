@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { useExpenses } from '@/hooks/useExpenseHooks';
 import { usePayments } from '@/hooks/usePaymentHooks';
 import { useFormatDate } from '@/hooks/useFormatDate';
-import { formatExpenseCategory } from '@/types/expense';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 import { LoadingSpinner } from '@buurman/ui';
 import { getCurrencySymbol } from '@/utils/currencies';
@@ -83,19 +82,19 @@ export const ContactFinancialsTab = ({
                 <thead>
                   <tr className="border-b border-border-default text-left">
                     <th className="pb-2 pr-4 font-medium text-text-secondary">
-                      Date
+                      {t('financials.date')}
                     </th>
                     <th className="pb-2 pr-4 font-medium text-text-secondary">
-                      Description
+                      {t('financials.description')}
                     </th>
                     <th className="pb-2 pr-4 font-medium text-text-secondary">
-                      Category
+                      {t('financials.category')}
                     </th>
                     <th className="pb-2 pr-4 font-medium text-text-secondary">
-                      Property
+                      {t('financials.property')}
                     </th>
                     <th className="pb-2 text-right font-medium text-text-secondary">
-                      Amount
+                      {t('financials.amount')}
                     </th>
                     <th className="pb-2 w-8" />
                   </tr>
@@ -113,7 +112,7 @@ export const ContactFinancialsTab = ({
                         {expense.description}
                       </td>
                       <td className="py-2.5 pr-4 text-text-secondary whitespace-nowrap">
-                        {formatExpenseCategory(expense.category)}
+                        {t(`expenses:category.${expense.category}`)}
                       </td>
                       <td className="py-2.5 pr-4 text-text-secondary truncate max-w-[150px]">
                         {expense.property.street}
@@ -176,19 +175,19 @@ export const ContactFinancialsTab = ({
                 <thead>
                   <tr className="border-b border-border-default text-left">
                     <th className="pb-2 pr-4 font-medium text-text-secondary">
-                      Due Date
+                      {t('financials.dueDate')}
                     </th>
                     <th className="pb-2 pr-4 font-medium text-text-secondary">
-                      Property
+                      {t('financials.property')}
                     </th>
                     <th className="pb-2 pr-4 font-medium text-text-secondary">
-                      Notes
+                      {t('financials.notes')}
                     </th>
                     <th className="pb-2 pr-4 font-medium text-text-secondary">
-                      Status
+                      {t('financials.status')}
                     </th>
                     <th className="pb-2 text-right font-medium text-text-secondary">
-                      Amount
+                      {t('financials.amount')}
                     </th>
                     <th className="pb-2 w-8" />
                   </tr>

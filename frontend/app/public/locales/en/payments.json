@@ -151,7 +151,10 @@
     "changedFields": "Changed Fields",
     "old": "Old:",
     "new": "New:",
-    "impersonated": "Impersonated"
+    "impersonated": "Impersonated",
+    "na": "N/A",
+    "none": "None",
+    "receivalOn": "{{amount}} on {{date}}"
   },
   "deleteDialog": {
     "title": "Delete Payment",

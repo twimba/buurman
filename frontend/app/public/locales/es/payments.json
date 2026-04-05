@@ -151,7 +151,10 @@
     "changedFields": "Campos Modificados",
     "old": "Anterior:",
     "new": "Nuevo:",
-    "impersonated": "Suplantado"
+    "impersonated": "Suplantado",
+    "na": "N/D",
+    "none": "Ninguno",
+    "receivalOn": "{{amount}} el {{date}}"
   },
   "deleteDialog": {
     "title": "Eliminar Pago",

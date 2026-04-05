@@ -5,7 +5,6 @@ import {
   ExpenseResponse,
   CreateExpenseRequest,
   ExpenseCategory,
-  formatExpenseCategory,
 } from '@/types/expense';
 import { MoneyInput } from '@/components/common/MoneyInput';
 import { PropertySelector } from '@/components/common/PropertySelector';
@@ -183,7 +182,7 @@ export const ExpenseForm = ({
         >
           {Object.values(ExpenseCategory).map((cat) => (
             <option key={cat} value={cat}>
-              {formatExpenseCategory(cat)}
+              {t(`category.${cat}`)}
             </option>
           ))}
         </select>

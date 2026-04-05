@@ -292,6 +292,14 @@
       "title": "Tendência de Ocupação",
       "subtitle": "Percentagem mensal da taxa de ocupação",
       "occupancyRate": "Taxa de Ocupação (%)"
-    }
+    },
+    "netProfit": "Lucro Líquido",
+    "income": "Receita",
+    "expenses": "Despesas",
+    "amount": "Montante",
+    "downloadPdf": "Descarregar PDF"
+  },
+  "auditLog": {
+    "failedToLoad": "Falha ao carregar registos de atividade"
   }
 }

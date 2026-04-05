@@ -33,11 +33,7 @@ import { ContactRelationshipsTab } from '@/components/contacts/ContactRelationsh
 import { ContactTagsTab } from '@/components/contacts/ContactTagsTab';
 import { ContactFinancialsTab } from '@/components/contacts/ContactFinancialsTab';
 import { ContactContractsTable } from '@/components/contacts/ContactContractsTable';
-import {
-  ContractStatus,
-  ContractPartyRole,
-  PARTY_ROLE_LABELS,
-} from '@/types/contract';
+import { ContractStatus, ContractPartyRole } from '@/types/contract';
 import {
   Button,
   ConfirmDialog,
@@ -80,12 +76,6 @@ const ROLE_COLORS: Record<ContractPartyRole, string> = {
   [ContractPartyRole.EXTRA_TENANT]: 'bg-success-bg text-success-text',
 };
 
-const CONTACT_TYPE_LABELS: Record<string, string> = {
-  INDIVIDUAL: 'Individual',
-  COMPANY: 'Company',
-  SERVICE_PROVIDER: 'Service Provider',
-};
-
 const formatCurrency = (amount: number, currency: string) =>
   new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -93,11 +83,17 @@ const formatCurrency = (amount: number, currency: string) =>
     minimumFractionDigits: 2,
   }).format(amount);
 
-const RoleBadge = ({ role }: { role: ContractPartyRole }) => (
+const RoleBadge = ({
+  role,
+  label,
+}: {
+  role: ContractPartyRole;
+  label: string;
+}) => (
   <span
     className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full ${ROLE_COLORS[role] ?? 'bg-surface-inset text-text-primary'}`}
   >
-    {PARTY_ROLE_LABELS[role] ?? role}
+    {label}
   </span>
 );
 
@@ -311,8 +307,10 @@ export const ContactDetailPage = () => {
           title={displayName}
           subtitle={`#${contact.identifier} · ${
             contact.contactType
-              ? (CONTACT_TYPE_LABELS[contact.contactType] ??
-                contact.contactType)
+              ? t(
+                  `enums.contactTypes.${contact.contactType}`,
+                  contact.contactType
+                )
               : ''
           }`}
           backTo="/contacts"
@@ -859,7 +857,15 @@ export const ContactDetailPage = () => {
                           </p>
                         </div>
                       </div>
-                      {item.role && <RoleBadge role={item.role} />}
+                      {item.role && (
+                        <RoleBadge
+                          role={item.role}
+                          label={t(
+                            'contracts:enums.partyRoles.' + item.role,
+                            item.role
+                          )}
+                        />
+                      )}
                     </div>
                   ))}
                 </div>

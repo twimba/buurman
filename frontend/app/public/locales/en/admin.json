@@ -264,6 +264,11 @@
     "noProperties": "No properties found",
     "totalIncome": "Total Income",
     "totalExpenses": "Total Expenses",
+    "netProfit": "Net Profit",
+    "income": "Income",
+    "expenses": "Expenses",
+    "amount": "Amount",
+    "downloadPdf": "Download PDF",
     "incomeTrend": {
       "title": "Income Trend",
       "subtitle": "Monthly income, expenses, and net profit",
@@ -293,5 +298,8 @@
       "subtitle": "Monthly occupancy rate percentage",
       "occupancyRate": "Occupancy Rate (%)"
     }
+  },
+  "auditLog": {
+    "failedToLoad": "Failed to load activity logs"
   }
 }

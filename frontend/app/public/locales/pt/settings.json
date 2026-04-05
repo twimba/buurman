@@ -296,7 +296,9 @@
     },
     "default": "Predefinido",
     "holder": "Titular:",
-    "account": "Conta:"
+    "account": "Conta:",
+    "routing": "Encaminhamento:",
+    "loading": "A carregar..."
   },
   "calendarFeeds": {
     "title": "Feeds de Calendário",

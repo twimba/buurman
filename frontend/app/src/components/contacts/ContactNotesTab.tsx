@@ -9,7 +9,6 @@ import {
 } from '@/hooks/useContactHooks';
 import {
   InteractionType,
-  INTERACTION_TYPE_LABELS,
   CreateContactNoteRequest,
   UpdateContactNoteRequest,
   ContactNoteResponse,
@@ -188,7 +187,7 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
             leftIcon={<Plus className="h-4 w-4" />}
             onClick={handleOpenCreate}
           >
-            Add Note
+            {t('notes.addNote')}
           </Button>
         )}
       </div>
@@ -206,7 +205,7 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
                 leftIcon={<Plus className="h-4 w-4" />}
                 onClick={handleOpenCreate}
               >
-                Add First Note
+                {t('notes.addFirstNote')}
               </Button>
             ) : undefined
           }
@@ -230,12 +229,12 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-surface-inset text-text-secondary">
-                        {INTERACTION_TYPE_LABELS[note.interactionType]}
+                        {t(`enums.interactionTypes.${note.interactionType}`)}
                       </span>
                       {note.pinned && (
                         <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300">
                           <Pin className="h-3 w-3 inline mr-1" />
-                          Pinned
+                          {t('notes.pinned')}
                         </span>
                       )}
                       {note.followUpDate && (
@@ -310,7 +309,7 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
         footer={
           <div className="flex gap-3 justify-end">
             <Button variant="secondary" onClick={handleCloseForm}>
-              Cancel
+              {t('common:buttons.cancel')}
             </Button>
             <Button
               variant="primary"
@@ -336,9 +335,9 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
                 }))
               }
             >
-              {Object.entries(INTERACTION_TYPE_LABELS).map(([value, label]) => (
+              {Object.values(InteractionType).map((value) => (
                 <option key={value} value={value}>
-                  {label}
+                  {t(`enums.interactionTypes.${value}`)}
                 </option>
               ))}
             </Select>

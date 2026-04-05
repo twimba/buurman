@@ -239,7 +239,7 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
             className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
           >
             <Plus className="h-4 w-4" />
-            Add Address
+            {t('addresses.addAddress')}
           </button>
         </div>
       )}
@@ -298,7 +298,7 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
                     onClick={() => handleSort('street')}
                   >
                     <div className="flex items-center gap-1">
-                      Street
+                      {t('addresses.street')}
                       {renderSortIcon('street')}
                     </div>
                   </th>
@@ -307,7 +307,7 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
                     onClick={() => handleSort('city')}
                   >
                     <div className="flex items-center gap-1">
-                      City
+                      {t('addresses.city')}
                       {renderSortIcon('city')}
                     </div>
                   </th>
@@ -316,7 +316,7 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
                     onClick={() => handleSort('countryCode')}
                   >
                     <div className="flex items-center gap-1">
-                      Country
+                      {t('addresses.country')}
                       {renderSortIcon('countryCode')}
                     </div>
                   </th>
@@ -325,7 +325,7 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
                     onClick={() => handleSort('addressType')}
                   >
                     <div className="flex items-center gap-1">
-                      Type
+                      {t('addresses.addressType')}
                       {renderSortIcon('addressType')}
                     </div>
                   </th>
@@ -334,13 +334,13 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
                     onClick={() => handleSort('status')}
                   >
                     <div className="flex items-center gap-1">
-                      Status
+                      {t('addresses.status')}
                       {renderSortIcon('status')}
                     </div>
                   </th>
                   {canEditData && (
                     <th className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      Actions
+                      {t('addresses.actions')}
                     </th>
                   )}
                 </tr>
@@ -386,7 +386,7 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
                           <span
                             className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(address.status)}`}
                           >
-                            {address.status}
+                            {t(`common:status.${address.status.toLowerCase()}`)}
                           </span>
                         </td>
                         {canEditData && (
@@ -456,9 +456,11 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
           {totalPages > 1 && (
             <div className="flex items-center justify-between mt-4 pt-4 border-t border-border-default">
               <div className="text-sm text-text-secondary">
-                Showing {(currentPage - 1) * perPage + 1} to{' '}
-                {Math.min(currentPage * perPage, filteredAndSorted.length)} of{' '}
-                {filteredAndSorted.length} addresses
+                {t('addresses.showing', {
+                  from: (currentPage - 1) * perPage + 1,
+                  to: Math.min(currentPage * perPage, filteredAndSorted.length),
+                  total: filteredAndSorted.length,
+                })}
               </div>
               <div className="flex gap-2">
                 <button
@@ -466,17 +468,20 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
                   disabled={currentPage === 1}
                   className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
                 >
-                  Previous
+                  {t('common:pagination.previous')}
                 </button>
                 <span className="px-3 py-1 text-sm text-text-secondary">
-                  Page {currentPage} of {totalPages}
+                  {t('addresses.page', {
+                    current: currentPage,
+                    total: totalPages,
+                  })}
                 </span>
                 <button
                   onClick={() => setCurrentPage(currentPage + 1)}
                   disabled={currentPage === totalPages}
                   className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
                 >
-                  Next
+                  {t('common:pagination.next')}
                 </button>
               </div>
             </div>
@@ -497,7 +502,7 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
               className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded hover:bg-primary-600"
             >
               <Plus className="h-4 w-4" />
-              Add First Address
+              {t('addresses.addFirstAddress')}
             </button>
           </div>
         )

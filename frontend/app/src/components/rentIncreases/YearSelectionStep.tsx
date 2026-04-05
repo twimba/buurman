@@ -71,8 +71,9 @@ export const YearSelectionStep = ({
                       {summary.countryName}
                     </p>
                     <p className="text-sm text-text-secondary">
-                      {summary.contractCount}{' '}
-                      {summary.contractCount === 1 ? 'contract' : 'contracts'}
+                      {t('rentIncrease.contract', {
+                        count: summary.contractCount,
+                      })}
                     </p>
                   </div>
                 </div>

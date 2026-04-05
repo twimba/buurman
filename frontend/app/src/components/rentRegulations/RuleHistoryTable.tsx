@@ -7,20 +7,14 @@ interface RuleHistoryTableProps {
   rules: RentRegulationRuleResponse[];
 }
 
-const humanizeEnum = (value: string): string => {
-  const labels: Record<string, string> = {
-    FIXED_PERCENTAGE: 'Fixed Percentage',
-    CPI_LINKED: 'CPI Linked',
-    INDEX_LINKED: 'Index Linked',
-    MARKET_RENT: 'Market Rent',
-    NEGOTIATED: 'Negotiated',
-    FROZEN: 'Frozen',
-    OTHER: 'Other',
-  };
-  return (
-    labels[value] ??
-    value.replace(/_/g, '').replace(/\b\w/g, (c) => c.toUpperCase())
-  );
+const INCREASE_TYPE_KEYS: Record<string, string> = {
+  FIXED_PERCENTAGE: 'FIXED_PERCENTAGE',
+  CPI_LINKED: 'CPI_LINKED',
+  INDEX_LINKED: 'INDEX_LINKED',
+  MARKET_RENT: 'MARKET_RENT',
+  NEGOTIATED: 'NEGOTIATED',
+  FROZEN: 'FROZEN',
+  OTHER: 'OTHER',
 };
 
 export const RuleHistoryTable = ({ rules }: RuleHistoryTableProps) => {
@@ -43,25 +37,25 @@ export const RuleHistoryTable = ({ rules }: RuleHistoryTableProps) => {
           <thead>
             <tr className="border-b border-border-default">
               <th className="text-left px-4 py-3 font-semibold text-text-secondary">
-                Year
+                {t('rentRegulations.year')}
               </th>
               <th className="text-left px-4 py-3 font-semibold text-text-secondary">
-                Category
+                {t('rentRegulations.category')}
               </th>
               <th className="text-left px-4 py-3 font-semibold text-text-secondary">
-                Max Increase
+                {t('rentRegulations.maxIncrease')}
               </th>
               <th className="text-left px-4 py-3 font-semibold text-text-secondary">
-                Type
+                {t('rentRegulations.type')}
               </th>
               <th className="text-left px-4 py-3 font-semibold text-text-secondary">
-                Effective Date
+                {t('rentRegulations.effectiveDate')}
               </th>
               <th className="text-left px-4 py-3 font-semibold text-text-secondary">
-                Notice Period
+                {t('rentRegulations.noticePeriod')}
               </th>
               <th className="text-left px-4 py-3 font-semibold text-text-secondary">
-                Source
+                {t('rentRegulations.source')}
               </th>
             </tr>
           </thead>
@@ -88,7 +82,7 @@ export const RuleHistoryTable = ({ rules }: RuleHistoryTableProps) => {
                       {rule.year}
                       {isCurrent && (
                         <span className="ml-2 text-xs px-1.5 py-0.5 rounded bg-primary-500 text-white font-normal">
-                          Current
+                          {t('rentRegulations.current')}
                         </span>
                       )}
                     </span>
@@ -113,7 +107,13 @@ export const RuleHistoryTable = ({ rules }: RuleHistoryTableProps) => {
                     )}
                   </td>
                   <td className="px-4 py-3 text-text-secondary">
-                    {humanizeEnum(rule.maxIncreaseType)}
+                    {INCREASE_TYPE_KEYS[rule.maxIncreaseType]
+                      ? t(
+                          `rentRegulations.increaseTypes.${rule.maxIncreaseType}`
+                        )
+                      : rule.maxIncreaseType
+                          .replace(/_/g, ' ')
+                          .replace(/\b\w/g, (c) => c.toUpperCase())}
                   </td>
                   <td className="px-4 py-3 text-text-secondary">
                     {rule.effectiveDate ?? '-'}
@@ -134,7 +134,7 @@ export const RuleHistoryTable = ({ rules }: RuleHistoryTableProps) => {
                         className="inline-flex items-center gap-1 text-primary-500 dark:text-primary-300 hover:underline"
                       >
                         <ExternalLink className="h-3.5 w-3.5" />
-                        Source
+                        {t('rentRegulations.source')}
                       </a>
                     ) : (
                       <span className="text-text-muted">-</span>
@@ -149,7 +149,7 @@ export const RuleHistoryTable = ({ rules }: RuleHistoryTableProps) => {
       {sortedRules.some((r) => r.notes || r.additionalConditions) && (
         <div className="border-t border-border-default p-4">
           <h4 className="text-xs font-semibold uppercase tracking-wider text-text-muted mb-2">
-            Notes
+            {t('rentRegulations.notes')}
           </h4>
           <div className="space-y-1">
             {sortedRules

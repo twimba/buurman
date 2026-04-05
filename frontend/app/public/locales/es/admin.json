@@ -292,6 +292,14 @@
       "title": "Tendencia de Ocupación",
       "subtitle": "Porcentaje mensual de la tasa de ocupación",
       "occupancyRate": "Tasa de Ocupación (%)"
-    }
+    },
+    "netProfit": "Beneficio Neto",
+    "income": "Ingresos",
+    "expenses": "Gastos",
+    "amount": "Importe",
+    "downloadPdf": "Descargar PDF"
+  },
+  "auditLog": {
+    "failedToLoad": "Error al cargar los registros de actividad"
   }
 }

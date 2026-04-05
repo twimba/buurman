@@ -296,7 +296,9 @@
     },
     "default": "Standard",
     "holder": "Inhaber:",
-    "account": "Konto:"
+    "account": "Konto:",
+    "routing": "Bankleitzahl:",
+    "loading": "Laden..."
   },
   "calendarFeeds": {
     "title": "Kalender-Feeds",

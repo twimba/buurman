@@ -1,9 +1,5 @@
 import { useContactActivity } from '@/hooks/useContactHooks';
-import {
-  InteractionType,
-  INTERACTION_TYPE_LABELS,
-  ContactActivityItem,
-} from '@/types/contact';
+import { InteractionType, ContactActivityItem } from '@/types/contact';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { LoadingSpinner, Pagination, RichTextDisplay } from '@buurman/ui';
 import { usePagination } from '@/hooks/usePagination';
@@ -126,13 +122,15 @@ export const ContactActivityTab = ({ contactId }: ContactActivityTabProps) => {
                         <div className="flex items-center gap-2 mb-1">
                           {item.interactionType && (
                             <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-surface-inset text-text-secondary">
-                              {INTERACTION_TYPE_LABELS[item.interactionType]}
+                              {t(
+                                `enums.interactionTypes.${item.interactionType}`
+                              )}
                             </span>
                           )}
                           {item.pinned && (
                             <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300">
                               <Pin className="h-3 w-3 inline mr-1" />
-                              Pinned
+                              {t('activity.pinned')}
                             </span>
                           )}
                         </div>

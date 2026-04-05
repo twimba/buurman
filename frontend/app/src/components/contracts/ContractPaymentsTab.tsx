@@ -148,7 +148,7 @@ export const ContractPaymentsTab = ({
                 onClick={() => setShowGeneratePaymentsModal(true)}
                 disabled={!canEditData}
               >
-                Generate Future Payments
+                {t('payments.generateFuture')}
               </Button>
             )}
             <Button
@@ -157,7 +157,7 @@ export const ContractPaymentsTab = ({
               onClick={() => navigate(`/payments/new?contractId=${contractId}`)}
               disabled={!canEditData}
             >
-              Schedule Payment
+              {t('payments.schedulePayment')}
             </Button>
             <Button
               variant="primary"
@@ -167,7 +167,7 @@ export const ContractPaymentsTab = ({
               }
               disabled={!canEditData}
             >
-              Register Payments
+              {t('payments.registerPayments')}
             </Button>
           </div>
         </div>
@@ -188,7 +188,7 @@ export const ContractPaymentsTab = ({
               onClick={() => navigate(`/payments/new?contractId=${contractId}`)}
               disabled={!canEditData}
             >
-              Create First Payment
+              {t('payments.createFirstPayment')}
             </Button>
           </div>
         ) : (
@@ -216,14 +216,14 @@ export const ContractPaymentsTab = ({
                 <thead className="bg-surface-page">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      Payment #
+                      {t('payments.table.paymentNumber')}
                     </th>
                     <th
                       className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                       onClick={() => handlePaymentsSort('dueDate')}
                     >
                       <div className="flex items-center gap-1">
-                        Due Date
+                        {t('payments.table.dueDate')}
                         {paymentsSortField === 'dueDate' &&
                           (paymentsSortOrder === 'asc' ? (
                             <ChevronUp className="h-4 w-4" />
@@ -237,7 +237,7 @@ export const ContractPaymentsTab = ({
                       onClick={() => handlePaymentsSort('amount')}
                     >
                       <div className="flex items-center gap-1">
-                        Amount
+                        {t('payments.table.amount')}
                         {paymentsSortField === 'amount' &&
                           (paymentsSortOrder === 'asc' ? (
                             <ChevronUp className="h-4 w-4" />
@@ -251,7 +251,7 @@ export const ContractPaymentsTab = ({
                       onClick={() => handlePaymentsSort('status')}
                     >
                       <div className="flex items-center gap-1">
-                        Status
+                        {t('payments.table.status')}
                         {paymentsSortField === 'status' &&
                           (paymentsSortOrder === 'asc' ? (
                             <ChevronUp className="h-4 w-4" />
@@ -265,7 +265,7 @@ export const ContractPaymentsTab = ({
                       onClick={() => handlePaymentsSort('paymentDate')}
                     >
                       <div className="flex items-center gap-1">
-                        Payment Date
+                        {t('payments.table.paymentDate')}
                         {paymentsSortField === 'paymentDate' &&
                           (paymentsSortOrder === 'asc' ? (
                             <ChevronUp className="h-4 w-4" />
@@ -275,7 +275,7 @@ export const ContractPaymentsTab = ({
                       </div>
                     </th>
                     <th className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      Actions
+                      {t('payments.table.actions')}
                     </th>
                   </tr>
                 </thead>
@@ -316,8 +316,10 @@ export const ContractPaymentsTab = ({
                             {payment.receivedAmount > 0 &&
                               payment.status !== PaymentStatus.PAID && (
                                 <p className="text-xs text-text-secondary">
-                                  Balance: {payment.currency}{' '}
-                                  {(payment.balance ?? 0).toFixed(2)}
+                                  {t('payments.balance', {
+                                    currency: payment.currency,
+                                    amount: (payment.balance ?? 0).toFixed(2),
+                                  })}
                                 </p>
                               )}
                           </div>
@@ -355,12 +357,14 @@ export const ContractPaymentsTab = ({
             {paymentsTotalPages > 1 && (
               <div className="flex items-center justify-between mt-4 pt-4 border-t border-border-default">
                 <div className="text-sm text-text-secondary">
-                  Showing {(paymentsCurrentPage - 1) * paymentsPerPage + 1} to{' '}
-                  {Math.min(
-                    paymentsCurrentPage * paymentsPerPage,
-                    filteredAndSortedPayments.length
-                  )}{' '}
-                  of {filteredAndSortedPayments.length} payments
+                  {t('payments.showing', {
+                    from: (paymentsCurrentPage - 1) * paymentsPerPage + 1,
+                    to: Math.min(
+                      paymentsCurrentPage * paymentsPerPage,
+                      filteredAndSortedPayments.length
+                    ),
+                    total: filteredAndSortedPayments.length,
+                  })}
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -370,10 +374,13 @@ export const ContractPaymentsTab = ({
                     disabled={paymentsCurrentPage === 1}
                     className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
                   >
-                    Previous
+                    {t('common:pagination.previous')}
                   </button>
                   <span className="px-3 py-1 text-sm text-text-secondary">
-                    Page {paymentsCurrentPage} of {paymentsTotalPages}
+                    {t('payments.page', {
+                      current: paymentsCurrentPage,
+                      total: paymentsTotalPages,
+                    })}
                   </span>
                   <button
                     onClick={() =>
@@ -382,7 +389,7 @@ export const ContractPaymentsTab = ({
                     disabled={paymentsCurrentPage === paymentsTotalPages}
                     className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
                   >
-                    Next
+                    {t('common:pagination.next')}
                   </button>
                 </div>
               </div>

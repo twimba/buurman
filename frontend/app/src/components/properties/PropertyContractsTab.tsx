@@ -188,7 +188,8 @@ export const PropertyContractsTab = ({
                       onClick={() => handleSort('startDate')}
                     >
                       <div className="flex items-center gap-1">
-                        {t('contracts.table.contractNumber')}{renderSortIcon('startDate')}
+                        {t('contracts.table.contractNumber')}
+                        {renderSortIcon('startDate')}
                       </div>
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
@@ -323,7 +324,8 @@ export const PropertyContractsTab = ({
                     {t('pagination.previous', { ns: 'common' })}
                   </button>
                   <span className="px-3 py-1 text-sm text-text-secondary">
-                    {t('pagination.page', { ns: 'common' })} {currentPage + 1} {t('pagination.of', { ns: 'common' })} {totalPages}
+                    {t('pagination.page', { ns: 'common' })} {currentPage + 1}{' '}
+                    {t('pagination.of', { ns: 'common' })} {totalPages}
                   </span>
                   <button
                     onClick={() => setCurrentPage(currentPage + 1)}
@@ -453,7 +455,9 @@ export const PropertyContractsTab = ({
                                   setEndOccupancyPeriodId(period.identifier);
                                   setShowEndOccupancyModal(true);
                                 }}
-                                title={t('contracts.selfOccupancy.endOccupancy')}
+                                title={t(
+                                  'contracts.selfOccupancy.endOccupancy'
+                                )}
                                 className="p-1.5 rounded-lg hover:bg-warning-bg text-text-secondary hover:text-warning-text transition-colors"
                               >
                                 <Square className="h-4 w-4" />

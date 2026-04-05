@@ -2,6 +2,7 @@ import { useContractMetadataSchema } from '../../hooks/useContractHooks';
 import { useCurrencies, getFractionalDigits } from '../../hooks/useCurrencies';
 import type { MetadataFieldSchema } from '../../types/contract';
 import { MoneyInput } from '../common/MoneyInput';
+import { useTranslation } from 'react-i18next';
 
 interface CountryMetadataFormProps {
   countryCode: string;
@@ -18,6 +19,7 @@ export default function CountryMetadataForm({
   currency,
   disabled = false,
 }: CountryMetadataFormProps) {
+  const { t } = useTranslation('contracts');
   const { data: schema, isLoading } = useContractMetadataSchema(countryCode);
   const { data: currencies } = useCurrencies();
   const digits = getFractionalDigits(currencies, currency);
@@ -35,7 +37,7 @@ export default function CountryMetadataForm({
   if (!schema || schema.fields.length === 0) {
     return (
       <p className="text-sm text-text-secondary italic">
-        No country-specific fields available for {countryCode}.
+        {t('countryMetadata.noFields', { countryCode })}
       </p>
     );
   }
@@ -228,7 +230,7 @@ function MetadataField({
             disabled={disabled}
             className={inputClasses}
           >
-            <option value="">— Select —</option>
+            <option value="">{t('countryMetadata.selectPlaceholder')}</option>
             {field.enumValues.map((ev) => (
               <option key={ev.value} value={ev.value}>
                 {ev.label}

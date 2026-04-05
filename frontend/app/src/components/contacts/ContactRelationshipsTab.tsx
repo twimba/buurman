@@ -8,7 +8,6 @@ import {
 } from '@/hooks/useContactHooks';
 import {
   RelationshipType,
-  RELATIONSHIP_TYPE_LABELS,
   CreateContactRelationshipRequest,
   UpdateContactRelationshipRequest,
   ContactRelationshipResponse,
@@ -139,7 +138,7 @@ export const ContactRelationshipsTab = ({
             leftIcon={<Plus className="h-4 w-4" />}
             onClick={handleOpenCreate}
           >
-            Add Relationship
+            {t('relationships.addRelationship')}
           </Button>
         )}
       </div>
@@ -157,7 +156,7 @@ export const ContactRelationshipsTab = ({
                 leftIcon={<Plus className="h-4 w-4" />}
                 onClick={handleOpenCreate}
               >
-                Add First Relationship
+                {t('relationships.addFirstRelationship')}
               </Button>
             ) : undefined
           }
@@ -190,7 +189,7 @@ export const ContactRelationshipsTab = ({
                       {rel.relatedContact.dataRetentionStatus ===
                       'ANONYMIZED' ? (
                         <span className="text-sm font-medium text-text-muted italic">
-                          Erased contact
+                          {t('relationships.erasedContact')}
                         </span>
                       ) : (
                         <button
@@ -257,7 +256,7 @@ export const ContactRelationshipsTab = ({
         footer={
           <div className="flex gap-3 justify-end">
             <Button variant="secondary" onClick={handleCloseForm}>
-              Cancel
+              {t('common:buttons.cancel')}
             </Button>
             <Button
               variant="primary"
@@ -296,13 +295,11 @@ export const ContactRelationshipsTab = ({
                 }))
               }
             >
-              {Object.entries(RELATIONSHIP_TYPE_LABELS).map(
-                ([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                )
-              )}
+              {Object.values(RelationshipType).map((value) => (
+                <option key={value} value={value}>
+                  {t(`enums.relationshipTypes.${value}`)}
+                </option>
+              ))}
             </Select>
           </FormField>
           <FormField label={t('relationships.notes')}>

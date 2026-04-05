@@ -128,6 +128,10 @@
     "message": "¿Está seguro de que desea eliminar este gasto? Esta acción no se puede deshacer.",
     "messageWithRelated": "¿Está seguro de que desea eliminar este gasto? Todos los documentos relacionados también serán eliminados. Esta acción no se puede deshacer."
   },
+  "tooltips": {
+    "viewExpense": "Ver gasto",
+    "deleteExpense": "Eliminar gasto"
+  },
   "errors": {
     "loadFailed": "Error al cargar gastos",
     "loadExpenseFailed": "Error al cargar gasto",

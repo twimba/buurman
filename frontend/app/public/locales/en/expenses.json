@@ -128,6 +128,10 @@
     "message": "Are you sure you want to delete this expense? This action cannot be undone.",
     "messageWithRelated": "Are you sure you want to delete this expense? All related documents will also be deleted. This action cannot be undone."
   },
+  "tooltips": {
+    "viewExpense": "View expense",
+    "deleteExpense": "Delete expense"
+  },
   "errors": {
     "loadFailed": "Failed to load expenses",
     "loadExpenseFailed": "Failed to load expense",

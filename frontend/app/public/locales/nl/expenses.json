@@ -128,6 +128,10 @@
     "message": "Weet u zeker dat u deze uitgave wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
     "messageWithRelated": "Weet u zeker dat u deze uitgave wilt verwijderen? Alle gerelateerde documenten worden ook verwijderd. Deze actie kan niet ongedaan worden gemaakt."
   },
+  "tooltips": {
+    "viewExpense": "Uitgave bekijken",
+    "deleteExpense": "Uitgave verwijderen"
+  },
   "errors": {
     "loadFailed": "Kan uitgaven niet laden",
     "loadExpenseFailed": "Kan uitgave niet laden",

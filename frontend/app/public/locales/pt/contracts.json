@@ -222,7 +222,32 @@
     "empty": "Sem extensões registadas.",
     "renewalConfig": "Configuração de Renovação",
     "createExtension": "Criar Extensão",
-    "newEndDate": "Nova Data de Fim"
+    "newEndDate": "Nova Data de Fim",
+    "newExtension": "Nova Extensão",
+    "extensionNumber": "Extensão #{{number}}",
+    "auto": "Auto",
+    "manual": "Manual",
+    "declined": "Recusado: {{reason}}",
+    "created": "Criado a {{date}}",
+    "activated": "Ativado a {{date}}",
+    "confirmed": "Confirmado a {{date}}",
+    "addendum": "Aditamento",
+    "rentLetter": "Carta de Renda",
+    "regenerate": "Regenerar",
+    "generateAndSave": "Gerar e Guardar",
+    "activate": "Ativar",
+    "confirm": "Confirmar",
+    "decline": "Recusar",
+    "cancel": "Cancelar",
+    "declineTitle": "Recusar Extensão",
+    "reasonOptional": "Motivo (Opcional)",
+    "reasonPlaceholder": "Motivo da recusa...",
+    "declining": "A recusar...",
+    "cancelTitle": "Cancelar Extensão",
+    "deleteGeneratedDocs": "Eliminar documentos gerados",
+    "deleteGeneratedDocsHelp": "Remover PDFs de aditamento e carta de renda gerados para esta extensão",
+    "downloadFailed": "Falha ao transferir documento. Por favor, tente novamente.",
+    "addRole": "Adicionar {{role}}"
   },
   "documents": {
     "title": "Documentos"
@@ -372,7 +397,40 @@
     "noRules": "Sem regras encontradas para esta seleção.",
     "noData": "Sem dados de regulamento disponíveis",
     "noDataDescription": "Os dados de regulamento podem ser geridos a partir do backoffice",
-    "failedToLoad": "Falha ao carregar regulamentos de renda"
+    "failedToLoad": "Falha ao carregar regulamentos de renda",
+    "regions": "Regiões",
+    "national": "Nacional",
+    "regional": "Regional",
+    "regionalVariations": "Variações regionais",
+    "reviewed": "Revisto a {{date}}",
+    "overview": "Visão Geral",
+    "category": "Categoria",
+    "source": "Fonte",
+    "current": "Atual",
+    "notes": "Notas",
+    "disclaimer": "Os dados de regulamentação são fornecidos apenas para fins informativos. Verifique sempre com fontes legais oficiais e procure aconselhamento profissional antes de aplicar ajustes de renda. Não nos responsabilizamos por erros ou omissões.",
+    "requestCountry": {
+      "triggerTitle": "Falta um país?",
+      "triggerDescription": "Não vê o seu país na lista? Diga-nos e trabalharemos para o adicionar!",
+      "modalTitle": "Solicitar um País",
+      "modalDescription": "Estamos sempre a expandir a nossa cobertura. Diga-nos para que país gostaria de ter dados de regulamentação e aumentaremos a sua prioridade!",
+      "countryName": "Nome do país",
+      "countryPlaceholder": "p. ex. Alemanha, Brasil, Japão...",
+      "anythingElse": "Mais alguma coisa que devamos saber?",
+      "optional": "opcional",
+      "notesPlaceholder": "Regiões específicas, tipos de imóvel, urgência...",
+      "sending": "A enviar...",
+      "sendRequest": "Enviar Pedido"
+    },
+    "increaseTypes": {
+      "FIXED_PERCENTAGE": "Percentagem Fixa",
+      "CPI_LINKED": "Indexado ao IPC",
+      "INDEX_LINKED": "Indexado a Índice",
+      "MARKET_RENT": "Renda de Mercado",
+      "NEGOTIATED": "Negociado",
+      "FROZEN": "Congelado",
+      "OTHER": "Outro"
+    }
   },
   "rentIncrease": {
     "title": "Assistente de Ajuste de Renda",
@@ -387,7 +445,56 @@
     "nextAdjustIncreases": "Seguinte: Ajustar Aumentos",
     "nextReview": "Seguinte: Rever",
     "applied": "Aplicado",
-    "backToAdjust": "Voltar ao Ajuste"
+    "backToAdjust": "Voltar ao Ajuste",
+    "contract_one": "{{count}} contrato",
+    "contract_other": "{{count}} contratos",
+    "adjustmentStrategy": "Estratégia de Ajuste",
+    "strategies": {
+      "maximum": "Máximo",
+      "medium": "Médio",
+      "minimum": "Mínimo",
+      "custom": "Personalizado"
+    },
+    "strategyDescriptions": {
+      "maximum": "Aplicar % máx. regulado",
+      "medium": "Média do mín. e máx.",
+      "minimum": "Aplicar % mín. regulado",
+      "custom": "Definir por imóvel"
+    },
+    "bulkEffectiveDate": "Data Efetiva em Massa",
+    "contractsAdjusted": "{{active}} de {{total}} contratos ajustados",
+    "avgChange": "Variação média:",
+    "warning_one": "{{count}} aviso",
+    "warning_other": "{{count}} avisos",
+    "retroactive": "retroativo",
+    "retroactiveTooltip": "Serão criados pagamentos de ajuste para quaisquer pagamentos já liquidados afetados por alterações retroativas.",
+    "exceedsMax": "Excede o aumento máximo regulado de {{max}}%",
+    "belowMin": "Abaixo do aumento mínimo regulado de {{min}}%",
+    "tableHeaders": {
+      "property": "Imóvel",
+      "currentRent": "Renda Atual",
+      "regulatedRange": "Intervalo Regulado",
+      "adjustment": "Ajuste",
+      "newRent": "Nova Renda",
+      "effectiveDate": "Data Efetiva"
+    },
+    "noData": "Sem dados",
+    "portfolioTotals": "Totais do Portefólio para {{year}}",
+    "previous": "Anterior",
+    "new": "Novo",
+    "increase": "Aumento",
+    "contractsToUpdate": "Contratos a Atualizar ({{count}})",
+    "unchangedContracts": "Contratos Sem Alteração ({{count}})",
+    "applying": "A aplicar...",
+    "applyAdjustments_one": "Aplicar {{count}} Ajuste",
+    "applyAdjustments_other": "Aplicar {{count}} Ajustes",
+    "allSuccess": "Todos os ajustes de renda foram aplicados com sucesso",
+    "partialSuccess": "{{success}} de {{total}} ajustes aplicados",
+    "increasesFailed_one": "{{count}} aumento falhou",
+    "increasesFailed_other": "{{count}} aumentos falharam",
+    "adjustmentPayments_one": "{{count}} pagamento de ajuste criado para alterações retroativas",
+    "adjustmentPayments_other": "{{count}} pagamentos de ajuste criados para alterações retroativas",
+    "status": "Estado"
   },
   "card": {
     "start": "Início",
@@ -425,6 +532,17 @@
       "STORAGE": "Arrecadação",
       "GARBAGE_COLLECTION": "Recolha de Lixo",
       "OTHER": "Outro"
+    },
+    "extensionStatuses": {
+      "DRAFT": "Rascunho",
+      "ACTIVE": "Ativo",
+      "SUPERSEDED": "Substituído",
+      "CANCELLED": "Cancelado",
+      "DECLINED": "Recusado"
     }
+  },
+  "countryMetadata": {
+    "noFields": "Sem campos específicos do país disponíveis para {{countryCode}}.",
+    "selectPlaceholder": "— Selecionar —"
   }
 }

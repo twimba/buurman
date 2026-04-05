@@ -26,7 +26,6 @@ import { useFormatDate } from '@/hooks/useFormatDate';
 import {
   AddContractPartyRequest,
   ContractResponse,
-  PARTY_ROLE_LABELS,
   ContractPartyRole,
 } from '@/types/contract';
 import { ContractPartyResponseRole } from '@/generated/models';
@@ -156,8 +155,7 @@ export const ContractOverviewTab = ({
               <User className="h-5 w-5 text-text-muted mt-1" />
               <div className="flex-1">
                 <p className="text-sm text-text-secondary">
-                  {PARTY_ROLE_LABELS[party.role as ContractPartyRole] ??
-                    party.role}
+                  {t(`enums.partyRoles.${party.role}`, party.role)}
                 </p>
                 <button
                   onClick={() =>
@@ -197,9 +195,9 @@ export const ContractOverviewTab = ({
                   }
                   className="w-full border border-border-strong rounded px-3 py-2 bg-surface-card text-text-primary text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
                 >
-                  {Object.entries(PARTY_ROLE_LABELS).map(([value, label]) => (
+                  {Object.values(ContractPartyRole).map((value) => (
                     <option key={value} value={value}>
-                      {label}
+                      {t(`enums.partyRoles.${value}`, value)}
                     </option>
                   ))}
                 </select>
@@ -635,8 +633,13 @@ export const ContractOverviewTab = ({
                 </p>
                 <p className="text-sm font-medium text-text-primary">
                   {contract.extensionsRemaining != null
-                    ? t('overview.renewalConfig.remaining', { remaining: contract.extensionsRemaining, max: contract.maxRenewals })
-                    : t('overview.renewalConfig.max', { max: contract.maxRenewals })}
+                    ? t('overview.renewalConfig.remaining', {
+                        remaining: contract.extensionsRemaining,
+                        max: contract.maxRenewals,
+                      })
+                    : t('overview.renewalConfig.max', {
+                        max: contract.maxRenewals,
+                      })}
                 </p>
               </div>
             )}

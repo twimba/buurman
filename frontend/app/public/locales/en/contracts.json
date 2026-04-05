@@ -222,7 +222,32 @@
     "empty": "No extensions recorded.",
     "renewalConfig": "Renewal Configuration",
     "createExtension": "Create Extension",
-    "newEndDate": "New End Date"
+    "newEndDate": "New End Date",
+    "newExtension": "New Extension",
+    "extensionNumber": "Extension #{{number}}",
+    "auto": "Auto",
+    "manual": "Manual",
+    "declined": "Declined: {{reason}}",
+    "created": "Created {{date}}",
+    "activated": "Activated {{date}}",
+    "confirmed": "Confirmed {{date}}",
+    "addendum": "Addendum",
+    "rentLetter": "Rent Letter",
+    "regenerate": "Regenerate",
+    "generateAndSave": "Generate & Save",
+    "activate": "Activate",
+    "confirm": "Confirm",
+    "decline": "Decline",
+    "cancel": "Cancel",
+    "declineTitle": "Decline Extension",
+    "reasonOptional": "Reason (Optional)",
+    "reasonPlaceholder": "Reason for declining...",
+    "declining": "Declining...",
+    "cancelTitle": "Cancel Extension",
+    "deleteGeneratedDocs": "Delete generated documents",
+    "deleteGeneratedDocsHelp": "Remove addendum and rent letter PDFs generated for this extension",
+    "downloadFailed": "Failed to download document. Please try again.",
+    "addRole": "Add {{role}}"
   },
   "documents": {
     "title": "Documents"
@@ -372,7 +397,40 @@
     "noRules": "No rules found for this selection.",
     "noData": "No regulation data available",
     "noDataDescription": "Regulation data can be managed from the backoffice",
-    "failedToLoad": "Failed to load rent regulations"
+    "failedToLoad": "Failed to load rent regulations",
+    "regions": "Regions",
+    "national": "National",
+    "regional": "Regional",
+    "regionalVariations": "Regional variations",
+    "reviewed": "Reviewed {{date}}",
+    "overview": "Overview",
+    "category": "Category",
+    "source": "Source",
+    "current": "Current",
+    "notes": "Notes",
+    "disclaimer": "Regulation data is provided for informational purposes only. Always verify with official legal sources and seek professional advice before applying rent adjustments. We are not accountable for errors or omissions.",
+    "requestCountry": {
+      "triggerTitle": "Missing a country?",
+      "triggerDescription": "Don't see your country listed? Let us know and we'll work on adding it!",
+      "modalTitle": "Request a Country",
+      "modalDescription": "We're always expanding our coverage. Tell us which country you'd like regulation data for, and we'll bump it up the priority list!",
+      "countryName": "Country name",
+      "countryPlaceholder": "e.g. Germany, Brazil, Japan...",
+      "anythingElse": "Anything else we should know?",
+      "optional": "optional",
+      "notesPlaceholder": "Specific regions, property types, urgency...",
+      "sending": "Sending...",
+      "sendRequest": "Send Request"
+    },
+    "increaseTypes": {
+      "FIXED_PERCENTAGE": "Fixed Percentage",
+      "CPI_LINKED": "CPI Linked",
+      "INDEX_LINKED": "Index Linked",
+      "MARKET_RENT": "Market Rent",
+      "NEGOTIATED": "Negotiated",
+      "FROZEN": "Frozen",
+      "OTHER": "Other"
+    }
   },
   "rentIncrease": {
     "title": "Rent Adjustment Wizard",
@@ -387,7 +445,56 @@
     "nextAdjustIncreases": "Next: Adjust Increases",
     "nextReview": "Next: Review",
     "applied": "Applied",
-    "backToAdjust": "Back to Adjust"
+    "backToAdjust": "Back to Adjust",
+    "contract_one": "{{count}} contract",
+    "contract_other": "{{count}} contracts",
+    "adjustmentStrategy": "Adjustment Strategy",
+    "strategies": {
+      "maximum": "Maximum",
+      "medium": "Medium",
+      "minimum": "Minimum",
+      "custom": "Custom"
+    },
+    "strategyDescriptions": {
+      "maximum": "Apply max regulated %",
+      "medium": "Average of min & max",
+      "minimum": "Apply min regulated %",
+      "custom": "Set per property"
+    },
+    "bulkEffectiveDate": "Bulk Effective Date",
+    "contractsAdjusted": "{{active}} of {{total}} contracts adjusted",
+    "avgChange": "Avg change:",
+    "warning_one": "{{count}} warning",
+    "warning_other": "{{count}} warnings",
+    "retroactive": "retroactive",
+    "retroactiveTooltip": "Adjustment payments will be created for any already settled payments affected by retroactive date changes.",
+    "exceedsMax": "Exceeds maximum regulated increase of {{max}}%",
+    "belowMin": "Below minimum regulated increase of {{min}}%",
+    "tableHeaders": {
+      "property": "Property",
+      "currentRent": "Current Rent",
+      "regulatedRange": "Regulated Range",
+      "adjustment": "Adjustment",
+      "newRent": "New Rent",
+      "effectiveDate": "Effective Date"
+    },
+    "noData": "No data",
+    "portfolioTotals": "Portfolio Totals for {{year}}",
+    "previous": "Previous",
+    "new": "New",
+    "increase": "Increase",
+    "contractsToUpdate": "Contracts to Update ({{count}})",
+    "unchangedContracts": "Unchanged Contracts ({{count}})",
+    "applying": "Applying...",
+    "applyAdjustments_one": "Apply {{count}} Adjustment",
+    "applyAdjustments_other": "Apply {{count}} Adjustments",
+    "allSuccess": "All rent adjustments applied successfully",
+    "partialSuccess": "{{success}} of {{total}} adjustments applied",
+    "increasesFailed_one": "{{count}} increase failed",
+    "increasesFailed_other": "{{count}} increases failed",
+    "adjustmentPayments_one": "{{count}} adjustment payment created for retroactive changes",
+    "adjustmentPayments_other": "{{count}} adjustment payments created for retroactive changes",
+    "status": "Status"
   },
   "card": {
     "start": "Start",
@@ -425,6 +532,17 @@
       "STORAGE": "Storage",
       "GARBAGE_COLLECTION": "Garbage Collection",
       "OTHER": "Other"
+    },
+    "extensionStatuses": {
+      "DRAFT": "Draft",
+      "ACTIVE": "Active",
+      "SUPERSEDED": "Superseded",
+      "CANCELLED": "Cancelled",
+      "DECLINED": "Declined"
     }
+  },
+  "countryMetadata": {
+    "noFields": "No country-specific fields available for {{countryCode}}.",
+    "selectPlaceholder": "— Select —"
   }
 }

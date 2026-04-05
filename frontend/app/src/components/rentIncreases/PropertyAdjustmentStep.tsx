@@ -106,31 +106,26 @@ export const PropertyAdjustmentStep = ({
     value: Strategy;
     label: string;
     icon: React.ReactNode;
-    description: string;
   }[] = [
     {
       value: 'maximum',
-      label: 'Maximum',
+      label: t('rentIncrease.strategies.maximum'),
       icon: <ChevronsUp className="h-3.5 w-3.5" />,
-      description: 'Apply max regulated %',
     },
     {
       value: 'medium',
-      label: 'Medium',
+      label: t('rentIncrease.strategies.medium'),
       icon: <Equal className="h-3.5 w-3.5" />,
-      description: 'Average of min & max',
     },
     {
       value: 'minimum',
-      label: 'Minimum',
+      label: t('rentIncrease.strategies.minimum'),
       icon: <ChevronsDown className="h-3.5 w-3.5" />,
-      description: 'Apply min regulated %',
     },
     {
       value: 'custom',
-      label: 'Custom',
+      label: t('rentIncrease.strategies.custom'),
       icon: <SlidersHorizontal className="h-3.5 w-3.5" />,
-      description: 'Set per property',
     },
   ];
 
@@ -213,14 +208,16 @@ export const PropertyAdjustmentStep = ({
         contract.regulationMaxPercent != null &&
         inc.increasePercentage > contract.regulationMaxPercent
       ) {
-        result[contract.contractIdentifier] =
-          `Exceeds maximum regulated increase of ${contract.regulationMaxPercent}%`;
+        result[contract.contractIdentifier] = t('rentIncrease.exceedsMax', {
+          max: contract.regulationMaxPercent,
+        });
       } else if (
         contract.regulationMinPercent != null &&
         inc.increasePercentage < contract.regulationMinPercent
       ) {
-        result[contract.contractIdentifier] =
-          `Below minimum regulated increase of ${contract.regulationMinPercent}%`;
+        result[contract.contractIdentifier] = t('rentIncrease.belowMin', {
+          min: contract.regulationMinPercent,
+        });
       }
     });
     return result;
@@ -256,7 +253,7 @@ export const PropertyAdjustmentStep = ({
             <div className="flex-1 min-w-[280px]">
               <label className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-text-secondary mb-2.5">
                 <Sparkles className="h-3.5 w-3.5" />
-                Adjustment Strategy
+                {t('rentIncrease.adjustmentStrategy')}
               </label>
               <div className="grid grid-cols-4 gap-1.5 p-1 rounded-lg bg-surface-inset">
                 {strategies.map((s) => (
@@ -280,7 +277,7 @@ export const PropertyAdjustmentStep = ({
             <div className="min-w-[200px]">
               <label className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-text-secondary mb-2.5">
                 <CalendarDays className="h-3.5 w-3.5" />
-                Bulk Effective Date
+                {t('rentIncrease.bulkEffectiveDate')}
               </label>
               <input
                 type="date"
@@ -295,14 +292,14 @@ export const PropertyAdjustmentStep = ({
         {/* Mini summary bar */}
         <div className="flex items-center gap-5 px-5 py-2.5 border-t border-border-default bg-surface-page rounded-b-xl">
           <span className="text-xs text-text-secondary">
-            <span className="font-semibold text-text-primary">
-              {summary.activeCount}
-            </span>{' '}
-            of {contracts.length} contracts adjusted
+            {t('rentIncrease.contractsAdjusted', {
+              active: summary.activeCount,
+              total: contracts.length,
+            })}
           </span>
           <span className="w-px h-3.5 bg-border-default" />
           <span className="text-xs text-text-secondary">
-            Avg change:{' '}
+            {t('rentIncrease.avgChange')}{' '}
             <span className={`font-semibold ${pctColor(summary.avgPct)}`}>
               {formatPct(summary.avgPct)}
             </span>
@@ -312,10 +309,9 @@ export const PropertyAdjustmentStep = ({
               <span className="w-px h-3.5 bg-border-default" />
               <span className="inline-flex items-center gap-1 text-xs text-warning-text">
                 <AlertTriangle className="h-3 w-3" />
-                <span className="font-semibold">
-                  {summary.warningCount}
-                </span>{' '}
-                warning{summary.warningCount !== 1 ? 's' : ''}
+                {t('rentIncrease.warning', {
+                  count: summary.warningCount,
+                })}
               </span>
             </>
           )}
@@ -327,10 +323,9 @@ export const PropertyAdjustmentStep = ({
                 <span className="font-semibold">
                   {summary.retroactiveCount}
                 </span>{' '}
-                retroactive
+                {t('rentIncrease.retroactive')}
                 <span className="hidden group-hover/retro:block absolute left-0 top-full mt-1 z-10 w-64 p-2.5 rounded-lg bg-surface-card border border-info-border text-xs text-info-text shadow-lg">
-                  Adjustment payments will be created for any already settled
-                  payments affected by retroactive date changes.
+                  {t('rentIncrease.retroactiveTooltip')}
                 </span>
               </span>
             </>
@@ -344,12 +339,24 @@ export const PropertyAdjustmentStep = ({
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b-2 border-border-default bg-surface-page">
-                <th className={`${TH} text-left`}>Property</th>
-                <th className={`${TH} text-right`}>Current Rent</th>
-                <th className={`${TH} text-center`}>Regulated Range</th>
-                <th className={`${TH} text-center`}>Adjustment</th>
-                <th className={`${TH} text-right`}>New Rent</th>
-                <th className={`${TH} text-left`}>Effective Date</th>
+                <th className={`${TH} text-left`}>
+                  {t('rentIncrease.tableHeaders.property')}
+                </th>
+                <th className={`${TH} text-right`}>
+                  {t('rentIncrease.tableHeaders.currentRent')}
+                </th>
+                <th className={`${TH} text-center`}>
+                  {t('rentIncrease.tableHeaders.regulatedRange')}
+                </th>
+                <th className={`${TH} text-center`}>
+                  {t('rentIncrease.tableHeaders.adjustment')}
+                </th>
+                <th className={`${TH} text-right`}>
+                  {t('rentIncrease.tableHeaders.newRent')}
+                </th>
+                <th className={`${TH} text-left`}>
+                  {t('rentIncrease.tableHeaders.effectiveDate')}
+                </th>
                 <th className={`${TH} w-10`} />
               </tr>
             </thead>
@@ -392,7 +399,7 @@ export const PropertyAdjustmentStep = ({
                         {isApplied && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-success-bg text-success-text ring-1 ring-success-border whitespace-nowrap">
                             <CheckCircle2 className="h-3 w-3" />
-                            Applied
+                            {t('rentIncrease.applied')}
                           </span>
                         )}
                       </div>
@@ -423,7 +430,7 @@ export const PropertyAdjustmentStep = ({
                         </span>
                       ) : (
                         <span className="inline-flex items-center justify-center w-[120px] text-xs text-text-muted">
-                          No data
+                          {t('rentIncrease.noData')}
                         </span>
                       )}
                     </td>

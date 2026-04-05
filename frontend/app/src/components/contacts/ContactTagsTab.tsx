@@ -1,12 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAddContactTag, useRemoveContactTag } from '@/hooks/useContactHooks';
-import {
-  ContactTag,
-  CONTACT_TAG_LABELS,
-  TAG_COLORS,
-  ContactResponse,
-} from '@/types/contact';
+import { ContactTag, TAG_COLORS, ContactResponse } from '@/types/contact';
 import { useTeam } from '@/context/TeamContext';
 import { Button, StatusBadge } from '@buurman/ui';
 import { Plus, X, Tag } from 'lucide-react';
@@ -66,7 +61,7 @@ export const ContactTagsTab = ({ contactId, contact }: ContactTagsTabProps) => {
                       className="w-full text-left px-3 py-2 text-sm hover:bg-surface-inset flex items-center gap-2"
                     >
                       <StatusBadge
-                        label={CONTACT_TAG_LABELS[tag]}
+                        label={t(`enums.contactTags.${tag}`)}
                         color={TAG_COLORS[tag]}
                         size="xs"
                         shape="pill"
@@ -93,7 +88,7 @@ export const ContactTagsTab = ({ contactId, contact }: ContactTagsTabProps) => {
           {currentTags.map((tag) => (
             <div key={tag} className="inline-flex items-center gap-1.5">
               <StatusBadge
-                label={CONTACT_TAG_LABELS[tag]}
+                label={t(`enums.contactTags.${tag}`)}
                 color={TAG_COLORS[tag]}
                 size="sm"
                 shape="pill"
@@ -103,7 +98,9 @@ export const ContactTagsTab = ({ contactId, contact }: ContactTagsTabProps) => {
                   onClick={() => handleRemoveTag(tag)}
                   disabled={removeTagMutation.isPending}
                   className="p-0.5 rounded-full hover:bg-error-bg text-text-muted hover:text-error-text transition-colors disabled:opacity-50"
-                  title={t('tags.removeTag', { tag: CONTACT_TAG_LABELS[tag] })}
+                  title={t('tags.removeTag', {
+                    tag: t(`enums.contactTags.${tag}`),
+                  })}
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>

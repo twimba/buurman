@@ -151,7 +151,10 @@
     "changedFields": "Gewijzigde velden",
     "old": "Oud:",
     "new": "Nieuw:",
-    "impersonated": "Geïmpersoneerd"
+    "impersonated": "Geïmpersoneerd",
+    "na": "N.v.t.",
+    "none": "Geen",
+    "receivalOn": "{{amount}} op {{date}}"
   },
   "deleteDialog": {
     "title": "Betaling verwijderen",

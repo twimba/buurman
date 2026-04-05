@@ -4,7 +4,6 @@ import { X, Save } from 'lucide-react';
 import {
   ContactResponse,
   ContactType,
-  CONTACT_TYPE_LABELS,
   CreateContactRequest,
 } from '@/types/contact';
 import { ConfirmDialog, RichTextEditor } from '@buurman/ui';
@@ -285,7 +284,7 @@ export const ContactForm = ({
                     : 'border-border-strong bg-surface-card text-text-secondary hover:bg-surface-inset'
                 }`}
               >
-                {CONTACT_TYPE_LABELS[type]}
+                {t(`enums.contactTypes.${type}`)}
               </button>
             ))}
           </div>
@@ -586,8 +585,15 @@ export const ContactForm = ({
           title={t('form.changeType.title')}
           message={
             fieldsCleared.length > 0
-              ? `Changing from ${CONTACT_TYPE_LABELS[originalType]} to ${CONTACT_TYPE_LABELS[pendingType]} will clear the following fields:\n\n${fieldsCleared.map((f) => `- ${f}`).join('\n')}\n\nThis cannot be undone after saving.`
-              : `Change contact type from ${CONTACT_TYPE_LABELS[originalType]} to ${CONTACT_TYPE_LABELS[pendingType]}?`
+              ? t('form.changeType.messageWithFields', {
+                  from: t(`enums.contactTypes.${originalType}`),
+                  to: t(`enums.contactTypes.${pendingType}`),
+                  fields: fieldsCleared.map((f) => `- ${f}`).join('\n'),
+                })
+              : t('form.changeType.messageSimple', {
+                  from: t(`enums.contactTypes.${originalType}`),
+                  to: t(`enums.contactTypes.${pendingType}`),
+                })
           }
           variant="default"
           confirmLabel={t('form.changeType.confirm')}

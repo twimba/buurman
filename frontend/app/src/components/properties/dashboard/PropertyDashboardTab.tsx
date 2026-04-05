@@ -406,7 +406,9 @@ export const PropertyDashboardTab = ({
                 }}
                 className="px-2 py-1.5 border border-border-strong rounded-md text-xs focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-surface-card text-text-primary"
               />
-              <span className="text-xs text-text-secondary">{t('dashboard.to')}</span>
+              <span className="text-xs text-text-secondary">
+                {t('dashboard.to')}
+              </span>
               <input
                 type="date"
                 value={customEndDate}
@@ -1196,9 +1198,7 @@ function EquityBreakdownCard({
   const { purchasePrice, currentMarketValue, mortgageBalance } = data;
 
   if (purchasePrice == null && currentMarketValue == null) {
-    return (
-      <EmptyChart message={t('dashboard.equity.noData')} />
-    );
+    return <EmptyChart message={t('dashboard.equity.noData')} />;
   }
 
   const equity =
@@ -1209,9 +1209,21 @@ function EquityBreakdownCard({
   const maxVal = Math.max(purchasePrice ?? 0, currentMarketValue ?? 0);
 
   const bars = [
-    { label: t('dashboard.equity.purchasePrice'), value: purchasePrice, color: '#6b7194' },
-    { label: t('dashboard.equity.marketValue'), value: currentMarketValue, color: '#3B82F6' },
-    { label: t('dashboard.equity.mortgage'), value: mortgageBalance, color: '#8B5CF6' },
+    {
+      label: t('dashboard.equity.purchasePrice'),
+      value: purchasePrice,
+      color: '#6b7194',
+    },
+    {
+      label: t('dashboard.equity.marketValue'),
+      value: currentMarketValue,
+      color: '#3B82F6',
+    },
+    {
+      label: t('dashboard.equity.mortgage'),
+      value: mortgageBalance,
+      color: '#8B5CF6',
+    },
     { label: t('dashboard.equity.equity'), value: equity, color: '#10B981' },
   ];
 
@@ -1248,10 +1260,22 @@ function EquityBreakdownCard({
 function DataCompletenessCard({ data }: { data: DashboardDataCompleteness }) {
   const { t } = useTranslation('properties');
   const items = [
-    { label: t('dashboard.completeness.purchasePrice'), done: data.hasPurchasePrice },
-    { label: t('dashboard.completeness.marketValue'), done: data.hasMarketValue },
-    { label: t('dashboard.completeness.mortgageInfo'), done: data.hasMortgageInfo },
-    { label: t('dashboard.completeness.operatingCosts'), done: data.hasOperatingCosts },
+    {
+      label: t('dashboard.completeness.purchasePrice'),
+      done: data.hasPurchasePrice,
+    },
+    {
+      label: t('dashboard.completeness.marketValue'),
+      done: data.hasMarketValue,
+    },
+    {
+      label: t('dashboard.completeness.mortgageInfo'),
+      done: data.hasMortgageInfo,
+    },
+    {
+      label: t('dashboard.completeness.operatingCosts'),
+      done: data.hasOperatingCosts,
+    },
     { label: t('dashboard.completeness.contracts'), done: data.hasContracts },
     { label: t('dashboard.completeness.payments'), done: data.hasPayments },
     { label: t('dashboard.completeness.expenses'), done: data.hasExpenses },
@@ -1262,7 +1286,9 @@ function DataCompletenessCard({ data }: { data: DashboardDataCompleteness }) {
       <div className="flex items-center gap-2 mb-3">
         <AlertCircle className="h-5 w-5 text-warning-text" />
         <span className="font-semibold text-warning-text text-sm">
-          {t('dashboard.completeness.title', { percent: data.completenessPercent })}
+          {t('dashboard.completeness.title', {
+            percent: data.completenessPercent,
+          })}
         </span>
       </div>
       <div className="h-2 bg-warning-border rounded-full mb-3">

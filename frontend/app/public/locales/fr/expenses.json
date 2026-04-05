@@ -128,6 +128,10 @@
     "message": "Êtes-vous sûr de vouloir supprimer cette dépense ? Cette action est irréversible.",
     "messageWithRelated": "Êtes-vous sûr de vouloir supprimer cette dépense ? Tous les documents associés seront également supprimés. Cette action est irréversible."
   },
+  "tooltips": {
+    "viewExpense": "Voir la dépense",
+    "deleteExpense": "Supprimer la dépense"
+  },
   "errors": {
     "loadFailed": "Échec du chargement des dépenses",
     "loadExpenseFailed": "Échec du chargement de la dépense",

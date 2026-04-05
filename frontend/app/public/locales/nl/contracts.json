@@ -222,7 +222,32 @@
     "empty": "Geen verlengingen vastgelegd.",
     "renewalConfig": "Verlengingsconfiguratie",
     "createExtension": "Verlenging aanmaken",
-    "newEndDate": "Nieuwe einddatum"
+    "newEndDate": "Nieuwe einddatum",
+    "newExtension": "Nieuwe verlenging",
+    "extensionNumber": "Verlenging #{{number}}",
+    "auto": "Auto",
+    "manual": "Handmatig",
+    "declined": "Afgewezen: {{reason}}",
+    "created": "Aangemaakt op {{date}}",
+    "activated": "Geactiveerd op {{date}}",
+    "confirmed": "Bevestigd op {{date}}",
+    "addendum": "Addendum",
+    "rentLetter": "Huurbrief",
+    "regenerate": "Regenereren",
+    "generateAndSave": "Genereren & Opslaan",
+    "activate": "Activeren",
+    "confirm": "Bevestigen",
+    "decline": "Afwijzen",
+    "cancel": "Annuleren",
+    "declineTitle": "Verlenging afwijzen",
+    "reasonOptional": "Reden (Optioneel)",
+    "reasonPlaceholder": "Reden voor afwijzing...",
+    "declining": "Afwijzen...",
+    "cancelTitle": "Verlenging annuleren",
+    "deleteGeneratedDocs": "Gegenereerde documenten verwijderen",
+    "deleteGeneratedDocsHelp": "Addendum- en huurbrief-PDF's van deze verlenging verwijderen",
+    "downloadFailed": "Document downloaden mislukt. Probeer het opnieuw.",
+    "addRole": "{{role}} toevoegen"
   },
   "documents": {
     "title": "Documenten"
@@ -372,7 +397,40 @@
     "noRules": "Geen regels gevonden voor deze selectie.",
     "noData": "Geen reguleringsgegevens beschikbaar",
     "noDataDescription": "Reguleringsgegevens kunnen worden beheerd vanuit het backoffice",
-    "failedToLoad": "Kan huurregulering niet laden"
+    "failedToLoad": "Kan huurregulering niet laden",
+    "regions": "Regio's",
+    "national": "Nationaal",
+    "regional": "Regionaal",
+    "regionalVariations": "Regionale variaties",
+    "reviewed": "Beoordeeld op {{date}}",
+    "overview": "Overzicht",
+    "category": "Categorie",
+    "source": "Bron",
+    "current": "Huidig",
+    "notes": "Opmerkingen",
+    "disclaimer": "Regelgevingsgegevens worden uitsluitend ter informatie verstrekt. Controleer altijd bij officiële juridische bronnen en raadpleeg professioneel advies voordat u huurverhogingen toepast. Wij zijn niet verantwoordelijk voor fouten of weglatingen.",
+    "requestCountry": {
+      "triggerTitle": "Land ontbreekt?",
+      "triggerDescription": "Staat uw land er niet bij? Laat het ons weten en we werken aan de toevoeging!",
+      "modalTitle": "Land aanvragen",
+      "modalDescription": "We breiden onze dekking voortdurend uit. Vertel ons voor welk land u regelgevingsgegevens wilt en we verhogen de prioriteit!",
+      "countryName": "Naam van het land",
+      "countryPlaceholder": "bijv. Duitsland, Brazilië, Japan...",
+      "anythingElse": "Nog iets dat we moeten weten?",
+      "optional": "optioneel",
+      "notesPlaceholder": "Specifieke regio's, vastgoedtypes, urgentie...",
+      "sending": "Verzenden...",
+      "sendRequest": "Verzoek verzenden"
+    },
+    "increaseTypes": {
+      "FIXED_PERCENTAGE": "Vast percentage",
+      "CPI_LINKED": "CPI-gekoppeld",
+      "INDEX_LINKED": "Indexgekoppeld",
+      "MARKET_RENT": "Markthuur",
+      "NEGOTIATED": "Onderhandeld",
+      "FROZEN": "Bevroren",
+      "OTHER": "Overig"
+    }
   },
   "rentIncrease": {
     "title": "Huuraanpassingswizard",
@@ -387,7 +445,56 @@
     "nextAdjustIncreases": "Volgende: Verhogingen aanpassen",
     "nextReview": "Volgende: Controleren",
     "applied": "Toegepast",
-    "backToAdjust": "Terug naar aanpassen"
+    "backToAdjust": "Terug naar aanpassen",
+    "contract_one": "{{count}} contract",
+    "contract_other": "{{count}} contracten",
+    "adjustmentStrategy": "Aanpassingsstrategie",
+    "strategies": {
+      "maximum": "Maximum",
+      "medium": "Gemiddeld",
+      "minimum": "Minimum",
+      "custom": "Aangepast"
+    },
+    "strategyDescriptions": {
+      "maximum": "Max. gereguleerd % toepassen",
+      "medium": "Gemiddelde van min & max",
+      "minimum": "Min. gereguleerd % toepassen",
+      "custom": "Per vastgoed instellen"
+    },
+    "bulkEffectiveDate": "Bulk ingangsdatum",
+    "contractsAdjusted": "{{active}} van {{total}} contracten aangepast",
+    "avgChange": "Gem. wijziging:",
+    "warning_one": "{{count}} waarschuwing",
+    "warning_other": "{{count}} waarschuwingen",
+    "retroactive": "retroactief",
+    "retroactiveTooltip": "Aanpassingsbetalingen worden aangemaakt voor reeds afgehandelde betalingen die worden beïnvloed door retroactieve datumwijzigingen.",
+    "exceedsMax": "Overschrijdt maximale gereguleerde verhoging van {{max}}%",
+    "belowMin": "Onder minimale gereguleerde verhoging van {{min}}%",
+    "tableHeaders": {
+      "property": "Vastgoed",
+      "currentRent": "Huidige huur",
+      "regulatedRange": "Gereguleerd bereik",
+      "adjustment": "Aanpassing",
+      "newRent": "Nieuwe huur",
+      "effectiveDate": "Ingangsdatum"
+    },
+    "noData": "Geen gegevens",
+    "portfolioTotals": "Portefeuille totalen voor {{year}}",
+    "previous": "Vorige",
+    "new": "Nieuw",
+    "increase": "Verhoging",
+    "contractsToUpdate": "Bij te werken contracten ({{count}})",
+    "unchangedContracts": "Ongewijzigde contracten ({{count}})",
+    "applying": "Toepassen...",
+    "applyAdjustments_one": "{{count}} aanpassing toepassen",
+    "applyAdjustments_other": "{{count}} aanpassingen toepassen",
+    "allSuccess": "Alle huurverhogingen succesvol toegepast",
+    "partialSuccess": "{{success}} van {{total}} aanpassingen toegepast",
+    "increasesFailed_one": "{{count}} verhoging mislukt",
+    "increasesFailed_other": "{{count}} verhogingen mislukt",
+    "adjustmentPayments_one": "{{count}} aanpassingsbetaling aangemaakt voor retroactieve wijzigingen",
+    "adjustmentPayments_other": "{{count}} aanpassingsbetalingen aangemaakt voor retroactieve wijzigingen",
+    "status": "Status"
   },
   "card": {
     "start": "Start",
@@ -425,6 +532,17 @@
       "STORAGE": "Opslag",
       "GARBAGE_COLLECTION": "Afvalinzameling",
       "OTHER": "Overig"
+    },
+    "extensionStatuses": {
+      "DRAFT": "Concept",
+      "ACTIVE": "Actief",
+      "SUPERSEDED": "Vervangen",
+      "CANCELLED": "Geannuleerd",
+      "DECLINED": "Afgewezen"
     }
+  },
+  "countryMetadata": {
+    "noFields": "Geen landspecifieke velden beschikbaar voor {{countryCode}}.",
+    "selectPlaceholder": "— Selecteer —"
   }
 }

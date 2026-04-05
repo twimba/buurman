@@ -66,9 +66,7 @@ const LoginPage: React.FC = () => {
               Buurman
             </h1>
           </div>
-          <p className="text-xl text-primary-200 mb-12">
-            {t('auth.tagline')}
-          </p>
+          <p className="text-xl text-primary-200 mb-12">{t('auth.tagline')}</p>
 
           {/* Features */}
           <div className="space-y-6">
@@ -130,9 +128,7 @@ const LoginPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="text-sm text-primary-300">
-          {t('auth.copyright')}
-        </div>
+        <div className="text-sm text-primary-300">{t('auth.copyright')}</div>
       </div>
 
       {/* Right Side - Login Form */}

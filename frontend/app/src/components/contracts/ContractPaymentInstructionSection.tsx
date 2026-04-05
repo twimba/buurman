@@ -255,28 +255,34 @@ export const ContractPaymentInstructionSection = ({
               )}
               {current.iban && (
                 <p className="text-sm text-text-secondary mt-1 font-mono">
-                  {t('overview.paymentInstructions.iban')}: {current.iban.replace(/(.{4})/g, '$1').trim()}
+                  {t('overview.paymentInstructions.iban')}:{' '}
+                  {current.iban.replace(/(.{4})/g, '$1').trim()}
                 </p>
               )}
               {current.accountNumber && (
                 <p className="text-sm text-text-secondary mt-1 font-mono">
-                  {t('overview.paymentInstructions.account')}: {current.accountNumber}
+                  {t('overview.paymentInstructions.account')}:{' '}
+                  {current.accountNumber}
                   {current.routingNumber &&
                     ` / ${t('overview.paymentInstructions.routing')}: ${current.routingNumber}`}
                 </p>
               )}
               {current.accountHolderName && (
                 <p className="text-sm text-text-secondary">
-                  {t('overview.paymentInstructions.holder')}: {current.accountHolderName}
+                  {t('overview.paymentInstructions.holder')}:{' '}
+                  {current.accountHolderName}
                 </p>
               )}
               {current.paymentReference && (
                 <p className="text-sm text-text-secondary">
-                  {t('overview.paymentInstructions.ref')}: {current.paymentReference}
+                  {t('overview.paymentInstructions.ref')}:{' '}
+                  {current.paymentReference}
                 </p>
               )}
               <p className="text-xs text-text-muted mt-2">
-                {t('overview.paymentInstructions.effectiveFrom', { date: formatDate(current.effectiveFrom) })}
+                {t('overview.paymentInstructions.effectiveFrom', {
+                  date: formatDate(current.effectiveFrom),
+                })}
               </p>
             </div>
           </div>
@@ -288,7 +294,12 @@ export const ContractPaymentInstructionSection = ({
               className="flex items-center gap-1 text-sm text-primary-500 dark:text-primary-300 hover:underline mt-2"
             >
               <Clock className="h-3.5 w-3.5" />
-              {showHistory ? t('overview.paymentInstructions.hideHistory') : t('overview.paymentInstructions.viewHistory')}{' '}{t('overview.paymentInstructions.historyCount', { count: history.length })}
+              {showHistory
+                ? t('overview.paymentInstructions.hideHistory')
+                : t('overview.paymentInstructions.viewHistory')}{' '}
+              {t('overview.paymentInstructions.historyCount', {
+                count: history.length,
+              })}
               {showHistory ? (
                 <ChevronUp className="h-3.5 w-3.5" />
               ) : (
@@ -385,13 +396,19 @@ export const ContractPaymentInstructionSection = ({
                   onChange={(e) => setSelectedTemplate(e.target.value)}
                   className="w-full rounded-lg border border-border-default bg-surface-card px-3 py-2 text-sm text-text-primary"
                 >
-                  <option value="">{t('overview.paymentInstructions.choosePlaceholder')}</option>
+                  <option value="">
+                    {t('overview.paymentInstructions.choosePlaceholder')}
+                  </option>
                   {templates.map((tpl) => (
                     <option key={tpl.identifier} value={tpl.identifier}>
                       {tpl.name} (
-                      {PaymentMethodLabels[tpl.paymentMethod as PaymentMethod] ||
-                        tpl.paymentMethod}
-                      ){tpl.isDefault ? ` - ${t('overview.paymentInstructions.default')}` : ''}
+                      {PaymentMethodLabels[
+                        tpl.paymentMethod as PaymentMethod
+                      ] || tpl.paymentMethod}
+                      )
+                      {tpl.isDefault
+                        ? ` - ${t('overview.paymentInstructions.default')}`
+                        : ''}
                     </option>
                   ))}
                 </select>
@@ -407,7 +424,8 @@ export const ContractPaymentInstructionSection = ({
                     )}
                     {selectedTemplateData.iban && (
                       <p className="text-text-secondary font-mono mt-1">
-                        {t('overview.paymentInstructions.iban')}: {selectedTemplateData.iban}
+                        {t('overview.paymentInstructions.iban')}:{' '}
+                        {selectedTemplateData.iban}
                       </p>
                     )}
                   </div>
