@@ -322,9 +322,7 @@ public class S3StorageService {
       List<String> batch = keys.subList(fromIndex, toIndex);
 
       List<ObjectIdentifier> objects =
-          batch.stream()
-              .map(key -> ObjectIdentifier.builder().key(key).build())
-              .toList();
+          batch.stream().map(key -> ObjectIdentifier.builder().key(key).build()).toList();
 
       try {
         s3Client.deleteObjects(
@@ -350,7 +348,8 @@ public class S3StorageService {
         "batch_delete",
         "result",
         "success");
-    metricsService.incrementCounterBy("s3.operation.total", totalDeleted, "operation", "delete", "result", "success");
+    metricsService.incrementCounterBy(
+        "s3.operation.total", totalDeleted, "operation", "delete", "result", "success");
 
     log.info("Batch-deleted {}/{} S3 objects in {} batches", totalDeleted, keys.size(), batchCount);
   }

@@ -477,5 +477,64 @@
     "depreciation": "Tax deduction for the gradual loss of property value over time",
     "usefulLife": "Number of years over which the property is depreciated for tax purposes",
     "landValue": "Value of the land alone (excluded from depreciation calculations)"
+  },
+  "auditLog": {
+    "title": "Activity Log",
+    "subtitle": "Complete audit trail of all changes in your team",
+    "searchPlaceholder": "Search activities...",
+    "allTypes": "All Types",
+    "allActions": "All Actions",
+    "entityType": "Entity Type",
+    "action": "Action",
+    "activityCount": "{{count}} activities",
+    "activityCount_one": "{{count}} activity",
+    "entityTypes": {
+      "property": "Property",
+      "contact": "Contact",
+      "contract": "Contract",
+      "payment": "Payment",
+      "expense": "Expense"
+    },
+    "actions": {
+      "created": "Created",
+      "updated": "Updated",
+      "deleted": "Deleted",
+      "restored": "Restored"
+    },
+    "table": {
+      "time": "Time",
+      "type": "Type",
+      "action": "Action",
+      "description": "Description",
+      "user": "User",
+      "details": "Details",
+      "impersonated": "Impersonated",
+      "hide": "Hide",
+      "show": "Show"
+    },
+    "changedFields": "Changed Fields",
+    "fileName": "File Name",
+    "before": "Before",
+    "after": "After",
+    "noActivities": "No activities found",
+    "adjustFilters": "Try adjusting your search or filters",
+    "noActivityYet": "No activity has been recorded yet"
+  },
+  "verifyEmail": {
+    "enterAllDigits": "Please enter all 6 digits",
+    "invalidCode": "Invalid or expired code. Please try again.",
+    "invalidLink": "This verification link is invalid or has expired. Please enter the code manually or request a new one.",
+    "verifying": "Verifying...",
+    "pleaseWait": "Please wait while we verify your email",
+    "verified": "Email Verified!",
+    "redirecting": "Redirecting to dashboard...",
+    "checkEmail": "Check your email",
+    "codeSent": "We sent a 6-digit verification code to your inbox",
+    "verifyingButton": "Verifying...",
+    "verifyButton": "Verify Email",
+    "didntReceive": "Didn't receive the code?",
+    "resendIn": "Resend in {{seconds}}s",
+    "sending": "Sending...",
+    "resendCode": "Resend Code"
   }
 }

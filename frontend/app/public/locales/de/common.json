@@ -477,5 +477,64 @@
     "depreciation": "Steuerliche Abschreibung für den schrittweisen Wertverlust der Immobilie",
     "usefulLife": "Anzahl der Jahre, über die die Immobilie steuerlich abgeschrieben wird",
     "landValue": "Wert des Grundstücks allein (von Abschreibungsberechnungen ausgenommen)"
+  },
+  "auditLog": {
+    "title": "Aktivitätsprotokoll",
+    "subtitle": "Vollständiger Audit-Trail aller Änderungen in Ihrem Team",
+    "searchPlaceholder": "Aktivitäten suchen...",
+    "allTypes": "Alle Typen",
+    "allActions": "Alle Aktionen",
+    "entityType": "Entitätstyp",
+    "action": "Aktion",
+    "activityCount": "{{count}} Aktivitäten",
+    "activityCount_one": "{{count}} Aktivität",
+    "entityTypes": {
+      "property": "Immobilie",
+      "contact": "Kontakt",
+      "contract": "Vertrag",
+      "payment": "Zahlung",
+      "expense": "Ausgabe"
+    },
+    "actions": {
+      "created": "Erstellt",
+      "updated": "Aktualisiert",
+      "deleted": "Gelöscht",
+      "restored": "Wiederhergestellt"
+    },
+    "table": {
+      "time": "Uhrzeit",
+      "type": "Typ",
+      "action": "Aktion",
+      "description": "Beschreibung",
+      "user": "Benutzer",
+      "details": "Details",
+      "impersonated": "Imitiert",
+      "hide": "Ausblenden",
+      "show": "Anzeigen"
+    },
+    "changedFields": "Geänderte Felder",
+    "fileName": "Dateiname",
+    "before": "Vorher",
+    "after": "Nachher",
+    "noActivities": "Keine Aktivitäten gefunden",
+    "adjustFilters": "Versuchen Sie, Ihre Suche oder Filter anzupassen",
+    "noActivityYet": "Es wurden noch keine Aktivitäten aufgezeichnet"
+  },
+  "verifyEmail": {
+    "enterAllDigits": "Bitte geben Sie alle 6 Ziffern ein",
+    "invalidCode": "Ungültiger oder abgelaufener Code. Bitte versuchen Sie es erneut.",
+    "invalidLink": "Dieser Verifizierungslink ist ungültig oder abgelaufen. Bitte geben Sie den Code manuell ein oder fordern Sie einen neuen an.",
+    "verifying": "Wird verifiziert...",
+    "pleaseWait": "Bitte warten Sie, während wir Ihre E-Mail verifizieren",
+    "verified": "E-Mail verifiziert!",
+    "redirecting": "Weiterleitung zum Dashboard...",
+    "checkEmail": "Überprüfen Sie Ihre E-Mail",
+    "codeSent": "Wir haben einen 6-stelligen Verifizierungscode an Ihr Postfach gesendet",
+    "verifyingButton": "Wird verifiziert...",
+    "verifyButton": "E-Mail verifizieren",
+    "didntReceive": "Code nicht erhalten?",
+    "resendIn": "Erneut senden in {{seconds}}s",
+    "sending": "Wird gesendet...",
+    "resendCode": "Code erneut senden"
   }
 }

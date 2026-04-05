@@ -269,8 +269,7 @@ public class DemoDocumentGenerator {
         String category = ctx.getPropertyCategory(propertyId);
         List<DocTemplate> templates = propertyDocsForCategory(category);
 
-        LocalDate acqDate =
-            acquisitionDates.getOrDefault(propertyId, LocalDate.now(clock));
+        LocalDate acqDate = acquisitionDates.getOrDefault(propertyId, LocalDate.now(clock));
         int minDocs = acqDate.isBefore(LocalDate.of(2015, 1, 1)) ? 3 : 2;
         int maxDocs = acqDate.isBefore(LocalDate.of(2010, 1, 1)) ? 5 : 4;
         int docCount = random.nextInt(minDocs, maxDocs + 1);
@@ -278,8 +277,17 @@ public class DemoDocumentGenerator {
         Sid entityIdentifier = ctx.getIdentifier(propertyId);
         for (DocTemplate doc : pickRandom(templates, docCount)) {
           collectUploadTask(
-              uploadTasks, ctx, teamId, teamIdentifier, uploadedBy, "PROPERTY", propertyId,
-              entityIdentifier, doc.title, prefix + "-" + doc.pdfResource, doc.pdfResource,
+              uploadTasks,
+              ctx,
+              teamId,
+              teamIdentifier,
+              uploadedBy,
+              "PROPERTY",
+              propertyId,
+              entityIdentifier,
+              doc.title,
+              prefix + "-" + doc.pdfResource,
+              doc.pdfResource,
               doc.notes);
         }
       }
@@ -287,16 +295,23 @@ public class DemoDocumentGenerator {
       // Contact documents (1-2 per contact, type-specific)
       for (UUID contactId : contactIds) {
         String prefix =
-            Optional.ofNullable(contactNames.get(contactId))
-                .map(this::slugify)
-                .orElse("contact");
+            Optional.ofNullable(contactNames.get(contactId)).map(this::slugify).orElse("contact");
         boolean isBusiness = ctx.isBusinessContact(contactId);
         List<DocTemplate> templates = isBusiness ? BUSINESS_CONTACT_DOCS : INDIVIDUAL_CONTACT_DOCS;
         Sid entityIdentifier = ctx.getIdentifier(contactId);
         for (DocTemplate doc : pickRandom(templates, random.nextInt(1, 3))) {
           collectUploadTask(
-              uploadTasks, ctx, teamId, teamIdentifier, uploadedBy, "CONTACT", contactId,
-              entityIdentifier, doc.title, prefix + "-" + doc.pdfResource, doc.pdfResource,
+              uploadTasks,
+              ctx,
+              teamId,
+              teamIdentifier,
+              uploadedBy,
+              "CONTACT",
+              contactId,
+              entityIdentifier,
+              doc.title,
+              prefix + "-" + doc.pdfResource,
+              doc.pdfResource,
               doc.notes);
         }
       }
@@ -314,9 +329,18 @@ public class DemoDocumentGenerator {
 
         if ("DRAFT".equals(status)) {
           collectUploadTask(
-              uploadTasks, ctx, teamId, teamIdentifier, uploadedBy, "CONTRACT", contractId,
-              entityIdentifier, "Draft rental agreement", "draft-rental-agreement.pdf",
-              "hud-model-lease.pdf", "Unsigned draft for review");
+              uploadTasks,
+              ctx,
+              teamId,
+              teamIdentifier,
+              uploadedBy,
+              "CONTRACT",
+              contractId,
+              entityIdentifier,
+              "Draft rental agreement",
+              "draft-rental-agreement.pdf",
+              "hud-model-lease.pdf",
+              "Unsigned draft for review");
           continue;
         }
 
@@ -328,8 +352,18 @@ public class DemoDocumentGenerator {
 
         for (DocTemplate doc : pickRandom(CONTRACT_DOCS, docCount)) {
           collectUploadTask(
-              uploadTasks, ctx, teamId, teamIdentifier, uploadedBy, "CONTRACT", contractId,
-              entityIdentifier, doc.title, doc.pdfResource, doc.pdfResource, doc.notes);
+              uploadTasks,
+              ctx,
+              teamId,
+              teamIdentifier,
+              uploadedBy,
+              "CONTRACT",
+              contractId,
+              entityIdentifier,
+              doc.title,
+              doc.pdfResource,
+              doc.pdfResource,
+              doc.notes);
         }
       }
 
@@ -355,9 +389,18 @@ public class DemoDocumentGenerator {
         String prefix = slugify(category.toLowerCase(Locale.ROOT));
 
         collectUploadTask(
-            uploadTasks, ctx, teamId, teamIdentifier, uploadedBy, "EXPENSE", expenseId,
-            ctx.getIdentifier(expenseId), doc.title + " — " + description,
-            prefix + "-" + doc.pdfResource, doc.pdfResource, doc.notes);
+            uploadTasks,
+            ctx,
+            teamId,
+            teamIdentifier,
+            uploadedBy,
+            "EXPENSE",
+            expenseId,
+            ctx.getIdentifier(expenseId),
+            doc.title + " — " + description,
+            prefix + "-" + doc.pdfResource,
+            doc.pdfResource,
+            doc.notes);
       }
     }
 
@@ -410,8 +453,16 @@ public class DemoDocumentGenerator {
     byte[] pdfData = pdfPool.getOrDefault(pdfResource, pdfPool.values().iterator().next());
     tasks.add(
         new DocUploadTask(
-            pdfData, teamIdentifier, entityType, entityIdentifier, fileName, teamId, entityId,
-            uploadedBy, title, notes));
+            pdfData,
+            teamIdentifier,
+            entityType,
+            entityIdentifier,
+            fileName,
+            teamId,
+            entityId,
+            uploadedBy,
+            title,
+            notes));
   }
 
   @SuppressWarnings("NullAway")
@@ -501,9 +552,11 @@ public class DemoDocumentGenerator {
     dsl.select(CONTACTS.ID, CONTACTS.FIRST_NAME, CONTACTS.LAST_NAME)
         .from(CONTACTS)
         .where(CONTACTS.ID.in(contactIds))
-        .forEach(r -> result.put(
-            r.get(CONTACTS.ID),
-            r.get(CONTACTS.FIRST_NAME) + " " + r.get(CONTACTS.LAST_NAME)));
+        .forEach(
+            r ->
+                result.put(
+                    r.get(CONTACTS.ID),
+                    r.get(CONTACTS.FIRST_NAME) + " " + r.get(CONTACTS.LAST_NAME)));
     return result;
   }
 

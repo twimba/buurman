@@ -193,7 +193,7 @@ export const CurrencyChangeModal = ({
             onClick={onClose}
             className="px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
           >
-            Cancel
+            {t('common:buttons.cancel')}
           </button>
           <button
             onClick={handleSubmit}

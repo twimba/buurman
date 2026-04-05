@@ -153,10 +153,21 @@ public class DemoContactNoteGenerator {
                     CONTACT_NOTES.CREATED_BY,
                     CONTACT_NOTES.UPDATED_BY)
                 .values(
-                    (UUID) null, (Sid) null, (UUID) null, (UUID) null, (String) null,
-                    (String) null, (String) null, (LocalDateTime) null, (LocalDate) null,
-                    (Boolean) null, (Boolean) null, (LocalDateTime) null, (LocalDateTime) null,
-                    (UUID) null, (UUID) null);
+                    (UUID) null,
+                    (Sid) null,
+                    (UUID) null,
+                    (UUID) null,
+                    (String) null,
+                    (String) null,
+                    (String) null,
+                    (LocalDateTime) null,
+                    (LocalDate) null,
+                    (Boolean) null,
+                    (Boolean) null,
+                    (LocalDateTime) null,
+                    (LocalDateTime) null,
+                    (UUID) null,
+                    (UUID) null);
         var batch = dsl.batch(insert);
         for (Object[] r : records) {
           batch = batch.bind(r);

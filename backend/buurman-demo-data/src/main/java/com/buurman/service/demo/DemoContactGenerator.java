@@ -500,11 +500,29 @@ public class DemoContactGenerator {
                     CONTACTS.CREATED_BY,
                     CONTACTS.UPDATED_BY)
                 .values(
-                    (UUID) null, (Sid) null, (UUID) null, (String) null, (String) null,
-                    (String) null, (String) null, (String) null, (String) null, (String) null,
-                    (String) null, (String) null, (String) null, (String) null, (String) null,
-                    (LocalDate) null, (LocalDate) null, (String) null, (String) null,
-                    (LocalDateTime) null, (LocalDateTime) null, (UUID) null, (UUID) null);
+                    (UUID) null,
+                    (Sid) null,
+                    (UUID) null,
+                    (String) null,
+                    (String) null,
+                    (String) null,
+                    (String) null,
+                    (String) null,
+                    (String) null,
+                    (String) null,
+                    (String) null,
+                    (String) null,
+                    (String) null,
+                    (String) null,
+                    (String) null,
+                    (LocalDate) null,
+                    (LocalDate) null,
+                    (String) null,
+                    (String) null,
+                    (LocalDateTime) null,
+                    (LocalDateTime) null,
+                    (UUID) null,
+                    (UUID) null);
         var contactBatch = dsl.batch(contactInsert);
         for (Object[] r : contactRecords) {
           contactBatch = contactBatch.bind(r);
@@ -534,10 +552,22 @@ public class DemoContactGenerator {
                     CONTACT_ADDRESSES.CREATED_BY,
                     CONTACT_ADDRESSES.UPDATED_BY)
                 .values(
-                    (UUID) null, (Sid) null, (UUID) null, (UUID) null, (String) null,
-                    (String) null, (String) null, (String) null, (String) null, (String) null,
-                    (BigDecimal) null, (BigDecimal) null, (LocalDateTime) null,
-                    (LocalDateTime) null, (UUID) null, (UUID) null);
+                    (UUID) null,
+                    (Sid) null,
+                    (UUID) null,
+                    (UUID) null,
+                    (String) null,
+                    (String) null,
+                    (String) null,
+                    (String) null,
+                    (String) null,
+                    (String) null,
+                    (BigDecimal) null,
+                    (BigDecimal) null,
+                    (LocalDateTime) null,
+                    (LocalDateTime) null,
+                    (UUID) null,
+                    (UUID) null);
         var addressBatch = dsl.batch(addressInsert);
         for (Object[] r : addressRecords) {
           addressBatch = addressBatch.bind(r);

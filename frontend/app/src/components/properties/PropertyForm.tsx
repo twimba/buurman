@@ -193,7 +193,7 @@ export const PropertyForm = ({
         label: categoryLabel(cat),
         Icon: PROPERTY_CATEGORY_ICONS[cat],
       })),
-    []
+    [categoryLabel]
   );
 
   const typeOptions = useMemo<IconSelectOption[]>(
@@ -203,7 +203,7 @@ export const PropertyForm = ({
         label: typeLabel(type),
         Icon: PROPERTY_TYPE_ICONS[type],
       })),
-    [availableTypes]
+    [availableTypes, typeLabel]
   );
 
   useEffect(() => {

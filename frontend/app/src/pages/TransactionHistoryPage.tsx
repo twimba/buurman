@@ -250,7 +250,7 @@ export const TransactionHistoryPage = () => {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Failed to download Excel:', error);
-      alert('Failed to download Excel. Please try again.');
+      alert(t('transactions.downloadFailed'));
     }
   };
 
@@ -280,7 +280,7 @@ export const TransactionHistoryPage = () => {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Failed to download CSV:', error);
-      alert('Failed to download CSV. Please try again.');
+      alert(t('transactions.downloadFailed'));
     }
   };
 
@@ -310,7 +310,7 @@ export const TransactionHistoryPage = () => {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Failed to download PDF:', error);
-      alert('Failed to download PDF. Please try again.');
+      alert(t('transactions.downloadFailed'));
     }
   };
 

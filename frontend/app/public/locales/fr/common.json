@@ -477,5 +477,64 @@
     "depreciation": "Déduction fiscale pour la perte progressive de valeur du bien au fil du temps",
     "usefulLife": "Nombre d'années sur lesquelles le bien est amorti à des fins fiscales",
     "landValue": "Valeur du terrain seul (exclue des calculs d'amortissement)"
+  },
+  "auditLog": {
+    "title": "Journal d'activité",
+    "subtitle": "Piste d'audit complète de toutes les modifications dans votre équipe",
+    "searchPlaceholder": "Rechercher des activités...",
+    "allTypes": "Tous les types",
+    "allActions": "Toutes les actions",
+    "entityType": "Type d'entité",
+    "action": "Action",
+    "activityCount": "{{count}} activités",
+    "activityCount_one": "{{count}} activité",
+    "entityTypes": {
+      "property": "Bien",
+      "contact": "Contact",
+      "contract": "Contrat",
+      "payment": "Paiement",
+      "expense": "Dépense"
+    },
+    "actions": {
+      "created": "Créé",
+      "updated": "Mis à jour",
+      "deleted": "Supprimé",
+      "restored": "Restauré"
+    },
+    "table": {
+      "time": "Heure",
+      "type": "Type",
+      "action": "Action",
+      "description": "Description",
+      "user": "Utilisateur",
+      "details": "Détails",
+      "impersonated": "Usurpé",
+      "hide": "Masquer",
+      "show": "Afficher"
+    },
+    "changedFields": "Champs modifiés",
+    "fileName": "Nom du fichier",
+    "before": "Avant",
+    "after": "Après",
+    "noActivities": "Aucune activité trouvée",
+    "adjustFilters": "Essayez d'ajuster votre recherche ou vos filtres",
+    "noActivityYet": "Aucune activité n'a encore été enregistrée"
+  },
+  "verifyEmail": {
+    "enterAllDigits": "Veuillez saisir tous les 6 chiffres",
+    "invalidCode": "Code invalide ou expiré. Veuillez réessayer.",
+    "invalidLink": "Ce lien de vérification est invalide ou expiré. Veuillez saisir le code manuellement ou en demander un nouveau.",
+    "verifying": "Vérification...",
+    "pleaseWait": "Veuillez patienter pendant que nous vérifions votre email",
+    "verified": "Email vérifié !",
+    "redirecting": "Redirection vers le tableau de bord...",
+    "checkEmail": "Vérifiez votre email",
+    "codeSent": "Nous avons envoyé un code de vérification à 6 chiffres dans votre boîte de réception",
+    "verifyingButton": "Vérification...",
+    "verifyButton": "Vérifier l'email",
+    "didntReceive": "Vous n'avez pas reçu le code ?",
+    "resendIn": "Renvoyer dans {{seconds}}s",
+    "sending": "Envoi...",
+    "resendCode": "Renvoyer le code"
   }
 }

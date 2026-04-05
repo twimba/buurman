@@ -282,9 +282,7 @@ public class DemoContractGenerator {
                   : "Historical contract (contract " + (c + 1) + " of " + chainLength + ")";
 
           JSONB metadataJsonb =
-              metadata != null
-                  ? JSONB.jsonb(countryMetadataSerializer.serialize(metadata))
-                  : null;
+              metadata != null ? JSONB.jsonb(countryMetadataSerializer.serialize(metadata)) : null;
 
           contractRecords.add(
               new Object[] {
@@ -419,14 +417,40 @@ public class DemoContractGenerator {
                     CONTRACTS.CREATED_BY,
                     CONTRACTS.UPDATED_BY)
                 .values(
-                    (UUID) null, (Sid) null, (UUID) null, (UUID) null, (String) null,
-                    (LocalDate) null, (LocalDate) null, (LocalDate) null, (BigDecimal) null,
-                    (BigDecimal) null, (BigDecimal) null, (String) null, (String) null,
-                    (String) null, (String) null, (Integer) null, (String) null, (Integer) null,
-                    (Integer) null, (Integer) null, (Integer) null, (Boolean) null, (String) null,
-                    (BigDecimal) null, (Integer) null, (BigDecimal) null, (String) null,
-                    (String) null, (String) null, (JSONB) null, (LocalDateTime) null,
-                    (LocalDateTime) null, (UUID) null, (UUID) null);
+                    (UUID) null,
+                    (Sid) null,
+                    (UUID) null,
+                    (UUID) null,
+                    (String) null,
+                    (LocalDate) null,
+                    (LocalDate) null,
+                    (LocalDate) null,
+                    (BigDecimal) null,
+                    (BigDecimal) null,
+                    (BigDecimal) null,
+                    (String) null,
+                    (String) null,
+                    (String) null,
+                    (String) null,
+                    (Integer) null,
+                    (String) null,
+                    (Integer) null,
+                    (Integer) null,
+                    (Integer) null,
+                    (Integer) null,
+                    (Boolean) null,
+                    (String) null,
+                    (BigDecimal) null,
+                    (Integer) null,
+                    (BigDecimal) null,
+                    (String) null,
+                    (String) null,
+                    (String) null,
+                    (JSONB) null,
+                    (LocalDateTime) null,
+                    (LocalDateTime) null,
+                    (UUID) null,
+                    (UUID) null);
         var contractBatch = dsl.batch(contractInsert);
         for (Object[] r : contractRecords) {
           contractBatch = contractBatch.bind(r);
@@ -450,8 +474,15 @@ public class DemoContractGenerator {
                     field("created_by", UUID.class),
                     field("updated_by", UUID.class))
                 .values(
-                    (UUID) null, (String) null, (UUID) null, (UUID) null, (UUID) null,
-                    (String) null, (LocalDateTime) null, (LocalDateTime) null, (UUID) null,
+                    (UUID) null,
+                    (String) null,
+                    (UUID) null,
+                    (UUID) null,
+                    (UUID) null,
+                    (String) null,
+                    (LocalDateTime) null,
+                    (LocalDateTime) null,
+                    (UUID) null,
                     (UUID) null);
         var partyBatch = dsl.batch(partyInsert);
         for (Object[] r : partyRecords) {
@@ -477,9 +508,17 @@ public class DemoContractGenerator {
                     field("created_by", UUID.class),
                     field("updated_by", UUID.class))
                 .values(
-                    (UUID) null, (String) null, (UUID) null, (UUID) null, (Long) null,
-                    (String) null, (java.sql.Date) null, (LocalDateTime) null,
-                    (LocalDateTime) null, (UUID) null, (UUID) null);
+                    (UUID) null,
+                    (String) null,
+                    (UUID) null,
+                    (UUID) null,
+                    (Long) null,
+                    (String) null,
+                    (java.sql.Date) null,
+                    (LocalDateTime) null,
+                    (LocalDateTime) null,
+                    (UUID) null,
+                    (UUID) null);
         var rpBatch = dsl.batch(rpInsert);
         for (Object[] r : rentPeriodRecords) {
           rpBatch = rpBatch.bind(r);
@@ -507,9 +546,20 @@ public class DemoContractGenerator {
                     field("created_by", UUID.class),
                     field("updated_by", UUID.class))
                 .values(
-                    (UUID) null, (String) null, (UUID) null, (UUID) null, (UUID) null,
-                    (String) null, (Long) null, (String) null, (String) null, (Integer) null,
-                    (LocalDateTime) null, (LocalDateTime) null, (UUID) null, (UUID) null);
+                    (UUID) null,
+                    (String) null,
+                    (UUID) null,
+                    (UUID) null,
+                    (UUID) null,
+                    (String) null,
+                    (Long) null,
+                    (String) null,
+                    (String) null,
+                    (Integer) null,
+                    (LocalDateTime) null,
+                    (LocalDateTime) null,
+                    (UUID) null,
+                    (UUID) null);
         var compBatch = dsl.batch(compInsert);
         for (Object[] r : componentRecords) {
           compBatch = compBatch.bind(r);
@@ -657,14 +707,41 @@ public class DemoContractGenerator {
 
     int sortOrder = 0;
     addComponent(
-        componentRecords, contractId, rentPeriodId, teamId, createdBy, "BASE_RENT", baseRent,
-        currency, null, sortOrder++, now);
+        componentRecords,
+        contractId,
+        rentPeriodId,
+        teamId,
+        createdBy,
+        "BASE_RENT",
+        baseRent,
+        currency,
+        null,
+        sortOrder++,
+        now);
     addComponent(
-        componentRecords, contractId, rentPeriodId, teamId, createdBy, "UTILITIES_ADVANCE",
-        utilities, currency, null, sortOrder++, now);
+        componentRecords,
+        contractId,
+        rentPeriodId,
+        teamId,
+        createdBy,
+        "UTILITIES_ADVANCE",
+        utilities,
+        currency,
+        null,
+        sortOrder++,
+        now);
     addComponent(
-        componentRecords, contractId, rentPeriodId, teamId, createdBy, "SERVICE_COSTS",
-        serviceCosts, currency, null, sortOrder++, now);
+        componentRecords,
+        contractId,
+        rentPeriodId,
+        teamId,
+        createdBy,
+        "SERVICE_COSTS",
+        serviceCosts,
+        currency,
+        null,
+        sortOrder++,
+        now);
 
     // Add PARKING for commercial/industrial (~10% chance for residential)
     if ("COMMERCIAL".equals(propertyCategory)
@@ -672,8 +749,17 @@ public class DemoContractGenerator {
         || random.nextInt(10) == 0) {
       BigDecimal parking = BigDecimal.valueOf(random.nextInt(50, 200));
       addComponent(
-          componentRecords, contractId, rentPeriodId, teamId, createdBy, "PARKING", parking,
-          currency, null, sortOrder++, now);
+          componentRecords,
+          contractId,
+          rentPeriodId,
+          teamId,
+          createdBy,
+          "PARKING",
+          parking,
+          currency,
+          null,
+          sortOrder++,
+          now);
     }
   }
 

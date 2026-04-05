@@ -414,7 +414,7 @@ export const TeamSettingsSection = () => {
                 onClick={() => setShowInviteModal(false)}
                 className="px-4 py-2 border border-border-strong text-text-secondary rounded-lg hover:bg-surface-inset transition-colors"
               >
-                Cancel
+                {t('common:buttons.cancel')}
               </button>
               <button
                 onClick={handleInviteMember}
@@ -471,7 +471,7 @@ export const TeamSettingsSection = () => {
                 }}
                 className="px-4 py-2 border border-border-strong text-text-secondary rounded-lg hover:bg-surface-inset transition-colors"
               >
-                Cancel
+                {t('common:buttons.cancel')}
               </button>
               <button
                 onClick={handleUpdateRole}
@@ -499,12 +499,14 @@ export const TeamSettingsSection = () => {
             </div>
 
             <div className="p-6">
-              <p className="text-text-secondary">
-                Are you sure you want to transfer team ownership to{' '}
-                <span className="font-semibold">{selectedMember.name}</span>?
-                This action cannot be undone by you. The new owner will have
-                full control of the team.
-              </p>
+              <p
+                className="text-text-secondary"
+                dangerouslySetInnerHTML={{
+                  __html: t('teamMembers.transferModal.message', {
+                    name: selectedMember.name,
+                  }),
+                }}
+              />
             </div>
 
             <div className="p-6 border-t border-border-default flex justify-end gap-3">
@@ -515,7 +517,7 @@ export const TeamSettingsSection = () => {
                 }}
                 className="px-4 py-2 border border-border-strong text-text-secondary rounded-lg hover:bg-surface-inset transition-colors"
               >
-                Cancel
+                {t('common:buttons.cancel')}
               </button>
               <button
                 onClick={handleTransferOwnership}
@@ -543,11 +545,14 @@ export const TeamSettingsSection = () => {
             </div>
 
             <div className="p-6">
-              <p className="text-text-secondary">
-                Are you sure you want to remove{' '}
-                <span className="font-semibold">{selectedMember.name}</span>{' '}
-                from your team? They will lose access to all team data.
-              </p>
+              <p
+                className="text-text-secondary"
+                dangerouslySetInnerHTML={{
+                  __html: t('teamMembers.removeModal.message', {
+                    name: selectedMember.name,
+                  }),
+                }}
+              />
             </div>
 
             <div className="p-6 border-t border-border-default flex justify-end gap-3">
@@ -558,7 +563,7 @@ export const TeamSettingsSection = () => {
                 }}
                 className="px-4 py-2 border border-border-strong text-text-secondary rounded-lg hover:bg-surface-inset transition-colors"
               >
-                Cancel
+                {t('common:buttons.cancel')}
               </button>
               <button
                 onClick={handleRemoveMember}

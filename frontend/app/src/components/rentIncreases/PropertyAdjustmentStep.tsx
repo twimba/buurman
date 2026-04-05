@@ -221,7 +221,7 @@ export const PropertyAdjustmentStep = ({
       }
     });
     return result;
-  }, [contracts, increases]);
+  }, [contracts, increases, t]);
 
   // Summary stats
   const summary = useMemo(() => {
@@ -476,7 +476,8 @@ export const PropertyAdjustmentStep = ({
                             className={`text-xs font-medium mt-0.5 ${pctColor(pct)}`}
                           >
                             {diff > 0 ? '+' : ''}
-                            {formatMoney(diff, contract.currency)}/mo
+                            {formatMoney(diff, contract.currency)}
+                            {t('overview.perMonth')}
                           </p>
                         )}
                       </div>

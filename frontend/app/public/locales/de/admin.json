@@ -152,6 +152,7 @@
     "totalExpenses": "Gesamtausgaben",
     "netTotal": "Netto gesamt",
     "noTransactions": "Keine Transaktionen gefunden",
+    "downloadFailed": "Herunterladen fehlgeschlagen. Bitte versuchen Sie es erneut.",
     "table": {
       "date": "Datum",
       "type": "Typ",

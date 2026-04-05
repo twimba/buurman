@@ -477,5 +477,64 @@
     "depreciation": "Deducción fiscal por la pérdida gradual de valor de la propiedad a lo largo del tiempo",
     "usefulLife": "Número de años durante los cuales la propiedad se deprecia a efectos fiscales",
     "landValue": "Valor del terreno solo (excluido de los cálculos de depreciación)"
+  },
+  "auditLog": {
+    "title": "Registro de Actividad",
+    "subtitle": "Registro de auditoría completo de todos los cambios en su equipo",
+    "searchPlaceholder": "Buscar actividades...",
+    "allTypes": "Todos los Tipos",
+    "allActions": "Todas las Acciones",
+    "entityType": "Tipo de Entidad",
+    "action": "Acción",
+    "activityCount": "{{count}} actividades",
+    "activityCount_one": "{{count}} actividad",
+    "entityTypes": {
+      "property": "Propiedad",
+      "contact": "Contacto",
+      "contract": "Contrato",
+      "payment": "Pago",
+      "expense": "Gasto"
+    },
+    "actions": {
+      "created": "Creado",
+      "updated": "Actualizado",
+      "deleted": "Eliminado",
+      "restored": "Restaurado"
+    },
+    "table": {
+      "time": "Hora",
+      "type": "Tipo",
+      "action": "Acción",
+      "description": "Descripción",
+      "user": "Usuario",
+      "details": "Detalles",
+      "impersonated": "Suplantado",
+      "hide": "Ocultar",
+      "show": "Mostrar"
+    },
+    "changedFields": "Campos Modificados",
+    "fileName": "Nombre del Archivo",
+    "before": "Antes",
+    "after": "Después",
+    "noActivities": "No se encontraron actividades",
+    "adjustFilters": "Intente ajustar su búsqueda o filtros",
+    "noActivityYet": "Aún no se ha registrado ninguna actividad"
+  },
+  "verifyEmail": {
+    "enterAllDigits": "Por favor, introduzca todos los 6 dígitos",
+    "invalidCode": "Código inválido o expirado. Por favor, inténtelo de nuevo.",
+    "invalidLink": "Este enlace de verificación es inválido o ha expirado. Por favor, introduzca el código manualmente o solicite uno nuevo.",
+    "verifying": "Verificando...",
+    "pleaseWait": "Por favor, espere mientras verificamos su email",
+    "verified": "¡Email Verificado!",
+    "redirecting": "Redirigiendo al panel...",
+    "checkEmail": "Compruebe su email",
+    "codeSent": "Hemos enviado un código de verificación de 6 dígitos a su bandeja de entrada",
+    "verifyingButton": "Verificando...",
+    "verifyButton": "Verificar Email",
+    "didntReceive": "¿No recibió el código?",
+    "resendIn": "Reenviar en {{seconds}}s",
+    "sending": "Enviando...",
+    "resendCode": "Reenviar Código"
   }
 }

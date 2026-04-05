@@ -325,8 +325,20 @@ public class DemoExpenseGenerator {
                     EXPENSES.CREATED_BY,
                     EXPENSES.UPDATED_BY)
                 .values(
-                    (UUID) null, null, null, null, null, null, null, null, null, null, null, null,
-                    null, null);
+                    (UUID) null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null);
         var batch = dsl.batch(insert);
         for (Object[] r : expenseRecords) {
           batch = batch.bind(r);

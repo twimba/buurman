@@ -477,5 +477,64 @@
     "depreciation": "Fiscale aftrek voor geleidelijk waardeverlies van het pand in de loop van de tijd",
     "usefulLife": "Aantal jaren waarover het pand fiscaal wordt afgeschreven",
     "landValue": "Waarde van de grond alleen (uitgesloten van afschrijvingsberekeningen)"
+  },
+  "auditLog": {
+    "title": "Activiteitenlogboek",
+    "subtitle": "Volledig auditspoor van alle wijzigingen in uw team",
+    "searchPlaceholder": "Activiteiten zoeken...",
+    "allTypes": "Alle Typen",
+    "allActions": "Alle Acties",
+    "entityType": "Entiteitstype",
+    "action": "Actie",
+    "activityCount": "{{count}} activiteiten",
+    "activityCount_one": "{{count}} activiteit",
+    "entityTypes": {
+      "property": "Pand",
+      "contact": "Contact",
+      "contract": "Contract",
+      "payment": "Betaling",
+      "expense": "Uitgave"
+    },
+    "actions": {
+      "created": "Aangemaakt",
+      "updated": "Bijgewerkt",
+      "deleted": "Verwijderd",
+      "restored": "Hersteld"
+    },
+    "table": {
+      "time": "Tijd",
+      "type": "Type",
+      "action": "Actie",
+      "description": "Beschrijving",
+      "user": "Gebruiker",
+      "details": "Details",
+      "impersonated": "Geïmiteerd",
+      "hide": "Verbergen",
+      "show": "Tonen"
+    },
+    "changedFields": "Gewijzigde velden",
+    "fileName": "Bestandsnaam",
+    "before": "Voor",
+    "after": "Na",
+    "noActivities": "Geen activiteiten gevonden",
+    "adjustFilters": "Pas uw zoekopdracht of filters aan",
+    "noActivityYet": "Er is nog geen activiteit geregistreerd"
+  },
+  "verifyEmail": {
+    "enterAllDigits": "Voer alle 6 cijfers in",
+    "invalidCode": "Ongeldige of verlopen code. Probeer het opnieuw.",
+    "invalidLink": "Deze verificatielink is ongeldig of verlopen. Voer de code handmatig in of vraag een nieuwe aan.",
+    "verifying": "Verifiëren...",
+    "pleaseWait": "Even geduld terwijl we uw e-mail verifiëren",
+    "verified": "E-mail geverifieerd!",
+    "redirecting": "Doorsturen naar dashboard...",
+    "checkEmail": "Controleer uw e-mail",
+    "codeSent": "We hebben een 6-cijferige verificatiecode naar uw inbox gestuurd",
+    "verifyingButton": "Verifiëren...",
+    "verifyButton": "E-mail verifiëren",
+    "didntReceive": "Code niet ontvangen?",
+    "resendIn": "Opnieuw versturen over {{seconds}}s",
+    "sending": "Verzenden...",
+    "resendCode": "Code opnieuw versturen"
   }
 }

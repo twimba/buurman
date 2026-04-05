@@ -206,8 +206,16 @@ public class DemoContactRelationshipGenerator {
                     CONTACT_RELATIONSHIPS.CREATED_BY,
                     CONTACT_RELATIONSHIPS.UPDATED_BY)
                 .values(
-                    (UUID) null, (Sid) null, (UUID) null, (UUID) null, (UUID) null, (String) null,
-                    (String) null, (LocalDateTime) null, (LocalDateTime) null, (UUID) null,
+                    (UUID) null,
+                    (Sid) null,
+                    (UUID) null,
+                    (UUID) null,
+                    (UUID) null,
+                    (String) null,
+                    (String) null,
+                    (LocalDateTime) null,
+                    (LocalDateTime) null,
+                    (UUID) null,
                     (UUID) null);
         var batch = dsl.batch(insert);
         for (Object[] r : records) {

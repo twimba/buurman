@@ -666,9 +666,7 @@ public class DemoPropertyGenerator {
               random.nextBoolean() ? 500 : 1000,
               "mbps",
               "ACTIVE",
-              "INDUSTRIAL".equals(propertyCategory)
-                  ? random.nextInt(5, 20)
-                  : random.nextInt(0, 3),
+              "INDUSTRIAL".equals(propertyCategory) ? random.nextInt(5, 20) : random.nextInt(0, 3),
               "AGRICULTURAL".equals(propertyCategory) ? "NONE" : pick(PARKING_TYPES),
               true,
               random.nextBoolean(),
@@ -843,17 +841,61 @@ public class DemoPropertyGenerator {
                 PROPERTIES.CREATED_BY,
                 PROPERTIES.UPDATED_BY)
             .values(
-                (UUID) null, (Sid) null, (UUID) null, (String) null, (String) null, (String) null,
-                (String) null, (String) null, (BigDecimal) null, (BigDecimal) null, (String) null,
-                (BigDecimal) null, (String) null, (String) null, (String) null, (Integer) null,
-                (Integer) null, (String) null, (String) null, (String) null, (String) null,
-                (String) null, (Integer) null, (String) null, (LocalDate) null, (String) null,
-                (String) null, (String) null, (String) null, (Integer) null, (String) null,
-                (String) null, (Boolean) null, (String) null, (String) null, (Integer) null,
-                (String) null, (String) null, (Integer) null, (String) null, (Boolean) null,
-                (Boolean) null, (Boolean) null, (Boolean) null, (Boolean) null, (Boolean) null,
-                (Boolean) null, (Boolean) null, (Boolean) null, (Boolean) null, (Boolean) null,
-                (LocalDateTime) null, (LocalDateTime) null, (UUID) null, (UUID) null);
+                (UUID) null,
+                (Sid) null,
+                (UUID) null,
+                (String) null,
+                (String) null,
+                (String) null,
+                (String) null,
+                (String) null,
+                (BigDecimal) null,
+                (BigDecimal) null,
+                (String) null,
+                (BigDecimal) null,
+                (String) null,
+                (String) null,
+                (String) null,
+                (Integer) null,
+                (Integer) null,
+                (String) null,
+                (String) null,
+                (String) null,
+                (String) null,
+                (String) null,
+                (Integer) null,
+                (String) null,
+                (LocalDate) null,
+                (String) null,
+                (String) null,
+                (String) null,
+                (String) null,
+                (Integer) null,
+                (String) null,
+                (String) null,
+                (Boolean) null,
+                (String) null,
+                (String) null,
+                (Integer) null,
+                (String) null,
+                (String) null,
+                (Integer) null,
+                (String) null,
+                (Boolean) null,
+                (Boolean) null,
+                (Boolean) null,
+                (Boolean) null,
+                (Boolean) null,
+                (Boolean) null,
+                (Boolean) null,
+                (Boolean) null,
+                (Boolean) null,
+                (Boolean) null,
+                (Boolean) null,
+                (LocalDateTime) null,
+                (LocalDateTime) null,
+                (UUID) null,
+                (UUID) null);
     BatchBindStep batch = dsl.batch(insert);
     for (Object[] r : records) {
       batch = batch.bind(r);
@@ -890,11 +932,27 @@ public class DemoPropertyGenerator {
                 PROPERTY_ACQUISITIONS.CREATED_BY,
                 PROPERTY_ACQUISITIONS.UPDATED_BY)
             .values(
-                (UUID) null, (Sid) null, (UUID) null, (UUID) null, (String) null, (LocalDate) null,
-                (BigDecimal) null, (String) null, (BigDecimal) null, (String) null,
-                (BigDecimal) null, (String) null, (BigDecimal) null, (String) null, (String) null,
-                (Integer) null, (String) null, (LocalDateTime) null, (LocalDateTime) null,
-                (UUID) null, (UUID) null);
+                (UUID) null,
+                (Sid) null,
+                (UUID) null,
+                (UUID) null,
+                (String) null,
+                (LocalDate) null,
+                (BigDecimal) null,
+                (String) null,
+                (BigDecimal) null,
+                (String) null,
+                (BigDecimal) null,
+                (String) null,
+                (BigDecimal) null,
+                (String) null,
+                (String) null,
+                (Integer) null,
+                (String) null,
+                (LocalDateTime) null,
+                (LocalDateTime) null,
+                (UUID) null,
+                (UUID) null);
     BatchBindStep batch = dsl.batch(insert);
     for (Object[] r : records) {
       batch = batch.bind(r);
@@ -924,9 +982,20 @@ public class DemoPropertyGenerator {
                 PROPERTY_VALUATIONS.CREATED_BY,
                 PROPERTY_VALUATIONS.UPDATED_BY)
             .values(
-                (UUID) null, (Sid) null, (UUID) null, (UUID) null, (String) null, (LocalDate) null,
-                (BigDecimal) null, (String) null, (String) null, (String) null,
-                (LocalDateTime) null, (LocalDateTime) null, (UUID) null, (UUID) null);
+                (UUID) null,
+                (Sid) null,
+                (UUID) null,
+                (UUID) null,
+                (String) null,
+                (LocalDate) null,
+                (BigDecimal) null,
+                (String) null,
+                (String) null,
+                (String) null,
+                (LocalDateTime) null,
+                (LocalDateTime) null,
+                (UUID) null,
+                (UUID) null);
     BatchBindStep batch = dsl.batch(insert);
     for (Object[] r : records) {
       batch = batch.bind(r);
@@ -967,11 +1036,31 @@ public class DemoPropertyGenerator {
                 PROPERTY_FINANCINGS.CREATED_BY,
                 PROPERTY_FINANCINGS.UPDATED_BY)
             .values(
-                (UUID) null, (Sid) null, (UUID) null, (UUID) null, (String) null, (String) null,
-                (String) null, (String) null, (BigDecimal) null, (String) null, (BigDecimal) null,
-                (String) null, (BigDecimal) null, (BigDecimal) null, (String) null, (Boolean) null,
-                (LocalDate) null, (LocalDate) null, (Integer) null, (String) null, (String) null,
-                (LocalDateTime) null, (LocalDateTime) null, (UUID) null, (UUID) null);
+                (UUID) null,
+                (Sid) null,
+                (UUID) null,
+                (UUID) null,
+                (String) null,
+                (String) null,
+                (String) null,
+                (String) null,
+                (BigDecimal) null,
+                (String) null,
+                (BigDecimal) null,
+                (String) null,
+                (BigDecimal) null,
+                (BigDecimal) null,
+                (String) null,
+                (Boolean) null,
+                (LocalDate) null,
+                (LocalDate) null,
+                (Integer) null,
+                (String) null,
+                (String) null,
+                (LocalDateTime) null,
+                (LocalDateTime) null,
+                (UUID) null,
+                (UUID) null);
     BatchBindStep batch = dsl.batch(insert);
     for (Object[] r : records) {
       batch = batch.bind(r);
@@ -1007,10 +1096,26 @@ public class DemoPropertyGenerator {
                 PROPERTY_INSURANCES.CREATED_BY,
                 PROPERTY_INSURANCES.UPDATED_BY)
             .values(
-                (UUID) null, (Sid) null, (UUID) null, (UUID) null, (String) null, (String) null,
-                (String) null, (BigDecimal) null, (String) null, (BigDecimal) null, (String) null,
-                (String) null, (LocalDate) null, (LocalDate) null, (String) null, (String) null,
-                (LocalDateTime) null, (LocalDateTime) null, (UUID) null, (UUID) null);
+                (UUID) null,
+                (Sid) null,
+                (UUID) null,
+                (UUID) null,
+                (String) null,
+                (String) null,
+                (String) null,
+                (BigDecimal) null,
+                (String) null,
+                (BigDecimal) null,
+                (String) null,
+                (String) null,
+                (LocalDate) null,
+                (LocalDate) null,
+                (String) null,
+                (String) null,
+                (LocalDateTime) null,
+                (LocalDateTime) null,
+                (UUID) null,
+                (UUID) null);
     BatchBindStep batch = dsl.batch(insert);
     for (Object[] r : records) {
       batch = batch.bind(r);
@@ -1045,10 +1150,25 @@ public class DemoPropertyGenerator {
                 PROPERTY_TAXES.CREATED_BY,
                 PROPERTY_TAXES.UPDATED_BY)
             .values(
-                (UUID) null, (Sid) null, (UUID) null, (UUID) null, (String) null, (String) null,
-                (BigDecimal) null, (String) null, (String) null, (String) null, (Integer) null,
-                (LocalDate) null, (LocalDate) null, (String) null, (String) null,
-                (LocalDateTime) null, (LocalDateTime) null, (UUID) null, (UUID) null);
+                (UUID) null,
+                (Sid) null,
+                (UUID) null,
+                (UUID) null,
+                (String) null,
+                (String) null,
+                (BigDecimal) null,
+                (String) null,
+                (String) null,
+                (String) null,
+                (Integer) null,
+                (LocalDate) null,
+                (LocalDate) null,
+                (String) null,
+                (String) null,
+                (LocalDateTime) null,
+                (LocalDateTime) null,
+                (UUID) null,
+                (UUID) null);
     BatchBindStep batch = dsl.batch(insert);
     for (Object[] r : records) {
       batch = batch.bind(r);
@@ -1081,10 +1201,23 @@ public class DemoPropertyGenerator {
                 PROPERTY_FEES.CREATED_BY,
                 PROPERTY_FEES.UPDATED_BY)
             .values(
-                (UUID) null, (Sid) null, (UUID) null, (UUID) null, (String) null, (String) null,
-                (BigDecimal) null, (String) null, (String) null, (String) null, (LocalDate) null,
-                (String) null, (String) null, (LocalDateTime) null, (LocalDateTime) null,
-                (UUID) null, (UUID) null);
+                (UUID) null,
+                (Sid) null,
+                (UUID) null,
+                (UUID) null,
+                (String) null,
+                (String) null,
+                (BigDecimal) null,
+                (String) null,
+                (String) null,
+                (String) null,
+                (LocalDate) null,
+                (String) null,
+                (String) null,
+                (LocalDateTime) null,
+                (LocalDateTime) null,
+                (UUID) null,
+                (UUID) null);
     BatchBindStep batch = dsl.batch(insert);
     for (Object[] r : records) {
       batch = batch.bind(r);
@@ -1111,9 +1244,17 @@ public class DemoPropertyGenerator {
                 PROPERTY_OUTDOOR_AREAS.CREATED_BY,
                 PROPERTY_OUTDOOR_AREAS.UPDATED_BY)
             .values(
-                (UUID) null, (Sid) null, (UUID) null, (UUID) null, (String) null,
-                (BigDecimal) null, (String) null, (LocalDateTime) null, (LocalDateTime) null,
-                (UUID) null, (UUID) null);
+                (UUID) null,
+                (Sid) null,
+                (UUID) null,
+                (UUID) null,
+                (String) null,
+                (BigDecimal) null,
+                (String) null,
+                (LocalDateTime) null,
+                (LocalDateTime) null,
+                (UUID) null,
+                (UUID) null);
     BatchBindStep batch = dsl.batch(insert);
     for (Object[] r : records) {
       batch = batch.bind(r);
@@ -1140,9 +1281,17 @@ public class DemoPropertyGenerator {
                 PROPERTY_RESIDENTIAL_DETAILS.CREATED_BY,
                 PROPERTY_RESIDENTIAL_DETAILS.UPDATED_BY)
             .values(
-                (UUID) null, (UUID) null, (UUID) null, (Integer) null, (Integer) null,
-                (Boolean) null, (String) null, (LocalDateTime) null, (LocalDateTime) null,
-                (UUID) null, (UUID) null);
+                (UUID) null,
+                (UUID) null,
+                (UUID) null,
+                (Integer) null,
+                (Integer) null,
+                (Boolean) null,
+                (String) null,
+                (LocalDateTime) null,
+                (LocalDateTime) null,
+                (UUID) null,
+                (UUID) null);
     BatchBindStep batch = dsl.batch(insert);
     for (Object[] r : records) {
       batch = batch.bind(r);
@@ -1179,11 +1328,27 @@ public class DemoPropertyGenerator {
                 PROPERTY_COMMERCIAL_DETAILS.CREATED_BY,
                 PROPERTY_COMMERCIAL_DETAILS.UPDATED_BY)
             .values(
-                (UUID) null, (UUID) null, (UUID) null, (BigDecimal) null, (String) null,
-                (BigDecimal) null, (String) null, (Integer) null, (BigDecimal) null, (String) null,
-                (Boolean) null, (Boolean) null, (String) null, (Integer) null, (Integer) null,
-                (Boolean) null, (Boolean) null, (LocalDateTime) null, (LocalDateTime) null,
-                (UUID) null, (UUID) null);
+                (UUID) null,
+                (UUID) null,
+                (UUID) null,
+                (BigDecimal) null,
+                (String) null,
+                (BigDecimal) null,
+                (String) null,
+                (Integer) null,
+                (BigDecimal) null,
+                (String) null,
+                (Boolean) null,
+                (Boolean) null,
+                (String) null,
+                (Integer) null,
+                (Integer) null,
+                (Boolean) null,
+                (Boolean) null,
+                (LocalDateTime) null,
+                (LocalDateTime) null,
+                (UUID) null,
+                (UUID) null);
     BatchBindStep batch = dsl.batch(insert);
     for (Object[] r : records) {
       batch = batch.bind(r);
@@ -1224,11 +1389,30 @@ public class DemoPropertyGenerator {
                 PROPERTY_INDUSTRIAL_DETAILS.CREATED_BY,
                 PROPERTY_INDUSTRIAL_DETAILS.UPDATED_BY)
             .values(
-                (UUID) null, (UUID) null, (UUID) null, (BigDecimal) null, (String) null,
-                (Integer) null, (Integer) null, (BigDecimal) null, (String) null, (Integer) null,
-                (String) null, (Boolean) null, (Boolean) null, (BigDecimal) null, (String) null,
-                (Boolean) null, (Boolean) null, (Boolean) null, (BigDecimal) null, (String) null,
-                (String) null, (LocalDateTime) null, (LocalDateTime) null, (UUID) null,
+                (UUID) null,
+                (UUID) null,
+                (UUID) null,
+                (BigDecimal) null,
+                (String) null,
+                (Integer) null,
+                (Integer) null,
+                (BigDecimal) null,
+                (String) null,
+                (Integer) null,
+                (String) null,
+                (Boolean) null,
+                (Boolean) null,
+                (BigDecimal) null,
+                (String) null,
+                (Boolean) null,
+                (Boolean) null,
+                (Boolean) null,
+                (BigDecimal) null,
+                (String) null,
+                (String) null,
+                (LocalDateTime) null,
+                (LocalDateTime) null,
+                (UUID) null,
                 (UUID) null);
     BatchBindStep batch = dsl.batch(insert);
     for (Object[] r : records) {
@@ -1265,10 +1449,25 @@ public class DemoPropertyGenerator {
                 PROPERTY_AGRICULTURAL_DETAILS.CREATED_BY,
                 PROPERTY_AGRICULTURAL_DETAILS.UPDATED_BY)
             .values(
-                (UUID) null, (UUID) null, (UUID) null, (BigDecimal) null, (String) null,
-                (BigDecimal) null, (String) null, (String) null, (Boolean) null, (String) null,
-                (String) null, (String) null, (Boolean) null, (String) null, (String) null,
-                (String) null, (LocalDateTime) null, (LocalDateTime) null, (UUID) null,
+                (UUID) null,
+                (UUID) null,
+                (UUID) null,
+                (BigDecimal) null,
+                (String) null,
+                (BigDecimal) null,
+                (String) null,
+                (String) null,
+                (Boolean) null,
+                (String) null,
+                (String) null,
+                (String) null,
+                (Boolean) null,
+                (String) null,
+                (String) null,
+                (String) null,
+                (LocalDateTime) null,
+                (LocalDateTime) null,
+                (UUID) null,
                 (UUID) null);
     BatchBindStep batch = dsl.batch(insert);
     for (Object[] r : records) {
@@ -1577,8 +1776,7 @@ public class DemoPropertyGenerator {
               common,
               "sqm",
               random.nextInt(0, 5),
-              BigDecimal.valueOf(2.7 + random.nextDouble() * 1.3)
-                  .setScale(2, RoundingMode.HALF_UP),
+              BigDecimal.valueOf(2.7 + random.nextDouble() * 1.3).setScale(2, RoundingMode.HALF_UP),
               "m",
               "RETAIL".equals(propertyType)
                   || "RESTAURANT".equals(propertyType)
@@ -1601,8 +1799,7 @@ public class DemoPropertyGenerator {
               UUID.randomUUID(),
               propertyId,
               teamId,
-              BigDecimal.valueOf(4.0 + random.nextDouble() * 8.0)
-                  .setScale(2, RoundingMode.HALF_UP),
+              BigDecimal.valueOf(4.0 + random.nextDouble() * 8.0).setScale(2, RoundingMode.HALF_UP),
               "m",
               random.nextInt(1, 6),
               random.nextInt(1, 4),
@@ -2128,100 +2325,239 @@ public class DemoPropertyGenerator {
       case "RESIDENTIAL" -> {
         if (random.nextInt(3) < 2) {
           addFee(
-              feeRecords, propertyId, teamId, createdBy, currency, "HOA", "Monthly HOA Dues",
-              Math.round(annualRent * (0.04 + random.nextDouble() * 0.06)), "MONTHLY",
-              "1,2,3,4,5,6,7,8,9,10,11,12", acquisitionDate, now);
+              feeRecords,
+              propertyId,
+              teamId,
+              createdBy,
+              currency,
+              "HOA",
+              "Monthly HOA Dues",
+              Math.round(annualRent * (0.04 + random.nextDouble() * 0.06)),
+              "MONTHLY",
+              "1,2,3,4,5,6,7,8,9,10,11,12",
+              acquisitionDate,
+              now);
         }
         addFee(
-            feeRecords, propertyId, teamId, createdBy, currency, "WASTE_MANAGEMENT",
+            feeRecords,
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "WASTE_MANAGEMENT",
             "Waste Collection Service",
-            Math.round(annualRent * (0.015 + random.nextDouble() * 0.015)), "QUARTERLY",
-            "3,6,9,12", acquisitionDate, now);
+            Math.round(annualRent * (0.015 + random.nextDouble() * 0.015)),
+            "QUARTERLY",
+            "3,6,9,12",
+            acquisitionDate,
+            now);
         addFee(
-            feeRecords, propertyId, teamId, createdBy, currency, "WATER", "Water & Sewage",
-            Math.round(annualRent * (0.02 + random.nextDouble() * 0.02)), "QUARTERLY",
-            "3,6,9,12", acquisitionDate, now);
+            feeRecords,
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "WATER",
+            "Water & Sewage",
+            Math.round(annualRent * (0.02 + random.nextDouble() * 0.02)),
+            "QUARTERLY",
+            "3,6,9,12",
+            acquisitionDate,
+            now);
       }
       case "COMMERCIAL" -> {
         addFee(
-            feeRecords, propertyId, teamId, createdBy, currency, "MANAGEMENT",
+            feeRecords,
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "MANAGEMENT",
             "Commercial Property Management",
-            Math.round(annualRent * (0.06 + random.nextDouble() * 0.04)), "MONTHLY",
-            "1,2,3,4,5,6,7,8,9,10,11,12", acquisitionDate, now);
+            Math.round(annualRent * (0.06 + random.nextDouble() * 0.04)),
+            "MONTHLY",
+            "1,2,3,4,5,6,7,8,9,10,11,12",
+            acquisitionDate,
+            now);
         addFee(
-            feeRecords, propertyId, teamId, createdBy, currency, "SECURITY", "Security Service",
-            Math.round(annualRent * (0.03 + random.nextDouble() * 0.03)), "MONTHLY",
-            "1,2,3,4,5,6,7,8,9,10,11,12", acquisitionDate, now);
+            feeRecords,
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "SECURITY",
+            "Security Service",
+            Math.round(annualRent * (0.03 + random.nextDouble() * 0.03)),
+            "MONTHLY",
+            "1,2,3,4,5,6,7,8,9,10,11,12",
+            acquisitionDate,
+            now);
         addFee(
-            feeRecords, propertyId, teamId, createdBy, currency, "CLEANING",
+            feeRecords,
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "CLEANING",
             "Professional Cleaning",
-            Math.round(annualRent * (0.04 + random.nextDouble() * 0.04)), "MONTHLY",
-            "1,2,3,4,5,6,7,8,9,10,11,12", acquisitionDate, now);
+            Math.round(annualRent * (0.04 + random.nextDouble() * 0.04)),
+            "MONTHLY",
+            "1,2,3,4,5,6,7,8,9,10,11,12",
+            acquisitionDate,
+            now);
         addFee(
-            feeRecords, propertyId, teamId, createdBy, currency, "WASTE_MANAGEMENT",
+            feeRecords,
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "WASTE_MANAGEMENT",
             "Commercial Waste Disposal",
-            Math.round(annualRent * (0.02 + random.nextDouble() * 0.02)), "QUARTERLY",
-            "3,6,9,12", acquisitionDate, now);
+            Math.round(annualRent * (0.02 + random.nextDouble() * 0.02)),
+            "QUARTERLY",
+            "3,6,9,12",
+            acquisitionDate,
+            now);
       }
       case "INDUSTRIAL" -> {
         addFee(
-            feeRecords, propertyId, teamId, createdBy, currency, "MANAGEMENT",
+            feeRecords,
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "MANAGEMENT",
             "Industrial Site Management",
-            Math.round(annualRent * (0.06 + random.nextDouble() * 0.04)), "MONTHLY",
-            "1,2,3,4,5,6,7,8,9,10,11,12", acquisitionDate, now);
+            Math.round(annualRent * (0.06 + random.nextDouble() * 0.04)),
+            "MONTHLY",
+            "1,2,3,4,5,6,7,8,9,10,11,12",
+            acquisitionDate,
+            now);
         addFee(
-            feeRecords, propertyId, teamId, createdBy, currency, "SECURITY",
+            feeRecords,
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "SECURITY",
             "24/7 Security Service",
-            Math.round(annualRent * (0.04 + random.nextDouble() * 0.04)), "MONTHLY",
-            "1,2,3,4,5,6,7,8,9,10,11,12", acquisitionDate, now);
+            Math.round(annualRent * (0.04 + random.nextDouble() * 0.04)),
+            "MONTHLY",
+            "1,2,3,4,5,6,7,8,9,10,11,12",
+            acquisitionDate,
+            now);
         addFee(
-            feeRecords, propertyId, teamId, createdBy, currency, "WASTE_MANAGEMENT",
+            feeRecords,
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "WASTE_MANAGEMENT",
             "Industrial Waste Removal",
-            Math.round(annualRent * (0.02 + random.nextDouble() * 0.02)), "MONTHLY",
-            "1,2,3,4,5,6,7,8,9,10,11,12", acquisitionDate, now);
+            Math.round(annualRent * (0.02 + random.nextDouble() * 0.02)),
+            "MONTHLY",
+            "1,2,3,4,5,6,7,8,9,10,11,12",
+            acquisitionDate,
+            now);
         addFee(
-            feeRecords, propertyId, teamId, createdBy, currency, "UTILITIES",
+            feeRecords,
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "UTILITIES",
             "Common Area Utilities",
-            Math.round(annualRent * (0.03 + random.nextDouble() * 0.04)), "QUARTERLY",
-            "3,6,9,12", acquisitionDate, now);
+            Math.round(annualRent * (0.03 + random.nextDouble() * 0.04)),
+            "QUARTERLY",
+            "3,6,9,12",
+            acquisitionDate,
+            now);
       }
       case "AGRICULTURAL" -> {
         addFee(
-            feeRecords, propertyId, teamId, createdBy, currency, "WATER",
+            feeRecords,
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "WATER",
             "Irrigation Water Supply",
-            Math.round(annualRent * (0.03 + random.nextDouble() * 0.04)), "SEMI_ANNUALLY",
-            "4,10", acquisitionDate, now);
+            Math.round(annualRent * (0.03 + random.nextDouble() * 0.04)),
+            "SEMI_ANNUALLY",
+            "4,10",
+            acquisitionDate,
+            now);
         addFee(
-            feeRecords, propertyId, teamId, createdBy, currency, "MAINTENANCE_RESERVE",
+            feeRecords,
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "MAINTENANCE_RESERVE",
             "Farm Maintenance Reserve",
-            Math.round(annualRent * (0.03 + random.nextDouble() * 0.05)), "ANNUALLY", "9",
-            acquisitionDate, now);
+            Math.round(annualRent * (0.03 + random.nextDouble() * 0.05)),
+            "ANNUALLY",
+            "9",
+            acquisitionDate,
+            now);
       }
       case "MIXED_USE" -> {
         if (random.nextBoolean()) {
           addFee(
-              feeRecords, propertyId, teamId, createdBy, currency, "HOA",
+              feeRecords,
+              propertyId,
+              teamId,
+              createdBy,
+              currency,
+              "HOA",
               "Building Association Fees",
-              Math.round(annualRent * (0.04 + random.nextDouble() * 0.06)), "MONTHLY",
-              "1,2,3,4,5,6,7,8,9,10,11,12", acquisitionDate, now);
+              Math.round(annualRent * (0.04 + random.nextDouble() * 0.06)),
+              "MONTHLY",
+              "1,2,3,4,5,6,7,8,9,10,11,12",
+              acquisitionDate,
+              now);
         }
         addFee(
-            feeRecords, propertyId, teamId, createdBy, currency, "MANAGEMENT",
+            feeRecords,
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "MANAGEMENT",
             "Mixed-Use Property Management",
-            Math.round(annualRent * (0.06 + random.nextDouble() * 0.04)), "MONTHLY",
-            "1,2,3,4,5,6,7,8,9,10,11,12", acquisitionDate, now);
+            Math.round(annualRent * (0.06 + random.nextDouble() * 0.04)),
+            "MONTHLY",
+            "1,2,3,4,5,6,7,8,9,10,11,12",
+            acquisitionDate,
+            now);
         addFee(
-            feeRecords, propertyId, teamId, createdBy, currency, "WASTE_MANAGEMENT",
+            feeRecords,
+            propertyId,
+            teamId,
+            createdBy,
+            currency,
+            "WASTE_MANAGEMENT",
             "Waste Collection Service",
-            Math.round(annualRent * (0.02 + random.nextDouble() * 0.02)), "QUARTERLY",
-            "3,6,9,12", acquisitionDate, now);
+            Math.round(annualRent * (0.02 + random.nextDouble() * 0.02)),
+            "QUARTERLY",
+            "3,6,9,12",
+            acquisitionDate,
+            now);
       }
       default ->
           addFee(
-              feeRecords, propertyId, teamId, createdBy, currency, "MAINTENANCE_RESERVE",
+              feeRecords,
+              propertyId,
+              teamId,
+              createdBy,
+              currency,
+              "MAINTENANCE_RESERVE",
               "Maintenance Reserve",
-              Math.round(annualRent * (0.03 + random.nextDouble() * 0.04)), "ANNUALLY", "9",
-              acquisitionDate, now);
+              Math.round(annualRent * (0.03 + random.nextDouble() * 0.04)),
+              "ANNUALLY",
+              "9",
+              acquisitionDate,
+              now);
     }
   }
 

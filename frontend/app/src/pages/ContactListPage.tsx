@@ -159,18 +159,18 @@ export const ContactListPage = () => {
     const errs: Record<string, string> = {};
     if (quickAdd.contactType === 'INDIVIDUAL') {
       if (!quickAdd.firstName?.trim()) {
-        errs.firstName = 'Required';
+        errs.firstName = t('common:errors.required');
       }
     } else {
       if (!quickAdd.companyName?.trim()) {
-        errs.companyName = 'Required';
+        errs.companyName = t('common:errors.required');
       }
     }
     if (
       quickAdd.email?.trim() &&
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(quickAdd.email)
     ) {
-      errs.email = 'Invalid email';
+      errs.email = t('common:errors.invalidEmail');
     }
     if (quickAdd.phone) {
       const phoneErr = validatePhoneE164(quickAdd.phone);

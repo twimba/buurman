@@ -79,7 +79,10 @@
     "selectContractFirst": "Please select a contract first",
     "rentPeriodNotice": "This date falls in a different rent period ({{amount}}/mo from {{from}}{{to}}). {{current}}",
     "rentPeriodNoticeTo": " to {{date}}",
-    "rentPeriodCurrentRent": "Current rent is {{amount}}/mo."
+    "rentPeriodCurrentRent": "Current rent is {{amount}}/mo.",
+    "rentPeriodWarning": "This date falls in a different rent period ({{currency}}{{amount}}/mo from {{from}}{{to}}).",
+    "rentPeriodTo": " to {{date}}",
+    "currentRentInfo": "Current rent is {{currency}}{{amount}}/mo."
   },
   "validation": {
     "amountRequired": "Amount must be greater than 0",

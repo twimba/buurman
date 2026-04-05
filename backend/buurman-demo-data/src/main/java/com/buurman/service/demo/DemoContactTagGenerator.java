@@ -109,7 +109,11 @@ public class DemoContactTagGenerator {
                     CONTACT_TAGS.CREATED_AT,
                     CONTACT_TAGS.CREATED_BY)
                 .values(
-                    (UUID) null, (UUID) null, (UUID) null, (String) null, (LocalDateTime) null,
+                    (UUID) null,
+                    (UUID) null,
+                    (UUID) null,
+                    (String) null,
+                    (LocalDateTime) null,
                     (UUID) null);
         var batch = dsl.batch(insert);
         for (Object[] r : records) {

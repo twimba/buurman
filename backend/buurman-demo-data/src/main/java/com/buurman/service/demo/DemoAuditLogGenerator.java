@@ -287,7 +287,13 @@ public class DemoAuditLogGenerator {
 
       auditRecords.add(
           new Object[] {
-            UUID.randomUUID(), teamId, entityType, entityId, "CREATE", newValuesJsonb, userId,
+            UUID.randomUUID(),
+            teamId,
+            entityType,
+            entityId,
+            "CREATE",
+            newValuesJsonb,
+            userId,
             timestamp
           });
     } catch (JsonProcessingException e) {

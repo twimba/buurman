@@ -56,8 +56,7 @@ export const VerifyEmailPage: React.FC = () => {
         setTokenVerifying(false);
         const error = err as { response?: { data?: { message?: string } } };
         setError(
-          error.response?.data?.message ||
-            'This verification link is invalid or has expired. Please enter the code manually or request a new one.'
+          error.response?.data?.message || t('common:verifyEmail.invalidLink')
         );
       },
     });

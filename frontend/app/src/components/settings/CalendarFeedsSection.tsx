@@ -253,7 +253,7 @@ export const CalendarFeedsSection = () => {
                           size="sm"
                           onClick={() => setConfirmRotateId(null)}
                         >
-                          Cancel
+                          {t('common:buttons.cancel')}
                         </Button>
                         <Button
                           variant="danger"
@@ -278,7 +278,7 @@ export const CalendarFeedsSection = () => {
                           size="sm"
                           onClick={() => setConfirmDeleteId(null)}
                         >
-                          Cancel
+                          {t('common:buttons.cancel')}
                         </Button>
                         <Button
                           variant="danger"
@@ -286,7 +286,7 @@ export const CalendarFeedsSection = () => {
                           onClick={() => handleDelete(feed.identifier)}
                           isLoading={deleteMutation.isPending}
                         >
-                          Delete
+                          {t('common:buttons.delete')}
                         </Button>
                       </div>
                     </div>

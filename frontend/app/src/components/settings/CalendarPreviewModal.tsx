@@ -7,20 +7,10 @@ import { Button, LoadingSpinner, ModalWrapper, Select } from '@buurman/ui';
 import { AlertTriangle, ChevronLeft, ChevronRight } from 'lucide-react';
 import './fullcalendar-theme.css';
 
-const MONTHS = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
+const getLocalizedMonths = (locale: string) =>
+  Array.from({ length: 12 }, (_, i) =>
+    new Intl.DateTimeFormat(locale, { month: 'long' }).format(new Date(2000, i))
+  );
 
 const currentYear = new Date().getFullYear();
 const YEARS = Array.from({ length: 11 }, (_, i) => currentYear - 3 + i);
@@ -38,7 +28,11 @@ export const CalendarPreviewModal = ({
   feedUrl,
   feedLabel,
 }: CalendarPreviewModalProps) => {
-  const { t } = useTranslation('settings');
+  const { t, i18n } = useTranslation('settings');
+  const months = useMemo(
+    () => getLocalizedMonths(i18n.language),
+    [i18n.language]
+  );
   const calendarRef = useRef<FullCalendar>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -173,7 +167,7 @@ export const CalendarPreviewModal = ({
               onChange={handleMonthChange}
               className="w-auto"
             >
-              {MONTHS.map((m, i) => (
+              {months.map((m, i) => (
                 <option key={m} value={i}>
                   {m}
                 </option>

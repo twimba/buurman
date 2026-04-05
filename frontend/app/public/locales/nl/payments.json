@@ -79,7 +79,10 @@
     "selectContractFirst": "Selecteer eerst een contract",
     "rentPeriodNotice": "Deze datum valt in een andere huurperiode ({{amount}}/mnd vanaf {{from}}{{to}}). {{current}}",
     "rentPeriodNoticeTo": " tot {{date}}",
-    "rentPeriodCurrentRent": "Huidige huur is {{amount}}/mnd."
+    "rentPeriodCurrentRent": "Huidige huur is {{amount}}/mnd.",
+    "rentPeriodWarning": "Deze datum valt in een andere huurperiode ({{currency}}{{amount}}/mnd vanaf {{from}}{{to}}).",
+    "rentPeriodTo": " tot {{date}}",
+    "currentRentInfo": "Huidige huur is {{currency}}{{amount}}/mnd."
   },
   "validation": {
     "amountRequired": "Bedrag moet groter zijn dan 0",

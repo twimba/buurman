@@ -79,7 +79,10 @@
     "selectContractFirst": "Veuillez d'abord sélectionner un contrat",
     "rentPeriodNotice": "Cette date tombe dans une période de loyer différente ({{amount}}/mois à partir de {{from}}{{to}}). {{current}}",
     "rentPeriodNoticeTo": " au {{date}}",
-    "rentPeriodCurrentRent": "Le loyer actuel est de {{amount}}/mois."
+    "rentPeriodCurrentRent": "Le loyer actuel est de {{amount}}/mois.",
+    "rentPeriodWarning": "Cette date correspond à une période de loyer différente ({{currency}}{{amount}}/mois du {{from}}{{to}}).",
+    "rentPeriodTo": " au {{date}}",
+    "currentRentInfo": "Loyer actuel : {{currency}}{{amount}}/mois."
   },
   "validation": {
     "amountRequired": "Le montant doit être supérieur à 0",

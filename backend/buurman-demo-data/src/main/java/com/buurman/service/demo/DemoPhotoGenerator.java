@@ -306,7 +306,10 @@ public class DemoPhotoGenerator {
       photoRepository.save(photo);
     }
 
-    log.info("Total property photos created: {} (from {} upload tasks)", results.size(), uploadTasks.size());
+    log.info(
+        "Total property photos created: {} (from {} upload tasks)",
+        results.size(),
+        uploadTasks.size());
   }
 
   private void collectPhotoUploadTasks(

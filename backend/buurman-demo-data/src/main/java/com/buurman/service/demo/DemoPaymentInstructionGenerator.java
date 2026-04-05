@@ -130,10 +130,23 @@ public class DemoPaymentInstructionGenerator {
                   PAYMENT_INSTRUCTIONS.CREATED_BY,
                   PAYMENT_INSTRUCTIONS.UPDATED_BY)
               .values(
-                  (UUID) null, (Sid) null, (UUID) null, (String) null, (String) null,
-                  (String) null, (String) null, (String) null, (String) null, (String) null,
-                  (String) null, (String) null, (Boolean) null, (LocalDateTime) null,
-                  (LocalDateTime) null, (UUID) null, (UUID) null);
+                  (UUID) null,
+                  (Sid) null,
+                  (UUID) null,
+                  (String) null,
+                  (String) null,
+                  (String) null,
+                  (String) null,
+                  (String) null,
+                  (String) null,
+                  (String) null,
+                  (String) null,
+                  (String) null,
+                  (Boolean) null,
+                  (LocalDateTime) null,
+                  (LocalDateTime) null,
+                  (UUID) null,
+                  (UUID) null);
       var piBatch = dsl.batch(piInsert);
       for (Object[] r : piRecords) {
         piBatch = piBatch.bind(r);
@@ -229,10 +242,22 @@ public class DemoPaymentInstructionGenerator {
                     CONTRACT_PAYMENT_INSTRUCTIONS.CREATED_BY,
                     CONTRACT_PAYMENT_INSTRUCTIONS.UPDATED_BY)
                 .values(
-                    (UUID) null, (Sid) null, (UUID) null, (UUID) null, (UUID) null,
-                    (Boolean) null, (String) null, (String) null, (String) null, (String) null,
-                    (LocalDate) null, (String) null, (LocalDateTime) null, (LocalDateTime) null,
-                    (UUID) null, (UUID) null);
+                    (UUID) null,
+                    (Sid) null,
+                    (UUID) null,
+                    (UUID) null,
+                    (UUID) null,
+                    (Boolean) null,
+                    (String) null,
+                    (String) null,
+                    (String) null,
+                    (String) null,
+                    (LocalDate) null,
+                    (String) null,
+                    (LocalDateTime) null,
+                    (LocalDateTime) null,
+                    (UUID) null,
+                    (UUID) null);
         var cpiBatch = dsl.batch(cpiInsert);
         for (Object[] r : cpiRecords) {
           cpiBatch = cpiBatch.bind(r);

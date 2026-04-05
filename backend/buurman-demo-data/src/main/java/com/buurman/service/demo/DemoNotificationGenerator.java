@@ -1,8 +1,8 @@
 package com.buurman.service.demo;
 
 import static com.buurman.jooq.generated.Tables.CONTACTS;
-import static com.buurman.jooq.generated.Tables.CONTRACT_PARTIES;
 import static com.buurman.jooq.generated.Tables.CONTRACTS;
+import static com.buurman.jooq.generated.Tables.CONTRACT_PARTIES;
 import static com.buurman.jooq.generated.Tables.NOTIFICATIONS;
 import static com.buurman.jooq.generated.Tables.PAYMENTS;
 import static com.buurman.jooq.generated.Tables.PROPERTIES;
@@ -26,7 +26,6 @@ import java.util.UUID;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
 import org.jooq.Record;
-
 import org.springframework.stereotype.Component;
 
 import com.buurman.config.models.AppProperties;
@@ -46,10 +45,7 @@ public class DemoNotificationGenerator {
   private final Random random = new Random(42);
 
   public DemoNotificationGenerator(
-      DSLContext dsl,
-      ObjectMapper objectMapper,
-      AppProperties appProperties,
-      Clock clock) {
+      DSLContext dsl, ObjectMapper objectMapper, AppProperties appProperties, Clock clock) {
     this.dsl = dsl;
     this.objectMapper = objectMapper;
     this.baseUrl = appProperties.email().baseUrl();
@@ -65,21 +61,17 @@ public class DemoNotificationGenerator {
 
     var usersById = dsl.selectFrom(USERS).fetchMap(USERS.ID);
 
-    var propertiesById = dsl.selectFrom(PROPERTIES)
-        .where(PROPERTIES.TEAM_ID.in(allTeamIds))
-        .fetchMap(PROPERTIES.ID);
+    var propertiesById =
+        dsl.selectFrom(PROPERTIES).where(PROPERTIES.TEAM_ID.in(allTeamIds)).fetchMap(PROPERTIES.ID);
 
-    var contractsById = dsl.selectFrom(CONTRACTS)
-        .where(CONTRACTS.TEAM_ID.in(allTeamIds))
-        .fetchMap(CONTRACTS.ID);
+    var contractsById =
+        dsl.selectFrom(CONTRACTS).where(CONTRACTS.TEAM_ID.in(allTeamIds)).fetchMap(CONTRACTS.ID);
 
-    var contactsById = dsl.selectFrom(CONTACTS)
-        .where(CONTACTS.TEAM_ID.in(allTeamIds))
-        .fetchMap(CONTACTS.ID);
+    var contactsById =
+        dsl.selectFrom(CONTACTS).where(CONTACTS.TEAM_ID.in(allTeamIds)).fetchMap(CONTACTS.ID);
 
-    var paymentsById = dsl.selectFrom(PAYMENTS)
-        .where(PAYMENTS.TEAM_ID.in(allTeamIds))
-        .fetchMap(PAYMENTS.ID);
+    var paymentsById =
+        dsl.selectFrom(PAYMENTS).where(PAYMENTS.TEAM_ID.in(allTeamIds)).fetchMap(PAYMENTS.ID);
 
     // team_member user IDs per team
     Map<UUID, List<UUID>> memberUserIdsByTeam = new HashMap<>();
@@ -87,9 +79,11 @@ public class DemoNotificationGenerator {
         .from(TEAM_MEMBERS)
         .where(TEAM_MEMBERS.TEAM_ID.in(allTeamIds))
         .fetch()
-        .forEach(r -> memberUserIdsByTeam
-            .computeIfAbsent(r.get(TEAM_MEMBERS.TEAM_ID), k -> new ArrayList<>())
-            .add(r.get(TEAM_MEMBERS.USER_ID)));
+        .forEach(
+            r ->
+                memberUserIdsByTeam
+                    .computeIfAbsent(r.get(TEAM_MEMBERS.TEAM_ID), k -> new ArrayList<>())
+                    .add(r.get(TEAM_MEMBERS.USER_ID)));
 
     // contract_parties: contract_id -> primary tenant contact_id
     Map<UUID, UUID> primaryContactByContract = new HashMap<>();
@@ -98,8 +92,10 @@ public class DemoNotificationGenerator {
         .where(CONTRACT_PARTIES.ROLE.eq("PRIMARY_TENANT"))
         .and(CONTRACT_PARTIES.DELETED_AT.isNull())
         .fetch()
-        .forEach(r -> primaryContactByContract
-            .putIfAbsent(r.get(CONTRACT_PARTIES.CONTRACT_ID), r.get(CONTRACT_PARTIES.CONTACT_ID)));
+        .forEach(
+            r ->
+                primaryContactByContract.putIfAbsent(
+                    r.get(CONTRACT_PARTIES.CONTRACT_ID), r.get(CONTRACT_PARTIES.CONTACT_ID)));
 
     // contact_id -> first contract_id (for failed notification section)
     Map<UUID, UUID> firstContractByContact = new HashMap<>();
@@ -107,8 +103,10 @@ public class DemoNotificationGenerator {
         .from(CONTRACT_PARTIES)
         .where(CONTRACT_PARTIES.DELETED_AT.isNull())
         .fetch()
-        .forEach(r -> firstContractByContact
-            .putIfAbsent(r.get(CONTRACT_PARTIES.CONTACT_ID), r.get(CONTRACT_PARTIES.CONTRACT_ID)));
+        .forEach(
+            r ->
+                firstContractByContact.putIfAbsent(
+                    r.get(CONTRACT_PARTIES.CONTACT_ID), r.get(CONTRACT_PARTIES.CONTRACT_ID)));
 
     for (var teamEntry : ctx.getTeamIds().entrySet()) {
       String teamKey = teamEntry.getKey();
@@ -125,7 +123,8 @@ public class DemoNotificationGenerator {
 
       // Resolve admin once per team
       Record adminRecord = createdBy != null ? usersById.get(createdBy) : null;
-      String adminEmail = adminRecord != null ? adminRecord.get(USERS.EMAIL) : "admin@demo.buurman.io";
+      String adminEmail =
+          adminRecord != null ? adminRecord.get(USERS.EMAIL) : "admin@demo.buurman.io";
       String adminName = adminRecord != null ? adminRecord.get(USERS.FIRST_NAME) : "Admin";
 
       // --- Welcome emails for all team members ---
@@ -145,11 +144,19 @@ public class DemoNotificationGenerator {
                 "baseUrl", baseUrl);
 
         addEmailNotification(
-            pending, teamId, createdBy,
+            pending,
+            teamId,
+            createdBy,
             now.minusDays(random.nextInt(60, 90)),
-            "WELCOME", "welcome", vars,
-            email, userId, null,
-            "DELIVERED", "delivered", null);
+            "WELCOME",
+            "welcome",
+            vars,
+            email,
+            userId,
+            null,
+            "DELIVERED",
+            "delivered",
+            null);
       }
 
       // --- Property created notifications ---
@@ -160,7 +167,8 @@ public class DemoNotificationGenerator {
           continue;
         }
 
-        String propertyName = property.get(PROPERTIES.STREET) + ", " + property.get(PROPERTIES.CITY);
+        String propertyName =
+            property.get(PROPERTIES.STREET) + ", " + property.get(PROPERTIES.CITY);
         String propertyType = property.get(PROPERTIES.PROPERTY_TYPE);
 
         Map<String, Object> vars =
@@ -171,11 +179,19 @@ public class DemoNotificationGenerator {
                 "baseUrl", baseUrl);
 
         addEmailNotification(
-            pending, teamId, createdBy,
+            pending,
+            teamId,
+            createdBy,
             now.minusDays(random.nextInt(30, 60)),
-            "PROPERTY_CREATED", "property-created", vars,
-            adminEmail, createdBy, null,
-            "DELIVERED", "delivered", null);
+            "PROPERTY_CREATED",
+            "property-created",
+            vars,
+            adminEmail,
+            createdBy,
+            null,
+            "DELIVERED",
+            "delivered",
+            null);
       }
 
       // --- Contract created + status change notifications ---
@@ -220,11 +236,19 @@ public class DemoNotificationGenerator {
         contractVars.put("baseUrl", baseUrl);
 
         addEmailNotification(
-            pending, teamId, createdBy,
+            pending,
+            teamId,
+            createdBy,
             now.minusDays(random.nextInt(20, 50)),
-            "CONTRACT_CREATED", "contract-created", contractVars,
-            adminEmail, createdBy, null,
-            "DELIVERED", "delivered", null);
+            "CONTRACT_CREATED",
+            "contract-created",
+            contractVars,
+            adminEmail,
+            createdBy,
+            null,
+            "DELIVERED",
+            "delivered",
+            null);
 
         // Contract status change notification for non-draft, non-active contracts
         if (!"DRAFT".equals(status) && !"ACTIVE".equals(status)) {
@@ -237,11 +261,19 @@ public class DemoNotificationGenerator {
                   "baseUrl", baseUrl);
 
           addEmailNotification(
-              pending, teamId, createdBy,
+              pending,
+              teamId,
+              createdBy,
               now.minusDays(random.nextInt(5, 30)),
-              "CONTRACT_STATUS_CHANGED", "contract-status-changed", statusVars,
-              adminEmail, createdBy, null,
-              "DELIVERED", "delivered", null);
+              "CONTRACT_STATUS_CHANGED",
+              "contract-status-changed",
+              statusVars,
+              adminEmail,
+              createdBy,
+              null,
+              "DELIVERED",
+              "delivered",
+              null);
         }
       }
 
@@ -300,20 +332,36 @@ public class DemoNotificationGenerator {
 
             // Email reminder
             addEmailNotification(
-                pending, teamId, createdBy,
+                pending,
+                teamId,
+                createdBy,
                 now.minusDays(random.nextInt(1, 10)),
-                "PAYMENT_REMINDER", "payment-reminder", vars,
-                contactEmail, null, primaryContactId,
-                "DELIVERED", "delivered", null);
+                "PAYMENT_REMINDER",
+                "payment-reminder",
+                vars,
+                contactEmail,
+                null,
+                primaryContactId,
+                "DELIVERED",
+                "delivered",
+                null);
 
             // SMS reminder for overdue
             if ("OVERDUE".equals(paymentStatus) && contactPhone != null) {
               addSmsNotification(
-                  pending, teamId, createdBy,
+                  pending,
+                  teamId,
+                  createdBy,
                   now.minusDays(random.nextInt(1, 5)),
-                  "PAYMENT_REMINDER", "payment-reminder", vars,
-                  contactPhone, null, primaryContactId,
-                  "SENT", "sent", null);
+                  "PAYMENT_REMINDER",
+                  "payment-reminder",
+                  vars,
+                  contactPhone,
+                  null,
+                  primaryContactId,
+                  "SENT",
+                  "sent",
+                  null);
             }
 
             reminderCount++;
@@ -374,11 +422,19 @@ public class DemoNotificationGenerator {
                   "baseUrl", baseUrl);
 
           addEmailNotification(
-              pending, teamId, createdBy,
+              pending,
+              teamId,
+              createdBy,
               now.minusDays(random.nextInt(1, 30)),
-              "PAYMENT_PAID", "payment-paid", vars,
-              adminEmail, createdBy, null,
-              "DELIVERED", "delivered", null);
+              "PAYMENT_PAID",
+              "payment-paid",
+              vars,
+              adminEmail,
+              createdBy,
+              null,
+              "DELIVERED",
+              "delivered",
+              null);
           paidCount++;
         }
       }
@@ -419,11 +475,19 @@ public class DemoNotificationGenerator {
                 "baseUrl", baseUrl);
 
         addEmailNotification(
-            pending, teamId, createdBy,
+            pending,
+            teamId,
+            createdBy,
             now.minusDays(random.nextInt(1, 14)),
-            "CONTRACT_EXPIRY", "contract-expiry", vars,
-            adminEmail, createdBy, null,
-            "DELIVERED", "delivered", null);
+            "CONTRACT_EXPIRY",
+            "contract-expiry",
+            vars,
+            adminEmail,
+            createdBy,
+            null,
+            "DELIVERED",
+            "delivered",
+            null);
       }
 
       // --- A couple of failed notifications for realism ---
@@ -458,20 +522,35 @@ public class DemoNotificationGenerator {
 
           // Bounced email
           addEmailNotification(
-              pending, teamId, createdBy,
+              pending,
+              teamId,
+              createdBy,
               now.minusDays(random.nextInt(5, 20)),
-              "PAYMENT_REMINDER", "payment-reminder", vars,
-              contactEmail, null, failedContactId,
-              "BOUNCED", null,
+              "PAYMENT_REMINDER",
+              "payment-reminder",
+              vars,
+              contactEmail,
+              null,
+              failedContactId,
+              "BOUNCED",
+              null,
               "550 5.1.1 The email account does not exist");
 
           // Failed SMS
           addSmsNotification(
-              pending, teamId, createdBy,
+              pending,
+              teamId,
+              createdBy,
               now.minusDays(random.nextInt(3, 15)),
-              "PAYMENT_REMINDER", "payment-reminder", vars,
-              "+31600000000", null, failedContactId,
-              "FAILED", null, "Invalid phone number");
+              "PAYMENT_REMINDER",
+              "payment-reminder",
+              vars,
+              "+31600000000",
+              null,
+              failedContactId,
+              "FAILED",
+              null,
+              "Invalid phone number");
         }
       }
 
@@ -505,12 +584,28 @@ public class DemoNotificationGenerator {
     String varsJson = toJson(templateVars);
     LocalDateTime statusUpdatedAt = createdAt.plusMinutes(random.nextInt(1, 30));
 
-    pending.add(new Object[] {
-        UUID.randomUUID(), newNotificationId(), teamId, type, "EMAIL", template,
-        subject, body, recipientEmail, null, recipientUserId, recipientContactId,
-        varsJson != null ? JSONB.jsonb(varsJson) : null,
-        status, providerStatus, providerError, statusUpdatedAt, createdAt, createdBy
-    });
+    pending.add(
+        new Object[] {
+          UUID.randomUUID(),
+          newNotificationId(),
+          teamId,
+          type,
+          "EMAIL",
+          template,
+          subject,
+          body,
+          recipientEmail,
+          null,
+          recipientUserId,
+          recipientContactId,
+          varsJson != null ? JSONB.jsonb(varsJson) : null,
+          status,
+          providerStatus,
+          providerError,
+          statusUpdatedAt,
+          createdAt,
+          createdBy
+        });
   }
 
   /** Collects an SMS notification row into the pending batch. */
@@ -532,46 +627,67 @@ public class DemoNotificationGenerator {
     String varsJson = toJson(templateVars);
     LocalDateTime statusUpdatedAt = createdAt.plusMinutes(random.nextInt(1, 30));
 
-    pending.add(new Object[] {
-        UUID.randomUUID(), newNotificationId(), teamId, type, "SMS", template,
-        null, smsBody, null, recipientPhone, recipientUserId, recipientContactId,
-        varsJson != null ? JSONB.jsonb(varsJson) : null,
-        status, providerStatus, providerError, statusUpdatedAt, createdAt, createdBy
-    });
+    pending.add(
+        new Object[] {
+          UUID.randomUUID(),
+          newNotificationId(),
+          teamId,
+          type,
+          "SMS",
+          template,
+          null,
+          smsBody,
+          null,
+          recipientPhone,
+          recipientUserId,
+          recipientContactId,
+          varsJson != null ? JSONB.jsonb(varsJson) : null,
+          status,
+          providerStatus,
+          providerError,
+          statusUpdatedAt,
+          createdAt,
+          createdBy
+        });
   }
 
   /** Batch inserts all collected notification rows in a single round-trip. */
   @SuppressWarnings("unchecked")
   private void batchInsertNotifications(List<Object[]> rows) {
-    var queries = rows.stream()
-        .map(r -> dsl.insertInto(NOTIFICATIONS)
-            .set(NOTIFICATIONS.ID, (UUID) r[0])
-            .set(NOTIFICATIONS.IDENTIFIER, (com.buurman.domain.Sid) r[1])
-            .set(NOTIFICATIONS.TEAM_ID, (UUID) r[2])
-            .set(NOTIFICATIONS.NOTIFICATION_TYPE, (String) r[3])
-            .set(NOTIFICATIONS.CHANNEL, (String) r[4])
-            .set(NOTIFICATIONS.CONTENT_TEMPLATE, (String) r[5])
-            .set(NOTIFICATIONS.SUBJECT, (String) r[6])
-            .set(NOTIFICATIONS.BODY, (String) r[7])
-            .set(NOTIFICATIONS.RECIPIENT_EMAIL, (String) r[8])
-            .set(NOTIFICATIONS.RECIPIENT_PHONE, (String) r[9])
-            .set(NOTIFICATIONS.RECIPIENT_USER_ID, (UUID) r[10])
-            .set(NOTIFICATIONS.RECIPIENT_CONTACT_ID, (UUID) r[11])
-            .set(NOTIFICATIONS.CONTENT_VARIABLES, (JSONB) r[12])
-            .set(NOTIFICATIONS.STATUS, (String) r[13])
-            .set(NOTIFICATIONS.PROVIDER_STATUS, (String) r[14])
-            .set(NOTIFICATIONS.PROVIDER_ERROR, (String) r[15])
-            .set(NOTIFICATIONS.STATUS_UPDATED_AT, (LocalDateTime) r[16])
-            .set(NOTIFICATIONS.CREATED_AT, (LocalDateTime) r[17])
-            .set(NOTIFICATIONS.CREATED_BY, (UUID) r[18]))
-        .toList();
+    var queries =
+        rows.stream()
+            .map(
+                r ->
+                    dsl.insertInto(NOTIFICATIONS)
+                        .set(NOTIFICATIONS.ID, (UUID) r[0])
+                        .set(NOTIFICATIONS.IDENTIFIER, (com.buurman.domain.Sid) r[1])
+                        .set(NOTIFICATIONS.TEAM_ID, (UUID) r[2])
+                        .set(NOTIFICATIONS.NOTIFICATION_TYPE, (String) r[3])
+                        .set(NOTIFICATIONS.CHANNEL, (String) r[4])
+                        .set(NOTIFICATIONS.CONTENT_TEMPLATE, (String) r[5])
+                        .set(NOTIFICATIONS.SUBJECT, (String) r[6])
+                        .set(NOTIFICATIONS.BODY, (String) r[7])
+                        .set(NOTIFICATIONS.RECIPIENT_EMAIL, (String) r[8])
+                        .set(NOTIFICATIONS.RECIPIENT_PHONE, (String) r[9])
+                        .set(NOTIFICATIONS.RECIPIENT_USER_ID, (UUID) r[10])
+                        .set(NOTIFICATIONS.RECIPIENT_CONTACT_ID, (UUID) r[11])
+                        .set(NOTIFICATIONS.CONTENT_VARIABLES, (JSONB) r[12])
+                        .set(NOTIFICATIONS.STATUS, (String) r[13])
+                        .set(NOTIFICATIONS.PROVIDER_STATUS, (String) r[14])
+                        .set(NOTIFICATIONS.PROVIDER_ERROR, (String) r[15])
+                        .set(NOTIFICATIONS.STATUS_UPDATED_AT, (LocalDateTime) r[16])
+                        .set(NOTIFICATIONS.CREATED_AT, (LocalDateTime) r[17])
+                        .set(NOTIFICATIONS.CREATED_BY, (UUID) r[18]))
+            .toList();
     dsl.batch(queries).execute();
   }
 
   /** Simple static HTML body — skips Thymeleaf rendering for demo data. */
   private String renderSimpleBody(String subject) {
     return "<div style='font-family:sans-serif;padding:20px'>"
-        + "<h2>" + subject + "</h2>"
+        + "<h2>"
+        + subject
+        + "</h2>"
         + "<p>This is a demo notification.</p></div>";
   }
 

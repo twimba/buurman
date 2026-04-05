@@ -36,33 +36,34 @@ const formatFileSize = (bytes: number | null): string => {
 };
 
 const StatusBadge = ({ status }: { status: TakeoutResponse['status'] }) => {
+  const { t } = useTranslation('settings');
   switch (status) {
     case 'PENDING':
       return (
         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-warning-bg text-warning-text">
           <Clock className="h-3 w-3" />
-          Pending
+          {t('dataExport.statuses.pending')}
         </span>
       );
     case 'PROCESSING':
       return (
         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-info-bg text-info-text">
           <Loader2 className="h-3 w-3 animate-spin" />
-          Processing
+          {t('dataExport.statuses.processing')}
         </span>
       );
     case 'COMPLETED':
       return (
         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-success-bg text-success-text">
           <CheckCircle className="h-3 w-3" />
-          Completed
+          {t('dataExport.statuses.completed')}
         </span>
       );
     case 'FAILED':
       return (
         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-error-bg text-error-text">
           <XCircle className="h-3 w-3" />
-          Failed
+          {t('dataExport.statuses.failed')}
         </span>
       );
   }
@@ -86,6 +87,7 @@ const TakeoutRow = ({
   onDelete: (identifier: string) => void;
   isDeleting: boolean;
 }) => {
+  const { t } = useTranslation('settings');
   const { formatDateTime } = useFormatDate();
   const isActive =
     takeout.status === 'PENDING' || takeout.status === 'PROCESSING';
@@ -100,28 +102,38 @@ const TakeoutRow = ({
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="font-semibold text-text-primary text-sm">
-                Data Export
+                {t('dataExport.dataExportLabel')}
               </span>
               <StatusBadge status={takeout.status} />
             </div>
             <div className="flex items-center gap-3 mt-1 text-xs text-text-secondary flex-wrap">
-              <span>Requested {formatDateTime(takeout.createdAt)}</span>
+              <span>
+                {t('dataExport.requested', {
+                  date: formatDateTime(takeout.createdAt),
+                })}
+              </span>
               {takeout.completedAt && (
-                <span>Completed {formatDateTime(takeout.completedAt)}</span>
+                <span>
+                  {t('dataExport.completed', {
+                    date: formatDateTime(takeout.completedAt),
+                  })}
+                </span>
               )}
               {takeout.fileSize !== null && (
                 <span>{formatFileSize(takeout.fileSize)}</span>
               )}
               {takeout.expiresAt && takeout.status === 'COMPLETED' && (
                 <span className="text-warning-text">
-                  Expires {formatDateTime(takeout.expiresAt)}
+                  {t('dataExport.expires', {
+                    date: formatDateTime(takeout.expiresAt),
+                  })}
                 </span>
               )}
             </div>
             {isActive && <ProgressBar progress={takeout.progress} />}
             {isActive && (
               <p className="text-xs text-text-secondary mt-1">
-                {takeout.progress}% complete
+                {t('dataExport.percentComplete', { percent: takeout.progress })}
               </p>
             )}
           </div>
@@ -134,14 +146,18 @@ const TakeoutRow = ({
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-lg transition-colors"
             >
               <Download className="h-4 w-4" />
-              Download
+              {t('common:buttons.download')}
             </a>
           )}
           <button
             onClick={() => onDelete(takeout.identifier)}
             disabled={isDeleting}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-error-text bg-error-bg hover:opacity-90 rounded-lg transition-colors disabled:opacity-50"
-            title={isActive ? 'Cancel export' : 'Delete export'}
+            title={
+              isActive
+                ? t('dataExport.deleteTitle')
+                : t('dataExport.deleteTitle')
+            }
           >
             {isDeleting ? (
               <Loader2 className="h-4 w-4 animate-spin" />

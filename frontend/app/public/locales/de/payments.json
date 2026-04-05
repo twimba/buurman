@@ -79,7 +79,10 @@
     "selectContractFirst": "Bitte wählen Sie zuerst einen Vertrag",
     "rentPeriodNotice": "Dieses Datum fällt in eine andere Mietperiode ({{amount}}/Mt. ab {{from}}{{to}}). {{current}}",
     "rentPeriodNoticeTo": " bis {{date}}",
-    "rentPeriodCurrentRent": "Aktuelle Miete ist {{amount}}/Mt."
+    "rentPeriodCurrentRent": "Aktuelle Miete ist {{amount}}/Mt.",
+    "rentPeriodWarning": "Dieses Datum liegt in einem anderen Mietperiode ({{currency}}{{amount}}/Monat ab {{from}}{{to}}).",
+    "rentPeriodTo": " bis {{date}}",
+    "currentRentInfo": "Aktuelle Miete beträgt {{currency}}{{amount}}/Monat."
   },
   "validation": {
     "amountRequired": "Betrag muss größer als 0 sein",

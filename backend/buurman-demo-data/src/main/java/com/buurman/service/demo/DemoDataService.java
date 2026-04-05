@@ -142,40 +142,45 @@ public class DemoDataService {
     TransactionTemplate tx = new TransactionTemplate(transactionManager);
 
     // Group 1: Foundation (teams, users, memberships)
-    tx.executeWithoutResult(status -> {
-      teamGenerator.generate(ctx);
-      userGenerator.generate(ctx);
-      teamMemberGenerator.generate(ctx);
-    });
+    tx.executeWithoutResult(
+        status -> {
+          teamGenerator.generate(ctx);
+          userGenerator.generate(ctx);
+          teamMemberGenerator.generate(ctx);
+        });
 
     // Group 2: Properties + financing
-    tx.executeWithoutResult(status -> {
-      propertyGenerator.generate(ctx);
-      financingPaymentGenerator.generate(ctx);
-    });
+    tx.executeWithoutResult(
+        status -> {
+          propertyGenerator.generate(ctx);
+          financingPaymentGenerator.generate(ctx);
+        });
 
     // Group 3: Contacts
-    tx.executeWithoutResult(status -> {
-      contactGenerator.generate(ctx);
-      contactTagGenerator.generate(ctx);
-      contactNoteGenerator.generate(ctx);
-      contactRelationshipGenerator.generate(ctx);
-    });
+    tx.executeWithoutResult(
+        status -> {
+          contactGenerator.generate(ctx);
+          contactTagGenerator.generate(ctx);
+          contactNoteGenerator.generate(ctx);
+          contactRelationshipGenerator.generate(ctx);
+        });
 
     // Group 4: Contracts + payments + expenses
-    tx.executeWithoutResult(status -> {
-      contractGenerator.generate(ctx);
-      contractExtensionGenerator.generate(ctx);
-      paymentInstructionGenerator.generate(ctx);
-      paymentGenerator.generate(ctx);
-      expenseGenerator.generate(ctx);
-    });
+    tx.executeWithoutResult(
+        status -> {
+          contractGenerator.generate(ctx);
+          contractExtensionGenerator.generate(ctx);
+          paymentInstructionGenerator.generate(ctx);
+          paymentGenerator.generate(ctx);
+          expenseGenerator.generate(ctx);
+        });
 
     // Group 5: Notifications + audit
-    tx.executeWithoutResult(status -> {
-      notificationGenerator.generate(ctx);
-      auditLogGenerator.generate(ctx);
-    });
+    tx.executeWithoutResult(
+        status -> {
+          notificationGenerator.generate(ctx);
+          auditLogGenerator.generate(ctx);
+        });
   }
 
   public void cleanup() {

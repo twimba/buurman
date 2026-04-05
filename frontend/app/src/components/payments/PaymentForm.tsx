@@ -232,21 +232,20 @@ export const PaymentForm = ({
           <div className="mt-2 flex items-start gap-2 p-2 bg-warning-bg border border-warning-border rounded text-xs text-warning-text">
             <Info className="h-3.5 w-3.5 flex-shrink-0 mt-0.5" />
             <span>
-              This date falls in a different rent period (
-              {getCurrencySymbol(currency)}{' '}
-              {rentPeriodForDate.rentAmount.toFixed(fractionalDigits)}/mo from{' '}
-              {rentPeriodForDate.effectiveFrom}
-              {rentPeriodForDate.effectiveTo
-                ? ` to ${rentPeriodForDate.effectiveTo}`
-                : ''}
-              ).
-              {currentRentPeriod && (
-                <>
-                  {' '}
-                  Current rent is {getCurrencySymbol(currency)}{' '}
-                  {currentRentPeriod.rentAmount.toFixed(fractionalDigits)}/mo.
-                </>
-              )}
+              {t('form.rentPeriodNotice', {
+                amount: `${getCurrencySymbol(currency)} ${rentPeriodForDate.rentAmount.toFixed(fractionalDigits)}`,
+                from: rentPeriodForDate.effectiveFrom,
+                to: rentPeriodForDate.effectiveTo
+                  ? t('form.rentPeriodNoticeTo', {
+                      date: rentPeriodForDate.effectiveTo,
+                    })
+                  : '',
+                current: currentRentPeriod
+                  ? t('form.rentPeriodCurrentRent', {
+                      amount: `${getCurrencySymbol(currency)} ${currentRentPeriod.rentAmount.toFixed(fractionalDigits)}`,
+                    })
+                  : '',
+              })}
             </span>
           </div>
         )}

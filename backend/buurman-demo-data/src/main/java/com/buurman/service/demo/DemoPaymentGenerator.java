@@ -262,8 +262,20 @@ public class DemoPaymentGenerator {
                     PAYMENTS.CREATED_BY,
                     PAYMENTS.UPDATED_BY)
                 .values(
-                    (UUID) null, null, null, null, null, null, null, null, null, null, null, null,
-                    null, null);
+                    (UUID) null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null);
         var batch = dsl.batch(insert);
         for (Object[] r : paymentRecords) {
           batch = batch.bind(r);
@@ -287,8 +299,7 @@ public class DemoPaymentGenerator {
                     PAYMENT_RECEIVALS.UPDATED_AT,
                     PAYMENT_RECEIVALS.CREATED_BY,
                     PAYMENT_RECEIVALS.UPDATED_BY)
-                .values(
-                    (UUID) null, null, null, null, null, null, null, null, null, null, null);
+                .values((UUID) null, null, null, null, null, null, null, null, null, null, null);
         var batch = dsl.batch(insert);
         for (Object[] r : receivalRecords) {
           batch = batch.bind(r);

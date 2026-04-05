@@ -152,6 +152,7 @@
     "totalExpenses": "Dépenses totales",
     "netTotal": "Total net",
     "noTransactions": "Aucune transaction trouvée",
+    "downloadFailed": "Échec du téléchargement. Veuillez réessayer.",
     "table": {
       "date": "Date",
       "type": "Type",

@@ -152,6 +152,7 @@
     "totalExpenses": "Totale uitgaven",
     "netTotal": "Netto totaal",
     "noTransactions": "Geen transacties gevonden",
+    "downloadFailed": "Downloaden mislukt. Probeer het opnieuw.",
     "table": {
       "date": "Datum",
       "type": "Type",

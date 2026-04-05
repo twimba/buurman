@@ -152,6 +152,7 @@
     "totalExpenses": "Gastos Totales",
     "netTotal": "Total Neto",
     "noTransactions": "No se encontraron transacciones",
+    "downloadFailed": "Error al descargar. Por favor, inténtelo de nuevo.",
     "table": {
       "date": "Fecha",
       "type": "Tipo",

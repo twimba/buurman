@@ -195,8 +195,22 @@ public class DemoFinancingPaymentGenerator {
                     FINANCING_PAYMENTS.CREATED_BY,
                     FINANCING_PAYMENTS.UPDATED_BY)
                 .values(
-                    (UUID) null, null, null, null, null, null, null, null, null, null, null, null,
-                    null, null, null, null);
+                    (UUID) null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null);
         var batch = dsl.batch(insert);
         for (Object[] r : paymentRecords) {
           batch = batch.bind(r);

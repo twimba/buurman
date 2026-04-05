@@ -152,6 +152,7 @@
     "totalExpenses": "Despesas Totais",
     "netTotal": "Total Líquido",
     "noTransactions": "Nenhuma transação encontrada",
+    "downloadFailed": "Falha ao descarregar. Por favor, tente novamente.",
     "table": {
       "date": "Data",
       "type": "Tipo",
