@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   TrendingUp,
   TrendingDown,
@@ -84,6 +85,7 @@ export const AdjustRentModal = ({
   onConfirm,
   isLoading = false,
 }: AdjustRentModalProps) => {
+  const { t } = useTranslation('contracts');
   const [rentAmount, setRentAmount] = useState('');
   const [effectiveFrom, setEffectiveFrom] = useState(getFirstDayOfNextMonth());
   const [notes, setNotes] = useState('');
@@ -274,7 +276,7 @@ export const AdjustRentModal = ({
     <ModalWrapper
       open
       onClose={onClose}
-      title="Adjust Rent"
+      title={t('adjustRent.title')}
       size="lg"
       preventClose={isLoading}
       onSubmit={submitForm}
@@ -286,7 +288,7 @@ export const AdjustRentModal = ({
             className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset"
             disabled={isLoading}
           >
-            Cancel
+            {t('common:buttons.cancel')}
           </button>
           <button
             type="submit"
@@ -294,7 +296,7 @@ export const AdjustRentModal = ({
             className="px-4 py-2 text-sm font-medium text-white bg-primary-500 rounded-md hover:bg-primary-600 disabled:opacity-50"
             disabled={isLoading || parsedAmount === null || parsedAmount <= 0}
           >
-            {isLoading ? 'Saving...' : 'Adjust Rent'}
+            {isLoading ? t('adjustRent.saving') : t('adjustRent.adjustRentButton')}
           </button>
         </>
       }
@@ -306,7 +308,7 @@ export const AdjustRentModal = ({
             htmlFor="effectiveFrom"
             className="block text-sm font-medium text-text-secondary mb-1"
           >
-            Effective From
+            {t('adjustRent.effectiveFrom')}
           </label>
           <input
             id="effectiveFrom"
@@ -321,14 +323,12 @@ export const AdjustRentModal = ({
             <div className="mt-2 flex items-start gap-1.5 text-xs text-info-text">
               <Info className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
               <span>
-                This is a retroactive adjustment. Pending payments will be
-                updated. For already settled payments, an adjustment payment
-                will be created for the difference.
+                {t('adjustRent.retroactiveNote')}
               </span>
             </div>
           ) : (
             <p className="mt-1 text-xs text-text-muted">
-              Pending payments from this date will be updated to the new amount.
+              {t('adjustRent.pendingNote')}
             </p>
           )}
         </div>
@@ -337,8 +337,8 @@ export const AdjustRentModal = ({
         <div>
           <label className="block text-sm font-medium text-text-secondary mb-1">
             {referenceRent !== currentRent
-              ? 'Rent at Selected Date'
-              : 'Current Rent'}
+              ? t('adjustRent.rentAtDate')
+              : t('adjustRent.currentRent')}
           </label>
           <p className="text-sm text-text-primary">
             {formatCurrency(referenceRent, currency)}
@@ -351,7 +351,7 @@ export const AdjustRentModal = ({
             htmlFor="rentAmount"
             className="block text-sm font-medium text-text-secondary mb-1"
           >
-            New Rent Amount
+            {t('adjustRent.newRent')}
           </label>
           <div className="relative">
             <MoneyInput
@@ -389,7 +389,7 @@ export const AdjustRentModal = ({
           </div>
           {adjustComponents && (
             <p className="mt-1 text-xs text-text-muted">
-              Auto-calculated from component totals below.
+              {t('adjustRent.autoCalculated')}
             </p>
           )}
         </div>
@@ -408,7 +408,7 @@ export const AdjustRentModal = ({
               ) : (
                 <ChevronRight className="h-4 w-4" />
               )}
-              Adjust Rent Components
+              {t('adjustRent.adjustComponents')}
             </button>
 
             {adjustComponents && (
@@ -438,7 +438,7 @@ export const AdjustRentModal = ({
                           </span>
                           {current && (
                             <span className="text-[10px] text-text-muted">
-                              was {formatCurrency(oldAmount, currency)}
+                              {t('adjustRent.was', { amount: formatCurrency(oldAmount, currency) })}
                             </span>
                           )}
                         </div>
@@ -477,7 +477,7 @@ export const AdjustRentModal = ({
                             onClick={() => handleRemoveComponent(index)}
                             className="p-1 text-text-muted hover:text-error-text transition-colors"
                             disabled={isLoading}
-                            title="Remove component"
+                            title={t('adjustRent.removeComponent')}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
@@ -494,7 +494,7 @@ export const AdjustRentModal = ({
                                 e.target.value
                               )
                             }
-                            placeholder="Custom label"
+                            placeholder={t('adjustRent.customLabel')}
                             className="w-full border border-border-strong rounded px-2 py-1 text-xs bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
                             disabled={isLoading}
                           />
@@ -524,7 +524,7 @@ export const AdjustRentModal = ({
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-error-text whitespace-nowrap no-underline"
                           style={{ textDecoration: 'none' }}
                         >
-                          removed
+                          {t('adjustRent.removed')}
                         </span>
                       </div>
                       <div className={actionCol}>
@@ -533,7 +533,7 @@ export const AdjustRentModal = ({
                           onClick={() => handleRestoreComponent(index)}
                           className="p-1 text-text-muted hover:text-primary-500 transition-colors"
                           disabled={isLoading}
-                          title="Restore component"
+                          title={t('adjustRent.restoreComponent')}
                         >
                           <RotateCcw className="h-3.5 w-3.5" />
                         </button>
@@ -546,7 +546,7 @@ export const AdjustRentModal = ({
                 <div className="flex items-center gap-2 pt-2 mt-1 border-t border-border-default">
                   <div className={labelCol}>
                     <span className="text-xs font-semibold text-text-primary">
-                      Components Total
+                      {t('adjustRent.componentsTotal')}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0 overflow-hidden relative">
@@ -587,7 +587,7 @@ export const AdjustRentModal = ({
                       value=""
                     >
                       <option value="" disabled>
-                        + Add component
+                        {t('adjustRent.addComponent')}
                       </option>
                       {availableTypes.map((type) => (
                         <option key={type} value={type}>
@@ -605,12 +605,12 @@ export const AdjustRentModal = ({
         {/* Notes */}
         <div>
           <label className="block text-sm font-medium text-text-secondary mb-1">
-            Notes (Optional)
+            {t('adjustRent.notesOptional')}
           </label>
           <RichTextEditor
             value={notes}
             onChange={setNotes}
-            placeholder="Reason for adjustment (e.g., annual CPI increase)..."
+            placeholder={t('adjustRent.notesPlaceholder')}
             onSubmit={submitForm}
           />
         </div>

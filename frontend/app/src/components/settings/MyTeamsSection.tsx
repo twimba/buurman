@@ -7,6 +7,7 @@ import {
   Loader2,
   Star,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useTeam } from '@/context/TeamContext';
 import {
   usePendingInvitations,
@@ -14,18 +15,7 @@ import {
 } from '@/hooks/useTeamHooks';
 import { useFormatDate } from '@/hooks/useFormatDate';
 
-const formatRole = (role: string) => {
-  switch (role) {
-    case 'TEAM_ADMIN':
-      return 'Administrator';
-    case 'TEAM_EDITOR':
-      return 'Editor';
-    case 'TEAM_VIEWER':
-      return 'Viewer';
-    default:
-      return role;
-  }
-};
+// formatRole moved inside component
 
 const roleBadgeClass = (role: string) => {
   switch (role) {
@@ -39,7 +29,21 @@ const roleBadgeClass = (role: string) => {
 };
 
 export const MyTeamsSection = () => {
+  const { t } = useTranslation('settings');
   const { teams } = useTeam();
+
+  const formatRole = (role: string) => {
+    switch (role) {
+      case 'TEAM_ADMIN':
+        return t('myTeams.roles.admin');
+      case 'TEAM_EDITOR':
+        return t('myTeams.roles.editor');
+      case 'TEAM_VIEWER':
+        return t('myTeams.roles.viewer');
+      default:
+        return role;
+    }
+  };
   const { data: pendingInvitations = [] } = usePendingInvitations();
   const acceptMutation = useAcceptInvitation();
   const { formatDate } = useFormatDate();
@@ -49,7 +53,7 @@ export const MyTeamsSection = () => {
       {/* Active Teams */}
       <div>
         <h3 className="text-lg font-semibold text-text-primary mb-4">
-          My Teams
+          {t('myTeams.title')}
         </h3>
         <div className="space-y-3">
           {teams.map((team) => (
@@ -73,7 +77,7 @@ export const MyTeamsSection = () => {
                       </span>
                       {team.isActive && (
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-primary-500/10 text-primary-500 dark:text-primary-300">
-                          Active
+                          {t('myTeams.active')}
                         </span>
                       )}
                       {team.isDefault && (
@@ -89,8 +93,7 @@ export const MyTeamsSection = () => {
                       </span>
                       <span className="inline-flex items-center gap-1">
                         <Users className="h-3.5 w-3.5" />
-                        {team.memberCount}{' '}
-                        {team.memberCount === 1 ? 'member' : 'members'}
+                        {t('myTeams.member', { count: team.memberCount })}
                       </span>
                     </div>
                   </div>
@@ -108,7 +111,7 @@ export const MyTeamsSection = () => {
       {pendingInvitations.length > 0 && (
         <div>
           <h3 className="text-lg font-semibold text-text-primary mb-4">
-            Pending Invitations
+            {t('myTeams.pendingInvitations')}
           </h3>
           <div className="space-y-3">
             {pendingInvitations.map((inv) => (
@@ -127,7 +130,7 @@ export const MyTeamsSection = () => {
                           {inv.teamName}
                         </span>
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-warning-bg text-warning-text">
-                          Pending
+                          {t('myTeams.pending')}
                         </span>
                       </div>
                       <div className="flex items-center gap-3 mt-1 text-sm text-text-secondary">
@@ -136,10 +139,10 @@ export const MyTeamsSection = () => {
                         >
                           {formatRole(inv.role)}
                         </span>
-                        <span>Invited by {inv.inviterName}</span>
+                        <span>{t('myTeams.invitedBy', { name: inv.inviterName })}</span>
                       </div>
                       <p className="text-xs text-text-muted mt-1">
-                        Expires {formatDate(inv.expiresAt)}
+                        {t('myTeams.expires', { date: formatDate(inv.expiresAt) })}
                       </p>
                     </div>
                   </div>
@@ -159,7 +162,7 @@ export const MyTeamsSection = () => {
                     ) : (
                       <CheckCircle className="h-4 w-4" />
                     )}
-                    Accept
+                    {t('myTeams.accept')}
                   </button>
                 </div>
               </div>

@@ -45,7 +45,7 @@ describe('sanitizeRedirect', () => {
   });
 
   it('returns null for javascript: URI', () => {
-    // eslint-disable-next-line no-script-url
+     
     expect(sanitizeRedirect('javascript:alert(1)')).toBeNull();
   });
 

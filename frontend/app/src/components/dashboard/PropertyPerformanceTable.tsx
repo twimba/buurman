@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { AlertTriangle, ArrowUp, ArrowDown } from 'lucide-react';
 import type { PropertyPerformance } from '@/types/portfolio';
@@ -52,6 +53,7 @@ export const PropertyPerformanceTable = ({
   data,
   currency,
 }: PropertyPerformanceTableProps) => {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const [sortKey, setSortKey] = useState<SortKey>('monthlyCashFlow');
   const [sortAsc, setSortAsc] = useState(false);
@@ -80,21 +82,19 @@ export const PropertyPerformanceTable = ({
   }, [data, sortKey, sortAsc]);
 
   const columns: { key: SortKey; label: string; align?: string }[] = [
-    { key: 'address', label: 'Property' },
-    { key: 'category', label: 'Category' },
-    { key: 'monthlyCashFlow', label: 'Monthly CF', align: 'right' },
-    { key: 'annualNoi', label: 'Annual NOI', align: 'right' },
-    { key: 'capRate', label: 'Cap Rate', align: 'right' },
-    { key: 'cashOnCash', label: 'CoC', align: 'right' },
-    { key: 'occupancyRate', label: 'Occupancy', align: 'right' },
-    { key: 'completenessPercent', label: 'Data %', align: 'right' },
+    { key: 'address', label: t('dashboard.performanceTable.property') },
+    { key: 'category', label: t('dashboard.performanceTable.category') },
+    { key: 'monthlyCashFlow', label: t('dashboard.performanceTable.monthlyCF'), align: 'right' },
+    { key: 'annualNoi', label: t('dashboard.performanceTable.annualNOI'), align: 'right' },
+    { key: 'capRate', label: t('dashboard.performanceTable.capRate'), align: 'right' },
+    { key: 'cashOnCash', label: t('dashboard.performanceTable.coc'), align: 'right' },
+    { key: 'occupancyRate', label: t('dashboard.performanceTable.occupancy'), align: 'right' },
+    { key: 'completenessPercent', label: t('dashboard.performanceTable.dataPercent'), align: 'right' },
   ];
 
   if (data.length === 0) {
     return (
-      <div className="text-center py-8 text-text-secondary text-sm">
-        No property performance data available
-      </div>
+      <div className="text-center py-8 text-text-secondary text-sm">{t("dashboard.performanceTable.noData")}</div>
     );
   }
 

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { ContractResponse } from '@/types/contract';
 import { ContractStatusBadge } from './ContractStatusBadge';
 import { Home, User, Calendar, DollarSign } from 'lucide-react';
@@ -9,6 +10,7 @@ interface ContractCardProps {
 }
 
 export const ContractCard = ({ contract }: ContractCardProps) => {
+  const { t } = useTranslation('contracts');
   const navigate = useNavigate();
   const { formatDate } = useFormatDate();
 
@@ -60,7 +62,7 @@ export const ContractCard = ({ contract }: ContractCardProps) => {
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-text-muted flex-shrink-0" />
             <div className="min-w-0">
-              <p className="text-xs text-text-secondary">Start</p>
+              <p className="text-xs text-text-secondary">{t('card.start')}</p>
               <p className="text-sm font-medium text-text-primary">
                 {formatDate(contract.startDate)}
               </p>
@@ -69,20 +71,20 @@ export const ContractCard = ({ contract }: ContractCardProps) => {
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-text-muted flex-shrink-0" />
             <div className="min-w-0">
-              <p className="text-xs text-text-secondary">End</p>
+              <p className="text-xs text-text-secondary">{t('card.end')}</p>
               <p className="text-sm font-medium text-text-primary">
                 {(contract.effectiveEndDate ?? contract.endDate)
                   ? formatDate(
                       (contract.effectiveEndDate ?? contract.endDate) as string
                     )
-                  : 'Open-ended'}
+                  : t('card.openEnded')}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <DollarSign className="h-4 w-4 text-text-muted flex-shrink-0" />
             <div className="min-w-0">
-              <p className="text-xs text-text-secondary">Rent</p>
+              <p className="text-xs text-text-secondary">{t('card.rent')}</p>
               <p className="text-sm font-medium text-text-primary">
                 {contract.rentAmountCurrency} {contract.rentAmount.toFixed(2)}
               </p>

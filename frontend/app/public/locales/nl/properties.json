@@ -1,0 +1,498 @@
+{
+  "list": {
+    "title": "Panden",
+    "subtitle": "Beheer uw huurpanden en eenheden",
+    "addButton": "Pand toevoegen",
+    "searchPlaceholder": "Zoek op adres, stad, postcode of type...",
+    "filters": "Filters",
+    "category": "Categorie",
+    "allCategories": "Alle categorieën",
+    "status": "Status",
+    "allStatuses": "Alle statussen",
+    "count_one": "{{count}} pand",
+    "count_other": "{{count}} panden",
+    "empty": {
+      "title": "Geen panden gevonden",
+      "filtered": "Probeer uw filters of zoektermen aan te passen",
+      "noData": "Begin door uw eerste pand toe te voegen"
+    },
+    "error": "Kan panden niet laden"
+  },
+  "create": {
+    "title": "Nieuw pand toevoegen",
+    "readOnlyMessage": "Panden aanmaken is niet beschikbaar in alleen-lezen modus."
+  },
+  "edit": {
+    "title": "Pand bewerken",
+    "notFound": "Pand niet gevonden"
+  },
+  "detail": {
+    "notFound": "Pand niet gevonden",
+    "booklet": "Boekje",
+    "bookletDownloadFailed": "Downloaden van boekje mislukt. Probeer het opnieuw.",
+    "tabs": {
+      "info": "Info",
+      "dashboard": "Dashboard",
+      "financials": "Financiën",
+      "photos": "Foto's",
+      "documents": "Documenten",
+      "contracts": "Contracten",
+      "expenses": "Uitgaven",
+      "history": "Geschiedenis"
+    },
+    "timeline": {
+      "title": "Tijdlijn pand",
+      "rentalContract": "Huurcontract",
+      "selfOccupied": "Eigen bewoning",
+      "financing": "Financiering"
+    },
+    "specs": {
+      "bedrooms": "Slaapkamers",
+      "bathrooms": "Badkamers",
+      "area": "Oppervlakte",
+      "type": "Type",
+      "street": "Straat",
+      "city": "Stad",
+      "postalCode": "Postcode",
+      "country": "Land",
+      "location": "Locatie"
+    },
+    "characteristics": {
+      "title": "Pandkenmerken"
+    },
+    "construction": {
+      "title": "Constructie & Structuur",
+      "yearBuilt": "Bouwjaar",
+      "lastRenovated": "Laatst gerenoveerd",
+      "construction": "Constructie",
+      "foundation": "Fundering",
+      "roof": "Dak",
+      "wallConstruction": "Wandconstructie",
+      "flooring": "Vloer",
+      "windows": "Ramen",
+      "floors": "Verdiepingen",
+      "structuralNotes": "Structurele opmerkingen"
+    },
+    "energy": {
+      "title": "Energie & Klimaat",
+      "energyRating": "Energielabel",
+      "certificateExpiry": "Certificaat verloopt",
+      "heating": "Verwarming",
+      "cooling": "Koeling",
+      "hotWater": "Warm water",
+      "insulationNotes": "Opmerkingen isolatie"
+    },
+    "utilities": {
+      "title": "Nutsvoorzieningen & Aansluitingen",
+      "electricity": "Elektriciteit",
+      "capacity": "Capaciteit",
+      "water": "Water",
+      "gasConnection": "Gasaansluiting",
+      "sewage": "Riolering",
+      "internet": "Internet",
+      "internetSpeed": "Internetsnelheid",
+      "internetStatus": "Internetstatus"
+    },
+    "parking": {
+      "title": "Parkeren",
+      "parkingSpaces": "Parkeerplaatsen",
+      "parkingType": "Parkeertype"
+    },
+    "outdoorAreas": {
+      "title": "Buitenruimte"
+    },
+    "amenities": {
+      "title": "Voorzieningen"
+    },
+    "safety": {
+      "title": "Veiligheid & Beveiliging",
+      "smokeDetectors": "Rookmelders",
+      "coDetectors": "CO-melders",
+      "fireExtinguisher": "Brandblusser",
+      "sprinklerSystem": "Sprinklersysteem",
+      "alarmSystem": "Alarmsysteem",
+      "securityCameras": "Beveiligingscamera's",
+      "secureEntry": "Beveiligde toegang",
+      "safetyNotes": "Veiligheidsopmerkingen"
+    },
+    "accessibility": {
+      "title": "Toegankelijkheid",
+      "wheelchairAccessible": "Rolstoeltoegankelijk",
+      "elevator": "Lift",
+      "stepFreeEntrance": "Drempelvrije ingang",
+      "adaptedBathroom": "Aangepaste badkamer",
+      "accessibilityNotes": "Opmerkingen toegankelijkheid"
+    },
+    "wws": {
+      "title": "WWS-punten",
+      "calculate": "Berekenen",
+      "recalculate": "Herberekenen",
+      "points": "punten",
+      "regulated": "Gereguleerd",
+      "midSegment": "Middensegment",
+      "freeSector": "Vrije sector",
+      "maxRent": "Maximale huur",
+      "calculated": "Berekend",
+      "history": "Geschiedenis",
+      "noCalculation": "Nog geen berekening",
+      "noCalculationDescription": "Bereken de WWS-punten om de maximale gereguleerde huur voor dit pand te bepalen.",
+      "noPreviousCalculations": "Geen eerdere berekeningen."
+    },
+    "metadata": {
+      "title": "Metadata",
+      "created": "Aangemaakt:",
+      "lastUpdated": "Laatst bijgewerkt:",
+      "at": "om"
+    },
+    "yes": "Ja",
+    "no": "Nee"
+  },
+  "form": {
+    "address": "Adres",
+    "street": "Straat",
+    "streetPlaceholder": "Hoofdstraat 123",
+    "city": "Stad",
+    "cityPlaceholder": "Amsterdam",
+    "postalCode": "Postcode",
+    "postalCodePlaceholder": "1012 AB",
+    "country": "Land",
+    "region": "Regio",
+    "regionOther": "Overig",
+    "locationPreview": "Locatievoorbeeld",
+    "specifications": "Specificaties",
+    "category": "Categorie",
+    "categoryCannotChange": "(kan niet worden gewijzigd)",
+    "type": "Type",
+    "status": "Status",
+    "area": "Oppervlakte",
+    "areaPlaceholder": "75,5",
+    "saving": "Opslaan...",
+    "updateProperty": "Pand bijwerken",
+    "createProperty": "Pand aanmaken",
+    "validation": {
+      "streetRequired": "Straat is verplicht",
+      "cityRequired": "Stad is verplicht",
+      "postalCodeRequired": "Postcode is verplicht",
+      "countryRequired": "Land is verplicht",
+      "areaPositive": "Oppervlakte moet groter zijn dan 0"
+    }
+  },
+  "collapsible": {
+    "filledCount": "{{filled}} van {{total}} ingevuld"
+  },
+  "documents": {
+    "title": "Documenten",
+    "uploadButton": "Document uploaden",
+    "empty": "Nog geen documenten geüpload",
+    "failedToLoad": "Kan documenten niet laden",
+    "table": {
+      "document": "Document",
+      "size": "Grootte",
+      "uploaded": "Geüpload",
+      "actions": "Acties"
+    },
+    "selection": {
+      "selected": "{{selected}} van {{total}} geselecteerd",
+      "count_one": "{{count}} document",
+      "count_other": "{{count}} documenten"
+    },
+    "preview": "Voorbeeld",
+    "editTitleNotes": "Titel & notities bewerken",
+    "upload": {
+      "title_one": "Document uploaden",
+      "title_other": "Documenten uploaden",
+      "files": "{{count}} bestanden",
+      "titleLabel": "Titel (optioneel)",
+      "titlePlaceholder": "bijv. Plattegrond",
+      "notesLabel": "Notities (optioneel)",
+      "notesPlaceholder": "Extra opmerkingen over dit document",
+      "uploading": "{{current}} van {{total}} uploaden...",
+      "uploadCount": "{{count}} documenten uploaden"
+    },
+    "delete": {
+      "title_one": "Document verwijderen",
+      "title_other": "Documenten verwijderen",
+      "message_one": "Weet u zeker dat u dit document wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+      "message_other": "U staat op het punt {{count}} documenten te verwijderen. Deze actie kan niet ongedaan worden gemaakt.",
+      "confirmLabel_other": "{{count}} documenten verwijderen"
+    },
+    "editModal": "Document bewerken",
+    "downloading": "Downloaden..."
+  },
+  "photos": {
+    "title": "Foto's",
+    "uploadButton": "Foto uploaden",
+    "empty": "Nog geen foto's",
+    "upload": {
+      "title_one": "Foto uploaden",
+      "title_other": "Foto's uploaden",
+      "files": "{{count}} bestanden",
+      "titleLabel": "Titel (optioneel)",
+      "titlePlaceholder": "bijv. Woonkamer",
+      "notesLabel": "Notities (optioneel)",
+      "notesPlaceholder": "Extra opmerkingen over deze foto",
+      "uploading": "{{current}} van {{total}} uploaden...",
+      "uploadCount": "{{count}} foto's uploaden"
+    },
+    "delete": {
+      "title_one": "Foto verwijderen",
+      "title_other": "Foto's verwijderen",
+      "mainPhotoWarning_one": "Dit is de hoofdfoto. Verwijdering betekent dat dit pand geen hoofdfoto meer heeft. Deze actie kan niet ongedaan worden gemaakt.",
+      "mainPhotoWarning_other": "U staat op het punt {{count}} foto's te verwijderen, waaronder de hoofdfoto. Dit pand zal geen hoofdfoto meer hebben. Deze actie kan niet ongedaan worden gemaakt.",
+      "message_one": "Weet u zeker dat u deze foto wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+      "message_other": "U staat op het punt {{count}} foto's te verwijderen. Deze actie kan niet ongedaan worden gemaakt.",
+      "confirmLabel_other": "{{count}} foto's verwijderen"
+    },
+    "editModal": "Foto bewerken"
+  },
+  "contracts": {
+    "title": "Contracten",
+    "addContract": "Contract toevoegen",
+    "empty": "Geen contracten voor dit pand",
+    "createFirst": "Eerste contract aanmaken",
+    "searchPlaceholder": "Zoek op contract #, contact, type...",
+    "noMatchingSearch": "Geen contracten gevonden voor uw zoekopdracht",
+    "table": {
+      "contractNumber": "Contract #",
+      "contact": "Contact",
+      "type": "Type",
+      "startDate": "Startdatum",
+      "endDate": "Einddatum",
+      "rentAmount": "Huurbedrag",
+      "status": "Status"
+    },
+    "pagination": {
+      "showing": "{{from}} tot {{to}} van {{total}} contracten weergegeven"
+    },
+    "selfOccupancy": {
+      "title": "Eigen bewoningsperioden",
+      "addButton": "Eigen bewoning toevoegen",
+      "empty": "Geen eigen bewoningsperioden vastgelegd",
+      "recordPeriod": "Eigen bewoningsperiode vastleggen",
+      "table": {
+        "period": "Periode",
+        "type": "Type",
+        "occupant": "Bewoner",
+        "status": "Status",
+        "actions": "Acties"
+      },
+      "ongoing": "Lopend",
+      "active": "Actief",
+      "ended": "Beëindigd",
+      "endOccupancy": "Bewoning beëindigen",
+      "deleteTitle": "Eigen bewoningsperiode verwijderen",
+      "deleteMessage": "Weet u zeker dat u deze eigen bewoningsperiode wilt verwijderen?",
+      "deleteWarning": "Deze actie kan niet ongedaan worden gemaakt."
+    }
+  },
+  "expenses": {
+    "title": "Uitgaven",
+    "addExpense": "Uitgave toevoegen",
+    "empty": "Geen uitgaven voor dit pand",
+    "createFirst": "Eerste uitgave aanmaken",
+    "failedToLoad": "Kan uitgaven niet laden",
+    "searchPlaceholder": "Zoek op uitgave #, omschrijving, categorie...",
+    "noMatchingSearch": "Geen uitgaven gevonden voor uw zoekopdracht",
+    "table": {
+      "expenseNumber": "Uitgave #",
+      "date": "Datum",
+      "description": "Omschrijving",
+      "category": "Categorie",
+      "amount": "Bedrag"
+    },
+    "pagination": {
+      "showing": "{{from}} tot {{to}} van {{total}} uitgaven weergegeven"
+    }
+  },
+  "audit": {
+    "title": "Pandgeschiedenis",
+    "failedToLoad": "Kan geschiedenis niet laden",
+    "empty": {
+      "title": "Geen geschiedenis beschikbaar",
+      "description": "Wijzigingen aan dit pand verschijnen hier"
+    },
+    "impersonated": "Geïmpersoneerd",
+    "clickToHide": "Klik om wijzigingen te verbergen",
+    "clickToView": "Klik om wijzigingen te bekijken",
+    "changedFields": "Gewijzigde velden",
+    "old": "Oud:",
+    "new": "Nieuw:",
+    "fileName": "Bestandsnaam",
+    "titleLabel": "Titel",
+    "typeLabel": "Type",
+    "photo": "Foto",
+    "document": "Document"
+  },
+  "selfOccupancy": {
+    "title": "Eigen bewoning",
+    "markTitle": "Markeren als eigen bewoning",
+    "editTitle": "Eigen bewoning bewerken",
+    "endTitle": "Eigen bewoning beëindigen",
+    "active": "Actief",
+    "period": "Periode",
+    "type": "Type",
+    "occupant": "Bewoner",
+    "imputedRent": "Fictieve huur",
+    "perMonth": "/ maand",
+    "endReason": "Reden beëindiging",
+    "notes": "Notities",
+    "endOccupancy": "Bewoning beëindigen",
+    "form": {
+      "startDate": "Startdatum *",
+      "endDate": "Einddatum",
+      "endDateRequired": "Einddatum *",
+      "occupancyType": "Bewoningstype *",
+      "occupantName": "Naam bewoner",
+      "occupantNamePlaceholder": "bijv. Eigenaar, Familielid",
+      "monthlyImputedRent": "Maandelijkse fictieve huur",
+      "notes": "Notities",
+      "notesPlaceholder": "Extra opmerkingen...",
+      "reason": "Reden",
+      "reasonPlaceholder": "Selecteer een reden...",
+      "alreadyTakenPeriods": "Reeds bezette perioden"
+    }
+  },
+  "map": {
+    "unavailable": "Kaartvoorbeeld niet beschikbaar",
+    "configureApiKey": "Configureer VITE_GOOGLE_MAPS_API_KEY om kaarten in te schakelen",
+    "loading": "Kaart laden...",
+    "locationNotFound": "Locatie niet gevonden",
+    "couldNotFind": "Kan dit adres niet op de kaart vinden",
+    "apiKeyNotConfigured": "Google Maps API-sleutel niet geconfigureerd",
+    "geocodeFailed": "Geocodering van adres mislukt",
+    "locationNotFoundShort": "Locatie niet gevonden",
+    "findingLocation": "Locatie zoeken...",
+    "couldNotLoadMaps": "Google Maps kan momenteel niet worden geladen",
+    "clickToPlace": "Onze kaartvaardigheden lieten ons dit keer in de steek. Klik ergens op de kaart om uw pand te markeren.",
+    "placePinManually": "Pin handmatig plaatsen",
+    "accuracy": {
+      "rooftop": "Sleep de pin om de locatie nauwkeuriger te maken",
+      "manual": "Pin handmatig geplaatst — sleep om aan te passen indien nodig",
+      "approximate": "We vonden de buurt maar niet de exacte locatie — sleep de pin naar uw pand!",
+      "country": "We vonden in elk geval het land! Sleep de pin naar de juiste locatie."
+    }
+  },
+  "timeline": {
+    "selfOccupancy": "Eigen bewoning",
+    "contract": "Contract",
+    "vacancy": "Leegstand",
+    "noEntries": "Nog geen tijdlijnvermeldingen",
+    "ongoing": "Lopend"
+  },
+  "statusChart": {
+    "occupied": "Verhuurd",
+    "selfOccupied": "Eigen bewoning",
+    "vacant": "Leegstaand",
+    "maintenance": "Onderhoud",
+    "unavailable": "Niet beschikbaar",
+    "noProperties": "Geen panden om weer te geven"
+  },
+  "financials": {
+    "failedToLoad": "Kan financiële gegevens niet laden.",
+    "saving": "Opslaan...",
+    "deleting": "Verwijderen...",
+    "notSet": "Niet ingesteld",
+    "latestValuation": "Laatste taxatie",
+    "valuationHistory": "Taxatiegeschiedenis",
+    "payments": "Betalingen",
+    "bulkAdd": "Bulk toevoegen",
+    "sections": {
+      "acquisition": "Aankoop",
+      "valuations": "Taxaties",
+      "financings": "Financieringen"
+    },
+    "empty": {
+      "noAcquisition": "Geen aankoopgegevens vastgelegd.",
+      "noValuation": "Geen taxatiegegevens vastgelegd.",
+      "noFinancing": "Geen financieringsinstrumenten vastgelegd.",
+      "noPayments": "Nog geen betalingen vastgelegd."
+    },
+    "metrics": {
+      "netWorth": "Nettovermogen",
+      "totalAnnualCosts": "Totale jaarlijkse kosten",
+      "totalFinancingBalance": "Totaal financieringssaldo",
+      "latestValuation": "Laatste taxatie"
+    },
+    "modals": {
+      "addTax": "Belasting toevoegen",
+      "editTax": "Belasting bewerken",
+      "addFee": "Kosten toevoegen",
+      "editFee": "Kosten bewerken",
+      "addFinancing": "Financiering toevoegen",
+      "editFinancing": "Financiering bewerken",
+      "addInsurance": "Verzekering toevoegen",
+      "editInsurance": "Verzekering bewerken",
+      "addValuation": "Taxatie toevoegen",
+      "editValuation": "Taxatie bewerken",
+      "addAcquisition": "Aankoop toevoegen",
+      "editAcquisition": "Aankoop bewerken",
+      "editPayment": "Betaling bewerken",
+      "recordPayment": "Betaling vastleggen",
+      "bulkAddPayments": "Betalingen bulk toevoegen"
+    },
+    "labels": {
+      "taxType": "Belastingtype",
+      "authority": "Instantie",
+      "annualAmount": "Jaarbedrag",
+      "paymentFrequency": "Betalingsfrequentie",
+      "taxYear": "Belastingjaar",
+      "dueMonths": "Vervaldagmaanden",
+      "startDate": "Startdatum",
+      "endDate": "Einddatum",
+      "status": "Status",
+      "notes": "Notities",
+      "feeType": "Kostentype",
+      "name": "Naam",
+      "financingType": "Financieringstype",
+      "rateType": "Rentetype",
+      "lenderName": "Naam geldverstrekker",
+      "loanNumber": "Leningnummer",
+      "originalAmount": "Oorspronkelijk bedrag",
+      "currentBalance": "Huidig saldo",
+      "interestRate": "Rente",
+      "monthlyPayment": "Maandelijkse betaling",
+      "variablePayment": "Variabele betaling",
+      "termMonths": "Looptijd (maanden)",
+      "insuranceType": "Verzekeringstype",
+      "provider": "Aanbieder",
+      "policyNumber": "Polisnummer",
+      "coverageAmount": "Dekkingsbedrag",
+      "annualPremium": "Jaarpremie",
+      "valuationType": "Taxatietype",
+      "valuationDate": "Taxatiedatum",
+      "amount": "Bedrag",
+      "source": "Bron",
+      "acquisitionType": "Aankooptype",
+      "acquisitionDate": "Aankoopdatum",
+      "purchasePrice": "Aankoopprijs",
+      "closingCosts": "Afsluitkosten",
+      "renovationCosts": "Renovatiekosten",
+      "landValue": "Grondwaarde",
+      "depreciationMethod": "Afschrijvingsmethode",
+      "depreciationYears": "Afschrijvingsjaren",
+      "paymentDate": "Betaaldatum",
+      "totalAmount": "Totaalbedrag",
+      "principal": "Aflossing",
+      "interest": "Rente",
+      "escrow": "Escrow",
+      "extraPayment": "Extra betaling",
+      "deductFromBalance": "Aflossing aftrekken van financieringssaldo",
+      "documents": "Documenten",
+      "currency": "Valuta",
+      "type": "Type",
+      "date": "Datum"
+    },
+    "placeholders": {
+      "addNotes": "Notities toevoegen...",
+      "source": "bijv. Makelaar, Online tool"
+    },
+    "units": {
+      "years": "jaar",
+      "months": "maanden"
+    }
+  },
+  "lifecycle": {
+    "openContract": "Contract openen",
+    "clickToEdit": "Klik om te bewerken"
+  }
+}

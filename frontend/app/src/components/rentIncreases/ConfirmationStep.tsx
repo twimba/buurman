@@ -6,6 +6,7 @@ import type {
   RentIncreaseContractPreview,
   RentIncreaseItem,
 } from '@/types/rentIncrease';
+import { useTranslation } from 'react-i18next';
 
 interface ConfirmationStepProps {
   response: ApplyRentIncreasesResponse;
@@ -20,6 +21,7 @@ export const ConfirmationStep = ({
   increases,
   onBack,
 }: ConfirmationStepProps) => {
+  const { t } = useTranslation('contracts');
   const navigate = useNavigate();
   const { results, summary } = response;
 
@@ -237,7 +239,7 @@ export const ConfirmationStep = ({
               onClick={onBack}
               className="px-6 py-2 rounded border border-border-default text-text-secondary hover:bg-surface-inset transition-colors"
             >
-              Back to Adjust
+              {t('rentIncrease.backToAdjust')}
             </button>
           )}
         </div>
@@ -246,13 +248,13 @@ export const ConfirmationStep = ({
             onClick={() => navigate('/rent-regulations')}
             className="px-6 py-2 rounded border border-border-default text-text-secondary hover:bg-surface-inset transition-colors"
           >
-            View Regulations
+            {t('rentRegulations.title')}
           </button>
           <button
             onClick={() => navigate('/contracts')}
             className="bg-primary-500 text-white px-6 py-2 rounded hover:bg-primary-600 transition-colors"
           >
-            View Contracts
+            {t('list.title')}
           </button>
         </div>
       </div>

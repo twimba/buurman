@@ -1,4 +1,5 @@
 import { AxiosError } from 'axios';
+import type { TFunction } from 'i18next';
 
 interface ApiError {
   detail?: string;
@@ -31,27 +32,55 @@ const FIELD_LABELS: Record<string, string> = {
   securityDepositCurrency: 'Security deposit currency',
 };
 
-function formatFieldName(field: string): string {
-  // Handle nested paths like "parties[0].newContact.phone" → "Phone"
+const FIELD_LABEL_KEYS: Record<string, string> = {
+  firstName: 'fieldLabels.firstName',
+  lastName: 'fieldLabels.lastName',
+  email: 'fieldLabels.email',
+  phone: 'fieldLabels.phone',
+  taxNumber: 'fieldLabels.taxNumber',
+  idNumber: 'fieldLabels.idNumber',
+  rentAmount: 'fieldLabels.rentAmount',
+  depositAmount: 'fieldLabels.depositAmount',
+  securityDeposit: 'fieldLabels.securityDeposit',
+  startDate: 'fieldLabels.startDate',
+  endDate: 'fieldLabels.endDate',
+  signedDate: 'fieldLabels.signedDate',
+  paymentDueDay: 'fieldLabels.paymentDueDay',
+  contractType: 'fieldLabels.contractType',
+  paymentFrequency: 'fieldLabels.paymentFrequency',
+  propertyIdentifier: 'fieldLabels.property',
+  currency: 'fieldLabels.currency',
+  rentAmountCurrency: 'fieldLabels.rentAmountCurrency',
+  depositAmountCurrency: 'fieldLabels.depositAmountCurrency',
+  securityDepositCurrency: 'fieldLabels.securityDepositCurrency',
+};
+
+function formatFieldName(field: string, t?: TFunction): string {
+  // Handle nested paths like "parties[0].newContact.phone" -> "Phone"
   const lastPart = field.includes('.')
     ? (field.split('.').pop() ?? field)
     : field;
-  // Strip array indices like "parties[0]" → "parties"
+  // Strip array indices like "parties[0]" -> "parties"
   const clean = lastPart.replace(/\[\d+\]/g, '');
+
+  if (t && FIELD_LABEL_KEYS[clean]) {
+    return t(FIELD_LABEL_KEYS[clean]);
+  }
+
   return (
     FIELD_LABELS[clean] ||
     clean.charAt(0).toUpperCase() + clean.slice(1).replace(/([A-Z])/g, ' $1')
   );
 }
 
-export const getErrorMessage = (error: unknown): string => {
+export const getErrorMessage = (error: unknown, t?: TFunction): string => {
   if (error instanceof AxiosError) {
     const data = error.response?.data as ApiError;
 
     // Check for ProblemDetail fieldErrors (Spring Boot validation)
     if (data?.fieldErrors && Object.keys(data.fieldErrors).length > 0) {
       const messages = Object.entries(data.fieldErrors).map(
-        ([field, message]) => `${formatFieldName(field)}: ${message}`
+        ([field, message]) => `${formatFieldName(field, t)}: ${message}`
       );
       return messages.join('\n');
     }
@@ -60,44 +89,65 @@ export const getErrorMessage = (error: unknown): string => {
     if (data?.errors) {
       const errorMessages = Object.entries(data.errors)
         .map(([field, messages]) => {
-          return `${formatFieldName(field)}: ${messages.join(', ')}`;
+          return `${formatFieldName(field, t)}: ${messages.join(', ')}`;
         })
         .join('. ');
-      return errorMessages || 'Please check your input and try again.';
+      return (
+        errorMessages ||
+        (t
+          ? t('errors.invalidInput')
+          : 'Please check your input and try again.')
+      );
     }
 
     // Check for ProblemDetail format (RFC 7807)
     if (data?.detail) {
-      return formatErrorMessage(data.detail);
+      return formatErrorMessage(data.detail, t);
     }
 
     // Check for general error message
     if (data?.message) {
-      return formatErrorMessage(data.message);
+      return formatErrorMessage(data.message, t);
     }
 
     if (data?.error) {
-      return formatErrorMessage(data.error);
+      return formatErrorMessage(data.error, t);
     }
 
     // Handle HTTP status codes
     switch (error.response?.status) {
       case 400:
-        return 'Invalid request. Please check your input and try again.';
+        return t
+          ? t('errors.badRequest')
+          : 'Invalid request. Please check your input and try again.';
       case 401:
-        return 'You are not authorized. Please log in again.';
+        return t
+          ? t('errors.unauthorized')
+          : 'You are not authorized. Please log in again.';
       case 403:
-        return 'You do not have permission to perform this action.';
+        return t
+          ? t('errors.forbidden')
+          : 'You do not have permission to perform this action.';
       case 404:
-        return 'The requested resource was not found.';
+        return t
+          ? t('errors.notFound')
+          : 'The requested resource was not found.';
       case 409:
-        return 'This action conflicts with existing data. Please check and try again.';
+        return t
+          ? t('errors.conflict')
+          : 'This action conflicts with existing data. Please check and try again.';
       case 422:
-        return 'The data provided is invalid. Please check your input.';
+        return t
+          ? t('errors.invalidData')
+          : 'The data provided is invalid. Please check your input.';
       case 500:
-        return 'A server error occurred. Please try again later.';
+        return t
+          ? t('errors.serverError')
+          : 'A server error occurred. Please try again later.';
       default:
-        return 'An unexpected error occurred. Please try again.';
+        return t
+          ? t('errors.generic')
+          : 'An unexpected error occurred. Please try again.';
     }
   }
 
@@ -105,29 +155,45 @@ export const getErrorMessage = (error: unknown): string => {
     return error.message;
   }
 
-  return 'An unexpected error occurred. Please try again.';
+  return t
+    ? t('errors.generic')
+    : 'An unexpected error occurred. Please try again.';
 };
 
-const formatErrorMessage = (message: string): string => {
-  // Convert technical error messages to user-friendly ones
-  const errorMappings: Record<string, string> = {
-    'duplicate key': 'This record already exists.',
-    'foreign key':
-      'This action cannot be completed because it is linked to other records.',
-    'not found': 'The requested item was not found.',
-    'already exists': 'A record with this information already exists.',
-    'invalid format': 'The format of the provided data is invalid.',
-    'required field': 'Please fill in all required fields.',
-    'constraint violation': 'This action violates data constraints.',
-  };
+const ERROR_MAPPING_KEYS: Record<string, string> = {
+  'duplicate key': 'errors.duplicateRecord',
+  'foreign key': 'errors.linkedRecord',
+  'not found': 'errors.notFound',
+  'already exists': 'errors.alreadyExists',
+  'invalid format': 'errors.invalidFormat',
+  'required field': 'errors.requiredFields',
+  'constraint violation': 'errors.constraintViolation',
+};
 
+const ERROR_MAPPINGS: Record<string, string> = {
+  'duplicate key': 'This record already exists.',
+  'foreign key':
+    'This action cannot be completed because it is linked to other records.',
+  'not found': 'The requested item was not found.',
+  'already exists': 'A record with this information already exists.',
+  'invalid format': 'The format of the provided data is invalid.',
+  'required field': 'Please fill in all required fields.',
+  'constraint violation': 'This action violates data constraints.',
+};
+
+const formatErrorMessage = (message: string, t?: TFunction): string => {
   const lowerMessage = message.toLowerCase();
-  for (const [key, value] of Object.entries(errorMappings)) {
+  for (const [key, i18nKey] of Object.entries(ERROR_MAPPING_KEYS)) {
     if (lowerMessage.includes(key)) {
-      return value;
+      if (t) {
+        return t(i18nKey);
+      }
+      return ERROR_MAPPINGS[key];
     }
   }
 
   // Return a generic message for unmapped backend errors to avoid leaking internals
-  return 'An error occurred. Please try again or contact support.';
+  return t
+    ? t('errors.genericWithSupport')
+    : 'An error occurred. Please try again or contact support.';
 };

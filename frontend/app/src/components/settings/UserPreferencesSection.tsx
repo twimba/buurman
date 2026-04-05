@@ -11,6 +11,7 @@ import {
   Clock,
   AlertTriangle,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import {
   useUserPreferences,
   useUpdateUserPreferences,
@@ -18,9 +19,11 @@ import {
   useUpdateNotificationTypePreferences,
 } from '../../hooks/useUserPreferencesHooks';
 import { useTheme } from '../../context/ThemeContext';
+import { useLocale } from '../../context/LocaleContext';
 import { NotificationTypePreferenceEntry } from '../../api/users';
 
 export const UserPreferencesSection = () => {
+  const { t } = useTranslation('settings');
   const {
     data: preferencesData,
     isLoading,
@@ -36,6 +39,7 @@ export const UserPreferencesSection = () => {
   } = useNotificationTypePreferences();
   const updateNotifTypeMutation = useUpdateNotificationTypePreferences();
   const { setTheme } = useTheme();
+  const { setLocale } = useLocale();
 
   const [preferences, setPreferences] = useState(() => ({
     theme: preferencesData?.theme || 'light',
@@ -85,6 +89,7 @@ export const UserPreferencesSection = () => {
   const handleLanguageChange = (language: string) => {
     setPreferences((prev) => ({ ...prev, language }));
     setHasGlobalChanges(true);
+    setLocale(language);
   };
 
   const handleTimezoneChange = (timezone: string) => {
@@ -168,6 +173,8 @@ export const UserPreferencesSection = () => {
   const languages = [
     { value: 'en', label: 'English' },
     { value: 'nl', label: 'Nederlands' },
+    { value: 'pt', label: 'Português' },
+    { value: 'es', label: 'Español' },
     { value: 'de', label: 'Deutsch' },
     { value: 'fr', label: 'Français' },
   ];
@@ -191,7 +198,7 @@ export const UserPreferencesSection = () => {
       <div className="flex flex-col items-center justify-center py-12 gap-4">
         <AlertTriangle className="h-8 w-8 text-warning-text" />
         <p className="text-sm text-text-secondary">
-          Failed to load preferences
+          {t('preferences.failedToLoad')}
         </p>
         <button
           onClick={() => {
@@ -200,7 +207,7 @@ export const UserPreferencesSection = () => {
           }}
           className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm"
         >
-          Try Again
+          {t('preferences.tryAgain')}
         </button>
       </div>
     );
@@ -213,10 +220,10 @@ export const UserPreferencesSection = () => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xl font-semibold text-text-primary">
-                User Preferences
+                {t('preferences.title')}
               </h2>
               <p className="text-sm text-text-secondary mt-1">
-                Customize your personal experience
+                {t('preferences.subtitle')}
               </p>
             </div>
             {(hasGlobalChanges || hasNotifTypeChanges) && (
@@ -230,7 +237,7 @@ export const UserPreferencesSection = () => {
                 ) : (
                   <Save className="h-4 w-4" />
                 )}
-                Save Changes
+                {t('common:buttons.saveChanges')}
               </button>
             )}
           </div>
@@ -242,13 +249,13 @@ export const UserPreferencesSection = () => {
             <div className="flex items-center gap-2">
               <Moon className="h-5 w-5 text-text-secondary " />
               <h3 className="text-lg font-semibold text-text-primary">
-                Appearance
+                {t('preferences.appearance.title')}
               </h3>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-3">
-                Theme
+                {t('preferences.appearance.theme')}
               </label>
               <div className="grid grid-cols-3 gap-3">
                 <button
@@ -260,7 +267,7 @@ export const UserPreferencesSection = () => {
                   }`}
                 >
                   <Sun className="h-6 w-6 mx-auto text-yellow-500 mb-2" />
-                  <p className="text-sm font-medium text-text-primary">Light</p>
+                  <p className="text-sm font-medium text-text-primary">{t('preferences.appearance.light')}</p>
                 </button>
                 <button
                   onClick={() => handleThemeChange('dark')}
@@ -271,7 +278,7 @@ export const UserPreferencesSection = () => {
                   }`}
                 >
                   <Moon className="h-6 w-6 mx-auto text-indigo-500 mb-2" />
-                  <p className="text-sm font-medium text-text-primary">Dark</p>
+                  <p className="text-sm font-medium text-text-primary">{t('preferences.appearance.dark')}</p>
                 </button>
                 <button
                   onClick={() => handleThemeChange('system')}
@@ -285,11 +292,11 @@ export const UserPreferencesSection = () => {
                     <Sun className="h-5 w-5 text-yellow-500" />
                     <Moon className="h-5 w-5 text-indigo-500" />
                   </div>
-                  <p className="text-sm font-medium text-text-primary">Auto</p>
+                  <p className="text-sm font-medium text-text-primary">{t('preferences.appearance.auto')}</p>
                 </button>
               </div>
               <p className="text-xs text-text-secondary mt-2">
-                Auto mode follows your system preferences
+                {t('preferences.appearance.autoDescription')}
               </p>
             </div>
           </div>
@@ -299,14 +306,14 @@ export const UserPreferencesSection = () => {
             <div className="flex items-center gap-2">
               <Globe className="h-5 w-5 text-text-secondary " />
               <h3 className="text-lg font-semibold text-text-primary">
-                Language & Region
+                {t('preferences.languageRegion.title')}
               </h3>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">
-                  Language
+                  {t('preferences.languageRegion.language')}
                 </label>
                 <select
                   value={preferences.language}
@@ -323,7 +330,7 @@ export const UserPreferencesSection = () => {
 
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">
-                  Date Format
+                  {t('preferences.languageRegion.dateFormat')}
                 </label>
                 <select
                   value={preferences.dateFormat}
@@ -345,7 +352,7 @@ export const UserPreferencesSection = () => {
             <div className="flex items-center gap-2">
               <Clock className="h-5 w-5 text-text-secondary " />
               <h3 className="text-lg font-semibold text-text-primary">
-                Timezone
+                {t('preferences.timezone.title')}
               </h3>
             </div>
 
@@ -369,7 +376,7 @@ export const UserPreferencesSection = () => {
             <div className="flex items-center gap-2">
               <Bell className="h-5 w-5 text-text-secondary " />
               <h3 className="text-lg font-semibold text-text-primary">
-                Notifications
+                {t('preferences.notifications.title')}
               </h3>
             </div>
 
@@ -381,10 +388,10 @@ export const UserPreferencesSection = () => {
                     <Mail className="h-5 w-5 text-text-secondary " />
                     <div>
                       <p className="font-medium text-text-primary">
-                        Email Notifications
+                        {t('preferences.notifications.email')}
                       </p>
                       <p className="text-sm text-text-secondary">
-                        Receive notifications via email
+                        {t('preferences.notifications.emailDescription')}
                       </p>
                     </div>
                   </div>
@@ -412,8 +419,7 @@ export const UserPreferencesSection = () => {
                     <Mail className="h-5 w-5 text-text-secondary " />
                     <div>
                       <p className="text-sm text-text-secondary">
-                        Security emails (password reset, verification,
-                        invitations) are always sent regardless of plan.
+                        {t('security.securityEmailNote')}
                       </p>
                     </div>
                   </div>
@@ -426,11 +432,10 @@ export const UserPreferencesSection = () => {
                     <MessageSquare className="h-5 w-5 text-text-secondary " />
                     <div>
                       <p className="font-medium text-text-primary">
-                        SMS Notifications
+                        {t('preferences.notifications.sms')}
                       </p>
                       <p className="text-sm text-text-secondary">
-                        Receive notifications via text message (requires phone
-                        number)
+                        {t('preferences.notifications.smsDescription')}
                       </p>
                     </div>
                   </div>
@@ -460,20 +465,20 @@ export const UserPreferencesSection = () => {
                 preferences.smsNotifications) && (
                 <div className="mt-4">
                   <p className="text-sm font-medium text-text-secondary mb-3">
-                    Configure notifications per type
+                    {t('preferences.notifications.configurePerType')}
                   </p>
                   <div className="border border-border-default rounded-lg overflow-hidden">
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="bg-surface-page dark:bg-surface-card border-b border-border-default">
                           <th className="text-left px-4 py-3 font-medium text-text-secondary">
-                            Notification Type
+                            {t('preferences.notifications.notificationType')}
                           </th>
                           {emailAvailable && (
                             <th className="text-center px-4 py-3 font-medium text-text-secondary w-20">
                               <div className="flex items-center justify-center gap-1">
                                 <Mail className="h-3.5 w-3.5" />
-                                Email
+                                {t('common:labels.email')}
                               </div>
                             </th>
                           )}
@@ -482,6 +487,7 @@ export const UserPreferencesSection = () => {
                               <div className="flex items-center justify-center gap-1">
                                 <MessageSquare className="h-3.5 w-3.5" />
                                 SMS
+
                               </div>
                             </th>
                           )}
@@ -542,8 +548,7 @@ export const UserPreferencesSection = () => {
                     smsAvailable &&
                     preferences.smsNotifications && (
                       <p className="text-xs text-text-secondary mt-2">
-                        Email column is disabled because the global Email toggle
-                        is off
+                        {t('preferences.notifications.emailColumnDisabled')}
                       </p>
                     )}
                   {emailAvailable &&
@@ -551,8 +556,7 @@ export const UserPreferencesSection = () => {
                     smsAvailable &&
                     !preferences.smsNotifications && (
                       <p className="text-xs text-text-secondary mt-2">
-                        SMS column is disabled because the global SMS toggle is
-                        off
+                        {t('preferences.notifications.smsColumnDisabled')}
                       </p>
                     )}
                 </div>

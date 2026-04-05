@@ -1,4 +1,5 @@
 import { useState, ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 
 interface CollapsibleSectionProps {
@@ -16,6 +17,7 @@ export const CollapsibleSection = ({
   children,
   defaultOpen = false,
 }: CollapsibleSectionProps) => {
+  const { t } = useTranslation('properties');
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const panelId = `section-${title.replace(/\s+/g, '-').toLowerCase()}`;
 
@@ -37,7 +39,7 @@ export const CollapsibleSection = ({
           <span className="font-medium text-text-primary">{title}</span>
         </div>
         <span className="text-sm text-text-muted">
-          {filledCount} of {totalCount} filled
+          {t('collapsible.filledCount', { filled: filledCount, total: totalCount })}
         </span>
       </button>
       {isOpen && (

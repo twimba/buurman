@@ -6,6 +6,7 @@ import {
   useDuplicateCheck,
   DuplicateContactWarning,
 } from '@/components/contacts/DuplicateContactWarning';
+import { useTranslation } from 'react-i18next';
 
 interface InlineContactFormProps {
   value: CreateContactRequest;
@@ -26,6 +27,7 @@ export const InlineContactForm = ({
   disabled,
   onBlockingChange,
 }: InlineContactFormProps) => {
+  const { t } = useTranslation('contracts');
   const inputClass =
     'w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary text-sm';
 
@@ -56,7 +58,7 @@ export const InlineContactForm = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="block text-xs font-medium text-text-secondary mb-1">
-            First Name <span className="text-error-text">*</span>
+            {t('overview.addPartyForm.firstName')} <span className="text-error-text">*</span>
           </label>
           <input
             type="text"

@@ -1,0 +1,98 @@
+{
+  "documentsPage": {
+    "title": "Biblioteca de Documentos",
+    "subtitle": "Busque y gestione todos sus documentos en un solo lugar",
+    "searchPlaceholder": "Buscar documentos por título, nombre de archivo o notas...",
+    "entityTypeFilter": {
+      "all": "Todos los Tipos",
+      "property": "Propiedades",
+      "contact": "Contactos",
+      "contract": "Contratos",
+      "payment": "Pagos",
+      "expense": "Gastos"
+    },
+    "table": {
+      "document": "Documento",
+      "type": "Tipo",
+      "size": "Tamaño",
+      "uploaded": "Subido",
+      "actions": "Acciones"
+    },
+    "selection": {
+      "selected": "{{selected}} de {{total}} seleccionados",
+      "count": "{{count}} documento",
+      "count_other": "{{count}} documentos"
+    },
+    "empty": "No se encontraron documentos",
+    "editModal": "Editar Documento"
+  },
+  "photosPage": {
+    "title": "Biblioteca de Fotos",
+    "subtitle": "Navegue y gestione todas sus fotos en un solo lugar",
+    "searchPlaceholder": "Buscar fotos por título, nombre de archivo o notas...",
+    "entityTypeFilter": {
+      "all": "Todos los Tipos",
+      "property": "Propiedades",
+      "contact": "Contactos",
+      "contract": "Contratos",
+      "payment": "Pagos",
+      "expense": "Gastos"
+    },
+    "empty": "No se encontraron fotos",
+    "editModal": "Editar Foto"
+  },
+  "photoGrid": {
+    "noPhotos": "Aún sin fotos",
+    "failedToLoad": "Error al cargar fotos",
+    "failedToLoadImage": "Error al cargar",
+    "noUrl": "Sin URL",
+    "main": "Principal",
+    "selection": {
+      "selected": "{{selected}} de {{total}} seleccionados",
+      "count": "{{count}} foto",
+      "count_other": "{{count}} fotos"
+    },
+    "downloading": "Descargando...",
+    "tooltips": {
+      "setAsMain": "Establecer como foto principal",
+      "editTitleNotes": "Editar título y notas",
+      "deletePhoto": "Eliminar foto"
+    }
+  },
+  "preview": {
+    "previewNotAvailable": "Vista previa no disponible para este tipo de archivo ({{mimeType}})",
+    "downloadFile": "Descargar Archivo",
+    "notes": "Notas:",
+    "tooltips": {
+      "editTitleNotes": "Editar título y notas",
+      "download": "Descargar",
+      "openInNewTab": "Abrir en nueva pestaña",
+      "close": "Cerrar",
+      "previous": "Anterior",
+      "next": "Siguiente"
+    }
+  },
+  "deleteDialog": {
+    "titleSingle": "Eliminar documento",
+    "titlePlural": "Eliminar documentos",
+    "messageSingle": "¿Está seguro de que desea eliminar este documento? Esta acción no se puede deshacer.",
+    "messagePlural": "Está a punto de eliminar {{count}} documentos. Esta acción no se puede deshacer.",
+    "confirmSingle": "Eliminar",
+    "confirmPlural": "Eliminar {{count}} documentos"
+  },
+  "deletePhotoDialog": {
+    "titleSingle": "Eliminar foto",
+    "titlePlural": "Eliminar fotos",
+    "messageSingle": "¿Está seguro de que desea eliminar esta foto? Esta acción no se puede deshacer.",
+    "messagePlural": "Está a punto de eliminar {{count}} fotos. Esta acción no se puede deshacer.",
+    "mainPhotoSingle": "Esta es la foto principal. Eliminarla significa que esta propiedad ya no tendrá foto principal. Esta acción no se puede deshacer.",
+    "mainPhotoPlural": "Está a punto de eliminar {{count}} fotos, incluyendo la foto principal. Esta propiedad ya no tendrá foto principal. Esta acción no se puede deshacer.",
+    "confirmSingle": "Eliminar",
+    "confirmPlural": "Eliminar {{count}} fotos"
+  },
+  "tooltips": {
+    "preview": "Vista previa",
+    "editTitleNotes": "Editar título y notas",
+    "delete": "Eliminar"
+  }
+}

@@ -1,4 +1,5 @@
 import { StatusBadge, type BadgeColorVariant } from '@buurman/ui';
+import { useTranslation } from 'react-i18next';
 import { ContractStatus } from '@/types/contract';
 
 interface ContractStatusBadgeProps {
@@ -21,10 +22,11 @@ export const ContractStatusBadge = ({
   status,
   className = '',
 }: ContractStatusBadgeProps) => {
+  const { t } = useTranslation('contracts');
   const config = statusConfig[status];
   return (
     <StatusBadge
-      label={config.label}
+      label={t('statusChange.statuses.' + status)}
       color={config.color}
       shape="pill"
       className={className}

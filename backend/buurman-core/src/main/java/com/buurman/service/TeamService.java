@@ -481,6 +481,7 @@ public class TeamService {
               regional.timezone().ifPresent(prefs::setTimezone);
               regional.dateFormat().ifPresent(prefs::setDateFormat);
               regional.fiscalYearStartMonth().ifPresent(prefs::setFiscalYearStartMonth);
+              regional.defaultLanguage().ifPresent(prefs::setDefaultLanguage);
             });
 
     TeamPreferences savedPrefs = teamPreferencesRepository.save(prefs);
@@ -517,7 +518,8 @@ public class TeamService {
             Optional.of(prefs.getDefaultCountryCode()),
             Optional.of(prefs.getTimezone()),
             Optional.of(prefs.getDateFormat()),
-            Optional.of(prefs.getFiscalYearStartMonth())));
+            Optional.of(prefs.getFiscalYearStartMonth()),
+            prefs.getDefaultLanguage()));
   }
 
   @Transactional

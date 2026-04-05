@@ -4,6 +4,7 @@ import type {
   RenewalMode,
   RentAdjustmentType,
 } from '@/types/contractExtension';
+import { useTranslation } from 'react-i18next';
 
 const RENEWAL_MODE_LABELS: Record<RenewalMode, string> = {
   NONE: 'No renewal',
@@ -55,6 +56,7 @@ export const RenewalConfigForm = ({
   onChange,
   disabled = false,
 }: RenewalConfigFormProps) => {
+  const { t } = useTranslation('contracts');
   const { data: jurisdictionDefaults, isLoading: loadingDefaults } =
     useJurisdictionDefaults(
       countryCode,
@@ -109,7 +111,7 @@ export const RenewalConfigForm = ({
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary-500 bg-primary-500/10 rounded-md hover:bg-primary-500/20 transition-colors disabled:opacity-50"
           >
             <Download className="h-3.5 w-3.5" />
-            {loadingDefaults ? 'Loading...' : 'Load Jurisdiction Defaults'}
+            {loadingDefaults ? t('common:buttons.loading') : t('form.loadJurisdictionDefaults')}
           </button>
           {jurisdictionDefaults?.disclaimer && (
             <p className="text-[11px] text-text-muted italic">

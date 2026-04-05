@@ -1,0 +1,297 @@
+{
+  "apiDocs": {
+    "title": "API-Dokumentation",
+    "subtitle": "Erkunden und testen Sie die Buurman REST API"
+  },
+  "billing": {
+    "title": "Abonnement & Abrechnung",
+    "subtitle": "Verwalten Sie Ihr Abonnement und sehen Sie den Abrechnungsverlauf ein",
+    "impersonationBlocked": "Abrechnungsoperationen sind während einer Impersonation-Sitzung nicht verfügbar."
+  },
+  "calendarFeeds": {
+    "title": "Kalender-Feeds",
+    "pageSubtitle": "Verwalten Sie iCalendar-Feeds für Zahlungsfälligkeiten und Vertragsereignisse"
+  },
+  "dataExport": {
+    "title": "Datenexport",
+    "pageSubtitle": "Exportieren Sie die Daten Ihres Teams als herunterladbares Archiv"
+  },
+  "notifications": {
+    "title": "Benachrichtigungen",
+    "subtitle": "Verfolgen und verwalten Sie alle Benachrichtigungen in Ihrem Team",
+    "loading": "Benachrichtigungen werden geladen...",
+    "noResults": "Keine Benachrichtigungen gefunden",
+    "view": "Anzeigen",
+    "viewDetails": "Details anzeigen",
+    "resend": "Erneut senden",
+    "resendNotification": "Benachrichtigung erneut senden",
+    "resendConfirm": {
+      "title": "Benachrichtigung erneut senden",
+      "message": "Hiermit wird eine neue Benachrichtigung erstellt und die Zustellung erneut versucht. Die ursprüngliche Benachrichtigung bleibt im Protokoll."
+    },
+    "demoBanner": {
+      "title": "Demo-Konto — Benachrichtigungen werden simuliert",
+      "emailAndSms": "E-Mail- und SMS-Benachrichtigungen werden protokolliert, aber nicht tatsächlich zugestellt.",
+      "emailOnly": "E-Mail-Benachrichtigungen werden protokolliert, aber nicht tatsächlich zugestellt.",
+      "smsOnly": "SMS-Benachrichtigungen werden protokolliert, aber nicht tatsächlich zugestellt."
+    },
+    "stats": {
+      "total": "Gesamt",
+      "delivered": "Zugestellt",
+      "pending": "Ausstehend",
+      "failed": "Fehlgeschlagen",
+      "byChannel": "Nach Kanal",
+      "demoBlocked": "Demo blockiert"
+    },
+    "table": {
+      "type": "Typ",
+      "channel": "Kanal",
+      "recipient": "Empfänger",
+      "subjectBody": "Betreff / Inhalt",
+      "status": "Status",
+      "date": "Datum",
+      "actions": "Aktionen"
+    },
+    "typeLabels": {
+      "welcome": "Willkommen",
+      "verification": "Verifizierung",
+      "invitation": "Einladung",
+      "accepted": "Angenommen",
+      "password": "Passwort",
+      "payment": "Zahlung",
+      "contract": "Vertrag",
+      "property": "Immobilie",
+      "newContract": "Neuer Vertrag",
+      "statusChange": "Statusänderung",
+      "reopened": "Wieder eröffnet",
+      "paid": "Bezahlt",
+      "receival": "Eingang",
+      "expense": "Ausgabe"
+    },
+    "details": {
+      "title": "Benachrichtigungsdetails",
+      "demoBlocked": "Diese Benachrichtigung wurde nicht zugestellt, da dies ein Demo-Konto ist. In einem echten Konto würde sie per {{channel}} gesendet.",
+      "type": "Typ",
+      "subject": "Betreff",
+      "content": "Inhalt",
+      "recipient": "Empfänger",
+      "sentAt": "Gesendet am",
+      "statusUpdated": "Status aktualisiert",
+      "providerStatus": "Anbieterstatus",
+      "refresh": "Aktualisieren",
+      "error": "Fehler",
+      "engagement": "Interaktion",
+      "open": "{{count}} Öffnung",
+      "open_other": "{{count}} Öffnungen",
+      "click": "{{count}} Klick",
+      "click_other": "{{count}} Klicks",
+      "first": "erste(r): {{date}}",
+      "resentFrom": "Erneut gesendet von",
+      "resendReason": "Grund für erneutes Senden",
+      "resend": "Erneut senden",
+      "emailPreview": "E-Mail-Vorschau",
+      "smsMessage": "SMS-Nachricht",
+      "delivered": "Zugestellt"
+    },
+    "filters": {
+      "searchByEmail": "Nach E-Mail suchen...",
+      "allTypes": "Alle Typen",
+      "allChannels": "Alle Kanäle",
+      "allStatuses": "Alle Status",
+      "fromDate": "Ab Datum",
+      "toDate": "Bis Datum"
+    },
+    "types": {
+      "welcome": "Willkommen",
+      "verificationCode": "Verifizierungscode",
+      "teamInvitation": "Teameinladung",
+      "invitationAccepted": "Einladung angenommen",
+      "passwordChanged": "Passwort geändert",
+      "paymentReminder": "Zahlungserinnerung",
+      "contractExpiry": "Vertragsablauf",
+      "propertyCreated": "Immobilie erstellt",
+      "contractCreated": "Vertrag erstellt",
+      "contractStatusChanged": "Vertragsstatus geändert",
+      "contractReopened": "Vertrag wieder eröffnet",
+      "paymentPaid": "Zahlung bezahlt",
+      "paymentReceival": "Zahlungseingang",
+      "expenseCreated": "Ausgabe erstellt"
+    },
+    "statuses": {
+      "pending": "Ausstehend",
+      "queued": "In Warteschlange",
+      "sent": "Gesendet",
+      "delivered": "Zugestellt",
+      "failed": "Fehlgeschlagen",
+      "bounced": "Zurückgewiesen",
+      "rejected": "Abgelehnt",
+      "demo": "Demo"
+    }
+  },
+  "paymentInstructions": {
+    "title": "Zahlungsanweisungen",
+    "pageSubtitle": "Zahlungsanweisungsvorlagen für Ihr Team verwalten"
+  },
+  "preferences": {
+    "title": "Einstellungen",
+    "subtitle": "Teamweite Einstellungen und regionale Optionen konfigurieren"
+  },
+  "teamMembers": {
+    "title": "Teammitglieder",
+    "subtitle": "Teammitglieder, Rollen und Einladungen verwalten",
+    "impersonationBlocked": "Teamänderungen sind während einer Impersonation-Sitzung nicht verfügbar."
+  },
+  "transactions": {
+    "title": "Transaktionsverlauf",
+    "subtitle": "Vollständiger Verlauf von Einnahmen und Ausgaben",
+    "searchPlaceholder": "Transaktionen suchen...",
+    "allTypes": "Alle Typen",
+    "incomeOnly": "Nur Einnahmen",
+    "expensesOnly": "Nur Ausgaben",
+    "totalIncome": "Gesamteinnahmen",
+    "totalExpenses": "Gesamtausgaben",
+    "netTotal": "Netto gesamt",
+    "noTransactions": "Keine Transaktionen gefunden",
+    "table": {
+      "date": "Datum",
+      "type": "Typ",
+      "description": "Beschreibung",
+      "property": "Immobilie",
+      "amount": "Betrag"
+    }
+  },
+  "dashboard": {
+    "portfolioOverview": "Portfolioübersicht",
+    "propertiesWithData": "{{withData}} von {{total}} Immobilien haben Finanzdaten",
+    "addProperties": "Fügen Sie Immobilien hinzu, um Ihr Portfolio-Dashboard zu sehen.",
+    "addFinancialData": "Fügen Sie Ihren Immobilien Finanzdaten hinzu, um Portfolio-Analysen zu sehen.",
+    "propertiesNoData": "{{count}} Immobilien gefunden, aber keine hat bisher Finanzdaten.",
+    "exporting": "Wird exportiert...",
+    "disclaimer": "Kennzahlen dienen nur zu Informationszwecken.",
+    "charts": {
+      "cashFlow": "Portfolio-Cashflow",
+      "allocation": "Portfolioaufteilung",
+      "propertyComparison": "Immobilienvergleich",
+      "equityComposition": "Eigenkapitalzusammensetzung",
+      "performance": "Immobilienperformance",
+      "occupancy": "Portfoliobelegung"
+    },
+    "cashFlow": {
+      "noData": "Keine Cashflow-Daten verfügbar",
+      "income": "Einnahmen",
+      "expenses": "Ausgaben",
+      "mortgage": "Hypothek",
+      "net": "Netto"
+    },
+    "allocation": {
+      "noData": "Keine Aufteilungsdaten verfügbar",
+      "byCategory": "Nach Kategorie",
+      "byCountry": "Nach Land"
+    },
+    "comparison": {
+      "noData": "Keine Immobilienvergleichsdaten verfügbar",
+      "monthlyCashFlow": "Monatlicher Cashflow"
+    },
+    "equity": {
+      "noData": "Keine Eigenkapitaldaten verfügbar",
+      "equity": "Eigenkapital",
+      "mortgage": "Hypothek"
+    },
+    "performanceTable": {
+      "noData": "Keine Immobilien-Performancedaten verfügbar",
+      "property": "Immobilie",
+      "category": "Kategorie",
+      "monthlyCF": "Monatl. CF",
+      "annualNOI": "Jährl. NOI",
+      "capRate": "Cap Rate",
+      "coc": "CoC",
+      "occupancy": "Belegung",
+      "dataPercent": "Daten %"
+    },
+    "occupancy": {
+      "noData": "Keine Belegungsdaten verfügbar",
+      "contactOccupancy": "Mieterbelegung",
+      "selfOccupancy": "Eigennutzung"
+    },
+    "pendingExtensions": {
+      "title": "Ausstehende Verlängerungen",
+      "awaitingAction": "{{count}} Verlängerung wartet auf Aktion",
+      "awaitingAction_other": "{{count}} Verlängerungen warten auf Aktion",
+      "extensionNumber": "Verlängerung #{{number}}",
+      "contractNumber": "Vertrag #{{id}}",
+      "until": "bis {{date}}",
+      "activate": "Aktivieren",
+      "decline": "Ablehnen"
+    },
+    "pendingInvitations": {
+      "title": "Ausstehende Teameinladungen",
+      "invitedToOne": "Sie wurden eingeladen, einem Team beizutreten",
+      "invitedToMany": "Sie wurden eingeladen, {{count}} Teams beizutreten",
+      "invitedBy": "Eingeladen von {{name}}",
+      "expires": "Läuft ab {{date}}",
+      "accept": "Annehmen"
+    },
+    "upcomingRenewals": {
+      "title": "Anstehende Verlängerungen",
+      "property": "Immobilie",
+      "contact": "Kontakt",
+      "endDate": "Enddatum",
+      "daysLeft": "Verbleibende Tage",
+      "mode": "Modus",
+      "rent": "Miete",
+      "renewalModes": {
+        "none": "Keine",
+        "automatic": "Auto",
+        "manual": "Manuell"
+      }
+    }
+  },
+  "reports": {
+    "title": "Finanzberichte",
+    "subtitle": "Umfassende Finanzübersicht und Analysen",
+    "transactions": "Transaktionen",
+    "failedToLoad": "Finanzberichte konnten nicht geladen werden",
+    "period": "Zeitraum:",
+    "month": "Monat",
+    "quarter": "Quartal",
+    "year": "Jahr",
+    "allTime": "Gesamter Zeitraum",
+    "custom": "Benutzerdefiniert",
+    "to": "bis",
+    "advancedFilters": "Erweiterte Filter",
+    "properties": "Immobilien",
+    "clearAll": "Alles löschen",
+    "noProperties": "Keine Immobilien gefunden",
+    "totalIncome": "Gesamteinnahmen",
+    "totalExpenses": "Gesamtausgaben",
+    "incomeTrend": {
+      "title": "Einnahmentrend",
+      "subtitle": "Monatliche Einnahmen, Ausgaben und Nettogewinn",
+      "line": "Linie",
+      "bar": "Balken"
+    },
+    "expenseBreakdown": {
+      "title": "Ausgabenaufschlüsselung",
+      "subtitle": "Nach Kategorie für den gewählten Zeitraum",
+      "pie": "Kreis",
+      "bar": "Balken",
+      "noData": "Keine Ausgabendaten für den gewählten Zeitraum"
+    },
+    "propertyPerformance": {
+      "title": "Immobilienperformance",
+      "subtitle": "Einnahmen, Ausgaben & Nettogewinn pro Immobilie",
+      "property": "Immobilie",
+      "income": "Einnahmen",
+      "expenses": "Ausgaben",
+      "netProfit": "Nettogewinn",
+      "margin": "Marge",
+      "total": "Gesamt",
+      "noData": "Keine Immobiliendaten für den gewählten Zeitraum"
+    },
+    "occupancyTrend": {
+      "title": "Belegungstrend",
+      "subtitle": "Monatliche Belegungsrate in Prozent",
+      "occupancyRate": "Belegungsrate (%)"
+    }
+  }
+}

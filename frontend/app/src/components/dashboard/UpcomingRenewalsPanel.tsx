@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { CalendarClock } from 'lucide-react';
 import { useUpcomingRenewals } from '@/hooks/useContractExtensionHooks';
 import { useFormatDate } from '@/hooks/useFormatDate';
@@ -22,6 +23,7 @@ function getDaysUntilColor(days: number): string {
 }
 
 export const UpcomingRenewalsPanel = () => {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const { formatDate } = useFormatDate();
   const { data: renewals, isLoading } = useUpcomingRenewals();
@@ -31,9 +33,7 @@ export const UpcomingRenewalsPanel = () => {
       <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
         <div className="flex items-center gap-3 mb-4">
           <CalendarClock className="h-5 w-5 text-primary-500" />
-          <h2 className="text-lg font-semibold text-text-primary">
-            Upcoming Renewals
-          </h2>
+          <h2 className="text-lg font-semibold text-text-primary">{t("dashboard.upcomingRenewals.title")}</h2>
         </div>
         <div className="flex justify-center py-4">
           <LoadingSpinner />
@@ -62,24 +62,12 @@ export const UpcomingRenewalsPanel = () => {
         <table className="min-w-full divide-y divide-border-default">
           <thead>
             <tr>
-              <th className="px-3 py-2 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                Property
-              </th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                Contact
-              </th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                End Date
-              </th>
-              <th className="px-3 py-2 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
-                Days Left
-              </th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                Mode
-              </th>
-              <th className="px-3 py-2 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
-                Rent
-              </th>
+              <th className="px-3 py-2 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">{t('dashboard.upcomingRenewals.property')}</th>
+              <th className="px-3 py-2 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">{t('dashboard.upcomingRenewals.contact')}</th>
+              <th className="px-3 py-2 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">{t('dashboard.upcomingRenewals.endDate')}</th>
+              <th className="px-3 py-2 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">{t('dashboard.upcomingRenewals.daysLeft')}</th>
+              <th className="px-3 py-2 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">{t('dashboard.upcomingRenewals.mode')}</th>
+              <th className="px-3 py-2 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">{t('dashboard.upcomingRenewals.rent')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border-default">

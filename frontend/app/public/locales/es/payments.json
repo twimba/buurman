@@ -1,0 +1,191 @@
+{
+  "page": {
+    "title": "Pagos",
+    "subtitle": "Seguimiento de pagos de alquiler e ingresos"
+  },
+  "actions": {
+    "schedulePayment": "Programar Pago",
+    "registerPayment": "Registrar Pago",
+    "registerReceival": "Registrar Recibo",
+    "markAsPaid": "Marcar como Pagado"
+  },
+  "stats": {
+    "pendingPayments": "Pagos Pendientes",
+    "pendingCount": "{{count}} pago",
+    "pendingCount_other": "{{count}} pagos",
+    "overduePayments": "Pagos Vencidos",
+    "overdueCount": "{{count}} pago vencido",
+    "overdueCount_other": "{{count}} pagos vencidos",
+    "overdueAction": "Acción necesaria: Revisar pagos vencidos",
+    "allCaughtUp": "¡Todo al día!",
+    "noOverdue": "Sin pagos vencidos. ¡Siga así!",
+    "lastSixMonths": "Últimos 6 Meses",
+    "tooltipReceived": "Recibido"
+  },
+  "filters": {
+    "title": "Filtros",
+    "property": "Propiedad",
+    "contract": "Contrato",
+    "status": "Estado",
+    "allStatuses": "Todos los Estados",
+    "allProperties": "Todas las Propiedades",
+    "allContracts": "Todos los Contratos"
+  },
+  "status": {
+    "pending": "Pendiente",
+    "partiallyPaid": "Parcial",
+    "paid": "Pagado",
+    "overdue": "Vencido",
+    "late": "Atrasado",
+    "cancelled": "Cancelado"
+  },
+  "table": {
+    "dueDate": "Fecha de Vencimiento",
+    "paymentNumber": "Pago #",
+    "contract": "Contrato",
+    "amount": "Importe",
+    "status": "Estado",
+    "balance": "Saldo: {{amount}}"
+  },
+  "empty": {
+    "title": "No se encontraron pagos",
+    "filtered": "Intente ajustar sus filtros",
+    "noData": "Comience registrando su primer pago"
+  },
+  "card": {
+    "paymentId": "Pago #{{id}}",
+    "contractId": "Contrato #{{id}}",
+    "property": "Propiedad",
+    "contact": "Contacto",
+    "amount": "Importe",
+    "balance": "Saldo: {{amount}}",
+    "dueDate": "Fecha de Vencimiento",
+    "paidOn": "Pagado el"
+  },
+  "form": {
+    "amount": "Importe",
+    "dueDate": "Fecha de Vencimiento",
+    "paymentDate": "Fecha de Pago",
+    "contact": "Contacto",
+    "notes": "Notas",
+    "notesPlaceholder": "Añadir notas adicionales sobre este pago...",
+    "continueAdding": "Continuar añadiendo",
+    "today": "Hoy",
+    "clear": "Limpiar",
+    "updatePayment": "Actualizar Pago",
+    "saving": "Guardando...",
+    "contract": "Contrato",
+    "currency": "Moneda",
+    "selectContractFirst": "Por favor, seleccione un contrato primero",
+    "rentPeriodNotice": "Esta fecha cae en un período de alquiler diferente ({{amount}}/mes desde {{from}}{{to}}). {{current}}",
+    "rentPeriodNoticeTo": " hasta {{date}}",
+    "rentPeriodCurrentRent": "El alquiler actual es {{amount}}/mes."
+  },
+  "validation": {
+    "amountRequired": "El importe debe ser mayor que 0",
+    "dueDateRequired": "La fecha de vencimiento es obligatoria",
+    "currencyRequired": "La moneda es obligatoria",
+    "paymentDateRequired": "La fecha de pago es obligatoria"
+  },
+  "create": {
+    "titleRegister": "Registrar Pago",
+    "titleSchedule": "Programar Pago",
+    "addedCount": "{{count}} pago {{action}} en esta sesión",
+    "addedCount_other": "{{count}} pagos {{action}} en esta sesión",
+    "actionRegistered": "registrado",
+    "actionScheduled": "programado",
+    "single": "Individual",
+    "bulk": "Masivo",
+    "contractInactiveWarning": "El contrato vinculado no está activo. Por favor, seleccione un contrato activo."
+  },
+  "detail": {
+    "titlePrefix": "Pago #{{id}}",
+    "subtitlePrefix": "Contrato #{{id}}",
+    "paymentDetails": "Detalles del Pago",
+    "relatedInformation": "Información Relacionada",
+    "amount": "Importe",
+    "received": "Recibido",
+    "balance": "Saldo",
+    "dueDate": "Fecha de Vencimiento",
+    "paymentDate": "Fecha de Pago",
+    "contract": "Contrato",
+    "contractId": "Contrato #{{id}}",
+    "property": "Propiedad",
+    "contact": "Contacto",
+    "notes": "Notas",
+    "metadata": "Metadatos",
+    "created": "Creado:",
+    "lastUpdated": "Última Actualización:",
+    "editPayment": "Editar Pago"
+  },
+  "tabs": {
+    "details": "Detalles",
+    "receivals": "Recibos",
+    "documents": "Documentos",
+    "history": "Historial"
+  },
+  "receivals": {
+    "title": "Recibos ({{count}})",
+    "totalAmount": "Importe Total",
+    "received": "Recibido",
+    "balance": "Saldo",
+    "empty": "Aún sin recibos registrados",
+    "searchPlaceholder": "Buscar por importe, fecha o notas...",
+    "date": "Fecha",
+    "amount": "Importe",
+    "notes": "Notas",
+    "actions": "Acciones",
+    "showing": "Mostrando {{from}} a {{to}} de {{total}}",
+    "remainingBalance": "Saldo restante:",
+    "receivalDate": "Fecha de Recibo",
+    "notesOptional": "Notas (Opcional)",
+    "notesPlaceholder": "Añadir notas sobre este recibo...",
+    "register": "Registrar"
+  },
+  "history": {
+    "title": "Historial de Pagos",
+    "empty": "Sin historial disponible",
+    "emptySubtitle": "Los cambios a este pago aparecerán aquí",
+    "clickToView": "Haga clic para ver cambios",
+    "clickToHide": "Haga clic para ocultar cambios",
+    "changedFields": "Campos Modificados",
+    "old": "Anterior:",
+    "new": "Nuevo:",
+    "impersonated": "Suplantado"
+  },
+  "deleteDialog": {
+    "title": "Eliminar Pago",
+    "message": "¿Está seguro de que desea eliminar este pago? Esta acción no se puede deshacer.",
+    "messageWithRelated": "¿Está seguro de que desea eliminar este pago? Todos los datos relacionados (recibos, documentos) también serán eliminados. Esta acción no se puede deshacer."
+  },
+  "markPaidDialog": {
+    "title": "Marcar Pago como Pagado",
+    "balanceMessage": "Esto registrará un recibo por el saldo restante de {{amount}} y marcará el pago como totalmente pagado.",
+    "paymentDate": "Fecha de Pago",
+    "notesOptional": "Notas (Opcional)",
+    "notesPlaceholder": "Añadir notas sobre este pago..."
+  },
+  "receivalDialog": {
+    "title": "Registrar Recibo",
+    "remainingBalance": "Saldo restante:",
+    "amount": "Importe",
+    "receivalDate": "Fecha de Recibo",
+    "notesOptional": "Notas (Opcional)",
+    "notesPlaceholder": "Añadir notas sobre este recibo...",
+    "register": "Registrar"
+  },
+  "tooltips": {
+    "viewPayment": "Ver pago",
+    "deletePayment": "Eliminar pago",
+    "editReceival": "Editar recibo",
+    "deleteReceival": "Eliminar recibo",
+    "save": "Guardar",
+    "previous": "Anterior",
+    "next": "Siguiente"
+  },
+  "errors": {
+    "loadFailed": "Error al cargar pagos",
+    "loadPaymentFailed": "Error al cargar pago",
+    "loadHistoryFailed": "Error al cargar historial"
+  }
+}

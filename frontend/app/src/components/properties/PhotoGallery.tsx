@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PhotoResponse } from '@/types/property';
 import { Upload, X, Loader2 } from 'lucide-react';
 import { ConfirmDialog, RichTextEditor } from '@buurman/ui';
@@ -31,6 +32,7 @@ export const PhotoGallery = ({
   isDeleting,
   readOnly = false,
 }: PhotoGalleryProps) => {
+  const { t } = useTranslation('properties');
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadTitle, setUploadTitle] = useState('');
@@ -136,11 +138,11 @@ export const PhotoGallery = ({
     <div className="space-y-4">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-text-primary">Photos</h3>
+        <h3 className="text-lg font-semibold text-text-primary">{t('photos.title')}</h3>
         {!readOnly && (
           <label className="cursor-pointer bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2">
             <Upload className="h-4 w-4" />
-            Upload Photo
+            {t('photos.uploadButton')}
             <input
               type="file"
               accept="image/*"
@@ -158,7 +160,7 @@ export const PhotoGallery = ({
         photos={photos}
         isLoading={isLoading}
         error={error}
-        emptyMessage="No photos yet"
+        emptyMessage={t('photos.empty')}
         selectedPhotos={selectedPhotos}
         onSelectPhoto={handleSelectPhoto}
         onSelectAll={handleSelectAll}
@@ -206,7 +208,7 @@ export const PhotoGallery = ({
       {/* Edit Modal */}
       {editingPhoto && (
         <EditMetadataModal
-          title="Edit Photo"
+          title={t('photos.editModal')}
           currentTitle={editingPhoto.title}
           currentNotes={editingPhoto.notes}
           onSave={(title, notes) => {
@@ -229,20 +231,16 @@ export const PhotoGallery = ({
           const isSingle = pendingBulkDelete.length === 1;
           return (
             <ConfirmDialog
-              title={isSingle ? 'Delete photo' : 'Delete photos'}
+              title={t('photos.delete.title', { count: pendingBulkDelete.length })}
               message={
                 includesMain
-                  ? isSingle
-                    ? 'This is the main photo. Deleting it means this property will no longer have a main photo. This action cannot be undone.'
-                    : `You are about to delete ${pendingBulkDelete.length} photos, including the main photo. This property will no longer have a main photo. This action cannot be undone.`
-                  : isSingle
-                    ? 'Are you sure you want to delete this photo? This action cannot be undone.'
-                    : `You are about to delete ${pendingBulkDelete.length} photos. This action cannot be undone.`
+                  ? t('photos.delete.mainPhotoWarning', { count: pendingBulkDelete.length })
+                  : t('photos.delete.message', { count: pendingBulkDelete.length })
               }
               confirmLabel={
                 isSingle
-                  ? 'Delete'
-                  : `Delete ${pendingBulkDelete.length} photos`
+                  ? t('buttons.delete', { ns: 'common' })
+                  : t('photos.delete.confirmLabel', { count: pendingBulkDelete.length })
               }
               variant="danger"
               onConfirm={confirmDelete}
@@ -261,11 +259,11 @@ export const PhotoGallery = ({
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-2">
                 <h3 className="text-lg font-semibold text-text-primary">
-                  Upload {selectedFiles.length === 1 ? 'Photo' : 'Photos'}
+                  {t('photos.upload.title', { count: selectedFiles.length })}
                 </h3>
                 {selectedFiles.length > 1 && (
                   <span className="px-2 py-0.5 text-xs font-medium bg-primary-500/10 text-primary-500 rounded-full">
-                    {selectedFiles.length} files
+                    {t('photos.upload.files', { count: selectedFiles.length })}
                   </span>
                 )}
               </div>
@@ -303,26 +301,26 @@ export const PhotoGallery = ({
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">
-                  Title (optional)
+                  {t('photos.upload.titleLabel')}
                 </label>
                 <input
                   type="text"
                   value={uploadTitle}
                   onChange={(e) => setUploadTitle(e.target.value)}
                   className="w-full border border-border-strong rounded px-3 py-2"
-                  placeholder="e.g., Living room"
+                  placeholder={t('photos.upload.titlePlaceholder')}
                   disabled={!!uploadProgress}
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">
-                  Notes (optional)
+                  {t('photos.upload.notesLabel')}
                 </label>
                 <RichTextEditor
                   value={uploadNotes}
                   onChange={setUploadNotes}
-                  placeholder="Additional notes about this photo"
+                  placeholder={t('photos.upload.notesPlaceholder')}
                   readOnly={!!uploadProgress}
                   onSubmit={handleUpload}
                 />
@@ -335,7 +333,7 @@ export const PhotoGallery = ({
                 className="border border-border-strong px-4 py-2 rounded hover:bg-surface-inset transition-colors"
                 disabled={!!uploadProgress}
               >
-                Cancel
+                {t('buttons.cancel', { ns: 'common' })}
               </button>
               <button
                 onClick={handleUpload}
@@ -346,8 +344,7 @@ export const PhotoGallery = ({
                 {uploadProgress ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    Uploading {uploadProgress.current} of {uploadProgress.total}
-                    ...
+                    {t('photos.upload.uploading', { current: uploadProgress.current, total: uploadProgress.total })}
                     <div
                       role="progressbar"
                       aria-valuenow={uploadProgress.current}
@@ -362,10 +359,9 @@ export const PhotoGallery = ({
                 ) : (
                   <>
                     <Upload className="h-4 w-4" />
-                    Upload
                     {selectedFiles.length > 1
-                      ? ` ${selectedFiles.length} Photos`
-                      : ''}
+                      ? t('photos.upload.uploadCount', { count: selectedFiles.length })
+                      : t('buttons.upload', { ns: 'common' })}
                   </>
                 )}
               </button>

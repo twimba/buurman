@@ -8,19 +8,19 @@
     <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
         <div th:replace="~{email/_email-base :: header}"></div>
         <div style="background: #ffffff; border: 1px solid #e7e5e4; border-top: none; border-radius: 0 0 8px 8px; padding: 40px;">
-            <h1 style="color: #292524; margin: 0 0 24px 0; font-size: 24px;" th:text="${count} + ' New Expenses Recorded'">New Expenses Recorded</h1>
+            <h1 style="color: #292524; margin: 0 0 24px 0; font-size: 24px;" th:text="#{email.expenses-bulk-created.heading(${count})}">New Expenses Recorded</h1>
 
-            <p style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
+            <p th:text="#{email.expenses-bulk-created.body1}" style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
                 A bulk upload of expenses has been completed.
             </p>
 
             <div style="background: #fafaf9; border: 1px solid #e7e5e4; border-radius: 6px; padding: 20px; margin: 0 0 24px 0;">
-                <p style="color: #292524; margin: 0 0 8px 0;"><strong>Expenses created:</strong> <span th:text="${count}">0</span></p>
-                <p style="color: #292524; margin: 0 0 8px 0;"><strong>Total amount:</strong> <span th:text="${totalAmount}">0</span></p>
-                <p style="color: #292524; margin: 0;"><strong>Properties:</strong> <span th:text="${propertyNames}">Properties</span></p>
+                <p style="color: #292524; margin: 0 0 8px 0;"><strong th:text="#{email.expenses-bulk-created.label.expensesCreated}">Expenses created:</strong> <span th:text="${count}">0</span></p>
+                <p style="color: #292524; margin: 0 0 8px 0;"><strong th:text="#{email.expenses-bulk-created.label.totalAmount}">Total amount:</strong> <span th:text="${totalAmount}">0</span></p>
+                <p style="color: #292524; margin: 0;"><strong th:text="#{email.expenses-bulk-created.label.properties}">Properties:</strong> <span th:text="${propertyNames}">Properties</span></p>
             </div>
 
-            <a th:href="${baseUrl}" style="display: inline-block; background: #0284c7; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500;">
+            <a th:href="${baseUrl}" th:text="#{email.expenses-bulk-created.cta}" style="display: inline-block; background: #0284c7; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500;">
                 View Expenses
             </a>
         </div>

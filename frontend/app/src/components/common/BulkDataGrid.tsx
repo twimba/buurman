@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Plus,
   Trash2,
@@ -219,6 +220,7 @@ export const BulkDataGrid = ({
   disabled,
   dateFormat,
 }: BulkDataGridProps) => {
+  const { t } = useTranslation('common');
   const nextRowId = useRef(2);
   const [rows, setRows] = useState<RowState[]>([
     {
@@ -385,8 +387,7 @@ export const BulkDataGrid = ({
         <div className="flex items-center gap-2 p-3 bg-surface-inset border border-dashed border-border-strong rounded-lg text-sm text-text-secondary">
           <ClipboardPaste className="h-4 w-4 flex-shrink-0" />
           <span>
-            Paste CSV data anywhere on this area, or add rows manually below.
-            Supports comma, tab, and semicolon delimiters.
+            {t('bulkGrid.pasteHint')}
           </span>
         </div>
       )}
@@ -411,7 +412,7 @@ export const BulkDataGrid = ({
                 </th>
               ))}
               <th className="w-10 px-3 py-2.5 text-xs font-semibold uppercase tracking-wider text-text-secondary text-center">
-                Status
+                {t('labels.status')}
               </th>
               <th className="w-10 px-2 py-2.5" />
             </tr>
@@ -544,7 +545,7 @@ export const BulkDataGrid = ({
             className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-primary-500 hover:bg-primary-500/10 rounded transition-colors disabled:opacity-50"
           >
             <Plus className="h-3.5 w-3.5" />
-            Add row
+            {t('bulkGrid.addRow')}
           </button>
           {nonEmptyRows.length > 0 && (
             <button
@@ -553,7 +554,7 @@ export const BulkDataGrid = ({
               disabled={disabled || isSubmitting}
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-text-secondary hover:bg-surface-inset rounded transition-colors disabled:opacity-50"
             >
-              Clear all
+              {t('bulkGrid.clearAll')}
             </button>
           )}
         </div>
@@ -561,19 +562,19 @@ export const BulkDataGrid = ({
         <div className="flex items-center gap-4">
           {/* Stats */}
           <div className="flex items-center gap-3 text-xs text-text-secondary">
-            <span>{nonEmptyRows.length} rows</span>
+            <span>{t('bulkGrid.rowCount', { count: nonEmptyRows.length })}</span>
             <span className="text-text-disabled">|</span>
-            <span>{validRows.length} valid</span>
+            <span>{t('bulkGrid.validCount', { count: validRows.length })}</span>
             {successCount > 0 && (
               <>
                 <span className="text-text-disabled">|</span>
-                <span className="text-success-text">{successCount} saved</span>
+                <span className="text-success-text">{t('bulkGrid.savedCount', { count: successCount })}</span>
               </>
             )}
             {errorCount > 0 && (
               <>
                 <span className="text-text-disabled">|</span>
-                <span className="text-error-text">{errorCount} failed</span>
+                <span className="text-error-text">{t('bulkGrid.failedCount', { count: errorCount })}</span>
               </>
             )}
           </div>
@@ -588,12 +589,12 @@ export const BulkDataGrid = ({
             {isSubmitting ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Submitting...
+                {t('bulkGrid.submitting')}
               </>
             ) : (
               <>
                 <Send className="h-4 w-4" />
-                Submit {submittableCount > 0 ? `(${submittableCount})` : ''}
+                {t('buttons.submit')} {submittableCount > 0 ? `(${submittableCount})` : ''}
               </>
             )}
           </button>

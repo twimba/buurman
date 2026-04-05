@@ -28,6 +28,7 @@ import {
 import { useTeam } from '../../context/TeamContext';
 import { useFormatDate } from '../../hooks/useFormatDate';
 import { ContractStatus } from '../../types/contract';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   contractIdentifier: string;
@@ -64,6 +65,7 @@ export const ContractPaymentInstructionSection = ({
   contractStartDate,
   contractSignedDate,
 }: Props) => {
+  const { t } = useTranslation('contracts');
   const { canEditData } = useTeam();
   const canModify = canEditData && !readOnly;
   const { formatDate } = useFormatDate();
@@ -204,7 +206,7 @@ export const ContractPaymentInstructionSection = ({
             leftIcon={current ? <Edit /> : <Plus />}
             onClick={current ? handleChange : () => setShowForm(true)}
           >
-            {current ? 'Change' : 'Set Instructions'}
+            {current ? t('common:buttons.edit') : t('overview.paymentInstruction')}
           </Button>
         )}
       </div>
@@ -296,7 +298,7 @@ export const ContractPaymentInstructionSection = ({
       ) : (
         !showForm && (
           <p className="text-sm text-text-secondary">
-            No payment instructions configured for this contract.
+            {t('overview.noPaymentInstruction')}
           </p>
         )
       )}

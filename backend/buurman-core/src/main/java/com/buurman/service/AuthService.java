@@ -25,6 +25,7 @@ import com.buurman.domain.Team;
 import com.buurman.domain.TeamInvitation;
 import com.buurman.domain.TeamMember;
 import com.buurman.domain.User;
+import com.buurman.domain.UserPreferences;
 import com.buurman.dto.request.RegisterRequest;
 import com.buurman.dto.request.UpdateProfileRequest;
 import com.buurman.dto.response.UserResponse;
@@ -35,6 +36,7 @@ import com.buurman.repository.EmailVerificationCodeRepository;
 import com.buurman.repository.TeamInvitationRepository;
 import com.buurman.repository.TeamMemberRepository;
 import com.buurman.repository.TeamRepository;
+import com.buurman.repository.UserPreferencesRepository;
 import com.buurman.repository.UserRepository;
 import com.buurman.service.notification.NotificationService;
 import com.buurman.service.notification.SendNotificationRequest;
@@ -51,6 +53,7 @@ public class AuthService {
 
   private final KeycloakService keycloakService;
   private final UserRepository userRepository;
+  private final UserPreferencesRepository userPreferencesRepository;
   private final TeamRepository teamRepository;
   private final TeamMemberRepository teamMemberRepository;
   private final TeamInvitationRepository invitationRepository;
@@ -69,6 +72,7 @@ public class AuthService {
   public AuthService(
       KeycloakService keycloakService,
       UserRepository userRepository,
+      UserPreferencesRepository userPreferencesRepository,
       TeamRepository teamRepository,
       TeamMemberRepository teamMemberRepository,
       TeamInvitationRepository invitationRepository,
@@ -81,6 +85,7 @@ public class AuthService {
       Clock clock) {
     this.keycloakService = keycloakService;
     this.userRepository = userRepository;
+    this.userPreferencesRepository = userPreferencesRepository;
     this.teamRepository = teamRepository;
     this.teamMemberRepository = teamMemberRepository;
     this.invitationRepository = invitationRepository;
@@ -162,6 +167,14 @@ public class AuthService {
       member.setInvitedAt(clock.instant());
       member.setJoinedAt(clock.instant());
       teamMemberRepository.save(member);
+
+      // Save user preferences with selected language
+      UserPreferences prefs =
+          UserPreferences.builder()
+              .userId(user.getId())
+              .language(request.language())
+              .build();
+      userPreferencesRepository.save(prefs);
 
       final User finalUser = user;
 

@@ -8,21 +8,21 @@
     <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
         <div th:replace="~{email/_email-base :: header}"></div>
         <div style="background: #ffffff; border: 1px solid #e7e5e4; border-top: none; border-radius: 0 0 8px 8px; padding: 40px;">
-            <h1 style="color: #292524; margin: 0 0 24px 0; font-size: 24px;">Verify your email</h1>
+            <h1 th:text="#{email.verification-code.heading}" style="color: #292524; margin: 0 0 24px 0; font-size: 24px;">Verify your email</h1>
 
-            <p style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
-                Hi <span th:text="${userName}">User</span>,
+            <p th:text="#{email.verification-code.greeting(${userName})}" style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
+                Hi User,
             </p>
 
-            <p style="color: #292524; line-height: 1.6; margin: 0 0 24px 0;">
+            <p th:text="#{email.verification-code.body1}" style="color: #292524; line-height: 1.6; margin: 0 0 24px 0;">
                 Click the button below to verify your email address:
             </p>
 
             <div style="text-align: center; margin: 0 0 24px 0;">
-                <a th:href="${verifyUrl}" style="display: inline-block; background: #0284c7; color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">Verify Email</a>
+                <a th:href="${verifyUrl}" th:text="#{email.verification-code.cta}" style="display: inline-block; background: #0284c7; color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">Verify Email</a>
             </div>
 
-            <p style="color: #57534e; font-size: 14px; line-height: 1.6; margin: 0 0 16px 0;">
+            <p th:text="#{email.verification-code.manual}" style="color: #57534e; font-size: 14px; line-height: 1.6; margin: 0 0 16px 0;">
                 Or enter this code manually:
             </p>
 
@@ -30,11 +30,11 @@
                 <span th:text="${verificationCode}" style="font-size: 36px; font-weight: 700; letter-spacing: 8px; color: #292524; font-family: monospace;">123456</span>
             </div>
 
-            <p style="color: #57534e; font-size: 14px; margin: 0 0 16px 0;">
-                This link and code expire in <span th:text="${expiresMinutes}">15</span> minutes.
+            <p th:text="#{email.verification-code.expiry(${expiresMinutes})}" style="color: #57534e; font-size: 14px; margin: 0 0 16px 0;">
+                This link and code expire in 15 minutes.
             </p>
 
-            <p style="color: #57534e; font-size: 14px; margin: 0;">
+            <p th:text="#{email.verification-code.ignore}" style="color: #57534e; font-size: 14px; margin: 0;">
                 If you didn't create an account with Buurman, you can safely ignore this email.
             </p>
         </div>

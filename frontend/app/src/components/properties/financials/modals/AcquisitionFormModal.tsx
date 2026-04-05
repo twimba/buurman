@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { MoneyInput } from '@/components/common/MoneyInput';
 import { RichTextEditor } from '@buurman/ui';
@@ -24,6 +25,7 @@ export const AcquisitionFormModal = ({
   existing,
   onClose,
 }: AcquisitionFormModalProps) => {
+  const { t } = useTranslation('properties');
   const { defaultCurrency } = useTeamDefaults();
   const currency = defaultCurrency || 'EUR';
   const mutation = useUpsertAcquisition(propertyId);
@@ -77,7 +79,7 @@ export const AcquisitionFormModal = ({
       <div className="bg-surface-card rounded-lg shadow-xl dark:shadow-black/20 max-w-lg w-full mx-4">
         <div className="flex items-center justify-between p-4 border-b border-border-strong">
           <h2 className="text-lg font-semibold text-text-primary">
-            {existing ? 'Edit Acquisition' : 'Add Acquisition'}
+            {existing ? t('financials.modals.editAcquisition') : t('financials.modals.addAcquisition')}
           </h2>
           <button
             type="button"
@@ -94,9 +96,7 @@ export const AcquisitionFormModal = ({
           className="p-4 space-y-4 max-h-[70vh] overflow-y-auto"
         >
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
-              Acquisition Type
-            </label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">{t('financials.labels.acquisitionType')}</label>
             <select
               value={formData.acquisitionType}
               onChange={(e) =>
@@ -116,9 +116,7 @@ export const AcquisitionFormModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
-              Acquisition Date
-            </label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">{t('financials.labels.acquisitionDate')}</label>
             <input
               type="date"
               value={formData.acquisitionDate ?? ''}
@@ -133,9 +131,7 @@ export const AcquisitionFormModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
-              Purchase Price
-            </label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">{t('financials.labels.purchasePrice')}</label>
             <MoneyInput
               value={formData.purchasePrice}
               onChange={(v) => setFormData({ ...formData, purchasePrice: v })}
@@ -144,9 +140,7 @@ export const AcquisitionFormModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
-              Closing Costs
-            </label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">{t('financials.labels.closingCosts')}</label>
             <MoneyInput
               value={formData.closingCosts}
               onChange={(v) => setFormData({ ...formData, closingCosts: v })}
@@ -155,9 +149,7 @@ export const AcquisitionFormModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
-              Renovation Costs
-            </label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">{t('financials.labels.renovationCosts')}</label>
             <MoneyInput
               value={formData.renovationCosts}
               onChange={(v) => setFormData({ ...formData, renovationCosts: v })}
@@ -166,9 +158,7 @@ export const AcquisitionFormModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
-              Land Value
-            </label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">{t('financials.labels.landValue')}</label>
             <MoneyInput
               value={formData.landValue}
               onChange={(v) => setFormData({ ...formData, landValue: v })}
@@ -177,9 +167,7 @@ export const AcquisitionFormModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
-              Depreciation Method
-            </label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">{t('financials.labels.depreciationMethod')}</label>
             <select
               value={formData.depreciationMethod ?? DepreciationMethod.NONE}
               onChange={(e) =>
@@ -199,9 +187,7 @@ export const AcquisitionFormModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
-              Depreciation Years
-            </label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">{t('financials.labels.depreciationYears')}</label>
             <div className="relative">
               <input
                 type="number"
@@ -217,22 +203,18 @@ export const AcquisitionFormModal = ({
                 }
                 className="w-full border border-border-strong rounded-md px-3 py-2 pr-14 bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-text-secondary">
-                years
-              </span>
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-text-secondary">{t('financials.units.years')}</span>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">
-              Notes
-            </label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">{t('financials.labels.notes')}</label>
             <RichTextEditor
               value={formData.notes ?? ''}
               onChange={(value) =>
                 setFormData({ ...formData, notes: value || undefined })
               }
-              placeholder="Add notes..."
+              placeholder={t('financials.placeholders.addNotes')}
             />
           </div>
         </form>
@@ -242,16 +224,14 @@ export const AcquisitionFormModal = ({
             type="button"
             onClick={onClose}
             className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset"
-          >
-            Cancel
-          </button>
+          >{t('common:buttons.cancel')}</button>
           <button
             type="submit"
             form="acquisition-form"
             disabled={mutation.isPending}
             className="bg-primary-500 text-white px-4 py-2 text-sm font-medium rounded-md hover:bg-primary-600 disabled:opacity-50"
           >
-            {mutation.isPending ? 'Saving...' : 'Save'}
+            {mutation.isPending ? t('financials.saving') : t('common:buttons.save')}
           </button>
         </div>
       </div>

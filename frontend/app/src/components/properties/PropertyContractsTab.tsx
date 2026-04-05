@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useContracts } from '@/hooks/useContractHooks';
 import { useDebounce } from '@/hooks/useDebounce';
 import {
@@ -38,6 +39,7 @@ type ContractSortField = 'startDate' | 'rentAmount' | 'status' | 'contractType';
 export const PropertyContractsTab = ({
   propertyId,
 }: PropertyContractsTabProps) => {
+  const { t } = useTranslation('properties');
   const navigate = useNavigate();
   const { canEditData, canManageMembers } = useTeam();
   const { formatDate } = useFormatDate();
@@ -135,19 +137,19 @@ export const PropertyContractsTab = ({
             className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
           >
             <Plus className="h-4 w-4" />
-            Add Contract
+            {t('contracts.addContract')}
           </button>
         </div>
 
         {contractsLoading ? (
           <LoadingSpinner />
         ) : contractsError ? (
-          <ErrorMessage message="Failed to load contracts" />
+          <ErrorMessage message={t('list.error', { ns: 'contracts' })} />
         ) : contracts.length === 0 ? (
           <div className="text-center py-12">
             <FileText className="h-12 w-12 text-text-disabled mx-auto mb-3" />
             <p className="text-text-secondary mb-4">
-              No contracts for this property
+              {t('contracts.empty')}
             </p>
             <button
               onClick={() =>
@@ -157,7 +159,7 @@ export const PropertyContractsTab = ({
               className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
             >
               <Plus className="h-4 w-4" />
-              Create First Contract
+              {t('contracts.createFirst')}
             </button>
           </div>
         ) : (
@@ -168,7 +170,7 @@ export const PropertyContractsTab = ({
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-text-muted " />
                 <input
                   type="text"
-                  placeholder="Search by contract #, contact, type..."
+                  placeholder={t('contracts.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value);

@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@buurman/ui';
 import {
   X,
@@ -139,6 +140,7 @@ const WwsCalculatorModalInner = ({
   propertyIdentifier,
   onClose,
 }: Omit<WwsCalculatorModalProps, 'isOpen'>) => {
+  const { t } = useTranslation('common');
   const { data: preFill, isLoading: preFillLoading } =
     useWwsPreFill(propertyIdentifier);
   const { data: latestCalc, isLoading: latestLoading } =
@@ -287,9 +289,7 @@ const WwsCalculatorModalInner = ({
               <Calculator className="h-4 w-4 text-primary-500" />
             </div>
             <div>
-              <h3 className="text-base font-semibold text-text-primary">
-                WWS Points Calculator
-              </h3>
+              <h3 className="text-base font-semibold text-text-primary">{t('wws.title')}</h3>
               {preFill?.propertyAddress && (
                 <p className="text-xs text-text-secondary">
                   {preFill.propertyAddress}
@@ -324,28 +324,23 @@ const WwsCalculatorModalInner = ({
             <div className="space-y-6">
               {preFillLoading || latestLoading ? (
                 <div className="flex items-center justify-center gap-2 py-16 text-sm text-text-secondary">
-                  <div className="h-4 w-4 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
-                  Loading property data...
-                </div>
+                  <div className="h-4 w-4 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />{t('wws.loadingPropertyData')}</div>
               ) : (
                 <>
                   {preFill && (
                     <div className="flex items-start gap-2 bg-primary-500/5 dark:bg-primary-500/10 rounded-lg px-3 py-2.5">
                       <Info className="h-4 w-4 text-primary-500 mt-0.5 shrink-0" />
-                      <p className="text-xs text-primary-500">
-                        Fields marked with a dot have been pre-filled from
-                        property data. You can adjust them before calculating.
-                      </p>
+                      <p className="text-xs text-primary-500">{t('wws.preFillHint')}</p>
                     </div>
                   )}
 
                   {/* Property & Rooms */}
                   <div className="space-y-3">
-                    <SectionHeader icon={Home} title="Property & Rooms" />
+                    <SectionHeader icon={Home} title={t('wws.sections.propertyRooms')} />
                     <div className="grid grid-cols-3 gap-4">
                       <div>
                         <label className={labelClass}>
-                          Surface area (m{'\u00B2'})
+                          {t('wws.fields.surfaceArea')} (m{'\u00B2'})
                           {preFill?.surfaceAreaSqm != null && (
                             <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary-500 ml-1.5 align-middle" />
                           )}
@@ -364,8 +359,7 @@ const WwsCalculatorModalInner = ({
                         <p className={hintClass}>Usable floor area (GBO)</p>
                       </div>
                       <div>
-                        <label className={labelClass}>
-                          Rooms
+                        <label className={labelClass}>{t('wws.fields.rooms')}
                           {preFill?.numberOfRooms != null && (
                             <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary-500 ml-1.5 align-middle" />
                           )}
@@ -383,8 +377,7 @@ const WwsCalculatorModalInner = ({
                         />
                       </div>
                       <div>
-                        <label className={labelClass}>
-                          Heated rooms
+                        <label className={labelClass}>{t('wws.fields.heatedRooms')}
                           {preFill?.numberOfHeatedRooms != null && (
                             <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary-500 ml-1.5 align-middle" />
                           )}
@@ -406,10 +399,9 @@ const WwsCalculatorModalInner = ({
 
                   {/* Energy & Quality */}
                   <div className="space-y-3">
-                    <SectionHeader icon={Flame} title="Energy & Quality" />
+                    <SectionHeader icon={Flame} title={t('wws.sections.energyQuality')} />
                     <div>
-                      <label className={labelClass}>
-                        Energy label
+                      <label className={labelClass}>{t('wws.fields.energyLabel')}
                         {preFill?.energyLabel && (
                           <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary-500 ml-1.5 align-middle" />
                         )}
@@ -421,7 +413,7 @@ const WwsCalculatorModalInner = ({
                         }
                         className={inputClass}
                       >
-                        <option value="">Select energy label...</option>
+                        <option value="">{t('wws.fields.selectEnergyLabel')}</option>
                         {ENERGY_LABELS.map((label) => (
                           <option key={label} value={label}>
                             {label}
@@ -431,7 +423,7 @@ const WwsCalculatorModalInner = ({
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className={labelClass}>Kitchen quality</label>
+                        <label className={labelClass}>{t('wws.fields.kitchenQuality')}</label>
                         <input
                           type="number"
                           value={form.kitchenQualityPoints}
@@ -448,7 +440,7 @@ const WwsCalculatorModalInner = ({
                         </p>
                       </div>
                       <div>
-                        <label className={labelClass}>Bathroom quality</label>
+                        <label className={labelClass}>{t('wws.fields.bathroomQuality')}</label>
                         <input
                           type="number"
                           value={form.bathroomQualityPoints}
@@ -469,10 +461,10 @@ const WwsCalculatorModalInner = ({
 
                   {/* Valuation */}
                   <div className="space-y-3">
-                    <SectionHeader icon={Euro} title="Valuation & Location" />
+                    <SectionHeader icon={Euro} title={t('wws.sections.valuationLocation')} />
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className={labelClass}>WOZ value</label>
+                        <label className={labelClass}>{t('wws.fields.wozValue')}</label>
                         <div className="relative">
                           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-text-secondary">
                             EUR
@@ -494,7 +486,7 @@ const WwsCalculatorModalInner = ({
                         </p>
                       </div>
                       <div>
-                        <label className={labelClass}>Location bonus</label>
+                        <label className={labelClass}>{t('wws.fields.locationBonus')}</label>
                         <input
                           type="number"
                           value={form.locationBonus}
@@ -539,11 +531,10 @@ const WwsCalculatorModalInner = ({
 
                   {/* Outdoor & Parking */}
                   <div className="space-y-3">
-                    <SectionHeader icon={TreePine} title="Outdoor & Parking" />
+                    <SectionHeader icon={TreePine} title={t('wws.sections.outdoorParking')} />
                     <div className="grid grid-cols-3 gap-4">
                       <div>
-                        <label className={labelClass}>
-                          Outdoor space (m{'\u00B2'})
+                        <label className={labelClass}>{t('wws.fields.outdoorSpace')} (m{'\u00B2'})
                           {preFill?.outdoorSpaceSqm != null && (
                             <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary-500 ml-1.5 align-middle" />
                           )}
@@ -561,8 +552,7 @@ const WwsCalculatorModalInner = ({
                         />
                       </div>
                       <div>
-                        <label className={labelClass}>
-                          Parking type
+                        <label className={labelClass}>{t('wws.fields.parkingType')}
                           {preFill?.parkingType && (
                             <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary-500 ml-1.5 align-middle" />
                           )}
@@ -582,8 +572,7 @@ const WwsCalculatorModalInner = ({
                         </select>
                       </div>
                       <div>
-                        <label className={labelClass}>
-                          Parking spaces
+                        <label className={labelClass}>{t('wws.fields.parkingSpaces')}
                           {preFill?.parkingSpaces != null && (
                             <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary-500 ml-1.5 align-middle" />
                           )}
@@ -605,11 +594,10 @@ const WwsCalculatorModalInner = ({
 
                   {/* Additional */}
                   <div className="space-y-3">
-                    <SectionHeader icon={Accessibility} title="Additional" />
+                    <SectionHeader icon={Accessibility} title={t('wws.sections.additional')} />
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className={labelClass}>
-                          Accessibility features
+                        <label className={labelClass}>{t('wws.fields.accessibilityFeatures')}
                           {preFill?.accessibilityFeatures != null && (
                             <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary-500 ml-1.5 align-middle" />
                           )}
@@ -630,8 +618,7 @@ const WwsCalculatorModalInner = ({
                         </p>
                       </div>
                       <div>
-                        <label className={labelClass}>
-                          Common area (m{'\u00B2'})
+                        <label className={labelClass}>{t('wws.fields.commonArea')} (m{'\u00B2'})
                         </label>
                         <input
                           type="number"
@@ -664,16 +651,12 @@ const WwsCalculatorModalInner = ({
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                      Total Points
-                    </div>
+                    <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">{t('wws.totalPoints')}</div>
                     <div className="text-3xl font-bold text-text-primary mt-0.5">
                       {result.totalPoints}
                     </div>
                     {result.maxRentIndication != null && (
-                      <div className="text-sm text-text-secondary mt-1">
-                        Max rent{' '}
-                        <span className="font-semibold text-text-primary">
+                      <div className="text-sm text-text-secondary mt-1">{t('wws.maxRent')}{' '}<span className="font-semibold text-text-primary">
                           EUR {result.maxRentIndication.toFixed(2)}
                         </span>
                         /month
@@ -696,9 +679,7 @@ const WwsCalculatorModalInner = ({
 
               {/* Breakdown */}
               <div>
-                <h4 className="text-xs font-semibold text-text-secondary uppercase tracking-wide mb-3">
-                  Points Breakdown
-                </h4>
+                <h4 className="text-xs font-semibold text-text-secondary uppercase tracking-wide mb-3">{t('wws.pointsBreakdown')}</h4>
                 <div className="space-y-1.5">
                   {result.breakdown
                     .slice()
@@ -761,9 +742,7 @@ const WwsCalculatorModalInner = ({
               {saved && (
                 <div className="flex items-center gap-2 bg-success-bg border border-success-border rounded-lg px-3 py-2.5">
                   <Check className="h-4 w-4 text-success-text shrink-0" />
-                  <p className="text-sm text-success-text">
-                    Calculation saved to property record.
-                  </p>
+                  <p className="text-sm text-success-text">{t('wws.calculationSaved')}</p>
                 </div>
               )}
             </div>
@@ -800,18 +779,14 @@ const WwsCalculatorModalInner = ({
                   </Button>
                 ) : (
                   <>
-                    <Button variant="secondary" onClick={onClose}>
-                      Close
-                    </Button>
+                    <Button variant="secondary" onClick={onClose}>{t('common:buttons.close')}</Button>
                     {!result?.identifier && (
                       <Button
                         variant="primary"
                         onClick={handleSave}
                         isLoading={saveAndCalculateMutation.isPending}
                         leftIcon={<Save className="h-4 w-4" />}
-                      >
-                        Save Result
-                      </Button>
+                      >{t('wws.saveResult')}</Button>
                     )}
                   </>
                 )}

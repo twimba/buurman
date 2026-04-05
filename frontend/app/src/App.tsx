@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import { TeamProvider } from './context/TeamContext';
 import { ImpersonationProvider } from './context/ImpersonationContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { LocaleProvider } from './context/LocaleContext';
 import { FeatureFlagProvider } from './context/FeatureFlagContext';
 import { AnalyticsInitializer } from './components/AnalyticsInitializer';
 import { FeatureGate } from './components/FeatureGate';
@@ -213,6 +214,7 @@ function App() {
               <AnalyticsInitializer />
               <FeatureFlagProvider>
                 <ThemeProvider>
+                  <LocaleProvider>
                   <ToastProvider>
                     <ImpersonationBanner />
                     <Suspense fallback={<LoadingSpinner />}>
@@ -455,6 +457,7 @@ function App() {
                       </Routes>
                     </Suspense>
                   </ToastProvider>
+                  </LocaleProvider>
                 </ThemeProvider>
               </FeatureFlagProvider>
             </TeamProvider>

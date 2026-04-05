@@ -8,28 +8,29 @@
     <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
         <div th:replace="~{email/_email-base :: header}"></div>
         <div style="background: #ffffff; border: 1px solid #e7e5e4; border-top: none; border-radius: 0 0 8px 8px; padding: 40px;">
-            <h1 style="color: #292524; margin: 0 0 24px 0; font-size: 24px;">Contract Extended</h1>
+            <h1 th:text="#{email.contract-extended.heading}" style="color: #292524; margin: 0 0 24px 0; font-size: 24px;">Contract Extended</h1>
 
-            <p style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
-                Hi <span th:text="${recipientName}">User</span>,
+            <p th:text="#{email.contract-extended.greeting(${recipientName})}" style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
+                Hi User,
             </p>
 
-            <p style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
-                Extension <span th:text="${extensionNumber}">#1</span> for the contract at
-                <strong th:text="${propertyName}">Property Name</strong> has been activated
-                <span th:if="${triggerType == 'AUTO'}">automatically</span><span th:if="${triggerType == 'MANUAL'}" th:text="'by ' + ${activatedBy}">by Admin</span>.
+            <p th:if="${triggerType == 'AUTO'}" th:text="#{email.contract-extended.body1.auto(${extensionNumber},${propertyName})}" style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
+                Extension #1 for the contract at Property Name has been activated automatically.
+            </p>
+            <p th:if="${triggerType == 'MANUAL'}" th:text="#{email.contract-extended.body1.manual(${extensionNumber},${propertyName},${activatedBy})}" style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
+                Extension #1 for the contract at Property Name has been activated by Admin.
             </p>
 
             <div style="background: #ecfdf5; border-radius: 6px; padding: 20px; margin: 0 0 24px 0; border-left: 4px solid #10b981;">
-                <p style="color: #065f46; margin: 0 0 8px 0; font-weight: 600;">Extension Details</p>
-                <p style="color: #065f46; margin: 0 0 8px 0;"><strong>Previous End Date:</strong> <span th:text="${previousEndDate}">Date</span></p>
-                <p style="color: #065f46; margin: 0 0 8px 0;"><strong>New End Date:</strong> <span th:text="${newEndDate}">Date</span></p>
-                <p style="color: #065f46; margin: 0 0 8px 0;"><strong>Previous Rent:</strong> <span th:text="${previousRentFormatted}">€1,000.00</span></p>
-                <p style="color: #065f46; margin: 0 0 8px 0;"><strong>New Rent:</strong> <span th:text="${newRentFormatted}">€1,025.00</span></p>
-                <p style="color: #065f46; margin: 0;"><strong>Rent Change:</strong> <span th:text="${rentChangeFormatted}">+2.5%</span></p>
+                <p th:text="#{email.contract-extended.detailsHeading}" style="color: #065f46; margin: 0 0 8px 0; font-weight: 600;">Extension Details</p>
+                <p style="color: #065f46; margin: 0 0 8px 0;"><strong th:text="#{email.contract-extended.label.previousEndDate}">Previous End Date:</strong> <span th:text="${previousEndDate}">Date</span></p>
+                <p style="color: #065f46; margin: 0 0 8px 0;"><strong th:text="#{email.contract-extended.label.newEndDate}">New End Date:</strong> <span th:text="${newEndDate}">Date</span></p>
+                <p style="color: #065f46; margin: 0 0 8px 0;"><strong th:text="#{email.contract-extended.label.previousRent}">Previous Rent:</strong> <span th:text="${previousRentFormatted}">€1,000.00</span></p>
+                <p style="color: #065f46; margin: 0 0 8px 0;"><strong th:text="#{email.contract-extended.label.newRent}">New Rent:</strong> <span th:text="${newRentFormatted}">€1,025.00</span></p>
+                <p style="color: #065f46; margin: 0;"><strong th:text="#{email.contract-extended.label.rentChange}">Rent Change:</strong> <span th:text="${rentChangeFormatted}">+2.5%</span></p>
             </div>
 
-            <a th:href="${appUrl}" style="display: inline-block; background: #0284c7; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500;">
+            <a th:href="${appUrl}" th:text="#{email.contract-extended.cta}" style="display: inline-block; background: #0284c7; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500;">
                 View Contract
             </a>
         </div>

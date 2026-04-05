@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -49,6 +50,7 @@ export const BulkFinancingPaymentModal = ({
   financingCurrency,
   onClose,
 }: BulkFinancingPaymentModalProps) => {
+  const { t } = useTranslation('properties');
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   const { defaultCurrency, defaultDateFormat } = useTeamDefaults();
@@ -152,9 +154,7 @@ export const BulkFinancingPaymentModal = ({
     >
       <div className="bg-surface-card rounded-lg shadow-xl dark:shadow-black/20 max-w-5xl w-full mx-4 max-h-[90vh] flex flex-col">
         <div className="flex items-center justify-between p-4 border-b border-border-strong flex-shrink-0">
-          <h2 className="text-lg font-semibold text-text-primary">
-            Bulk Add Payments
-          </h2>
+          <h2 className="text-lg font-semibold text-text-primary">{t('financials.modals.bulkAddPayments')}</h2>
           <button
             onClick={onClose}
             className="text-text-muted hover:text-text-secondary"
@@ -167,7 +167,7 @@ export const BulkFinancingPaymentModal = ({
           {/* Fixed fields */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
             <div>
-              <label className={labelClass}>Currency</label>
+              <label className={labelClass}>{t('financials.labels.currency')}</label>
               <CurrencySelector
                 value={currency}
                 onChange={setCurrency}
@@ -182,9 +182,7 @@ export const BulkFinancingPaymentModal = ({
                   onChange={(e) => setDeductFromBalance(e.target.checked)}
                   disabled={isSubmitting}
                   className="h-4 w-4 rounded border-border-strong text-primary-500 focus:ring-primary-500"
-                />
-                Deduct principal from financing balance
-              </label>
+                />{t('financials.labels.deductFromBalance')}</label>
             </div>
           </div>
 

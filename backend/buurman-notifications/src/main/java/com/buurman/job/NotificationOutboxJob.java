@@ -11,6 +11,7 @@ import static java.util.stream.Collectors.toMap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,8 +31,12 @@ import com.buurman.domain.Notification;
 import com.buurman.domain.NotificationChannel;
 import com.buurman.domain.NotificationOutbox;
 import com.buurman.domain.NotificationType;
+import com.buurman.domain.TeamPreferences;
+import com.buurman.domain.UserPreferences;
 import com.buurman.repository.NotificationOutboxRepository;
 import com.buurman.repository.NotificationRepository;
+import com.buurman.repository.TeamPreferencesRepository;
+import com.buurman.repository.UserPreferencesRepository;
 import com.buurman.service.notification.DigestRenderer;
 import com.buurman.service.notification.NotificationChannelSender;
 import com.buurman.service.notification.NotificationSendException;
@@ -48,6 +53,8 @@ public class NotificationOutboxJob implements Job {
 
   private final NotificationOutboxRepository outboxRepository;
   private final NotificationRepository notificationRepository;
+  private final UserPreferencesRepository userPreferencesRepository;
+  private final TeamPreferencesRepository teamPreferencesRepository;
   private final Map<NotificationChannel, NotificationChannelSender> channelSenders;
   private final ObjectMapper objectMapper;
   private final DigestRenderer digestRenderer;
@@ -58,6 +65,8 @@ public class NotificationOutboxJob implements Job {
   public NotificationOutboxJob(
       NotificationOutboxRepository outboxRepository,
       NotificationRepository notificationRepository,
+      UserPreferencesRepository userPreferencesRepository,
+      TeamPreferencesRepository teamPreferencesRepository,
       List<NotificationChannelSender> senders,
       ObjectMapper objectMapper,
       NotificationOutboxProperties outboxProperties,
@@ -66,6 +75,8 @@ public class NotificationOutboxJob implements Job {
       AppProperties appProperties) {
     this.outboxRepository = outboxRepository;
     this.notificationRepository = notificationRepository;
+    this.userPreferencesRepository = userPreferencesRepository;
+    this.teamPreferencesRepository = teamPreferencesRepository;
     this.objectMapper = objectMapper;
     this.batchSize = outboxProperties.batchSize();
     this.channelSenders =
@@ -250,11 +261,28 @@ public class NotificationOutboxJob implements Job {
       return;
     }
 
+    // Resolve recipient locale: user preference → team default → English
+    Optional<String> userLang =
+        first
+            .getRecipientUserId()
+            .flatMap(userPreferencesRepository::findByUserId)
+            .map(UserPreferences::getLanguage);
+    Locale recipientLocale =
+        userLang
+            .map(Locale::forLanguageTag)
+            .orElseGet(
+                () ->
+                    first
+                        .getTeamId()
+                        .flatMap(teamPreferencesRepository::findByTeamId)
+                        .map(tp -> Locale.forLanguageTag(tp.getDefaultLanguage()))
+                        .orElse(Locale.ENGLISH));
+
     // Render digest email via the Thymeleaf template
     Map<String, Object> templateVars =
         digestRenderer.buildEmailDigestVariables(
             notificationType, digestItems, recipientName, baseUrl);
-    RenderedContent content = sender.render("notification-digest", templateVars);
+    RenderedContent content = sender.render("notification-digest", templateVars, recipientLocale);
 
     String subject = digestRenderer.buildEmailDigestSubject(notificationType, digestItems);
 

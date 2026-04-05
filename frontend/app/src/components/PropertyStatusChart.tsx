@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   PieChart,
   Pie,
@@ -37,6 +38,7 @@ const CustomTooltip = ({
         <p className="font-semibold text-text-primary">{payload[0].name}</p>
         <p className="text-sm text-text-secondary">
           {value} {value === 1 ? 'property' : 'properties'} ({percentage}%)
+
         </p>
       </div>
     );
@@ -51,16 +53,17 @@ export const PropertyStatusChart = ({
   maintenance,
   unavailable,
 }: PropertyStatusChartProps) => {
+  const { t } = useTranslation('properties');
   const data = useMemo(
     () =>
       [
-        { name: 'Occupied', value: occupied, color: '#059669' },
-        { name: 'Self-Occupied', value: selfOccupied, color: '#0284c7' },
-        { name: 'Vacant', value: vacant, color: '#fbbf24' },
-        { name: 'Maintenance', value: maintenance, color: '#f59e0b' },
-        { name: 'Unavailable', value: unavailable, color: '#78716c' },
+        { name: t('statusChart.occupied'), value: occupied, color: '#059669' },
+        { name: t('statusChart.selfOccupied'), value: selfOccupied, color: '#0284c7' },
+        { name: t('statusChart.vacant'), value: vacant, color: '#fbbf24' },
+        { name: t('statusChart.maintenance'), value: maintenance, color: '#f59e0b' },
+        { name: t('statusChart.unavailable'), value: unavailable, color: '#78716c' },
       ].filter((item) => item.value > 0),
-    [occupied, selfOccupied, vacant, maintenance, unavailable]
+    [occupied, selfOccupied, vacant, maintenance, unavailable, t]
   );
 
   const total = occupied + selfOccupied + vacant + maintenance + unavailable;
@@ -99,7 +102,7 @@ export const PropertyStatusChart = ({
   if (total === 0) {
     return (
       <div className="flex items-center justify-center h-64 text-text-secondary">
-        <p>No properties to display</p>
+        <p>{t('statusChart.noProperties')}</p>
       </div>
     );
   }

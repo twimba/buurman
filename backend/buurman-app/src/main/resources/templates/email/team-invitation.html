@@ -8,27 +8,27 @@
     <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
         <div th:replace="~{email/_email-base :: header}"></div>
         <div style="background: #ffffff; border: 1px solid #e7e5e4; border-top: none; border-radius: 0 0 8px 8px; padding: 40px;">
-            <h1 style="color: #292524; margin: 0 0 24px 0; font-size: 24px;">You're Invited!</h1>
+            <h1 th:text="#{email.team-invitation.heading}" style="color: #292524; margin: 0 0 24px 0; font-size: 24px;">You're Invited!</h1>
 
-            <p style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
-                <strong th:text="${inviterName}">Someone</strong> has invited you to join
-                <strong th:text="${teamName}">a team</strong> on Buurman as a
-                <strong th:text="${role}">member</strong>.
+            <p th:utext="#{email.team-invitation.body1(${inviterName},${teamName},${role})}" style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
+                <strong>Someone</strong> has invited you to join
+                <strong>a team</strong> on Buurman as a
+                <strong>member</strong>.
             </p>
 
-            <p style="color: #292524; line-height: 1.6; margin: 0 0 24px 0;">
+            <p th:text="#{email.team-invitation.body2}" style="color: #292524; line-height: 1.6; margin: 0 0 24px 0;">
                 Click the button below to accept this invitation and get started.
             </p>
 
-            <a th:href="${inviteUrl}" style="display: inline-block; background: #0284c7; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500;">
+            <a th:href="${inviteUrl}" th:text="#{email.team-invitation.cta}" style="display: inline-block; background: #0284c7; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500;">
                 Accept Invitation
             </a>
 
-            <p style="color: #57534e; font-size: 14px; margin: 32px 0 0 0;">
-                This invitation will expire on <span th:text="${expiresAt}">date</span>.
+            <p th:text="#{email.team-invitation.expiry(${expiresAt})}" style="color: #57534e; font-size: 14px; margin: 32px 0 0 0;">
+                This invitation will expire on date.
             </p>
 
-            <p style="color: #57534e; font-size: 14px; margin: 16px 0 0 0;">
+            <p th:text="#{email.team-invitation.ignore}" style="color: #57534e; font-size: 14px; margin: 16px 0 0 0;">
                 If you didn't expect this invitation, you can safely ignore this email.
             </p>
         </div>

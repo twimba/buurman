@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { ExpenseCategory, formatExpenseCategory } from '@/types/expense';
 import {
@@ -62,6 +63,7 @@ const categoryFilters = [
 ];
 
 export const ExpensesPage = () => {
+  const { t } = useTranslation('expenses');
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
@@ -162,7 +164,7 @@ export const ExpensesPage = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-background p-8">
-        <ErrorMessage message="Failed to load expenses" />
+        <ErrorMessage message={t('errors.loadFailed')} />
       </div>
     );
   }
@@ -175,10 +177,10 @@ export const ExpensesPage = () => {
           <div>
             <div className="flex items-center gap-3 mb-1">
               <Receipt className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-              <h1 className="text-3xl font-bold text-text-primary">Expenses</h1>
+              <h1 className="text-3xl font-bold text-text-primary">{t('page.title')}</h1>
             </div>
             <p className="text-text-secondary ml-11">
-              Track property expenses and costs
+              {t('page.subtitle')}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -192,7 +194,7 @@ export const ExpensesPage = () => {
               className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
             >
               <Plus className="h-5 w-5" />
-              Add Expense
+              {t('actions.addExpense')}
             </button>
           </div>
         </div>
@@ -204,7 +206,7 @@ export const ExpensesPage = () => {
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 flex flex-col">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-medium text-text-secondary">
-                  Total Expenses
+                  {t('stats.totalExpenses')}
                 </h3>
                 <DollarSign className="h-5 w-5 text-error-text" />
               </div>
@@ -224,7 +226,7 @@ export const ExpensesPage = () => {
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-medium text-text-secondary">
-                  Top Categories
+                  {t('stats.topCategories')}
                 </h3>
                 <PieChart className="h-5 w-5 text-primary-500" />
               </div>
@@ -265,7 +267,7 @@ export const ExpensesPage = () => {
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-medium text-text-secondary">
-                  Last 6 Months
+                  {t('stats.lastSixMonths')}
                 </h3>
                 <TrendingDown className="h-5 w-5 text-error-text" />
               </div>
@@ -317,7 +319,7 @@ export const ExpensesPage = () => {
         <div className="mb-6 bg-surface-card rounded-lg border border-border-default p-4">
           <div className="flex items-center gap-2 mb-3">
             <Filter className="h-5 w-5 text-text-secondary " />
-            <h3 className="font-semibold text-text-primary">Filters</h3>
+            <h3 className="font-semibold text-text-primary">{t('filters.title')}</h3>
           </div>
 
           <div className="flex flex-col gap-4">
@@ -334,7 +336,7 @@ export const ExpensesPage = () => {
                     resetPage();
                   }}
                   clearable
-                  placeholder="All Properties"
+                  placeholder={t('filters.allProperties')}
                 />
               </div>
               <div className="flex-1">
@@ -505,12 +507,12 @@ export const ExpensesPage = () => {
           <div className="bg-surface-card rounded-lg border border-border-default p-12 text-center">
             <Receipt className="h-12 w-12 text-text-muted mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-text-primary mb-2">
-              No expenses found
+              {t('empty.title')}
             </h3>
             <p className="text-text-secondary mb-6">
               {categoryFilter || propertyFilter
-                ? 'Try adjusting your filters'
-                : 'Get started by recording your first expense'}
+                ? t('empty.filtered')
+                : t('empty.noData')}
             </p>
             {!categoryFilter && !propertyFilter && (
               <button
@@ -519,7 +521,7 @@ export const ExpensesPage = () => {
                 className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
               >
                 <Plus className="h-5 w-5" />
-                Add Expense
+                {t('actions.addExpense')}
               </button>
             )}
           </div>
@@ -528,9 +530,9 @@ export const ExpensesPage = () => {
 
       {deleteTarget && (
         <ConfirmDialog
-          title="Delete Expense"
-          message="Are you sure you want to delete this expense? All related documents will also be deleted. This action cannot be undone."
-          confirmLabel="Delete"
+          title={t('deleteDialog.title')}
+          message={t('deleteDialog.messageWithRelated')}
+          confirmLabel={t('buttons.delete', { ns: 'common' })}
           variant="danger"
           isLoading={deleteExpenseMutation.isPending}
           onConfirm={async () => {

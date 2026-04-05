@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -39,6 +40,7 @@ import { useDocumentSelection } from '@/hooks/useDocumentSelection';
 import { useTeam } from '@/context/TeamContext';
 
 export const DocumentsPage = () => {
+  const { t } = useTranslation('documents');
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
@@ -150,11 +152,11 @@ export const DocumentsPage = () => {
           <div className="flex items-center gap-3 mb-1">
             <Folder className="h-8 w-8 text-primary-500 dark:text-primary-300" />
             <h1 className="text-3xl font-bold text-text-primary">
-              Document Library
+              {t('documentsPage.title')}
             </h1>
           </div>
           <p className="text-text-secondary ml-11">
-            Search and manage all your documents in one place
+            {t('documentsPage.subtitle')}
           </p>
         </div>
         <RefreshButton onClick={() => refetch()} isRefreshing={isFetching} />
@@ -168,7 +170,7 @@ export const DocumentsPage = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-muted " />
             <input
               type="text"
-              placeholder="Search documents by title, filename, or notes..."
+              placeholder={t('documentsPage.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -189,12 +191,12 @@ export const DocumentsPage = () => {
               }}
               className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
             >
-              <option value="">All Types</option>
-              <option value="PROPERTY">Properties</option>
-              <option value="CONTACT">Contacts</option>
-              <option value="CONTRACT">Contracts</option>
-              <option value="PAYMENT">Payments</option>
-              <option value="EXPENSE">Expenses</option>
+              <option value="">{t('documentsPage.entityTypeFilter.all')}</option>
+              <option value="PROPERTY">{t('documentsPage.entityTypeFilter.property')}</option>
+              <option value="CONTACT">{t('documentsPage.entityTypeFilter.contact')}</option>
+              <option value="CONTRACT">{t('documentsPage.entityTypeFilter.contract')}</option>
+              <option value="PAYMENT">{t('documentsPage.entityTypeFilter.payment')}</option>
+              <option value="EXPENSE">{t('documentsPage.entityTypeFilter.expense')}</option>
             </select>
           </div>
         </div>
@@ -208,7 +210,7 @@ export const DocumentsPage = () => {
       ) : !documents || documents.length === 0 ? (
         <div className="text-center py-12 bg-surface-card rounded-lg shadow-sm">
           <FileText className="h-12 w-12 text-text-muted mx-auto mb-4" />
-          <p className="text-text-secondary">No documents found</p>
+          <p className="text-text-secondary">{t('documentsPage.empty')}</p>
         </div>
       ) : (
         <>
@@ -229,8 +231,8 @@ export const DocumentsPage = () => {
                 </button>
                 <span className="text-sm text-text-secondary">
                   {hasSelection
-                    ? `${selectedDocuments.size} of ${documentsData?.totalElements ?? documents.length} selected`
-                    : `${documentsData?.totalElements ?? documents.length} document${(documentsData?.totalElements ?? documents.length) !== 1 ? 's' : ''}`}
+                    ? t('documentsPage.selection.selected', { selected: selectedDocuments.size, total: documentsData?.totalElements ?? documents.length })
+                    : t('documentsPage.selection.count', { count: documentsData?.totalElements ?? documents.length })}
                 </span>
               </div>
 
@@ -248,8 +250,8 @@ export const DocumentsPage = () => {
                       <Download className="h-4 w-4" />
                     )}
                     {bulkDownloadMutation.isPending
-                      ? 'Downloading...'
-                      : 'Download'}
+                      ? t('common:buttons.loading')
+                      : t('common:buttons.download')}
                   </button>
                   {canEditData && (
                     <button
@@ -257,7 +259,7 @@ export const DocumentsPage = () => {
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-error-text bg-surface-card border border-error-border rounded-md hover:bg-error-bg transition-colors"
                     >
                       <Trash2 className="h-4 w-4" />
-                      Delete
+                      {t('common:buttons.delete')}
                     </button>
                   )}
                 </div>
@@ -273,7 +275,7 @@ export const DocumentsPage = () => {
                     onClick={() => handleSortChange('title')}
                   >
                     <div className="flex items-center gap-1">
-                      Document
+                      {t('documentsPage.table.document')}
                       {getSortIcon('title')}
                     </div>
                   </th>
@@ -282,7 +284,7 @@ export const DocumentsPage = () => {
                     onClick={() => handleSortChange('entityType')}
                   >
                     <div className="flex items-center gap-1">
-                      Type
+                      {t('documentsPage.table.type')}
                       {getSortIcon('entityType')}
                     </div>
                   </th>
@@ -291,7 +293,7 @@ export const DocumentsPage = () => {
                     onClick={() => handleSortChange('fileSize')}
                   >
                     <div className="flex items-center gap-1">
-                      Size
+                      {t('documentsPage.table.size')}
                       {getSortIcon('fileSize')}
                     </div>
                   </th>
@@ -300,12 +302,12 @@ export const DocumentsPage = () => {
                     onClick={() => handleSortChange('uploadedAt')}
                   >
                     <div className="flex items-center gap-1">
-                      Uploaded
+                      {t('documentsPage.table.uploaded')}
                       {getSortIcon('uploadedAt')}
                     </div>
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
-                    Actions
+                    {t('documentsPage.table.actions')}
                   </th>
                 </tr>
               </thead>
@@ -486,7 +488,7 @@ export const DocumentsPage = () => {
       {/* Edit Modal */}
       {editingDocument && (
         <EditMetadataModal
-          title="Edit Document"
+          title={t('documentsPage.editModal')}
           currentTitle={editingDocument.title}
           currentNotes={editingDocument.notes}
           onSave={(title, notes) => {
@@ -505,18 +507,18 @@ export const DocumentsPage = () => {
         <ConfirmDialog
           title={
             pendingBulkDelete.length === 1
-              ? 'Delete document'
-              : 'Delete documents'
+              ? t('deleteDialog.titleSingle')
+              : t('deleteDialog.titlePlural')
           }
           message={
             pendingBulkDelete.length === 1
-              ? 'Are you sure you want to delete this document? This action cannot be undone.'
-              : `You are about to delete ${pendingBulkDelete.length} documents. This action cannot be undone.`
+              ? t('deleteDialog.messageSingle')
+              : t('deleteDialog.messagePlural', { count: pendingBulkDelete.length })
           }
           confirmLabel={
             pendingBulkDelete.length === 1
-              ? 'Delete'
-              : `Delete ${pendingBulkDelete.length} documents`
+              ? t('deleteDialog.confirmSingle')
+              : t('deleteDialog.confirmPlural', { count: pendingBulkDelete.length })
           }
           variant="danger"
           onConfirm={confirmDelete}

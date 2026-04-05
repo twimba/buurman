@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   PropertyStatus,
   PropertyCategory,
@@ -15,28 +16,26 @@ import { usePagination } from '@/hooks/usePagination';
 import { useDebounce } from '@/hooks/useDebounce';
 import { Pagination, RefreshButton, Skeleton } from '@buurman/ui';
 
-const categoryFilters: {
-  value: PropertyCategory | undefined;
-  label: string;
-}[] = [
-  { value: undefined, label: 'All Categories' },
-  ...Object.values(PropertyCategory).map((cat) => ({
-    value: cat,
-    label: PROPERTY_CATEGORY_LABELS[cat],
-  })),
-];
-
-const statusFilters: { value: PropertyStatus | undefined; label: string }[] = [
-  { value: undefined, label: 'All Statuses' },
-  ...Object.values(PropertyStatus).map((status) => ({
-    value: status,
-    label: PROPERTY_STATUS_LABELS[status],
-  })),
-];
-
 export const PropertyListPage = () => {
+  const { t } = useTranslation('properties');
   const navigate = useNavigate();
   const { canEditData } = useTeam();
+
+  const categoryFilters = useMemo<{ value: PropertyCategory | undefined; label: string }[]>(() => [
+    { value: undefined, label: t('list.allCategories') },
+    ...Object.values(PropertyCategory).map((cat) => ({
+      value: cat,
+      label: PROPERTY_CATEGORY_LABELS[cat],
+    })),
+  ], [t]);
+
+  const statusFilters = useMemo<{ value: PropertyStatus | undefined; label: string }[]>(() => [
+    { value: undefined, label: t('list.allStatuses') },
+    ...Object.values(PropertyStatus).map((status) => ({
+      value: status,
+      label: PROPERTY_STATUS_LABELS[status],
+    })),
+  ], [t]);
   const [statusFilter, setStatusFilter] = useState<PropertyStatus | undefined>(
     undefined
   );
@@ -109,7 +108,7 @@ export const PropertyListPage = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-background p-8">
-        <ErrorMessage message="Failed to load properties" />
+        <ErrorMessage message={t('list.error')} />
       </div>
     );
   }
@@ -123,11 +122,11 @@ export const PropertyListPage = () => {
             <div className="flex items-center gap-3 mb-1">
               <Home className="h-8 w-8 text-primary-500 dark:text-primary-300" />
               <h1 className="text-3xl font-bold text-text-primary">
-                Properties
+                {t('list.title')}
               </h1>
             </div>
             <p className="text-text-secondary ml-11">
-              Manage your rental properties and units
+              {t('list.subtitle')}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -141,7 +140,7 @@ export const PropertyListPage = () => {
               className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
             >
               <Plus className="h-5 w-5" />
-              Add Property
+              {t('list.addButton')}
             </button>
           </div>
         </div>
@@ -150,7 +149,7 @@ export const PropertyListPage = () => {
         <div className="mb-6 bg-surface-card rounded-lg border border-border-default p-4 space-y-4">
           <div className="flex items-center gap-2">
             <Filter className="h-5 w-5 text-text-secondary " />
-            <h2 className="font-semibold text-text-primary">Filters</h2>
+            <h2 className="font-semibold text-text-primary">{t('list.filters')}</h2>
           </div>
 
           {/* Search */}
@@ -163,7 +162,7 @@ export const PropertyListPage = () => {
                 setSearchQuery(e.target.value);
                 resetPage();
               }}
-              placeholder="Search by address, city, postal code, or type..."
+              placeholder={t('list.searchPlaceholder')}
               className="w-full pl-10 pr-10 py-2 border border-border-strong rounded focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
             />
             {searchQuery && (
@@ -183,7 +182,7 @@ export const PropertyListPage = () => {
             {/* Category Filter */}
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-2">
-                Category
+                {t('list.category')}
               </label>
               <div className="flex gap-2 flex-wrap">
                 {categoryFilters.map((filter) => (
@@ -208,7 +207,7 @@ export const PropertyListPage = () => {
             {/* Status Filter */}
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-2">
-                Status
+                {t('list.status')}
               </label>
               <div className="flex gap-2 flex-wrap">
                 {statusFilters.map((filter) => (
@@ -234,8 +233,7 @@ export const PropertyListPage = () => {
 
         {/* Property Count */}
         <p className="text-sm text-text-secondary mb-4">
-          {propertiesData?.totalElements ?? 0}{' '}
-          {propertiesData?.totalElements === 1 ? 'property' : 'properties'}
+          {t('list.count', { count: propertiesData?.totalElements ?? 0 })}
         </p>
 
         {/* Properties Grid */}
@@ -264,12 +262,12 @@ export const PropertyListPage = () => {
           <div className="flex flex-col items-center justify-center py-16 bg-surface-card rounded-lg">
             <Home className="h-16 w-16 text-text-disabled mb-4" />
             <h3 className="text-lg font-semibold text-text-primary mb-2">
-              No properties found
+              {t('list.empty.title')}
             </h3>
             <p className="text-text-secondary mb-6">
               {searchQuery || statusFilter || categoryFilter
-                ? 'Try adjusting your filters or search terms'
-                : 'Get started by adding your first property'}
+                ? t('list.empty.filtered')
+                : t('list.empty.noData')}
             </p>
             {!searchQuery && !statusFilter && !categoryFilter && (
               <button
@@ -278,7 +276,7 @@ export const PropertyListPage = () => {
                 className="bg-primary-500 text-white px-6 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
               >
                 <Plus className="h-5 w-5" />
-                Add Property
+                {t('list.addButton')}
               </button>
             )}
           </div>

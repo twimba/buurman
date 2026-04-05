@@ -3,6 +3,7 @@ package com.buurman.service.notification.channel;
 import static com.buurman.domain.NotificationChannel.SMS;
 
 import java.time.Instant;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -51,7 +52,7 @@ public class LocalSmsSender implements NotificationChannelSender {
   }
 
   @Override
-  public RenderedContent render(String templateName, Map<String, Object> variables) {
+  public RenderedContent render(String templateName, Map<String, Object> variables, Locale locale) {
     String body = renderSmsTemplate(templateName, variables);
     return new RenderedContent(Optional.empty(), body, SMS);
   }

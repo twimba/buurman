@@ -29,6 +29,7 @@ import {
 import { Avatar } from '@/components/common/Avatar';
 import { Plus, Edit, Trash2, Users, ShieldOff } from 'lucide-react';
 import { useFormatDate } from '@/hooks/useFormatDate';
+import { useTranslation } from 'react-i18next';
 
 interface RelationshipFormData {
   targetContactIdentifier: string;
@@ -49,6 +50,7 @@ interface ContactRelationshipsTabProps {
 export const ContactRelationshipsTab = ({
   contactId,
 }: ContactRelationshipsTabProps) => {
+  const { t } = useTranslation('tenants');
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const { formatRelative } = useFormatDate();
@@ -129,7 +131,7 @@ export const ContactRelationshipsTab = ({
     <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold text-text-primary">
-          Relationships ({relationships.length})
+          {t('relationships.title')} ({relationships.length})
         </h2>
         {canEditData && (
           <Button
@@ -145,8 +147,8 @@ export const ContactRelationshipsTab = ({
       {relationships.length === 0 ? (
         <EmptyState
           icon={<Users className="h-12 w-12" />}
-          title="No relationships yet"
-          description="Track how this contact relates to other contacts in your system."
+          title={t('relationships.empty')}
+          description={t('relationships.emptyDescription')}
           variant="section"
           actions={
             canEditData ? (
@@ -212,7 +214,7 @@ export const ContactRelationshipsTab = ({
                       </div>
                     )}
                     <p className="text-xs text-text-muted mt-1">
-                      Added {formatRelative(rel.createdAt)}
+                      {t('relationships.added', { time: formatRelative(rel.createdAt) })}
                     </p>
                   </div>
                 </div>
@@ -221,14 +223,14 @@ export const ContactRelationshipsTab = ({
                     <button
                       onClick={() => handleOpenEdit(rel)}
                       className="p-1.5 rounded hover:bg-surface-inset text-text-muted hover:text-text-primary transition-colors"
-                      title="Edit"
+                      title={t('common:buttons.edit')}
                     >
                       <Edit className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => setDeleteRelationshipId(rel.identifier)}
                       className="p-1.5 rounded hover:bg-error-bg text-text-muted hover:text-error-text transition-colors"
-                      title="Delete"
+                      title={t('common:buttons.delete')}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -244,7 +246,7 @@ export const ContactRelationshipsTab = ({
       <ModalWrapper
         open={showFormModal}
         onClose={handleCloseForm}
-        title={editingRelationship ? 'Edit Relationship' : 'Add Relationship'}
+        title={editingRelationship ? t('relationships.editRelationship') : t('relationships.addRelationship')}
         size="md"
         footer={
           <div className="flex gap-3 justify-end">
@@ -257,14 +259,14 @@ export const ContactRelationshipsTab = ({
               isLoading={createMutation.isPending || updateMutation.isPending}
               disabled={!editingRelationship && !form.targetContactIdentifier}
             >
-              {editingRelationship ? 'Save Changes' : 'Create'}
+              {editingRelationship ? t('relationships.saveChanges') : t('common:buttons.create')}
             </Button>
           </div>
         }
       >
         <div className="space-y-4">
           {!editingRelationship && (
-            <FormField label="Related Contact" required>
+            <FormField label={t('relationships.relatedContact')} required>
               <ContactSelector
                 value={form.targetContactIdentifier}
                 onChange={(value) =>
@@ -276,7 +278,7 @@ export const ContactRelationshipsTab = ({
               />
             </FormField>
           )}
-          <FormField label="Relationship Type" required>
+          <FormField label={t('relationships.relationshipType')} required>
             <Select
               value={form.relationshipType}
               onChange={(e) =>
@@ -295,11 +297,11 @@ export const ContactRelationshipsTab = ({
               )}
             </Select>
           </FormField>
-          <FormField label="Notes">
+          <FormField label={t('relationships.notes')}>
             <RichTextEditor
               value={form.notes}
               onChange={(value) => setForm((f) => ({ ...f, notes: value }))}
-              placeholder="Additional notes about this relationship..."
+              placeholder={t('relationships.notesPlaceholder')}
             />
           </FormField>
         </div>
@@ -308,10 +310,10 @@ export const ContactRelationshipsTab = ({
       {/* Delete Confirmation */}
       {deleteRelationshipId && (
         <ConfirmDialog
-          title="Delete Relationship"
-          message="Are you sure you want to remove this relationship? This action cannot be undone."
+          title={t('relationships.deleteTitle')}
+          message={t('relationships.deleteMessage')}
           variant="danger"
-          confirmLabel="Delete"
+          confirmLabel={t('common:buttons.delete')}
           isLoading={deleteMutation.isPending}
           onConfirm={handleDelete}
           onCancel={() => setDeleteRelationshipId(null)}

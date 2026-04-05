@@ -8,19 +8,19 @@
     <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
         <div th:replace="~{email/_email-base :: header}"></div>
         <div style="background: #ffffff; border: 1px solid #e7e5e4; border-top: none; border-radius: 0 0 8px 8px; padding: 40px;">
-            <h1 style="color: #292524; margin: 0 0 24px 0; font-size: 24px;">Property Created</h1>
+            <h1 th:text="#{email.property-created.heading}" style="color: #292524; margin: 0 0 24px 0; font-size: 24px;">Property Created</h1>
 
-            <p style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
+            <p th:text="#{email.property-created.body1}" style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
                 A new property has been added to your portfolio.
             </p>
 
             <div style="background: #fafaf9; border: 1px solid #e7e5e4; border-radius: 6px; padding: 20px; margin: 0 0 24px 0;">
-                <p style="color: #292524; margin: 0 0 8px 0;"><strong>Property:</strong> <span th:text="${propertyName}">Property Name</span></p>
-                <p style="color: #292524; margin: 0 0 8px 0;"><strong>Address:</strong> <span th:text="${propertyAddress}">Address</span></p>
-                <p style="color: #292524; margin: 0;"><strong>Type:</strong> <span th:text="${propertyType}">Type</span></p>
+                <p style="color: #292524; margin: 0 0 8px 0;"><strong th:text="#{email.property-created.label.property}">Property:</strong> <span th:text="${propertyName}">Property Name</span></p>
+                <p style="color: #292524; margin: 0 0 8px 0;"><strong th:text="#{email.property-created.label.address}">Address:</strong> <span th:text="${propertyAddress}">Address</span></p>
+                <p style="color: #292524; margin: 0;"><strong th:text="#{email.property-created.label.type}">Type:</strong> <span th:text="${propertyType}">Type</span></p>
             </div>
 
-            <a th:href="${baseUrl}" style="display: inline-block; background: #0284c7; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500;">
+            <a th:href="${baseUrl}" th:text="#{email.property-created.cta}" style="display: inline-block; background: #0284c7; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500;">
                 View Property
             </a>
         </div>

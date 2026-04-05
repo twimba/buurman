@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Receipt,
   Download,
@@ -25,6 +26,7 @@ interface Invoice {
 }
 
 export const PaymentHistorySection = () => {
+  const { t } = useTranslation('settings');
   const { formatDate } = useFormatDate();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string | undefined>(
@@ -150,7 +152,7 @@ export const PaymentHistorySection = () => {
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-text-secondary">Next Payment</p>
+              <p className="text-sm text-text-secondary">{t('paymentHistory.nextPayment')}</p>
               <p className="text-2xl font-bold text-text-primary mt-1">
                 {nextPayment.currency} {nextPayment.amount.toFixed(2)}
               </p>
@@ -165,11 +167,11 @@ export const PaymentHistorySection = () => {
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-text-secondary">Total Paid</p>
+              <p className="text-sm text-text-secondary">{t('paymentHistory.totalPaid')}</p>
               <p className="text-2xl font-bold text-text-primary mt-1">
                 EUR {totalPaid.toFixed(2)}
               </p>
-              <p className="text-xs text-text-secondary mt-1">All time</p>
+              <p className="text-xs text-text-secondary mt-1">{t('paymentHistory.allTime')}</p>
             </div>
             <CreditCard className="h-12 w-12 text-success-text" />
           </div>
@@ -178,12 +180,12 @@ export const PaymentHistorySection = () => {
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-text-secondary">Total Invoices</p>
+              <p className="text-sm text-text-secondary">{t('paymentHistory.totalInvoices')}</p>
               <p className="text-2xl font-bold text-text-primary mt-1">
                 {invoices.length}
               </p>
               <p className="text-xs text-text-secondary mt-1">
-                {invoices.filter((i) => i.status === 'paid').length} paid
+                {t('paymentHistory.paid', { count: invoices.filter((i) => i.status === 'paid').length })}
               </p>
             </div>
             <Receipt className="h-12 w-12 text-purple-600" />
@@ -195,10 +197,10 @@ export const PaymentHistorySection = () => {
       <div className="bg-surface-card rounded-lg shadow-sm border border-border-default">
         <div className="p-6 border-b border-border-default">
           <h2 className="text-xl font-semibold text-text-primary">
-            Payment History
+            {t('paymentHistory.title')}
           </h2>
           <p className="text-sm text-text-secondary mt-1">
-            View and download your invoices
+            {t('paymentHistory.subtitle')}
           </p>
         </div>
 
@@ -210,7 +212,7 @@ export const PaymentHistorySection = () => {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by invoice number, plan, or payment method..."
+              placeholder={t('paymentHistory.searchPlaceholder')}
               className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             />
           </div>
@@ -328,12 +330,12 @@ export const PaymentHistorySection = () => {
           <div className="p-12 text-center">
             <Receipt className="h-12 w-12 text-text-muted mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-text-primary mb-2">
-              No invoices found
+              {t('paymentHistory.noInvoices')}
             </h3>
             <p className="text-text-secondary">
               {statusFilter || searchTerm
-                ? 'Try adjusting your filters or search'
-                : 'Your payment history will appear here'}
+                ? t('paymentHistory.adjustFilters')
+                : t('paymentHistory.historyWillAppear')}
             </p>
           </div>
         )}

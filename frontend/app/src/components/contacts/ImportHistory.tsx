@@ -25,6 +25,7 @@ import { useTeam } from '@/context/TeamContext';
 import { trackEvent } from '@/utils/analytics';
 import { AnalyticsEvent } from '@/constants/analyticsEvents';
 import type { DataImportResponse } from '@/generated/models';
+import { useTranslation } from 'react-i18next';
 
 const STATUS_STYLES: Record<string, string> = {
   PROCESSING: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
@@ -61,6 +62,7 @@ function formatDate(iso: string): string {
 }
 
 export const ImportHistory = () => {
+  const { t } = useTranslation('tenants');
   const { canEditData } = useTeam();
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
@@ -119,7 +121,7 @@ export const ImportHistory = () => {
   }
 
   if (error) {
-    return <ErrorMessage message="Failed to load import history" />;
+    return <ErrorMessage message={t('importHistory.failedToLoad')} />;
   }
 
   if (!importsData?.content || importsData.content.length === 0) {
@@ -127,8 +129,8 @@ export const ImportHistory = () => {
       <div className="bg-surface-card rounded-lg">
         <EmptyState
           icon={<FileSpreadsheet className="h-12 w-12" />}
-          title="No imports yet"
-          description="Import contacts from CSV or XLSX files. Your import history will appear here."
+          title={t('importHistory.empty')}
+          description={t('importHistory.emptyDescription')}
           variant="page"
         />
       </div>
@@ -140,12 +142,12 @@ export const ImportHistory = () => {
       <div className="bg-surface-card border border-border-default rounded-lg overflow-hidden">
         {/* Table header */}
         <div className="hidden md:grid md:grid-cols-[1fr_80px_100px_120px_140px_100px] gap-4 px-4 py-3 bg-surface-inset border-b border-border-default text-xs font-medium text-text-muted uppercase tracking-wider">
-          <span>File</span>
-          <span>Format</span>
-          <span>Status</span>
-          <span>Rows</span>
-          <span>Date</span>
-          <span>Actions</span>
+          <span>{t('importHistory.file')}</span>
+          <span>{t('importHistory.format')}</span>
+          <span>{t('importHistory.status')}</span>
+          <span>{t('importHistory.rows')}</span>
+          <span>{t('importHistory.date')}</span>
+          <span>{t('importHistory.actions')}</span>
         </div>
 
         {/* Rows */}
@@ -201,7 +203,7 @@ export const ImportHistory = () => {
                     type="button"
                     onClick={() => toggleExpand(imp.identifier)}
                     className="p-1.5 rounded hover:bg-surface-inset text-text-muted hover:text-text-primary transition-colors"
-                    title="View details"
+                    title={t('importHistory.viewDetails')}
                   >
                     {expandedId === imp.identifier ? (
                       <ChevronUp className="h-4 w-4" />
@@ -218,7 +220,7 @@ export const ImportHistory = () => {
                         }
                         disabled={downloadMutation.isPending}
                         className="p-1.5 rounded hover:bg-surface-inset text-text-muted hover:text-text-primary transition-colors disabled:opacity-50"
-                        title="Download error report"
+                        title={t('importHistory.downloadErrors')}
                       >
                         <Download className="h-4 w-4" />
                       </button>
@@ -228,7 +230,7 @@ export const ImportHistory = () => {
                       type="button"
                       onClick={() => setRevertTarget(imp)}
                       className="p-1.5 rounded hover:bg-red-50 dark:hover:bg-red-950 text-text-muted hover:text-red-600 dark:hover:text-red-400 transition-colors"
-                      title="Revert import"
+                      title={t('importHistory.revertImport')}
                     >
                       <Undo2 className="h-4 w-4" />
                     </button>
@@ -249,7 +251,7 @@ export const ImportHistory = () => {
                       {imp.revertedAt && (
                         <div className="flex items-center gap-2 text-sm text-text-muted bg-surface-card border border-border-default rounded-lg px-3 py-2">
                           <AlertTriangle className="h-4 w-4 text-yellow-500" />
-                          Reverted on {formatDate(imp.revertedAt)}
+                          {t('importHistory.revertedOn', { date: formatDate(imp.revertedAt) })}
                         </div>
                       )}
 
@@ -257,7 +259,7 @@ export const ImportHistory = () => {
                       {detail.items.length > 0 && (
                         <div>
                           <p className="text-xs font-medium text-text-muted mb-2">
-                            Imported Contacts ({detail.items.length})
+                            {t('importHistory.importedContacts', { count: detail.items.length })}
                           </p>
                           <div className="grid gap-1 max-h-48 overflow-y-auto">
                             {detail.items.map((item) => (
@@ -270,7 +272,7 @@ export const ImportHistory = () => {
                                   {item.displayName}
                                 </span>
                                 <span className="text-xs text-text-muted">
-                                  Row {item.rowNumber}
+                                  {t('importHistory.rowNumber', { number: item.rowNumber })}
                                 </span>
                               </Link>
                             ))}
@@ -280,7 +282,7 @@ export const ImportHistory = () => {
 
                       {detail.items.length === 0 && (
                         <p className="text-sm text-text-muted py-2">
-                          No imported contacts to display.
+                          {t('importHistory.noImportedContacts')}
                         </p>
                       )}
                     </div>
@@ -312,9 +314,9 @@ export const ImportHistory = () => {
         <ConfirmDialog
           onCancel={() => setRevertTarget(null)}
           onConfirm={handleRevert}
-          title="Revert Import?"
+          title={t('importHistory.revertTitle')}
           message={`This will permanently delete all ${revertTarget.importedRows} contacts created by the import "${revertTarget.fileName}". This action cannot be undone.`}
-          confirmLabel="Revert Import"
+          confirmLabel={t('importHistory.revertConfirm')}
           variant="danger"
           isLoading={revertMutation.isPending}
         />

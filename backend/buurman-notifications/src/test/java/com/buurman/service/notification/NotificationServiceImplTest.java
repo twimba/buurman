@@ -43,6 +43,7 @@ import com.buurman.domain.UserPreferences;
 import com.buurman.repository.NotificationOutboxRepository;
 import com.buurman.repository.NotificationRepository;
 import com.buurman.repository.TeamMemberRepository;
+import com.buurman.repository.TeamPreferencesRepository;
 import com.buurman.repository.UserNotificationTypePreferenceRepository;
 import com.buurman.repository.UserPreferencesRepository;
 import com.buurman.repository.UserRepository;
@@ -57,6 +58,7 @@ class NotificationServiceImplTest {
   @Mock private NotificationRepository notificationRepository;
   @Mock private NotificationOutboxRepository outboxRepository;
   @Mock private TeamMemberRepository teamMemberRepository;
+  @Mock private TeamPreferencesRepository teamPreferencesRepository;
   @Mock private UserPreferencesRepository userPreferencesRepository;
   @Mock private UserRepository userRepository;
   @Mock private UserNotificationTypePreferenceRepository notifTypePrefRepository;
@@ -79,6 +81,7 @@ class NotificationServiceImplTest {
             notificationRepository,
             outboxRepository,
             teamMemberRepository,
+            teamPreferencesRepository,
             userPreferencesRepository,
             userRepository,
             notifTypePrefRepository,
@@ -109,7 +112,7 @@ class NotificationServiceImplTest {
   }
 
   private void stubEmailRender() {
-    when(emailSender.render(anyString(), anyMap()))
+    when(emailSender.render(anyString(), anyMap(), any(java.util.Locale.class)))
         .thenReturn(new RenderedContent(Optional.of("Subject"), "Body", EMAIL));
   }
 
@@ -410,6 +413,7 @@ class NotificationServiceImplTest {
               notificationRepository,
               outboxRepository,
               teamMemberRepository,
+              teamPreferencesRepository,
               userPreferencesRepository,
               userRepository,
               notifTypePrefRepository,

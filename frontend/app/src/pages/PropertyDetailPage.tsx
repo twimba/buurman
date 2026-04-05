@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useTabState } from '@/hooks/useTabState';
 import { useProperty, useDeleteProperty } from '@/hooks/usePropertyHooks';
 import {
@@ -90,6 +91,7 @@ const formatEnumValue = (value: string | null): string => {
 };
 
 export const PropertyDetailPage = () => {
+  const { t } = useTranslation('properties');
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData, canManageMembers } = useTeam();
@@ -184,7 +186,7 @@ export const PropertyDetailPage = () => {
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error('Failed to download booklet:', err);
-      showToast('Failed to download booklet. Please try again.', 'error');
+      showToast(t('detail.bookletDownloadFailed'), 'error');
     }
   };
 
@@ -231,7 +233,7 @@ export const PropertyDetailPage = () => {
   if (error || !property) {
     return (
       <div className="min-h-screen bg-background p-8">
-        <ErrorMessage message="Property not found" />
+        <ErrorMessage message={t('detail.notFound')} />
       </div>
     );
   }
@@ -263,7 +265,7 @@ export const PropertyDetailPage = () => {
                 leftIcon={<Download />}
                 onClick={handleDownloadBooklet}
               >
-                Booklet
+                {t('detail.booklet')}
               </Button>
               {id && (
                 <CalendarFeedButton
@@ -302,7 +304,7 @@ export const PropertyDetailPage = () => {
                   : 'border-transparent text-text-secondary hover:text-text-primary'
               }`}
             >
-              Info
+              {t('detail.tabs.info')}
             </button>
             <FeatureGate flag={FeatureFlags.REPORTS}>
               <button
@@ -314,7 +316,7 @@ export const PropertyDetailPage = () => {
                 }`}
               >
                 <BarChart3 className="h-4 w-4" />
-                Dashboard
+                {t('detail.tabs.dashboard')}
               </button>
             </FeatureGate>
             <button
@@ -326,7 +328,7 @@ export const PropertyDetailPage = () => {
               }`}
             >
               <Wallet className="h-4 w-4" />
-              Financials
+              {t('detail.tabs.financials')}
             </button>
             <button
               onClick={() => setActiveTab('photos')}
@@ -337,7 +339,7 @@ export const PropertyDetailPage = () => {
               }`}
             >
               <Image className="h-4 w-4" />
-              Photos
+              {t('detail.tabs.photos')}
             </button>
             <button
               onClick={() => setActiveTab('documents')}
@@ -347,7 +349,7 @@ export const PropertyDetailPage = () => {
                   : 'border-transparent text-text-secondary hover:text-text-primary'
               }`}
             >
-              Documents
+              {t('detail.tabs.documents')}
             </button>
             <button
               onClick={() => setActiveTab('contracts')}
@@ -358,7 +360,7 @@ export const PropertyDetailPage = () => {
               }`}
             >
               <FileText className="h-4 w-4" />
-              Contracts
+              {t('detail.tabs.contracts')}
             </button>
             <button
               onClick={() => setActiveTab('expenses')}
@@ -369,7 +371,7 @@ export const PropertyDetailPage = () => {
               }`}
             >
               <Receipt className="h-4 w-4" />
-              Expenses
+              {t('detail.tabs.expenses')}
             </button>
             <button
               onClick={() => setActiveTab('audit')}
@@ -380,7 +382,7 @@ export const PropertyDetailPage = () => {
               }`}
             >
               <History className="h-4 w-4" />
-              History
+              {t('detail.tabs.history')}
             </button>
           </div>
         </div>
@@ -392,7 +394,7 @@ export const PropertyDetailPage = () => {
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-sm font-semibold text-text-primary">
-                  Property Timeline
+                  {t('detail.timeline.title')}
                 </span>
                 <div className="flex items-center gap-4 text-xs text-text-secondary">
                   <span className="flex items-center gap-1.5">
@@ -400,21 +402,21 @@ export const PropertyDetailPage = () => {
                       className="inline-block w-3 h-2.5 rounded-full"
                       style={{ background: 'rgba(59,130,246,1)' }}
                     />
-                    Rental contract
+                    {t('detail.timeline.rentalContract')}
                   </span>
                   <span className="flex items-center gap-1.5">
                     <span
                       className="inline-block w-3 h-2.5 rounded-full"
                       style={{ background: 'rgba(99,102,241,1)' }}
                     />
-                    Self-occupied
+                    {t('detail.timeline.selfOccupied')}
                   </span>
                   <span className="flex items-center gap-1.5">
                     <span
                       className="inline-block w-3 h-1.5 rounded-full"
                       style={{ background: 'rgba(245,158,11,0.5)' }}
                     />
-                    Financing
+                    {t('detail.timeline.financing')}
                   </span>
                 </div>
               </div>
@@ -492,7 +494,7 @@ export const PropertyDetailPage = () => {
                   <div>
                     <div className="flex items-center gap-2 text-text-secondary mb-1">
                       <Bed className="h-5 w-5" />
-                      <span className="text-sm font-medium">Bedrooms</span>
+                      <span className="text-sm font-medium">{t('detail.specs.bedrooms')}</span>
                     </div>
                     <p className="text-2xl font-semibold text-text-primary">
                       {property.residentialDetails.bedrooms}
@@ -504,7 +506,7 @@ export const PropertyDetailPage = () => {
                   <div>
                     <div className="flex items-center gap-2 text-text-secondary mb-1">
                       <Bath className="h-5 w-5" />
-                      <span className="text-sm font-medium">Bathrooms</span>
+                      <span className="text-sm font-medium">{t('detail.specs.bathrooms')}</span>
                     </div>
                     <p className="text-2xl font-semibold text-text-primary">
                       {property.residentialDetails.bathrooms}
@@ -516,7 +518,7 @@ export const PropertyDetailPage = () => {
                   <div>
                     <div className="flex items-center gap-2 text-text-secondary mb-1">
                       <Ruler className="h-5 w-5" />
-                      <span className="text-sm font-medium">Area</span>
+                      <span className="text-sm font-medium">{t('detail.specs.area')}</span>
                     </div>
                     <p className="text-2xl font-semibold text-text-primary">
                       {property.areaValue}
@@ -528,7 +530,7 @@ export const PropertyDetailPage = () => {
                 <div>
                   <div className="flex items-center gap-2 text-text-secondary mb-1">
                     <PropertyTypeIcon type={property.propertyType} size={20} />
-                    <span className="text-sm font-medium">Type</span>
+                    <span className="text-sm font-medium">{t('detail.specs.type')}</span>
                   </div>
                   <p className="text-lg font-semibold text-text-primary">
                     {PROPERTY_TYPE_LABELS[property.propertyType] ??
@@ -539,7 +541,7 @@ export const PropertyDetailPage = () => {
                 <div>
                   <div className="flex items-center gap-2 text-text-secondary mb-1">
                     <MapPin className="h-5 w-5" />
-                    <span className="text-sm font-medium">Street</span>
+                    <span className="text-sm font-medium">{t('detail.specs.street')}</span>
                   </div>
                   <p className="text-lg text-text-primary">{property.street}</p>
                 </div>
@@ -547,7 +549,7 @@ export const PropertyDetailPage = () => {
                 <div>
                   <div className="flex items-center gap-2 text-text-secondary mb-1">
                     <MapPin className="h-5 w-5" />
-                    <span className="text-sm font-medium">City</span>
+                    <span className="text-sm font-medium">{t('detail.specs.city')}</span>
                   </div>
                   <p className="text-lg text-text-primary">{property.city}</p>
                 </div>
@@ -555,7 +557,7 @@ export const PropertyDetailPage = () => {
                 <div>
                   <div className="flex items-center gap-2 text-text-secondary mb-1">
                     <MapPin className="h-5 w-5" />
-                    <span className="text-sm font-medium">Postal Code</span>
+                    <span className="text-sm font-medium">{t('detail.specs.postalCode')}</span>
                   </div>
                   <p className="text-lg text-text-primary">
                     {property.postalCode}
@@ -565,7 +567,7 @@ export const PropertyDetailPage = () => {
                 <div>
                   <div className="flex items-center gap-2 text-text-secondary mb-1">
                     <MapPin className="h-5 w-5" />
-                    <span className="text-sm font-medium">Country</span>
+                    <span className="text-sm font-medium">{t('detail.specs.country')}</span>
                   </div>
                   <p className="text-lg text-text-primary">
                     {property.countryCode}
@@ -576,7 +578,7 @@ export const PropertyDetailPage = () => {
               {/* Map */}
               <div className="pt-6 border-t">
                 <h3 className="text-sm font-semibold text-text-secondary mb-3">
-                  Location
+                  {t('detail.specs.location')}
                 </h3>
                 <InteractiveMap
                   street={property.street}
@@ -601,7 +603,7 @@ export const PropertyDetailPage = () => {
               property.structuralNotes) && (
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
                 <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
-                  Construction &amp; Structure
+                  {t('detail.construction.title')}
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {property.yearBuilt != null && (
@@ -720,7 +722,7 @@ export const PropertyDetailPage = () => {
               property.insulationNotes) && (
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
                 <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
-                  Energy &amp; Climate
+                  {t('detail.energy.title')}
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {property.energyEfficiencyRating && (
@@ -818,7 +820,7 @@ export const PropertyDetailPage = () => {
               property.internetStatus) && (
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
                 <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
-                  Utilities &amp; Connections
+                  {t('detail.utilities.title')}
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {property.electricityConnectionType && (
@@ -1018,7 +1020,7 @@ export const PropertyDetailPage = () => {
               property.safetyNotes) && (
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
                 <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
-                  Safety &amp; Security
+                  {t('detail.safety.title')}
                 </h3>
                 <div className="flex flex-wrap gap-x-6 gap-y-2">
                   {property.hasSmokeDetectors && (

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   X,
   Download,
@@ -31,6 +32,7 @@ export const DocumentPreviewModal = ({
   currentIndex,
   totalCount,
 }: DocumentPreviewModalProps) => {
+  const { t } = useTranslation('documents');
   const touchStartX = useRef<number | null>(null);
 
   const handleKeyDown = useCallback(
@@ -91,7 +93,7 @@ export const DocumentPreviewModal = ({
               onPrevious();
             }}
             className="fixed left-4 top-1/2 -translate-y-1/2 z-[60] p-2 rounded-full bg-black/40 text-white/70 hover:bg-black/60 hover:text-white transition-colors"
-            title="Previous"
+            title={t('preview.tooltips.previous')}
           >
             <ChevronLeft className="h-6 w-6" />
           </button>
@@ -105,7 +107,7 @@ export const DocumentPreviewModal = ({
               onNext();
             }}
             className="fixed right-4 top-1/2 -translate-y-1/2 z-[60] p-2 rounded-full bg-black/40 text-white/70 hover:bg-black/60 hover:text-white transition-colors"
-            title="Next"
+            title={t('preview.tooltips.next')}
           >
             <ChevronRight className="h-6 w-6" />
           </button>
@@ -142,7 +144,7 @@ export const DocumentPreviewModal = ({
                 <button
                   onClick={onEdit}
                   className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-inset rounded-md"
-                  title="Edit title & notes"
+                  title={t('preview.tooltips.editTitleNotes')}
                 >
                   <Pencil className="h-5 w-5" />
                 </button>
@@ -151,7 +153,7 @@ export const DocumentPreviewModal = ({
                 href={document.downloadUrl ?? undefined}
                 download
                 className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-inset rounded-md"
-                title="Download"
+                title={t('preview.tooltips.download')}
               >
                 <Download className="h-5 w-5" />
               </a>
@@ -160,14 +162,14 @@ export const DocumentPreviewModal = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-inset rounded-md"
-                title="Open in new tab"
+                title={t('preview.tooltips.openInNewTab')}
               >
                 <ExternalLink className="h-5 w-5" />
               </a>
               <button
                 onClick={onClose}
                 className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-inset rounded-md"
-                title="Close"
+                title={t('preview.tooltips.close')}
               >
                 <X className="h-5 w-5" />
               </button>
@@ -206,7 +208,7 @@ export const DocumentPreviewModal = ({
             ) : (
               <div className="text-center py-12">
                 <p className="text-text-secondary mb-4">
-                  Preview not available for this file type ({document.mimeType})
+                  {t('preview.previewNotAvailable', { mimeType: document.mimeType })}
                 </p>
                 <a
                   href={document.downloadUrl ?? undefined}
@@ -214,7 +216,7 @@ export const DocumentPreviewModal = ({
                   className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600"
                 >
                   <Download className="h-4 w-4" />
-                  Download File
+                  {t('preview.downloadFile')}
                 </a>
               </div>
             )}
@@ -224,7 +226,7 @@ export const DocumentPreviewModal = ({
           {document.notes ? (
             <div className="bg-surface-card px-4 py-3 border-t border-border-default">
               <div className="text-sm text-text-secondary">
-                <span className="font-medium">Notes:</span>
+                <span className="font-medium">{t('preview.notes')}</span>
                 <RichTextDisplay
                   html={document.notes}
                   className="mt-1 text-sm"

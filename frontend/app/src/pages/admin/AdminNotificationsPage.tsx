@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Bell,
@@ -13,6 +13,7 @@ import {
   ShieldOff,
 } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
+import { useTranslation } from 'react-i18next';
 import { useFeatureFlags } from '@/context/FeatureFlagContext';
 import { FeatureFlags } from '@/constants/featureFlags';
 import {
@@ -32,26 +33,27 @@ import { NotificationFilters } from '@/components/notifications/NotificationFilt
 import { NotificationDetailModal } from '@/components/notifications/NotificationDetailModal';
 import { ConfirmDialog, Pagination, RefreshButton } from '@buurman/ui';
 
-const typeLabels: Record<string, string> = {
-  WELCOME: 'Welcome',
-  VERIFICATION_CODE: 'Verification',
-  TEAM_INVITATION: 'Invitation',
-  INVITATION_ACCEPTED: 'Accepted',
-  PASSWORD_CHANGED: 'Password',
-  PAYMENT_REMINDER: 'Payment',
-  CONTRACT_EXPIRY: 'Contract',
-  PROPERTY_CREATED: 'Property',
-  CONTRACT_CREATED: 'New Contract',
-  CONTRACT_STATUS_CHANGED: 'Status Change',
-  CONTRACT_REOPENED: 'Reopened',
-  PAYMENT_PAID: 'Paid',
-  PAYMENT_RECEIVAL: 'Receival',
-  EXPENSE_CREATED: 'Expense',
-};
-
 export const AdminNotificationsPage = () => {
+  const { t } = useTranslation('admin');
   const { canEditTeamSettings, isLoading: teamLoading } = useTeam();
   const navigate = useNavigate();
+
+  const typeLabels: Record<string, string> = useMemo(() => ({
+    WELCOME: t('notifications.typeLabels.welcome'),
+    VERIFICATION_CODE: t('notifications.typeLabels.verification'),
+    TEAM_INVITATION: t('notifications.typeLabels.invitation'),
+    INVITATION_ACCEPTED: t('notifications.typeLabels.accepted'),
+    PASSWORD_CHANGED: t('notifications.typeLabels.password'),
+    PAYMENT_REMINDER: t('notifications.typeLabels.payment'),
+    CONTRACT_EXPIRY: t('notifications.typeLabels.contract'),
+    PROPERTY_CREATED: t('notifications.typeLabels.property'),
+    CONTRACT_CREATED: t('notifications.typeLabels.newContract'),
+    CONTRACT_STATUS_CHANGED: t('notifications.typeLabels.statusChange'),
+    CONTRACT_REOPENED: t('notifications.typeLabels.reopened'),
+    PAYMENT_PAID: t('notifications.typeLabels.paid'),
+    PAYMENT_RECEIVAL: t('notifications.typeLabels.receival'),
+    EXPENSE_CREATED: t('notifications.typeLabels.expense'),
+  }), [t]);
   const { isEnabled } = useFeatureFlags();
 
   const emailBlocked = isEnabled(FeatureFlags.BLOCK_EMAIL_NOTIFICATIONS);
@@ -143,11 +145,11 @@ export const AdminNotificationsPage = () => {
             <div className="flex items-center gap-3 mb-1">
               <Bell className="h-8 w-8 text-primary-500 dark:text-primary-300" />
               <h1 className="text-3xl font-bold text-text-primary">
-                Notifications
+                {t('notifications.title')}
               </h1>
             </div>
             <p className="text-text-secondary ml-11">
-              Track and manage all notifications sent across your team
+              {t('notifications.subtitle')}
             </p>
           </div>
           <RefreshButton
@@ -165,14 +167,14 @@ export const AdminNotificationsPage = () => {
             <Info className="h-5 w-5 text-violet-500 mt-0.5 shrink-0" />
             <div>
               <p className="font-medium text-violet-800 dark:text-violet-200">
-                Demo account — notifications are simulated
+                {t('notifications.demoBanner.title')}
               </p>
               <p className="text-sm text-violet-600 dark:text-violet-400 mt-0.5">
                 {emailBlocked && smsBlocked
-                  ? 'Email and SMS notifications are recorded but not actually delivered.'
+                  ? t('notifications.demoBanner.emailAndSms')
                   : emailBlocked
-                    ? 'Email notifications are recorded but not actually delivered.'
-                    : 'SMS notifications are recorded but not actually delivered.'}
+                    ? t('notifications.demoBanner.emailOnly')
+                    : t('notifications.demoBanner.smsOnly')}
               </p>
             </div>
           </div>
@@ -184,7 +186,7 @@ export const AdminNotificationsPage = () => {
             <div className="bg-surface-card rounded-lg border border-border-default p-4">
               <div className="flex items-center gap-2 text-text-secondary text-sm mb-1">
                 <Mail className="h-4 w-4" />
-                Total
+                {t('notifications.stats.total')}
               </div>
               <div className="text-2xl font-bold text-text-primary">
                 {stats.totalCount}
@@ -193,7 +195,7 @@ export const AdminNotificationsPage = () => {
             <div className="bg-surface-card rounded-lg border border-border-default p-4">
               <div className="flex items-center gap-2 text-text-secondary text-sm mb-1">
                 <CheckCircle className="h-4 w-4 text-success-text" />
-                Delivered
+                {t('notifications.stats.delivered')}
               </div>
               <div className="text-2xl font-bold text-success-text">
                 {stats.deliveredCount}
@@ -202,7 +204,7 @@ export const AdminNotificationsPage = () => {
             <div className="bg-surface-card rounded-lg border border-border-default p-4">
               <div className="flex items-center gap-2 text-text-secondary text-sm mb-1">
                 <Clock className="h-4 w-4 text-info-text" />
-                Pending
+                {t('notifications.stats.pending')}
               </div>
               <div className="text-2xl font-bold text-info-text">
                 {stats.pendingCount}
@@ -211,7 +213,7 @@ export const AdminNotificationsPage = () => {
             <div className="bg-surface-card rounded-lg border border-border-default p-4">
               <div className="flex items-center gap-2 text-text-secondary text-sm mb-1">
                 <AlertTriangle className="h-4 w-4 text-error-text" />
-                Failed
+                {t('notifications.stats.failed')}
               </div>
               <div className="text-2xl font-bold text-error-text">
                 {stats.failedCount}
@@ -220,7 +222,7 @@ export const AdminNotificationsPage = () => {
             <div className="bg-surface-card rounded-lg border border-border-default p-4">
               <div className="flex items-center gap-2 text-text-secondary text-sm mb-1">
                 <Phone className="h-4 w-4" />
-                By Channel
+                {t('notifications.stats.byChannel')}
               </div>
               <div className="text-sm text-text-primary">
                 {Object.entries(stats.byChannel).map(([ch, count]) => (
@@ -234,7 +236,7 @@ export const AdminNotificationsPage = () => {
               <div className="bg-surface-card rounded-lg border border-border-default p-4">
                 <div className="flex items-center gap-2 text-text-secondary text-sm mb-1">
                   <ShieldOff className="h-4 w-4 text-violet-500" />
-                  Demo Blocked
+                  {t('notifications.stats.demoBlocked')}
                 </div>
                 <div className="text-2xl font-bold text-violet-600 dark:text-violet-400">
                   {stats.demoBlockedCount}
@@ -259,25 +261,25 @@ export const AdminNotificationsPage = () => {
               <thead>
                 <tr className="border-b border-border-default bg-surface-page dark:bg-surface-card">
                   <th className="text-left px-4 py-3 font-medium text-text-secondary">
-                    Type
+                    {t('notifications.table.type')}
                   </th>
                   <th className="text-left px-4 py-3 font-medium text-text-secondary">
-                    Channel
+                    {t('notifications.table.channel')}
                   </th>
                   <th className="text-left px-4 py-3 font-medium text-text-secondary">
-                    Recipient
+                    {t('notifications.table.recipient')}
                   </th>
                   <th className="text-left px-4 py-3 font-medium text-text-secondary">
-                    Subject / Body
+                    {t('notifications.table.subjectBody')}
                   </th>
                   <th className="text-left px-4 py-3 font-medium text-text-secondary">
-                    Status
+                    {t('notifications.table.status')}
                   </th>
                   <th className="text-left px-4 py-3 font-medium text-text-secondary">
-                    Date
+                    {t('notifications.table.date')}
                   </th>
                   <th className="text-right px-4 py-3 font-medium text-text-secondary">
-                    Actions
+                    {t('notifications.table.actions')}
                   </th>
                 </tr>
               </thead>
@@ -288,7 +290,7 @@ export const AdminNotificationsPage = () => {
                       colSpan={7}
                       className="px-4 py-12 text-center text-text-secondary"
                     >
-                      Loading notifications...
+                      {t('notifications.loading')}
                     </td>
                   </tr>
                 ) : !notifications?.content?.length ? (
@@ -297,7 +299,7 @@ export const AdminNotificationsPage = () => {
                       colSpan={7}
                       className="px-4 py-12 text-center text-text-secondary"
                     >
-                      No notifications found
+                      {t('notifications.noResults')}
                     </td>
                   </tr>
                 ) : (
@@ -345,10 +347,10 @@ export const AdminNotificationsPage = () => {
                               setSelectedNotification(notif);
                             }}
                             className="inline-flex items-center gap-1 text-xs font-medium text-text-secondary hover:text-text-secondary transition-colors"
-                            title="View details"
+                            title={t('notifications.viewDetails')}
                           >
                             <Eye className="h-3.5 w-3.5" />
-                            View
+                            {t('notifications.view')}
                           </button>
                           <button
                             onClick={(e) => {
@@ -356,10 +358,10 @@ export const AdminNotificationsPage = () => {
                               setResendTarget(notif.identifier);
                             }}
                             className="inline-flex items-center gap-1 text-xs font-medium text-primary-500 hover:text-primary-600 transition-colors"
-                            title="Resend notification"
+                            title={t('notifications.resendNotification')}
                           >
                             <RotateCcw className="h-3.5 w-3.5" />
-                            Resend
+                            {t('notifications.resend')}
                           </button>
                         </div>
                       </td>
@@ -404,9 +406,9 @@ export const AdminNotificationsPage = () => {
       {/* Resend Confirm Dialog */}
       {resendTarget && (
         <ConfirmDialog
-          title="Resend Notification"
-          message="This will create a new notification and attempt delivery again. The original notification will remain in the log."
-          confirmLabel="Resend"
+          title={t('notifications.resendConfirm.title')}
+          message={t('notifications.resendConfirm.message')}
+          confirmLabel={t('notifications.resend')}
           onConfirm={handleResendConfirm}
           onCancel={() => setResendTarget(null)}
           isLoading={resendMutation.isPending}

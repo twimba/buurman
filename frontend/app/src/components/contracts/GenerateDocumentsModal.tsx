@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { FileText, FileDown, Languages, Shield, Globe } from 'lucide-react';
 import { useGenerateExtensionDocuments } from '@/hooks/useContractExtensionHooks';
 import type { GenerateExtensionDocumentsRequest } from '@/api/contractExtensions';
+import { useTranslation } from 'react-i18next';
 
 const SUPPORTED_LANGUAGES = [
   { code: 'en', label: 'English' },
@@ -68,6 +69,7 @@ export const GenerateDocumentsModal = ({
   regenerate = false,
   onClose,
 }: GenerateDocumentsModalProps) => {
+  const { t } = useTranslation('contracts');
   const officialLanguages = countryCode
     ? (COUNTRY_OFFICIAL_LANGUAGES[countryCode.toUpperCase()] ?? [])
     : [];
@@ -314,7 +316,7 @@ export const GenerateDocumentsModal = ({
             className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset"
             disabled={generateDocs.isPending}
           >
-            Cancel
+            {t('common:buttons.cancel')}
           </button>
           <button
             type="button"

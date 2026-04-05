@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, Image as ImageIcon, Filter } from 'lucide-react';
 import {
   usePhotos,
@@ -16,6 +17,7 @@ import { usePhotoSelection } from '@/hooks/usePhotoSelection';
 import { useTeam } from '@/context/TeamContext';
 
 export const PhotosPage = () => {
+  const { t } = useTranslation('documents');
   const { canEditData } = useTeam();
   const [searchTerm, setSearchTerm] = useState('');
   const [entityTypeFilter, setEntityTypeFilter] = useState<string>('');
@@ -81,11 +83,11 @@ export const PhotosPage = () => {
           <div className="flex items-center gap-3 mb-1">
             <ImageIcon className="h-8 w-8 text-primary-500 dark:text-primary-300" />
             <h1 className="text-3xl font-bold text-text-primary">
-              Photo Library
+              {t('photosPage.title')}
             </h1>
           </div>
           <p className="text-text-secondary ml-11">
-            Browse and manage all your photos in one place
+            {t('photosPage.subtitle')}
           </p>
         </div>
         <RefreshButton onClick={() => refetch()} isRefreshing={isFetching} />
@@ -98,7 +100,7 @@ export const PhotosPage = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-muted " />
             <input
               type="text"
-              placeholder="Search photos by title, filename, or notes..."
+              placeholder={t('photosPage.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -118,12 +120,12 @@ export const PhotosPage = () => {
               }}
               className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
             >
-              <option value="">All Types</option>
-              <option value="PROPERTY">Properties</option>
-              <option value="CONTACT">Contacts</option>
-              <option value="CONTRACT">Contracts</option>
-              <option value="PAYMENT">Payments</option>
-              <option value="EXPENSE">Expenses</option>
+              <option value="">{t('photosPage.entityTypeFilter.all')}</option>
+              <option value="PROPERTY">{t('photosPage.entityTypeFilter.property')}</option>
+              <option value="CONTACT">{t('photosPage.entityTypeFilter.contact')}</option>
+              <option value="CONTRACT">{t('photosPage.entityTypeFilter.contract')}</option>
+              <option value="PAYMENT">{t('photosPage.entityTypeFilter.payment')}</option>
+              <option value="EXPENSE">{t('photosPage.entityTypeFilter.expense')}</option>
             </select>
           </div>
         </div>
@@ -134,7 +136,7 @@ export const PhotosPage = () => {
         <PhotoGrid
           photos={photos}
           isLoading={isLoading}
-          emptyMessage="No photos found"
+          emptyMessage={t('photosPage.empty')}
           totalCount={photosData?.totalElements}
           selectedPhotos={selectedPhotos}
           onSelectPhoto={handleSelectPhoto}
@@ -192,7 +194,7 @@ export const PhotosPage = () => {
       {/* Edit Modal */}
       {editingPhoto && (
         <EditMetadataModal
-          title="Edit Photo"
+          title={t('photosPage.editModal')}
           currentTitle={editingPhoto.title}
           currentNotes={editingPhoto.notes}
           onSave={(title, notes) => {

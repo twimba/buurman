@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { AlertTriangle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useCheckContactDuplicates } from '@/hooks/useContactHooks';
 import type {
   DuplicateCheckRequest,
@@ -72,6 +73,8 @@ export function DuplicateContactWarning({
   onDismiss: () => void;
   compact?: boolean;
 }) {
+  const { t } = useTranslation('tenants');
+
   if (matches.length === 0 || dismissed) {
     return null;
   }
@@ -123,7 +126,7 @@ export function DuplicateContactWarning({
         <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
-            Potential duplicate{matches.length > 1 ? 's' : ''} found
+            {t('duplicate.potentialDuplicate', { count: matches.length })}
           </p>
           <div className="mt-2 space-y-2">
             {matches.map((match) => (
@@ -143,7 +146,7 @@ export function DuplicateContactWarning({
                     </span>
                   )}
                   <span className="text-amber-500 dark:text-amber-500 ml-2">
-                    ({match.matchType} match on {match.matchField})
+                    {t('duplicate.matchInfo', { matchType: match.matchType, matchField: match.matchField })}
                   </span>
                 </span>
                 <a

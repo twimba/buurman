@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   BarChart,
   Bar,
@@ -35,6 +36,7 @@ export const PropertyComparisonChart = ({
   currency = 'EUR',
   isDark,
 }: PropertyComparisonChartProps) => {
+  const { t } = useTranslation('common');
   const sorted = useMemo(() => {
     return [...data]
       .filter((d) => d.monthlyCashFlow != null)
@@ -54,9 +56,7 @@ export const PropertyComparisonChart = ({
 
   if (sorted.length === 0) {
     return (
-      <div className="flex items-center justify-center h-80 text-text-secondary text-sm">
-        No property comparison data available
-      </div>
+      <div className="flex items-center justify-center h-80 text-text-secondary text-sm">{t("dashboard.comparison.noData")}</div>
     );
   }
 
@@ -87,7 +87,7 @@ export const PropertyComparisonChart = ({
               typeof value === 'number' ? value : Number(value),
               currency
             ),
-            'Monthly Cash Flow',
+            t('dashboard.comparison.monthlyCashFlow'),
           ]}
         />
         <Bar dataKey="monthlyCashFlow" radius={[0, 4, 4, 0]}>

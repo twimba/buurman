@@ -8,6 +8,7 @@ import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 import { LoadingSpinner } from '@buurman/ui';
 import { getCurrencySymbol } from '@/utils/currencies';
 import { Receipt, CreditCard, ExternalLink } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface ContactFinancialsTabProps {
   contactIdentifier: string;
@@ -18,6 +19,7 @@ export const ContactFinancialsTab = ({
   contactIdentifier,
   backTo,
 }: ContactFinancialsTabProps) => {
+  const { t } = useTranslation('tenants');
   const { formatDate } = useFormatDate();
 
   const { data: expensesData, isLoading: expensesLoading } = useExpenses({
@@ -65,7 +67,7 @@ export const ContactFinancialsTab = ({
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-text-primary flex items-center gap-2">
             <Receipt className="h-5 w-5" />
-            Expenses ({expenses.length})
+            {t('financials.expenses')} ({expenses.length})
           </h2>
         </div>
 
@@ -73,7 +75,7 @@ export const ContactFinancialsTab = ({
           <div className="text-center py-8">
             <Receipt className="h-12 w-12 text-text-disabled mx-auto mb-3" />
             <p className="text-text-secondary">
-              No expenses linked to this contact
+              {t('financials.noExpenses')}
             </p>
           </div>
         ) : (
@@ -141,7 +143,7 @@ export const ContactFinancialsTab = ({
             {expenseTotal && (
               <div className="mt-4 pt-3 border-t border-border-default flex justify-end">
                 <div className="text-sm">
-                  <span className="text-text-secondary">Total: </span>
+                  <span className="text-text-secondary">{t('financials.total')} </span>
                   <span className="font-semibold text-text-primary">
                     {getCurrencySymbol(expenseTotal.currency)}{' '}
                     {expenseTotal.total.toFixed(2)}
@@ -158,7 +160,7 @@ export const ContactFinancialsTab = ({
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-text-primary flex items-center gap-2">
             <CreditCard className="h-5 w-5" />
-            Payments ({payments.length})
+            {t('financials.payments')} ({payments.length})
           </h2>
         </div>
 
@@ -166,7 +168,7 @@ export const ContactFinancialsTab = ({
           <div className="text-center py-8">
             <CreditCard className="h-12 w-12 text-text-disabled mx-auto mb-3" />
             <p className="text-text-secondary">
-              No payments linked to this contact
+              {t('financials.noPayments')}
             </p>
           </div>
         ) : (
@@ -234,14 +236,14 @@ export const ContactFinancialsTab = ({
             {paymentTotal && (
               <div className="mt-4 pt-3 border-t border-border-default flex justify-end gap-6">
                 <div className="text-sm">
-                  <span className="text-text-secondary">Total: </span>
+                  <span className="text-text-secondary">{t('financials.total')} </span>
                   <span className="font-semibold text-text-primary">
                     {getCurrencySymbol(paymentTotal.currency)}{' '}
                     {paymentTotal.total.toFixed(2)}
                   </span>
                 </div>
                 <div className="text-sm">
-                  <span className="text-text-secondary">Received: </span>
+                  <span className="text-text-secondary">{t('financials.received')} </span>
                   <span className="font-semibold text-success-text">
                     {getCurrencySymbol(paymentTotal.currency)}{' '}
                     {paymentTotal.received.toFixed(2)}

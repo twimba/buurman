@@ -19,6 +19,7 @@ import {
   MoreHorizontal,
   Pin,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const EVENT_TYPE_ICONS: Record<string, React.ReactNode> = {
   AUDIT: <FileText className="h-4 w-4" />,
@@ -45,6 +46,7 @@ interface ContactActivityTabProps {
 }
 
 export const ContactActivityTab = ({ contactId }: ContactActivityTabProps) => {
+  const { t } = useTranslation('tenants');
   const { formatDate, formatRelative } = useFormatDate();
   const { pageParams, page, size, handlePageChange, handleSizeChange } =
     usePagination({ defaultSize: 25 });
@@ -81,16 +83,16 @@ export const ContactActivityTab = ({ contactId }: ContactActivityTabProps) => {
     <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold text-text-primary">
-          Activity ({totalElements})
+          {t('activity.title')} ({totalElements})
         </h2>
       </div>
 
       {items.length === 0 ? (
         <div className="text-center py-8">
           <Activity className="h-12 w-12 text-text-disabled mx-auto mb-3" />
-          <p className="text-text-secondary">No activity yet</p>
+          <p className="text-text-secondary">{t('activity.empty')}</p>
           <p className="text-sm text-text-muted mt-1">
-            Activity from notes, updates, and other events will appear here
+            {t('activity.emptyDescription')}
           </p>
         </div>
       ) : (

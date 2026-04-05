@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { FileCode } from 'lucide-react';
 import { useTeam } from '@/context/TeamContext';
 import { useAuth } from '@/context/AuthContext';
+import { useTranslation } from 'react-i18next';
 import SwaggerUI from 'swagger-ui-react';
 import 'swagger-ui-react/swagger-ui.css';
 
 const apiBaseUrl = `${window.location.protocol}//api.${window.location.hostname.replace(/^app\./, '')}`;
 
 export const AdminApiDocsPage = () => {
+  const { t } = useTranslation('admin');
   const { canEditTeamSettings, isLoading } = useTeam();
   const { keycloak } = useAuth();
   const navigate = useNavigate();
@@ -31,11 +33,11 @@ export const AdminApiDocsPage = () => {
         <div className="flex items-center gap-3 mb-1">
           <FileCode className="h-8 w-8 text-primary-500 dark:text-primary-300" />
           <h1 className="text-3xl font-bold text-text-primary">
-            API Documentation
+            {t('apiDocs.title')}
           </h1>
         </div>
         <p className="text-text-secondary ml-11">
-          Explore and test the Buurman REST API
+          {t('apiDocs.subtitle')}
         </p>
       </div>
       <div className="flex-1 px-4 pb-4">

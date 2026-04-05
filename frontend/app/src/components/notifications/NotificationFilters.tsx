@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Search } from 'lucide-react';
 import {
   NotificationType,
@@ -6,21 +7,21 @@ import {
   NotificationFilterParams,
 } from '@/types/notification';
 
-const notificationTypeLabels: Record<NotificationType, string> = {
-  [NotificationType.WELCOME]: 'Welcome',
-  [NotificationType.VERIFICATION_CODE]: 'Verification Code',
-  [NotificationType.TEAM_INVITATION]: 'Team Invitation',
-  [NotificationType.INVITATION_ACCEPTED]: 'Invitation Accepted',
-  [NotificationType.PASSWORD_CHANGED]: 'Password Changed',
-  [NotificationType.PAYMENT_REMINDER]: 'Payment Reminder',
-  [NotificationType.CONTRACT_EXPIRY]: 'Contract Expiry',
-  [NotificationType.PROPERTY_CREATED]: 'Property Created',
-  [NotificationType.CONTRACT_CREATED]: 'Contract Created',
-  [NotificationType.CONTRACT_STATUS_CHANGED]: 'Contract Status Changed',
-  [NotificationType.CONTRACT_REOPENED]: 'Contract Reopened',
-  [NotificationType.PAYMENT_PAID]: 'Payment Paid',
-  [NotificationType.PAYMENT_RECEIVAL]: 'Payment Receival',
-  [NotificationType.EXPENSE_CREATED]: 'Expense Created',
+const notificationTypeKeys: Record<NotificationType, string> = {
+  [NotificationType.WELCOME]: 'notifications.types.welcome',
+  [NotificationType.VERIFICATION_CODE]: 'notifications.types.verificationCode',
+  [NotificationType.TEAM_INVITATION]: 'notifications.types.teamInvitation',
+  [NotificationType.INVITATION_ACCEPTED]: 'notifications.types.invitationAccepted',
+  [NotificationType.PASSWORD_CHANGED]: 'notifications.types.passwordChanged',
+  [NotificationType.PAYMENT_REMINDER]: 'notifications.types.paymentReminder',
+  [NotificationType.CONTRACT_EXPIRY]: 'notifications.types.contractExpiry',
+  [NotificationType.PROPERTY_CREATED]: 'notifications.types.propertyCreated',
+  [NotificationType.CONTRACT_CREATED]: 'notifications.types.contractCreated',
+  [NotificationType.CONTRACT_STATUS_CHANGED]: 'notifications.types.contractStatusChanged',
+  [NotificationType.CONTRACT_REOPENED]: 'notifications.types.contractReopened',
+  [NotificationType.PAYMENT_PAID]: 'notifications.types.paymentPaid',
+  [NotificationType.PAYMENT_RECEIVAL]: 'notifications.types.paymentReceival',
+  [NotificationType.EXPENSE_CREATED]: 'notifications.types.expenseCreated',
 };
 
 interface NotificationFiltersProps {
@@ -32,6 +33,7 @@ export const NotificationFilters = ({
   filters,
   onFilterChange,
 }: NotificationFiltersProps) => {
+  const { t } = useTranslation('admin');
   const selectClass =
     'border border-border-strong rounded-lg px-3 py-2 bg-surface-card text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500/30';
 
@@ -41,7 +43,7 @@ export const NotificationFilters = ({
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted " />
         <input
           type="text"
-          placeholder="Search by email..."
+          placeholder={t('notifications.filters.searchByEmail')}
           value={filters.recipientEmail ?? ''}
           onChange={(e) =>
             onFilterChange({
@@ -63,10 +65,10 @@ export const NotificationFilters = ({
         }
         className={selectClass}
       >
-        <option value="">All Types</option>
-        {Object.entries(notificationTypeLabels).map(([value, label]) => (
+        <option value="">{t('notifications.filters.allTypes')}</option>
+        {Object.entries(notificationTypeKeys).map(([value, key]) => (
           <option key={value} value={value}>
-            {label}
+            {t(key)}
           </option>
         ))}
       </select>
@@ -81,7 +83,7 @@ export const NotificationFilters = ({
         }
         className={selectClass}
       >
-        <option value="">All Channels</option>
+        <option value="">{t('notifications.filters.allChannels')}</option>
         <option value={NotificationChannel.EMAIL}>Email</option>
         <option value={NotificationChannel.SMS}>SMS</option>
       </select>
@@ -96,7 +98,7 @@ export const NotificationFilters = ({
         }
         className={selectClass}
       >
-        <option value="">All Statuses</option>
+        <option value="">{t('notifications.filters.allStatuses')}</option>
         {Object.values(NotificationStatus).map((status) => (
           <option key={status} value={status}>
             {status.charAt(0) + status.slice(1).toLowerCase()}
@@ -114,7 +116,7 @@ export const NotificationFilters = ({
           })
         }
         className={selectClass}
-        title="From date"
+        title={t('notifications.filters.fromDate')}
       />
       <input
         type="date"
@@ -126,7 +128,7 @@ export const NotificationFilters = ({
           })
         }
         className={selectClass}
-        title="To date"
+        title={t('notifications.filters.toDate')}
       />
     </div>
   );

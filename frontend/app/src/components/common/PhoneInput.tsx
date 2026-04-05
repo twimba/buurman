@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronDown } from 'lucide-react';
 import { parsePhoneNumber, isValidPhoneNumber } from 'libphonenumber-js/max';
 import type { CountryCode } from 'libphonenumber-js/max';
@@ -36,6 +37,7 @@ export const PhoneInput = ({
   error,
   allowedCountryCodes,
 }: PhoneInputProps) => {
+  const { t } = useTranslation('common');
   const [selectedCountryCode, setSelectedCountryCode] =
     useState<string>(defaultCountryCode);
   const [nationalNumber, setNationalNumber] = useState('');
@@ -221,7 +223,7 @@ export const PhoneInput = ({
           value={nationalNumber}
           onChange={handleNationalNumberChange}
           disabled={disabled}
-          placeholder="Phone number"
+          placeholder={t('selectors.phoneNumber')}
           className="flex-1 px-3 py-2 bg-transparent text-sm text-text-primary outline-none disabled:cursor-not-allowed"
         />
       </div>
@@ -238,7 +240,7 @@ export const PhoneInput = ({
                 setHighlightedIndex(0);
               }}
               onKeyDown={handleDropdownKeyDown}
-              placeholder="Search country or code..."
+              placeholder={t('selectors.searchCountryOrCode')}
               autoComplete="off"
               className="w-full px-2 py-1.5 text-sm border border-border-strong rounded bg-surface-card text-text-primary outline-none focus:border-primary-500"
             />
@@ -271,7 +273,7 @@ export const PhoneInput = ({
 
             {filtered.length === 0 && (
               <div className="px-3 py-8 text-center text-sm text-text-secondary">
-                No countries found
+                {t('selectors.noCountriesFound')}
               </div>
             )}
           </div>

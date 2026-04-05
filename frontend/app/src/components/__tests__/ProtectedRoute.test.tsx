@@ -51,12 +51,12 @@ describe('ProtectedRoute', () => {
       login: vi.fn(),
       logout: vi.fn(),
       token: undefined,
-      keycloak: {} as any,
+      keycloak: {} as unknown as ReturnType<typeof useAuth>['keycloak'],
     });
     mockUseCurrentUser.mockReturnValue({
       data: undefined,
       isLoading: false,
-    } as any);
+    } as unknown as ReturnType<typeof useCurrentUser>);
 
     renderWithProviders(
       <ProtectedRoute>
@@ -75,12 +75,12 @@ describe('ProtectedRoute', () => {
       login: vi.fn(),
       logout: vi.fn(),
       token: undefined,
-      keycloak: {} as any,
+      keycloak: {} as unknown as ReturnType<typeof useAuth>['keycloak'],
     });
     mockUseCurrentUser.mockReturnValue({
       data: undefined,
       isLoading: false,
-    } as any);
+    } as unknown as ReturnType<typeof useCurrentUser>);
 
     renderWithProviders(
       <ProtectedRoute>
@@ -99,12 +99,12 @@ describe('ProtectedRoute', () => {
       login: vi.fn(),
       logout: vi.fn(),
       token: 'some-token',
-      keycloak: {} as any,
+      keycloak: {} as unknown as ReturnType<typeof useAuth>['keycloak'],
     });
     mockUseCurrentUser.mockReturnValue({
       data: { emailVerified: true },
       isLoading: false,
-    } as any);
+    } as unknown as ReturnType<typeof useCurrentUser>);
 
     renderWithProviders(
       <ProtectedRoute>
@@ -122,12 +122,12 @@ describe('ProtectedRoute', () => {
       login: vi.fn(),
       logout: vi.fn(),
       token: 'some-token',
-      keycloak: {} as any,
+      keycloak: {} as unknown as ReturnType<typeof useAuth>['keycloak'],
     });
     mockUseCurrentUser.mockReturnValue({
       data: { emailVerified: false },
       isLoading: false,
-    } as any);
+    } as unknown as ReturnType<typeof useCurrentUser>);
 
     renderWithProviders(
       <ProtectedRoute requireVerification={true}>

@@ -1,5 +1,6 @@
 package com.buurman.service.notification;
 
+import java.util.Locale;
 import java.util.Map;
 
 import com.buurman.domain.NotificationChannel;
@@ -10,5 +11,5 @@ public interface NotificationChannelSender {
 
   NotificationChannel getChannel();
 
-  RenderedContent render(String templateName, Map<String, Object> variables);
+  RenderedContent render(String templateName, Map<String, Object> variables, Locale locale);
 }

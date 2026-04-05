@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAddContactTag, useRemoveContactTag } from '@/hooks/useContactHooks';
 import {
   ContactTag,
@@ -16,6 +17,7 @@ interface ContactTagsTabProps {
 }
 
 export const ContactTagsTab = ({ contactId, contact }: ContactTagsTabProps) => {
+  const { t } = useTranslation('tenants');
   const { canEditData } = useTeam();
   const addTagMutation = useAddContactTag(contactId);
   const removeTagMutation = useRemoveContactTag(contactId);
@@ -39,7 +41,7 @@ export const ContactTagsTab = ({ contactId, contact }: ContactTagsTabProps) => {
     <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold text-text-primary">
-          Tags ({currentTags.length})
+          {t('tags.title')} ({currentTags.length})
         </h2>
         {canEditData && availableTags.length > 0 && (
           <div className="relative">
@@ -48,7 +50,7 @@ export const ContactTagsTab = ({ contactId, contact }: ContactTagsTabProps) => {
               leftIcon={<Plus className="h-4 w-4" />}
               onClick={() => setShowDropdown(!showDropdown)}
             >
-              Add Tag
+              {t('tags.addTag')}
             </Button>
             {showDropdown && (
               <>
@@ -81,9 +83,9 @@ export const ContactTagsTab = ({ contactId, contact }: ContactTagsTabProps) => {
       {currentTags.length === 0 ? (
         <div className="text-center py-8">
           <Tag className="h-12 w-12 text-text-disabled mx-auto mb-3" />
-          <p className="text-text-secondary">No tags assigned</p>
+          <p className="text-text-secondary">{t('tags.noTags')}</p>
           <p className="text-sm text-text-muted mt-1">
-            Use tags to categorize and quickly identify contacts
+            {t('tags.noTagsDescription')}
           </p>
         </div>
       ) : (
@@ -101,7 +103,7 @@ export const ContactTagsTab = ({ contactId, contact }: ContactTagsTabProps) => {
                   onClick={() => handleRemoveTag(tag)}
                   disabled={removeTagMutation.isPending}
                   className="p-0.5 rounded-full hover:bg-error-bg text-text-muted hover:text-error-text transition-colors disabled:opacity-50"
-                  title={`Remove ${CONTACT_TAG_LABELS[tag]} tag`}
+                  title={t('tags.removeTag', { tag: CONTACT_TAG_LABELS[tag] })}
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>

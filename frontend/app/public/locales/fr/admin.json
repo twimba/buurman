@@ -1,0 +1,297 @@
+{
+  "apiDocs": {
+    "title": "Documentation API",
+    "subtitle": "Explorez et testez l\u2019API REST de Buurman"
+  },
+  "billing": {
+    "title": "Abonnement et facturation",
+    "subtitle": "G\u00e9rez votre plan d\u2019abonnement et consultez l\u2019historique de facturation",
+    "impersonationBlocked": "Les op\u00e9rations de facturation ne sont pas disponibles pendant une session d\u2019usurpation d\u2019identit\u00e9."
+  },
+  "calendarFeeds": {
+    "title": "Flux de calendrier",
+    "pageSubtitle": "G\u00e9rez les flux iCalendar pour les \u00e9ch\u00e9ances de paiement et les \u00e9v\u00e9nements de bail"
+  },
+  "dataExport": {
+    "title": "Exportation de donn\u00e9es",
+    "pageSubtitle": "Exportez les donn\u00e9es de votre \u00e9quipe sous forme d\u2019archive t\u00e9l\u00e9chargeable"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Suivez et g\u00e9rez toutes les notifications envoy\u00e9es au sein de votre \u00e9quipe",
+    "loading": "Chargement des notifications\u2026",
+    "noResults": "Aucune notification trouv\u00e9e",
+    "view": "Voir",
+    "viewDetails": "Voir les d\u00e9tails",
+    "resend": "Renvoyer",
+    "resendNotification": "Renvoyer la notification",
+    "resendConfirm": {
+      "title": "Renvoyer la notification",
+      "message": "Cela cr\u00e9era une nouvelle notification et tentera une nouvelle livraison. La notification originale restera dans le journal."
+    },
+    "demoBanner": {
+      "title": "Compte d\u00e9mo \u2014 les notifications sont simul\u00e9es",
+      "emailAndSms": "Les notifications par e-mail et SMS sont enregistr\u00e9es mais ne sont pas r\u00e9ellement envoy\u00e9es.",
+      "emailOnly": "Les notifications par e-mail sont enregistr\u00e9es mais ne sont pas r\u00e9ellement envoy\u00e9es.",
+      "smsOnly": "Les notifications par SMS sont enregistr\u00e9es mais ne sont pas r\u00e9ellement envoy\u00e9es."
+    },
+    "stats": {
+      "total": "Total",
+      "delivered": "Livr\u00e9es",
+      "pending": "En attente",
+      "failed": "\u00c9chou\u00e9es",
+      "byChannel": "Par canal",
+      "demoBlocked": "Bloqu\u00e9 (d\u00e9mo)"
+    },
+    "table": {
+      "type": "Type",
+      "channel": "Canal",
+      "recipient": "Destinataire",
+      "subjectBody": "Objet / Corps",
+      "status": "Statut",
+      "date": "Date",
+      "actions": "Actions"
+    },
+    "typeLabels": {
+      "welcome": "Bienvenue",
+      "verification": "V\u00e9rification",
+      "invitation": "Invitation",
+      "accepted": "Accept\u00e9e",
+      "password": "Mot de passe",
+      "payment": "Paiement",
+      "contract": "Bail",
+      "property": "Bien",
+      "newContract": "Nouveau bail",
+      "statusChange": "Changement de statut",
+      "reopened": "R\u00e9ouvert",
+      "paid": "Pay\u00e9",
+      "receival": "R\u00e9ception",
+      "expense": "D\u00e9pense"
+    },
+    "details": {
+      "title": "D\u00e9tails de la notification",
+      "demoBlocked": "Cette notification n\u2019a pas \u00e9t\u00e9 envoy\u00e9e car il s\u2019agit d\u2019un compte d\u00e9mo. Sur un compte r\u00e9el, elle serait envoy\u00e9e via {{channel}}.",
+      "type": "Type",
+      "subject": "Objet",
+      "content": "Contenu",
+      "recipient": "Destinataire",
+      "sentAt": "Envoy\u00e9e le",
+      "statusUpdated": "Statut mis \u00e0 jour",
+      "providerStatus": "Statut fournisseur",
+      "refresh": "Actualiser",
+      "error": "Erreur",
+      "engagement": "Engagement",
+      "open": "{{count}} ouverture",
+      "open_other": "{{count}} ouvertures",
+      "click": "{{count}} clic",
+      "click_other": "{{count}} clics",
+      "first": "premier : {{date}}",
+      "resentFrom": "Renvoy\u00e9e depuis",
+      "resendReason": "Motif du renvoi",
+      "resend": "Renvoyer",
+      "emailPreview": "Aper\u00e7u de l\u2019e-mail",
+      "smsMessage": "Message SMS",
+      "delivered": "Livr\u00e9e"
+    },
+    "filters": {
+      "searchByEmail": "Rechercher par e-mail\u2026",
+      "allTypes": "Tous les types",
+      "allChannels": "Tous les canaux",
+      "allStatuses": "Tous les statuts",
+      "fromDate": "Date de d\u00e9but",
+      "toDate": "Date de fin"
+    },
+    "types": {
+      "welcome": "Bienvenue",
+      "verificationCode": "Code de v\u00e9rification",
+      "teamInvitation": "Invitation d\u2019\u00e9quipe",
+      "invitationAccepted": "Invitation accept\u00e9e",
+      "passwordChanged": "Mot de passe modifi\u00e9",
+      "paymentReminder": "Rappel de paiement",
+      "contractExpiry": "Expiration de bail",
+      "propertyCreated": "Bien cr\u00e9\u00e9",
+      "contractCreated": "Bail cr\u00e9\u00e9",
+      "contractStatusChanged": "Statut du bail modifi\u00e9",
+      "contractReopened": "Bail r\u00e9ouvert",
+      "paymentPaid": "Paiement effectu\u00e9",
+      "paymentReceival": "R\u00e9ception de paiement",
+      "expenseCreated": "D\u00e9pense enregistr\u00e9e"
+    },
+    "statuses": {
+      "pending": "En attente",
+      "queued": "En file d\u2019attente",
+      "sent": "Envoy\u00e9e",
+      "delivered": "Livr\u00e9e",
+      "failed": "\u00c9chou\u00e9e",
+      "bounced": "Retourn\u00e9e",
+      "rejected": "Rejet\u00e9e",
+      "demo": "D\u00e9mo"
+    }
+  },
+  "paymentInstructions": {
+    "title": "Instructions de paiement",
+    "pageSubtitle": "G\u00e9rez les mod\u00e8les d\u2019instructions de paiement pour votre \u00e9quipe"
+  },
+  "preferences": {
+    "title": "Pr\u00e9f\u00e9rences",
+    "subtitle": "Configurez les pr\u00e9f\u00e9rences et les param\u00e8tres r\u00e9gionaux de l\u2019\u00e9quipe"
+  },
+  "teamMembers": {
+    "title": "Membres de l\u2019\u00e9quipe",
+    "subtitle": "G\u00e9rez les membres, les r\u00f4les et les invitations de l\u2019\u00e9quipe",
+    "impersonationBlocked": "Les modifications d\u2019\u00e9quipe ne sont pas disponibles pendant une session d\u2019usurpation d\u2019identit\u00e9."
+  },
+  "transactions": {
+    "title": "Historique des transactions",
+    "subtitle": "Historique complet des revenus et des d\u00e9penses",
+    "searchPlaceholder": "Rechercher des transactions\u2026",
+    "allTypes": "Tous les types",
+    "incomeOnly": "Revenus uniquement",
+    "expensesOnly": "D\u00e9penses uniquement",
+    "totalIncome": "Revenus totaux",
+    "totalExpenses": "D\u00e9penses totales",
+    "netTotal": "Total net",
+    "noTransactions": "Aucune transaction trouv\u00e9e",
+    "table": {
+      "date": "Date",
+      "type": "Type",
+      "description": "Description",
+      "property": "Bien",
+      "amount": "Montant"
+    }
+  },
+  "dashboard": {
+    "portfolioOverview": "Vue d\u2019ensemble du portefeuille",
+    "propertiesWithData": "{{withData}} sur {{total}} biens ont des donn\u00e9es financi\u00e8res",
+    "addProperties": "Ajoutez des biens pour voir le tableau de bord de votre portefeuille.",
+    "addFinancialData": "Ajoutez des donn\u00e9es financi\u00e8res \u00e0 vos biens pour voir les analyses du portefeuille.",
+    "propertiesNoData": "{{count}} biens trouv\u00e9s, mais aucun n\u2019a encore de donn\u00e9es financi\u00e8res.",
+    "exporting": "Exportation\u2026",
+    "disclaimer": "Les indicateurs sont fournis \u00e0 titre informatif uniquement.",
+    "charts": {
+      "cashFlow": "Flux de tr\u00e9sorerie du portefeuille",
+      "allocation": "R\u00e9partition du portefeuille",
+      "propertyComparison": "Comparaison des biens",
+      "equityComposition": "Composition des capitaux propres",
+      "performance": "Performance des biens",
+      "occupancy": "Occupation du portefeuille"
+    },
+    "cashFlow": {
+      "noData": "Aucune donn\u00e9e de flux de tr\u00e9sorerie disponible",
+      "income": "Revenus",
+      "expenses": "D\u00e9penses",
+      "mortgage": "Hypoth\u00e8que",
+      "net": "Net"
+    },
+    "allocation": {
+      "noData": "Aucune donn\u00e9e de r\u00e9partition disponible",
+      "byCategory": "Par cat\u00e9gorie",
+      "byCountry": "Par pays"
+    },
+    "comparison": {
+      "noData": "Aucune donn\u00e9e de comparaison disponible",
+      "monthlyCashFlow": "Flux de tr\u00e9sorerie mensuel"
+    },
+    "equity": {
+      "noData": "Aucune donn\u00e9e de capitaux propres disponible",
+      "equity": "Capitaux propres",
+      "mortgage": "Hypoth\u00e8que"
+    },
+    "performanceTable": {
+      "noData": "Aucune donn\u00e9e de performance disponible",
+      "property": "Bien",
+      "category": "Cat\u00e9gorie",
+      "monthlyCF": "CF mensuel",
+      "annualNOI": "NOI annuel",
+      "capRate": "Taux de capitalisation",
+      "coc": "CoC",
+      "occupancy": "Occupation",
+      "dataPercent": "Donn\u00e9es %"
+    },
+    "occupancy": {
+      "noData": "Aucune donn\u00e9e d\u2019occupation disponible",
+      "contactOccupancy": "Occupation par locataire",
+      "selfOccupancy": "Occupation propre"
+    },
+    "pendingExtensions": {
+      "title": "Prolongations en attente",
+      "awaitingAction": "{{count}} prolongation en attente d\u2019action",
+      "awaitingAction_other": "{{count}} prolongations en attente d\u2019action",
+      "extensionNumber": "Prolongation n\u00b0{{number}}",
+      "contractNumber": "Bail n\u00b0{{id}}",
+      "until": "jusqu\u2019au {{date}}",
+      "activate": "Activer",
+      "decline": "Refuser"
+    },
+    "pendingInvitations": {
+      "title": "Invitations d\u2019\u00e9quipe en attente",
+      "invitedToOne": "Vous avez \u00e9t\u00e9 invit\u00e9 \u00e0 rejoindre une \u00e9quipe",
+      "invitedToMany": "Vous avez \u00e9t\u00e9 invit\u00e9 \u00e0 rejoindre {{count}} \u00e9quipes",
+      "invitedBy": "Invit\u00e9 par {{name}}",
+      "expires": "Expire le {{date}}",
+      "accept": "Accepter"
+    },
+    "upcomingRenewals": {
+      "title": "Renouvellements \u00e0 venir",
+      "property": "Bien",
+      "contact": "Contact",
+      "endDate": "Date de fin",
+      "daysLeft": "Jours restants",
+      "mode": "Mode",
+      "rent": "Loyer",
+      "renewalModes": {
+        "none": "Aucun",
+        "automatic": "Auto",
+        "manual": "Manuel"
+      }
+    }
+  },
+  "reports": {
+    "title": "Rapports financiers",
+    "subtitle": "Vue d\u2019ensemble et analyses financi\u00e8res compl\u00e8tes",
+    "transactions": "Transactions",
+    "failedToLoad": "\u00c9chec du chargement des rapports financiers",
+    "period": "P\u00e9riode :",
+    "month": "Mois",
+    "quarter": "Trimestre",
+    "year": "Ann\u00e9e",
+    "allTime": "Depuis toujours",
+    "custom": "Personnalis\u00e9",
+    "to": "\u00e0",
+    "advancedFilters": "Filtres avanc\u00e9s",
+    "properties": "Biens",
+    "clearAll": "Tout effacer",
+    "noProperties": "Aucun bien trouv\u00e9",
+    "totalIncome": "Revenus totaux",
+    "totalExpenses": "D\u00e9penses totales",
+    "incomeTrend": {
+      "title": "Tendance des revenus",
+      "subtitle": "Revenus, d\u00e9penses et b\u00e9n\u00e9fice net mensuels",
+      "line": "Ligne",
+      "bar": "Barres"
+    },
+    "expenseBreakdown": {
+      "title": "R\u00e9partition des d\u00e9penses",
+      "subtitle": "Par cat\u00e9gorie pour la p\u00e9riode s\u00e9lectionn\u00e9e",
+      "pie": "Camembert",
+      "bar": "Barres",
+      "noData": "Aucune donn\u00e9e de d\u00e9pense pour la p\u00e9riode s\u00e9lectionn\u00e9e"
+    },
+    "propertyPerformance": {
+      "title": "Performance des biens",
+      "subtitle": "Revenus, d\u00e9penses et b\u00e9n\u00e9fice net par bien",
+      "property": "Bien",
+      "income": "Revenus",
+      "expenses": "D\u00e9penses",
+      "netProfit": "B\u00e9n\u00e9fice net",
+      "margin": "Marge",
+      "total": "Total",
+      "noData": "Aucune donn\u00e9e de bien pour la p\u00e9riode s\u00e9lectionn\u00e9e"
+    },
+    "occupancyTrend": {
+      "title": "Tendance d\u2019occupation",
+      "subtitle": "Taux d\u2019occupation mensuel en pourcentage",
+      "occupancyRate": "Taux d\u2019occupation (%)"
+    }
+  }
+}

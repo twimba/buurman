@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import DOMPurify from 'dompurify';
 import { Info, AlertTriangle, AlertCircle, X } from 'lucide-react';
 import {
@@ -39,6 +40,7 @@ const BroadcastItem = ({
   message: BroadcastMessage;
   onDismiss: (identifier: string) => void;
 }) => {
+  const { t } = useTranslation('common');
   const config = severityConfig[message.severity];
   const Icon = config.icon;
 
@@ -58,7 +60,7 @@ const BroadcastItem = ({
         type="button"
         onClick={() => onDismiss(message.identifier)}
         className={`${config.text} opacity-60 hover:opacity-100 transition-opacity shrink-0 p-0.5`}
-        aria-label="Dismiss message"
+        aria-label={t('accessibility.dismiss')}
       >
         <X className="h-4 w-4" />
       </button>

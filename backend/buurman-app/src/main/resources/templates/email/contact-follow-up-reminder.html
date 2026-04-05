@@ -8,23 +8,23 @@
     <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
         <div th:replace="~{email/_email-base :: header}"></div>
         <div style="background: #ffffff; border: 1px solid #e7e5e4; border-top: none; border-radius: 0 0 8px 8px; padding: 40px;">
-            <h1 style="color: #292524; margin: 0 0 24px 0; font-size: 24px;">Follow-Up Reminder</h1>
+            <h1 th:text="#{email.contact-follow-up-reminder.heading}" style="color: #292524; margin: 0 0 24px 0; font-size: 24px;">Follow-Up Reminder</h1>
 
-            <p style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
-                Hi <span th:text="${userName}">User</span>,
+            <p th:text="#{email.contact-follow-up-reminder.greeting(${userName})}" style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
+                Hi User,
             </p>
 
-            <p style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
+            <p th:text="#{email.contact-follow-up-reminder.body1}" style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
                 You have a follow-up scheduled for a contact note.
             </p>
 
             <div style="background: #fafaf9; border: 1px solid #e7e5e4; border-radius: 6px; padding: 20px; margin: 0 0 24px 0;">
-                <p style="color: #292524; margin: 0 0 8px 0;"><strong>Contact:</strong> <span th:text="${contactName}">Contact Name</span></p>
-                <p style="color: #292524; margin: 0 0 8px 0;"><strong>Follow-Up Date:</strong> <span th:text="${followUpDate}">Date</span></p>
-                <p th:if="${noteSubject}" style="color: #292524; margin: 0;"><strong>Subject:</strong> <span th:text="${noteSubject}">Subject</span></p>
+                <p style="color: #292524; margin: 0 0 8px 0;"><strong th:text="#{email.contact-follow-up-reminder.label.contact}">Contact:</strong> <span th:text="${contactName}">Contact Name</span></p>
+                <p style="color: #292524; margin: 0 0 8px 0;"><strong th:text="#{email.contact-follow-up-reminder.label.followUpDate}">Follow-Up Date:</strong> <span th:text="${followUpDate}">Date</span></p>
+                <p th:if="${noteSubject}" style="color: #292524; margin: 0;"><strong th:text="#{email.contact-follow-up-reminder.label.subject}">Subject:</strong> <span th:text="${noteSubject}">Subject</span></p>
             </div>
 
-            <a th:href="${baseUrl}" style="display: inline-block; background: #0284c7; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500;">
+            <a th:href="${baseUrl}" th:text="#{email.contact-follow-up-reminder.cta}" style="display: inline-block; background: #0284c7; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500;">
                 View Contact
             </a>
         </div>

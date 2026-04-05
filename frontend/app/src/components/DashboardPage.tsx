@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useDashboardStats } from '@/hooks/useDashboard';
 import { usePayments, useMarkPaymentAsPaid } from '@/hooks/usePaymentHooks';
@@ -25,6 +26,7 @@ import { useNavigate } from 'react-router-dom';
 import { useFormatDate } from '@/hooks/useFormatDate';
 
 export const DashboardPage = () => {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { formatDate, formatRelative } = useFormatDate();
@@ -61,10 +63,10 @@ export const DashboardPage = () => {
     }) => extensionsApi.activateExtension(contractId, extensionId),
     onSuccess: () => {
       invalidateExtensionQueries();
-      showToast('Extension activated successfully', 'success');
+      showToast(t('dashboard.extensionActivated'), 'success');
     },
     onError: () => {
-      showToast('Failed to activate extension', 'error');
+      showToast(t('dashboard.extensionActivateFailed'), 'error');
     },
   });
 
@@ -78,10 +80,10 @@ export const DashboardPage = () => {
     }) => extensionsApi.declineExtension(contractId, extensionId, {}),
     onSuccess: () => {
       invalidateExtensionQueries();
-      showToast('Extension declined', 'success');
+      showToast(t('dashboard.extensionDeclined'), 'success');
     },
     onError: () => {
-      showToast('Failed to decline extension', 'error');
+      showToast(t('dashboard.extensionDeclineFailed'), 'error');
     },
   });
 
@@ -164,7 +166,7 @@ export const DashboardPage = () => {
   if (statsError) {
     return (
       <div className="p-8">
-        <ErrorMessage message="Failed to load dashboard statistics. Please try again." />
+        <ErrorMessage message={t('dashboard.failedToLoad')} />
       </div>
     );
   }
@@ -195,9 +197,7 @@ export const DashboardPage = () => {
         {/* Total Properties */}
         <div className="bg-surface-card rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-border-default hover:border-info-border">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-text-secondary">
-              Total Properties
-            </h3>
+            <h3 className="text-sm font-medium text-text-secondary">{t("dashboard.totalProperties")}</h3>
             <div className="p-2 bg-primary-100 rounded-lg">
               <Home className="h-5 w-5 text-primary-500" />
             </div>
@@ -205,17 +205,13 @@ export const DashboardPage = () => {
           <div className="text-3xl font-bold text-text-primary">
             {stats?.totalProperties ?? 0}
           </div>
-          <div className="text-sm text-text-secondary mt-2">
-            Active properties in portfolio
-          </div>
+          <div className="text-sm text-text-secondary mt-2">{t("dashboard.activeProperties")}</div>
         </div>
 
         {/* Occupied Units */}
         <div className="bg-surface-card rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-border-default hover:border-success-border">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-text-secondary">
-              Occupied
-            </h3>
+            <h3 className="text-sm font-medium text-text-secondary">{t("dashboard.occupied")}</h3>
             <div className="p-2 bg-success-bg rounded-lg">
               <Users className="h-5 w-5 text-success-text" />
             </div>
@@ -225,10 +221,9 @@ export const DashboardPage = () => {
           </div>
           <div className="text-sm text-text-secondary mt-2">
             {stats?.selfOccupiedUnits
-              ? `${stats.selfOccupiedUnits} self-occupied,`
+              ? `${stats.selfOccupiedUnits} ${t('dashboard.selfOccupied')},`
               : ''}
-            {stats?.vacantUnits ?? 0} vacant, {stats?.maintenanceUnits ?? 0} in
-            maintenance
+            {stats?.vacantUnits ?? 0} {t('dashboard.vacant')}, {stats?.maintenanceUnits ?? 0} {t('dashboard.inMaintenance')}
           </div>
         </div>
 
@@ -236,7 +231,7 @@ export const DashboardPage = () => {
         <div className="bg-surface-card rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-border-default hover:border-primary-200">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-text-secondary">
-              <MetricHint label="Occupancy Rate" />
+              <MetricHint label={t("dashboard.occupancyRate")} />
             </h3>
             <div className="p-2 bg-primary-50 rounded-lg">
               <TrendingUp className="h-5 w-5 text-primary-700" />
@@ -245,17 +240,13 @@ export const DashboardPage = () => {
           <div className="text-3xl font-bold text-text-primary">
             {stats?.occupancyRate?.toFixed(1) ?? 0}%
           </div>
-          <div className="text-sm text-text-secondary mt-2">
-            Current occupancy level
-          </div>
+          <div className="text-sm text-text-secondary mt-2">{t("dashboard.currentOccupancy")}</div>
         </div>
 
         {/* Monthly Income */}
         <div className="bg-surface-card rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-border-default hover:border-success-border">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-text-secondary">
-              Monthly Income
-            </h3>
+            <h3 className="text-sm font-medium text-text-secondary">{t("dashboard.monthlyIncome")}</h3>
             <div className="p-2 bg-success-bg rounded-lg">
               <DollarSign className="h-5 w-5 text-success-text" />
             </div>
@@ -273,9 +264,7 @@ export const DashboardPage = () => {
                   maximumFractionDigits: 0,
                 })}
           </div>
-          <div className="text-sm text-text-secondary mt-2">
-            Expected monthly revenue
-          </div>
+          <div className="text-sm text-text-secondary mt-2">{t("dashboard.expectedRevenue")}</div>
         </div>
       </div>
 
@@ -285,7 +274,7 @@ export const DashboardPage = () => {
         (() => {
           const statuses = [
             {
-              label: 'Occupied',
+              label: t('dashboard.occupied'),
               count: stats.occupiedUnits,
               color: 'bg-success',
               dotColor: 'bg-success',
@@ -294,7 +283,7 @@ export const DashboardPage = () => {
             ...(stats.selfOccupiedUnits > 0
               ? [
                   {
-                    label: 'Self-Occupied',
+                    label: t('dashboard.selfOccupied'),
                     count: stats.selfOccupiedUnits,
                     color: 'bg-info',
                     dotColor: 'bg-info',
@@ -303,21 +292,21 @@ export const DashboardPage = () => {
                 ]
               : []),
             {
-              label: 'Vacant',
+              label: t('dashboard.vacant'),
               count: stats.vacantUnits,
               color: 'bg-warning',
               dotColor: 'bg-warning',
               textColor: 'text-warning-text',
             },
             {
-              label: 'Maintenance',
+              label: t('dashboard.maintenance'),
               count: stats.maintenanceUnits,
               color: 'bg-amber-500',
               dotColor: 'bg-amber-500',
               textColor: 'text-text-secondary',
             },
             {
-              label: 'Unavailable',
+              label: t('dashboard.unavailable'),
               count: stats.unavailableUnits,
               color: 'bg-neutral-300',
               dotColor: 'bg-neutral-400',
@@ -327,9 +316,7 @@ export const DashboardPage = () => {
 
           return (
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-              <h2 className="text-base font-semibold text-text-primary mb-5">
-                Property Status
-              </h2>
+              <h2 className="text-base font-semibold text-text-primary mb-5">{t("dashboard.propertyStatus")}</h2>
 
               {/* Stacked horizontal bar */}
               <div className="flex h-3 rounded-full overflow-hidden mb-6">
@@ -382,9 +369,7 @@ export const DashboardPage = () => {
       <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <h2 className="text-xl font-semibold text-text-primary">
-              Unpaid Payments
-            </h2>
+            <h2 className="text-xl font-semibold text-text-primary">{t("dashboard.unpaidPayments")}</h2>
             {unpaidPayments.length > 0 && (
               <span className="px-2.5 py-0.5 rounded-full text-sm font-medium bg-warning-bg text-warning-text">
                 {unpaidPayments.length}
@@ -394,7 +379,7 @@ export const DashboardPage = () => {
           <div className="flex items-center gap-4">
             {unpaidPayments.length > 0 && (
               <div className="text-right">
-                <div className="text-sm text-text-secondary">Total pending</div>
+                <div className="text-sm text-text-secondary">{t('dashboard.totalPending')}</div>
                 <div className="text-lg font-bold text-warning-text">
                   {pendingCurrency}
                   {totalPending.toLocaleString(undefined, {
@@ -407,9 +392,7 @@ export const DashboardPage = () => {
             <button
               onClick={() => navigate('/payments')}
               className="text-sm text-primary-500 hover:text-primary-600 font-medium flex items-center gap-1"
-            >
-              View all
-              <ArrowRight className="h-4 w-4" />
+            >{t('dashboard.viewAll')}<ArrowRight className="h-4 w-4" />
             </button>
           </div>
         </div>
@@ -448,7 +431,7 @@ export const DashboardPage = () => {
                           }
                           className="text-sm font-medium text-text-primary hover:text-primary-500 truncate"
                         >
-                          {payment.property?.street || 'Payment'} &mdash;{' '}
+                          {payment.property?.street || t('dashboard.payment')} &mdash;{' '}
                           {payment.contact?.firstName}{' '}
                           {payment.contact?.lastName}
                         </button>
@@ -489,8 +472,8 @@ export const DashboardPage = () => {
                       >
                         <CheckCircle className="h-3.5 w-3.5" />
                         {markingPaidId === payment.identifier
-                          ? 'Saving...'
-                          : 'Mark Paid'}
+                          ? t('dashboard.saving')
+                          : t('dashboard.markPaid')}
                       </button>
                     )}
                   </div>
@@ -502,16 +485,14 @@ export const DashboardPage = () => {
                 <button
                   onClick={() => navigate('/payments')}
                   className="text-sm text-primary-500 hover:text-primary-600 font-medium"
-                >
-                  +{unpaidPayments.length - 10} more unpaid payments
-                </button>
+                >{t('dashboard.moreUnpaid', { count: unpaidPayments.length - 10 })}</button>
               </div>
             )}
           </div>
         ) : (
           <div className="text-center py-8">
             <CheckCircle className="h-10 w-10 text-success-text mx-auto mb-2" />
-            <p className="text-text-secondary">All payments are up to date</p>
+            <p className="text-text-secondary">{t('dashboard.allUpToDate')}</p>
           </div>
         )}
       </div>

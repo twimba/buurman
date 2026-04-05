@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
 import { MapPin } from 'lucide-react';
 import { env } from '@/config/env';
@@ -29,6 +30,7 @@ export const AddressMap = ({
   onCoordinatesChange,
   height = 'h-96',
 }: AddressMapProps) => {
+  const { t } = useTranslation('properties');
   const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -46,7 +48,7 @@ export const AddressMap = ({
 
     const geocodeAddress = async () => {
       if (!apiKey) {
-        setError('Google Maps API key not configured');
+        setError(t('map.apiKeyNotConfigured'));
         setLoading(false);
         return;
       }
@@ -72,10 +74,10 @@ export const AddressMap = ({
             onCoordinatesChange(newCoords.lat, newCoords.lng);
           }
         } else {
-          setError('Could not find location');
+          setError(t('map.locationNotFoundShort'));
         }
       } catch {
-        setError('Failed to geocode address');
+        setError(t('map.geocodeFailed'));
       } finally {
         setLoading(false);
       }
@@ -90,10 +92,10 @@ export const AddressMap = ({
       <div className="bg-gray-50 rounded-lg p-8 text-center">
         <MapPin className="h-12 w-12 text-gray-300 mx-auto mb-3" />
         <p className="text-gray-600 font-medium mb-1">
-          Map Preview Unavailable
+          {t('map.unavailable')}
         </p>
         <p className="text-sm text-gray-500">
-          Configure VITE_GOOGLE_MAPS_API_KEY to enable maps
+          {t('map.configureApiKey')}
         </p>
         <div className="mt-3 text-xs text-gray-400 bg-gray-100 rounded p-2 font-mono">
           {street}, {city}, {postalCode}, {countryCode}
@@ -107,7 +109,7 @@ export const AddressMap = ({
       <div className="bg-gray-50 rounded-lg p-8 text-center">
         <div className="animate-pulse">
           <MapPin className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500">Loading map...</p>
+          <p className="text-gray-500">{t('map.loading')}</p>
         </div>
       </div>
     );
@@ -117,9 +119,9 @@ export const AddressMap = ({
     return (
       <div className="bg-gray-50 rounded-lg p-8 text-center">
         <MapPin className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-        <p className="text-gray-600 font-medium mb-1">Location Not Found</p>
+        <p className="text-gray-600 font-medium mb-1">{t('map.locationNotFound')}</p>
         <p className="text-sm text-gray-500">
-          {error || 'Could not find this address on the map'}
+          {error || t('map.couldNotFind')}
         </p>
         <div className="mt-3 text-xs text-gray-400 bg-gray-100 rounded p-2 font-mono">
           {street}, {city}, {postalCode}, {countryCode}

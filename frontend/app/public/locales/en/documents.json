@@ -1,0 +1,98 @@
+{
+  "documentsPage": {
+    "title": "Document Library",
+    "subtitle": "Search and manage all your documents in one place",
+    "searchPlaceholder": "Search documents by title, filename, or notes...",
+    "entityTypeFilter": {
+      "all": "All Types",
+      "property": "Properties",
+      "contact": "Contacts",
+      "contract": "Contracts",
+      "payment": "Payments",
+      "expense": "Expenses"
+    },
+    "table": {
+      "document": "Document",
+      "type": "Type",
+      "size": "Size",
+      "uploaded": "Uploaded",
+      "actions": "Actions"
+    },
+    "selection": {
+      "selected": "{{selected}} of {{total}} selected",
+      "count": "{{count}} document",
+      "count_other": "{{count}} documents"
+    },
+    "empty": "No documents found",
+    "editModal": "Edit Document"
+  },
+  "photosPage": {
+    "title": "Photo Library",
+    "subtitle": "Browse and manage all your photos in one place",
+    "searchPlaceholder": "Search photos by title, filename, or notes...",
+    "entityTypeFilter": {
+      "all": "All Types",
+      "property": "Properties",
+      "contact": "Contacts",
+      "contract": "Contracts",
+      "payment": "Payments",
+      "expense": "Expenses"
+    },
+    "empty": "No photos found",
+    "editModal": "Edit Photo"
+  },
+  "photoGrid": {
+    "noPhotos": "No photos yet",
+    "failedToLoad": "Failed to load photos",
+    "failedToLoadImage": "Failed to load",
+    "noUrl": "No URL",
+    "main": "Main",
+    "selection": {
+      "selected": "{{selected}} of {{total}} selected",
+      "count": "{{count}} photo",
+      "count_other": "{{count}} photos"
+    },
+    "downloading": "Downloading...",
+    "tooltips": {
+      "setAsMain": "Set as main photo",
+      "editTitleNotes": "Edit title & notes",
+      "deletePhoto": "Delete photo"
+    }
+  },
+  "preview": {
+    "previewNotAvailable": "Preview not available for this file type ({{mimeType}})",
+    "downloadFile": "Download File",
+    "notes": "Notes:",
+    "tooltips": {
+      "editTitleNotes": "Edit title & notes",
+      "download": "Download",
+      "openInNewTab": "Open in new tab",
+      "close": "Close",
+      "previous": "Previous",
+      "next": "Next"
+    }
+  },
+  "deleteDialog": {
+    "titleSingle": "Delete document",
+    "titlePlural": "Delete documents",
+    "messageSingle": "Are you sure you want to delete this document? This action cannot be undone.",
+    "messagePlural": "You are about to delete {{count}} documents. This action cannot be undone.",
+    "confirmSingle": "Delete",
+    "confirmPlural": "Delete {{count}} documents"
+  },
+  "deletePhotoDialog": {
+    "titleSingle": "Delete photo",
+    "titlePlural": "Delete photos",
+    "messageSingle": "Are you sure you want to delete this photo? This action cannot be undone.",
+    "messagePlural": "You are about to delete {{count}} photos. This action cannot be undone.",
+    "mainPhotoSingle": "This is the main photo. Deleting it means this property will no longer have a main photo. This action cannot be undone.",
+    "mainPhotoPlural": "You are about to delete {{count}} photos, including the main photo. This property will no longer have a main photo. This action cannot be undone.",
+    "confirmSingle": "Delete",
+    "confirmPlural": "Delete {{count}} photos"
+  },
+  "tooltips": {
+    "preview": "Preview",
+    "editTitleNotes": "Edit title & notes",
+    "delete": "Delete"
+  }
+}

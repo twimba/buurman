@@ -1,0 +1,498 @@
+{
+  "list": {
+    "title": "Properties",
+    "subtitle": "Manage your rental properties and units",
+    "addButton": "Add Property",
+    "searchPlaceholder": "Search by address, city, postal code, or type...",
+    "filters": "Filters",
+    "category": "Category",
+    "allCategories": "All Categories",
+    "status": "Status",
+    "allStatuses": "All Statuses",
+    "count_one": "{{count}} property",
+    "count_other": "{{count}} properties",
+    "empty": {
+      "title": "No properties found",
+      "filtered": "Try adjusting your filters or search terms",
+      "noData": "Get started by adding your first property"
+    },
+    "error": "Failed to load properties"
+  },
+  "create": {
+    "title": "Add New Property",
+    "readOnlyMessage": "Creating properties is not available in read-only mode."
+  },
+  "edit": {
+    "title": "Edit Property",
+    "notFound": "Property not found"
+  },
+  "detail": {
+    "notFound": "Property not found",
+    "booklet": "Booklet",
+    "bookletDownloadFailed": "Failed to download booklet. Please try again.",
+    "tabs": {
+      "info": "Info",
+      "dashboard": "Dashboard",
+      "financials": "Financials",
+      "photos": "Photos",
+      "documents": "Documents",
+      "contracts": "Contracts",
+      "expenses": "Expenses",
+      "history": "History"
+    },
+    "timeline": {
+      "title": "Property Timeline",
+      "rentalContract": "Rental contract",
+      "selfOccupied": "Self-occupied",
+      "financing": "Financing"
+    },
+    "specs": {
+      "bedrooms": "Bedrooms",
+      "bathrooms": "Bathrooms",
+      "area": "Area",
+      "type": "Type",
+      "street": "Street",
+      "city": "City",
+      "postalCode": "Postal Code",
+      "country": "Country",
+      "location": "Location"
+    },
+    "characteristics": {
+      "title": "Property Characteristics"
+    },
+    "construction": {
+      "title": "Construction & Structure",
+      "yearBuilt": "Year Built",
+      "lastRenovated": "Last Renovated",
+      "construction": "Construction",
+      "foundation": "Foundation",
+      "roof": "Roof",
+      "wallConstruction": "Wall Construction",
+      "flooring": "Flooring",
+      "windows": "Windows",
+      "floors": "Floors",
+      "structuralNotes": "Structural Notes"
+    },
+    "energy": {
+      "title": "Energy & Climate",
+      "energyRating": "Energy Rating",
+      "certificateExpiry": "Certificate Expiry",
+      "heating": "Heating",
+      "cooling": "Cooling",
+      "hotWater": "Hot Water",
+      "insulationNotes": "Insulation Notes"
+    },
+    "utilities": {
+      "title": "Utilities & Connections",
+      "electricity": "Electricity",
+      "capacity": "Capacity",
+      "water": "Water",
+      "gasConnection": "Gas Connection",
+      "sewage": "Sewage",
+      "internet": "Internet",
+      "internetSpeed": "Internet Speed",
+      "internetStatus": "Internet Status"
+    },
+    "parking": {
+      "title": "Parking",
+      "parkingSpaces": "Parking Spaces",
+      "parkingType": "Parking Type"
+    },
+    "outdoorAreas": {
+      "title": "Outdoor Areas"
+    },
+    "amenities": {
+      "title": "Amenities"
+    },
+    "safety": {
+      "title": "Safety & Security",
+      "smokeDetectors": "Smoke Detectors",
+      "coDetectors": "CO Detectors",
+      "fireExtinguisher": "Fire Extinguisher",
+      "sprinklerSystem": "Sprinkler System",
+      "alarmSystem": "Alarm System",
+      "securityCameras": "Security Cameras",
+      "secureEntry": "Secure Entry",
+      "safetyNotes": "Safety Notes"
+    },
+    "accessibility": {
+      "title": "Accessibility",
+      "wheelchairAccessible": "Wheelchair Accessible",
+      "elevator": "Elevator",
+      "stepFreeEntrance": "Step-Free Entrance",
+      "adaptedBathroom": "Adapted Bathroom",
+      "accessibilityNotes": "Accessibility Notes"
+    },
+    "wws": {
+      "title": "WWS Points",
+      "calculate": "Calculate",
+      "recalculate": "Recalculate",
+      "points": "points",
+      "regulated": "Regulated",
+      "midSegment": "Mid-Segment",
+      "freeSector": "Free Sector",
+      "maxRent": "Max Rent",
+      "calculated": "Calculated",
+      "history": "History",
+      "noCalculation": "No calculation yet",
+      "noCalculationDescription": "Calculate the WWS points to determine the maximum regulated rent for this property.",
+      "noPreviousCalculations": "No previous calculations."
+    },
+    "metadata": {
+      "title": "Metadata",
+      "created": "Created:",
+      "lastUpdated": "Last Updated:",
+      "at": "at"
+    },
+    "yes": "Yes",
+    "no": "No"
+  },
+  "form": {
+    "address": "Address",
+    "street": "Street",
+    "streetPlaceholder": "Main Street 123",
+    "city": "City",
+    "cityPlaceholder": "Amsterdam",
+    "postalCode": "Postal Code",
+    "postalCodePlaceholder": "1012 AB",
+    "country": "Country",
+    "region": "Region",
+    "regionOther": "Other",
+    "locationPreview": "Location Preview",
+    "specifications": "Specifications",
+    "category": "Category",
+    "categoryCannotChange": "(cannot be changed)",
+    "type": "Type",
+    "status": "Status",
+    "area": "Area",
+    "areaPlaceholder": "75.5",
+    "saving": "Saving...",
+    "updateProperty": "Update Property",
+    "createProperty": "Create Property",
+    "validation": {
+      "streetRequired": "Street is required",
+      "cityRequired": "City is required",
+      "postalCodeRequired": "Postal code is required",
+      "countryRequired": "Country is required",
+      "areaPositive": "Area must be greater than 0"
+    }
+  },
+  "collapsible": {
+    "filledCount": "{{filled}} of {{total}} filled"
+  },
+  "documents": {
+    "title": "Documents",
+    "uploadButton": "Upload Document",
+    "empty": "No documents uploaded yet",
+    "failedToLoad": "Failed to load documents",
+    "table": {
+      "document": "Document",
+      "size": "Size",
+      "uploaded": "Uploaded",
+      "actions": "Actions"
+    },
+    "selection": {
+      "selected": "{{selected}} of {{total}} selected",
+      "count_one": "{{count}} document",
+      "count_other": "{{count}} documents"
+    },
+    "preview": "Preview",
+    "editTitleNotes": "Edit title & notes",
+    "upload": {
+      "title_one": "Upload Document",
+      "title_other": "Upload Documents",
+      "files": "{{count}} files",
+      "titleLabel": "Title (optional)",
+      "titlePlaceholder": "e.g., Floor Plan",
+      "notesLabel": "Notes (optional)",
+      "notesPlaceholder": "Additional notes about this document",
+      "uploading": "Uploading {{current}} of {{total}}...",
+      "uploadCount": "Upload {{count}} Documents"
+    },
+    "delete": {
+      "title_one": "Delete document",
+      "title_other": "Delete documents",
+      "message_one": "Are you sure you want to delete this document? This action cannot be undone.",
+      "message_other": "You are about to delete {{count}} documents. This action cannot be undone.",
+      "confirmLabel_other": "Delete {{count}} documents"
+    },
+    "editModal": "Edit Document",
+    "downloading": "Downloading..."
+  },
+  "photos": {
+    "title": "Photos",
+    "uploadButton": "Upload Photo",
+    "empty": "No photos yet",
+    "upload": {
+      "title_one": "Upload Photo",
+      "title_other": "Upload Photos",
+      "files": "{{count}} files",
+      "titleLabel": "Title (optional)",
+      "titlePlaceholder": "e.g., Living room",
+      "notesLabel": "Notes (optional)",
+      "notesPlaceholder": "Additional notes about this photo",
+      "uploading": "Uploading {{current}} of {{total}}...",
+      "uploadCount": "Upload {{count}} Photos"
+    },
+    "delete": {
+      "title_one": "Delete photo",
+      "title_other": "Delete photos",
+      "mainPhotoWarning_one": "This is the main photo. Deleting it means this property will no longer have a main photo. This action cannot be undone.",
+      "mainPhotoWarning_other": "You are about to delete {{count}} photos, including the main photo. This property will no longer have a main photo. This action cannot be undone.",
+      "message_one": "Are you sure you want to delete this photo? This action cannot be undone.",
+      "message_other": "You are about to delete {{count}} photos. This action cannot be undone.",
+      "confirmLabel_other": "Delete {{count}} photos"
+    },
+    "editModal": "Edit Photo"
+  },
+  "contracts": {
+    "title": "Contracts",
+    "addContract": "Add Contract",
+    "empty": "No contracts for this property",
+    "createFirst": "Create First Contract",
+    "searchPlaceholder": "Search by contract #, contact, type...",
+    "noMatchingSearch": "No contracts found matching your search",
+    "table": {
+      "contractNumber": "Contract #",
+      "contact": "Contact",
+      "type": "Type",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "rentAmount": "Rent Amount",
+      "status": "Status"
+    },
+    "pagination": {
+      "showing": "Showing {{from}} to {{to}} of {{total}} contracts"
+    },
+    "selfOccupancy": {
+      "title": "Self-Occupancy Periods",
+      "addButton": "Add Self-Occupancy",
+      "empty": "No self-occupancy periods recorded",
+      "recordPeriod": "Record a self-occupancy period",
+      "table": {
+        "period": "Period",
+        "type": "Type",
+        "occupant": "Occupant",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "ongoing": "Ongoing",
+      "active": "Active",
+      "ended": "Ended",
+      "endOccupancy": "End occupancy",
+      "deleteTitle": "Delete Self-Occupancy Period",
+      "deleteMessage": "Are you sure you want to delete this self-occupancy period?",
+      "deleteWarning": "This action cannot be undone."
+    }
+  },
+  "expenses": {
+    "title": "Expenses",
+    "addExpense": "Add Expense",
+    "empty": "No expenses for this property",
+    "createFirst": "Create First Expense",
+    "failedToLoad": "Failed to load expenses",
+    "searchPlaceholder": "Search by expense #, description, category...",
+    "noMatchingSearch": "No expenses found matching your search",
+    "table": {
+      "expenseNumber": "Expense #",
+      "date": "Date",
+      "description": "Description",
+      "category": "Category",
+      "amount": "Amount"
+    },
+    "pagination": {
+      "showing": "Showing {{from}} to {{to}} of {{total}} expenses"
+    }
+  },
+  "audit": {
+    "title": "Property History",
+    "failedToLoad": "Failed to load history",
+    "empty": {
+      "title": "No history available",
+      "description": "Changes to this property will appear here"
+    },
+    "impersonated": "Impersonated",
+    "clickToHide": "Click to hide changes",
+    "clickToView": "Click to view changes",
+    "changedFields": "Changed Fields",
+    "old": "Old:",
+    "new": "New:",
+    "fileName": "File Name",
+    "titleLabel": "Title",
+    "typeLabel": "Type",
+    "photo": "Photo",
+    "document": "Document"
+  },
+  "selfOccupancy": {
+    "title": "Self-Occupancy",
+    "markTitle": "Mark as Self-Occupied",
+    "editTitle": "Edit Self-Occupancy",
+    "endTitle": "End Self-Occupancy",
+    "active": "Active",
+    "period": "Period",
+    "type": "Type",
+    "occupant": "Occupant",
+    "imputedRent": "Imputed Rent",
+    "perMonth": "/ month",
+    "endReason": "End Reason",
+    "notes": "Notes",
+    "endOccupancy": "End Occupancy",
+    "form": {
+      "startDate": "Start Date *",
+      "endDate": "End Date",
+      "endDateRequired": "End Date *",
+      "occupancyType": "Occupancy Type *",
+      "occupantName": "Occupant Name",
+      "occupantNamePlaceholder": "e.g. Owner, Family member",
+      "monthlyImputedRent": "Monthly Imputed Rent",
+      "notes": "Notes",
+      "notesPlaceholder": "Additional notes...",
+      "reason": "Reason",
+      "reasonPlaceholder": "Select a reason...",
+      "alreadyTakenPeriods": "Already taken periods"
+    }
+  },
+  "map": {
+    "unavailable": "Map Preview Unavailable",
+    "configureApiKey": "Configure VITE_GOOGLE_MAPS_API_KEY to enable maps",
+    "loading": "Loading map...",
+    "locationNotFound": "Location Not Found",
+    "couldNotFind": "Could not find this address on the map",
+    "apiKeyNotConfigured": "Google Maps API key not configured",
+    "geocodeFailed": "Failed to geocode address",
+    "locationNotFoundShort": "Could not find location",
+    "findingLocation": "Finding location...",
+    "couldNotLoadMaps": "Could not load Google Maps right now",
+    "clickToPlace": "Our map skills failed us this time. Click anywhere on the map to place your property pin.",
+    "placePinManually": "Place pin manually",
+    "accuracy": {
+      "rooftop": "Drag the pin to fine-tune the location",
+      "manual": "Pin placed manually — drag to adjust if needed",
+      "approximate": "We found the neighborhood but not the exact spot — drag the pin to your property!",
+      "country": "Well, we found the country at least! Drag the pin to the right location."
+    }
+  },
+  "timeline": {
+    "selfOccupancy": "Self-Occupancy",
+    "contract": "Contract",
+    "vacancy": "Vacancy",
+    "noEntries": "No timeline entries yet",
+    "ongoing": "Ongoing"
+  },
+  "statusChart": {
+    "occupied": "Occupied",
+    "selfOccupied": "Self-Occupied",
+    "vacant": "Vacant",
+    "maintenance": "Maintenance",
+    "unavailable": "Unavailable",
+    "noProperties": "No properties to display"
+  },
+  "financials": {
+    "failedToLoad": "Failed to load financial data.",
+    "saving": "Saving...",
+    "deleting": "Deleting...",
+    "notSet": "Not set",
+    "latestValuation": "Latest Valuation",
+    "valuationHistory": "Valuation History",
+    "payments": "Payments",
+    "bulkAdd": "Bulk Add",
+    "sections": {
+      "acquisition": "Acquisition",
+      "valuations": "Valuations",
+      "financings": "Financings"
+    },
+    "empty": {
+      "noAcquisition": "No acquisition data recorded.",
+      "noValuation": "No valuation data recorded.",
+      "noFinancing": "No financing instruments recorded.",
+      "noPayments": "No payments recorded yet."
+    },
+    "metrics": {
+      "netWorth": "Net Worth",
+      "totalAnnualCosts": "Total Annual Costs",
+      "totalFinancingBalance": "Total Financing Balance",
+      "latestValuation": "Latest Valuation"
+    },
+    "modals": {
+      "addTax": "Add Tax",
+      "editTax": "Edit Tax",
+      "addFee": "Add Fee",
+      "editFee": "Edit Fee",
+      "addFinancing": "Add Financing",
+      "editFinancing": "Edit Financing",
+      "addInsurance": "Add Insurance",
+      "editInsurance": "Edit Insurance",
+      "addValuation": "Add Valuation",
+      "editValuation": "Edit Valuation",
+      "addAcquisition": "Add Acquisition",
+      "editAcquisition": "Edit Acquisition",
+      "editPayment": "Edit Payment",
+      "recordPayment": "Record Payment",
+      "bulkAddPayments": "Bulk Add Payments"
+    },
+    "labels": {
+      "taxType": "Tax Type",
+      "authority": "Authority",
+      "annualAmount": "Annual Amount",
+      "paymentFrequency": "Payment Frequency",
+      "taxYear": "Tax Year",
+      "dueMonths": "Due Months",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "status": "Status",
+      "notes": "Notes",
+      "feeType": "Fee Type",
+      "name": "Name",
+      "financingType": "Financing Type",
+      "rateType": "Rate Type",
+      "lenderName": "Lender Name",
+      "loanNumber": "Loan Number",
+      "originalAmount": "Original Amount",
+      "currentBalance": "Current Balance",
+      "interestRate": "Interest Rate",
+      "monthlyPayment": "Monthly Payment",
+      "variablePayment": "Variable payment",
+      "termMonths": "Term (months)",
+      "insuranceType": "Insurance Type",
+      "provider": "Provider",
+      "policyNumber": "Policy Number",
+      "coverageAmount": "Coverage Amount",
+      "annualPremium": "Annual Premium",
+      "valuationType": "Valuation Type",
+      "valuationDate": "Valuation Date",
+      "amount": "Amount",
+      "source": "Source",
+      "acquisitionType": "Acquisition Type",
+      "acquisitionDate": "Acquisition Date",
+      "purchasePrice": "Purchase Price",
+      "closingCosts": "Closing Costs",
+      "renovationCosts": "Renovation Costs",
+      "landValue": "Land Value",
+      "depreciationMethod": "Depreciation Method",
+      "depreciationYears": "Depreciation Years",
+      "paymentDate": "Payment Date",
+      "totalAmount": "Total Amount",
+      "principal": "Principal",
+      "interest": "Interest",
+      "escrow": "Escrow",
+      "extraPayment": "Extra Payment",
+      "deductFromBalance": "Deduct principal from financing balance",
+      "documents": "Documents",
+      "currency": "Currency",
+      "type": "Type",
+      "date": "Date"
+    },
+    "placeholders": {
+      "addNotes": "Add notes...",
+      "source": "e.g. Real estate agent, Online tool"
+    },
+    "units": {
+      "years": "years",
+      "months": "months"
+    }
+  },
+  "lifecycle": {
+    "openContract": "Open contract",
+    "clickToEdit": "Click to edit"
+  }
+}

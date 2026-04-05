@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DocumentResponse } from '@/types/property';
 import {
   Upload,
@@ -68,6 +69,7 @@ export const DocumentList = ({
   isDeleting,
   readOnly = false,
 }: DocumentListProps) => {
+  const { t } = useTranslation('properties');
   const { formatDate } = useFormatDate();
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -192,18 +194,18 @@ export const DocumentList = ({
   }
 
   if (error) {
-    return <ErrorMessage message="Failed to load documents" />;
+    return <ErrorMessage message={t('documents.failedToLoad')} />;
   }
 
   return (
     <div className="space-y-4">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-text-primary">Documents</h3>
+        <h3 className="text-lg font-semibold text-text-primary">{t('documents.title')}</h3>
         {!readOnly && (
           <label className="cursor-pointer bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2">
             <Upload className="h-4 w-4" />
-            Upload Document
+            {t('documents.uploadButton')}
             <input
               type="file"
               accept=".pdf,.jpg,.jpeg,.png,.gif,.doc,.docx,.xls,.xlsx"
@@ -220,7 +222,7 @@ export const DocumentList = ({
       {documents.length === 0 ? (
         <div className="text-center py-12 bg-surface-page rounded-lg">
           <FileText className="h-12 w-12 text-text-muted mx-auto mb-3" />
-          <p className="text-text-secondary">No documents uploaded yet</p>
+          <p className="text-text-secondary">{t('documents.empty')}</p>
         </div>
       ) : (
         <div className="bg-surface-card rounded-lg shadow-sm overflow-hidden">
@@ -240,8 +242,8 @@ export const DocumentList = ({
               </button>
               <span className="text-sm text-text-secondary">
                 {hasSelection
-                  ? `${selectedDocuments.size} of ${documents.length} selected`
-                  : `${documents.length} document${documents.length !== 1 ? 's' : ''}`}
+                  ? t('documents.selection.selected', { selected: selectedDocuments.size, total: documents.length })
+                  : t('documents.selection.count', { count: documents.length })}
               </span>
             </div>
 
@@ -259,8 +261,8 @@ export const DocumentList = ({
                     <Download className="h-4 w-4" />
                   )}
                   {bulkDownloadMutation.isPending
-                    ? 'Downloading...'
-                    : 'Download'}
+                    ? t('documents.downloading')
+                    : t('buttons.download', { ns: 'common' })}
                 </button>
                 {!readOnly && (
                   <button
@@ -268,7 +270,7 @@ export const DocumentList = ({
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-error-text bg-surface-card border border-error-border rounded-md hover:bg-error-bg transition-colors"
                   >
                     <Trash2 className="h-4 w-4" />
-                    Delete
+                    {t('buttons.delete', { ns: 'common' })}
                   </button>
                 )}
               </div>
@@ -280,16 +282,16 @@ export const DocumentList = ({
               <tr>
                 <th className="w-12 px-6 py-3" />
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Document
+                  {t('documents.table.document')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Size
+                  {t('documents.table.size')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Uploaded
+                  {t('documents.table.uploaded')}
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Actions
+                  {t('documents.table.actions')}
                 </th>
               </tr>
             </thead>
@@ -363,7 +365,7 @@ export const DocumentList = ({
                             setPreviewIndex(documents.indexOf(doc))
                           }
                           className="p-1.5 text-text-secondary hover:bg-surface-inset rounded-md transition-colors"
-                          title="Preview"
+                          title={t('documents.preview')}
                         >
                           <Eye className="h-4 w-4" />
                         </button>
@@ -371,7 +373,7 @@ export const DocumentList = ({
                           <button
                             onClick={() => setEditingDocument(doc)}
                             className="p-1.5 text-text-secondary hover:bg-surface-inset rounded-md transition-colors"
-                            title="Edit title & notes"
+                            title={t('documents.editTitleNotes')}
                           >
                             <Pencil className="h-4 w-4" />
                           </button>
@@ -379,7 +381,7 @@ export const DocumentList = ({
                         <button
                           onClick={() => handleDownload(doc.identifier)}
                           className="p-1.5 text-primary-500 hover:bg-primary-50 rounded-md transition-colors"
-                          title="Download"
+                          title={t('buttons.download', { ns: 'common' })}
                         >
                           <Download className="h-4 w-4" />
                         </button>
@@ -388,7 +390,7 @@ export const DocumentList = ({
                             onClick={() => handleDeleteSingle(doc.identifier)}
                             disabled={isDeleting}
                             className="p-1.5 text-error-text hover:bg-error-bg rounded-md transition-colors disabled:opacity-50"
-                            title="Delete"
+                            title={t('buttons.delete', { ns: 'common' })}
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
@@ -435,7 +437,7 @@ export const DocumentList = ({
       {/* Edit Modal */}
       {editingDocument && (
         <EditMetadataModal
-          title="Edit Document"
+          title={t('documents.editModal')}
           currentTitle={editingDocument.title}
           currentNotes={editingDocument.notes}
           onSave={(title, notes) => {
@@ -452,20 +454,12 @@ export const DocumentList = ({
       {/* Delete Confirmation */}
       {pendingBulkDelete && (
         <ConfirmDialog
-          title={
-            pendingBulkDelete.length === 1
-              ? 'Delete document'
-              : 'Delete documents'
-          }
-          message={
-            pendingBulkDelete.length === 1
-              ? 'Are you sure you want to delete this document? This action cannot be undone.'
-              : `You are about to delete ${pendingBulkDelete.length} documents. This action cannot be undone.`
-          }
+          title={t('documents.delete.title', { count: pendingBulkDelete.length })}
+          message={t('documents.delete.message', { count: pendingBulkDelete.length })}
           confirmLabel={
             pendingBulkDelete.length === 1
-              ? 'Delete'
-              : `Delete ${pendingBulkDelete.length} documents`
+              ? t('buttons.delete', { ns: 'common' })
+              : t('documents.delete.confirmLabel', { count: pendingBulkDelete.length })
           }
           variant="danger"
           onConfirm={confirmDelete}
@@ -483,11 +477,11 @@ export const DocumentList = ({
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-2">
                 <h3 className="text-lg font-semibold text-text-primary">
-                  Upload {selectedFiles.length === 1 ? 'Document' : 'Documents'}
+                  {t('documents.upload.title', { count: selectedFiles.length })}
                 </h3>
                 {selectedFiles.length > 1 && (
                   <span className="px-2 py-0.5 text-xs font-medium bg-primary-500/10 text-primary-500 rounded-full">
-                    {selectedFiles.length} files
+                    {t('documents.upload.files', { count: selectedFiles.length })}
                   </span>
                 )}
               </div>
@@ -532,26 +526,26 @@ export const DocumentList = ({
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">
-                  Title (optional)
+                  {t('documents.upload.titleLabel')}
                 </label>
                 <input
                   type="text"
                   value={uploadTitle}
                   onChange={(e) => setUploadTitle(e.target.value)}
                   className="w-full border border-border-strong rounded px-3 py-2"
-                  placeholder="e.g., Floor Plan"
+                  placeholder={t('documents.upload.titlePlaceholder')}
                   disabled={!!uploadProgress}
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">
-                  Notes (optional)
+                  {t('documents.upload.notesLabel')}
                 </label>
                 <RichTextEditor
                   value={uploadNotes}
                   onChange={setUploadNotes}
-                  placeholder="Additional notes about this document"
+                  placeholder={t('documents.upload.notesPlaceholder')}
                   readOnly={!!uploadProgress}
                   onSubmit={handleUpload}
                 />
@@ -564,7 +558,7 @@ export const DocumentList = ({
                 className="border border-border-strong px-4 py-2 rounded hover:bg-surface-inset transition-colors"
                 disabled={!!uploadProgress}
               >
-                Cancel
+                {t('buttons.cancel', { ns: 'common' })}
               </button>
               <button
                 onClick={handleUpload}
@@ -575,8 +569,7 @@ export const DocumentList = ({
                 {uploadProgress ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    Uploading {uploadProgress.current} of {uploadProgress.total}
-                    ...
+                    {t('documents.upload.uploading', { current: uploadProgress.current, total: uploadProgress.total })}
                     <div
                       role="progressbar"
                       aria-valuenow={uploadProgress.current}
@@ -591,10 +584,9 @@ export const DocumentList = ({
                 ) : (
                   <>
                     <Upload className="h-4 w-4" />
-                    Upload
                     {selectedFiles.length > 1
-                      ? ` ${selectedFiles.length} Documents`
-                      : ''}
+                      ? t('documents.upload.uploadCount', { count: selectedFiles.length })
+                      : t('buttons.upload', { ns: 'common' })}
                   </>
                 )}
               </button>

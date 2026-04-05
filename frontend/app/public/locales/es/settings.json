@@ -1,0 +1,375 @@
+{
+  "page": {
+    "title": "Ajustes",
+    "subtitle": "Gestione su perfil personal y preferencias",
+    "impersonationBlocked": "Los ajustes no se pueden modificar durante una sesión de suplantación."
+  },
+  "tabs": {
+    "profile": "Perfil y Seguridad",
+    "preferences": "Mis Preferencias",
+    "teams": "Mis Equipos"
+  },
+  "profile": {
+    "title": "Información del Perfil",
+    "subtitle": "Actualice su información personal y avatar",
+    "editProfile": "Editar Perfil",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "emailAddress": "Dirección de Email",
+    "emailChangeNote": "La dirección de email no se puede cambiar. Contacte con soporte si necesita actualizarla.",
+    "phoneNumber": "Número de Teléfono",
+    "verified": "Verificado",
+    "unverified": "No verificado",
+    "phoneNotAllowed": "Los números de teléfono de este país no están permitidos",
+    "phoneTypeNotAllowed": "Este tipo de número de teléfono ({{type}}) no está permitido",
+    "verification": {
+      "enterCode": "¡Casi listo! Introduzca el código enviado a",
+      "invalidCode": "Código no válido o expirado. Por favor, inténtelo de nuevo.",
+      "sending": "Enviando...",
+      "resendIn": "Reenviar en {{seconds}}s",
+      "resendCode": "Reenviar código",
+      "cancelling": "Cancelando...",
+      "changeNumber": "Cambiar número"
+    },
+    "failedToLoad": "Error al cargar datos del perfil",
+    "tryAgain": "Reintentar"
+  },
+  "security": {
+    "title": "Ajustes de Seguridad",
+    "subtitle": "Gestione su contraseña y preferencias de seguridad",
+    "password": "Contraseña",
+    "passwordNote": "Los cambios de contraseña se gestionan a través de su proveedor de identidad",
+    "changePassword": "Cambiar Contraseña",
+    "securityEmailNote": "Los emails de seguridad (restablecimiento de contraseña, verificación, invitaciones) siempre se envían independientemente del plan."
+  },
+  "preferences": {
+    "title": "Preferencias del Usuario",
+    "subtitle": "Personalice su experiencia",
+    "failedToLoad": "Error al cargar preferencias",
+    "tryAgain": "Reintentar",
+    "appearance": {
+      "title": "Apariencia",
+      "theme": "Tema",
+      "light": "Claro",
+      "dark": "Oscuro",
+      "auto": "Automático",
+      "autoDescription": "El modo automático sigue las preferencias de su sistema"
+    },
+    "languageRegion": {
+      "title": "Idioma y Región",
+      "language": "Idioma",
+      "dateFormat": "Formato de Fecha"
+    },
+    "timezone": {
+      "title": "Zona Horaria"
+    },
+    "notifications": {
+      "title": "Notificaciones",
+      "email": "Notificaciones por Email",
+      "emailDescription": "Recibir notificaciones por email",
+      "sms": "Notificaciones por SMS",
+      "smsDescription": "Recibir notificaciones por mensaje de texto (requiere número de teléfono)",
+      "configurePerType": "Configurar notificaciones por tipo",
+      "notificationType": "Tipo de Notificación",
+      "emailColumnDisabled": "La columna de email está desactivada porque el toggle global de Email está desactivado",
+      "smsColumnDisabled": "La columna de SMS está desactivada porque el toggle global de SMS está desactivado"
+    }
+  },
+  "teamPreferences": {
+    "title": "Preferencias del Equipo",
+    "subtitle": "Configure los ajustes predeterminados para su equipo",
+    "teamIdentity": {
+      "title": "Identidad del Equipo",
+      "teamName": "Nombre del Equipo",
+      "placeholder": "Introduzca nombre del equipo",
+      "description": "El nombre visible de su equipo"
+    },
+    "currency": {
+      "title": "Ajustes de Moneda",
+      "teamCurrency": "Moneda del Equipo",
+      "change": "Cambiar",
+      "description": "Todos los datos financieros usan esta moneda. Cambiarla afecta a todos los registros existentes."
+    },
+    "defaultCountry": {
+      "title": "País Predeterminado",
+      "label": "País Predeterminado",
+      "placeholder": "Sin predeterminado (seleccionar cada vez)",
+      "description": "Este será el país preseleccionado para nuevas propiedades y direcciones de contactos"
+    },
+    "fiscalYear": {
+      "title": "Año Fiscal",
+      "fiscalYearStart": "Inicio del Año Fiscal",
+      "description": "Primer mes de su año fiscal para informes financieros"
+    }
+  },
+  "currencyChange": {
+    "title": "Cambiar Moneda del Equipo",
+    "currentCurrency": "Moneda Actual",
+    "newCurrency": "Nueva Moneda",
+    "changeMode": "Modo de Cambio",
+    "relabelOnly": "Solo Reetiquetado",
+    "relabelDescription": "Cambiar los códigos de moneda sin modificar los importes. Use cuando los importes ya se introdujeron en la moneda de destino.",
+    "convertAtRate": "Convertir a Tasa Fija",
+    "convertDescription": "Multiplicar todos los importes por una tasa de conversión. Todos los datos financieros existentes serán recalculados.",
+    "conversionRate": "Tasa de Conversión (1 {{from}} = {{rate}} {{to}})",
+    "irreversible": "Esta acción es irreversible",
+    "relabelWarning": "Todos los códigos de moneda se cambiarán de {{from}} a {{to}}. Los importes no se modificarán.",
+    "convertWarning": "Todos los importes se multiplicarán por {{rate}} y los códigos de moneda se cambiarán de {{from}} a {{to}}.",
+    "understandCannotUndo": "Entiendo que esto no se puede deshacer",
+    "changing": "Cambiando...",
+    "confirmChange": "Confirmar Cambio",
+    "changeCurrency": "Cambiar Moneda"
+  },
+  "teamMembers": {
+    "title": "Miembros del Equipo",
+    "memberCount": "{{count}} miembro",
+    "memberCount_other": "{{count}} miembros",
+    "inviteMember": "Invitar Miembro",
+    "you": "Usted",
+    "owner": "Propietario",
+    "joined": "Se unió el {{date}}",
+    "changeRole": "Cambiar rol",
+    "transferOwnership": "Transferir propiedad",
+    "removeMember": "Eliminar miembro",
+    "roles": {
+      "admin": "Administrador",
+      "editor": "Editor",
+      "viewer": "Visor",
+      "adminDescription": "Acceso completo a todas las funcionalidades y ajustes",
+      "editorDescription": "Puede crear y editar propiedades, contactos y contratos",
+      "viewerDescription": "Acceso de solo lectura a todos los datos",
+      "label": "Roles:"
+    },
+    "pendingInvitations": {
+      "title": "Invitaciones Pendientes",
+      "count": "{{count}} invitación pendiente",
+      "count_other": "{{count}} invitaciones pendientes",
+      "invitedBy": "Invitado por {{name}}",
+      "sent": "Enviado el {{date}}",
+      "expires": "Expira el {{date}}",
+      "resend": "Reenviar"
+    },
+    "inviteModal": {
+      "title": "Invitar Miembro del Equipo",
+      "subtitle": "Enviar una invitación para unirse a su equipo",
+      "emailAddress": "Dirección de Email",
+      "role": "Rol",
+      "sendInvitation": "Enviar Invitación"
+    },
+    "roleModal": {
+      "title": "Cambiar Rol del Miembro",
+      "subtitle": "Actualizar rol de {{name}}",
+      "newRole": "Nuevo Rol",
+      "updateRole": "Actualizar Rol"
+    },
+    "transferModal": {
+      "title": "Transferir Propiedad",
+      "message": "¿Está seguro de que desea transferir la propiedad del equipo a <strong>{{name}}</strong>? Esta acción no puede ser deshecha por usted. El nuevo propietario tendrá control total del equipo.",
+      "confirm": "Transferir Propiedad"
+    },
+    "removeModal": {
+      "title": "Eliminar Miembro del Equipo",
+      "message": "¿Está seguro de que desea eliminar a <strong>{{name}}</strong> de su equipo? Perderá acceso a todos los datos del equipo.",
+      "confirm": "Eliminar Miembro"
+    }
+  },
+  "myTeams": {
+    "title": "Mis Equipos",
+    "active": "Activo",
+    "pending": "Pendiente",
+    "member": "{{count}} miembro",
+    "member_other": "{{count}} miembros",
+    "accept": "Aceptar",
+    "pendingInvitations": "Invitaciones Pendientes",
+    "invitedBy": "Invitado por {{name}}",
+    "expires": "Expira el {{date}}",
+    "roles": {
+      "admin": "Administrador",
+      "editor": "Editor",
+      "viewer": "Visor"
+    }
+  },
+  "subscription": {
+    "earlyAccess": {
+      "title": "¡Todo es gratis por ahora!",
+      "description": "Todavía estamos construyendo Buurman y esta página es solo una vista previa de lo que viene. Por ahora, disfrute de <strong>todas las funcionalidades</strong> sin límites y sin coste. ¡Aproveche!",
+      "noSurprises": "Le avisaremos con suficiente antelación antes de que la facturación entre en vigor. Sin sorpresas, prometido."
+    },
+    "currentPlan": {
+      "title": "Suscripción Actual",
+      "subtitle": "Gestione su plan de suscripción y facturación",
+      "properties": "Propiedades",
+      "teamMembers": "Miembros del Equipo",
+      "nextRenewal": "Próxima Renovación",
+      "autoRenews": "Renovación automática",
+      "changePlan": "Cambiar Plan",
+      "cancelSubscription": "Cancelar Suscripción"
+    },
+    "plans": {
+      "title": "Planes Disponibles",
+      "subtitle": "Elija el plan que mejor se adapte a sus necesidades",
+      "monthly": "Mensual",
+      "annual": "Anual",
+      "save20": "Ahorre 20%",
+      "forever": "/para siempre",
+      "perMonth": "/mes",
+      "billedAnnually": "Facturado anualmente a {{amount}}",
+      "billedMonthly": "Facturado mensualmente, cancele en cualquier momento",
+      "perfectToStart": "Perfecto para empezar",
+      "currentPlan": "Plan Actual",
+      "downgradeToFree": "Cambiar a Gratuito",
+      "downgrade": "Degradar",
+      "upgrade": "Mejorar",
+      "mostPopular": "Más Popular",
+      "freeForever": "GRATIS PARA SIEMPRE"
+    },
+    "confirmModal": {
+      "title": "Confirmar Cambio de Plan",
+      "message": "¿Está seguro de que desea cambiar al plan <strong>{{plan}}</strong>? Su facturación se ajustará en consecuencia.",
+      "billingNote": "Se le cobrará {{amount}}/mes{{annual}} a partir del próximo ciclo de facturación.",
+      "billedAnnually": " ({{total}} facturado anualmente)",
+      "confirmChange": "Confirmar Cambio"
+    },
+    "paymentMethods": {
+      "title": "Métodos de Pago",
+      "subtitle": "Gestione sus métodos de pago",
+      "addPaymentMethod": "Añadir Método de Pago",
+      "default": "Predeterminado",
+      "expires": "Expira {{month}}/{{year}}"
+    }
+  },
+  "paymentHistory": {
+    "nextPayment": "Próximo Pago",
+    "totalPaid": "Total Pagado",
+    "allTime": "Todo el período",
+    "totalInvoices": "Total de Facturas",
+    "paid": "{{count}} pagadas",
+    "title": "Historial de Pagos",
+    "subtitle": "Vea y descargue sus facturas",
+    "searchPlaceholder": "Buscar por número de factura, plan o método de pago...",
+    "statusFilter": "Filtro de Estado",
+    "allStatuses": "Todos los Estados",
+    "invoice": "Factura",
+    "date": "Fecha",
+    "plan": "Plan",
+    "paymentMethod": "Método de Pago",
+    "amount": "Importe",
+    "status": "Estado",
+    "actions": "Acciones",
+    "download": "Descargar",
+    "noInvoices": "No se encontraron facturas",
+    "adjustFilters": "Intente ajustar sus filtros o búsqueda",
+    "historyWillAppear": "Su historial de pagos aparecerá aquí",
+    "statuses": {
+      "paid": "Pagado",
+      "pending": "Pendiente",
+      "failed": "Fallido"
+    }
+  },
+  "paymentInstructions": {
+    "title": "Instrucciones de Pago",
+    "subtitle": "Defina plantillas de instrucciones de pago reutilizables para sus contratos",
+    "addInstruction": "Añadir Instrucción",
+    "editTitle": "Editar Instrucción de Pago",
+    "newTitle": "Nueva Instrucción de Pago",
+    "name": "Nombre *",
+    "namePlaceholder": "ej., Cuenta Bancaria Principal",
+    "paymentMethod": "Instrucción de Pago *",
+    "description": "Descripción",
+    "descriptionPlaceholder": "Instrucciones para el contacto...",
+    "bankName": "Nombre del Banco",
+    "accountHolder": "Titular de la Cuenta",
+    "iban": "IBAN",
+    "bicSwift": "BIC / SWIFT",
+    "accountNumber": "Número de Cuenta",
+    "routingNumber": "Número de Ruta",
+    "paymentReference": "Referencia de Pago",
+    "paymentReferencePlaceholder": "Referencia a incluir en el pago",
+    "setAsDefault": "Establecer como método de pago predeterminado",
+    "setAsDefaultShort": "Establecer como predeterminado",
+    "creating": "Creando...",
+    "saving": "Guardando...",
+    "empty": {
+      "title": "Sin Instrucciones de Pago",
+      "subtitle": "Añada su primer método de pago para usar en contratos.",
+      "addInstruction": "Añadir Instrucción de Pago"
+    },
+    "default": "Predeterminado",
+    "holder": "Titular:",
+    "account": "Cuenta:"
+  },
+  "calendarFeeds": {
+    "title": "Feeds de Calendario",
+    "subtitle": "Suscríbase a fechas de vencimiento de pagos en Google Calendar, Apple Calendar o cualquier aplicación que admita feeds iCalendar. Cada feed tiene una URL única que puede añadir como suscripción de calendario.",
+    "createAllPayments": "Crear Feed de Todos los Pagos",
+    "previewCalendar": "Vista previa del calendario",
+    "copyUrl": "Copiar URL",
+    "regenerateUrl": "Regenerar URL",
+    "deleteFeed": "Eliminar feed",
+    "regenerateWarning": "Regenerar invalidará la URL actual.",
+    "regenerate": "Regenerar",
+    "deleteConfirm": "¿Eliminar este feed de calendario?",
+    "empty": "Aún sin feeds de calendario. Cree uno para empezar.",
+    "copied": "URL del feed copiada al portapapeles",
+    "copyFailed": "Error al copiar enlace",
+    "feedTypes": {
+      "allPayments": "Todos los Pagos",
+      "propertyPayments": "Pagos de la Propiedad",
+      "contactPayments": "Pagos del Contacto",
+      "contract": "Contrato"
+    },
+    "preview": {
+      "subtitle": "Vista previa del feed de calendario",
+      "today": "Hoy",
+      "errorMessage": "Error al cargar feed de calendario. La URL del feed puede ser no válida o inaccesible.",
+      "emailPreview": "Vista Previa de Email",
+      "smsMessage": "Mensaje SMS"
+    }
+  },
+  "onboarding": {
+    "welcome": "Bienvenido a Buurman",
+    "subtitle": "Vamos a configurar las preferencias de su equipo",
+    "chooseLanguage": "Elija su idioma",
+    "chooseLanguageDesc": "Seleccione el idioma para la interfaz de Buurman.",
+    "whereProperties": "¿Dónde están sus propiedades?",
+    "wherePropertiesDesc": "Esto configura su moneda y formato de fecha predeterminados.",
+    "searchCountries": "Buscar países...",
+    "teamCurrency": "Moneda del Equipo",
+    "teamCurrencyDesc": "Todos los datos financieros usarán esta moneda. Puede cambiarla más tarde en ajustes.",
+    "suggestedFor": "Sugerido para {{country}}",
+    "selected": "Seleccionado",
+    "dateFormat": "Formato de Fecha",
+    "dateFormatDesc": "¿Cómo deben mostrarse las fechas?",
+    "summary": "Resumen",
+    "summaryLanguage": "Idioma",
+    "summaryCountry": "País",
+    "summaryCurrency": "Moneda",
+    "summaryDateFormat": "Formato de fecha",
+    "skipForNow": "Omitir por ahora",
+    "saving": "Guardando...",
+    "completeSetup": "Completar Configuración"
+  },
+  "dataExport": {
+    "title": "Exportación de Datos",
+    "subtitle": "Exporte todos los datos de su equipo como un archivo descargable. Las exportaciones incluyen propiedades, contactos, contratos, pagos, gastos y documentos.",
+    "requestExport": "Solicitar Exportación",
+    "inProgress": "Una exportación ya está en curso. Por favor, espere a que se complete antes de solicitar otra.",
+    "failedToLoad": "Error al cargar exportaciones",
+    "tryAgain": "Reintentar",
+    "empty": "Aún sin exportaciones. Solicite su primera exportación de datos arriba.",
+    "dataExportLabel": "Exportación de Datos",
+    "requested": "Solicitado el {{date}}",
+    "completed": "Completado el {{date}}",
+    "expires": "Expira el {{date}}",
+    "percentComplete": "{{percent}}% completado",
+    "adminOnly": "Solo los administradores del equipo pueden exportar datos.",
+    "deleteTitle": "Eliminar Exportación",
+    "deleteMessage": "¿Está seguro de que desea eliminar esta exportación de datos? El archivo exportado será eliminado permanentemente. Esta acción no se puede deshacer.",
+    "statuses": {
+      "pending": "Pendiente",
+      "processing": "Procesando",
+      "completed": "Completado",
+      "failed": "Fallido"
+    }
+  }
+}

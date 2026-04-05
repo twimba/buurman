@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   TrendingUp,
   Building2,
@@ -1290,6 +1291,7 @@ const RecurringCostsSection = ({
 export const PropertyFinancialsTab = ({
   propertyId,
 }: PropertyFinancialsTabProps) => {
+  const { t } = useTranslation('properties');
   const {
     data: summary,
     isLoading,
@@ -1383,13 +1385,13 @@ export const PropertyFinancialsTab = ({
   if (error) {
     return (
       <div className="bg-error-bg border border-error-border text-error-text px-4 py-3 rounded-lg text-sm">
-        Failed to load financial data.{' '}
+        {t('financials.failedToLoad')}{' '}
         <button
           onClick={() => refetch()}
           className="underline hover:no-underline font-medium inline-flex items-center gap-1"
         >
           <RefreshCw className="h-3 w-3" />
-          Retry
+          {t('common:buttons.retry')}
         </button>
       </div>
     );

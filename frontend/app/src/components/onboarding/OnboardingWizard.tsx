@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Globe,
+  Languages,
   Coins,
   Calendar,
   ArrowRight,
@@ -14,6 +16,7 @@ import {
 import { getCountryByCode } from '@/utils/countries';
 import { useCurrencies, getCurrencyByCode } from '@/hooks/useCurrencies';
 import { getCurrencyFlag } from '@/utils/currencyFlags';
+import { supportedLanguages, useLocale } from '@/context/LocaleContext';
 
 interface OnboardingWizardProps {
   onComplete: () => void;
@@ -21,7 +24,7 @@ interface OnboardingWizardProps {
   currentCurrency: string;
 }
 
-const STEPS = ['country', 'currency', 'dateFormat'] as const;
+const STEPS = ['language', 'country', 'currency', 'dateFormat'] as const;
 
 const DATE_FORMATS = [
   { value: 'DD/MM/YYYY', label: 'DD/MM/YYYY', example: '25/03/2026' },
@@ -105,7 +108,10 @@ export const OnboardingWizard = ({
   currentCountryCode,
   currentCurrency,
 }: OnboardingWizardProps) => {
+  const { t } = useTranslation('settings');
+  const { locale, setLocale } = useLocale();
   const [stepIndex, setStepIndex] = useState(0);
+  const [language, setLanguage] = useState(locale || 'en');
   const [country, setCountry] = useState(currentCountryCode || 'NL');
   const [currency, setCurrency] = useState(currentCurrency || 'EUR');
   const [suggestedCurrency, setSuggestedCurrency] = useState(
@@ -142,6 +148,9 @@ export const OnboardingWizard = ({
   };
 
   const handleNext = () => {
+    if (currentStep === 'language') {
+      setLocale(language);
+    }
     if (stepIndex < STEPS.length - 1) {
       setStepIndex(stepIndex + 1);
     }
@@ -168,10 +177,10 @@ export const OnboardingWizard = ({
         {/* Header */}
         <div className="px-8 pt-8 pb-4">
           <h2 className="text-2xl font-bold text-text-primary">
-            Welcome to Buurman
+            {t('onboarding.welcome')}
           </h2>
           <p className="text-sm text-text-secondary mt-1">
-            Let&apos;s set up your team preferences
+            {t('onboarding.subtitle')}
           </p>
 
           {/* Step indicator */}
@@ -203,20 +212,52 @@ export const OnboardingWizard = ({
 
         {/* Content */}
         <div className="px-8 py-6 min-h-[320px]">
+          {currentStep === 'language' && (
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <Languages className="h-5 w-5 text-primary-500" />
+                <h3 className="text-lg font-semibold text-text-primary">
+                  {t('onboarding.chooseLanguage')}
+                </h3>
+              </div>
+              <p className="text-sm text-text-secondary mb-4">
+                {t('onboarding.chooseLanguageDesc')}
+              </p>
+              <div className="space-y-2">
+                {supportedLanguages.map((lang) => (
+                  <button
+                    key={lang.value}
+                    onClick={() => setLanguage(lang.value)}
+                    className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-between ${
+                      language === lang.value
+                        ? 'bg-primary-500 text-white'
+                        : 'hover:bg-surface-inset text-text-primary border border-border-default'
+                    }`}
+                  >
+                    <span>{lang.label}</span>
+                    {language === lang.value && (
+                      <Check className="h-4 w-4" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {currentStep === 'country' && (
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <Globe className="h-5 w-5 text-primary-500" />
                 <h3 className="text-lg font-semibold text-text-primary">
-                  Where are your properties?
+                  {t('onboarding.whereProperties')}
                 </h3>
               </div>
               <p className="text-sm text-text-secondary mb-4">
-                This sets your default currency and date format.
+                {t('onboarding.wherePropertiesDesc')}
               </p>
               <input
                 type="text"
-                placeholder="Search countries..."
+                placeholder={t('onboarding.searchCountries')}
                 value={countrySearch}
                 onChange={(e) => setCountrySearch(e.target.value)}
                 className="w-full px-3 py-2 border border-border-strong rounded-lg bg-surface-card text-text-primary mb-3 focus:outline-none focus:ring-1 focus:ring-primary-500"
@@ -260,12 +301,11 @@ export const OnboardingWizard = ({
                   <div className="flex items-center gap-2 mb-4">
                     <Coins className="h-5 w-5 text-primary-500" />
                     <h3 className="text-lg font-semibold text-text-primary">
-                      Team Currency
+                      {t('onboarding.teamCurrency')}
                     </h3>
                   </div>
                   <p className="text-sm text-text-secondary mb-4">
-                    All financial data will use this currency. You can change it
-                    later in settings.
+                    {t('onboarding.teamCurrencyDesc')}
                   </p>
 
                   {/* Suggested + Selected cards */}
@@ -283,11 +323,11 @@ export const OnboardingWizard = ({
                     >
                       <div className="flex items-center gap-1.5 mb-2">
                         <span className="text-[10px] font-semibold uppercase tracking-wider text-success-text bg-success-bg px-1.5 py-0.5 rounded">
-                          Suggested for {countryName}
+                          {t('onboarding.suggestedFor', { country: countryName })}
                         </span>
                         {isSuggested && (
                           <span className="text-[10px] font-semibold uppercase tracking-wider text-primary-500 bg-primary-500/10 px-1.5 py-0.5 rounded">
-                            Selected
+                            {t('onboarding.selected')}
                           </span>
                         )}
                       </div>
@@ -318,7 +358,7 @@ export const OnboardingWizard = ({
                       <div className="rounded-lg border-2 border-primary-500 bg-primary-500/5 dark:bg-primary-500/10 p-4">
                         <div className="mb-2">
                           <span className="text-[10px] font-semibold uppercase tracking-wider text-primary-500 bg-primary-500/10 px-1.5 py-0.5 rounded">
-                            Selected
+                            {t('onboarding.selected')}
                           </span>
                         </div>
                         <div className="flex items-center gap-2.5">
@@ -389,11 +429,11 @@ export const OnboardingWizard = ({
               <div className="flex items-center gap-2 mb-4">
                 <Calendar className="h-5 w-5 text-primary-500" />
                 <h3 className="text-lg font-semibold text-text-primary">
-                  Date Format
+                  {t('onboarding.dateFormat')}
                 </h3>
               </div>
               <p className="text-sm text-text-secondary mb-4">
-                How should dates be displayed?
+                {t('onboarding.dateFormatDesc')}
               </p>
               <div className="space-y-3">
                 {DATE_FORMATS.map((fmt) => (
@@ -419,18 +459,25 @@ export const OnboardingWizard = ({
               {/* Summary */}
               <div className="mt-6 bg-surface-inset rounded-lg p-4">
                 <h4 className="text-sm font-medium text-text-secondary mb-2">
-                  Summary
+                  {t('onboarding.summary')}
                 </h4>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-text-secondary">Country</span>
+                    <span className="text-text-secondary">{t('onboarding.summaryLanguage')}</span>
+                    <span className="font-medium text-text-primary">
+                      {supportedLanguages.find((l) => l.value === language)
+                        ?.label ?? language}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-text-secondary">{t('onboarding.summaryCountry')}</span>
                     <span className="font-medium text-text-primary">
                       {getCountryByCode(country)?.flag}{' '}
                       {COUNTRIES.find((c) => c.code === country)?.name}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-text-secondary">Currency</span>
+                    <span className="text-text-secondary">{t('onboarding.summaryCurrency')}</span>
                     <span className="font-medium text-text-primary">
                       {getCurrencyFlag(currency)} {currency}
                       {getCurrencyByCode(currencyList, currency) && (
@@ -441,7 +488,7 @@ export const OnboardingWizard = ({
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-text-secondary">Date format</span>
+                    <span className="text-text-secondary">{t('onboarding.summaryDateFormat')}</span>
                     <span className="font-medium text-text-primary">
                       {dateFormat}
                     </span>
@@ -459,11 +506,11 @@ export const OnboardingWizard = ({
             className="px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors flex items-center gap-1"
           >
             {stepIndex === 0 ? (
-              'Skip for now'
+              t('onboarding.skipForNow')
             ) : (
               <>
                 <ArrowLeft className="h-4 w-4" />
-                Back
+                {t('buttons.back', { ns: 'common' })}
               </>
             )}
           </button>
@@ -473,15 +520,15 @@ export const OnboardingWizard = ({
             className="px-6 py-2.5 bg-primary-500 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2 disabled:opacity-50"
           >
             {completeMutation.isPending ? (
-              'Saving...'
+              t('onboarding.saving')
             ) : isLastStep ? (
               <>
-                Complete Setup
+                {t('onboarding.completeSetup')}
                 <Check className="h-4 w-4" />
               </>
             ) : (
               <>
-                Next
+                {t('pagination.next', { ns: 'common' })}
                 <ArrowRight className="h-4 w-4" />
               </>
             )}

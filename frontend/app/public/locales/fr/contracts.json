@@ -1,0 +1,172 @@
+{
+  "list": {
+    "title": "Contrats", "subtitle": "Gérez les baux et conditions de location",
+    "addButton": "Ajouter un contrat", "filters": "Filtres", "status": "Statut",
+    "allStatuses": "Tous les statuts", "active": "Actif", "draft": "Brouillon",
+    "pendingSignature": "En attente de signature", "expired": "Expiré", "terminated": "Résilié",
+    "count_one": "{{count}} contrat", "count_other": "{{count}} contrats",
+    "empty": { "title": "Pas encore de contrats", "description": "Commencez par créer votre premier bail" },
+    "error": "Échec du chargement des contrats"
+  },
+  "create": { "title": "Ajouter un nouveau contrat", "readOnlyMessage": "La création de contrats n'est pas disponible en mode lecture seule." },
+  "edit": { "title": "Modifier le contrat", "failedToLoad": "Échec du chargement du contrat" },
+  "detail": {
+    "title": "Contrat #{{id}}", "notFound": "Échec du chargement du contrat",
+    "booklet": "Dossier", "bookletDownloadFailed": "Échec du téléchargement du dossier. Veuillez réessayer.",
+    "changeStatus": "Changer le statut", "reopen": "Rouvrir",
+    "reopenTitle": "Rouvrir ce contrat en statut brouillon",
+    "duplicate": "Dupliquer", "duplicateTitle": "Créer une copie de ce contrat en statut brouillon",
+    "edit": "Modifier", "delete": "Supprimer",
+    "tabs": { "overview": "Vue d'ensemble", "payments": "Paiements", "extensions": "Prolongations", "documents": "Documents", "history": "Historique" },
+    "deleteTitle": "Supprimer le contrat",
+    "deleteMessage": "Êtes-vous sûr de vouloir supprimer ce contrat ? Cette action est irréversible.",
+    "declineExtension": "Refuser la prolongation",
+    "declineConfirmMessage": "Êtes-vous sûr de vouloir refuser cette prolongation ?",
+    "cancelExtension": "Annuler la prolongation",
+    "cancelConfirmMessage": "Êtes-vous sûr de vouloir annuler cette prolongation ? Cette action est irréversible.",
+    "deleteGeneratedDocuments": "Supprimer les documents générés",
+    "keepExtension": "Garder la prolongation"
+  },
+  "overview": {
+    "contractParties": "Parties au contrat", "addParty": "Ajouter une partie",
+    "property": "Bien", "contractType": "Type de contrat", "startDate": "Date de début",
+    "endDate": "Date de fin", "signedDate": "Date de signature", "importantDates": "Dates importantes",
+    "original": "Original", "extension": "Prolongation #{{number}}", "extended": "Prolongé ({{count}}x)",
+    "activated": "Activé le {{date}}", "auto": "Auto",
+    "financialTerms": "Conditions financières", "rentBreakdown": "Détail du loyer", "total": "Total",
+    "deposit": "Dépôt de garantie", "securityDeposit": "Caution", "paymentDueDay": "Jour d'échéance",
+    "dayOfPeriod": "Le {{day}} de chaque période", "openEnded": "Durée indéterminée",
+    "effectiveEndDate": "Date de fin effective", "notSigned": "Non signé", "noDeposit": "Pas de dépôt",
+    "dayOfMonth": "Le {{day}} de chaque mois", "rentDetails": "Détails du loyer",
+    "currentRent": "Loyer actuel", "perMonth": "/mois", "serviceCharges": "Charges",
+    "totalMonthly": "Total mensuel", "rentHistory": "Historique des loyers",
+    "parties": "Parties au contrat", "noParties": "Aucune partie assignée à ce contrat.",
+    "paymentInstruction": "Instruction de paiement", "noPaymentInstruction": "Aucune instruction de paiement configurée.",
+    "notes": "Notes",
+    "renewalConfig": {
+      "title": "Configuration du renouvellement", "mode": "Mode", "automatic": "Automatique", "manual": "Manuel",
+      "renewalTerm": "Durée de renouvellement", "month_one": "{{count}} mois", "month_other": "{{count}} mois",
+      "extensions": "Prolongations", "remaining": "{{remaining}} sur {{max}} restantes",
+      "max": "{{max}} max.", "unlimited": "Illimité", "rentAdjustment": "Ajustement du loyer",
+      "noticePeriods": "Délais de préavis", "landlord": "Propriétaire", "contact": "Contact",
+      "days": "{{count}} jours", "contactConfirmation": "Confirmation du locataire", "required": "Obligatoire"
+    },
+    "additionalTerms": "Conditions supplémentaires", "terminationNotice": "Préavis de résiliation",
+    "lateFee": "Pénalité de retard", "termsAndConditions": "Conditions générales",
+    "countryDetails": "Détails de location en {{country}}", "countrySpecificDetails": "Détails spécifiques au pays",
+    "addPartyForm": {
+      "role": "Rôle", "selectExisting": "Sélectionner un existant", "createNew": "Créer un nouveau",
+      "contact": "Contact", "firstName": "Prénom", "lastName": "Nom de famille",
+      "email": "Email", "phone": "Téléphone", "adding": "Ajout...", "add": "Ajouter"
+    },
+    "removeParty": { "title": "Supprimer la partie", "message": "Êtes-vous sûr de vouloir supprimer cette partie du contrat ?", "confirm": "Supprimer" },
+    "metadata": { "title": "Métadonnées", "created": "Créé :", "lastUpdated": "Dernière mise à jour :", "at": "à" }
+  },
+  "payments": {
+    "title": "Paiements", "generate": "Générer des paiements", "generateFuture": "Générer des paiements futurs",
+    "generateAndMarkPaid": "Générer et marquer comme payé", "schedulePayment": "Planifier un paiement",
+    "registerPayments": "Enregistrer des paiements", "createFirstPayment": "Créer le premier paiement",
+    "noPayments": "Aucun paiement pour ce contrat", "failedToLoad": "Échec du chargement des paiements",
+    "noMatch": "Aucun paiement trouvé pour votre recherche",
+    "searchPlaceholder": "Rechercher par nº de paiement, statut...",
+    "empty": "Aucun paiement trouvé pour ce contrat.", "balance": "Solde : {{currency}} {{amount}}",
+    "deleteTitle": "Supprimer le paiement",
+    "deleteMessage": "Êtes-vous sûr de vouloir supprimer ce paiement ? Toutes les données associées (encaissements, documents) seront également supprimées. Cette action est irréversible.",
+    "showing": "Affichage de {{from}} à {{to}} sur {{total}} paiements",
+    "page": "Page {{current}} sur {{total}}",
+    "table": { "paymentNumber": "Paiement #", "dueDate": "Date d'échéance", "amount": "Montant", "status": "Statut", "paymentDate": "Date de paiement", "actions": "Actions", "paidDate": "Date de paiement", "method": "Méthode" }
+  },
+  "extensions": {
+    "title": "Prolongations et renouvellements", "addExtension": "Ajouter une prolongation",
+    "empty": "Aucune prolongation enregistrée.", "renewalConfig": "Configuration du renouvellement",
+    "createExtension": "Créer une prolongation", "newEndDate": "Nouvelle date de fin"
+  },
+  "documents": { "title": "Documents" },
+  "history": {
+    "title": "Historique du contrat", "empty": "Aucun historique disponible",
+    "emptyDescription": "Les modifications de ce contrat apparaîtront ici",
+    "failedToLoad": "Échec du chargement de l'historique", "impersonated": "Usurpé",
+    "clickToView": "Cliquez pour voir les modifications", "clickToHide": "Cliquez pour masquer les modifications",
+    "changedFields": "Champs modifiés", "old": "Ancien :", "new": "Nouveau :",
+    "fileName": "Nom du fichier", "titleField": "Titre", "typeField": "Type", "photo": "Photo", "document": "Document"
+  },
+  "form": {
+    "contractType": "Type de contrat", "property": "Bien", "propertyAndParties": "Bien et parties",
+    "propertyPlaceholder": "Sélectionner un bien...", "primaryContact": "Contact principal",
+    "contactPlaceholder": "Sélectionner un contact...", "createNewContact": "Créer un nouveau contact",
+    "startDate": "Date de début", "endDate": "Date de fin",
+    "endDateHelp": "Laissez vide pour les contrats à durée indéterminée",
+    "rentAmount": "Montant du loyer", "rentAmountPlaceholder": "0,00", "currency": "Devise",
+    "paymentFrequency": "Fréquence de paiement", "paymentDay": "Jour de paiement",
+    "serviceCharges": "Charges", "serviceChargesPlaceholder": "0,00",
+    "depositAmount": "Montant du dépôt de garantie", "depositAmountPlaceholder": "0,00",
+    "notes": "Notes", "notesPlaceholder": "Notes supplémentaires sur ce contrat...",
+    "saving": "Enregistrement...", "updateContract": "Mettre à jour le contrat", "createContract": "Créer le contrat",
+    "breakdownRentIntoComponents": "Décomposer le loyer en composantes", "useSingleAmount": "Utiliser un montant unique",
+    "renewalMode": "Mode de renouvellement", "renewalTermMonths": "Durée de renouvellement (mois)",
+    "maxRenewals": "Maximum de renouvellements", "landlordNoticeDays": "Préavis du propriétaire (jours)",
+    "contactNoticeDays": "Préavis du locataire (jours)", "requiresContactConfirmation": "Nécessite la confirmation du locataire",
+    "rentAdjustmentType": "Type d'ajustement du loyer", "adjustmentValue": "Valeur de l'ajustement",
+    "loadJurisdictionDefaults": "Charger les valeurs par défaut de la juridiction",
+    "parties": { "title": "Parties au contrat", "addParty": "Ajouter une partie", "role": "Rôle", "contact": "Contact", "removeParty": "Supprimer la partie" },
+    "paymentInstruction": {
+      "title": "Instruction de paiement", "iban": "IBAN", "ibanPlaceholder": "ex., FR7630006000011234567890189",
+      "accountHolder": "Titulaire du compte", "accountHolderPlaceholder": "Nom du titulaire du compte",
+      "reference": "Référence", "referencePlaceholder": "Référence de paiement"
+    },
+    "validation": {
+      "propertyRequired": "Le bien est obligatoire", "contactRequired": "Le contact principal est obligatoire",
+      "startDateRequired": "La date de début est obligatoire", "rentAmountRequired": "Le montant du loyer est obligatoire",
+      "rentAmountPositive": "Le montant du loyer doit être supérieur à 0",
+      "baseRentRequired": "La composante de loyer de base est obligatoire",
+      "componentAmountsPositive": "Tous les montants des composantes doivent être supérieurs à 0",
+      "otherDescriptionRequired": "La composante personnalisée nécessite une description"
+    }
+  },
+  "statusChange": {
+    "title": "Changer le statut du contrat", "currentStatus": "Statut actuel", "newStatus": "Nouveau statut",
+    "reason": "Motif (Optionnel)", "reasonPlaceholder": "Saisissez le motif du changement de statut...",
+    "noTransitions": "Aucune transition de statut valide disponible depuis {{status}}.",
+    "changing": "Modification...", "confirm": "Changer le statut",
+    "statuses": { "DRAFT": "Brouillon", "PENDING_SIGNATURE": "En attente de signature", "ACTIVE": "Actif", "EXPIRED": "Expiré", "TERMINATED": "Résilié" }
+  },
+  "adjustRent": {
+    "title": "Ajuster le loyer", "effectiveFrom": "Effectif à partir de",
+    "retroactiveNote": "Il s'agit d'un ajustement rétroactif. Les paiements en attente seront mis à jour. Pour les paiements déjà réglés, un paiement d'ajustement sera créé pour la différence.",
+    "pendingNote": "Les paiements en attente à partir de cette date seront mis à jour au nouveau montant.",
+    "currentRent": "Loyer actuel", "rentAtDate": "Loyer à la date sélectionnée",
+    "newRent": "Nouveau montant du loyer", "autoCalculated": "Calculé automatiquement à partir des totaux des composantes.",
+    "adjustComponents": "Ajuster les composantes du loyer", "was": "était {{amount}}",
+    "componentsTotal": "Total des composantes", "removed": "supprimé",
+    "removeComponent": "Supprimer la composante", "restoreComponent": "Restaurer la composante",
+    "customLabel": "Étiquette personnalisée", "addComponent": "+ Ajouter une composante",
+    "notesOptional": "Notes (Optionnel)", "notesPlaceholder": "Motif de l'ajustement (ex., augmentation annuelle IRL)...",
+    "saving": "Enregistrement...", "adjustRentButton": "Ajuster le loyer",
+    "effectiveDate": "Date d'effet", "reason": "Motif", "percentage": "Pourcentage"
+  },
+  "rentRegulations": {
+    "title": "Réglementations de loyer", "subtitle": "Données de référence pour les règles d'ajustement de loyer par pays",
+    "applyAdjustments": "Appliquer les ajustements de loyer",
+    "selectCountry": "Sélectionnez un pays pour voir ses règles de réglementation de loyer",
+    "currentYear": "Année en cours", "currentRules": "Règles actuelles {{year}}",
+    "maxIncrease": "Augmentation maximale", "type": "Type", "effectiveDate": "Date d'effet",
+    "noticePeriod": "Délai de préavis", "days": "{{count}} jours", "notSet": "Non défini", "na": "N/A",
+    "method": "Méthode", "ruleHistory": "Historique des règles", "regionalRules": "Règles régionales",
+    "regulationHistory": "Historique des réglementations", "year": "Année", "percentage": "Pourcentage",
+    "noRules": "Aucune règle trouvée pour cette sélection.",
+    "noData": "Aucune donnée de réglementation disponible",
+    "noDataDescription": "Les données de réglementation peuvent être gérées depuis le backoffice",
+    "failedToLoad": "Échec du chargement des réglementations de loyer"
+  },
+  "rentIncrease": {
+    "title": "Assistant d'ajustement de loyer", "subtitle": "Appliquer des ajustements de loyer réglementés sur tout votre portefeuille",
+    "steps": { "selectYear": "Sélectionner l'année", "adjustRents": "Ajuster les loyers", "review": "Vérifier", "confirmation": "Confirmation" },
+    "regulationDataAvailable": "Données de réglementation disponibles",
+    "nextAdjustIncreases": "Suivant : Ajuster les augmentations", "nextReview": "Suivant : Vérifier",
+    "applied": "Appliqué", "backToAdjust": "Retour à l'ajustement"
+  },
+  "card": { "start": "Début", "end": "Fin", "rent": "Loyer", "openEnded": "Durée indéterminée", "noEndDate": "Pas de date de fin" },
+  "generatePayments": { "title": "Générer des paiements", "description": "Générer des enregistrements de paiement pour la période sélectionnée." },
+  "generateDocuments": { "title": "Générer des documents", "description": "Générer des documents de contrat à partir de modèles." },
+  "generateRentChange": { "title": "Générer un changement de loyer", "description": "Générer une notification de changement de loyer." }
+}

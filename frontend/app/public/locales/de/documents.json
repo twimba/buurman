@@ -1,0 +1,98 @@
+{
+  "documentsPage": {
+    "title": "Dokumentenbibliothek",
+    "subtitle": "Suchen und verwalten Sie alle Ihre Dokumente an einem Ort",
+    "searchPlaceholder": "Dokumente nach Titel, Dateiname oder Notizen suchen...",
+    "entityTypeFilter": {
+      "all": "Alle Typen",
+      "property": "Immobilien",
+      "contact": "Kontakte",
+      "contract": "Verträge",
+      "payment": "Zahlungen",
+      "expense": "Ausgaben"
+    },
+    "table": {
+      "document": "Dokument",
+      "type": "Typ",
+      "size": "Größe",
+      "uploaded": "Hochgeladen",
+      "actions": "Aktionen"
+    },
+    "selection": {
+      "selected": "{{selected}} von {{total}} ausgewählt",
+      "count": "{{count}} Dokument",
+      "count_other": "{{count}} Dokumente"
+    },
+    "empty": "Keine Dokumente gefunden",
+    "editModal": "Dokument bearbeiten"
+  },
+  "photosPage": {
+    "title": "Fotobibliothek",
+    "subtitle": "Durchsuchen und verwalten Sie alle Ihre Fotos an einem Ort",
+    "searchPlaceholder": "Fotos nach Titel, Dateiname oder Notizen suchen...",
+    "entityTypeFilter": {
+      "all": "Alle Typen",
+      "property": "Immobilien",
+      "contact": "Kontakte",
+      "contract": "Verträge",
+      "payment": "Zahlungen",
+      "expense": "Ausgaben"
+    },
+    "empty": "Keine Fotos gefunden",
+    "editModal": "Foto bearbeiten"
+  },
+  "photoGrid": {
+    "noPhotos": "Noch keine Fotos",
+    "failedToLoad": "Fotos konnten nicht geladen werden",
+    "failedToLoadImage": "Laden fehlgeschlagen",
+    "noUrl": "Keine URL",
+    "main": "Haupt",
+    "selection": {
+      "selected": "{{selected}} von {{total}} ausgewählt",
+      "count": "{{count}} Foto",
+      "count_other": "{{count}} Fotos"
+    },
+    "downloading": "Wird heruntergeladen...",
+    "tooltips": {
+      "setAsMain": "Als Hauptfoto festlegen",
+      "editTitleNotes": "Titel & Notizen bearbeiten",
+      "deletePhoto": "Foto löschen"
+    }
+  },
+  "preview": {
+    "previewNotAvailable": "Vorschau für diesen Dateityp nicht verfügbar ({{mimeType}})",
+    "downloadFile": "Datei herunterladen",
+    "notes": "Notizen:",
+    "tooltips": {
+      "editTitleNotes": "Titel & Notizen bearbeiten",
+      "download": "Herunterladen",
+      "openInNewTab": "In neuem Tab öffnen",
+      "close": "Schließen",
+      "previous": "Zurück",
+      "next": "Weiter"
+    }
+  },
+  "deleteDialog": {
+    "titleSingle": "Dokument löschen",
+    "titlePlural": "Dokumente löschen",
+    "messageSingle": "Sind Sie sicher, dass Sie dieses Dokument löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "messagePlural": "Sie sind dabei, {{count}} Dokumente zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "confirmSingle": "Löschen",
+    "confirmPlural": "{{count}} Dokumente löschen"
+  },
+  "deletePhotoDialog": {
+    "titleSingle": "Foto löschen",
+    "titlePlural": "Fotos löschen",
+    "messageSingle": "Sind Sie sicher, dass Sie dieses Foto löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "messagePlural": "Sie sind dabei, {{count}} Fotos zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "mainPhotoSingle": "Dies ist das Hauptfoto. Nach dem Löschen hat diese Immobilie kein Hauptfoto mehr. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "mainPhotoPlural": "Sie sind dabei, {{count}} Fotos zu löschen, einschließlich des Hauptfotos. Diese Immobilie wird kein Hauptfoto mehr haben. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "confirmSingle": "Löschen",
+    "confirmPlural": "{{count}} Fotos löschen"
+  },
+  "tooltips": {
+    "preview": "Vorschau",
+    "editTitleNotes": "Titel & Notizen bearbeiten",
+    "delete": "Löschen"
+  }
+}

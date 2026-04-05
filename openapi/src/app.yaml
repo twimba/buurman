@@ -1279,6 +1279,16 @@ components:
           type: string
           maxLength: 2
           minLength: 2
+        defaultLanguage:
+          type: string
+          description: Default language for the team
+          enum:
+            - en
+            - nl
+            - pt
+            - es
+            - fr
+            - de
     UpdateTeamSettingsRequest:
       type: object
       properties:

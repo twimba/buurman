@@ -1,5 +1,6 @@
 /// <reference types="@types/google.maps" />
 import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   APIProvider,
   Map,
@@ -53,21 +54,21 @@ interface InteractiveMapProps {
 const placeholderCls =
   'bg-surface-page rounded-lg flex flex-col items-center justify-center text-center';
 
-function getAccuracyMessage(
+function getAccuracyMessageKey(
   accuracy: string | null | undefined
 ): string | null {
   switch (accuracy) {
     case 'ROOFTOP':
     case 'RANGE_INTERPOLATED':
-      return 'Drag the pin to fine-tune the location';
+      return 'map.accuracy.rooftop';
     case 'MANUAL':
-      return 'Pin placed manually — drag to adjust if needed';
+      return 'map.accuracy.manual';
     case 'CITY':
     case 'GEOMETRIC_CENTER':
     case 'APPROXIMATE':
-      return 'We found the neighborhood but not the exact spot — drag the pin to your property!';
+      return 'map.accuracy.approximate';
     case 'COUNTRY':
-      return 'Well, we found the country at least! Drag the pin to the right location.';
+      return 'map.accuracy.country';
     default:
       return null;
   }
@@ -121,6 +122,7 @@ export const InteractiveMap = ({
   height = 'h-96',
   defaultCountryCode,
 }: InteractiveMapProps) => {
+  const { t } = useTranslation('properties');
   const apiKey = env('VITE_GOOGLE_MAPS_API_KEY');
   const mapsChannel = parseGoogleMapsChannel(env('VITE_GOOGLE_MAPS_CHANNEL'));
   const [clickToPlaceActive, setClickToPlaceActive] = useState(false);
@@ -167,10 +169,10 @@ export const InteractiveMap = ({
       <div className={`${height} ${placeholderCls}`}>
         <MapPin className="h-12 w-12 text-text-disabled mb-3" />
         <p className="text-text-secondary font-medium mb-1">
-          Map Preview Unavailable
+          {t('map.unavailable')}
         </p>
         <p className="text-sm text-text-secondary">
-          Configure VITE_GOOGLE_MAPS_API_KEY to enable maps
+          {t('map.configureApiKey')}
         </p>
         <div className="mt-3 text-xs text-text-muted bg-surface-inset rounded p-2 font-mono">
           {street}, {city}
@@ -185,7 +187,7 @@ export const InteractiveMap = ({
       <div className={`${height} ${placeholderCls}`}>
         <Loader2 className="h-10 w-10 text-primary-500 animate-spin mb-3" />
         <p className="text-text-secondary font-medium mb-1">
-          Finding location...
+          {t('map.findingLocation')}
         </p>
         <div className="mt-3 text-xs text-text-muted bg-surface-inset rounded p-2 font-mono">
           {street}, {city}
@@ -200,10 +202,10 @@ export const InteractiveMap = ({
       <div className={`${height} ${placeholderCls}`}>
         <MapPin className="h-12 w-12 text-text-disabled mb-3" />
         <p className="text-text-secondary font-medium mb-1">
-          Map Preview Unavailable
+          {t('map.unavailable')}
         </p>
         <p className="text-sm text-text-secondary">
-          Could not load Google Maps right now
+          {t('map.couldNotLoadMaps')}
         </p>
         <div className="mt-3 text-xs text-text-muted bg-surface-inset rounded p-2 font-mono">
           {street}, {city}
@@ -232,8 +234,7 @@ export const InteractiveMap = ({
           </APIProvider>
         </div>
         <p className="text-sm text-primary-500 dark:text-primary-300 text-center">
-          Our map skills failed us this time. Click anywhere on the map to place
-          your property pin.
+          {t('map.clickToPlace')}
         </p>
       </div>
     );
@@ -245,10 +246,10 @@ export const InteractiveMap = ({
       <div className={`${height} ${placeholderCls}`}>
         <MapPin className="h-12 w-12 text-text-disabled mb-3" />
         <p className="text-text-secondary font-medium mb-1">
-          Location Not Found
+          {t('map.locationNotFound')}
         </p>
         <p className="text-sm text-text-secondary mb-3">
-          We couldn&apos;t find this address on the map
+          {t('map.couldNotFind')}
         </p>
         <button
           type="button"
@@ -256,7 +257,7 @@ export const InteractiveMap = ({
           className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm font-medium"
         >
           <MousePointerClick className="h-4 w-4" />
-          Place pin manually
+          {t('map.placePinManually')}
         </button>
       </div>
     );
@@ -268,10 +269,10 @@ export const InteractiveMap = ({
       <div className={`${height} ${placeholderCls}`}>
         <MapPin className="h-12 w-12 text-text-disabled mb-3" />
         <p className="text-text-secondary font-medium mb-1">
-          Location Not Found
+          {t('map.locationNotFound')}
         </p>
         <p className="text-sm text-text-secondary">
-          Could not find this address on the map
+          {t('map.couldNotFind')}
         </p>
         <div className="mt-3 text-xs text-text-muted bg-surface-inset rounded p-2 font-mono">
           {street}, {city}
@@ -283,9 +284,10 @@ export const InteractiveMap = ({
   // Has coordinates — render map with marker
   const coordinates = { lat: latitude, lng: longitude };
   const zoom = getZoomForAccuracy(geocodeAccuracy);
-  const accuracyMessage = isInteractive
-    ? getAccuracyMessage(geocodeAccuracy)
+  const accuracyMessageKey = isInteractive
+    ? getAccuracyMessageKey(geocodeAccuracy)
     : null;
+  const accuracyMessage = accuracyMessageKey ? t(accuracyMessageKey) : null;
 
   return (
     <div className="space-y-2">

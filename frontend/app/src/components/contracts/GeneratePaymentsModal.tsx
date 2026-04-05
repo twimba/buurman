@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Calendar, CalendarCheck } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface GeneratePaymentsModalProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ export default function GeneratePaymentsModal({
   onSubmit,
   isLoading,
 }: GeneratePaymentsModalProps) {
+  const { t } = useTranslation('contracts');
   const [count, setCount] = useState(1);
 
   if (!isOpen) {
@@ -43,7 +45,7 @@ export default function GeneratePaymentsModal({
       <div className="absolute inset-0 bg-black/50" />
       <div className="relative bg-surface-card rounded-lg shadow-xl dark:shadow-black/20 w-full max-w-md p-6">
         <h3 className="text-lg font-semibold mb-4 text-text-primary">
-          Generate Future Payments
+          {t('payments.generateFuture')}
         </h3>
 
         <form onSubmit={handleSubmit} onKeyDown={handleCmdEnter}>
@@ -81,7 +83,7 @@ export default function GeneratePaymentsModal({
               className="px-4 py-2 text-sm text-text-secondary hover:bg-surface-inset rounded-md"
               disabled={isLoading}
             >
-              Cancel
+              {t('common:buttons.cancel')}
             </button>
             <button
               type="submit"
@@ -89,7 +91,7 @@ export default function GeneratePaymentsModal({
               disabled={isLoading}
             >
               <Calendar className="h-4 w-4" />
-              Generate
+              {t('payments.generate')}
             </button>
             <button
               type="button"
@@ -98,7 +100,7 @@ export default function GeneratePaymentsModal({
               disabled={isLoading}
             >
               <CalendarCheck className="h-4 w-4" />
-              {isLoading ? 'Generating...' : 'Generate & Mark Paid'}
+              {isLoading ? t('common:buttons.loading') : t('payments.generateAndMarkPaid')}
             </button>
           </div>
         </form>

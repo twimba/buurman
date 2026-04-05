@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Scale, TrendingUp, CalendarDays } from 'lucide-react';
 import {
   useRentRegulationCountries,
@@ -30,6 +31,7 @@ const humanizeEnum = (value: string): string => {
 };
 
 export const RentRegulationsPage = () => {
+  const { t } = useTranslation('contracts');
   const navigate = useNavigate();
   const [selectedCountry, setSelectedCountry] = useState<string | undefined>();
   const [selectedRegion, setSelectedRegion] = useState<string | undefined>();
@@ -76,7 +78,7 @@ export const RentRegulationsPage = () => {
   if (countriesError) {
     return (
       <div className="min-h-screen bg-background p-8">
-        <ErrorMessage message="Failed to load rent regulations" />
+        <ErrorMessage message={t('rentRegulations.failedToLoad')} />
       </div>
     );
   }
@@ -90,11 +92,11 @@ export const RentRegulationsPage = () => {
             <div className="flex items-center gap-3 mb-1">
               <Scale className="h-8 w-8 text-primary-500 dark:text-primary-300" />
               <h1 className="text-3xl font-bold text-text-primary">
-                Rent Regulations
+                {t('rentRegulations.title')}
               </h1>
             </div>
             <p className="text-text-secondary ml-11">
-              Reference data for rent adjustment rules by country
+              {t('rentRegulations.subtitle')}
             </p>
           </div>
           <button
@@ -102,7 +104,7 @@ export const RentRegulationsPage = () => {
             className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg bg-gradient-to-b from-primary-500 to-primary-600 text-white border border-primary-600 shadow-sm shadow-primary-500/20 hover:from-primary-400 hover:to-primary-600 hover:shadow-md transition-all"
           >
             <TrendingUp className="h-4 w-4" />
-            Apply Rent Adjustments
+            {t('rentRegulations.applyAdjustments')}
           </button>
         </div>
 
@@ -143,23 +145,23 @@ export const RentRegulationsPage = () => {
                       <div className="flex items-center gap-2 mb-3">
                         <CalendarDays className="h-4 w-4 text-primary-500 dark:text-primary-300" />
                         <h3 className="text-sm font-semibold text-primary-500 dark:text-primary-300">
-                          {currentYear} Current Rules
+                          {t('rentRegulations.currentRules', { year: currentYear })}
                         </h3>
                       </div>
                       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                         <div>
                           <p className="text-xs text-text-secondary mb-0.5">
-                            Max Increase
+                            {t('rentRegulations.maxIncrease')}
                           </p>
                           <p className="text-lg font-bold text-text-primary">
                             {currentYearRule.maxIncreasePercentage != null
                               ? `${currentYearRule.maxIncreasePercentage}%`
-                              : 'N/A'}
+                              : t('rentRegulations.na')}
                           </p>
                         </div>
                         <div>
                           <p className="text-xs text-text-secondary mb-0.5">
-                            Type
+                            {t('rentRegulations.type')}
                           </p>
                           <p className="text-sm font-semibold text-text-primary">
                             {humanizeEnum(currentYearRule.maxIncreaseType)}
@@ -167,20 +169,20 @@ export const RentRegulationsPage = () => {
                         </div>
                         <div>
                           <p className="text-xs text-text-secondary mb-0.5">
-                            Effective Date
+                            {t('rentRegulations.effectiveDate')}
                           </p>
                           <p className="text-sm font-semibold text-text-primary">
-                            {currentYearRule.effectiveDate ?? 'Not set'}
+                            {currentYearRule.effectiveDate ?? t('rentRegulations.notSet')}
                           </p>
                         </div>
                         <div>
                           <p className="text-xs text-text-secondary mb-0.5">
-                            Notice Period
+                            {t('rentRegulations.noticePeriod')}
                           </p>
                           <p className="text-sm font-semibold text-text-primary">
                             {currentYearRule.noticePeriodDays != null
-                              ? `${currentYearRule.noticePeriodDays} days`
-                              : 'N/A'}
+                              ? t('rentRegulations.days', { count: currentYearRule.noticePeriodDays })
+                              : t('rentRegulations.na')}
                           </p>
                         </div>
                       </div>
@@ -190,7 +192,7 @@ export const RentRegulationsPage = () => {
                   {/* Rules table */}
                   <div>
                     <h3 className="text-lg font-semibold text-text-primary mb-3">
-                      {selectedRegion ? 'Regional Rules' : 'Regulation History'}
+                      {selectedRegion ? t('rentRegulations.regionalRules') : t('rentRegulations.regulationHistory')}
                     </h3>
                     {displayRules && <RuleHistoryTable rules={displayRules} />}
                   </div>
@@ -205,10 +207,10 @@ export const RentRegulationsPage = () => {
           <div className="flex flex-col items-center justify-center py-16 bg-surface-card rounded-lg border border-border-default">
             <Scale className="h-16 w-16 text-text-disabled mb-4" />
             <h3 className="text-lg font-semibold text-text-primary mb-2">
-              No regulation data available
+              {t('rentRegulations.noData')}
             </h3>
             <p className="text-text-secondary">
-              Regulation data can be managed from the backoffice
+              {t('rentRegulations.noDataDescription')}
             </p>
           </div>
         )}

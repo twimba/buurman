@@ -1,4 +1,5 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Scale, ChevronRight } from 'lucide-react';
 import {
   useRentIncreasePreview,
@@ -16,14 +17,18 @@ import { ConfirmationStep } from '@/components/rentIncreases/ConfirmationStep';
 
 type WizardStep = 'year' | 'adjust' | 'review' | 'confirmation';
 
-const STEPS: { key: WizardStep; label: string }[] = [
-  { key: 'year', label: 'Select Year' },
-  { key: 'adjust', label: 'Adjust Rents' },
-  { key: 'review', label: 'Review' },
-  { key: 'confirmation', label: 'Confirmation' },
-];
-
 export const RentIncreaseWizardPage = () => {
+  const { t } = useTranslation('contracts');
+
+  const STEPS = useMemo(
+    () => [
+      { key: 'year' as WizardStep, label: t('rentIncrease.steps.selectYear') },
+      { key: 'adjust' as WizardStep, label: t('rentIncrease.steps.adjustRents') },
+      { key: 'review' as WizardStep, label: t('rentIncrease.steps.review') },
+      { key: 'confirmation' as WizardStep, label: t('rentIncrease.steps.confirmation') },
+    ],
+    [t]
+  );
   const [step, setStep] = useState<WizardStep>('year');
   const [year, setYear] = useState(new Date().getFullYear());
   const [preview, setPreview] = useState<RentIncreasePreviewResponse | null>(
@@ -113,11 +118,11 @@ export const RentIncreaseWizardPage = () => {
           <div className="flex items-center gap-3 mb-1">
             <Scale className="h-8 w-8 text-primary-500 dark:text-primary-300" />
             <h1 className="text-3xl font-bold text-text-primary">
-              Rent Adjustment Wizard
+              {t('rentIncrease.title')}
             </h1>
           </div>
           <p className="text-text-secondary ml-11">
-            Apply regulated rent adjustments across your portfolio
+            {t('rentIncrease.subtitle')}
           </p>
         </div>
 

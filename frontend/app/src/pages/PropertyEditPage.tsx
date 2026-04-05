@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   useProperty,
   useUpdateProperty,
@@ -17,6 +18,7 @@ import { ErrorMessage } from '@/components/ErrorMessage';
 import { ArrowLeft } from 'lucide-react';
 
 export const PropertyEditPage = () => {
+  const { t } = useTranslation('properties');
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: property, isLoading, error } = useProperty(id);
@@ -46,7 +48,7 @@ export const PropertyEditPage = () => {
   if (error || !property) {
     return (
       <div className="min-h-screen bg-surface-page p-8">
-        <ErrorMessage message="Property not found" />
+        <ErrorMessage message={t('edit.notFound')} />
       </div>
     );
   }
@@ -63,7 +65,7 @@ export const PropertyEditPage = () => {
             <ArrowLeft className="h-5 w-5" />
           </button>
           <h1 className="text-2xl font-bold text-text-primary">
-            Edit Property
+            {t('edit.title')}
           </h1>
         </div>
 

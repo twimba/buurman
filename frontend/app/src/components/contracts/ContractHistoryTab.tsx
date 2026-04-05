@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useContractAuditLog } from '@/hooks/useContractHooks';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { LoadingSpinner, RichTextDisplay } from '@buurman/ui';
@@ -11,6 +12,7 @@ interface ContractHistoryTabProps {
 }
 
 export const ContractHistoryTab = ({ contractId }: ContractHistoryTabProps) => {
+  const { t } = useTranslation('contracts');
   const { formatRelative } = useFormatDate();
   const [expandedAuditItems, setExpandedAuditItems] = useState<Set<string>>(
     new Set()
@@ -25,14 +27,14 @@ export const ContractHistoryTab = ({ contractId }: ContractHistoryTabProps) => {
   return (
     <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
       <h2 className="text-xl font-semibold text-text-primary mb-4">
-        Contract History
+        {t('history.title')}
       </h2>
       {auditLoading ? (
         <div className="flex items-center justify-center py-8">
           <LoadingSpinner />
         </div>
       ) : auditError ? (
-        <ErrorMessage message="Failed to load history" />
+        <ErrorMessage message={t('history.failedToLoad')} />
       ) : auditLog.length > 0 ? (
         <div className="space-y-4">
           {auditLog.map((activity) => {
@@ -97,15 +99,15 @@ export const ContractHistoryTab = ({ contractId }: ContractHistoryTabProps) => {
                       {activity.impersonatedBy && (
                         <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-warning-bg text-warning-text">
                           <Eye className="h-3 w-3" />
-                          Impersonated
+                          {t('history.impersonated')}
                         </span>
                       )}
                     </div>
                     {hasChanges && (
                       <p className="text-xs text-primary-500 mt-1">
                         {isExpanded
-                          ? 'Click to hide changes'
-                          : 'Click to view changes'}
+                          ? t('history.clickToHide')
+                          : t('history.clickToView')}
                       </p>
                     )}
                   </div>
@@ -114,7 +116,7 @@ export const ContractHistoryTab = ({ contractId }: ContractHistoryTabProps) => {
                 {isExpanded && hasChanges && (
                   <div className="bg-surface-page px-4 py-3 border-t border-border-default">
                     <h4 className="text-xs font-semibold text-text-secondary mb-2 uppercase">
-                      Changed Fields
+                      {t('history.changedFields')}
                     </h4>
                     <div className="space-y-2">
                       {Object.entries(activity.changedFields ?? {})
@@ -240,9 +242,9 @@ export const ContractHistoryTab = ({ contractId }: ContractHistoryTabProps) => {
       ) : (
         <div className="text-center py-8">
           <History className="h-12 w-12 text-text-disabled mx-auto mb-3" />
-          <p className="text-text-secondary">No history available</p>
+          <p className="text-text-secondary">{t('history.empty')}</p>
           <p className="text-sm text-text-muted mt-1">
-            Changes to this contract will appear here
+            {t('history.emptyDescription')}
           </p>
         </div>
       )}

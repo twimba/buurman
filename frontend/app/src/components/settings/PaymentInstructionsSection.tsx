@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Plus,
   Edit,
@@ -40,6 +41,7 @@ const emptyForm: CreatePaymentInstructionRequest = {
 };
 
 export const PaymentInstructionsSection = () => {
+  const { t } = useTranslation('settings');
   const { data: instructions = [], isLoading } = usePaymentInstructions();
   const createMutation = useCreatePaymentInstruction();
   const deleteMutation = useDeletePaymentInstruction();
@@ -128,15 +130,15 @@ export const PaymentInstructionsSection = () => {
         <div className="flex items-center gap-3 mb-2">
           <CreditCard className="h-6 w-6 text-primary-500 dark:text-primary-300" />
           <h2 className="text-xl font-semibold text-text-primary">
-            Payment Instructions
+            {t('paymentInstructions.title')}
           </h2>
         </div>
         <p className="text-sm text-text-secondary mb-4">
-          Define reusable payment instruction templates for your contracts
+          {t('paymentInstructions.subtitle')}
         </p>
         {canEditData && (
           <Button variant="primary" leftIcon={<Plus />} onClick={handleCreate}>
-            Add Instruction
+            {t('paymentInstructions.addInstruction')}
           </Button>
         )}
       </div>
@@ -145,7 +147,7 @@ export const PaymentInstructionsSection = () => {
       {showForm && (
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
           <h3 className="text-lg font-semibold text-text-primary mb-4">
-            {editingId ? 'Edit Payment Instruction' : 'New Payment Instruction'}
+            {editingId ? t('paymentInstructions.editTitle') : t('paymentInstructions.newTitle')}
           </h3>
           {editingId ? (
             <PaymentInstructionEditForm
@@ -371,10 +373,10 @@ export const PaymentInstructionsSection = () => {
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-12 text-center">
           <CreditCard className="h-12 w-12 mx-auto text-text-muted mb-3" />
           <h3 className="text-lg font-semibold text-text-primary mb-1">
-            No Payment Instructions
+            {t('paymentInstructions.empty.title')}
           </h3>
           <p className="text-sm text-text-secondary mb-4">
-            Add your first payment method to use with contracts.
+            {t('paymentInstructions.empty.subtitle')}
           </p>
           {canEditData && (
             <Button
@@ -382,7 +384,7 @@ export const PaymentInstructionsSection = () => {
               leftIcon={<Plus />}
               onClick={handleCreate}
             >
-              Add Payment Instruction
+              {t('paymentInstructions.empty.addInstruction')}
             </Button>
           )}
         </div>
@@ -413,7 +415,7 @@ export const PaymentInstructionsSection = () => {
                       {pi.isDefault && (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-warning-bg text-warning-text">
                           <Star className="h-3 w-3" />
-                          Default
+                          {t('paymentInstructions.default')}
                         </span>
                       )}
                       <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-surface-inset text-text-secondary">

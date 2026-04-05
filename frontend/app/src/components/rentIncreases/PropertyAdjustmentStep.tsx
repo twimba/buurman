@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import type { RentIncreaseContractPreview } from '@/types/rentIncrease';
 import type { RentIncreaseItem } from '@/types/rentIncrease';
+import { useTranslation } from 'react-i18next';
 
 type Strategy = 'maximum' | 'medium' | 'minimum' | 'custom';
 
@@ -97,6 +98,7 @@ export const PropertyAdjustmentStep = ({
   onBack,
   appliedContractIds = new Set(),
 }: PropertyAdjustmentStepProps) => {
+  const { t } = useTranslation('contracts');
   const [strategy, setStrategy] = useState<Strategy>('maximum');
   const [bulkEffectiveDate, setBulkEffectiveDate] = useState('');
 
@@ -520,13 +522,13 @@ export const PropertyAdjustmentStep = ({
           onClick={onBack}
           className="inline-flex items-center h-10 px-5 rounded-lg border border-border-default text-sm font-medium text-text-secondary bg-surface-card hover:bg-surface-inset hover:border-border-strong shadow-sm transition-all"
         >
-          Back
+          {t('common:buttons.back')}
         </button>
         <button
           onClick={onNext}
           className="inline-flex items-center gap-2 h-10 px-6 rounded-lg text-sm font-medium bg-gradient-to-b from-primary-500 to-primary-600 text-white border border-primary-600 shadow-sm shadow-primary-500/20 hover:from-primary-400 hover:to-primary-600 hover:shadow-md hover:shadow-primary-500/30 transition-all"
         >
-          Next: Review
+          {t('rentIncrease.nextReview')}
           <ArrowRight className="h-4 w-4" />
         </button>
       </div>

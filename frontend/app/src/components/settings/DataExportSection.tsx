@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Download,
   Loader2,
@@ -155,6 +156,7 @@ const TakeoutRow = ({
 };
 
 export const DataExportSection = () => {
+  const { t } = useTranslation('settings');
   const { canEditTeamSettings } = useTeam();
   const { data: takeoutsPage, isLoading, isError, refetch } = useTakeouts();
   const requestMutation = useRequestTakeout();
@@ -171,7 +173,7 @@ export const DataExportSection = () => {
       <div className="bg-surface-card rounded-lg shadow-sm p-6">
         <div className="flex items-center gap-3 text-text-secondary">
           <ShieldAlert className="h-5 w-5" />
-          <p className="text-sm">Only team admins can export data.</p>
+          <p className="text-sm">{t('dataExport.adminOnly')}</p>
         </div>
       </div>
     );
@@ -185,12 +187,10 @@ export const DataExportSection = () => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xl font-semibold text-text-primary">
-                Data Export
+                {t('dataExport.title')}
               </h2>
               <p className="text-sm text-text-secondary mt-1">
-                Export all your team data as a downloadable archive. Exports
-                include properties, contacts, contracts, payments, expenses, and
-                documents.
+                {t('dataExport.subtitle')}
               </p>
             </div>
             <button
@@ -203,13 +203,12 @@ export const DataExportSection = () => {
               ) : (
                 <Download className="h-4 w-4" />
               )}
-              Request Export
+              {t('dataExport.requestExport')}
             </button>
           </div>
           {hasActiveTakeout && (
             <p className="text-xs text-warning-text mt-2">
-              An export is already in progress. Please wait for it to complete
-              before requesting another.
+              {t('dataExport.inProgress')}
             </p>
           )}
         </div>
@@ -226,13 +225,13 @@ export const DataExportSection = () => {
             <div className="flex flex-col items-center justify-center py-8 gap-3">
               <AlertTriangle className="h-6 w-6 text-warning-text" />
               <p className="text-sm text-text-secondary">
-                Failed to load exports
+                {t('dataExport.failedToLoad')}
               </p>
               <button
                 onClick={() => refetch()}
                 className="px-3 py-1.5 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
               >
-                Try Again
+                {t('dataExport.tryAgain')}
               </button>
             </div>
           )}
@@ -241,7 +240,7 @@ export const DataExportSection = () => {
             <div className="text-center py-8">
               <FileArchive className="h-10 w-10 text-text-muted mx-auto mb-3" />
               <p className="text-sm text-text-secondary">
-                No exports yet. Request your first data export above.
+                {t('dataExport.empty')}
               </p>
             </div>
           )}
@@ -266,9 +265,9 @@ export const DataExportSection = () => {
 
       {deleteTarget && (
         <ConfirmDialog
-          title="Delete Export"
-          message="Are you sure you want to delete this data export? The exported file will be permanently removed. This action cannot be undone."
-          confirmLabel="Delete"
+          title={t('dataExport.deleteTitle')}
+          message={t('dataExport.deleteMessage')}
+          confirmLabel={t('common:buttons.delete')}
           variant="danger"
           isLoading={deleteMutation.isPending}
           onConfirm={async () => {

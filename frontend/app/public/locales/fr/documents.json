@@ -1,0 +1,98 @@
+{
+  "documentsPage": {
+    "title": "Bibliothèque de documents",
+    "subtitle": "Recherchez et gérez tous vos documents en un seul endroit",
+    "searchPlaceholder": "Rechercher des documents par titre, nom de fichier ou notes...",
+    "entityTypeFilter": {
+      "all": "Tous les types",
+      "property": "Biens",
+      "contact": "Contacts",
+      "contract": "Contrats",
+      "payment": "Paiements",
+      "expense": "Dépenses"
+    },
+    "table": {
+      "document": "Document",
+      "type": "Type",
+      "size": "Taille",
+      "uploaded": "Téléversé",
+      "actions": "Actions"
+    },
+    "selection": {
+      "selected": "{{selected}} sur {{total}} sélectionnés",
+      "count": "{{count}} document",
+      "count_other": "{{count}} documents"
+    },
+    "empty": "Aucun document trouvé",
+    "editModal": "Modifier le document"
+  },
+  "photosPage": {
+    "title": "Bibliothèque de photos",
+    "subtitle": "Parcourez et gérez toutes vos photos en un seul endroit",
+    "searchPlaceholder": "Rechercher des photos par titre, nom de fichier ou notes...",
+    "entityTypeFilter": {
+      "all": "Tous les types",
+      "property": "Biens",
+      "contact": "Contacts",
+      "contract": "Contrats",
+      "payment": "Paiements",
+      "expense": "Dépenses"
+    },
+    "empty": "Aucune photo trouvée",
+    "editModal": "Modifier la photo"
+  },
+  "photoGrid": {
+    "noPhotos": "Pas encore de photos",
+    "failedToLoad": "Échec du chargement des photos",
+    "failedToLoadImage": "Échec du chargement",
+    "noUrl": "Pas d'URL",
+    "main": "Principale",
+    "selection": {
+      "selected": "{{selected}} sur {{total}} sélectionnés",
+      "count": "{{count}} photo",
+      "count_other": "{{count}} photos"
+    },
+    "downloading": "Téléchargement...",
+    "tooltips": {
+      "setAsMain": "Définir comme photo principale",
+      "editTitleNotes": "Modifier le titre et les notes",
+      "deletePhoto": "Supprimer la photo"
+    }
+  },
+  "preview": {
+    "previewNotAvailable": "Aperçu non disponible pour ce type de fichier ({{mimeType}})",
+    "downloadFile": "Télécharger le fichier",
+    "notes": "Notes :",
+    "tooltips": {
+      "editTitleNotes": "Modifier le titre et les notes",
+      "download": "Télécharger",
+      "openInNewTab": "Ouvrir dans un nouvel onglet",
+      "close": "Fermer",
+      "previous": "Précédent",
+      "next": "Suivant"
+    }
+  },
+  "deleteDialog": {
+    "titleSingle": "Supprimer le document",
+    "titlePlural": "Supprimer les documents",
+    "messageSingle": "Êtes-vous sûr de vouloir supprimer ce document ? Cette action est irréversible.",
+    "messagePlural": "Vous êtes sur le point de supprimer {{count}} documents. Cette action est irréversible.",
+    "confirmSingle": "Supprimer",
+    "confirmPlural": "Supprimer {{count}} documents"
+  },
+  "deletePhotoDialog": {
+    "titleSingle": "Supprimer la photo",
+    "titlePlural": "Supprimer les photos",
+    "messageSingle": "Êtes-vous sûr de vouloir supprimer cette photo ? Cette action est irréversible.",
+    "messagePlural": "Vous êtes sur le point de supprimer {{count}} photos. Cette action est irréversible.",
+    "mainPhotoSingle": "C'est la photo principale. La supprimer signifie que ce bien n'aura plus de photo principale. Cette action est irréversible.",
+    "mainPhotoPlural": "Vous êtes sur le point de supprimer {{count}} photos, y compris la photo principale. Ce bien n'aura plus de photo principale. Cette action est irréversible.",
+    "confirmSingle": "Supprimer",
+    "confirmPlural": "Supprimer {{count}} photos"
+  },
+  "tooltips": {
+    "preview": "Aperçu",
+    "editTitleNotes": "Modifier le titre et les notes",
+    "delete": "Supprimer"
+  }
+}

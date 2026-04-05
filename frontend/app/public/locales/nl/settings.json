@@ -1,0 +1,375 @@
+{
+  "page": {
+    "title": "Instellingen",
+    "subtitle": "Beheer uw persoonlijke profiel en voorkeuren",
+    "impersonationBlocked": "Instellingen kunnen niet worden gewijzigd tijdens een impersonatiesessie."
+  },
+  "tabs": {
+    "profile": "Profiel & Beveiliging",
+    "preferences": "Mijn voorkeuren",
+    "teams": "Mijn teams"
+  },
+  "profile": {
+    "title": "Profielinformatie",
+    "subtitle": "Werk uw persoonlijke gegevens en avatar bij",
+    "editProfile": "Profiel bewerken",
+    "firstName": "Voornaam",
+    "lastName": "Achternaam",
+    "emailAddress": "E-mailadres",
+    "emailChangeNote": "E-mailadres kan niet worden gewijzigd. Neem contact op met support als u dit wilt bijwerken.",
+    "phoneNumber": "Telefoonnummer",
+    "verified": "Geverifieerd",
+    "unverified": "Niet geverifieerd",
+    "phoneNotAllowed": "Telefoonnummers uit dit land zijn niet toegestaan",
+    "phoneTypeNotAllowed": "Dit type telefoonnummer ({{type}}) is niet toegestaan",
+    "verification": {
+      "enterCode": "Bijna klaar! Voer de code in die is verzonden naar",
+      "invalidCode": "Ongeldige of verlopen code. Probeer het opnieuw.",
+      "sending": "Verzenden...",
+      "resendIn": "Opnieuw verzenden over {{seconds}}s",
+      "resendCode": "Code opnieuw verzenden",
+      "cancelling": "Annuleren...",
+      "changeNumber": "Nummer wijzigen"
+    },
+    "failedToLoad": "Kan profielgegevens niet laden",
+    "tryAgain": "Opnieuw proberen"
+  },
+  "security": {
+    "title": "Beveiligingsinstellingen",
+    "subtitle": "Beheer uw wachtwoord en beveiligingsvoorkeuren",
+    "password": "Wachtwoord",
+    "passwordNote": "Wachtwoordwijzigingen worden beheerd via uw identiteitsprovider",
+    "changePassword": "Wachtwoord wijzigen",
+    "securityEmailNote": "Beveiligingse-mails (wachtwoordreset, verificatie, uitnodigingen) worden altijd verzonden, ongeacht uw abonnement."
+  },
+  "preferences": {
+    "title": "Gebruikersvoorkeuren",
+    "subtitle": "Pas uw persoonlijke ervaring aan",
+    "failedToLoad": "Kan voorkeuren niet laden",
+    "tryAgain": "Opnieuw proberen",
+    "appearance": {
+      "title": "Weergave",
+      "theme": "Thema",
+      "light": "Licht",
+      "dark": "Donker",
+      "auto": "Automatisch",
+      "autoDescription": "Automatische modus volgt uw systeemvoorkeuren"
+    },
+    "languageRegion": {
+      "title": "Taal & Regio",
+      "language": "Taal",
+      "dateFormat": "Datumformaat"
+    },
+    "timezone": {
+      "title": "Tijdzone"
+    },
+    "notifications": {
+      "title": "Notificaties",
+      "email": "E-mailnotificaties",
+      "emailDescription": "Ontvang notificaties via e-mail",
+      "sms": "SMS-notificaties",
+      "smsDescription": "Ontvang notificaties via sms (telefoonnummer vereist)",
+      "configurePerType": "Notificaties per type configureren",
+      "notificationType": "Notificatietype",
+      "emailColumnDisabled": "E-mailkolom is uitgeschakeld omdat de algemene e-mailschakelaar uit staat",
+      "smsColumnDisabled": "SMS-kolom is uitgeschakeld omdat de algemene SMS-schakelaar uit staat"
+    }
+  },
+  "teamPreferences": {
+    "title": "Teamvoorkeuren",
+    "subtitle": "Configureer standaardinstellingen voor uw team",
+    "teamIdentity": {
+      "title": "Teamidentiteit",
+      "teamName": "Teamnaam",
+      "placeholder": "Voer teamnaam in",
+      "description": "De weergavenaam voor uw team"
+    },
+    "currency": {
+      "title": "Valuta-instellingen",
+      "teamCurrency": "Teamvaluta",
+      "change": "Wijzigen",
+      "description": "Alle financiële gegevens gebruiken deze valuta. Wijziging heeft invloed op alle bestaande records."
+    },
+    "defaultCountry": {
+      "title": "Standaardland",
+      "label": "Standaardland",
+      "placeholder": "Geen standaard (elke keer selecteren)",
+      "description": "Dit wordt het voorgeselecteerde land voor nieuwe panden en contactadressen"
+    },
+    "fiscalYear": {
+      "title": "Boekjaar",
+      "fiscalYearStart": "Begin boekjaar",
+      "description": "Eerste maand van uw boekjaar voor financiële rapportages"
+    }
+  },
+  "currencyChange": {
+    "title": "Teamvaluta wijzigen",
+    "currentCurrency": "Huidige valuta",
+    "newCurrency": "Nieuwe valuta",
+    "changeMode": "Wijzigingsmodus",
+    "relabelOnly": "Alleen herlabelen",
+    "relabelDescription": "Wijzig valutacodes zonder bedragen aan te passen. Gebruik wanneer bedragen al in de doelvaluta zijn ingevoerd.",
+    "convertAtRate": "Omrekenen tegen vaste koers",
+    "convertDescription": "Vermenigvuldig alle bedragen met een omrekenkoers. Alle bestaande financiële gegevens worden herberekend.",
+    "conversionRate": "Omrekenkoers (1 {{from}} = {{rate}} {{to}})",
+    "irreversible": "Deze actie is onomkeerbaar",
+    "relabelWarning": "Alle valutacodes worden gewijzigd van {{from}} naar {{to}}. Bedragen worden niet aangepast.",
+    "convertWarning": "Alle bedragen worden vermenigvuldigd met {{rate}} en valutacodes worden gewijzigd van {{from}} naar {{to}}.",
+    "understandCannotUndo": "Ik begrijp dat dit niet ongedaan kan worden gemaakt",
+    "changing": "Wijzigen...",
+    "confirmChange": "Wijziging bevestigen",
+    "changeCurrency": "Valuta wijzigen"
+  },
+  "teamMembers": {
+    "title": "Teamleden",
+    "memberCount": "{{count}} lid",
+    "memberCount_other": "{{count}} leden",
+    "inviteMember": "Lid uitnodigen",
+    "you": "U",
+    "owner": "Eigenaar",
+    "joined": "Lid sinds {{date}}",
+    "changeRole": "Rol wijzigen",
+    "transferOwnership": "Eigendom overdragen",
+    "removeMember": "Lid verwijderen",
+    "roles": {
+      "admin": "Beheerder",
+      "editor": "Bewerker",
+      "viewer": "Lezer",
+      "adminDescription": "Volledige toegang tot alle functies en instellingen",
+      "editorDescription": "Kan panden, contacten en contracten aanmaken en bewerken",
+      "viewerDescription": "Alleen-lezen toegang tot alle gegevens",
+      "label": "Rollen:"
+    },
+    "pendingInvitations": {
+      "title": "Openstaande uitnodigingen",
+      "count": "{{count}} openstaande uitnodiging",
+      "count_other": "{{count}} openstaande uitnodigingen",
+      "invitedBy": "Uitgenodigd door {{name}}",
+      "sent": "Verzonden {{date}}",
+      "expires": "Verloopt {{date}}",
+      "resend": "Opnieuw verzenden"
+    },
+    "inviteModal": {
+      "title": "Teamlid uitnodigen",
+      "subtitle": "Stuur een uitnodiging om lid te worden van uw team",
+      "emailAddress": "E-mailadres",
+      "role": "Rol",
+      "sendInvitation": "Uitnodiging verzenden"
+    },
+    "roleModal": {
+      "title": "Rol van lid wijzigen",
+      "subtitle": "Rol bijwerken voor {{name}}",
+      "newRole": "Nieuwe rol",
+      "updateRole": "Rol bijwerken"
+    },
+    "transferModal": {
+      "title": "Eigendom overdragen",
+      "message": "Weet u zeker dat u het eigendom van het team wilt overdragen aan <strong>{{name}}</strong>? Deze actie kan niet door u ongedaan worden gemaakt. De nieuwe eigenaar krijgt volledige controle over het team.",
+      "confirm": "Eigendom overdragen"
+    },
+    "removeModal": {
+      "title": "Teamlid verwijderen",
+      "message": "Weet u zeker dat u <strong>{{name}}</strong> uit uw team wilt verwijderen? Ze verliezen toegang tot alle teamgegevens.",
+      "confirm": "Lid verwijderen"
+    }
+  },
+  "myTeams": {
+    "title": "Mijn teams",
+    "active": "Actief",
+    "pending": "In afwachting",
+    "member": "{{count}} lid",
+    "member_other": "{{count}} leden",
+    "accept": "Accepteren",
+    "pendingInvitations": "Openstaande uitnodigingen",
+    "invitedBy": "Uitgenodigd door {{name}}",
+    "expires": "Verloopt {{date}}",
+    "roles": {
+      "admin": "Beheerder",
+      "editor": "Bewerker",
+      "viewer": "Lezer"
+    }
+  },
+  "subscription": {
+    "earlyAccess": {
+      "title": "Alles is nu gratis!",
+      "description": "We bouwen nog aan Buurman en deze pagina is slechts een voorproefje van wat er komt. Geniet voorlopig van <strong>alle functies</strong> zonder limieten en zonder kosten. Ga uw gang!",
+      "noSurprises": "We geven u ruim van tevoren bericht voordat facturering live gaat. Geen verrassingen, beloofd."
+    },
+    "currentPlan": {
+      "title": "Huidig abonnement",
+      "subtitle": "Beheer uw abonnement en facturering",
+      "properties": "Panden",
+      "teamMembers": "Teamleden",
+      "nextRenewal": "Volgende verlenging",
+      "autoRenews": "Automatische verlenging",
+      "changePlan": "Abonnement wijzigen",
+      "cancelSubscription": "Abonnement opzeggen"
+    },
+    "plans": {
+      "title": "Beschikbare abonnementen",
+      "subtitle": "Kies het abonnement dat het beste bij u past",
+      "monthly": "Maandelijks",
+      "annual": "Jaarlijks",
+      "save20": "Bespaar 20%",
+      "forever": "/voor altijd",
+      "perMonth": "/maand",
+      "billedAnnually": "Jaarlijks gefactureerd voor {{amount}}",
+      "billedMonthly": "Maandelijks gefactureerd, altijd opzegbaar",
+      "perfectToStart": "Perfect om te beginnen",
+      "currentPlan": "Huidig abonnement",
+      "downgradeToFree": "Downgraden naar Gratis",
+      "downgrade": "Downgraden",
+      "upgrade": "Upgraden",
+      "mostPopular": "Meest populair",
+      "freeForever": "VOOR ALTIJD GRATIS"
+    },
+    "confirmModal": {
+      "title": "Abonnementswijziging bevestigen",
+      "message": "Weet u zeker dat u wilt wisselen naar het <strong>{{plan}}</strong>-abonnement? Uw facturering wordt dienovereenkomstig aangepast.",
+      "billingNote": "Er wordt {{amount}}/maand{{annual}} in rekening gebracht vanaf uw volgende factuurcyclus.",
+      "billedAnnually": " ({{total}} jaarlijks gefactureerd)",
+      "confirmChange": "Wijziging bevestigen"
+    },
+    "paymentMethods": {
+      "title": "Betaalmethoden",
+      "subtitle": "Beheer uw betaalmethoden",
+      "addPaymentMethod": "Betaalmethode toevoegen",
+      "default": "Standaard",
+      "expires": "Verloopt {{month}}/{{year}}"
+    }
+  },
+  "paymentHistory": {
+    "nextPayment": "Volgende betaling",
+    "totalPaid": "Totaal betaald",
+    "allTime": "Alle tijd",
+    "totalInvoices": "Totaal facturen",
+    "paid": "{{count}} betaald",
+    "title": "Betalingsgeschiedenis",
+    "subtitle": "Bekijk en download uw facturen",
+    "searchPlaceholder": "Zoek op factuurnummer, abonnement of betaalmethode...",
+    "statusFilter": "Statusfilter",
+    "allStatuses": "Alle statussen",
+    "invoice": "Factuur",
+    "date": "Datum",
+    "plan": "Abonnement",
+    "paymentMethod": "Betaalmethode",
+    "amount": "Bedrag",
+    "status": "Status",
+    "actions": "Acties",
+    "download": "Downloaden",
+    "noInvoices": "Geen facturen gevonden",
+    "adjustFilters": "Probeer uw filters of zoekopdracht aan te passen",
+    "historyWillAppear": "Uw betalingsgeschiedenis verschijnt hier",
+    "statuses": {
+      "paid": "Betaald",
+      "pending": "Openstaand",
+      "failed": "Mislukt"
+    }
+  },
+  "paymentInstructions": {
+    "title": "Betaalinstructies",
+    "subtitle": "Definieer herbruikbare betaalinstructiesjablonen voor uw contracten",
+    "addInstruction": "Instructie toevoegen",
+    "editTitle": "Betaalinstructie bewerken",
+    "newTitle": "Nieuwe betaalinstructie",
+    "name": "Naam *",
+    "namePlaceholder": "bijv. Hoofdbankrekening",
+    "paymentMethod": "Betaalinstructie *",
+    "description": "Omschrijving",
+    "descriptionPlaceholder": "Instructies voor de huurder...",
+    "bankName": "Banknaam",
+    "accountHolder": "Rekeninghouder",
+    "iban": "IBAN",
+    "bicSwift": "BIC / SWIFT",
+    "accountNumber": "Rekeningnummer",
+    "routingNumber": "Routeringsnummer",
+    "paymentReference": "Betalingsreferentie",
+    "paymentReferencePlaceholder": "Referentie bij betaling",
+    "setAsDefault": "Als standaard betaalmethode instellen",
+    "setAsDefaultShort": "Als standaard instellen",
+    "creating": "Aanmaken...",
+    "saving": "Opslaan...",
+    "empty": {
+      "title": "Geen betaalinstructies",
+      "subtitle": "Voeg uw eerste betaalmethode toe om bij contracten te gebruiken.",
+      "addInstruction": "Betaalinstructie toevoegen"
+    },
+    "default": "Standaard",
+    "holder": "Houder:",
+    "account": "Rekening:"
+  },
+  "calendarFeeds": {
+    "title": "Agendafeeds",
+    "subtitle": "Abonneer u op betalingstermijnen in Google Agenda, Apple Agenda of elke app die iCalendar-feeds ondersteunt. Elke feed heeft een unieke URL die u als agenda-abonnement kunt toevoegen.",
+    "createAllPayments": "Alle betalingenfeed aanmaken",
+    "previewCalendar": "Agenda bekijken",
+    "copyUrl": "URL kopiëren",
+    "regenerateUrl": "URL vernieuwen",
+    "deleteFeed": "Feed verwijderen",
+    "regenerateWarning": "Vernieuwen maakt de huidige URL ongeldig.",
+    "regenerate": "Vernieuwen",
+    "deleteConfirm": "Deze agendafeed verwijderen?",
+    "empty": "Nog geen agendafeeds. Maak er een aan om te beginnen.",
+    "copied": "Feed-URL gekopieerd naar klembord",
+    "copyFailed": "Kopiëren van link mislukt",
+    "feedTypes": {
+      "allPayments": "Alle betalingen",
+      "propertyPayments": "Pandbetalingen",
+      "contactPayments": "Contactbetalingen",
+      "contract": "Contract"
+    },
+    "preview": {
+      "subtitle": "Agendafeed voorbeeld",
+      "today": "Vandaag",
+      "errorMessage": "Kan agendafeed niet laden. De feed-URL is mogelijk ongeldig of onbereikbaar.",
+      "emailPreview": "E-mail voorbeeld",
+      "smsMessage": "SMS-bericht"
+    }
+  },
+  "onboarding": {
+    "welcome": "Welkom bij Buurman",
+    "subtitle": "Laten we uw teamvoorkeuren instellen",
+    "chooseLanguage": "Kies uw taal",
+    "chooseLanguageDesc": "Selecteer de taal voor de Buurman-interface.",
+    "whereProperties": "Waar bevinden uw panden zich?",
+    "wherePropertiesDesc": "Dit stelt uw standaard valuta en datumformaat in.",
+    "searchCountries": "Zoek landen...",
+    "teamCurrency": "Teamvaluta",
+    "teamCurrencyDesc": "Alle financiële gegevens gebruiken deze valuta. U kunt dit later wijzigen in de instellingen.",
+    "suggestedFor": "Aanbevolen voor {{country}}",
+    "selected": "Geselecteerd",
+    "dateFormat": "Datumformaat",
+    "dateFormatDesc": "Hoe moeten datums worden weergegeven?",
+    "summary": "Samenvatting",
+    "summaryLanguage": "Taal",
+    "summaryCountry": "Land",
+    "summaryCurrency": "Valuta",
+    "summaryDateFormat": "Datumformaat",
+    "skipForNow": "Voorlopig overslaan",
+    "saving": "Opslaan...",
+    "completeSetup": "Instelling voltooien"
+  },
+  "dataExport": {
+    "title": "Gegevensexport",
+    "subtitle": "Exporteer al uw teamgegevens als een downloadbaar archief. Exports bevatten panden, contacten, contracten, betalingen, uitgaven en documenten.",
+    "requestExport": "Export aanvragen",
+    "inProgress": "Er is al een export bezig. Wacht tot deze is voltooid voordat u een nieuwe aanvraagt.",
+    "failedToLoad": "Kan exports niet laden",
+    "tryAgain": "Opnieuw proberen",
+    "empty": "Nog geen exports. Vraag hierboven uw eerste gegevensexport aan.",
+    "dataExportLabel": "Gegevensexport",
+    "requested": "Aangevraagd {{date}}",
+    "completed": "Voltooid {{date}}",
+    "expires": "Verloopt {{date}}",
+    "percentComplete": "{{percent}}% voltooid",
+    "adminOnly": "Alleen teambeheerders kunnen gegevens exporteren.",
+    "deleteTitle": "Export verwijderen",
+    "deleteMessage": "Weet u zeker dat u deze gegevensexport wilt verwijderen? Het geëxporteerde bestand wordt permanent verwijderd. Deze actie kan niet ongedaan worden gemaakt.",
+    "statuses": {
+      "pending": "In afwachting",
+      "processing": "Verwerken",
+      "completed": "Voltooid",
+      "failed": "Mislukt"
+    }
+  }
+}

@@ -43,6 +43,7 @@ import type {
 } from '@/types/contractExtension';
 import type { ContractResponseStatus } from '@/generated/models';
 import type { DocumentResponse } from '@/types/property';
+import { useTranslation } from 'react-i18next';
 
 interface ExtensionTimelineProps {
   contractIdentifier: string;
@@ -69,6 +70,7 @@ export const ExtensionTimeline = ({
   documentLanguages,
   countryCode,
 }: ExtensionTimelineProps) => {
+  const { t } = useTranslation('contracts');
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -212,7 +214,7 @@ export const ExtensionTimeline = ({
       ) : extensions.length === 0 ? (
         <div className="text-center py-8">
           <p className="text-sm text-text-secondary">
-            No extensions for this contract
+            {t('extensions.empty')}
           </p>
         </div>
       ) : (
@@ -300,7 +302,7 @@ export const ExtensionTimeline = ({
             >
               <div className="p-4 space-y-3">
                 <p className="text-sm text-text-secondary">
-                  Are you sure you want to decline this extension?
+                  {t('detail.declineConfirmMessage')}
                 </p>
                 <div>
                   <label
@@ -355,8 +357,7 @@ export const ExtensionTimeline = ({
             </div>
             <div className="p-4 space-y-3">
               <p className="text-sm text-text-secondary">
-                Are you sure you want to cancel this extension? This action
-                cannot be undone.
+                {t('detail.cancelConfirmMessage')}
               </p>
               <label className="flex items-start gap-2 p-3 rounded-md border border-border-default hover:border-border-strong cursor-pointer transition-colors">
                 <input
@@ -396,8 +397,8 @@ export const ExtensionTimeline = ({
                 disabled={cancelExtension.isPending}
               >
                 {cancelExtension.isPending
-                  ? 'Cancelling...'
-                  : 'Cancel Extension'}
+                  ? t('common:buttons.loading')
+                  : t('detail.cancelExtension')}
               </button>
             </div>
           </div>

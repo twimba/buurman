@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ContractStatus } from '@/types/contract';
 import { X } from 'lucide-react';
 import { RichTextEditor } from '@buurman/ui';
@@ -28,21 +29,25 @@ const getValidTransitions = (
   }
 };
 
-const statusLabels: Record<ContractStatus, string> = {
-  DRAFT: 'Draft',
-  PENDING_SIGNATURE: 'Pending Signature',
-  ACTIVE: 'Active',
-  EXPIRED: 'Expired',
-  TERMINATED: 'Terminated',
-};
-
 export const ChangeContractStatusModal = ({
   currentStatus,
   onClose,
   onConfirm,
   isLoading = false,
 }: ChangeContractStatusModalProps) => {
+  const { t } = useTranslation('contracts');
   const validTransitions = getValidTransitions(currentStatus);
+
+  const statusLabels = useMemo(
+    (): Record<ContractStatus, string> => ({
+      DRAFT: t('statusChange.statuses.DRAFT'),
+      PENDING_SIGNATURE: t('statusChange.statuses.PENDING_SIGNATURE'),
+      ACTIVE: t('statusChange.statuses.ACTIVE'),
+      EXPIRED: t('statusChange.statuses.EXPIRED'),
+      TERMINATED: t('statusChange.statuses.TERMINATED'),
+    }),
+    [t]
+  );
   const [selectedStatus, setSelectedStatus] = useState<ContractStatus>(
     validTransitions[0] ?? currentStatus
   );
@@ -70,7 +75,7 @@ export const ChangeContractStatusModal = ({
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border-default">
           <h2 className="text-lg font-semibold text-text-primary">
-            Change Contract Status
+            {t('statusChange.title')}
           </h2>
           <button
             onClick={onClose}
@@ -87,7 +92,7 @@ export const ChangeContractStatusModal = ({
             {/* Current Status */}
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Current Status
+                {t('statusChange.currentStatus')}
               </label>
               <p className="text-sm text-text-primary">
                 {statusLabels[currentStatus]}
@@ -102,7 +107,7 @@ export const ChangeContractStatusModal = ({
                     htmlFor="newStatus"
                     className="block text-sm font-medium text-text-secondary mb-1"
                   >
-                    New Status
+                    {t('statusChange.newStatus')}
                   </label>
                   <select
                     id="newStatus"
@@ -127,20 +132,19 @@ export const ChangeContractStatusModal = ({
                     htmlFor="reason"
                     className="block text-sm font-medium text-text-secondary mb-1"
                   >
-                    Reason (Optional)
+                    {t('statusChange.reason')}
                   </label>
                   <RichTextEditor
                     value={reason}
                     onChange={setReason}
-                    placeholder="Enter reason for status change..."
+                    placeholder={t('statusChange.reasonPlaceholder')}
                     onSubmit={submitForm}
                   />
                 </div>
               </>
             ) : (
               <div className="text-sm text-text-secondary">
-                No valid status transitions available from{' '}
-                {statusLabels[currentStatus]}.
+                {t('statusChange.noTransitions', { status: statusLabels[currentStatus] })}
               </div>
             )}
           </div>
@@ -153,7 +157,7 @@ export const ChangeContractStatusModal = ({
               className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset"
               disabled={isLoading}
             >
-              Cancel
+              {t('common:buttons.cancel')}
             </button>
             {validTransitions.length > 0 && (
               <button
@@ -161,7 +165,7 @@ export const ChangeContractStatusModal = ({
                 className="px-4 py-2 text-sm font-medium text-white bg-primary-500 rounded-md hover:bg-primary-600 disabled:opacity-50"
                 disabled={isLoading}
               >
-                {isLoading ? 'Changing...' : 'Change Status'}
+                {isLoading ? t('statusChange.changing') : t('statusChange.confirm')}
               </button>
             )}
           </div>

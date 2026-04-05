@@ -26,12 +26,14 @@ import { InteractiveMap } from '../common/InteractiveMap';
 import { useTeam } from '@/context/TeamContext';
 import { getErrorMessage } from '@/utils/errorMessages';
 import { ConfirmDialog, useToast } from '@buurman/ui';
+import { useTranslation } from 'react-i18next';
 
 interface ContactAddressListProps {
   contactId: string;
 }
 
 export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
+  const { t } = useTranslation('tenants');
   const { canEditData } = useTeam();
   const { showToast } = useToast();
   const queryClient = useQueryClient();
@@ -122,15 +124,15 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
   const getAddressTypeLabel = (type: AddressType) => {
     switch (type) {
       case AddressType.CURRENT:
-        return 'Current';
+        return t('addresses.typeLabels.CURRENT');
       case AddressType.MAILING:
-        return 'Mailing';
+        return t('addresses.typeLabels.MAILING');
       case AddressType.RELATIVE:
-        return 'Relative/Emergency';
+        return t('addresses.typeLabels.RELATIVE');
       case AddressType.WORK:
-        return 'Work';
+        return t('addresses.typeLabels.WORK');
       case AddressType.HISTORIC:
-        return 'Historic';
+        return t('addresses.typeLabels.HISTORIC');
       default:
         return type;
     }
@@ -219,7 +221,7 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
     return (
       <div className="text-center py-12">
         <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
-        <p className="mt-2 text-text-secondary">Loading addresses...</p>
+        <p className="mt-2 text-text-secondary">{t('addresses.loadingAddresses')}</p>
       </div>
     );
   }
@@ -274,7 +276,7 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-text-muted " />
             <input
               type="text"
-              placeholder="Search by street, city, country, type..."
+              placeholder={t('addresses.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -348,7 +350,7 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
                       colSpan={canEditData ? 6 : 5}
                       className="px-6 py-12 text-center text-text-secondary"
                     >
-                      No addresses found matching your search
+                      {t('addresses.noMatch')}
                     </td>
                   </tr>
                 ) : (
@@ -398,7 +400,7 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
                                     )
                                   }
                                   className="p-2 text-text-secondary hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-950 rounded"
-                                  title="Show map"
+                                  title={t('addresses.showMap')}
                                 >
                                   <MapPin className="h-4 w-4" />
                                 </button>
@@ -408,7 +410,7 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
                                   setEditingAddressId(address.identifier)
                                 }
                                 className="p-2 text-text-secondary hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-950 rounded"
-                                title="Edit address"
+                                title={t('addresses.editAddressTitle')}
                               >
                                 <Edit className="h-4 w-4" />
                               </button>
@@ -417,7 +419,7 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
                                   setPendingDeleteId(address.identifier)
                                 }
                                 className="p-2 text-text-secondary hover:text-error-text hover:bg-error-bg rounded"
-                                title="Delete address"
+                                title={t('addresses.deleteAddressTitle')}
                               >
                                 <Trash2 className="h-4 w-4" />
                               </button>
@@ -483,10 +485,10 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
           <div className="text-center py-12 bg-surface-page rounded-lg border-2 border-dashed border-border-strong">
             <MapPin className="h-12 w-12 text-text-disabled mx-auto mb-3" />
             <p className="text-text-secondary font-medium mb-1">
-              No addresses yet
+              {t('addresses.empty')}
             </p>
             <p className="text-sm text-text-secondary mb-4">
-              Add an address to get started
+              {t('addresses.emptyDescription')}
             </p>
             <button
               onClick={() => setIsAddingNew(true)}
@@ -501,9 +503,9 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
 
       {pendingDeleteId !== null && (
         <ConfirmDialog
-          title="Delete Address"
-          message="Are you sure you want to delete this address? This action cannot be undone."
-          confirmLabel="Delete"
+          title={t('addresses.deleteTitle')}
+          message={t('addresses.deleteMessage')}
+          confirmLabel={t('common:buttons.delete')}
           variant="danger"
           isLoading={deleteMutation.isPending}
           onConfirm={handleDeleteAddress}

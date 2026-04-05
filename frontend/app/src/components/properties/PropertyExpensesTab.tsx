@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useExpensesByProperty } from '@/hooks/useExpenseHooks';
 import { ExpenseCategoryBadge } from '@/components/expenses/ExpenseCategoryBadge';
@@ -17,6 +18,7 @@ type ExpenseSortField = 'expenseDate' | 'amount' | 'category' | 'description';
 export const PropertyExpensesTab = ({
   propertyId,
 }: PropertyExpensesTabProps) => {
+  const { t } = useTranslation('properties');
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
@@ -121,7 +123,7 @@ export const PropertyExpensesTab = ({
     <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold text-text-primary">
-          Expenses ({filteredAndSortedExpenses.length})
+          {t('expenses.title')} ({filteredAndSortedExpenses.length})
         </h2>
         <button
           onClick={() => navigate(`/expenses/new?propertyId=${propertyId}`)}
@@ -129,19 +131,19 @@ export const PropertyExpensesTab = ({
           className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
         >
           <Plus className="h-4 w-4" />
-          Add Expense
+          {t('expenses.addExpense')}
         </button>
       </div>
 
       {isLoading ? (
         <LoadingSpinner />
       ) : error ? (
-        <ErrorMessage message="Failed to load expenses" />
+        <ErrorMessage message={t('expenses.failedToLoad')} />
       ) : expenses.length === 0 ? (
         <div className="text-center py-12">
           <Receipt className="h-12 w-12 text-text-disabled mx-auto mb-3" />
           <p className="text-text-secondary mb-4">
-            No expenses for this property
+            {t('expenses.empty')}
           </p>
           <button
             onClick={() => navigate(`/expenses/new?propertyId=${propertyId}`)}
@@ -149,7 +151,7 @@ export const PropertyExpensesTab = ({
             className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
           >
             <Plus className="h-4 w-4" />
-            Create First Expense
+            {t('expenses.createFirst')}
           </button>
         </div>
       ) : (
@@ -160,7 +162,7 @@ export const PropertyExpensesTab = ({
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-text-muted " />
               <input
                 type="text"
-                placeholder="Search by expense #, description, category..."
+                placeholder={t('expenses.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
@@ -177,14 +179,14 @@ export const PropertyExpensesTab = ({
               <thead className="bg-surface-page">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                    Expense #
+                    {t('expenses.table.expenseNumber')}
                   </th>
                   <th
                     className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                     onClick={() => handleSort('expenseDate')}
                   >
                     <div className="flex items-center gap-1">
-                      Date
+                      {t('expenses.table.date')}
                       {renderSortIcon('expenseDate')}
                     </div>
                   </th>
@@ -193,7 +195,7 @@ export const PropertyExpensesTab = ({
                     onClick={() => handleSort('description')}
                   >
                     <div className="flex items-center gap-1">
-                      Description
+                      {t('expenses.table.description')}
                       {renderSortIcon('description')}
                     </div>
                   </th>
@@ -202,7 +204,7 @@ export const PropertyExpensesTab = ({
                     onClick={() => handleSort('category')}
                   >
                     <div className="flex items-center gap-1">
-                      Category
+                      {t('expenses.table.category')}
                       {renderSortIcon('category')}
                     </div>
                   </th>
@@ -211,7 +213,7 @@ export const PropertyExpensesTab = ({
                     onClick={() => handleSort('amount')}
                   >
                     <div className="flex items-center gap-1">
-                      Amount
+                      {t('expenses.table.amount')}
                       {renderSortIcon('amount')}
                     </div>
                   </th>
@@ -224,7 +226,7 @@ export const PropertyExpensesTab = ({
                       colSpan={5}
                       className="px-6 py-12 text-center text-text-secondary"
                     >
-                      No expenses found matching your search
+                      {t('expenses.noMatchingSearch')}
                     </td>
                   </tr>
                 ) : (
@@ -266,12 +268,7 @@ export const PropertyExpensesTab = ({
           {totalPages > 1 && (
             <div className="flex items-center justify-between mt-4 pt-4 border-t border-border-default">
               <div className="text-sm text-text-secondary">
-                Showing {(currentPage - 1) * perPage + 1} to{' '}
-                {Math.min(
-                  currentPage * perPage,
-                  filteredAndSortedExpenses.length
-                )}{' '}
-                of {filteredAndSortedExpenses.length} expenses
+                {t('expenses.pagination.showing', { from: (currentPage - 1) * perPage + 1, to: Math.min(currentPage * perPage, filteredAndSortedExpenses.length), total: filteredAndSortedExpenses.length })}
               </div>
               <div className="flex gap-2">
                 <button
@@ -279,17 +276,17 @@ export const PropertyExpensesTab = ({
                   disabled={currentPage === 1}
                   className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
                 >
-                  Previous
+                  {t('pagination.previous', { ns: 'common' })}
                 </button>
                 <span className="px-3 py-1 text-sm text-text-secondary">
-                  Page {currentPage} of {totalPages}
+                  {t('pagination.page', { ns: 'common' })} {currentPage} {t('pagination.of', { ns: 'common' })} {totalPages}
                 </span>
                 <button
                   onClick={() => setCurrentPage(currentPage + 1)}
                   disabled={currentPage === totalPages}
                   className="px-3 py-1 border border-border-strong rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-inset"
                 >
-                  Next
+                  {t('pagination.next', { ns: 'common' })}
                 </button>
               </div>
             </div>

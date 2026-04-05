@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useTabState } from '@/hooks/useTabState';
 import {
   usePayment,
@@ -99,6 +100,7 @@ const ReceivalsTable = ({
   pageSize,
   onPageChange,
 }: ReceivalsTableProps) => {
+  const { t } = useTranslation('payments');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editAmount, setEditAmount] = useState('');
   const [editDate, setEditDate] = useState('');
@@ -164,7 +166,7 @@ const ReceivalsTable = ({
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-text-muted " />
         <input
           type="text"
-          placeholder="Search by amount, date, or notes..."
+          placeholder={t('receivals.searchPlaceholder')}
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
           className="w-full pl-9 pr-4 py-2 text-sm border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
@@ -181,7 +183,7 @@ const ReceivalsTable = ({
                 onClick={() => onSort('date')}
               >
                 <div className="flex items-center gap-1">
-                  Date
+                  {t('receivals.date')}
                   <ArrowUpDown className="h-3 w-3" />
                 </div>
               </th>
@@ -190,16 +192,16 @@ const ReceivalsTable = ({
                 onClick={() => onSort('amount')}
               >
                 <div className="flex items-center justify-end gap-1">
-                  Amount
+                  {t('receivals.amount')}
                   <ArrowUpDown className="h-3 w-3" />
                 </div>
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                Notes
+                {t('receivals.notes')}
               </th>
               {canEdit && (
                 <th className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider w-24">
-                  Actions
+                  {t('receivals.actions')}
                 </th>
               )}
             </tr>
@@ -230,7 +232,7 @@ const ReceivalsTable = ({
                     <RichTextEditor
                       value={editNotes}
                       onChange={setEditNotes}
-                      placeholder="Notes..."
+                      placeholder={t('receivals.notes') + '...'}
                     />
                     <div className="flex justify-end gap-1 mt-2">
                       <button
@@ -277,14 +279,14 @@ const ReceivalsTable = ({
                         <button
                           onClick={() => startEdit(receival)}
                           className="p-1.5 text-primary-500 hover:bg-info-bg rounded transition-colors"
-                          title="Edit receival"
+                          title={t('tooltips.editReceival')}
                         >
                           <Pencil className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => onDelete(receival.identifier)}
                           className="p-1.5 text-error-text hover:bg-error-bg rounded transition-colors"
-                          title="Delete receival"
+                          title={t('tooltips.deleteReceival')}
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -302,9 +304,11 @@ const ReceivalsTable = ({
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-4 text-sm">
           <span className="text-text-secondary">
-            Showing {(currentPage - 1) * pageSize + 1} to{' '}
-            {Math.min(currentPage * pageSize, filtered.length)} of{' '}
-            {filtered.length}
+            {t('receivals.showing', {
+              from: (currentPage - 1) * pageSize + 1,
+              to: Math.min(currentPage * pageSize, filtered.length),
+              total: filtered.length,
+            })}
           </span>
           <div className="flex gap-2">
             <button
@@ -313,14 +317,14 @@ const ReceivalsTable = ({
               className="px-3 py-1 border border-border-strong rounded hover:bg-surface-inset disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 text-text-secondary"
             >
               <ChevronLeft className="h-4 w-4" />
-              Previous
+              {t('common:pagination.previous')}
             </button>
             <button
               onClick={() => onPageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
               className="px-3 py-1 border border-border-strong rounded hover:bg-surface-inset disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 text-text-secondary"
             >
-              Next
+              {t('common:pagination.next')}
               <ChevronRight className="h-4 w-4" />
             </button>
           </div>
@@ -334,6 +338,7 @@ export const PaymentDetailPage = () => {
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation('payments');
   const backTo = (location.state as { backTo?: string })?.backTo ?? '/payments';
   const { canEditData } = useTeam();
   const { formatDate, formatRelative } = useFormatDate();
@@ -465,7 +470,7 @@ export const PaymentDetailPage = () => {
   if (error || !payment) {
     return (
       <div className="min-h-screen bg-background p-8">
-        <ErrorMessage message="Failed to load payment" />
+        <ErrorMessage message={t('errors.loadPaymentFailed')} />
       </div>
     );
   }
@@ -485,8 +490,8 @@ export const PaymentDetailPage = () => {
       <div className="px-4 py-8">
         {/* Header */}
         <PageHeader
-          title={`Payment #${payment.identifier}`}
-          subtitle={`Contract #${payment.contract.identifier}`}
+          title={t('detail.titlePrefix', { id: payment.identifier })}
+          subtitle={t('detail.subtitlePrefix', { id: payment.contract.identifier })}
           backTo={backTo}
           badge={<PaymentStatusBadge status={payment.status} />}
           actions={
@@ -498,7 +503,7 @@ export const PaymentDetailPage = () => {
                   onClick={() => setShowReceivalModal(true)}
                   disabled={!canEditData}
                 >
-                  Register Receival
+                  {t('actions.registerReceival')}
                 </Button>
               )}
               {canMarkPaid && (
@@ -508,7 +513,7 @@ export const PaymentDetailPage = () => {
                   onClick={() => setShowMarkPaidModal(true)}
                   disabled={!canEditData}
                 >
-                  Mark as Paid
+                  {t('actions.markAsPaid')}
                 </Button>
               )}
               {canEdit && !isEditing && (
@@ -521,7 +526,7 @@ export const PaymentDetailPage = () => {
                   }}
                   disabled={!canEditData}
                 >
-                  Edit
+                  {t('common:buttons.edit')}
                 </Button>
               )}
               {canDelete && (
@@ -531,7 +536,7 @@ export const PaymentDetailPage = () => {
                   onClick={() => setShowDeleteModal(true)}
                   disabled={!canEditData}
                 >
-                  Delete
+                  {t('common:buttons.delete')}
                 </Button>
               )}
             </>
@@ -549,7 +554,7 @@ export const PaymentDetailPage = () => {
                   : 'text-text-secondary hover:text-text-primary'
               }`}
             >
-              Details
+              {t('tabs.details')}
             </button>
             <button
               onClick={() => setActiveTab('receivals')}
@@ -560,7 +565,7 @@ export const PaymentDetailPage = () => {
               }`}
             >
               <ArrowDownCircle className="h-4 w-4" />
-              Receivals{' '}
+              {t('tabs.receivals')}{' '}
               {payment.receivals?.length > 0 && `(${payment.receivals.length})`}
             </button>
             <button
@@ -572,7 +577,7 @@ export const PaymentDetailPage = () => {
               }`}
             >
               <FileText className="h-4 w-4" />
-              Documents {documents.length > 0 && `(${documents.length})`}
+              {t('tabs.documents')} {documents.length > 0 && `(${documents.length})`}
             </button>
             <button
               onClick={() => setActiveTab('history')}
@@ -583,7 +588,7 @@ export const PaymentDetailPage = () => {
               }`}
             >
               <History className="h-4 w-4" />
-              History {auditLog.length > 0 && `(${auditLog.length})`}
+              {t('tabs.history')} {auditLog.length > 0 && `(${auditLog.length})`}
             </button>
           </div>
         </div>
@@ -593,7 +598,7 @@ export const PaymentDetailPage = () => {
           (isEditing ? (
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <h2 className="text-lg font-semibold text-text-primary mb-4">
-                Edit Payment
+                {t('detail.editPayment')}
               </h2>
               <PaymentForm
                 payment={payment}

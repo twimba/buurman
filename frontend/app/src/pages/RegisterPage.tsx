@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   useRegister,
@@ -25,8 +26,11 @@ import {
   XCircle,
 } from 'lucide-react';
 import { PublicBroadcastBanner } from '../components/common/BroadcastBanner';
+import { supportedLanguages } from '../context/LocaleContext';
+import i18n from '../i18n';
 
 const RegisterPage: React.FC = () => {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const invitationToken = searchParams.get('invitation') ?? undefined;
@@ -54,11 +58,11 @@ const RegisterPage: React.FC = () => {
         setCodeError('');
       } else {
         setCodeValidated(false);
-        setCodeError('Invalid or expired invitation code');
+        setCodeError(t('auth.invalidCode'));
       }
     } catch {
       setCodeValidated(false);
-      setCodeError('Could not validate code. Please try again.');
+      setCodeError(t('auth.validateCodeFailed'));
     }
   };
 
@@ -76,6 +80,7 @@ const RegisterPage: React.FC = () => {
     email: '',
     firstName: '',
     lastName: '',
+    language: i18n.language || 'en',
     password: '',
     confirmPassword: '',
   });
@@ -98,22 +103,22 @@ const RegisterPage: React.FC = () => {
     const p = formData.password;
     const email = formData.email.toLowerCase();
     return [
-      { key: 'length', label: '8+ characters', met: p.length >= 8 },
-      { key: 'upper', label: 'Uppercase letter', met: /[A-Z]/.test(p) },
-      { key: 'lower', label: 'Lowercase letter', met: /[a-z]/.test(p) },
-      { key: 'digit', label: 'Number', met: /\d/.test(p) },
+      { key: 'length', label: t('auth.passwordRules.length'), met: p.length >= 8 },
+      { key: 'upper', label: t('auth.passwordRules.upper'), met: /[A-Z]/.test(p) },
+      { key: 'lower', label: t('auth.passwordRules.lower'), met: /[a-z]/.test(p) },
+      { key: 'digit', label: t('auth.passwordRules.digit'), met: /\d/.test(p) },
       {
         key: 'special',
-        label: 'Special character',
+        label: t('auth.passwordRules.special'),
         met: /[^A-Za-z0-9]/.test(p),
       },
       {
         key: 'notEmail',
-        label: 'Not your email',
+        label: t('auth.passwordRules.notEmail'),
         met: p.length > 0 && (!email || p.toLowerCase() !== email),
       },
     ];
-  }, [formData.password, formData.email]);
+  }, [formData.password, formData.email, t]);
 
   const allRulesMet = passwordRules.every((r) => r.met);
   const passwordsMatch =
@@ -133,21 +138,21 @@ const RegisterPage: React.FC = () => {
     const newErrors: Record<string, string> = {};
 
     if (!formData.email) {
-      newErrors.email = 'Email is required';
+      newErrors.email = t('auth.validation.emailRequired');
     }
     if (!formData.firstName) {
-      newErrors.firstName = 'First name is required';
+      newErrors.firstName = t('auth.validation.firstNameRequired');
     }
     if (!formData.lastName) {
-      newErrors.lastName = 'Last name is required';
+      newErrors.lastName = t('auth.validation.lastNameRequired');
     }
     if (!formData.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = t('auth.validation.passwordRequired');
     } else if (!allRulesMet) {
-      newErrors.password = 'Password does not meet all requirements';
+      newErrors.password = t('auth.validation.passwordRequirements');
     }
     if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = t('auth.validation.passwordsMismatch');
     }
 
     setErrors(newErrors);
@@ -165,6 +170,7 @@ const RegisterPage: React.FC = () => {
         firstName: formData.firstName,
         lastName: formData.lastName,
         password: formData.password,
+        language: formData.language,
         invitationToken,
         registrationInvitationCode:
           invitationRequired && !invitationToken
@@ -178,9 +184,16 @@ const RegisterPage: React.FC = () => {
       setRegistrationSuccess(true);
       setTimeout(() => navigate('/login'), 3000);
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { message?: string } } };
+      const err = error as {
+        response?: { data?: { message?: string; detail?: string } };
+      };
+      const detail = err.response?.data?.detail ?? '';
+      const isEmailTaken = detail
+        .toLowerCase()
+        .includes('email already');
       setErrors({
-        submit: err.response?.data?.message || 'Registration failed',
+        submit: err.response?.data?.message || t('auth.registrationFailed'),
+        ...(isEmailTaken ? { emailTaken: 'true' } : {}),
       });
     }
   };
@@ -212,9 +225,7 @@ const RegisterPage: React.FC = () => {
               Buurman
             </h1>
           </div>
-          <p className="text-xl text-primary-200 mb-12">
-            Property management made simple for small landlords
-          </p>
+          <p className="text-xl text-primary-200 mb-12">{t('auth.tagline')}</p>
 
           {/* Features */}
           <div className="space-y-6">
@@ -223,12 +234,8 @@ const RegisterPage: React.FC = () => {
                 <Home className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-1">
-                  Manage Properties
-                </h3>
-                <p className="text-primary-200">
-                  Keep track of all your rental properties in one place
-                </p>
+                <h3 className="font-semibold text-lg mb-1">{t('auth.features.manageProperties')}</h3>
+                <p className="text-primary-200">{t('auth.features.managePropertiesDesc')}</p>
               </div>
             </div>
 
@@ -237,10 +244,8 @@ const RegisterPage: React.FC = () => {
                 <Users className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-1">Track Contacts</h3>
-                <p className="text-primary-200">
-                  Manage contact information and lease agreements
-                </p>
+                <h3 className="font-semibold text-lg mb-1">{t('auth.features.trackContacts')}</h3>
+                <p className="text-primary-200">{t('auth.features.trackContactsDesc')}</p>
               </div>
             </div>
 
@@ -249,10 +254,8 @@ const RegisterPage: React.FC = () => {
                 <FileText className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-1">Handle Finances</h3>
-                <p className="text-primary-200">
-                  Monitor payments, expenses, and financial reports
-                </p>
+                <h3 className="font-semibold text-lg mb-1">{t('auth.features.handleFinances')}</h3>
+                <p className="text-primary-200">{t('auth.features.handleFinancesDesc')}</p>
               </div>
             </div>
 
@@ -261,12 +264,8 @@ const RegisterPage: React.FC = () => {
                 <TrendingUp className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-1">
-                  Grow Your Business
-                </h3>
-                <p className="text-primary-200">
-                  Scale your rental portfolio with confidence
-                </p>
+                <h3 className="font-semibold text-lg mb-1">{t('auth.features.growBusiness')}</h3>
+                <p className="text-primary-200">{t('auth.features.growBusinessDesc')}</p>
               </div>
             </div>
           </div>
@@ -292,7 +291,7 @@ const RegisterPage: React.FC = () => {
               Buurman
             </h1>
             <p className="text-text-secondary mt-2 text-center">
-              Property management for small landlords
+              {t('auth.taglineShort')}
             </p>
           </div>
 
@@ -310,35 +309,21 @@ const RegisterPage: React.FC = () => {
                     <Check className="h-3.5 w-3.5 text-white" />
                   </div>
                 </div>
-                <h2 className="text-2xl font-bold text-text-primary mb-2">
-                  You&apos;re all set!
-                </h2>
-                <p className="text-text-secondary mb-6">
-                  We&apos;ve sent a verification email to your inbox.
-                  <br />
-                  Check it and you&apos;re ready to go!
-                </p>
+                <h2 className="text-2xl font-bold text-text-primary mb-2">{t('auth.allSet')}</h2>
+                <p className="text-text-secondary mb-6">{t('auth.verificationSent')}</p>
                 <a
                   href="/login"
                   className="group inline-flex items-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 text-white py-2.5 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5"
-                >
-                  Sign in now
-                  <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+                >{t('auth.signInNow')}<ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
                 </a>
               </div>
             ) : (
               <>
                 <div className="mb-8 text-center">
                   <div className="inline-flex items-center gap-1.5 bg-primary-500/10 text-primary-600 px-3 py-1 rounded-full text-xs font-medium mb-4">
-                    <Sparkles className="h-3.5 w-3.5" />
-                    Takes less than a minute
-                  </div>
-                  <h2 className="text-2xl font-bold text-text-primary mb-2">
-                    Create your free account
-                  </h2>
-                  <p className="text-text-secondary">
-                    Join landlords who manage smarter, not harder
-                  </p>
+                    <Sparkles className="h-3.5 w-3.5" />{t('auth.takesLessThanMinute')}</div>
+                  <h2 className="text-2xl font-bold text-text-primary mb-2">{t('auth.createFreeAccount')}</h2>
+                  <p className="text-text-secondary">{t('auth.joinLandlords')}</p>
                 </div>
 
                 <form
@@ -357,14 +342,10 @@ const RegisterPage: React.FC = () => {
                     >
                       <div className="flex items-center gap-2 mb-3">
                         <Ticket className="h-4 w-4 text-primary-500" />
-                        <span className="text-sm font-medium text-text-secondary">
-                          Invitation Code
-                        </span>
+                        <span className="text-sm font-medium text-text-secondary">{t('auth.invitationCode')}</span>
                         {codeValidated && (
                           <span className="ml-auto inline-flex items-center gap-1 text-xs font-medium text-success-text">
-                            <ShieldCheck className="h-3.5 w-3.5" />
-                            Verified
-                          </span>
+                            <ShieldCheck className="h-3.5 w-3.5" />{t('auth.verified')}</span>
                         )}
                       </div>
                       <div className="flex gap-2">
@@ -397,7 +378,7 @@ const RegisterPage: React.FC = () => {
                             {validateCodeMutation.isPending ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
                             ) : (
-                              'Verify'
+                              t('auth.verify')
                             )}
                           </button>
                         )}
@@ -410,9 +391,7 @@ const RegisterPage: React.FC = () => {
                               setCodeError('');
                             }}
                             className="px-3 py-2.5 text-text-secondary hover:text-text-secondary text-sm rounded-lg hover:bg-surface-card/50 transition-colors shrink-0"
-                          >
-                            Change
-                          </button>
+                          >{t('auth.change')}</button>
                         )}
                       </div>
                       {codeError && (
@@ -424,9 +403,7 @@ const RegisterPage: React.FC = () => {
                         </div>
                       )}
                       {!codeValidated && !codeError && (
-                        <p className="text-xs text-text-secondary mt-2">
-                          Enter the invitation code you received to continue
-                        </p>
+                        <p className="text-xs text-text-secondary mt-2">{t('auth.enterCodeHint')}</p>
                       )}
                     </div>
                   )}
@@ -440,9 +417,7 @@ const RegisterPage: React.FC = () => {
                   >
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-text-secondary mb-1.5">
-                          First Name
-                        </label>
+                        <label className="block text-sm font-medium text-text-secondary mb-1.5">{t('auth.firstName')}</label>
                         <input
                           type="text"
                           name="firstName"
@@ -459,9 +434,7 @@ const RegisterPage: React.FC = () => {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-text-secondary mb-1.5">
-                          Last Name
-                        </label>
+                        <label className="block text-sm font-medium text-text-secondary mb-1.5">{t('auth.lastName')}</label>
                         <input
                           type="text"
                           name="lastName"
@@ -479,9 +452,31 @@ const RegisterPage: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-text-secondary mb-1.5">
-                        Email
-                      </label>
+                      <label className="block text-sm font-medium text-text-secondary mb-1.5">{t('auth.language')}</label>
+                      <select
+                        name="language"
+                        value={formData.language}
+                        onChange={(e) => {
+                          const lang = e.target.value;
+                          i18n.changeLanguage(lang);
+                          localStorage.setItem('buurman-language', lang);
+                          setFormData({
+                            ...formData,
+                            language: lang,
+                          });
+                        }}
+                        className="w-full border border-border-strong rounded-lg px-4 py-2.5 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-20 transition-colors"
+                      >
+                        {supportedLanguages.map((lang) => (
+                          <option key={lang.value} value={lang.value}>
+                            {lang.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-text-secondary mb-1.5">{t('auth.email')}</label>
                       <input
                         type="email"
                         name="email"
@@ -492,9 +487,7 @@ const RegisterPage: React.FC = () => {
                         placeholder="john.doe@example.com"
                       />
                       {invitationToken && invitation?.email && (
-                        <p className="text-xs text-text-secondary mt-1">
-                          Email is pre-filled from your invitation
-                        </p>
+                        <p className="text-xs text-text-secondary mt-1">{t('auth.emailPrefilled')}</p>
                       )}
                       {errors.email && (
                         <p className="text-error-text text-xs mt-1">
@@ -504,9 +497,7 @@ const RegisterPage: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-text-secondary mb-1.5">
-                        Password
-                      </label>
+                      <label className="block text-sm font-medium text-text-secondary mb-1.5">{t('auth.password')}</label>
                       <div className="relative">
                         <input
                           type={showPassword ? 'text' : 'password'}
@@ -518,7 +509,7 @@ const RegisterPage: React.FC = () => {
                               ? 'border-success-border focus:border-success-text'
                               : 'border-border-strong focus:border-primary-500'
                           }`}
-                          placeholder="Create a strong password"
+                          placeholder={t('auth.createStrongPassword')}
                         />
                         <button
                           type="button"
@@ -560,9 +551,7 @@ const RegisterPage: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-text-secondary mb-1.5">
-                        Confirm Password
-                      </label>
+                      <label className="block text-sm font-medium text-text-secondary mb-1.5">{t('auth.confirmPassword')}</label>
                       <div className="relative">
                         <input
                           type={showConfirmPassword ? 'text' : 'password'}
@@ -576,7 +565,7 @@ const RegisterPage: React.FC = () => {
                                 ? 'border-error-border focus:border-error-text'
                                 : 'border-border-strong focus:border-primary-500'
                           }`}
-                          placeholder="Re-enter your password"
+                          placeholder={t('auth.reenterPassword')}
                         />
                         <button
                           type="button"
@@ -598,16 +587,12 @@ const RegisterPage: React.FC = () => {
                           {passwordsMatch ? (
                             <>
                               <Check className="h-3.5 w-3.5 text-success-text" />
-                              <span className="text-xs text-success-text">
-                                Passwords match
-                              </span>
+                              <span className="text-xs text-success-text">{t('auth.passwordsMatch')}</span>
                             </>
                           ) : (
                             <>
                               <Circle className="h-3.5 w-3.5 text-error-text" />
-                              <span className="text-xs text-error-text">
-                                Passwords do not match
-                              </span>
+                              <span className="text-xs text-error-text">{t('auth.passwordsDoNotMatch')}</span>
                             </>
                           )}
                         </div>
@@ -624,16 +609,14 @@ const RegisterPage: React.FC = () => {
                       <div className="bg-error-bg border border-error-border rounded-lg p-3">
                         <p className="text-error-text text-sm">
                           {errors.submit}
-                          {errors.submit
-                            .toLowerCase()
-                            .includes('email already registered') && (
+                          {errors.emailTaken && (
                             <>
                               {' '}
                               <a
                                 href="/login"
                                 className="text-primary-500 hover:text-primary-600 font-semibold hover:underline"
                               >
-                                Go to login
+                                {t('auth.goToLogin')}
                               </a>
                             </>
                           )}
@@ -655,8 +638,8 @@ const RegisterPage: React.FC = () => {
                     >
                       <UserPlus className="h-5 w-5" />
                       {registerMutation.isPending
-                        ? 'Creating account...'
-                        : 'Get started for free'}
+                        ? t('auth.creatingAccount')
+                        : t('auth.getStarted')}
                       {!registerMutation.isPending && (
                         <ArrowRight className="h-4 w-4 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200 group-disabled:hidden" />
                       )}
@@ -669,30 +652,22 @@ const RegisterPage: React.FC = () => {
                     <div className="w-full border-t border-border-default " />
                   </div>
                   <div className="relative flex justify-center text-xs">
-                    <span className="bg-surface-card px-3 text-text-secondary">
-                      already have an account?
-                    </span>
+                    <span className="bg-surface-card px-3 text-text-secondary">{t('auth.alreadyHaveAccount')}</span>
                   </div>
                 </div>
 
                 <a
                   href="/login"
                   className="mt-6 w-full py-3 px-6 rounded-lg border-2 border-border-default text-text-secondary font-semibold flex items-center justify-center gap-2 hover:border-primary-500 hover:text-primary-500 transition-all duration-200 hover:bg-primary-50"
-                >
-                  Sign in instead
-                  <ArrowRight className="h-4 w-4" />
+                >{t('auth.signInInstead')}<ArrowRight className="h-4 w-4" />
                 </a>
 
-                <p className="mt-5 text-xs text-text-secondary text-center">
-                  By creating an account, you agree to our{' '}
-                  <a
+                <p className="mt-5 text-xs text-text-secondary text-center">{t('auth.byCreatingAccount')}{' '}<a
                     href="https://www.buurman.io/terms"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-primary-500 hover:text-primary-600 hover:underline"
-                  >
-                    Terms of Service
-                  </a>
+                  >{t('auth.termsOfService')}</a>
                 </p>
               </>
             )}
@@ -700,16 +675,12 @@ const RegisterPage: React.FC = () => {
 
           {/* Additional Info */}
           <div className="mt-6 text-center">
-            <p className="text-sm text-text-secondary">
-              Need help?{' '}
-              <a
+            <p className="text-sm text-text-secondary">{t('auth.needHelp')}{' '}<a
                 href="https://www.buurman.io/support"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary-500 hover:underline"
-              >
-                Contact support
-              </a>
+              >{t('auth.contactSupport')}</a>
             </p>
           </div>
         </div>

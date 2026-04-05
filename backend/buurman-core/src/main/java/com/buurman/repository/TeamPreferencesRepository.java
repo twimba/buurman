@@ -10,6 +10,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.jooq.DSLContext;
+import org.jooq.Field;
+import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.springframework.stereotype.Repository;
 
 import com.buurman.domain.TeamPreferences;
@@ -20,6 +23,11 @@ import lombok.RequiredArgsConstructor;
 @Repository
 @RequiredArgsConstructor
 public class TeamPreferencesRepository {
+
+  // TODO: Replace with TEAM_PREFERENCES.DEFAULT_LANGUAGE after running JOOQ codegen:
+  //       cd backend && mvn generate-sources -pl buurman-jooq -am
+  private static final Field<String> DEFAULT_LANGUAGE =
+      DSL.field(DSL.name("default_language"), SQLDataType.VARCHAR);
 
   private final DSLContext dsl;
   private final Clock clock;
@@ -52,6 +60,7 @@ public class TeamPreferencesRepository {
           .set(TEAM_PREFERENCES.TIMEZONE, prefs.getTimezone())
           .set(TEAM_PREFERENCES.DATE_FORMAT, prefs.getDateFormat())
           .set(TEAM_PREFERENCES.FISCAL_YEAR_START_MONTH, prefs.getFiscalYearStartMonth())
+          .set(DEFAULT_LANGUAGE, prefs.getDefaultLanguage())
           .set(TEAM_PREFERENCES.TAKEOUT_RETENTION_DAYS, prefs.getTakeoutRetentionDays())
           .set(
               TEAM_PREFERENCES.ONBOARDING_COMPLETED_AT,
@@ -74,6 +83,7 @@ public class TeamPreferencesRepository {
           .set(TEAM_PREFERENCES.TIMEZONE, prefs.getTimezone())
           .set(TEAM_PREFERENCES.DATE_FORMAT, prefs.getDateFormat())
           .set(TEAM_PREFERENCES.FISCAL_YEAR_START_MONTH, prefs.getFiscalYearStartMonth())
+          .set(DEFAULT_LANGUAGE, prefs.getDefaultLanguage())
           .set(TEAM_PREFERENCES.TAKEOUT_RETENTION_DAYS, prefs.getTakeoutRetentionDays())
           .set(
               TEAM_PREFERENCES.ONBOARDING_COMPLETED_AT,
@@ -116,6 +126,8 @@ public class TeamPreferencesRepository {
     prefs.setTimezone(record.getTimezone());
     prefs.setDateFormat(record.getDateFormat());
     prefs.setFiscalYearStartMonth(record.getFiscalYearStartMonth());
+    prefs.setDefaultLanguage(
+        Optional.ofNullable(record.get(DEFAULT_LANGUAGE)).orElse("en"));
     prefs.setTakeoutRetentionDays(record.getTakeoutRetentionDays());
     prefs.setOnboardingCompletedAt(
         Optional.ofNullable(record.getOnboardingCompletedAt()).map(ldt -> ldt.toInstant(UTC)));

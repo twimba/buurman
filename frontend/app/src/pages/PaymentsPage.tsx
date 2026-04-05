@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PaymentStatus } from '@/types/payment';
 import {
   usePayments,
@@ -47,18 +48,9 @@ import {
 import { useTeam } from '@/context/TeamContext';
 import { useFormatDate } from '@/hooks/useFormatDate';
 
-const statusFilters = [
-  { value: undefined, label: 'All Statuses' },
-  { value: PaymentStatus.PENDING, label: 'Pending' },
-  { value: PaymentStatus.PARTIALLY_PAID, label: 'Partial' },
-  { value: PaymentStatus.PAID, label: 'Paid' },
-  { value: PaymentStatus.OVERDUE, label: 'Overdue' },
-  { value: PaymentStatus.LATE, label: 'Late' },
-  { value: PaymentStatus.CANCELLED, label: 'Cancelled' },
-];
-
 export const PaymentsPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation('payments');
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
   const deletePaymentMutation = useDeletePayment();
@@ -73,6 +65,19 @@ export const PaymentsPage = () => {
     undefined
   );
   const [periodRange, setPeriodRange] = useState<PeriodDateRange | null>(null);
+
+  const statusFilters = useMemo(
+    () => [
+      { value: undefined, label: t('filters.allStatuses') },
+      { value: PaymentStatus.PENDING, label: t('status.pending') },
+      { value: PaymentStatus.PARTIALLY_PAID, label: t('status.partiallyPaid') },
+      { value: PaymentStatus.PAID, label: t('status.paid') },
+      { value: PaymentStatus.OVERDUE, label: t('status.overdue') },
+      { value: PaymentStatus.LATE, label: t('status.late') },
+      { value: PaymentStatus.CANCELLED, label: t('status.cancelled') },
+    ],
+    [t]
+  );
 
   const {
     pageParams,
@@ -165,7 +170,7 @@ export const PaymentsPage = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-background p-8">
-        <ErrorMessage message="Failed to load payments" />
+        <ErrorMessage message={t('errors.loadFailed')} />
       </div>
     );
   }
@@ -178,10 +183,10 @@ export const PaymentsPage = () => {
           <div>
             <div className="flex items-center gap-3 mb-1">
               <DollarSign className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-              <h1 className="text-3xl font-bold text-text-primary">Payments</h1>
+              <h1 className="text-3xl font-bold text-text-primary">{t('page.title')}</h1>
             </div>
             <p className="text-text-secondary ml-11">
-              Track rent payments and income
+              {t('page.subtitle')}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -195,7 +200,7 @@ export const PaymentsPage = () => {
               className="text-text-secondary border border-border-strong px-4 py-2 rounded hover:bg-surface-inset transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Plus className="h-5 w-5" />
-              Schedule Payment
+              {t('actions.schedulePayment')}
             </button>
             <button
               onClick={() => navigate('/payments/new?register=true')}
@@ -203,7 +208,7 @@ export const PaymentsPage = () => {
               className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
             >
               <CalendarCheck className="h-5 w-5" />
-              Register Payment
+              {t('actions.registerPayment')}
             </button>
           </div>
         </div>
@@ -215,7 +220,7 @@ export const PaymentsPage = () => {
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-medium text-text-secondary">
-                  Pending Payments
+                  {t('stats.pendingPayments')}
                 </h3>
                 <Clock className="h-5 w-5 text-warning-text" />
               </div>
@@ -223,8 +228,7 @@ export const PaymentsPage = () => {
                 {fmtMoney(paymentStats.pendingAmount, statsCurrency)}
               </p>
               <p className="text-sm text-text-secondary mt-1">
-                {paymentStats.pendingCount} payment
-                {paymentStats.pendingCount !== 1 ? 's' : ''}
+                {t('stats.pendingCount', { count: paymentStats.pendingCount })}
               </p>
             </div>
 
@@ -244,7 +248,7 @@ export const PaymentsPage = () => {
                       : 'text-text-secondary'
                   }`}
                 >
-                  Overdue Payments
+                  {t('stats.overduePayments')}
                 </h3>
                 {paymentStats.overdueCount > 0 ? (
                   <AlertTriangle className="h-5 w-5 text-error-text animate-pulse" />
@@ -258,11 +262,10 @@ export const PaymentsPage = () => {
                     {fmtMoney(paymentStats.overdueAmount, statsCurrency)}
                   </p>
                   <p className="text-sm text-error-text mt-1 font-medium">
-                    {paymentStats.overdueCount} payment
-                    {paymentStats.overdueCount !== 1 ? 's' : ''} past due
+                    {t('stats.overdueCount', { count: paymentStats.overdueCount })}
                   </p>
                   <p className="text-xs text-error-text mt-2">
-                    Action required: Review overdue payments
+                    {t('stats.overdueAction')}
                   </p>
                 </>
               ) : (
@@ -271,10 +274,10 @@ export const PaymentsPage = () => {
                     {fmtMoney(0, statsCurrency)}
                   </p>
                   <p className="text-sm text-text-secondary mt-1">
-                    All caught up!
+                    {t('stats.allCaughtUp')}
                   </p>
                   <p className="text-xs text-text-secondary mt-2">
-                    No overdue payments. Keep up the great work!
+                    {t('stats.noOverdue')}
                   </p>
                 </>
               )}
@@ -284,7 +287,7 @@ export const PaymentsPage = () => {
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-medium text-text-secondary">
-                  Last 6 Months
+                  {t('stats.lastSixMonths')}
                 </h3>
                 <TrendingUp className="h-5 w-5 text-success-text" />
               </div>
@@ -308,7 +311,7 @@ export const PaymentsPage = () => {
                       typeof value === 'number'
                         ? fmtMoney(value, statsCurrency)
                         : 'N/A',
-                      'Received',
+                      t('stats.tooltipReceived'),
                     ]}
                     contentStyle={{ fontSize: 12 }}
                   />
@@ -330,7 +333,7 @@ export const PaymentsPage = () => {
         <div className="mb-6 bg-surface-card rounded-lg border border-border-default p-4">
           <div className="flex items-center gap-2 mb-3">
             <Filter className="h-5 w-5 text-text-secondary " />
-            <h3 className="font-semibold text-text-primary">Filters</h3>
+            <h3 className="font-semibold text-text-primary">{t('filters.title')}</h3>
           </div>
 
           <div className="flex flex-col gap-4">
@@ -348,7 +351,7 @@ export const PaymentsPage = () => {
               {/* Property Filter */}
               <div className="lg:w-72">
                 <label className="block text-xs font-medium text-text-secondary mb-1">
-                  Property
+                  {t('filters.property')}
                 </label>
                 <PropertySelector
                   value={propertyFilter ?? ''}
@@ -357,14 +360,14 @@ export const PaymentsPage = () => {
                     resetPage();
                   }}
                   clearable
-                  placeholder="All Properties"
+                  placeholder={t('filters.allProperties')}
                 />
               </div>
 
               {/* Contract Filter */}
               <div className="lg:w-72">
                 <label className="block text-xs font-medium text-text-secondary mb-1">
-                  Contract
+                  {t('filters.contract')}
                 </label>
                 <ContractSelector
                   value={contractFilter ?? ''}
@@ -374,14 +377,14 @@ export const PaymentsPage = () => {
                   }}
                   status={undefined}
                   clearable
-                  placeholder="All Contracts"
+                  placeholder={t('filters.allContracts')}
                 />
               </div>
 
               {/* Status Filter */}
               <div className="flex-1">
                 <label className="block text-xs font-medium text-text-secondary mb-1">
-                  Status
+                  {t('filters.status')}
                 </label>
                 <div className="flex gap-2 flex-wrap">
                   {statusFilters.map((filter) => (
@@ -418,22 +421,22 @@ export const PaymentsPage = () => {
                       onClick={() => handleSortChange('dueDate')}
                     >
                       <div className="flex items-center gap-1">
-                        Due Date
+                        {t('table.dueDate')}
                         <ArrowUpDown className="h-4 w-4" />
                       </div>
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                      Payment #
+                      {t('table.paymentNumber')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider min-w-[280px]">
-                      Contract
+                      {t('table.contract')}
                     </th>
                     <th
                       className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                       onClick={() => handleSortChange('amount')}
                     >
                       <div className="flex items-center justify-end gap-1">
-                        Amount
+                        {t('table.amount')}
                         <ArrowUpDown className="h-4 w-4" />
                       </div>
                     </th>
@@ -442,7 +445,7 @@ export const PaymentsPage = () => {
                       onClick={() => handleSortChange('status')}
                     >
                       <div className="flex items-center gap-1">
-                        Status
+                        {t('table.status')}
                         <ArrowUpDown className="h-4 w-4" />
                       </div>
                     </th>
@@ -487,11 +490,7 @@ export const PaymentsPage = () => {
                           {payment.receivedAmount > 0 &&
                             payment.status !== PaymentStatus.PAID && (
                               <p className="text-xs text-text-secondary">
-                                Balance:{' '}
-                                {fmtMoney(
-                                  payment.balance ?? 0,
-                                  payment.currency
-                                )}
+                                {t('table.balance', { amount: fmtMoney(payment.balance ?? 0, payment.currency) })}
                               </p>
                             )}
                         </div>
@@ -507,7 +506,7 @@ export const PaymentsPage = () => {
                               navigate(`/payments/${payment.identifier}`);
                             }}
                             className="p-1.5 rounded hover:bg-neutral-100 text-text-secondary hover:text-primary-500 transition-colors"
-                            title="View payment"
+                            title={t('tooltips.viewPayment')}
                           >
                             <Eye className="h-4 w-4" />
                           </button>
@@ -518,7 +517,7 @@ export const PaymentsPage = () => {
                                 setDeleteTarget(payment.identifier);
                               }}
                               className="p-1.5 rounded hover:bg-error-bg text-text-secondary hover:text-error-text transition-colors"
-                              title="Delete payment"
+                              title={t('tooltips.deletePayment')}
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
@@ -546,12 +545,12 @@ export const PaymentsPage = () => {
           <div className="bg-surface-card rounded-lg border border-border-default p-12 text-center">
             <DollarSign className="h-12 w-12 text-text-muted mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-text-primary mb-2">
-              No payments found
+              {t('empty.title')}
             </h3>
             <p className="text-text-secondary mb-6">
               {statusFilter || propertyFilter || contractFilter
-                ? 'Try adjusting your filters'
-                : 'Get started by recording your first payment'}
+                ? t('empty.filtered')
+                : t('empty.noData')}
             </p>
             {!statusFilter && !propertyFilter && !contractFilter && (
               <div className="flex items-center gap-2 justify-center">
@@ -561,7 +560,7 @@ export const PaymentsPage = () => {
                   className="text-text-secondary border border-border-strong px-4 py-2 rounded hover:bg-surface-inset transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Plus className="h-5 w-5" />
-                  Schedule Payment
+                  {t('actions.schedulePayment')}
                 </button>
                 <button
                   onClick={() => navigate('/payments/new?register=true')}
@@ -569,7 +568,7 @@ export const PaymentsPage = () => {
                   className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary-500"
                 >
                   <CalendarCheck className="h-5 w-5" />
-                  Register Payment
+                  {t('actions.registerPayment')}
                 </button>
               </div>
             )}
@@ -579,9 +578,9 @@ export const PaymentsPage = () => {
 
       {deleteTarget && (
         <ConfirmDialog
-          title="Delete Payment"
-          message="Are you sure you want to delete this payment? All related data (receivals, documents) will also be deleted. This action cannot be undone."
-          confirmLabel="Delete"
+          title={t('deleteDialog.title')}
+          message={t('deleteDialog.messageWithRelated')}
+          confirmLabel={t('common:buttons.delete')}
           variant="danger"
           isLoading={deletePaymentMutation.isPending}
           onConfirm={async () => {

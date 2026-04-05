@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronDown } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -23,6 +24,7 @@ export const IconSelect = ({
   disabled = false,
   className = '',
 }: IconSelectProps) => {
+  const { t } = useTranslation('common');
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const selected = options.find((o) => o.value === value);
@@ -75,7 +77,7 @@ export const IconSelect = ({
             <span className="flex-1 truncate">{selected.label}</span>
           </>
         ) : (
-          <span className="flex-1 text-text-muted">Select…</span>
+          <span className="flex-1 text-text-muted">{t('selectors.select')}</span>
         )}
         <ChevronDown
           size={14}

@@ -15,11 +15,13 @@ import {
   useUpdateTeam,
 } from '../../hooks/useTeamHooks';
 import { useTeam } from '../../context/TeamContext';
+import { useTranslation } from 'react-i18next';
 import { CountrySelector } from '../common/CountrySelector';
 import { CurrencyChangeModal } from './CurrencyChangeModal';
 import { useCurrencies, getCurrencySymbol } from '@/hooks/useCurrencies';
 
 export const TeamPreferencesSection = () => {
+  const { t } = useTranslation('settings');
   const { canEditTeamSettings } = useTeam();
   const { data: team } = useCurrentTeam();
   const { data: settingsData, isLoading } = useTeamSettings(team?.identifier);
@@ -107,10 +109,10 @@ export const TeamPreferencesSection = () => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xl font-semibold text-text-primary">
-                Team Preferences
+                {t('teamPreferences.title')}
               </h2>
               <p className="text-sm text-text-secondary mt-1">
-                Configure default settings for your team
+                {t('teamPreferences.subtitle')}
               </p>
             </div>
             {hasChanges && canEditTeamSettings && (
@@ -124,7 +126,7 @@ export const TeamPreferencesSection = () => {
                 ) : (
                   <Save className="h-4 w-4" />
                 )}
-                Save Changes
+                {t('common:buttons.saveChanges')}
               </button>
             )}
           </div>
@@ -136,13 +138,13 @@ export const TeamPreferencesSection = () => {
             <div className="flex items-center gap-2">
               <Building className="h-5 w-5 text-text-secondary " />
               <h3 className="text-lg font-semibold text-text-primary">
-                Team Identity
+                {t('teamPreferences.teamIdentity.title')}
               </h3>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Team Name
+                {t('teamPreferences.teamIdentity.teamName')}
               </label>
               <input
                 type="text"
@@ -153,10 +155,10 @@ export const TeamPreferencesSection = () => {
                 }}
                 disabled={!canEditTeamSettings}
                 className="w-full px-3 py-2 border border-border-strong rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-surface-inset disabled:cursor-not-allowed bg-surface-card text-text-primary"
-                placeholder="Enter team name"
+                placeholder={t('teamPreferences.teamIdentity.placeholder')}
               />
               <p className="text-xs text-text-secondary mt-1">
-                The display name for your team
+                {t('teamPreferences.teamIdentity.description')}
               </p>
             </div>
           </div>
@@ -166,13 +168,13 @@ export const TeamPreferencesSection = () => {
             <div className="flex items-center gap-2">
               <DollarSign className="h-5 w-5 text-text-secondary " />
               <h3 className="text-lg font-semibold text-text-primary">
-                Currency Settings
+                {t('teamPreferences.currency.title')}
               </h3>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Team Currency
+                {t('teamPreferences.currency.teamCurrency')}
               </label>
               <div className="flex items-center gap-3">
                 <div className="flex-1 px-3 py-2 bg-surface-inset border border-border-strong rounded-lg text-text-primary font-medium">
@@ -189,13 +191,12 @@ export const TeamPreferencesSection = () => {
                     className="px-3 py-2 text-sm font-medium text-warning-text bg-warning-bg border border-warning-border rounded-lg hover:opacity-90 transition-colors flex items-center gap-1.5"
                   >
                     <ArrowRightLeft className="h-4 w-4" />
-                    Change
+                    {t('teamPreferences.currency.change')}
                   </button>
                 )}
               </div>
               <p className="text-xs text-text-secondary mt-1">
-                All financial data uses this currency. Changing it affects all
-                existing records.
+                {t('teamPreferences.currency.description')}
               </p>
             </div>
           </div>
@@ -205,13 +206,13 @@ export const TeamPreferencesSection = () => {
             <div className="flex items-center gap-2">
               <MapPin className="h-5 w-5 text-text-secondary " />
               <h3 className="text-lg font-semibold text-text-primary">
-                Default Country
+                {t('teamPreferences.defaultCountry.title')}
               </h3>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Default Country
+                {t('teamPreferences.defaultCountry.label')}
               </label>
               <CountrySelector
                 value={preferences.defaultCountryCode}
@@ -219,11 +220,10 @@ export const TeamPreferencesSection = () => {
                   handlePreferenceChange('defaultCountryCode', v)
                 }
                 disabled={!canEditTeamSettings}
-                placeholder="No default (select each time)"
+                placeholder={t('teamPreferences.defaultCountry.placeholder')}
               />
               <p className="text-xs text-text-secondary mt-1">
-                This will be the pre-selected country for new properties and
-                contact addresses
+                {t('teamPreferences.defaultCountry.description')}
               </p>
             </div>
           </div>
@@ -233,13 +233,13 @@ export const TeamPreferencesSection = () => {
             <div className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-text-secondary " />
               <h3 className="text-lg font-semibold text-text-primary">
-                Fiscal Year
+                {t('teamPreferences.fiscalYear.title')}
               </h3>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                Fiscal Year Start
+                {t('teamPreferences.fiscalYear.fiscalYearStart')}
               </label>
               <select
                 value={preferences.fiscalYearStart}
@@ -256,7 +256,7 @@ export const TeamPreferencesSection = () => {
                 ))}
               </select>
               <p className="text-xs text-text-secondary mt-1">
-                First month of your fiscal year for financial reports
+                {t('teamPreferences.fiscalYear.description')}
               </p>
             </div>
           </div>

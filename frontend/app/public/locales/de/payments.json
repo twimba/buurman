@@ -1,0 +1,191 @@
+{
+  "page": {
+    "title": "Zahlungen",
+    "subtitle": "Mietzahlungen und Einnahmen verfolgen"
+  },
+  "actions": {
+    "schedulePayment": "Zahlung planen",
+    "registerPayment": "Zahlung registrieren",
+    "registerReceival": "Eingang registrieren",
+    "markAsPaid": "Als bezahlt markieren"
+  },
+  "stats": {
+    "pendingPayments": "Ausstehende Zahlungen",
+    "pendingCount": "{{count}} Zahlung",
+    "pendingCount_other": "{{count}} Zahlungen",
+    "overduePayments": "Überfällige Zahlungen",
+    "overdueCount": "{{count}} Zahlung überfällig",
+    "overdueCount_other": "{{count}} Zahlungen überfällig",
+    "overdueAction": "Handlungsbedarf: Überfällige Zahlungen überprüfen",
+    "allCaughtUp": "Alles erledigt!",
+    "noOverdue": "Keine überfälligen Zahlungen. Weiter so!",
+    "lastSixMonths": "Letzte 6 Monate",
+    "tooltipReceived": "Erhalten"
+  },
+  "filters": {
+    "title": "Filter",
+    "property": "Immobilie",
+    "contract": "Vertrag",
+    "status": "Status",
+    "allStatuses": "Alle Status",
+    "allProperties": "Alle Immobilien",
+    "allContracts": "Alle Verträge"
+  },
+  "status": {
+    "pending": "Ausstehend",
+    "partiallyPaid": "Teilweise",
+    "paid": "Bezahlt",
+    "overdue": "Überfällig",
+    "late": "Verspätet",
+    "cancelled": "Storniert"
+  },
+  "table": {
+    "dueDate": "Fälligkeitsdatum",
+    "paymentNumber": "Zahlung #",
+    "contract": "Vertrag",
+    "amount": "Betrag",
+    "status": "Status",
+    "balance": "Saldo: {{amount}}"
+  },
+  "empty": {
+    "title": "Keine Zahlungen gefunden",
+    "filtered": "Versuchen Sie, Ihre Filter anzupassen",
+    "noData": "Beginnen Sie mit der Erfassung Ihrer ersten Zahlung"
+  },
+  "card": {
+    "paymentId": "Zahlung #{{id}}",
+    "contractId": "Vertrag #{{id}}",
+    "property": "Immobilie",
+    "contact": "Kontakt",
+    "amount": "Betrag",
+    "balance": "Saldo: {{amount}}",
+    "dueDate": "Fälligkeitsdatum",
+    "paidOn": "Bezahlt am"
+  },
+  "form": {
+    "amount": "Betrag",
+    "dueDate": "Fälligkeitsdatum",
+    "paymentDate": "Zahlungsdatum",
+    "contact": "Kontakt",
+    "notes": "Notizen",
+    "notesPlaceholder": "Zusätzliche Anmerkungen zu dieser Zahlung hinzufügen...",
+    "continueAdding": "Weitere hinzufügen",
+    "today": "Heute",
+    "clear": "Löschen",
+    "updatePayment": "Zahlung aktualisieren",
+    "saving": "Wird gespeichert...",
+    "contract": "Vertrag",
+    "currency": "Währung",
+    "selectContractFirst": "Bitte wählen Sie zuerst einen Vertrag",
+    "rentPeriodNotice": "Dieses Datum fällt in eine andere Mietperiode ({{amount}}/Mt. ab {{from}}{{to}}). {{current}}",
+    "rentPeriodNoticeTo": " bis {{date}}",
+    "rentPeriodCurrentRent": "Aktuelle Miete ist {{amount}}/Mt."
+  },
+  "validation": {
+    "amountRequired": "Betrag muss größer als 0 sein",
+    "dueDateRequired": "Fälligkeitsdatum ist erforderlich",
+    "currencyRequired": "Währung ist erforderlich",
+    "paymentDateRequired": "Zahlungsdatum ist erforderlich"
+  },
+  "create": {
+    "titleRegister": "Zahlung registrieren",
+    "titleSchedule": "Zahlung planen",
+    "addedCount": "{{count}} Zahlung {{action}} in dieser Sitzung",
+    "addedCount_other": "{{count}} Zahlungen {{action}} in dieser Sitzung",
+    "actionRegistered": "registriert",
+    "actionScheduled": "geplant",
+    "single": "Einzeln",
+    "bulk": "Mehrfach",
+    "contractInactiveWarning": "Der verknüpfte Vertrag ist nicht aktiv. Bitte wählen Sie einen aktiven Vertrag."
+  },
+  "detail": {
+    "titlePrefix": "Zahlung #{{id}}",
+    "subtitlePrefix": "Vertrag #{{id}}",
+    "paymentDetails": "Zahlungsdetails",
+    "relatedInformation": "Zugehörige Informationen",
+    "amount": "Betrag",
+    "received": "Erhalten",
+    "balance": "Saldo",
+    "dueDate": "Fälligkeitsdatum",
+    "paymentDate": "Zahlungsdatum",
+    "contract": "Vertrag",
+    "contractId": "Vertrag #{{id}}",
+    "property": "Immobilie",
+    "contact": "Kontakt",
+    "notes": "Notizen",
+    "metadata": "Metadaten",
+    "created": "Erstellt:",
+    "lastUpdated": "Zuletzt aktualisiert:",
+    "editPayment": "Zahlung bearbeiten"
+  },
+  "tabs": {
+    "details": "Details",
+    "receivals": "Eingänge",
+    "documents": "Dokumente",
+    "history": "Verlauf"
+  },
+  "receivals": {
+    "title": "Eingänge ({{count}})",
+    "totalAmount": "Gesamtbetrag",
+    "received": "Erhalten",
+    "balance": "Saldo",
+    "empty": "Noch keine Eingänge registriert",
+    "searchPlaceholder": "Suche nach Betrag, Datum oder Notizen...",
+    "date": "Datum",
+    "amount": "Betrag",
+    "notes": "Notizen",
+    "actions": "Aktionen",
+    "showing": "{{from}} bis {{to}} von {{total}} angezeigt",
+    "remainingBalance": "Verbleibender Saldo:",
+    "receivalDate": "Eingangsdatum",
+    "notesOptional": "Notizen (optional)",
+    "notesPlaceholder": "Anmerkungen zu diesem Eingang hinzufügen...",
+    "register": "Registrieren"
+  },
+  "history": {
+    "title": "Zahlungsverlauf",
+    "empty": "Kein Verlauf verfügbar",
+    "emptySubtitle": "Änderungen an dieser Zahlung werden hier angezeigt",
+    "clickToView": "Klicken zum Anzeigen der Änderungen",
+    "clickToHide": "Klicken zum Ausblenden der Änderungen",
+    "changedFields": "Geänderte Felder",
+    "old": "Alt:",
+    "new": "Neu:",
+    "impersonated": "Impersoniert"
+  },
+  "deleteDialog": {
+    "title": "Zahlung löschen",
+    "message": "Sind Sie sicher, dass Sie diese Zahlung löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "messageWithRelated": "Sind Sie sicher, dass Sie diese Zahlung löschen möchten? Alle zugehörigen Daten (Eingänge, Dokumente) werden ebenfalls gelöscht. Diese Aktion kann nicht rückgängig gemacht werden."
+  },
+  "markPaidDialog": {
+    "title": "Zahlung als bezahlt markieren",
+    "balanceMessage": "Hiermit wird ein Eingang über den verbleibenden Saldo von {{amount}} registriert und die Zahlung als vollständig bezahlt markiert.",
+    "paymentDate": "Zahlungsdatum",
+    "notesOptional": "Notizen (optional)",
+    "notesPlaceholder": "Anmerkungen zu dieser Zahlung hinzufügen..."
+  },
+  "receivalDialog": {
+    "title": "Eingang registrieren",
+    "remainingBalance": "Verbleibender Saldo:",
+    "amount": "Betrag",
+    "receivalDate": "Eingangsdatum",
+    "notesOptional": "Notizen (optional)",
+    "notesPlaceholder": "Anmerkungen zu diesem Eingang hinzufügen...",
+    "register": "Registrieren"
+  },
+  "tooltips": {
+    "viewPayment": "Zahlung anzeigen",
+    "deletePayment": "Zahlung löschen",
+    "editReceival": "Eingang bearbeiten",
+    "deleteReceival": "Eingang löschen",
+    "save": "Speichern",
+    "previous": "Zurück",
+    "next": "Weiter"
+  },
+  "errors": {
+    "loadFailed": "Zahlungen konnten nicht geladen werden",
+    "loadPaymentFailed": "Zahlung konnte nicht geladen werden",
+    "loadHistoryFailed": "Verlauf konnte nicht geladen werden"
+  }
+}

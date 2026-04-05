@@ -1,0 +1,98 @@
+{
+  "documentsPage": {
+    "title": "Documentenbibliotheek",
+    "subtitle": "Zoek en beheer al uw documenten op één plek",
+    "searchPlaceholder": "Zoek documenten op titel, bestandsnaam of notities...",
+    "entityTypeFilter": {
+      "all": "Alle typen",
+      "property": "Panden",
+      "contact": "Contacten",
+      "contract": "Contracten",
+      "payment": "Betalingen",
+      "expense": "Uitgaven"
+    },
+    "table": {
+      "document": "Document",
+      "type": "Type",
+      "size": "Grootte",
+      "uploaded": "Geüpload",
+      "actions": "Acties"
+    },
+    "selection": {
+      "selected": "{{selected}} van {{total}} geselecteerd",
+      "count": "{{count}} document",
+      "count_other": "{{count}} documenten"
+    },
+    "empty": "Geen documenten gevonden",
+    "editModal": "Document bewerken"
+  },
+  "photosPage": {
+    "title": "Fotobibliotheek",
+    "subtitle": "Blader door en beheer al uw foto's op één plek",
+    "searchPlaceholder": "Zoek foto's op titel, bestandsnaam of notities...",
+    "entityTypeFilter": {
+      "all": "Alle typen",
+      "property": "Panden",
+      "contact": "Contacten",
+      "contract": "Contracten",
+      "payment": "Betalingen",
+      "expense": "Uitgaven"
+    },
+    "empty": "Geen foto's gevonden",
+    "editModal": "Foto bewerken"
+  },
+  "photoGrid": {
+    "noPhotos": "Nog geen foto's",
+    "failedToLoad": "Kan foto's niet laden",
+    "failedToLoadImage": "Laden mislukt",
+    "noUrl": "Geen URL",
+    "main": "Hoofd",
+    "selection": {
+      "selected": "{{selected}} van {{total}} geselecteerd",
+      "count": "{{count}} foto",
+      "count_other": "{{count}} foto's"
+    },
+    "downloading": "Downloaden...",
+    "tooltips": {
+      "setAsMain": "Als hoofdfoto instellen",
+      "editTitleNotes": "Titel & notities bewerken",
+      "deletePhoto": "Foto verwijderen"
+    }
+  },
+  "preview": {
+    "previewNotAvailable": "Voorbeeld niet beschikbaar voor dit bestandstype ({{mimeType}})",
+    "downloadFile": "Bestand downloaden",
+    "notes": "Notities:",
+    "tooltips": {
+      "editTitleNotes": "Titel & notities bewerken",
+      "download": "Downloaden",
+      "openInNewTab": "Openen in nieuw tabblad",
+      "close": "Sluiten",
+      "previous": "Vorige",
+      "next": "Volgende"
+    }
+  },
+  "deleteDialog": {
+    "titleSingle": "Document verwijderen",
+    "titlePlural": "Documenten verwijderen",
+    "messageSingle": "Weet u zeker dat u dit document wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+    "messagePlural": "U staat op het punt {{count}} documenten te verwijderen. Deze actie kan niet ongedaan worden gemaakt.",
+    "confirmSingle": "Verwijderen",
+    "confirmPlural": "{{count}} documenten verwijderen"
+  },
+  "deletePhotoDialog": {
+    "titleSingle": "Foto verwijderen",
+    "titlePlural": "Foto's verwijderen",
+    "messageSingle": "Weet u zeker dat u deze foto wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+    "messagePlural": "U staat op het punt {{count}} foto's te verwijderen. Deze actie kan niet ongedaan worden gemaakt.",
+    "mainPhotoSingle": "Dit is de hoofdfoto. Verwijdering betekent dat dit pand geen hoofdfoto meer heeft. Deze actie kan niet ongedaan worden gemaakt.",
+    "mainPhotoPlural": "U staat op het punt {{count}} foto's te verwijderen, waaronder de hoofdfoto. Dit pand zal geen hoofdfoto meer hebben. Deze actie kan niet ongedaan worden gemaakt.",
+    "confirmSingle": "Verwijderen",
+    "confirmPlural": "{{count}} foto's verwijderen"
+  },
+  "tooltips": {
+    "preview": "Voorbeeld",
+    "editTitleNotes": "Titel & notities bewerken",
+    "delete": "Verwijderen"
+  }
+}

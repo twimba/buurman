@@ -5,43 +5,33 @@
  */
 
 import { useRef, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
-const HINTS: Record<string, string> = {
+const HINT_KEYS: Record<string, string> = {
   // Investment metrics
-  'Total ROI': 'Return on Investment — total profit relative to total cost',
-  'Annualized ROI': 'Return on Investment normalized to a yearly rate',
-  'Cap Rate': 'Capitalization Rate — NOI divided by property value',
-  'Cash-on-Cash': 'Annual pre-tax cash flow divided by total cash invested',
-  'Annual NOI':
-    'Net Operating Income — revenue minus operating expenses, before debt service',
-  'Gross Rent Multiplier':
-    'Purchase price divided by gross annual rent — lower is better',
+  'Total ROI': 'metricHints.totalROI',
+  'Annualized ROI': 'metricHints.annualizedROI',
+  'Cap Rate': 'metricHints.capRate',
+  'Cash-on-Cash': 'metricHints.cashOnCash',
+  'Annual NOI': 'metricHints.annualNOI',
+  'Gross Rent Multiplier': 'metricHints.grossRentMultiplier',
   // Property performance table
-  'Monthly CF':
-    'Monthly Cash Flow — total rent collected minus operating expenses and debt service',
-  CoC: 'Cash-on-Cash Return — annual pre-tax cash flow divided by total cash invested',
-  'Data %':
-    'Financial data completeness — how much cost and income data has been entered; higher means more accurate metrics',
+  'Monthly CF': 'metricHints.monthlyCF',
+  CoC: 'metricHints.coc',
+  'Data %': 'metricHints.dataPercent',
   // Dashboard summary cards
-  'Wtd Cap Rate':
-    'Weighted Capitalization Rate — NOI divided by property value, weighted by portfolio value across all properties',
-  'Wtd Cash-on-Cash':
-    'Weighted Cash-on-Cash Return — annual pre-tax cash flow divided by total cash invested, weighted by equity across all properties',
-  Occupancy: 'Percentage of units currently occupied by contacts',
+  'Wtd Cap Rate': 'metricHints.wtdCapRate',
+  'Wtd Cash-on-Cash': 'metricHints.wtdCashOnCash',
+  Occupancy: 'metricHints.occupancy',
   // Dashboard / reports
-  'Occupancy Rate': 'Percentage of units currently rented out',
-  'Net Profit': 'Total income minus total expenses for the period',
+  'Occupancy Rate': 'metricHints.occupancyRate',
+  'Net Profit': 'metricHints.netProfit',
   // Property financial form
-  'HOA Fee':
-    'Homeowners Association fee — shared building/complex maintenance costs',
-  'Maintenance Reserve':
-    'Annual budget set aside for unexpected repairs and upkeep',
-  Depreciation:
-    'Tax deduction for the gradual loss of property value over time',
-  'Useful Life':
-    'Number of years over which the property is depreciated for tax purposes',
-  'Land Value':
-    'Value of the land alone (excluded from depreciation calculations)',
+  'HOA Fee': 'metricHints.hoaFee',
+  'Maintenance Reserve': 'metricHints.maintenanceReserve',
+  Depreciation: 'metricHints.depreciation',
+  'Useful Life': 'metricHints.usefulLife',
+  'Land Value': 'metricHints.landValue',
 };
 
 interface TooltipPos {
@@ -56,7 +46,9 @@ export function MetricHint({
   label: string;
   hint?: string;
 }) {
-  const resolved = explicitHint ?? HINTS[label];
+  const { t } = useTranslation('common');
+  const hintKey = HINT_KEYS[label];
+  const resolved = explicitHint ?? (hintKey ? t(hintKey) : undefined);
   const triggerRef = useRef<HTMLSpanElement>(null);
   const [pos, setPos] = useState<TooltipPos | null>(null);
 

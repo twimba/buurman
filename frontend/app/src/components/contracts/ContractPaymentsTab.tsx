@@ -23,6 +23,7 @@ import { useFormatDate } from '@/hooks/useFormatDate';
 import { ContractStatus } from '@/types/contract';
 import { PaymentStatusBadge } from '@/components/payments/PaymentStatusBadge';
 import { PaymentStatus } from '@/types/payment';
+import { useTranslation } from 'react-i18next';
 
 interface ContractPaymentsTabProps {
   contractId: string;
@@ -33,6 +34,7 @@ export const ContractPaymentsTab = ({
   contractId,
   contractStatus,
 }: ContractPaymentsTabProps) => {
+  const { t } = useTranslation('contracts');
   const navigate = useNavigate();
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
@@ -136,7 +138,7 @@ export const ContractPaymentsTab = ({
       <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-text-primary">
-            Payments ({filteredAndSortedPayments.length})
+            {t('payments.title')} ({filteredAndSortedPayments.length})
           </h2>
           <div className="flex items-center gap-2">
             {contractStatus === ContractStatus.ACTIVE && (
@@ -173,12 +175,12 @@ export const ContractPaymentsTab = ({
         {paymentsLoading ? (
           <LoadingSpinner />
         ) : paymentsError ? (
-          <ErrorMessage message="Failed to load payments" />
+          <ErrorMessage message={t('payments.failedToLoad')} />
         ) : payments.length === 0 ? (
           <div className="text-center py-12">
             <DollarSign className="h-12 w-12 text-text-disabled mx-auto mb-3" />
             <p className="text-text-secondary mb-4">
-              No payments for this contract
+              {t('payments.noPayments')}
             </p>
             <Button
               variant="primary"
@@ -197,7 +199,7 @@ export const ContractPaymentsTab = ({
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-text-muted " />
                 <input
                   type="text"
-                  placeholder="Search by payment #, status..."
+                  placeholder={t('payments.searchPlaceholder')}
                   value={paymentsSearchTerm}
                   onChange={(e) => {
                     setPaymentsSearchTerm(e.target.value);
@@ -284,7 +286,7 @@ export const ContractPaymentsTab = ({
                         colSpan={5}
                         className="px-6 py-12 text-center text-text-secondary"
                       >
-                        No payments found matching your search
+                        {t('payments.noMatch')}
                       </td>
                     </tr>
                   ) : (
@@ -336,7 +338,7 @@ export const ContractPaymentsTab = ({
                                 setDeletePaymentTarget(payment.identifier);
                               }}
                               className="p-1.5 rounded hover:bg-error-bg text-text-secondary hover:text-error-text transition-colors"
-                              title="Delete payment"
+                              title={t('common:buttons.delete')}
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
@@ -401,9 +403,9 @@ export const ContractPaymentsTab = ({
 
       {deletePaymentTarget && (
         <ConfirmDialog
-          title="Delete Payment"
-          message="Are you sure you want to delete this payment? All related data (receivals, documents) will also be deleted. This action cannot be undone."
-          confirmLabel="Delete"
+          title={t('payments.deleteTitle')}
+          message={t('payments.deleteMessage')}
+          confirmLabel={t('common:buttons.delete')}
           variant="danger"
           isLoading={deletePaymentMutation.isPending}
           onConfirm={async () => {

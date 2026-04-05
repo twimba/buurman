@@ -1,0 +1,297 @@
+{
+  "apiDocs": {
+    "title": "API Documentation",
+    "subtitle": "Explore and test the Buurman REST API"
+  },
+  "billing": {
+    "title": "Subscription & Billing",
+    "subtitle": "Manage your subscription plan and view billing history",
+    "impersonationBlocked": "Billing operations are not available during an impersonation session."
+  },
+  "calendarFeeds": {
+    "title": "Calendar Feeds",
+    "pageSubtitle": "Manage iCalendar feeds for payment due dates and contract events"
+  },
+  "dataExport": {
+    "title": "Data Export",
+    "pageSubtitle": "Export your team's data as a downloadable archive"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Track and manage all notifications sent across your team",
+    "loading": "Loading notifications...",
+    "noResults": "No notifications found",
+    "view": "View",
+    "viewDetails": "View details",
+    "resend": "Resend",
+    "resendNotification": "Resend notification",
+    "resendConfirm": {
+      "title": "Resend Notification",
+      "message": "This will create a new notification and attempt delivery again. The original notification will remain in the log."
+    },
+    "demoBanner": {
+      "title": "Demo account — notifications are simulated",
+      "emailAndSms": "Email and SMS notifications are recorded but not actually delivered.",
+      "emailOnly": "Email notifications are recorded but not actually delivered.",
+      "smsOnly": "SMS notifications are recorded but not actually delivered."
+    },
+    "stats": {
+      "total": "Total",
+      "delivered": "Delivered",
+      "pending": "Pending",
+      "failed": "Failed",
+      "byChannel": "By Channel",
+      "demoBlocked": "Demo Blocked"
+    },
+    "table": {
+      "type": "Type",
+      "channel": "Channel",
+      "recipient": "Recipient",
+      "subjectBody": "Subject / Body",
+      "status": "Status",
+      "date": "Date",
+      "actions": "Actions"
+    },
+    "typeLabels": {
+      "welcome": "Welcome",
+      "verification": "Verification",
+      "invitation": "Invitation",
+      "accepted": "Accepted",
+      "password": "Password",
+      "payment": "Payment",
+      "contract": "Contract",
+      "property": "Property",
+      "newContract": "New Contract",
+      "statusChange": "Status Change",
+      "reopened": "Reopened",
+      "paid": "Paid",
+      "receival": "Receival",
+      "expense": "Expense"
+    },
+    "details": {
+      "title": "Notification Details",
+      "demoBlocked": "This notification was not delivered because this is a demo account. In a real account, it would be sent via {{channel}}.",
+      "type": "Type",
+      "subject": "Subject",
+      "content": "Content",
+      "recipient": "Recipient",
+      "sentAt": "Sent at",
+      "statusUpdated": "Status updated",
+      "providerStatus": "Provider status",
+      "refresh": "Refresh",
+      "error": "Error",
+      "engagement": "Engagement",
+      "open": "{{count}} open",
+      "open_other": "{{count}} opens",
+      "click": "{{count}} click",
+      "click_other": "{{count}} clicks",
+      "first": "first: {{date}}",
+      "resentFrom": "Resent from",
+      "resendReason": "Resend reason",
+      "resend": "Resend",
+      "emailPreview": "Email Preview",
+      "smsMessage": "SMS Message",
+      "delivered": "Delivered"
+    },
+    "filters": {
+      "searchByEmail": "Search by email...",
+      "allTypes": "All Types",
+      "allChannels": "All Channels",
+      "allStatuses": "All Statuses",
+      "fromDate": "From date",
+      "toDate": "To date"
+    },
+    "types": {
+      "welcome": "Welcome",
+      "verificationCode": "Verification Code",
+      "teamInvitation": "Team Invitation",
+      "invitationAccepted": "Invitation Accepted",
+      "passwordChanged": "Password Changed",
+      "paymentReminder": "Payment Reminder",
+      "contractExpiry": "Contract Expiry",
+      "propertyCreated": "Property Created",
+      "contractCreated": "Contract Created",
+      "contractStatusChanged": "Contract Status Changed",
+      "contractReopened": "Contract Reopened",
+      "paymentPaid": "Payment Paid",
+      "paymentReceival": "Payment Receival",
+      "expenseCreated": "Expense Created"
+    },
+    "statuses": {
+      "pending": "Pending",
+      "queued": "Queued",
+      "sent": "Sent",
+      "delivered": "Delivered",
+      "failed": "Failed",
+      "bounced": "Bounced",
+      "rejected": "Rejected",
+      "demo": "Demo"
+    }
+  },
+  "paymentInstructions": {
+    "title": "Payment Instructions",
+    "pageSubtitle": "Manage payment instruction templates for your team"
+  },
+  "preferences": {
+    "title": "Preferences",
+    "subtitle": "Configure team-wide preferences and regional settings"
+  },
+  "teamMembers": {
+    "title": "Team Members",
+    "subtitle": "Manage team members, roles, and invitations",
+    "impersonationBlocked": "Team membership changes are not available during an impersonation session."
+  },
+  "transactions": {
+    "title": "Transaction History",
+    "subtitle": "Complete history of income and expenses",
+    "searchPlaceholder": "Search transactions...",
+    "allTypes": "All Types",
+    "incomeOnly": "Income Only",
+    "expensesOnly": "Expenses Only",
+    "totalIncome": "Total Income",
+    "totalExpenses": "Total Expenses",
+    "netTotal": "Net Total",
+    "noTransactions": "No transactions found",
+    "table": {
+      "date": "Date",
+      "type": "Type",
+      "description": "Description",
+      "property": "Property",
+      "amount": "Amount"
+    }
+  },
+  "dashboard": {
+    "portfolioOverview": "Portfolio Overview",
+    "propertiesWithData": "{{withData}} of {{total}} properties have financial data",
+    "addProperties": "Add properties to see your portfolio dashboard.",
+    "addFinancialData": "Add financial data to your properties to see portfolio analytics.",
+    "propertiesNoData": "{{count}} properties found, but none have financial data yet.",
+    "exporting": "Exporting...",
+    "disclaimer": "Metrics are for informational purposes only.",
+    "charts": {
+      "cashFlow": "Portfolio Cash Flow",
+      "allocation": "Portfolio Allocation",
+      "propertyComparison": "Property Comparison",
+      "equityComposition": "Equity Composition",
+      "performance": "Property Performance",
+      "occupancy": "Portfolio Occupancy"
+    },
+    "cashFlow": {
+      "noData": "No cash flow data available",
+      "income": "Income",
+      "expenses": "Expenses",
+      "mortgage": "Mortgage",
+      "net": "Net"
+    },
+    "allocation": {
+      "noData": "No allocation data available",
+      "byCategory": "By Category",
+      "byCountry": "By Country"
+    },
+    "comparison": {
+      "noData": "No property comparison data available",
+      "monthlyCashFlow": "Monthly Cash Flow"
+    },
+    "equity": {
+      "noData": "No equity data available",
+      "equity": "Equity",
+      "mortgage": "Mortgage"
+    },
+    "performanceTable": {
+      "noData": "No property performance data available",
+      "property": "Property",
+      "category": "Category",
+      "monthlyCF": "Monthly CF",
+      "annualNOI": "Annual NOI",
+      "capRate": "Cap Rate",
+      "coc": "CoC",
+      "occupancy": "Occupancy",
+      "dataPercent": "Data %"
+    },
+    "occupancy": {
+      "noData": "No occupancy data available",
+      "contactOccupancy": "Contact Occupancy",
+      "selfOccupancy": "Self Occupancy"
+    },
+    "pendingExtensions": {
+      "title": "Pending Extensions",
+      "awaitingAction": "{{count}} extension awaiting action",
+      "awaitingAction_other": "{{count}} extensions awaiting action",
+      "extensionNumber": "Extension #{{number}}",
+      "contractNumber": "Contract #{{id}}",
+      "until": "until {{date}}",
+      "activate": "Activate",
+      "decline": "Decline"
+    },
+    "pendingInvitations": {
+      "title": "Pending Team Invitations",
+      "invitedToOne": "You have been invited to join a team",
+      "invitedToMany": "You have been invited to join {{count}} teams",
+      "invitedBy": "Invited by {{name}}",
+      "expires": "Expires {{date}}",
+      "accept": "Accept"
+    },
+    "upcomingRenewals": {
+      "title": "Upcoming Renewals",
+      "property": "Property",
+      "contact": "Contact",
+      "endDate": "End Date",
+      "daysLeft": "Days Left",
+      "mode": "Mode",
+      "rent": "Rent",
+      "renewalModes": {
+        "none": "None",
+        "automatic": "Auto",
+        "manual": "Manual"
+      }
+    }
+  },
+  "reports": {
+    "title": "Financial Reports",
+    "subtitle": "Comprehensive financial overview and analytics",
+    "transactions": "Transactions",
+    "failedToLoad": "Failed to load financial reports",
+    "period": "Period:",
+    "month": "Month",
+    "quarter": "Quarter",
+    "year": "Year",
+    "allTime": "All Time",
+    "custom": "Custom",
+    "to": "to",
+    "advancedFilters": "Advanced Filters",
+    "properties": "Properties",
+    "clearAll": "Clear all",
+    "noProperties": "No properties found",
+    "totalIncome": "Total Income",
+    "totalExpenses": "Total Expenses",
+    "incomeTrend": {
+      "title": "Income Trend",
+      "subtitle": "Monthly income, expenses, and net profit",
+      "line": "Line",
+      "bar": "Bar"
+    },
+    "expenseBreakdown": {
+      "title": "Expense Breakdown",
+      "subtitle": "By category for selected period",
+      "pie": "Pie",
+      "bar": "Bar",
+      "noData": "No expense data for selected period"
+    },
+    "propertyPerformance": {
+      "title": "Property Performance",
+      "subtitle": "Income, expenses & net profit per property",
+      "property": "Property",
+      "income": "Income",
+      "expenses": "Expenses",
+      "netProfit": "Net Profit",
+      "margin": "Margin",
+      "total": "Total",
+      "noData": "No property data for selected period"
+    },
+    "occupancyTrend": {
+      "title": "Occupancy Trend",
+      "subtitle": "Monthly occupancy rate percentage",
+      "occupancyRate": "Occupancy Rate (%)"
+    }
+  }
+}

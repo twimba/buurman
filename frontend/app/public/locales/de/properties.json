@@ -1,0 +1,498 @@
+{
+  "list": {
+    "title": "Immobilien",
+    "subtitle": "Verwalten Sie Ihre Mietobjekte und Einheiten",
+    "addButton": "Immobilie hinzufügen",
+    "searchPlaceholder": "Suche nach Adresse, Stadt, Postleitzahl oder Typ...",
+    "filters": "Filter",
+    "category": "Kategorie",
+    "allCategories": "Alle Kategorien",
+    "status": "Status",
+    "allStatuses": "Alle Status",
+    "count_one": "{{count}} Immobilie",
+    "count_other": "{{count}} Immobilien",
+    "empty": {
+      "title": "Keine Immobilien gefunden",
+      "filtered": "Versuchen Sie, Ihre Filter oder Suchbegriffe anzupassen",
+      "noData": "Beginnen Sie, indem Sie Ihre erste Immobilie hinzufügen"
+    },
+    "error": "Immobilien konnten nicht geladen werden"
+  },
+  "create": {
+    "title": "Neue Immobilie hinzufügen",
+    "readOnlyMessage": "Das Erstellen von Immobilien ist im Nur-Lesen-Modus nicht verfügbar."
+  },
+  "edit": {
+    "title": "Immobilie bearbeiten",
+    "notFound": "Immobilie nicht gefunden"
+  },
+  "detail": {
+    "notFound": "Immobilie nicht gefunden",
+    "booklet": "Broschüre",
+    "bookletDownloadFailed": "Download der Broschüre fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "tabs": {
+      "info": "Info",
+      "dashboard": "Dashboard",
+      "financials": "Finanzen",
+      "photos": "Fotos",
+      "documents": "Dokumente",
+      "contracts": "Verträge",
+      "expenses": "Ausgaben",
+      "history": "Verlauf"
+    },
+    "timeline": {
+      "title": "Immobilien-Zeitstrahl",
+      "rentalContract": "Mietvertrag",
+      "selfOccupied": "Eigennutzung",
+      "financing": "Finanzierung"
+    },
+    "specs": {
+      "bedrooms": "Schlafzimmer",
+      "bathrooms": "Badezimmer",
+      "area": "Fläche",
+      "type": "Typ",
+      "street": "Straße",
+      "city": "Stadt",
+      "postalCode": "Postleitzahl",
+      "country": "Land",
+      "location": "Standort"
+    },
+    "characteristics": {
+      "title": "Immobilienmerkmale"
+    },
+    "construction": {
+      "title": "Bau & Struktur",
+      "yearBuilt": "Baujahr",
+      "lastRenovated": "Letzte Renovierung",
+      "construction": "Bauweise",
+      "foundation": "Fundament",
+      "roof": "Dach",
+      "wallConstruction": "Wandkonstruktion",
+      "flooring": "Bodenbelag",
+      "windows": "Fenster",
+      "floors": "Etagen",
+      "structuralNotes": "Strukturelle Anmerkungen"
+    },
+    "energy": {
+      "title": "Energie & Klima",
+      "energyRating": "Energieeffizienzklasse",
+      "certificateExpiry": "Zertifikat läuft ab",
+      "heating": "Heizung",
+      "cooling": "Kühlung",
+      "hotWater": "Warmwasser",
+      "insulationNotes": "Anmerkungen zur Dämmung"
+    },
+    "utilities": {
+      "title": "Versorgung & Anschlüsse",
+      "electricity": "Strom",
+      "capacity": "Kapazität",
+      "water": "Wasser",
+      "gasConnection": "Gasanschluss",
+      "sewage": "Abwasser",
+      "internet": "Internet",
+      "internetSpeed": "Internetgeschwindigkeit",
+      "internetStatus": "Internetstatus"
+    },
+    "parking": {
+      "title": "Parken",
+      "parkingSpaces": "Stellplätze",
+      "parkingType": "Stellplatzart"
+    },
+    "outdoorAreas": {
+      "title": "Außenbereiche"
+    },
+    "amenities": {
+      "title": "Ausstattung"
+    },
+    "safety": {
+      "title": "Sicherheit",
+      "smokeDetectors": "Rauchmelder",
+      "coDetectors": "CO-Melder",
+      "fireExtinguisher": "Feuerlöscher",
+      "sprinklerSystem": "Sprinkleranlage",
+      "alarmSystem": "Alarmanlage",
+      "securityCameras": "Überwachungskameras",
+      "secureEntry": "Gesicherter Eingang",
+      "safetyNotes": "Sicherheitshinweise"
+    },
+    "accessibility": {
+      "title": "Barrierefreiheit",
+      "wheelchairAccessible": "Rollstuhlgerecht",
+      "elevator": "Aufzug",
+      "stepFreeEntrance": "Stufenfreier Eingang",
+      "adaptedBathroom": "Angepasstes Badezimmer",
+      "accessibilityNotes": "Anmerkungen zur Barrierefreiheit"
+    },
+    "wws": {
+      "title": "WWS-Punkte",
+      "calculate": "Berechnen",
+      "recalculate": "Neu berechnen",
+      "points": "Punkte",
+      "regulated": "Reguliert",
+      "midSegment": "Mittelsegment",
+      "freeSector": "Freier Sektor",
+      "maxRent": "Maximale Miete",
+      "calculated": "Berechnet",
+      "history": "Verlauf",
+      "noCalculation": "Noch keine Berechnung",
+      "noCalculationDescription": "Berechnen Sie die WWS-Punkte, um die maximale regulierte Miete für diese Immobilie zu ermitteln.",
+      "noPreviousCalculations": "Keine früheren Berechnungen."
+    },
+    "metadata": {
+      "title": "Metadaten",
+      "created": "Erstellt:",
+      "lastUpdated": "Zuletzt aktualisiert:",
+      "at": "um"
+    },
+    "yes": "Ja",
+    "no": "Nein"
+  },
+  "form": {
+    "address": "Adresse",
+    "street": "Straße",
+    "streetPlaceholder": "Hauptstraße 123",
+    "city": "Stadt",
+    "cityPlaceholder": "Berlin",
+    "postalCode": "Postleitzahl",
+    "postalCodePlaceholder": "10115",
+    "country": "Land",
+    "region": "Region",
+    "regionOther": "Sonstige",
+    "locationPreview": "Standortvorschau",
+    "specifications": "Spezifikationen",
+    "category": "Kategorie",
+    "categoryCannotChange": "(kann nicht geändert werden)",
+    "type": "Typ",
+    "status": "Status",
+    "area": "Fläche",
+    "areaPlaceholder": "75,5",
+    "saving": "Wird gespeichert...",
+    "updateProperty": "Immobilie aktualisieren",
+    "createProperty": "Immobilie erstellen",
+    "validation": {
+      "streetRequired": "Straße ist erforderlich",
+      "cityRequired": "Stadt ist erforderlich",
+      "postalCodeRequired": "Postleitzahl ist erforderlich",
+      "countryRequired": "Land ist erforderlich",
+      "areaPositive": "Fläche muss größer als 0 sein"
+    }
+  },
+  "collapsible": {
+    "filledCount": "{{filled}} von {{total}} ausgefüllt"
+  },
+  "documents": {
+    "title": "Dokumente",
+    "uploadButton": "Dokument hochladen",
+    "empty": "Noch keine Dokumente hochgeladen",
+    "failedToLoad": "Dokumente konnten nicht geladen werden",
+    "table": {
+      "document": "Dokument",
+      "size": "Größe",
+      "uploaded": "Hochgeladen",
+      "actions": "Aktionen"
+    },
+    "selection": {
+      "selected": "{{selected}} von {{total}} ausgewählt",
+      "count_one": "{{count}} Dokument",
+      "count_other": "{{count}} Dokumente"
+    },
+    "preview": "Vorschau",
+    "editTitleNotes": "Titel & Notizen bearbeiten",
+    "upload": {
+      "title_one": "Dokument hochladen",
+      "title_other": "Dokumente hochladen",
+      "files": "{{count}} Dateien",
+      "titleLabel": "Titel (optional)",
+      "titlePlaceholder": "z.B. Grundriss",
+      "notesLabel": "Notizen (optional)",
+      "notesPlaceholder": "Zusätzliche Anmerkungen zu diesem Dokument",
+      "uploading": "{{current}} von {{total}} wird hochgeladen...",
+      "uploadCount": "{{count}} Dokumente hochladen"
+    },
+    "delete": {
+      "title_one": "Dokument löschen",
+      "title_other": "Dokumente löschen",
+      "message_one": "Sind Sie sicher, dass Sie dieses Dokument löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "message_other": "Sie sind dabei, {{count}} Dokumente zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "confirmLabel_other": "{{count}} Dokumente löschen"
+    },
+    "editModal": "Dokument bearbeiten",
+    "downloading": "Wird heruntergeladen..."
+  },
+  "photos": {
+    "title": "Fotos",
+    "uploadButton": "Foto hochladen",
+    "empty": "Noch keine Fotos",
+    "upload": {
+      "title_one": "Foto hochladen",
+      "title_other": "Fotos hochladen",
+      "files": "{{count}} Dateien",
+      "titleLabel": "Titel (optional)",
+      "titlePlaceholder": "z.B. Wohnzimmer",
+      "notesLabel": "Notizen (optional)",
+      "notesPlaceholder": "Zusätzliche Anmerkungen zu diesem Foto",
+      "uploading": "{{current}} von {{total}} wird hochgeladen...",
+      "uploadCount": "{{count}} Fotos hochladen"
+    },
+    "delete": {
+      "title_one": "Foto löschen",
+      "title_other": "Fotos löschen",
+      "mainPhotoWarning_one": "Dies ist das Hauptfoto. Nach dem Löschen hat diese Immobilie kein Hauptfoto mehr. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "mainPhotoWarning_other": "Sie sind dabei, {{count}} Fotos zu löschen, einschließlich des Hauptfotos. Diese Immobilie wird kein Hauptfoto mehr haben. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "message_one": "Sind Sie sicher, dass Sie dieses Foto löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "message_other": "Sie sind dabei, {{count}} Fotos zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "confirmLabel_other": "{{count}} Fotos löschen"
+    },
+    "editModal": "Foto bearbeiten"
+  },
+  "contracts": {
+    "title": "Verträge",
+    "addContract": "Vertrag hinzufügen",
+    "empty": "Keine Verträge für diese Immobilie",
+    "createFirst": "Ersten Vertrag erstellen",
+    "searchPlaceholder": "Suche nach Vertrag #, Kontakt, Typ...",
+    "noMatchingSearch": "Keine Verträge für Ihre Suche gefunden",
+    "table": {
+      "contractNumber": "Vertrag #",
+      "contact": "Kontakt",
+      "type": "Typ",
+      "startDate": "Startdatum",
+      "endDate": "Enddatum",
+      "rentAmount": "Mietbetrag",
+      "status": "Status"
+    },
+    "pagination": {
+      "showing": "{{from}} bis {{to}} von {{total}} Verträgen angezeigt"
+    },
+    "selfOccupancy": {
+      "title": "Eigennutzungsperioden",
+      "addButton": "Eigennutzung hinzufügen",
+      "empty": "Keine Eigennutzungsperioden erfasst",
+      "recordPeriod": "Eigennutzungsperiode erfassen",
+      "table": {
+        "period": "Zeitraum",
+        "type": "Typ",
+        "occupant": "Bewohner",
+        "status": "Status",
+        "actions": "Aktionen"
+      },
+      "ongoing": "Laufend",
+      "active": "Aktiv",
+      "ended": "Beendet",
+      "endOccupancy": "Nutzung beenden",
+      "deleteTitle": "Eigennutzungsperiode löschen",
+      "deleteMessage": "Sind Sie sicher, dass Sie diese Eigennutzungsperiode löschen möchten?",
+      "deleteWarning": "Diese Aktion kann nicht rückgängig gemacht werden."
+    }
+  },
+  "expenses": {
+    "title": "Ausgaben",
+    "addExpense": "Ausgabe hinzufügen",
+    "empty": "Keine Ausgaben für diese Immobilie",
+    "createFirst": "Erste Ausgabe erstellen",
+    "failedToLoad": "Ausgaben konnten nicht geladen werden",
+    "searchPlaceholder": "Suche nach Ausgabe #, Beschreibung, Kategorie...",
+    "noMatchingSearch": "Keine Ausgaben für Ihre Suche gefunden",
+    "table": {
+      "expenseNumber": "Ausgabe #",
+      "date": "Datum",
+      "description": "Beschreibung",
+      "category": "Kategorie",
+      "amount": "Betrag"
+    },
+    "pagination": {
+      "showing": "{{from}} bis {{to}} von {{total}} Ausgaben angezeigt"
+    }
+  },
+  "audit": {
+    "title": "Immobilienverlauf",
+    "failedToLoad": "Verlauf konnte nicht geladen werden",
+    "empty": {
+      "title": "Kein Verlauf verfügbar",
+      "description": "Änderungen an dieser Immobilie werden hier angezeigt"
+    },
+    "impersonated": "Impersoniert",
+    "clickToHide": "Klicken zum Ausblenden der Änderungen",
+    "clickToView": "Klicken zum Anzeigen der Änderungen",
+    "changedFields": "Geänderte Felder",
+    "old": "Alt:",
+    "new": "Neu:",
+    "fileName": "Dateiname",
+    "titleLabel": "Titel",
+    "typeLabel": "Typ",
+    "photo": "Foto",
+    "document": "Dokument"
+  },
+  "selfOccupancy": {
+    "title": "Eigennutzung",
+    "markTitle": "Als Eigennutzung markieren",
+    "editTitle": "Eigennutzung bearbeiten",
+    "endTitle": "Eigennutzung beenden",
+    "active": "Aktiv",
+    "period": "Zeitraum",
+    "type": "Typ",
+    "occupant": "Bewohner",
+    "imputedRent": "Kalkulatorische Miete",
+    "perMonth": "/ Monat",
+    "endReason": "Beendigungsgrund",
+    "notes": "Notizen",
+    "endOccupancy": "Nutzung beenden",
+    "form": {
+      "startDate": "Startdatum *",
+      "endDate": "Enddatum",
+      "endDateRequired": "Enddatum *",
+      "occupancyType": "Nutzungsart *",
+      "occupantName": "Name des Bewohners",
+      "occupantNamePlaceholder": "z.B. Eigentümer, Familienmitglied",
+      "monthlyImputedRent": "Monatliche kalkulatorische Miete",
+      "notes": "Notizen",
+      "notesPlaceholder": "Zusätzliche Anmerkungen...",
+      "reason": "Grund",
+      "reasonPlaceholder": "Grund auswählen...",
+      "alreadyTakenPeriods": "Bereits belegte Zeiträume"
+    }
+  },
+  "map": {
+    "unavailable": "Kartenvorschau nicht verfügbar",
+    "configureApiKey": "Konfigurieren Sie VITE_GOOGLE_MAPS_API_KEY, um Karten zu aktivieren",
+    "loading": "Karte wird geladen...",
+    "locationNotFound": "Standort nicht gefunden",
+    "couldNotFind": "Diese Adresse konnte auf der Karte nicht gefunden werden",
+    "apiKeyNotConfigured": "Google Maps API-Schlüssel nicht konfiguriert",
+    "geocodeFailed": "Geokodierung der Adresse fehlgeschlagen",
+    "locationNotFoundShort": "Standort nicht gefunden",
+    "findingLocation": "Standort wird gesucht...",
+    "couldNotLoadMaps": "Google Maps konnte derzeit nicht geladen werden",
+    "clickToPlace": "Unsere Kartenkünste haben uns diesmal im Stich gelassen. Klicken Sie irgendwo auf die Karte, um Ihre Immobilie zu markieren.",
+    "placePinManually": "Pin manuell setzen",
+    "accuracy": {
+      "rooftop": "Ziehen Sie den Pin, um den Standort zu verfeinern",
+      "manual": "Pin manuell gesetzt — bei Bedarf ziehen zum Anpassen",
+      "approximate": "Wir haben die Gegend gefunden, aber nicht den genauen Standort — ziehen Sie den Pin zu Ihrer Immobilie!",
+      "country": "Immerhin haben wir das Land gefunden! Ziehen Sie den Pin zum richtigen Standort."
+    }
+  },
+  "timeline": {
+    "selfOccupancy": "Eigennutzung",
+    "contract": "Vertrag",
+    "vacancy": "Leerstand",
+    "noEntries": "Noch keine Zeitstrahleinträge",
+    "ongoing": "Laufend"
+  },
+  "statusChart": {
+    "occupied": "Vermietet",
+    "selfOccupied": "Eigennutzung",
+    "vacant": "Leerstand",
+    "maintenance": "Instandhaltung",
+    "unavailable": "Nicht verfügbar",
+    "noProperties": "Keine Immobilien anzuzeigen"
+  },
+  "financials": {
+    "failedToLoad": "Finanzdaten konnten nicht geladen werden.",
+    "saving": "Wird gespeichert...",
+    "deleting": "Wird gelöscht...",
+    "notSet": "Nicht festgelegt",
+    "latestValuation": "Letzte Bewertung",
+    "valuationHistory": "Bewertungsverlauf",
+    "payments": "Zahlungen",
+    "bulkAdd": "Massenhinzufügen",
+    "sections": {
+      "acquisition": "Erwerb",
+      "valuations": "Bewertungen",
+      "financings": "Finanzierungen"
+    },
+    "empty": {
+      "noAcquisition": "Keine Erwerbsdaten erfasst.",
+      "noValuation": "Keine Bewertungsdaten erfasst.",
+      "noFinancing": "Keine Finanzierungsinstrumente erfasst.",
+      "noPayments": "Noch keine Zahlungen erfasst."
+    },
+    "metrics": {
+      "netWorth": "Nettovermögen",
+      "totalAnnualCosts": "Jährliche Gesamtkosten",
+      "totalFinancingBalance": "Gesamter Finanzierungssaldo",
+      "latestValuation": "Letzte Bewertung"
+    },
+    "modals": {
+      "addTax": "Steuer hinzufügen",
+      "editTax": "Steuer bearbeiten",
+      "addFee": "Gebühr hinzufügen",
+      "editFee": "Gebühr bearbeiten",
+      "addFinancing": "Finanzierung hinzufügen",
+      "editFinancing": "Finanzierung bearbeiten",
+      "addInsurance": "Versicherung hinzufügen",
+      "editInsurance": "Versicherung bearbeiten",
+      "addValuation": "Bewertung hinzufügen",
+      "editValuation": "Bewertung bearbeiten",
+      "addAcquisition": "Erwerb hinzufügen",
+      "editAcquisition": "Erwerb bearbeiten",
+      "editPayment": "Zahlung bearbeiten",
+      "recordPayment": "Zahlung erfassen",
+      "bulkAddPayments": "Zahlungen massenhinzufügen"
+    },
+    "labels": {
+      "taxType": "Steuerart",
+      "authority": "Behörde",
+      "annualAmount": "Jahresbetrag",
+      "paymentFrequency": "Zahlungsfrequenz",
+      "taxYear": "Steuerjahr",
+      "dueMonths": "Fälligkeitsmonate",
+      "startDate": "Startdatum",
+      "endDate": "Enddatum",
+      "status": "Status",
+      "notes": "Notizen",
+      "feeType": "Gebührenart",
+      "name": "Name",
+      "financingType": "Finanzierungsart",
+      "rateType": "Zinsart",
+      "lenderName": "Name des Kreditgebers",
+      "loanNumber": "Darlehensnummer",
+      "originalAmount": "Ursprünglicher Betrag",
+      "currentBalance": "Aktueller Saldo",
+      "interestRate": "Zinssatz",
+      "monthlyPayment": "Monatliche Zahlung",
+      "variablePayment": "Variable Zahlung",
+      "termMonths": "Laufzeit (Monate)",
+      "insuranceType": "Versicherungsart",
+      "provider": "Anbieter",
+      "policyNumber": "Policennummer",
+      "coverageAmount": "Deckungssumme",
+      "annualPremium": "Jahresprämie",
+      "valuationType": "Bewertungsart",
+      "valuationDate": "Bewertungsdatum",
+      "amount": "Betrag",
+      "source": "Quelle",
+      "acquisitionType": "Erwerbsart",
+      "acquisitionDate": "Erwerbsdatum",
+      "purchasePrice": "Kaufpreis",
+      "closingCosts": "Abschlusskosten",
+      "renovationCosts": "Renovierungskosten",
+      "landValue": "Grundstückswert",
+      "depreciationMethod": "Abschreibungsmethode",
+      "depreciationYears": "Abschreibungsjahre",
+      "paymentDate": "Zahlungsdatum",
+      "totalAmount": "Gesamtbetrag",
+      "principal": "Tilgung",
+      "interest": "Zinsen",
+      "escrow": "Treuhandkonto",
+      "extraPayment": "Sonderzahlung",
+      "deductFromBalance": "Tilgung vom Finanzierungssaldo abziehen",
+      "documents": "Dokumente",
+      "currency": "Währung",
+      "type": "Typ",
+      "date": "Datum"
+    },
+    "placeholders": {
+      "addNotes": "Notizen hinzufügen...",
+      "source": "z.B. Immobilienmakler, Online-Tool"
+    },
+    "units": {
+      "years": "Jahre",
+      "months": "Monate"
+    }
+  },
+  "lifecycle": {
+    "openContract": "Vertrag öffnen",
+    "clickToEdit": "Klicken zum Bearbeiten"
+  }
+}

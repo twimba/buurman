@@ -1,0 +1,498 @@
+{
+  "list": {
+    "title": "Propiedades",
+    "subtitle": "Gestione sus propiedades de alquiler y unidades",
+    "addButton": "Añadir Propiedad",
+    "searchPlaceholder": "Buscar por dirección, ciudad, código postal o tipo...",
+    "filters": "Filtros",
+    "category": "Categoría",
+    "allCategories": "Todas las Categorías",
+    "status": "Estado",
+    "allStatuses": "Todos los Estados",
+    "count_one": "{{count}} propiedad",
+    "count_other": "{{count}} propiedades",
+    "empty": {
+      "title": "No se encontraron propiedades",
+      "filtered": "Intente ajustar sus filtros o términos de búsqueda",
+      "noData": "Comience añadiendo su primera propiedad"
+    },
+    "error": "Error al cargar propiedades"
+  },
+  "create": {
+    "title": "Añadir Nueva Propiedad",
+    "readOnlyMessage": "La creación de propiedades no está disponible en modo solo lectura."
+  },
+  "edit": {
+    "title": "Editar Propiedad",
+    "notFound": "Propiedad no encontrada"
+  },
+  "detail": {
+    "notFound": "Propiedad no encontrada",
+    "booklet": "Dossier",
+    "bookletDownloadFailed": "Error al descargar el dossier. Por favor, inténtelo de nuevo.",
+    "tabs": {
+      "info": "Información",
+      "dashboard": "Panel",
+      "financials": "Finanzas",
+      "photos": "Fotos",
+      "documents": "Documentos",
+      "contracts": "Contratos",
+      "expenses": "Gastos",
+      "history": "Historial"
+    },
+    "timeline": {
+      "title": "Cronología de la Propiedad",
+      "rentalContract": "Contrato de alquiler",
+      "selfOccupied": "Uso propio",
+      "financing": "Financiación"
+    },
+    "specs": {
+      "bedrooms": "Dormitorios",
+      "bathrooms": "Baños",
+      "area": "Superficie",
+      "type": "Tipo",
+      "street": "Calle",
+      "city": "Ciudad",
+      "postalCode": "Código Postal",
+      "country": "País",
+      "location": "Ubicación"
+    },
+    "characteristics": {
+      "title": "Características de la Propiedad"
+    },
+    "construction": {
+      "title": "Construcción y Estructura",
+      "yearBuilt": "Año de Construcción",
+      "lastRenovated": "Última Renovación",
+      "construction": "Construcción",
+      "foundation": "Cimentación",
+      "roof": "Tejado",
+      "wallConstruction": "Construcción de Muros",
+      "flooring": "Suelo",
+      "windows": "Ventanas",
+      "floors": "Plantas",
+      "structuralNotes": "Notas Estructurales"
+    },
+    "energy": {
+      "title": "Energía y Climatización",
+      "energyRating": "Calificación Energética",
+      "certificateExpiry": "Vencimiento del Certificado",
+      "heating": "Calefacción",
+      "cooling": "Aire Acondicionado",
+      "hotWater": "Agua Caliente",
+      "insulationNotes": "Notas de Aislamiento"
+    },
+    "utilities": {
+      "title": "Suministros y Conexiones",
+      "electricity": "Electricidad",
+      "capacity": "Capacidad",
+      "water": "Agua",
+      "gasConnection": "Conexión de Gas",
+      "sewage": "Alcantarillado",
+      "internet": "Internet",
+      "internetSpeed": "Velocidad de Internet",
+      "internetStatus": "Estado de Internet"
+    },
+    "parking": {
+      "title": "Aparcamiento",
+      "parkingSpaces": "Plazas de Aparcamiento",
+      "parkingType": "Tipo de Aparcamiento"
+    },
+    "outdoorAreas": {
+      "title": "Áreas Exteriores"
+    },
+    "amenities": {
+      "title": "Equipamientos"
+    },
+    "safety": {
+      "title": "Seguridad y Protección",
+      "smokeDetectors": "Detectores de Humo",
+      "coDetectors": "Detectores de CO",
+      "fireExtinguisher": "Extintor de Incendios",
+      "sprinklerSystem": "Sistema de Rociadores",
+      "alarmSystem": "Sistema de Alarma",
+      "securityCameras": "Cámaras de Seguridad",
+      "secureEntry": "Entrada Segura",
+      "safetyNotes": "Notas de Seguridad"
+    },
+    "accessibility": {
+      "title": "Accesibilidad",
+      "wheelchairAccessible": "Accesible para Silla de Ruedas",
+      "elevator": "Ascensor",
+      "stepFreeEntrance": "Entrada sin Escalones",
+      "adaptedBathroom": "Baño Adaptado",
+      "accessibilityNotes": "Notas de Accesibilidad"
+    },
+    "wws": {
+      "title": "Puntos WWS",
+      "calculate": "Calcular",
+      "recalculate": "Recalcular",
+      "points": "puntos",
+      "regulated": "Regulado",
+      "midSegment": "Segmento Medio",
+      "freeSector": "Sector Libre",
+      "maxRent": "Alquiler Máximo",
+      "calculated": "Calculado",
+      "history": "Historial",
+      "noCalculation": "Sin cálculo aún",
+      "noCalculationDescription": "Calcule los puntos WWS para determinar el alquiler máximo regulado para esta propiedad.",
+      "noPreviousCalculations": "Sin cálculos anteriores."
+    },
+    "metadata": {
+      "title": "Metadatos",
+      "created": "Creado:",
+      "lastUpdated": "Última Actualización:",
+      "at": "a las"
+    },
+    "yes": "Sí",
+    "no": "No"
+  },
+  "form": {
+    "address": "Dirección",
+    "street": "Calle",
+    "streetPlaceholder": "Calle Principal 123",
+    "city": "Ciudad",
+    "cityPlaceholder": "Madrid",
+    "postalCode": "Código Postal",
+    "postalCodePlaceholder": "28001",
+    "country": "País",
+    "region": "Región",
+    "regionOther": "Otro",
+    "locationPreview": "Vista Previa de Ubicación",
+    "specifications": "Especificaciones",
+    "category": "Categoría",
+    "categoryCannotChange": "(no se puede cambiar)",
+    "type": "Tipo",
+    "status": "Estado",
+    "area": "Superficie",
+    "areaPlaceholder": "75,5",
+    "saving": "Guardando...",
+    "updateProperty": "Actualizar Propiedad",
+    "createProperty": "Crear Propiedad",
+    "validation": {
+      "streetRequired": "La calle es obligatoria",
+      "cityRequired": "La ciudad es obligatoria",
+      "postalCodeRequired": "El código postal es obligatorio",
+      "countryRequired": "El país es obligatorio",
+      "areaPositive": "La superficie debe ser mayor que 0"
+    }
+  },
+  "collapsible": {
+    "filledCount": "{{filled}} de {{total}} completados"
+  },
+  "documents": {
+    "title": "Documentos",
+    "uploadButton": "Subir Documento",
+    "empty": "Aún no se han subido documentos",
+    "failedToLoad": "Error al cargar documentos",
+    "table": {
+      "document": "Documento",
+      "size": "Tamaño",
+      "uploaded": "Subido",
+      "actions": "Acciones"
+    },
+    "selection": {
+      "selected": "{{selected}} de {{total}} seleccionados",
+      "count_one": "{{count}} documento",
+      "count_other": "{{count}} documentos"
+    },
+    "preview": "Vista previa",
+    "editTitleNotes": "Editar título y notas",
+    "upload": {
+      "title_one": "Subir Documento",
+      "title_other": "Subir Documentos",
+      "files": "{{count}} archivos",
+      "titleLabel": "Título (opcional)",
+      "titlePlaceholder": "ej., Plano del inmueble",
+      "notesLabel": "Notas (opcional)",
+      "notesPlaceholder": "Notas adicionales sobre este documento",
+      "uploading": "Subiendo {{current}} de {{total}}...",
+      "uploadCount": "Subir {{count}} Documentos"
+    },
+    "delete": {
+      "title_one": "Eliminar documento",
+      "title_other": "Eliminar documentos",
+      "message_one": "¿Está seguro de que desea eliminar este documento? Esta acción no se puede deshacer.",
+      "message_other": "Está a punto de eliminar {{count}} documentos. Esta acción no se puede deshacer.",
+      "confirmLabel_other": "Eliminar {{count}} documentos"
+    },
+    "editModal": "Editar Documento",
+    "downloading": "Descargando..."
+  },
+  "photos": {
+    "title": "Fotos",
+    "uploadButton": "Subir Foto",
+    "empty": "Aún sin fotos",
+    "upload": {
+      "title_one": "Subir Foto",
+      "title_other": "Subir Fotos",
+      "files": "{{count}} archivos",
+      "titleLabel": "Título (opcional)",
+      "titlePlaceholder": "ej., Salón",
+      "notesLabel": "Notas (opcional)",
+      "notesPlaceholder": "Notas adicionales sobre esta foto",
+      "uploading": "Subiendo {{current}} de {{total}}...",
+      "uploadCount": "Subir {{count}} Fotos"
+    },
+    "delete": {
+      "title_one": "Eliminar foto",
+      "title_other": "Eliminar fotos",
+      "mainPhotoWarning_one": "Esta es la foto principal. Eliminarla significa que esta propiedad ya no tendrá foto principal. Esta acción no se puede deshacer.",
+      "mainPhotoWarning_other": "Está a punto de eliminar {{count}} fotos, incluyendo la foto principal. Esta propiedad ya no tendrá foto principal. Esta acción no se puede deshacer.",
+      "message_one": "¿Está seguro de que desea eliminar esta foto? Esta acción no se puede deshacer.",
+      "message_other": "Está a punto de eliminar {{count}} fotos. Esta acción no se puede deshacer.",
+      "confirmLabel_other": "Eliminar {{count}} fotos"
+    },
+    "editModal": "Editar Foto"
+  },
+  "contracts": {
+    "title": "Contratos",
+    "addContract": "Añadir Contrato",
+    "empty": "Sin contratos para esta propiedad",
+    "createFirst": "Crear Primer Contrato",
+    "searchPlaceholder": "Buscar por nº de contrato, contacto, tipo...",
+    "noMatchingSearch": "No se encontraron contratos para su búsqueda",
+    "table": {
+      "contractNumber": "Contrato #",
+      "contact": "Contacto",
+      "type": "Tipo",
+      "startDate": "Fecha de Inicio",
+      "endDate": "Fecha de Fin",
+      "rentAmount": "Importe del Alquiler",
+      "status": "Estado"
+    },
+    "pagination": {
+      "showing": "Mostrando {{from}} a {{to}} de {{total}} contratos"
+    },
+    "selfOccupancy": {
+      "title": "Períodos de Uso Propio",
+      "addButton": "Añadir Uso Propio",
+      "empty": "Sin períodos de uso propio registrados",
+      "recordPeriod": "Registrar un período de uso propio",
+      "table": {
+        "period": "Período",
+        "type": "Tipo",
+        "occupant": "Ocupante",
+        "status": "Estado",
+        "actions": "Acciones"
+      },
+      "ongoing": "En curso",
+      "active": "Activo",
+      "ended": "Finalizado",
+      "endOccupancy": "Finalizar ocupación",
+      "deleteTitle": "Eliminar Período de Uso Propio",
+      "deleteMessage": "¿Está seguro de que desea eliminar este período de uso propio?",
+      "deleteWarning": "Esta acción no se puede deshacer."
+    }
+  },
+  "expenses": {
+    "title": "Gastos",
+    "addExpense": "Añadir Gasto",
+    "empty": "Sin gastos para esta propiedad",
+    "createFirst": "Crear Primer Gasto",
+    "failedToLoad": "Error al cargar gastos",
+    "searchPlaceholder": "Buscar por nº de gasto, descripción, categoría...",
+    "noMatchingSearch": "No se encontraron gastos para su búsqueda",
+    "table": {
+      "expenseNumber": "Gasto #",
+      "date": "Fecha",
+      "description": "Descripción",
+      "category": "Categoría",
+      "amount": "Importe"
+    },
+    "pagination": {
+      "showing": "Mostrando {{from}} a {{to}} de {{total}} gastos"
+    }
+  },
+  "audit": {
+    "title": "Historial de la Propiedad",
+    "failedToLoad": "Error al cargar historial",
+    "empty": {
+      "title": "Sin historial disponible",
+      "description": "Los cambios a esta propiedad aparecerán aquí"
+    },
+    "impersonated": "Suplantado",
+    "clickToHide": "Haga clic para ocultar cambios",
+    "clickToView": "Haga clic para ver cambios",
+    "changedFields": "Campos Modificados",
+    "old": "Anterior:",
+    "new": "Nuevo:",
+    "fileName": "Nombre del Archivo",
+    "titleLabel": "Título",
+    "typeLabel": "Tipo",
+    "photo": "Foto",
+    "document": "Documento"
+  },
+  "selfOccupancy": {
+    "title": "Uso Propio",
+    "markTitle": "Marcar como Uso Propio",
+    "editTitle": "Editar Uso Propio",
+    "endTitle": "Finalizar Uso Propio",
+    "active": "Activo",
+    "period": "Período",
+    "type": "Tipo",
+    "occupant": "Ocupante",
+    "imputedRent": "Alquiler Imputado",
+    "perMonth": "/ mes",
+    "endReason": "Motivo de Finalización",
+    "notes": "Notas",
+    "endOccupancy": "Finalizar Ocupación",
+    "form": {
+      "startDate": "Fecha de Inicio *",
+      "endDate": "Fecha de Fin",
+      "endDateRequired": "Fecha de Fin *",
+      "occupancyType": "Tipo de Ocupación *",
+      "occupantName": "Nombre del Ocupante",
+      "occupantNamePlaceholder": "ej., Propietario, Familiar",
+      "monthlyImputedRent": "Alquiler Imputado Mensual",
+      "notes": "Notas",
+      "notesPlaceholder": "Notas adicionales...",
+      "reason": "Motivo",
+      "reasonPlaceholder": "Seleccione un motivo...",
+      "alreadyTakenPeriods": "Períodos ya ocupados"
+    }
+  },
+  "map": {
+    "unavailable": "Vista Previa del Mapa No Disponible",
+    "configureApiKey": "Configure VITE_GOOGLE_MAPS_API_KEY para activar los mapas",
+    "loading": "Cargando mapa...",
+    "locationNotFound": "Ubicación No Encontrada",
+    "couldNotFind": "No se pudo encontrar esta dirección en el mapa",
+    "apiKeyNotConfigured": "Clave de API de Google Maps no configurada",
+    "geocodeFailed": "Error al geocodificar la dirección",
+    "locationNotFoundShort": "Ubicación no encontrada",
+    "findingLocation": "Buscando ubicación...",
+    "couldNotLoadMaps": "No se pudo cargar Google Maps en este momento",
+    "clickToPlace": "Nuestras habilidades de mapa fallaron esta vez. Haga clic en cualquier parte del mapa para colocar el pin de su propiedad.",
+    "placePinManually": "Colocar pin manualmente",
+    "accuracy": {
+      "rooftop": "Arrastre el pin para ajustar la ubicación",
+      "manual": "Pin colocado manualmente — arrastre para ajustar si es necesario",
+      "approximate": "Encontramos el barrio pero no el punto exacto — ¡arrastre el pin hasta su propiedad!",
+      "country": "Bueno, ¡al menos encontramos el país! Arrastre el pin a la ubicación correcta."
+    }
+  },
+  "timeline": {
+    "selfOccupancy": "Uso Propio",
+    "contract": "Contrato",
+    "vacancy": "Vacante",
+    "noEntries": "Sin entradas en la cronología",
+    "ongoing": "En curso"
+  },
+  "statusChart": {
+    "occupied": "Ocupado",
+    "selfOccupied": "Uso Propio",
+    "vacant": "Vacante",
+    "maintenance": "Mantenimiento",
+    "unavailable": "No disponible",
+    "noProperties": "Sin propiedades para mostrar"
+  },
+  "financials": {
+    "failedToLoad": "Error al cargar datos financieros.",
+    "saving": "Guardando...",
+    "deleting": "Eliminando...",
+    "notSet": "No definido",
+    "latestValuation": "Última Valoración",
+    "valuationHistory": "Historial de Valoraciones",
+    "payments": "Pagos",
+    "bulkAdd": "Adición Masiva",
+    "sections": {
+      "acquisition": "Adquisición",
+      "valuations": "Valoraciones",
+      "financings": "Financiaciones"
+    },
+    "empty": {
+      "noAcquisition": "Sin datos de adquisición registrados.",
+      "noValuation": "Sin datos de valoración registrados.",
+      "noFinancing": "Sin instrumentos de financiación registrados.",
+      "noPayments": "Sin pagos registrados aún."
+    },
+    "metrics": {
+      "netWorth": "Valor Neto",
+      "totalAnnualCosts": "Costes Anuales Totales",
+      "totalFinancingBalance": "Saldo Total de Financiación",
+      "latestValuation": "Última Valoración"
+    },
+    "modals": {
+      "addTax": "Añadir Impuesto",
+      "editTax": "Editar Impuesto",
+      "addFee": "Añadir Tasa",
+      "editFee": "Editar Tasa",
+      "addFinancing": "Añadir Financiación",
+      "editFinancing": "Editar Financiación",
+      "addInsurance": "Añadir Seguro",
+      "editInsurance": "Editar Seguro",
+      "addValuation": "Añadir Valoración",
+      "editValuation": "Editar Valoración",
+      "addAcquisition": "Añadir Adquisición",
+      "editAcquisition": "Editar Adquisición",
+      "editPayment": "Editar Pago",
+      "recordPayment": "Registrar Pago",
+      "bulkAddPayments": "Adición Masiva de Pagos"
+    },
+    "labels": {
+      "taxType": "Tipo de Impuesto",
+      "authority": "Autoridad",
+      "annualAmount": "Importe Anual",
+      "paymentFrequency": "Frecuencia de Pago",
+      "taxYear": "Año Fiscal",
+      "dueMonths": "Meses de Vencimiento",
+      "startDate": "Fecha de Inicio",
+      "endDate": "Fecha de Fin",
+      "status": "Estado",
+      "notes": "Notas",
+      "feeType": "Tipo de Tasa",
+      "name": "Nombre",
+      "financingType": "Tipo de Financiación",
+      "rateType": "Tipo de Tasa",
+      "lenderName": "Nombre del Prestamista",
+      "loanNumber": "Número de Préstamo",
+      "originalAmount": "Importe Original",
+      "currentBalance": "Saldo Actual",
+      "interestRate": "Tipo de Interés",
+      "monthlyPayment": "Pago Mensual",
+      "variablePayment": "Pago variable",
+      "termMonths": "Plazo (meses)",
+      "insuranceType": "Tipo de Seguro",
+      "provider": "Proveedor",
+      "policyNumber": "Número de Póliza",
+      "coverageAmount": "Importe de Cobertura",
+      "annualPremium": "Prima Anual",
+      "valuationType": "Tipo de Valoración",
+      "valuationDate": "Fecha de Valoración",
+      "amount": "Importe",
+      "source": "Fuente",
+      "acquisitionType": "Tipo de Adquisición",
+      "acquisitionDate": "Fecha de Adquisición",
+      "purchasePrice": "Precio de Compra",
+      "closingCosts": "Gastos de Escritura",
+      "renovationCosts": "Gastos de Renovación",
+      "landValue": "Valor del Terreno",
+      "depreciationMethod": "Método de Depreciación",
+      "depreciationYears": "Años de Depreciación",
+      "paymentDate": "Fecha de Pago",
+      "totalAmount": "Importe Total",
+      "principal": "Capital",
+      "interest": "Intereses",
+      "escrow": "Depósito en Garantía",
+      "extraPayment": "Pago Extra",
+      "deductFromBalance": "Deducir capital del saldo de financiación",
+      "documents": "Documentos",
+      "currency": "Moneda",
+      "type": "Tipo",
+      "date": "Fecha"
+    },
+    "placeholders": {
+      "addNotes": "Añadir notas...",
+      "source": "ej., Agente inmobiliario, Herramienta online"
+    },
+    "units": {
+      "years": "años",
+      "months": "meses"
+    }
+  },
+  "lifecycle": {
+    "openContract": "Abrir contrato",
+    "clickToEdit": "Haga clic para editar"
+  }
+}

@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -35,6 +36,7 @@ interface Transaction {
 }
 
 export const TransactionHistoryPage = () => {
+  const { t } = useTranslation('admin');
   const navigate = useNavigate();
   const { formatDate } = useFormatDate();
   const { isEnabled } = useFeatureFlags();
@@ -320,11 +322,11 @@ export const TransactionHistoryPage = () => {
           <div className="flex items-center gap-3 mb-1">
             <List className="h-8 w-8 text-primary-500 dark:text-primary-300" />
             <h1 className="text-3xl font-bold text-text-primary">
-              Transaction History
+              {t('transactions.title')}
             </h1>
           </div>
           <p className="text-text-secondary ml-11">
-            Complete history of income and expenses
+            {t('transactions.subtitle')}
           </p>
         </div>
         <div className="flex gap-2">
@@ -362,7 +364,7 @@ export const TransactionHistoryPage = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-success-text font-medium mb-1">
-                Total Income
+                {t('transactions.totalIncome')}
               </p>
               <p className="text-2xl font-bold text-success-text">
                 {formatCurrency(totals.income, defaultCurrency)}
@@ -376,7 +378,7 @@ export const TransactionHistoryPage = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-error-text font-medium mb-1">
-                Total Expenses
+                {t('transactions.totalExpenses')}
               </p>
               <p className="text-2xl font-bold text-error-text">
                 {formatCurrency(totals.expenses, defaultCurrency)}
@@ -400,7 +402,7 @@ export const TransactionHistoryPage = () => {
                   totals.net >= 0 ? 'text-info-text' : 'text-warning-text'
                 }`}
               >
-                Net Total
+                {t('transactions.netTotal')}
               </p>
               <p
                 className={`text-2xl font-bold ${
@@ -427,7 +429,7 @@ export const TransactionHistoryPage = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-muted " />
             <input
               type="text"
-              placeholder="Search transactions..."
+              placeholder={t('transactions.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -448,9 +450,9 @@ export const TransactionHistoryPage = () => {
               }}
               className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="ALL">All Types</option>
-              <option value="INCOME">Income Only</option>
-              <option value="EXPENSE">Expenses Only</option>
+              <option value="ALL">{t('transactions.allTypes')}</option>
+              <option value="INCOME">{t('transactions.incomeOnly')}</option>
+              <option value="EXPENSE">{t('transactions.expensesOnly')}</option>
             </select>
           </div>
 
@@ -491,7 +493,7 @@ export const TransactionHistoryPage = () => {
         </div>
       ) : filteredAndSortedTransactions.length === 0 ? (
         <div className="bg-surface-card rounded-lg shadow-sm p-12 text-center">
-          <p className="text-text-secondary">No transactions found</p>
+          <p className="text-text-secondary">{t('transactions.noTransactions')}</p>
         </div>
       ) : (
         <div className="bg-surface-card rounded-lg shadow-sm overflow-hidden">
@@ -503,27 +505,27 @@ export const TransactionHistoryPage = () => {
                   onClick={() => handleSort('date')}
                 >
                   <div className="flex items-center gap-1">
-                    Date
+                    {t('transactions.table.date')}
                     {sortField === 'date' && (
                       <ArrowUpDown className="h-4 w-4" />
                     )}
                   </div>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Type
+                  {t('transactions.table.type')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Description
+                  {t('transactions.table.description')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Property
+                  {t('transactions.table.property')}
                 </th>
                 <th
                   className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider cursor-pointer hover:bg-surface-inset"
                   onClick={() => handleSort('amount')}
                 >
                   <div className="flex items-center justify-end gap-1">
-                    Amount
+                    {t('transactions.table.amount')}
                     {sortField === 'amount' && (
                       <ArrowUpDown className="h-4 w-4" />
                     )}

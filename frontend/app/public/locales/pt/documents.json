@@ -1,0 +1,98 @@
+{
+  "documentsPage": {
+    "title": "Biblioteca de Documentos",
+    "subtitle": "Pesquisar e gerir todos os seus documentos num só lugar",
+    "searchPlaceholder": "Pesquisar documentos por título, nome de ficheiro ou notas...",
+    "entityTypeFilter": {
+      "all": "Todos os Tipos",
+      "property": "Imóveis",
+      "contact": "Contactos",
+      "contract": "Contratos",
+      "payment": "Pagamentos",
+      "expense": "Despesas"
+    },
+    "table": {
+      "document": "Documento",
+      "type": "Tipo",
+      "size": "Tamanho",
+      "uploaded": "Carregado",
+      "actions": "Ações"
+    },
+    "selection": {
+      "selected": "{{selected}} de {{total}} selecionados",
+      "count": "{{count}} documento",
+      "count_other": "{{count}} documentos"
+    },
+    "empty": "Nenhum documento encontrado",
+    "editModal": "Editar Documento"
+  },
+  "photosPage": {
+    "title": "Biblioteca de Fotos",
+    "subtitle": "Navegar e gerir todas as suas fotos num só lugar",
+    "searchPlaceholder": "Pesquisar fotos por título, nome de ficheiro ou notas...",
+    "entityTypeFilter": {
+      "all": "Todos os Tipos",
+      "property": "Imóveis",
+      "contact": "Contactos",
+      "contract": "Contratos",
+      "payment": "Pagamentos",
+      "expense": "Despesas"
+    },
+    "empty": "Nenhuma foto encontrada",
+    "editModal": "Editar Foto"
+  },
+  "photoGrid": {
+    "noPhotos": "Ainda sem fotos",
+    "failedToLoad": "Falha ao carregar fotos",
+    "failedToLoadImage": "Falha ao carregar",
+    "noUrl": "Sem URL",
+    "main": "Principal",
+    "selection": {
+      "selected": "{{selected}} de {{total}} selecionados",
+      "count": "{{count}} foto",
+      "count_other": "{{count}} fotos"
+    },
+    "downloading": "A transferir...",
+    "tooltips": {
+      "setAsMain": "Definir como foto principal",
+      "editTitleNotes": "Editar título e notas",
+      "deletePhoto": "Eliminar foto"
+    }
+  },
+  "preview": {
+    "previewNotAvailable": "Pré-visualização não disponível para este tipo de ficheiro ({{mimeType}})",
+    "downloadFile": "Transferir Ficheiro",
+    "notes": "Notas:",
+    "tooltips": {
+      "editTitleNotes": "Editar título e notas",
+      "download": "Transferir",
+      "openInNewTab": "Abrir num novo separador",
+      "close": "Fechar",
+      "previous": "Anterior",
+      "next": "Seguinte"
+    }
+  },
+  "deleteDialog": {
+    "titleSingle": "Eliminar documento",
+    "titlePlural": "Eliminar documentos",
+    "messageSingle": "Tem a certeza de que pretende eliminar este documento? Esta ação não pode ser revertida.",
+    "messagePlural": "Está prestes a eliminar {{count}} documentos. Esta ação não pode ser revertida.",
+    "confirmSingle": "Eliminar",
+    "confirmPlural": "Eliminar {{count}} documentos"
+  },
+  "deletePhotoDialog": {
+    "titleSingle": "Eliminar foto",
+    "titlePlural": "Eliminar fotos",
+    "messageSingle": "Tem a certeza de que pretende eliminar esta foto? Esta ação não pode ser revertida.",
+    "messagePlural": "Está prestes a eliminar {{count}} fotos. Esta ação não pode ser revertida.",
+    "mainPhotoSingle": "Esta é a foto principal. Eliminá-la significa que este imóvel deixará de ter uma foto principal. Esta ação não pode ser revertida.",
+    "mainPhotoPlural": "Está prestes a eliminar {{count}} fotos, incluindo a foto principal. Este imóvel deixará de ter uma foto principal. Esta ação não pode ser revertida.",
+    "confirmSingle": "Eliminar",
+    "confirmPlural": "Eliminar {{count}} fotos"
+  },
+  "tooltips": {
+    "preview": "Pré-visualização",
+    "editTitleNotes": "Editar título e notas",
+    "delete": "Eliminar"
+  }
+}

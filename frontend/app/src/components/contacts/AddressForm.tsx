@@ -11,6 +11,7 @@ import { InteractiveMap } from '../common/InteractiveMap';
 import { CountrySelector } from '../common/CountrySelector';
 import { useTeamDefaults } from '@/hooks/useTeamDefaults';
 import { useGeocode } from '@/hooks/useGeocodingHooks';
+import { useTranslation } from 'react-i18next';
 
 interface AddressFormProps {
   address?: ContactAddressResponse;
@@ -31,6 +32,7 @@ export const AddressForm = ({
   showTypeSelector = true,
   showStatusSelector = true,
 }: AddressFormProps) => {
+  const { t } = useTranslation('tenants');
   const { defaultCountryCode } = useTeamDefaults();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const geocodeMutation = useGeocode();
@@ -122,13 +124,13 @@ export const AddressForm = ({
     const newErrors: Record<string, string> = {};
 
     if (!formData.street.trim()) {
-      newErrors.street = 'Street is required';
+      newErrors.street = t('addresses.validation.streetRequired');
     }
     if (!formData.city.trim()) {
-      newErrors.city = 'City is required';
+      newErrors.city = t('addresses.validation.cityRequired');
     }
     if (!formData.countryCode.trim()) {
-      newErrors.countryCode = 'Country is required';
+      newErrors.countryCode = t('addresses.validation.countryRequired');
     }
 
     setErrors(newErrors);
@@ -170,11 +172,11 @@ export const AddressForm = ({
   };
 
   const addressTypeLabels: Record<AddressType, string> = {
-    [AddressType.CURRENT]: 'Current Address',
-    [AddressType.MAILING]: 'Mailing Address',
-    [AddressType.RELATIVE]: 'Relative/Emergency Contact',
-    [AddressType.WORK]: 'Work Address',
-    [AddressType.HISTORIC]: 'Historic Address',
+    [AddressType.CURRENT]: t('addresses.types.CURRENT'),
+    [AddressType.MAILING]: t('addresses.types.MAILING'),
+    [AddressType.RELATIVE]: t('addresses.types.RELATIVE'),
+    [AddressType.WORK]: t('addresses.types.WORK'),
+    [AddressType.HISTORIC]: t('addresses.types.HISTORIC'),
   };
 
   return (
@@ -185,7 +187,7 @@ export const AddressForm = ({
     >
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold text-text-primary">
-          {address ? 'Edit Address' : 'Add New Address'}
+          {address ? t('addresses.editAddress') : t('addresses.addNewAddress')}
         </h3>
         <button
           type="button"
@@ -291,8 +293,8 @@ export const AddressForm = ({
               }
               className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
             >
-              <option value={AddressStatus.ACTIVE}>Active</option>
-              <option value={AddressStatus.INACTIVE}>Inactive</option>
+              <option value={AddressStatus.ACTIVE}>{t('common:status.active')}</option>
+              <option value={AddressStatus.INACTIVE}>{t('common:status.inactive')}</option>
             </select>
           </div>
         )}
@@ -340,7 +342,7 @@ export const AddressForm = ({
           className="px-4 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 disabled:opacity-50 flex items-center gap-2"
         >
           <Save className="h-4 w-4" />
-          {isLoading ? 'Saving...' : 'Save Address'}
+          {isLoading ? t('form.saving') : t('addresses.saveAddress')}
         </button>
       </div>
     </form>

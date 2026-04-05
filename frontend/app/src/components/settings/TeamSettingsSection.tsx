@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Users,
   UserPlus,
@@ -27,6 +28,7 @@ import { useFormatDate } from '@/hooks/useFormatDate';
 type Role = 'TEAM_ADMIN' | 'TEAM_EDITOR' | 'TEAM_VIEWER';
 
 export const TeamSettingsSection = () => {
+  const { t } = useTranslation('settings');
   const { formatDate } = useFormatDate();
   const { canManageMembers } = useTeam();
   const { data: team, isLoading: teamLoading } = useCurrentTeam();
@@ -56,15 +58,15 @@ export const TeamSettingsSection = () => {
   );
 
   const roleLabels: Record<Role, string> = {
-    TEAM_ADMIN: 'Admin',
-    TEAM_EDITOR: 'Editor',
-    TEAM_VIEWER: 'Viewer',
+    TEAM_ADMIN: t('teamMembers.roles.admin'),
+    TEAM_EDITOR: t('teamMembers.roles.editor'),
+    TEAM_VIEWER: t('teamMembers.roles.viewer'),
   };
 
   const roleDescriptions: Record<Role, string> = {
-    TEAM_ADMIN: 'Full access to all features and settings',
-    TEAM_EDITOR: 'Can create and edit properties, contacts, and contracts',
-    TEAM_VIEWER: 'Read-only access to all data',
+    TEAM_ADMIN: t('teamMembers.roles.adminDescription'),
+    TEAM_EDITOR: t('teamMembers.roles.editorDescription'),
+    TEAM_VIEWER: t('teamMembers.roles.viewerDescription'),
   };
 
   const roleColors: Record<Role, string> = {
@@ -148,10 +150,10 @@ export const TeamSettingsSection = () => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xl font-semibold text-text-primary">
-                Team Members
+                {t('teamMembers.title')}
               </h2>
               <p className="text-sm text-text-secondary mt-1">
-                {members?.length ?? 0} member{members?.length !== 1 ? 's' : ''}
+                {t('teamMembers.memberCount', { count: members?.length ?? 0 })}
               </p>
             </div>
             {canManageMembers && (
@@ -160,7 +162,7 @@ export const TeamSettingsSection = () => {
                 className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center gap-2"
               >
                 <UserPlus className="h-4 w-4" />
-                Invite Member
+                {t('teamMembers.inviteMember')}
               </button>
             )}
           </div>
@@ -184,13 +186,13 @@ export const TeamSettingsSection = () => {
                       </p>
                       {member.isCurrentUser && (
                         <span className="px-2 py-0.5 bg-success-bg text-success-text text-xs font-semibold rounded">
-                          You
+                          {t('teamMembers.you')}
                         </span>
                       )}
                       {member.isOwner && (
                         <span className="px-2 py-0.5 bg-warning-bg text-warning-text text-xs font-semibold rounded flex items-center gap-1">
                           <Crown className="h-3 w-3" />
-                          Owner
+                          {t('teamMembers.owner')}
                         </span>
                       )}
                     </div>
@@ -198,7 +200,7 @@ export const TeamSettingsSection = () => {
                       {member.email}
                     </p>
                     <p className="text-xs text-text-secondary mt-1">
-                      Joined {formatDate(member.joinedAt)}
+                      {t('teamMembers.joined', { date: formatDate(member.joinedAt) })}
                     </p>
                   </div>
                 </div>
@@ -223,7 +225,7 @@ export const TeamSettingsSection = () => {
                           setShowRoleModal(true);
                         }}
                         className="p-2 text-primary-500 hover:bg-primary-50 rounded-lg transition-colors"
-                        title="Change role"
+                        title={t('teamMembers.changeRole')}
                       >
                         <Edit3 className="h-4 w-4" />
                       </button>
@@ -234,7 +236,7 @@ export const TeamSettingsSection = () => {
                             setShowTransferModal(true);
                           }}
                           className="p-2 text-warning-text hover:bg-warning-bg rounded-lg transition-colors"
-                          title="Transfer ownership"
+                          title={t('teamMembers.transferOwnership')}
                         >
                           <Crown className="h-4 w-4" />
                         </button>
@@ -245,7 +247,7 @@ export const TeamSettingsSection = () => {
                           setShowRemoveModal(true);
                         }}
                         className="p-2 text-error-text hover:bg-error-bg rounded-lg transition-colors"
-                        title="Remove member"
+                        title={t('teamMembers.removeMember')}
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -268,11 +270,10 @@ export const TeamSettingsSection = () => {
                 <Clock className="h-5 w-5 text-warning-text" />
                 <div>
                   <h2 className="text-xl font-semibold text-text-primary">
-                    Pending Invitations
+                    {t('teamMembers.pendingInvitations.title')}
                   </h2>
                   <p className="text-sm text-text-secondary mt-1">
-                    {pendingInvitations.length} pending invitation
-                    {pendingInvitations.length !== 1 ? 's' : ''}
+                    {t('teamMembers.pendingInvitations.count', { count: pendingInvitations.length })}
                   </p>
                 </div>
               </div>
@@ -297,12 +298,11 @@ export const TeamSettingsSection = () => {
                             {roleLabels[inv.role as Role]}
                           </span>
                           <span className="text-xs text-text-secondary">
-                            Invited by {inv.inviterName}
+                            {t('teamMembers.pendingInvitations.invitedBy', { name: inv.inviterName })}
                           </span>
                         </div>
                         <p className="text-xs text-text-muted mt-1">
-                          Sent {formatDate(inv.invitedAt)} &middot; Expires{' '}
-                          {formatDate(inv.expiresAt)}
+                          {t('teamMembers.pendingInvitations.sent', { date: formatDate(inv.invitedAt) })} &middot; {t('teamMembers.pendingInvitations.expires', { date: formatDate(inv.expiresAt) })}
                         </p>
                       </div>
                     </div>
@@ -317,7 +317,7 @@ export const TeamSettingsSection = () => {
                       ) : (
                         <RefreshCw className="h-4 w-4" />
                       )}
-                      Resend
+                      {t('teamMembers.pendingInvitations.resend')}
                     </button>
                   </div>
                 </div>
@@ -330,7 +330,7 @@ export const TeamSettingsSection = () => {
       <div className="bg-surface-page rounded-lg border border-border-default px-4 py-3">
         <div className="flex items-center gap-2 text-xs text-text-secondary">
           <Shield className="h-3.5 w-3.5 shrink-0" />
-          <span className="font-medium">Roles:</span>
+          <span className="font-medium">{t('teamMembers.roles.label')}</span>
           {Object.entries(roleLabels).map(([role, label]) => (
             <span key={role} className="inline-flex items-center gap-1">
               <span
@@ -355,17 +355,17 @@ export const TeamSettingsSection = () => {
           <div className="bg-surface-card rounded-lg shadow-xl max-w-md w-full mx-4">
             <div className="p-6 border-b border-border-default">
               <h3 className="text-xl font-semibold text-text-primary">
-                Invite Team Member
+                {t('teamMembers.inviteModal.title')}
               </h3>
               <p className="text-sm text-text-secondary mt-1">
-                Send an invitation to join your team
+                {t('teamMembers.inviteModal.subtitle')}
               </p>
             </div>
 
             <div className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">
-                  Email Address
+                  {t('teamMembers.inviteModal.emailAddress')}
                 </label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-muted " />
@@ -381,7 +381,7 @@ export const TeamSettingsSection = () => {
 
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-1">
-                  Role
+                  {t('teamMembers.inviteModal.role')}
                 </label>
                 <select
                   value={inviteRole}
@@ -412,7 +412,7 @@ export const TeamSettingsSection = () => {
                 {createInvitationMutation.isPending && (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 )}
-                Send Invitation
+                {t('teamMembers.inviteModal.sendInvitation')}
               </button>
             </div>
           </div>
@@ -425,16 +425,16 @@ export const TeamSettingsSection = () => {
           <div className="bg-surface-card rounded-lg shadow-xl max-w-md w-full mx-4">
             <div className="p-6 border-b border-border-default">
               <h3 className="text-xl font-semibold text-text-primary">
-                Change Member Role
+                {t('teamMembers.roleModal.title')}
               </h3>
               <p className="text-sm text-text-secondary mt-1">
-                Update role for {selectedMember.name}
+                {t('teamMembers.roleModal.subtitle', { name: selectedMember.name })}
               </p>
             </div>
 
             <div className="p-6">
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                New Role
+                {t('teamMembers.roleModal.newRole')}
               </label>
               <select
                 value={newRole}
@@ -467,7 +467,7 @@ export const TeamSettingsSection = () => {
                 {updateRoleMutation.isPending && (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 )}
-                Update Role
+                {t('teamMembers.roleModal.updateRole')}
               </button>
             </div>
           </div>
@@ -480,7 +480,7 @@ export const TeamSettingsSection = () => {
           <div className="bg-surface-card rounded-lg shadow-xl max-w-md w-full mx-4">
             <div className="p-6 border-b border-border-default">
               <h3 className="text-xl font-semibold text-text-primary">
-                Transfer Ownership
+                {t('teamMembers.transferModal.title')}
               </h3>
             </div>
 
@@ -511,7 +511,7 @@ export const TeamSettingsSection = () => {
                 {transferOwnershipMutation.isPending && (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 )}
-                Transfer Ownership
+                {t('teamMembers.transferModal.confirm')}
               </button>
             </div>
           </div>
@@ -524,7 +524,7 @@ export const TeamSettingsSection = () => {
           <div className="bg-surface-card rounded-lg shadow-xl max-w-md w-full mx-4">
             <div className="p-6 border-b border-border-default">
               <h3 className="text-xl font-semibold text-text-primary">
-                Remove Team Member
+                {t('teamMembers.removeModal.title')}
               </h3>
             </div>
 
@@ -554,7 +554,7 @@ export const TeamSettingsSection = () => {
                 {removeMemberMutation.isPending && (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 )}
-                Remove Member
+                {t('teamMembers.removeModal.confirm')}
               </button>
             </div>
           </div>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Star,
   StarOff,
@@ -70,7 +71,7 @@ export const PhotoGrid = ({
   photos,
   isLoading,
   error,
-  emptyMessage = 'No photos yet',
+  emptyMessage,
   totalCount,
   selectedPhotos,
   onSelectPhoto,
@@ -88,6 +89,7 @@ export const PhotoGrid = ({
   disableActions = false,
 }: PhotoGridProps) => {
   const navigate = useNavigate();
+  const { t } = useTranslation('documents');
   const { formatDate } = useFormatDate();
   const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
 
@@ -105,14 +107,14 @@ export const PhotoGrid = ({
   }
 
   if (error) {
-    return <ErrorMessage message="Failed to load photos" />;
+    return <ErrorMessage message={t('photoGrid.failedToLoad')} />;
   }
 
   if (photos.length === 0) {
     return (
       <div className="text-center py-12 bg-surface-page rounded-lg">
         <Upload className="h-12 w-12 text-text-muted mx-auto mb-3" />
-        <p className="text-text-secondary">{emptyMessage}</p>
+        <p className="text-text-secondary">{emptyMessage ?? t('photoGrid.noPhotos')}</p>
       </div>
     );
   }
@@ -134,8 +136,8 @@ export const PhotoGrid = ({
           </button>
           <span className="text-sm text-text-secondary">
             {hasSelection
-              ? `${selectedPhotos.size} of ${displayCount} selected`
-              : `${displayCount} photo${displayCount !== 1 ? 's' : ''}`}
+              ? t('photoGrid.selection.selected', { selected: selectedPhotos.size, total: displayCount })
+              : t('photoGrid.selection.count', { count: displayCount })}
           </span>
         </div>
 
@@ -153,7 +155,7 @@ export const PhotoGrid = ({
                 ) : (
                   <Download className="h-4 w-4" />
                 )}
-                {isBulkDownloading ? 'Downloading...' : 'Download'}
+                {isBulkDownloading ? t('photoGrid.downloading') : t('common:buttons.download')}
               </button>
             )}
             {onBulkDelete && (
@@ -162,7 +164,7 @@ export const PhotoGrid = ({
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-error-text bg-surface-card border border-error-border rounded-md hover:bg-error-bg transition-colors"
               >
                 <Trash2 className="h-4 w-4" />
-                Delete
+                {t('common:buttons.delete')}
               </button>
             )}
           </div>
@@ -195,7 +197,7 @@ export const PhotoGrid = ({
                   <div className="flex items-center justify-center h-full">
                     <div className="text-center p-4">
                       <AlertCircle className="h-8 w-8 text-text-muted mx-auto mb-2" />
-                      <p className="text-xs text-text-secondary">No URL</p>
+                      <p className="text-xs text-text-secondary">{t('photoGrid.noUrl')}</p>
                     </div>
                   </div>
                 ) : hasError ? (
@@ -203,7 +205,7 @@ export const PhotoGrid = ({
                     <div className="text-center p-4">
                       <AlertCircle className="h-8 w-8 text-error-text mx-auto mb-2" />
                       <p className="text-xs text-text-secondary font-medium">
-                        Failed to load
+                        {t('photoGrid.failedToLoadImage')}
                       </p>
                     </div>
                   </div>
@@ -227,11 +229,11 @@ export const PhotoGrid = ({
               {showMainBadge && photo.isMainPhoto && (
                 <div className="absolute top-2 left-2 bg-primary-500 text-white px-2 py-1 rounded text-xs font-semibold flex items-center gap-1 z-10">
                   <Star className="h-3 w-3 fill-white" />
-                  Main
+                  {t('photoGrid.main')}
                 </div>
               )}
 
-              {/* Selection indicator — persistent when selected, hover when not */}
+              {/* Selection indicator -- persistent when selected, hover when not */}
               {isSelected ? (
                 <button
                   onClick={(e) => {
@@ -266,7 +268,7 @@ export const PhotoGrid = ({
                         onSetMain(photo.identifier);
                       }}
                       className="p-1.5 bg-surface-card/80 backdrop-blur-sm text-text-primary rounded-md hover:bg-surface-card transition-colors shadow"
-                      title="Set as main photo"
+                      title={t('photoGrid.tooltips.setAsMain')}
                       disabled={disableActions}
                     >
                       <StarOff className="h-4 w-4" />
@@ -279,7 +281,7 @@ export const PhotoGrid = ({
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
                       className="p-1.5 bg-surface-card/80 backdrop-blur-sm text-text-secondary rounded-md hover:bg-surface-card transition-colors shadow"
-                      title="Download"
+                      title={t('common:buttons.download')}
                     >
                       <Download className="h-4 w-4" />
                     </a>
@@ -291,7 +293,7 @@ export const PhotoGrid = ({
                         onEdit(photo);
                       }}
                       className="p-1.5 bg-surface-card/80 backdrop-blur-sm text-text-secondary rounded-md hover:bg-surface-card transition-colors shadow"
-                      title="Edit title & notes"
+                      title={t('photoGrid.tooltips.editTitleNotes')}
                       disabled={disableActions}
                     >
                       <Pencil className="h-4 w-4" />
@@ -304,7 +306,7 @@ export const PhotoGrid = ({
                         onDelete(photo.identifier);
                       }}
                       className="p-1.5 bg-surface-card/80 backdrop-blur-sm text-error-text rounded-md hover:bg-error-bg transition-colors shadow"
-                      title="Delete photo"
+                      title={t('photoGrid.tooltips.deletePhoto')}
                       disabled={disableActions}
                     >
                       <Trash2 className="h-4 w-4" />

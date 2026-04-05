@@ -32,6 +32,7 @@ import { useFormatDate } from '@/hooks/useFormatDate';
 import { RichTextDisplay } from '@buurman/ui';
 import { useTeam } from '@/context/TeamContext';
 import type { DocumentResponse } from '@/types/property';
+import { useTranslation } from 'react-i18next';
 
 interface RentTimelineProps {
   contractIdentifier: string;
@@ -63,6 +64,7 @@ export const RentTimeline = ({
   documentLanguages,
   countryCode,
 }: RentTimelineProps) => {
+  const { t } = useTranslation('contracts');
   const { canEditData } = useTeam();
   const { formatDate } = useFormatDate();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -127,7 +129,7 @@ export const RentTimeline = ({
       <div className="flex items-center gap-3">
         <DollarSign className="h-5 w-5 text-text-muted " />
         <div className="flex-1">
-          <p className="text-sm text-text-secondary">Rent Amount</p>
+          <p className="text-sm text-text-secondary">{t('overview.rentDetails')}</p>
           <p className="font-medium text-text-primary">
             {currency} {currentRentAmount.toFixed(2)} /{' '}
             {paymentFrequency.toLowerCase()}

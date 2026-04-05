@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
   TrendingUp,
@@ -46,6 +47,7 @@ import { ChevronDown, ChevronUp, Filter, Check, FileText } from 'lucide-react';
 import { ExportDropdown } from '@/components/common/ExportDropdown';
 
 export const FinancialReportsPage = () => {
+  const { t } = useTranslation('admin');
   const navigate = useNavigate();
   const { effectiveTheme } = useTheme();
   const isDark = effectiveTheme === 'dark';
@@ -258,9 +260,7 @@ export const FinancialReportsPage = () => {
   ) {
     return (
       <div className="px-4 py-8">
-        <div className="bg-error-bg border border-error-border text-error-text px-4 py-3 rounded">
-          Failed to load financial reports
-        </div>
+        <div className="bg-error-bg border border-error-border text-error-text px-4 py-3 rounded">{t("reports.failedToLoad")}</div>
       </div>
     );
   }
@@ -272,13 +272,9 @@ export const FinancialReportsPage = () => {
         <div>
           <div className="flex items-center gap-3 mb-1">
             <BarChart3 className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-            <h1 className="text-3xl font-bold text-text-primary">
-              Financial Reports
-            </h1>
+            <h1 className="text-3xl font-bold text-text-primary">{t("reports.title")}</h1>
           </div>
-          <p className="text-text-secondary ml-11">
-            Comprehensive financial overview and analytics
-          </p>
+          <p className="text-text-secondary ml-11">{t("reports.subtitle")}</p>
         </div>
         <div className="flex items-center gap-2">
           <ExportDropdown

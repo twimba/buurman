@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   ContactListItemResponse,
   CONTACT_TAG_LABELS,
@@ -40,6 +41,7 @@ interface ContactCardProps {
 }
 
 export const ContactCard = ({ contact }: ContactCardProps) => {
+  const { t } = useTranslation('tenants');
   const navigate = useNavigate();
   const { formatRelative } = useFormatDate();
   const tags = contact.tags ?? [];
@@ -130,7 +132,7 @@ export const ContactCard = ({ contact }: ContactCardProps) => {
         >
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4" />
-            <span className="text-sm font-medium">All paid</span>
+            <span className="text-sm font-medium">{t('card.allPaid')}</span>
           </div>
         </div>
       )}
@@ -152,9 +154,8 @@ export const ContactCard = ({ contact }: ContactCardProps) => {
               </span>
             </div>
             <span className="text-xs">
-              {balance.outstandingPaymentCount} payment
-              {balance.outstandingPaymentCount !== 1 ? 's' : ''}
-              {balance.status === 'OVERDUE' ? ' overdue' : ' pending'}
+              {t('card.payment', { count: balance.outstandingPaymentCount })}{' '}
+              {balance.status === 'OVERDUE' ? t('card.overdue') : t('card.pending')}
             </span>
           </div>
         )}
@@ -169,13 +170,11 @@ export const ContactCard = ({ contact }: ContactCardProps) => {
             <div className="flex items-center gap-2">
               <Shield className="h-4 w-4" />
               <span className="text-sm font-medium">
-                Guarantees{' '}
-                {formatCurrency(balance.guaranteedAmount, balance.currency)}
+                {t('card.guarantees', { amount: formatCurrency(balance.guaranteedAmount, balance.currency) })}
               </span>
             </div>
             <span className="text-xs">
-              {balance.guaranteedPaymentCount ?? 0} payment
-              {(balance.guaranteedPaymentCount ?? 0) !== 1 ? 's' : ''}
+              {t('card.payment', { count: balance.guaranteedPaymentCount ?? 0 })}
             </span>
           </div>
         )}
@@ -186,8 +185,8 @@ export const ContactCard = ({ contact }: ContactCardProps) => {
           <FileText className="h-4 w-4" />
           <span className="text-sm">
             {contact.activeContractCount > 0
-              ? `${contact.activeContractCount} active contract${contact.activeContractCount !== 1 ? 's' : ''}`
-              : 'No active contracts'}
+              ? t('card.activeContracts', { count: contact.activeContractCount })
+              : t('card.noActiveContracts')}
           </span>
         </div>
         <div

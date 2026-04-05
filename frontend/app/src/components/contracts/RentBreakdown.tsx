@@ -6,6 +6,7 @@ import {
   RentComponentType,
   RENT_COMPONENT_LABELS,
 } from '@/types/contract';
+import { useTranslation } from 'react-i18next';
 
 interface RentBreakdownProps {
   value: number | '';
@@ -36,6 +37,7 @@ export const RentBreakdown = ({
   breakdownMode,
   onBreakdownModeChange,
 }: RentBreakdownProps) => {
+  const { t } = useTranslation('contracts');
   const total = useMemo(
     () =>
       components.reduce(
@@ -197,7 +199,7 @@ export const RentBreakdown = ({
                       onClick={() => handleRemoveComponent(index)}
                       className="p-1.5 text-text-muted hover:text-error-text transition-colors"
                       disabled={disabled}
-                      title="Remove component"
+                      title={t('adjustRent.removeComponent')}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -212,7 +214,7 @@ export const RentBreakdown = ({
                       onChange={(e) =>
                         handleComponentDescriptionChange(index, e.target.value)
                       }
-                      placeholder="Custom label"
+                      placeholder={t('adjustRent.customLabel')}
                       className="w-full border border-border-strong rounded px-3 py-1.5 text-sm bg-surface-card text-text-primary focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
                       disabled={disabled}
                     />

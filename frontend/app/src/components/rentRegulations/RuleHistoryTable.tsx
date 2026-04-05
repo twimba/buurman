@@ -1,4 +1,5 @@
 import { ExternalLink } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { RichTextDisplay } from '@buurman/ui';
 import type { RentRegulationRuleResponse } from '@/types/rentRegulation';
 
@@ -23,13 +24,14 @@ const humanizeEnum = (value: string): string => {
 };
 
 export const RuleHistoryTable = ({ rules }: RuleHistoryTableProps) => {
+  const { t } = useTranslation('contracts');
   const currentYear = new Date().getFullYear();
   const sortedRules = [...rules].sort((a, b) => b.year - a.year);
 
   if (sortedRules.length === 0) {
     return (
       <div className="bg-surface-card rounded-lg border border-border-default p-8 text-center">
-        <p className="text-text-secondary">No regulation rules available</p>
+        <p className="text-text-secondary">{t('rentRegulations.noRules')}</p>
       </div>
     );
   }
@@ -118,7 +120,7 @@ export const RuleHistoryTable = ({ rules }: RuleHistoryTableProps) => {
                   </td>
                   <td className="px-4 py-3 text-text-secondary">
                     {rule.noticePeriodDays != null
-                      ? `${rule.noticePeriodDays} days`
+                      ? t('rentRegulations.days', { count: rule.noticePeriodDays })
                       : '-'}
                   </td>
                   <td className="px-4 py-3">

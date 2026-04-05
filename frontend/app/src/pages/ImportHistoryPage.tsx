@@ -1,8 +1,10 @@
 import { ImportHistory } from '@/components/contacts/ImportHistory';
 import { ArrowLeft, History } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export const ImportHistoryPage = () => {
+  const { t } = useTranslation('admin');
   return (
     <div className="min-h-screen bg-background">
       <div className="px-4 py-8">
@@ -16,10 +18,10 @@ export const ImportHistoryPage = () => {
           <History className="h-8 w-8 text-primary-500 dark:text-primary-300" />
           <div>
             <h1 className="text-3xl font-bold text-text-primary">
-              Import History
+              {t('common:importHistory.title')}
             </h1>
             <p className="text-text-secondary">
-              View past imports and manage imported data
+              {t('common:importHistory.subtitle')}
             </p>
           </div>
         </div>

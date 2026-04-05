@@ -8,23 +8,21 @@
     <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
         <div th:replace="~{email/_email-base :: header}"></div>
         <div style="background: #ffffff; border: 1px solid #e7e5e4; border-top: none; border-radius: 0 0 8px 8px; padding: 40px;">
-            <h1 style="color: #292524; margin: 0 0 24px 0; font-size: 24px;">New Team Member!</h1>
+            <h1 th:text="#{email.invitation-accepted.heading}" style="color: #292524; margin: 0 0 24px 0; font-size: 24px;">New Team Member!</h1>
 
-            <p style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
-                Hi <span th:text="${inviterName}">User</span>,
+            <p th:text="#{email.invitation-accepted.greeting(${inviterName})}" style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
+                Hi User,
             </p>
 
-            <p style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
-                Great news! <strong th:text="${memberName}">Someone</strong>
-                (<span th:text="${memberEmail}">email</span>) has accepted your invitation
-                and joined <strong th:text="${teamName}">your team</strong>.
+            <p th:text="#{email.invitation-accepted.body1(${memberName},${memberEmail},${teamName})}" style="color: #292524; line-height: 1.6; margin: 0 0 16px 0;">
+                Great news! Someone (email) has accepted your invitation and joined your team.
             </p>
 
-            <p style="color: #292524; line-height: 1.6; margin: 0 0 24px 0;">
+            <p th:text="#{email.invitation-accepted.body2}" style="color: #292524; line-height: 1.6; margin: 0 0 24px 0;">
                 They can now collaborate with you on managing properties in Buurman.
             </p>
 
-            <a th:href="${baseUrl}" style="display: inline-block; background: #0284c7; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500;">
+            <a th:href="${baseUrl}" th:text="#{email.invitation-accepted.cta}" style="display: inline-block; background: #0284c7; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500;">
                 View Team Members
             </a>
         </div>

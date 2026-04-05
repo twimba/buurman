@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useCreateContact } from '@/hooks/useContactHooks';
 import { ContactForm } from '@/components/contacts/ContactForm';
 import { CreateContactRequest } from '@/types/contact';
@@ -6,6 +7,7 @@ import { ArrowLeft } from 'lucide-react';
 import { ImpersonationGuard } from '@/components/ImpersonationGuard';
 
 export const ContactCreatePage = () => {
+  const { t } = useTranslation('tenants');
   const navigate = useNavigate();
   const createContactMutation = useCreateContact();
 
@@ -25,7 +27,7 @@ export const ContactCreatePage = () => {
             <ArrowLeft className="h-5 w-5" />
           </button>
           <h1 className="text-2xl font-bold text-text-primary">
-            Add New Contact
+            {t('create.title')}
           </h1>
         </div>
 
@@ -35,7 +37,7 @@ export const ContactCreatePage = () => {
             blockInReadOnly
             fallback={
               <div className="text-center py-8 text-text-secondary">
-                Creating contacts is not available in read-only mode.
+                {t('create.readOnlyMessage')}
               </div>
             }
           >

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import type { RentIncreaseContractPreview } from '@/types/rentIncrease';
 import type { RentIncreaseItem } from '@/types/rentIncrease';
+import { useTranslation } from 'react-i18next';
 
 interface ReviewStepProps {
   contracts: RentIncreaseContractPreview[];
@@ -19,6 +20,7 @@ export const ReviewStep = ({
   onApply,
   isApplying,
 }: ReviewStepProps) => {
+  const { t } = useTranslation('contracts');
   const changedIncreases = useMemo(
     () => increases.filter((inc) => inc.increasePercentage !== 0),
     [increases]
@@ -244,7 +246,7 @@ export const ReviewStep = ({
           onClick={onBack}
           className="px-6 py-2 rounded border border-border-default text-text-secondary hover:bg-surface-inset transition-colors"
         >
-          Back
+          {t('common:buttons.back')}
         </button>
         <button
           onClick={onApply}

@@ -6,6 +6,7 @@ import { ContractPartyRole, PARTY_ROLE_LABELS } from '@/types/contract';
 import type { ContractResponse } from '@/types/contract';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import { getCurrencySymbol } from '@/utils/currencies';
+import { useTranslation } from 'react-i18next';
 
 const ROLE_COLORS: Record<ContractPartyRole, string> = {
   [ContractPartyRole.PRIMARY_TENANT]: 'bg-info-bg text-info-text',
@@ -38,6 +39,7 @@ export const ContactContractsTable = ({
   contracts,
   contactIdentifier,
 }: ContactContractsTableProps) => {
+  const { t } = useTranslation('tenants');
   const navigate = useNavigate();
   const { formatDate } = useFormatDate();
 
@@ -119,14 +121,14 @@ export const ContactContractsTable = ({
     <div className="mt-6 pt-4 border-t border-border-default">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-text-secondary uppercase">
-          All Contracts ({contracts.length})
+          {t('contractsTable.allContracts')} ({contracts.length})
         </h3>
         {contracts.length > 5 && (
           <div className="relative">
             <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
             <input
               type="text"
-              placeholder="Search..."
+              placeholder={t('contractsTable.search')}
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -205,7 +207,7 @@ export const ContactContractsTable = ({
                           (contract.effectiveEndDate ??
                             contract.endDate) as string
                         )
-                      : 'Ongoing'}
+                      : t('contractsTable.ongoing')}
                   </td>
                   <td className="px-4 py-3 font-medium">
                     {getCurrencySymbol(contract.rentAmountCurrency)}{' '}
@@ -223,7 +225,7 @@ export const ContactContractsTable = ({
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-3 text-sm">
           <span className="text-text-secondary">
-            Page {currentPage} of {totalPages}
+            {t('contractsTable.page', { current: currentPage, total: totalPages })}
           </span>
           <div className="flex gap-2">
             <button

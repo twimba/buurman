@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Info, Plus, Trash2 } from 'lucide-react';
 import { CollapsibleSection } from './CollapsibleSection';
 import { MeasurementInput } from '@/components/common/MeasurementInput';
@@ -300,6 +301,7 @@ export const PropertyCharacteristicsForm = ({
   onAddAmenity,
   onRemoveAmenity,
 }: PropertyCharacteristicsFormProps) => {
+  const { t } = useTranslation('properties');
   const constructionFields = [
     formData.yearBuilt,
     formData.yearLastRenovated,
@@ -357,12 +359,12 @@ export const PropertyCharacteristicsForm = ({
   return (
     <div className="space-y-3">
       <h3 className="text-lg font-semibold text-text-primary mb-2">
-        Property Characteristics
+        {t('detail.characteristics.title')}
       </h3>
 
       {/* Construction & Structure */}
       <CollapsibleSection
-        title="Construction & Structure"
+        title={t('detail.construction.title')}
         filledCount={countFilled(constructionFields)}
         totalCount={constructionFields.length}
       >
@@ -435,7 +437,7 @@ export const PropertyCharacteristicsForm = ({
 
       {/* Energy & Climate */}
       <CollapsibleSection
-        title="Energy & Climate"
+        title={t('detail.energy.title')}
         filledCount={countFilled(energyFields)}
         totalCount={energyFields.length}
       >
@@ -490,7 +492,7 @@ export const PropertyCharacteristicsForm = ({
 
       {/* Utilities & Connections */}
       <CollapsibleSection
-        title="Utilities & Connections"
+        title={t('detail.utilities.title')}
         filledCount={countFilled(utilityFields)}
         totalCount={utilityFields.length}
       >
@@ -554,7 +556,7 @@ export const PropertyCharacteristicsForm = ({
 
       {/* Parking */}
       <CollapsibleSection
-        title="Parking"
+        title={t('detail.parking.title')}
         filledCount={countFilled(parkingFields)}
         totalCount={parkingFields.length}
       >
@@ -577,7 +579,7 @@ export const PropertyCharacteristicsForm = ({
 
       {/* Safety & Security */}
       <CollapsibleSection
-        title="Safety & Security"
+        title={t('detail.safety.title')}
         filledCount={countFilled(safetyFields)}
         totalCount={safetyFields.length}
       >
@@ -628,7 +630,7 @@ export const PropertyCharacteristicsForm = ({
 
       {/* Accessibility */}
       <CollapsibleSection
-        title="Accessibility"
+        title={t('detail.accessibility.title')}
         filledCount={countFilled(accessibilityFields)}
         totalCount={accessibilityFields.length}
       >
@@ -742,7 +744,7 @@ const OutdoorAreasSection = ({
 
   return (
     <CollapsibleSection
-      title="Outdoor Areas"
+      title={t('detail.outdoorAreas.title')}
       filledCount={areas.length}
       totalCount={areas.length}
     >
@@ -1360,7 +1362,7 @@ const AmenitiesSection = ({
 
   return (
     <CollapsibleSection
-      title="Amenities"
+      title={t('detail.amenities.title')}
       filledCount={selectedIds.size}
       totalCount={totalAmenities}
     >

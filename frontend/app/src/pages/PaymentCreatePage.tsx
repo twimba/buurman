@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getContracts } from '@/api/contracts';
 import { bulkCreatePayments } from '@/api/payments';
@@ -39,6 +40,7 @@ const BULK_COLUMNS: BulkColumnDef[] = [
 
 export const PaymentCreatePage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation('payments');
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
   const createPaymentMutation = useCreatePayment();
@@ -162,13 +164,15 @@ export const PaymentCreatePage = () => {
           </button>
           <div className="flex-1">
             <h1 className="text-2xl font-bold text-text-primary">
-              {registerMode ? 'Register Payment' : 'Schedule Payment'}
+              {registerMode ? t('create.titleRegister') : t('create.titleSchedule')}
             </h1>
             {addedCount > 0 && (
               <p className="flex items-center gap-1.5 text-sm text-success-text mt-1">
                 <CheckCircle className="h-3.5 w-3.5" />
-                {addedCount} payment{addedCount !== 1 ? 's' : ''}{' '}
-                {registerMode ? 'registered' : 'scheduled'} this session
+                {t('create.addedCount', {
+                  count: addedCount,
+                  action: registerMode ? t('create.actionRegistered') : t('create.actionScheduled'),
+                })}
               </p>
             )}
           </div>
@@ -187,7 +191,7 @@ export const PaymentCreatePage = () => {
                   : 'text-text-secondary hover:text-text-secondary'
               }`}
             >
-              {m === 'single' ? 'Single' : 'Bulk'}
+              {m === 'single' ? t('create.single') : t('create.bulk')}
             </button>
           ))}
         </div>
@@ -198,15 +202,14 @@ export const PaymentCreatePage = () => {
             <div className="mb-4 flex items-start gap-2 p-3 bg-warning-bg border border-warning-border rounded text-sm text-warning-text">
               <AlertTriangle className="h-4 w-4 flex-shrink-0 mt-0.5" />
               <span>
-                The linked contract is not active. Please select an active
-                contract.
+                {t('create.contractInactiveWarning')}
               </span>
             </div>
           )}
 
           <div className="mb-6">
             <label className="block text-sm font-medium text-text-secondary mb-2">
-              Contract <span className="text-error-text">*</span>
+              {t('form.contract')} <span className="text-error-text">*</span>
             </label>
             <ContractSelector
               value={effectiveContractId}
@@ -218,7 +221,7 @@ export const PaymentCreatePage = () => {
             />
             {!effectiveContractId && !showWarning && (
               <p className="mt-1 text-sm text-text-secondary">
-                Please select a contract first
+                {t('form.selectContractFirst')}
               </p>
             )}
           </div>
@@ -254,7 +257,7 @@ export const PaymentCreatePage = () => {
               {/* Currency selector for bulk */}
               <div className="mb-6">
                 <label className="block text-sm font-medium text-text-secondary mb-2">
-                  Currency <span className="text-error-text">*</span>
+                  {t('form.currency')} <span className="text-error-text">*</span>
                 </label>
                 <CurrencySelector
                   value={bulkCurrency || defaultCurrency || ''}

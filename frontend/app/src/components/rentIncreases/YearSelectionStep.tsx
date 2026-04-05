@@ -1,4 +1,5 @@
 import type { RentIncreaseCountrySummary } from '@/types/rentIncrease';
+import { useTranslation } from 'react-i18next';
 
 function countryCodeToFlag(code: string): string {
   return code
@@ -23,6 +24,7 @@ export const YearSelectionStep = ({
   onNext,
   isLoading,
 }: YearSelectionStepProps) => {
+  const { t } = useTranslation('contracts');
   const currentYear = new Date().getFullYear();
   const yearOptions = [currentYear, currentYear + 1];
 
@@ -30,7 +32,7 @@ export const YearSelectionStep = ({
     <div className="space-y-6">
       <div className="bg-surface-card rounded-lg border border-border-default p-6">
         <h3 className="text-lg font-semibold text-text-primary mb-4">
-          Select Year
+          {t('rentIncrease.steps.selectYear')}
         </h3>
         <div className="flex gap-3">
           {yearOptions.map((y) => (
@@ -52,7 +54,7 @@ export const YearSelectionStep = ({
       {countrySummaries.length > 0 && (
         <div className="bg-surface-card rounded-lg border border-border-default p-6">
           <h3 className="text-lg font-semibold text-text-primary mb-4">
-            Regulation Summary
+            {t('rentRegulations.title')}
           </h3>
           <div className="space-y-3">
             {countrySummaries.map((summary) => (
@@ -76,11 +78,11 @@ export const YearSelectionStep = ({
                 </div>
                 {summary.hasRegulationData ? (
                   <span className="text-xs px-2 py-1 rounded-full bg-success-bg text-success-text">
-                    Regulation data available
+                    {t('rentIncrease.regulationDataAvailable')}
                   </span>
                 ) : (
                   <span className="text-xs px-2 py-1 rounded-full bg-warning-bg text-warning-text">
-                    No regulation data
+                    {t('rentRegulations.noData')}
                   </span>
                 )}
               </div>
@@ -95,7 +97,7 @@ export const YearSelectionStep = ({
           disabled={isLoading || countrySummaries.length === 0}
           className="bg-primary-500 text-white px-6 py-2 rounded hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Next: Adjust Increases
+          {t('rentIncrease.nextAdjustIncreases')}
         </button>
       </div>
     </div>

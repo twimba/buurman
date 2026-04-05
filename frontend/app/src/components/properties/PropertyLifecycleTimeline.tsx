@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Home } from 'lucide-react';
 import { usePropertyTimeline } from '@/hooks/useOccupancyPeriodHooks';
@@ -237,6 +238,7 @@ const BarTooltip = ({
   formatDate,
   isSelfOccupancyClickable,
 }: BarTooltipProps) => {
+  const { t } = useTranslation('properties');
   const { entry, x } = tooltip;
 
   const isContract = entry.type === 'CONTRACT';
@@ -266,7 +268,7 @@ const BarTooltip = ({
       : 'rgba(107,113,148,0.15)';
 
   const dateRange = `${formatDate(entry.startDate)} — ${
-    entry.endDate ? formatDate(entry.endDate) : 'Ongoing'
+    entry.endDate ? formatDate(entry.endDate) : t('timeline.ongoing')
   }`;
 
   const clampedX = Math.min(Math.max(x, 8), 92);
@@ -318,10 +320,10 @@ const BarTooltip = ({
             }}
           >
             {isContract
-              ? 'Contract'
+              ? t('timeline.contract')
               : isSelfOccupancy
-                ? 'Self-Occupied'
-                : 'Vacancy'}
+                ? t('detail.timeline.selfOccupied')
+                : t('timeline.vacancy')}
           </span>
           {typeLabel && (
             <span
@@ -399,7 +401,7 @@ const BarTooltip = ({
               opacity: 0.9,
             }}
           >
-            {isContract ? '↗ Open contract' : '✎ Click to edit'}
+            {isContract ? t('lifecycle.openContract') : t('lifecycle.clickToEdit')}
           </div>
         )}
       </div>
@@ -435,12 +437,13 @@ const FinancingTooltip = ({
   x,
   formatDate,
 }: FinancingTooltipProps) => {
+  const { t } = useTranslation('properties');
   const accentColor = '#f59e0b';
   const glowColor = 'rgba(245,158,11,0.2)';
   const clampedX = Math.min(Math.max(x, 8), 92);
 
   const dateRange = `${formatDate(financing.startDate)} — ${
-    financing.endDate ? formatDate(financing.endDate) : 'Ongoing'
+    financing.endDate ? formatDate(financing.endDate) : t('timeline.ongoing')
   }`;
 
   return (

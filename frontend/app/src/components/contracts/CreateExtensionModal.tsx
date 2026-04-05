@@ -7,6 +7,7 @@ import type {
   RentAdjustmentType,
   CreateContractExtensionRequest,
 } from '@/types/contractExtension';
+import { useTranslation } from 'react-i18next';
 
 interface CreateExtensionModalProps {
   currentRentAmount: number;
@@ -62,6 +63,7 @@ export const CreateExtensionModal = ({
   onConfirm,
   isLoading = false,
 }: CreateExtensionModalProps) => {
+  const { t } = useTranslation('contracts');
   const defaultNewEnd =
     currentEndDate && renewalTermMonths
       ? computeNewEndDate(currentEndDate, renewalTermMonths)
@@ -358,7 +360,7 @@ export const CreateExtensionModal = ({
               className="px-4 py-2 text-sm font-medium text-white bg-primary-500 rounded-md hover:bg-primary-600 disabled:opacity-50"
               disabled={isLoading}
             >
-              {isLoading ? 'Creating...' : 'Create Extension'}
+              {isLoading ? t('common:buttons.loading') : t('extensions.createExtension')}
             </button>
           </div>
         </form>

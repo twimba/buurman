@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useImpersonation } from '../context/ImpersonationContext';
 
 interface ImpersonationGuardProps {
@@ -14,6 +15,7 @@ export function ImpersonationGuard({
   blockAlways = false,
   fallback,
 }: ImpersonationGuardProps) {
+  const { t } = useTranslation('common');
   const { active, mode } = useImpersonation();
 
   if (!active) {
@@ -25,7 +27,7 @@ export function ImpersonationGuard({
       <>
         {fallback ?? (
           <span className="text-sm text-text-muted">
-            Not available during impersonation
+            {t('impersonation.notAvailable')}
           </span>
         )}
       </>
@@ -36,7 +38,7 @@ export function ImpersonationGuard({
     return (
       <>
         {fallback ?? (
-          <span className="text-sm text-text-muted">Read-only mode</span>
+          <span className="text-sm text-text-muted">{t('impersonation.readOnly')}</span>
         )}
       </>
     );

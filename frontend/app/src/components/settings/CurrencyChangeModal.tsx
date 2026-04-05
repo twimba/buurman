@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AlertTriangle, X } from 'lucide-react';
 import { useChangeCurrency } from '@/hooks/useOnboarding';
 import { useCurrencies, getCurrencySymbol } from '@/hooks/useCurrencies';
@@ -20,6 +21,7 @@ export const CurrencyChangeModal = ({
   onClose,
   onSuccess,
 }: CurrencyChangeModalProps) => {
+  const { t } = useTranslation('settings');
   const [newCurrency, setNewCurrency] = useState('');
   const [mode, setMode] = useState<ChangeMode>('RELABEL');
   const [conversionRate, setConversionRate] = useState('');
@@ -62,7 +64,7 @@ export const CurrencyChangeModal = ({
       <div className="bg-surface-card rounded-lg shadow-xl max-w-md w-full">
         <div className="flex items-center justify-between px-6 pt-6">
           <h3 className="text-lg font-semibold text-text-primary">
-            Change Team Currency
+            {t('currencyChange.title')}
           </h3>
           <button
             onClick={onClose}
@@ -75,7 +77,7 @@ export const CurrencyChangeModal = ({
         <div className="px-6 py-4 space-y-4">
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Current Currency
+              {t('currencyChange.currentCurrency')}
             </label>
             <div className="px-3 py-2 bg-surface-inset rounded-lg text-text-primary font-medium flex items-center gap-2">
               <span>{getCurrencyFlag(currentCurrency)}</span>
@@ -85,7 +87,7 @@ export const CurrencyChangeModal = ({
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              New Currency
+              {t('currencyChange.newCurrency')}
             </label>
             <CurrencySelector
               value={newCurrency || undefined}
@@ -95,7 +97,7 @@ export const CurrencyChangeModal = ({
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-2">
-              Change Mode
+              {t('currencyChange.changeMode')}
             </label>
             <div className="space-y-2">
               <button
@@ -107,11 +109,10 @@ export const CurrencyChangeModal = ({
                 }`}
               >
                 <div className="font-medium text-sm text-text-primary">
-                  Relabel Only
+                  {t('currencyChange.relabelOnly')}
                 </div>
                 <div className="text-xs text-text-secondary mt-0.5">
-                  Change currency codes without modifying amounts. Use when
-                  amounts were already entered in the target currency.
+                  {t('currencyChange.relabelDescription')}
                 </div>
               </button>
               <button
@@ -123,11 +124,10 @@ export const CurrencyChangeModal = ({
                 }`}
               >
                 <div className="font-medium text-sm text-text-primary">
-                  Convert at Fixed Rate
+                  {t('currencyChange.convertAtRate')}
                 </div>
                 <div className="text-xs text-text-secondary mt-0.5">
-                  Multiply all amounts by a conversion rate. All existing
-                  financial data will be recalculated.
+                  {t('currencyChange.convertDescription')}
                 </div>
               </button>
             </div>
@@ -157,12 +157,12 @@ export const CurrencyChangeModal = ({
                 <AlertTriangle className="h-5 w-5 text-warning-text flex-shrink-0 mt-0.5" />
                 <div>
                   <div className="text-sm font-medium text-warning-text">
-                    This action is irreversible
+                    {t('currencyChange.irreversible')}
                   </div>
                   <div className="text-xs text-warning-text mt-1">
                     {mode === 'RELABEL'
-                      ? `All currency codes will be changed from ${currentCurrency} to ${newCurrency}. Amounts will not be modified.`
-                      : `All amounts will be multiplied by ${conversionRate} and currency codes changed from ${currentCurrency} to ${newCurrency}.`}
+                      ? t('currencyChange.relabelWarning', { from: currentCurrency, to: newCurrency })
+                      : t('currencyChange.convertWarning', { rate: conversionRate, from: currentCurrency, to: newCurrency })}
                   </div>
                   <label className="flex items-center gap-2 mt-3 cursor-pointer">
                     <input
@@ -172,7 +172,7 @@ export const CurrencyChangeModal = ({
                       className="rounded"
                     />
                     <span className="text-xs text-warning-text">
-                      I understand this cannot be undone
+                      {t('currencyChange.understandCannotUndo')}
                     </span>
                   </label>
                 </div>
@@ -198,10 +198,10 @@ export const CurrencyChangeModal = ({
             className="px-4 py-2 bg-warning-text hover:opacity-90 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
           >
             {changeMutation.isPending
-              ? 'Changing...'
+              ? t('currencyChange.changing')
               : showConfirmation
-                ? 'Confirm Change'
-                : 'Change Currency'}
+                ? t('currencyChange.confirmChange')
+                : t('currencyChange.changeCurrency')}
           </button>
         </div>
       </div>

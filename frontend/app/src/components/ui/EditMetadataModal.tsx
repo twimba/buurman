@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, Save, Loader2 } from 'lucide-react';
 import { RichTextEditor } from '@buurman/ui';
 
@@ -19,6 +20,7 @@ export const EditMetadataModal = ({
   onCancel,
   isLoading,
 }: EditMetadataModalProps) => {
+  const { t } = useTranslation('common');
   const [editTitle, setEditTitle] = useState(currentTitle ?? '');
   const [editNotes, setEditNotes] = useState(currentNotes ?? '');
 
@@ -70,14 +72,14 @@ export const EditMetadataModal = ({
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Title
+              {t('editMetadata.title')}
             </label>
             <input
               type="text"
               value={editTitle}
               onChange={(e) => setEditTitle(e.target.value)}
               className="w-full border border-border-strong rounded px-3 py-2"
-              placeholder="Enter a title"
+              placeholder={t('editMetadata.titlePlaceholder')}
               disabled={isLoading}
               autoFocus
             />
@@ -85,12 +87,12 @@ export const EditMetadataModal = ({
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1">
-              Notes
+              {t('editMetadata.notes')}
             </label>
             <RichTextEditor
               value={editNotes}
               onChange={setEditNotes}
-              placeholder="Add notes"
+              placeholder={t('editMetadata.notesPlaceholder')}
               readOnly={isLoading}
               onSubmit={handleSave}
             />
@@ -103,7 +105,7 @@ export const EditMetadataModal = ({
             className="border border-border-strong px-4 py-2 rounded hover:bg-surface-inset transition-colors"
             disabled={isLoading}
           >
-            Cancel
+            {t('common:buttons.cancel')}
           </button>
           <button
             onClick={handleSave}
@@ -113,12 +115,12 @@ export const EditMetadataModal = ({
             {isLoading ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Saving...
+                {t('editMetadata.saving')}
               </>
             ) : (
               <>
                 <Save className="h-4 w-4" />
-                Save
+                {t('common:buttons.save')}
               </>
             )}
           </button>

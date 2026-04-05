@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import iCalendarPlugin from '@fullcalendar/icalendar';
@@ -37,6 +38,7 @@ export const CalendarPreviewModal = ({
   feedUrl,
   feedLabel,
 }: CalendarPreviewModalProps) => {
+  const { t } = useTranslation('settings');
   const calendarRef = useRef<FullCalendar>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -56,10 +58,10 @@ export const CalendarPreviewModal = ({
 
   const handleError = useCallback(() => {
     setError(
-      'Failed to load calendar feed. The feed URL may be invalid or unreachable.'
+      t('calendarFeeds.preview.errorMessage')
     );
     setIsLoading(false);
-  }, []);
+  }, [t]);
 
   const navigateTo = useCallback((date: Date) => {
     const api = calendarRef.current?.getApi();
@@ -118,7 +120,7 @@ export const CalendarPreviewModal = ({
       open={open}
       onClose={onClose}
       title={feedLabel}
-      subtitle="Calendar feed preview"
+      subtitle={t('calendarFeeds.preview.subtitle')}
       size="xl"
     >
       {isLoading && !error && (
@@ -162,7 +164,7 @@ export const CalendarPreviewModal = ({
               {''}
             </Button>
             <Button variant="secondary" size="sm" onClick={handleToday}>
-              Today
+              {t('calendarFeeds.preview.today')}
             </Button>
           </div>
 

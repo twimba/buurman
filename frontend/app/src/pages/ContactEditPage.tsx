@@ -1,4 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useContact, useUpdateContact } from '@/hooks/useContactHooks';
 import { ContactForm } from '@/components/contacts/ContactForm';
 import { UpdateContactRequest } from '@/types/contact';
@@ -7,6 +8,7 @@ import { ErrorMessage } from '@/components/ErrorMessage';
 import { ArrowLeft } from 'lucide-react';
 
 export const ContactEditPage = () => {
+  const { t } = useTranslation('tenants');
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: contact, isLoading, error } = useContact(id);
@@ -27,7 +29,7 @@ export const ContactEditPage = () => {
   if (error || !contact) {
     return (
       <div className="min-h-screen bg-surface-page p-8">
-        <ErrorMessage message="Failed to load contact" />
+        <ErrorMessage message={t('edit.failedToLoad')} />
       </div>
     );
   }
@@ -43,7 +45,7 @@ export const ContactEditPage = () => {
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <h1 className="text-2xl font-bold text-text-primary">Edit Contact</h1>
+          <h1 className="text-2xl font-bold text-text-primary">{t('edit.title')}</h1>
         </div>
 
         {/* Form */}

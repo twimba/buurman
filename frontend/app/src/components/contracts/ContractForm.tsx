@@ -31,6 +31,7 @@ import {
   useRemoveContractParty,
   useChangePrimaryContact,
 } from '@/hooks/useContractHooks';
+import { useTranslation } from 'react-i18next';
 
 interface ContractFormProps {
   contract?: ContractResponse;
@@ -104,6 +105,7 @@ export const ContractForm = ({
   prefilledPropertyId,
   prefilledContactId,
 }: ContractFormProps) => {
+  const { t } = useTranslation('contracts');
   const navigate = useNavigate();
   const { defaultCurrency } = useTeamDefaults();
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -259,13 +261,13 @@ export const ContractForm = ({
     const newErrors: Record<string, string> = {};
 
     if (!formData.propertyIdentifier) {
-      newErrors.propertyIdentifier = 'Property is required';
+      newErrors.propertyIdentifier = t('form.validation.propertyRequired');
     }
 
     // Validate primary contact
     if (!isEditing) {
       if (primaryMode === 'select' && !primaryContactId) {
-        newErrors.primaryContact = 'Primary contact is required';
+        newErrors.primaryContact = t('form.validation.contactRequired');
       } else if (primaryMode === 'create') {
         Object.assign(
           newErrors,
@@ -275,21 +277,21 @@ export const ContractForm = ({
     }
 
     if (!formData.startDate) {
-      newErrors.startDate = 'Start date is required';
+      newErrors.startDate = t('form.validation.startDateRequired');
     }
     if (formData.breakdownMode) {
       const hasBaseRent = formData.rentComponents.some(
         (c) => c.componentType === RentComponentType.BASE_RENT
       );
       if (!hasBaseRent) {
-        newErrors.rentComponents = 'Base rent component is required';
+        newErrors.rentComponents = t('form.validation.baseRentRequired');
       }
       const invalidAmounts = formData.rentComponents.some(
         (c) => typeof c.amount !== 'number' || c.amount <= 0
       );
       if (invalidAmounts) {
         newErrors.rentComponents =
-          'All component amounts must be greater than 0';
+          t('form.validation.componentAmountsPositive');
       }
       const missingOtherDesc = formData.rentComponents.some(
         (c) =>
@@ -298,7 +300,7 @@ export const ContractForm = ({
       );
       if (missingOtherDesc) {
         newErrors.rentComponents =
-          'Custom label is required for "Other" components';
+          t('form.validation.otherDescriptionRequired');
       }
       // Validate total > 0
       const total = formData.rentComponents.reduce(
@@ -306,10 +308,10 @@ export const ContractForm = ({
         0
       );
       if (total <= 0) {
-        newErrors.rentAmount = 'Rent amount must be greater than 0';
+        newErrors.rentAmount = t('form.validation.rentAmountPositive');
       }
     } else if (!formData.rentAmount || formData.rentAmount <= 0) {
-      newErrors.rentAmount = 'Rent amount must be greater than 0';
+      newErrors.rentAmount = t('form.validation.rentAmountPositive');
     }
     if (
       formData.rentAmount &&
@@ -494,7 +496,7 @@ export const ContractForm = ({
       {/* Property Selection */}
       <div>
         <h3 className="text-lg font-semibold text-text-primary mb-4">
-          {isEditing ? 'Property' : 'Property & Parties'}
+          {isEditing ? t('form.property') : t('form.propertyAndParties')}
         </h3>
         <div className="space-y-4">
           <div>

@@ -1,0 +1,136 @@
+{
+  "page": {
+    "title": "Despesas",
+    "subtitle": "Acompanhar despesas e custos dos imóveis"
+  },
+  "actions": {
+    "addExpense": "Adicionar Despesa"
+  },
+  "stats": {
+    "totalExpenses": "Total de Despesas",
+    "categorySummary": "em {{category}}",
+    "categorySummaryAll": "em {{count}} categorias",
+    "topCategories": "Categorias Principais",
+    "noData": "Sem dados disponíveis",
+    "lastSixMonths": "Últimos 6 Meses",
+    "tooltipExpenses": "Despesas"
+  },
+  "filters": {
+    "title": "Filtros",
+    "property": "Imóvel",
+    "category": "Categoria",
+    "allProperties": "Todos os Imóveis",
+    "allCategories": "Todas as Categorias"
+  },
+  "category": {
+    "MAINTENANCE": "Manutenção",
+    "REPAIR": "Reparação",
+    "UTILITY": "Utilidades",
+    "TAX": "Imposto",
+    "INSURANCE": "Seguro",
+    "LEGAL": "Jurídico",
+    "MARKETING": "Marketing",
+    "CLEANING": "Limpeza",
+    "LANDSCAPING": "Jardinagem",
+    "PROPERTY_MANAGEMENT": "Gestão de Imóveis",
+    "FEES": "Taxas",
+    "PROPERTY_TAX": "Imposto sobre Imóveis",
+    "OTHER": "Outro"
+  },
+  "table": {
+    "date": "Data",
+    "expenseNumber": "Despesa #",
+    "description": "Descrição",
+    "category": "Categoria",
+    "property": "Imóvel",
+    "amount": "Montante"
+  },
+  "empty": {
+    "title": "Nenhuma despesa encontrada",
+    "filtered": "Tente ajustar os seus filtros",
+    "noData": "Comece por registar a sua primeira despesa"
+  },
+  "card": {
+    "expenseId": "Despesa #{{id}}",
+    "property": "Imóvel",
+    "contact": "Contacto",
+    "amount": "Montante",
+    "expenseDate": "Data da Despesa",
+    "documentsAttached": "{{count}} documento(s) anexado(s)"
+  },
+  "form": {
+    "property": "Imóvel",
+    "category": "Categoria",
+    "contact": "Contacto",
+    "amount": "Montante",
+    "expenseDate": "Data da Despesa",
+    "description": "Descrição",
+    "descriptionPlaceholder": "p. ex., Reparação de canalização na casa de banho",
+    "notes": "Notas",
+    "notesPlaceholder": "Adicionar notas adicionais sobre esta despesa...",
+    "continueAdding": "Continuar a adicionar",
+    "today": "Hoje",
+    "updateExpense": "Atualizar",
+    "createExpense": "Criar",
+    "expenseSuffix": " Despesa",
+    "saving": "A guardar...",
+    "currency": "Moeda"
+  },
+  "validation": {
+    "propertyRequired": "O imóvel é obrigatório",
+    "amountRequired": "O montante deve ser superior a 0",
+    "currencyRequired": "A moeda é obrigatória",
+    "expenseDateRequired": "A data da despesa é obrigatória",
+    "descriptionRequired": "A descrição é obrigatória"
+  },
+  "create": {
+    "title": "Adicionar Nova Despesa",
+    "addedCount": "{{count}} despesa adicionada nesta sessão",
+    "addedCount_other": "{{count}} despesas adicionadas nesta sessão",
+    "single": "Individual",
+    "bulk": "Em massa"
+  },
+  "detail": {
+    "titlePrefix": "Despesa #{{id}}",
+    "expenseDetails": "Detalhes da Despesa",
+    "propertyAndContact": "Imóvel e Contacto",
+    "amount": "Montante",
+    "expenseDate": "Data da Despesa",
+    "category": "Categoria",
+    "description": "Descrição",
+    "property": "Imóvel",
+    "contact": "Contacto",
+    "noContactLinked": "Sem contacto associado",
+    "notes": "Notas",
+    "metadata": "Metadados",
+    "created": "Criado:",
+    "lastUpdated": "Última Atualização:",
+    "editExpense": "Editar Despesa"
+  },
+  "tabs": {
+    "details": "Detalhes",
+    "documents": "Documentos",
+    "history": "Histórico"
+  },
+  "history": {
+    "title": "Histórico de Despesas",
+    "empty": "Sem histórico disponível",
+    "emptySubtitle": "As alterações a esta despesa aparecerão aqui",
+    "clickToView": "Clique para ver alterações",
+    "clickToHide": "Clique para ocultar alterações",
+    "changedFields": "Campos Alterados",
+    "old": "Anterior:",
+    "new": "Novo:",
+    "impersonated": "Personificado"
+  },
+  "deleteDialog": {
+    "title": "Eliminar Despesa",
+    "message": "Tem a certeza de que pretende eliminar esta despesa? Esta ação não pode ser revertida.",
+    "messageWithRelated": "Tem a certeza de que pretende eliminar esta despesa? Todos os documentos relacionados também serão eliminados. Esta ação não pode ser revertida."
+  },
+  "errors": {
+    "loadFailed": "Falha ao carregar despesas",
+    "loadExpenseFailed": "Falha ao carregar despesa",
+    "loadHistoryFailed": "Falha ao carregar histórico"
+  }
+}
