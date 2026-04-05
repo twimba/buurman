@@ -39,7 +39,10 @@ export const CollapsibleSection = ({
           <span className="font-medium text-text-primary">{title}</span>
         </div>
         <span className="text-sm text-text-muted">
-          {t('collapsible.filledCount', { filled: filledCount, total: totalCount })}
+          {t('collapsible.filledCount', {
+            filled: filledCount,
+            total: totalCount,
+          })}
         </span>
       </button>
       {isOpen && (

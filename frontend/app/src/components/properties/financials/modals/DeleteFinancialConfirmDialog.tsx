@@ -55,7 +55,9 @@ export const DeleteFinancialConfirmDialog = ({
             type="button"
             onClick={onCancel}
             className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset"
-          >{t('common:buttons.cancel')}</button>
+          >
+            {t('common:buttons.cancel')}
+          </button>
           <button
             type="button"
             onClick={onConfirm}

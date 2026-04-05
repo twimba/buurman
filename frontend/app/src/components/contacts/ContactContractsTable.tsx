@@ -225,7 +225,10 @@ export const ContactContractsTable = ({
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-3 text-sm">
           <span className="text-text-secondary">
-            {t('contractsTable.page', { current: currentPage, total: totalPages })}
+            {t('contractsTable.page', {
+              current: currentPage,
+              total: totalPages,
+            })}
           </span>
           <div className="flex gap-2">
             <button

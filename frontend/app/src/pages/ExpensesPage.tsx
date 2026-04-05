@@ -177,11 +177,11 @@ export const ExpensesPage = () => {
           <div>
             <div className="flex items-center gap-3 mb-1">
               <Receipt className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-              <h1 className="text-3xl font-bold text-text-primary">{t('page.title')}</h1>
+              <h1 className="text-3xl font-bold text-text-primary">
+                {t('page.title')}
+              </h1>
             </div>
-            <p className="text-text-secondary ml-11">
-              {t('page.subtitle')}
-            </p>
+            <p className="text-text-secondary ml-11">{t('page.subtitle')}</p>
           </div>
           <div className="flex items-center gap-2">
             <RefreshButton
@@ -319,7 +319,9 @@ export const ExpensesPage = () => {
         <div className="mb-6 bg-surface-card rounded-lg border border-border-default p-4">
           <div className="flex items-center gap-2 mb-3">
             <Filter className="h-5 w-5 text-text-secondary " />
-            <h3 className="font-semibold text-text-primary">{t('filters.title')}</h3>
+            <h3 className="font-semibold text-text-primary">
+              {t('filters.title')}
+            </h3>
           </div>
 
           <div className="flex flex-col gap-4">

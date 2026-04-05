@@ -100,7 +100,9 @@ export default function GeneratePaymentsModal({
               disabled={isLoading}
             >
               <CalendarCheck className="h-4 w-4" />
-              {isLoading ? t('common:buttons.loading') : t('payments.generateAndMarkPaid')}
+              {isLoading
+                ? t('common:buttons.loading')
+                : t('payments.generateAndMarkPaid')}
             </button>
           </div>
         </form>

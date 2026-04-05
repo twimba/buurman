@@ -144,7 +144,9 @@ export const ChangeContractStatusModal = ({
               </>
             ) : (
               <div className="text-sm text-text-secondary">
-                {t('statusChange.noTransitions', { status: statusLabels[currentStatus] })}
+                {t('statusChange.noTransitions', {
+                  status: statusLabels[currentStatus],
+                })}
               </div>
             )}
           </div>
@@ -165,7 +167,9 @@ export const ChangeContractStatusModal = ({
                 className="px-4 py-2 text-sm font-medium text-white bg-primary-500 rounded-md hover:bg-primary-600 disabled:opacity-50"
                 disabled={isLoading}
               >
-                {isLoading ? t('statusChange.changing') : t('statusChange.confirm')}
+                {isLoading
+                  ? t('statusChange.changing')
+                  : t('statusChange.confirm')}
               </button>
             )}
           </div>

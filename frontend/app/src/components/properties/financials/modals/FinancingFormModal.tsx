@@ -171,7 +171,9 @@ export const FinancingFormModal = ({
       <div className="bg-surface-card rounded-lg shadow-xl dark:shadow-black/20 max-w-lg w-full mx-4 max-h-[90vh] flex flex-col">
         <div className="flex items-center justify-between p-4 border-b border-border-strong flex-shrink-0">
           <h2 className="text-lg font-semibold text-text-primary">
-            {existing ? t('financials.modals.editFinancing') : t('financials.modals.addFinancing')}
+            {existing
+              ? t('financials.modals.editFinancing')
+              : t('financials.modals.addFinancing')}
           </h2>
           <button
             type="button"
@@ -189,7 +191,8 @@ export const FinancingFormModal = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>
-                {t('financials.labels.financingType')} <span className="text-error-text">*</span>
+                {t('financials.labels.financingType')}{' '}
+                <span className="text-error-text">*</span>
               </label>
               <select
                 value={formData.financingType ?? ''}
@@ -206,7 +209,9 @@ export const FinancingFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>{t('financials.labels.rateType')}</label>
+              <label className={labelClass}>
+                {t('financials.labels.rateType')}
+              </label>
               <select
                 value={formData.rateType ?? ''}
                 onChange={(e) =>
@@ -224,7 +229,9 @@ export const FinancingFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>{t('financials.labels.lenderName')}</label>
+              <label className={labelClass}>
+                {t('financials.labels.lenderName')}
+              </label>
               <input
                 type="text"
                 value={formData.lenderName ?? ''}
@@ -236,7 +243,9 @@ export const FinancingFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>{t('financials.labels.loanNumber')}</label>
+              <label className={labelClass}>
+                {t('financials.labels.loanNumber')}
+              </label>
               <input
                 type="text"
                 value={formData.loanNumber ?? ''}
@@ -249,7 +258,8 @@ export const FinancingFormModal = ({
 
             <div className="min-w-0">
               <label className={labelClass}>
-                {t('financials.labels.originalAmount')} <span className="text-error-text">*</span>
+                {t('financials.labels.originalAmount')}{' '}
+                <span className="text-error-text">*</span>
               </label>
               <MoneyInput
                 value={formData.originalAmount}
@@ -261,7 +271,9 @@ export const FinancingFormModal = ({
             </div>
 
             <div className="min-w-0">
-              <label className={labelClass}>{t('financials.labels.currentBalance')}</label>
+              <label className={labelClass}>
+                {t('financials.labels.currentBalance')}
+              </label>
               <MoneyInput
                 value={formData.currentBalance}
                 onChange={(v) => update('currentBalance', v)}
@@ -272,7 +284,9 @@ export const FinancingFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>{t('financials.labels.interestRate')} (%)</label>
+              <label className={labelClass}>
+                {t('financials.labels.interestRate')} (%)
+              </label>
               <div className="relative">
                 <input
                   type="number"
@@ -297,7 +311,9 @@ export const FinancingFormModal = ({
             <div
               className={`min-w-0 ${formData.paymentVariable ? 'opacity-50 pointer-events-none' : ''}`}
             >
-              <label className={labelClass}>{t('financials.labels.monthlyPayment')}</label>
+              <label className={labelClass}>
+                {t('financials.labels.monthlyPayment')}
+              </label>
               <MoneyInput
                 value={formData.monthlyPayment}
                 onChange={(v) => update('monthlyPayment', v)}
@@ -315,13 +331,16 @@ export const FinancingFormModal = ({
                   onChange={(e) => update('paymentVariable', e.target.checked)}
                   className="rounded border-border-strong text-primary-500 focus:ring-primary-500"
                 />
-                <span className="text-sm text-text-secondary">{t('financials.labels.variablePayment')}</span>
+                <span className="text-sm text-text-secondary">
+                  {t('financials.labels.variablePayment')}
+                </span>
               </label>
             </div>
 
             <div>
               <label className={labelClass}>
-                {t('financials.labels.startDate')} <span className="text-error-text">*</span>
+                {t('financials.labels.startDate')}{' '}
+                <span className="text-error-text">*</span>
               </label>
               <input
                 type="date"
@@ -333,7 +352,9 @@ export const FinancingFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>{t('financials.labels.endDate')}</label>
+              <label className={labelClass}>
+                {t('financials.labels.endDate')}
+              </label>
               <input
                 type="date"
                 value={formData.endDate ?? ''}
@@ -343,7 +364,9 @@ export const FinancingFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>{t('financials.labels.termMonths')}</label>
+              <label className={labelClass}>
+                {t('financials.labels.termMonths')}
+              </label>
               <input
                 type="number"
                 value={formData.termMonths ?? ''}
@@ -359,7 +382,9 @@ export const FinancingFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>{t('financials.labels.status')}</label>
+              <label className={labelClass}>
+                {t('financials.labels.status')}
+              </label>
               <select
                 value={formData.status ?? ''}
                 onChange={(e) => update('status', e.target.value || undefined)}
@@ -374,7 +399,9 @@ export const FinancingFormModal = ({
             </div>
 
             <div className="col-span-2">
-              <label className={labelClass}>{t('financials.labels.notes')}</label>
+              <label className={labelClass}>
+                {t('financials.labels.notes')}
+              </label>
               <RichTextEditor
                 value={formData.notes ?? ''}
                 onChange={(value) => update('notes', value || undefined)}
@@ -389,14 +416,20 @@ export const FinancingFormModal = ({
             type="button"
             onClick={onClose}
             className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset"
-          >{t('common:buttons.cancel')}</button>
+          >
+            {t('common:buttons.cancel')}
+          </button>
           <button
             type="submit"
             onClick={handleSubmit}
             disabled={isLoading}
             className="bg-primary-500 text-white px-4 py-2 text-sm font-medium rounded-md hover:bg-primary-600 disabled:opacity-50"
           >
-            {isLoading ? t('financials.saving') : existing ? t('common:buttons.saveChanges') : t('common:buttons.create')}
+            {isLoading
+              ? t('financials.saving')
+              : existing
+                ? t('common:buttons.saveChanges')
+                : t('common:buttons.create')}
           </button>
         </div>
       </div>

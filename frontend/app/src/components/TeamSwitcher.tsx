@@ -166,7 +166,11 @@ export const TeamSwitcher = () => {
                             </div>
                             <div className="flex items-center gap-1">
                               <Users className="h-3 w-3" />
-                              <span>{t('teamSwitcher.members', { count: team.memberCount })}</span>
+                              <span>
+                                {t('teamSwitcher.members', {
+                                  count: team.memberCount,
+                                })}
+                              </span>
                             </div>
                           </div>
 
@@ -197,7 +201,8 @@ export const TeamSwitcher = () => {
                     <Star className="h-3.5 w-3.5 text-primary-500" />
                   </div>
                   <p>
-                    <strong>{t('teamSwitcher.defaultTeam')}</strong> {t('teamSwitcher.defaultTeamDescription')}
+                    <strong>{t('teamSwitcher.defaultTeam')}</strong>{' '}
+                    {t('teamSwitcher.defaultTeamDescription')}
                   </p>
                 </div>
               </div>

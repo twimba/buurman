@@ -52,15 +52,16 @@ export function ImpersonationBanner() {
   return (
     <div className="fixed top-0 left-0 right-0 z-[9999] bg-amber-500 text-amber-950 px-4 py-2 text-center text-sm font-medium shadow-md">
       <span>
-        {t('impersonation.active')} — {t('impersonation.admin')}: <strong>{displayName}</strong>
+        {t('impersonation.active')} — {t('impersonation.admin')}:{' '}
+        <strong>{displayName}</strong>
         {isReadOnly && (
           <span className="inline-flex items-center gap-1 ml-1">
-            <Lock className="inline h-3 w-3" />
-            ({t('impersonation.readOnly')})
+            <Lock className="inline h-3 w-3" />({t('impersonation.readOnly')})
           </span>
         )}
         {' · '}
-        {t('impersonation.timeRemaining')}: <strong>{formatTime(remainingSeconds)}</strong>
+        {t('impersonation.timeRemaining')}:{' '}
+        <strong>{formatTime(remainingSeconds)}</strong>
       </span>
       {reason && (
         <span

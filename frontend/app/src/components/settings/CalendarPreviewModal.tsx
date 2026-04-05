@@ -57,9 +57,7 @@ export const CalendarPreviewModal = ({
   }, []);
 
   const handleError = useCallback(() => {
-    setError(
-      t('calendarFeeds.preview.errorMessage')
-    );
+    setError(t('calendarFeeds.preview.errorMessage'));
     setIsLoading(false);
   }, [t]);
 

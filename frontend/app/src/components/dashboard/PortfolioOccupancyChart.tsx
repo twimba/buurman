@@ -59,7 +59,9 @@ export const PortfolioOccupancyChart = ({
 
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-80 text-text-secondary text-sm">{t("dashboard.occupancy.noData")}</div>
+      <div className="flex items-center justify-center h-80 text-text-secondary text-sm">
+        {t('dashboard.occupancy.noData')}
+      </div>
     );
   }
 
@@ -95,7 +97,9 @@ export const PortfolioOccupancyChart = ({
           labelFormatter={(label) => formatMonthTick(String(label))}
           formatter={(value, name) => {
             const labels: Record<string, string> = {
-              contactOccupancyPercent: t('dashboard.occupancy.contactOccupancy'),
+              contactOccupancyPercent: t(
+                'dashboard.occupancy.contactOccupancy'
+              ),
               selfOccupancyPercent: t('dashboard.occupancy.selfOccupancy'),
             };
             return [
@@ -107,7 +111,9 @@ export const PortfolioOccupancyChart = ({
         <Legend
           formatter={(value) => {
             const labels: Record<string, string> = {
-              contactOccupancyPercent: t('dashboard.occupancy.contactOccupancy'),
+              contactOccupancyPercent: t(
+                'dashboard.occupancy.contactOccupancy'
+              ),
               selfOccupancyPercent: t('dashboard.occupancy.selfOccupancy'),
             };
             return labels[value] ?? value;

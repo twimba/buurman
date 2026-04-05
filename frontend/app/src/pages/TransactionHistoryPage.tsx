@@ -493,7 +493,9 @@ export const TransactionHistoryPage = () => {
         </div>
       ) : filteredAndSortedTransactions.length === 0 ? (
         <div className="bg-surface-card rounded-lg shadow-sm p-12 text-center">
-          <p className="text-text-secondary">{t('transactions.noTransactions')}</p>
+          <p className="text-text-secondary">
+            {t('transactions.noTransactions')}
+          </p>
         </div>
       ) : (
         <div className="bg-surface-card rounded-lg shadow-sm overflow-hidden">

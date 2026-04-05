@@ -47,11 +47,15 @@ export const PendingInvitationsPanel = () => {
           <Users className="h-5 w-5 text-primary-500" />
         </div>
         <div>
-          <h2 className="text-lg font-semibold text-text-primary">{t("dashboard.pendingInvitations.title")}</h2>
+          <h2 className="text-lg font-semibold text-text-primary">
+            {t('dashboard.pendingInvitations.title')}
+          </h2>
           <p className="text-sm text-text-secondary">
             {invitations.length === 1
               ? t('dashboard.pendingInvitations.invitedToOne')
-              : t('dashboard.pendingInvitations.invitedToMany', { count: invitations.length })}
+              : t('dashboard.pendingInvitations.invitedToMany', {
+                  count: invitations.length,
+                })}
           </p>
         </div>
       </div>
@@ -78,7 +82,13 @@ export const PendingInvitationsPanel = () => {
                   </span>
                 </div>
                 <p className="text-xs text-text-secondary">
-                  {t('dashboard.pendingInvitations.invitedBy', { name: inv.inviterName })} &middot; {t('dashboard.pendingInvitations.expires', { date: formatDate(inv.expiresAt) })}
+                  {t('dashboard.pendingInvitations.invitedBy', {
+                    name: inv.inviterName,
+                  })}{' '}
+                  &middot;{' '}
+                  {t('dashboard.pendingInvitations.expires', {
+                    date: formatDate(inv.expiresAt),
+                  })}
                 </p>
               </div>
             </div>

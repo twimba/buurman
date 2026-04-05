@@ -148,9 +148,7 @@ export const PropertyContractsTab = ({
         ) : contracts.length === 0 ? (
           <div className="text-center py-12">
             <FileText className="h-12 w-12 text-text-disabled mx-auto mb-3" />
-            <p className="text-text-secondary mb-4">
-              {t('contracts.empty')}
-            </p>
+            <p className="text-text-secondary mb-4">{t('contracts.empty')}</p>
             <button
               onClick={() =>
                 navigate(`/contracts/new?propertyId=${propertyId}`)

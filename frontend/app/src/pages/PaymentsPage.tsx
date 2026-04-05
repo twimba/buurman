@@ -183,11 +183,11 @@ export const PaymentsPage = () => {
           <div>
             <div className="flex items-center gap-3 mb-1">
               <DollarSign className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-              <h1 className="text-3xl font-bold text-text-primary">{t('page.title')}</h1>
+              <h1 className="text-3xl font-bold text-text-primary">
+                {t('page.title')}
+              </h1>
             </div>
-            <p className="text-text-secondary ml-11">
-              {t('page.subtitle')}
-            </p>
+            <p className="text-text-secondary ml-11">{t('page.subtitle')}</p>
           </div>
           <div className="flex items-center gap-2">
             <RefreshButton
@@ -262,7 +262,9 @@ export const PaymentsPage = () => {
                     {fmtMoney(paymentStats.overdueAmount, statsCurrency)}
                   </p>
                   <p className="text-sm text-error-text mt-1 font-medium">
-                    {t('stats.overdueCount', { count: paymentStats.overdueCount })}
+                    {t('stats.overdueCount', {
+                      count: paymentStats.overdueCount,
+                    })}
                   </p>
                   <p className="text-xs text-error-text mt-2">
                     {t('stats.overdueAction')}
@@ -333,7 +335,9 @@ export const PaymentsPage = () => {
         <div className="mb-6 bg-surface-card rounded-lg border border-border-default p-4">
           <div className="flex items-center gap-2 mb-3">
             <Filter className="h-5 w-5 text-text-secondary " />
-            <h3 className="font-semibold text-text-primary">{t('filters.title')}</h3>
+            <h3 className="font-semibold text-text-primary">
+              {t('filters.title')}
+            </h3>
           </div>
 
           <div className="flex flex-col gap-4">
@@ -490,7 +494,12 @@ export const PaymentsPage = () => {
                           {payment.receivedAmount > 0 &&
                             payment.status !== PaymentStatus.PAID && (
                               <p className="text-xs text-text-secondary">
-                                {t('table.balance', { amount: fmtMoney(payment.balance ?? 0, payment.currency) })}
+                                {t('table.balance', {
+                                  amount: fmtMoney(
+                                    payment.balance ?? 0,
+                                    payment.currency
+                                  ),
+                                })}
                               </p>
                             )}
                         </div>

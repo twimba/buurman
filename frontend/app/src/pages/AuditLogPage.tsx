@@ -65,22 +65,28 @@ export const AuditLogPage = () => {
   const { formatDate } = useFormatDate();
   const { canEditTeamSettings, isLoading: isTeamLoading } = useTeam();
 
-  const entityTypeFilters = useMemo(() => [
-    { value: undefined, label: t('common:auditLog.allTypes') },
-    { value: 'PROPERTY', label: t('common:auditLog.entityTypes.property') },
-    { value: 'CONTACT', label: t('common:auditLog.entityTypes.contact') },
-    { value: 'CONTRACT', label: t('common:auditLog.entityTypes.contract') },
-    { value: 'PAYMENT', label: t('common:auditLog.entityTypes.payment') },
-    { value: 'EXPENSE', label: t('common:auditLog.entityTypes.expense') },
-  ], [t]);
+  const entityTypeFilters = useMemo(
+    () => [
+      { value: undefined, label: t('common:auditLog.allTypes') },
+      { value: 'PROPERTY', label: t('common:auditLog.entityTypes.property') },
+      { value: 'CONTACT', label: t('common:auditLog.entityTypes.contact') },
+      { value: 'CONTRACT', label: t('common:auditLog.entityTypes.contract') },
+      { value: 'PAYMENT', label: t('common:auditLog.entityTypes.payment') },
+      { value: 'EXPENSE', label: t('common:auditLog.entityTypes.expense') },
+    ],
+    [t]
+  );
 
-  const actionFilters = useMemo(() => [
-    { value: undefined, label: t('common:auditLog.allActions') },
-    { value: 'CREATE', label: t('common:auditLog.actions.created') },
-    { value: 'UPDATE', label: t('common:auditLog.actions.updated') },
-    { value: 'DELETE', label: t('common:auditLog.actions.deleted') },
-    { value: 'RESTORE', label: t('common:auditLog.actions.restored') },
-  ], [t]);
+  const actionFilters = useMemo(
+    () => [
+      { value: undefined, label: t('common:auditLog.allActions') },
+      { value: 'CREATE', label: t('common:auditLog.actions.created') },
+      { value: 'UPDATE', label: t('common:auditLog.actions.updated') },
+      { value: 'DELETE', label: t('common:auditLog.actions.deleted') },
+      { value: 'RESTORE', label: t('common:auditLog.actions.restored') },
+    ],
+    [t]
+  );
 
   useEffect(() => {
     if (!isTeamLoading && !canEditTeamSettings) {
@@ -212,7 +218,9 @@ export const AuditLogPage = () => {
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <Filter className="h-5 w-5 text-text-secondary " />
-                <h3 className="font-semibold text-text-primary">{t('common:auditLog.entityType')}</h3>
+                <h3 className="font-semibold text-text-primary">
+                  {t('common:auditLog.entityType')}
+                </h3>
               </div>
               <div className="flex gap-2 flex-wrap">
                 {entityTypeFilters.map((filter) => (
@@ -238,7 +246,9 @@ export const AuditLogPage = () => {
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <Filter className="h-5 w-5 text-text-secondary " />
-                <h3 className="font-semibold text-text-primary">{t('common:auditLog.action')}</h3>
+                <h3 className="font-semibold text-text-primary">
+                  {t('common:auditLog.action')}
+                </h3>
               </div>
               <div className="flex gap-2 flex-wrap">
                 {actionFilters.map((filter) => (
@@ -264,7 +274,9 @@ export const AuditLogPage = () => {
 
         {/* Activity Count */}
         <p className="text-sm text-text-secondary mb-4">
-          {t('common:auditLog.activityCount', { count: activitiesData?.totalElements ?? 0 })}
+          {t('common:auditLog.activityCount', {
+            count: activitiesData?.totalElements ?? 0,
+          })}
         </p>
 
         {/* Activities Table */}

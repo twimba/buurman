@@ -235,9 +235,7 @@ export const OnboardingWizard = ({
                     }`}
                   >
                     <span>{lang.label}</span>
-                    {language === lang.value && (
-                      <Check className="h-4 w-4" />
-                    )}
+                    {language === lang.value && <Check className="h-4 w-4" />}
                   </button>
                 ))}
               </div>
@@ -323,7 +321,9 @@ export const OnboardingWizard = ({
                     >
                       <div className="flex items-center gap-1.5 mb-2">
                         <span className="text-[10px] font-semibold uppercase tracking-wider text-success-text bg-success-bg px-1.5 py-0.5 rounded">
-                          {t('onboarding.suggestedFor', { country: countryName })}
+                          {t('onboarding.suggestedFor', {
+                            country: countryName,
+                          })}
                         </span>
                         {isSuggested && (
                           <span className="text-[10px] font-semibold uppercase tracking-wider text-primary-500 bg-primary-500/10 px-1.5 py-0.5 rounded">
@@ -463,21 +463,27 @@ export const OnboardingWizard = ({
                 </h4>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-text-secondary">{t('onboarding.summaryLanguage')}</span>
+                    <span className="text-text-secondary">
+                      {t('onboarding.summaryLanguage')}
+                    </span>
                     <span className="font-medium text-text-primary">
                       {supportedLanguages.find((l) => l.value === language)
                         ?.label ?? language}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-text-secondary">{t('onboarding.summaryCountry')}</span>
+                    <span className="text-text-secondary">
+                      {t('onboarding.summaryCountry')}
+                    </span>
                     <span className="font-medium text-text-primary">
                       {getCountryByCode(country)?.flag}{' '}
                       {COUNTRIES.find((c) => c.code === country)?.name}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-text-secondary">{t('onboarding.summaryCurrency')}</span>
+                    <span className="text-text-secondary">
+                      {t('onboarding.summaryCurrency')}
+                    </span>
                     <span className="font-medium text-text-primary">
                       {getCurrencyFlag(currency)} {currency}
                       {getCurrencyByCode(currencyList, currency) && (
@@ -488,7 +494,9 @@ export const OnboardingWizard = ({
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-text-secondary">{t('onboarding.summaryDateFormat')}</span>
+                    <span className="text-text-secondary">
+                      {t('onboarding.summaryDateFormat')}
+                    </span>
                     <span className="font-medium text-text-primary">
                       {dateFormat}
                     </span>

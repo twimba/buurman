@@ -362,7 +362,9 @@ export const ContactForm = ({
 
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                {isCompanyLike ? t('form.contactPersonFirstName') : t('form.firstName')}
+                {isCompanyLike
+                  ? t('form.contactPersonFirstName')
+                  : t('form.firstName')}
                 {isIndividual && <span className="text-error-text"> *</span>}
               </label>
               <input
@@ -381,7 +383,9 @@ export const ContactForm = ({
 
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">
-                {isCompanyLike ? t('form.contactPersonLastName') : t('form.lastName')}
+                {isCompanyLike
+                  ? t('form.contactPersonLastName')
+                  : t('form.lastName')}
               </label>
               <input
                 type="text"

@@ -206,7 +206,9 @@ export const ContractPaymentInstructionSection = ({
             leftIcon={current ? <Edit /> : <Plus />}
             onClick={current ? handleChange : () => setShowForm(true)}
           >
-            {current ? t('common:buttons.edit') : t('overview.paymentInstruction')}
+            {current
+              ? t('common:buttons.edit')
+              : t('overview.paymentInstruction')}
           </Button>
         )}
       </div>

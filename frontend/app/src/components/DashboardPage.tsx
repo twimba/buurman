@@ -197,7 +197,9 @@ export const DashboardPage = () => {
         {/* Total Properties */}
         <div className="bg-surface-card rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-border-default hover:border-info-border">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-text-secondary">{t("dashboard.totalProperties")}</h3>
+            <h3 className="text-sm font-medium text-text-secondary">
+              {t('dashboard.totalProperties')}
+            </h3>
             <div className="p-2 bg-primary-100 rounded-lg">
               <Home className="h-5 w-5 text-primary-500" />
             </div>
@@ -205,13 +207,17 @@ export const DashboardPage = () => {
           <div className="text-3xl font-bold text-text-primary">
             {stats?.totalProperties ?? 0}
           </div>
-          <div className="text-sm text-text-secondary mt-2">{t("dashboard.activeProperties")}</div>
+          <div className="text-sm text-text-secondary mt-2">
+            {t('dashboard.activeProperties')}
+          </div>
         </div>
 
         {/* Occupied Units */}
         <div className="bg-surface-card rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-border-default hover:border-success-border">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-text-secondary">{t("dashboard.occupied")}</h3>
+            <h3 className="text-sm font-medium text-text-secondary">
+              {t('dashboard.occupied')}
+            </h3>
             <div className="p-2 bg-success-bg rounded-lg">
               <Users className="h-5 w-5 text-success-text" />
             </div>
@@ -223,7 +229,8 @@ export const DashboardPage = () => {
             {stats?.selfOccupiedUnits
               ? `${stats.selfOccupiedUnits} ${t('dashboard.selfOccupied')},`
               : ''}
-            {stats?.vacantUnits ?? 0} {t('dashboard.vacant')}, {stats?.maintenanceUnits ?? 0} {t('dashboard.inMaintenance')}
+            {stats?.vacantUnits ?? 0} {t('dashboard.vacant')},{' '}
+            {stats?.maintenanceUnits ?? 0} {t('dashboard.inMaintenance')}
           </div>
         </div>
 
@@ -231,7 +238,7 @@ export const DashboardPage = () => {
         <div className="bg-surface-card rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-border-default hover:border-primary-200">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-text-secondary">
-              <MetricHint label={t("dashboard.occupancyRate")} />
+              <MetricHint label={t('dashboard.occupancyRate')} />
             </h3>
             <div className="p-2 bg-primary-50 rounded-lg">
               <TrendingUp className="h-5 w-5 text-primary-700" />
@@ -240,13 +247,17 @@ export const DashboardPage = () => {
           <div className="text-3xl font-bold text-text-primary">
             {stats?.occupancyRate?.toFixed(1) ?? 0}%
           </div>
-          <div className="text-sm text-text-secondary mt-2">{t("dashboard.currentOccupancy")}</div>
+          <div className="text-sm text-text-secondary mt-2">
+            {t('dashboard.currentOccupancy')}
+          </div>
         </div>
 
         {/* Monthly Income */}
         <div className="bg-surface-card rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow duration-300 border border-border-default hover:border-success-border">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-text-secondary">{t("dashboard.monthlyIncome")}</h3>
+            <h3 className="text-sm font-medium text-text-secondary">
+              {t('dashboard.monthlyIncome')}
+            </h3>
             <div className="p-2 bg-success-bg rounded-lg">
               <DollarSign className="h-5 w-5 text-success-text" />
             </div>
@@ -264,7 +275,9 @@ export const DashboardPage = () => {
                   maximumFractionDigits: 0,
                 })}
           </div>
-          <div className="text-sm text-text-secondary mt-2">{t("dashboard.expectedRevenue")}</div>
+          <div className="text-sm text-text-secondary mt-2">
+            {t('dashboard.expectedRevenue')}
+          </div>
         </div>
       </div>
 
@@ -316,7 +329,9 @@ export const DashboardPage = () => {
 
           return (
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-              <h2 className="text-base font-semibold text-text-primary mb-5">{t("dashboard.propertyStatus")}</h2>
+              <h2 className="text-base font-semibold text-text-primary mb-5">
+                {t('dashboard.propertyStatus')}
+              </h2>
 
               {/* Stacked horizontal bar */}
               <div className="flex h-3 rounded-full overflow-hidden mb-6">
@@ -369,7 +384,9 @@ export const DashboardPage = () => {
       <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <h2 className="text-xl font-semibold text-text-primary">{t("dashboard.unpaidPayments")}</h2>
+            <h2 className="text-xl font-semibold text-text-primary">
+              {t('dashboard.unpaidPayments')}
+            </h2>
             {unpaidPayments.length > 0 && (
               <span className="px-2.5 py-0.5 rounded-full text-sm font-medium bg-warning-bg text-warning-text">
                 {unpaidPayments.length}
@@ -379,7 +396,9 @@ export const DashboardPage = () => {
           <div className="flex items-center gap-4">
             {unpaidPayments.length > 0 && (
               <div className="text-right">
-                <div className="text-sm text-text-secondary">{t('dashboard.totalPending')}</div>
+                <div className="text-sm text-text-secondary">
+                  {t('dashboard.totalPending')}
+                </div>
                 <div className="text-lg font-bold text-warning-text">
                   {pendingCurrency}
                   {totalPending.toLocaleString(undefined, {
@@ -392,7 +411,9 @@ export const DashboardPage = () => {
             <button
               onClick={() => navigate('/payments')}
               className="text-sm text-primary-500 hover:text-primary-600 font-medium flex items-center gap-1"
-            >{t('dashboard.viewAll')}<ArrowRight className="h-4 w-4" />
+            >
+              {t('dashboard.viewAll')}
+              <ArrowRight className="h-4 w-4" />
             </button>
           </div>
         </div>
@@ -431,8 +452,8 @@ export const DashboardPage = () => {
                           }
                           className="text-sm font-medium text-text-primary hover:text-primary-500 truncate"
                         >
-                          {payment.property?.street || t('dashboard.payment')} &mdash;{' '}
-                          {payment.contact?.firstName}{' '}
+                          {payment.property?.street || t('dashboard.payment')}{' '}
+                          &mdash; {payment.contact?.firstName}{' '}
                           {payment.contact?.lastName}
                         </button>
                         <span
@@ -485,7 +506,11 @@ export const DashboardPage = () => {
                 <button
                   onClick={() => navigate('/payments')}
                   className="text-sm text-primary-500 hover:text-primary-600 font-medium"
-                >{t('dashboard.moreUnpaid', { count: unpaidPayments.length - 10 })}</button>
+                >
+                  {t('dashboard.moreUnpaid', {
+                    count: unpaidPayments.length - 10,
+                  })}
+                </button>
               </div>
             )}
           </div>

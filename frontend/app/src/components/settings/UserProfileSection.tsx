@@ -527,7 +527,9 @@ export const UserProfileSection = () => {
                     {resendMutation.isPending
                       ? t('profile.verification.sending')
                       : cooldown > 0
-                        ? t('profile.verification.resendIn', { seconds: cooldown })
+                        ? t('profile.verification.resendIn', {
+                            seconds: cooldown,
+                          })
                         : t('profile.verification.resendCode')}
                   </button>
                   <span className="text-text-disabled">|</span>
@@ -599,7 +601,9 @@ export const UserProfileSection = () => {
             <div className="flex items-center gap-3">
               <Lock className="h-5 w-5 text-text-secondary " />
               <div>
-                <p className="font-medium text-text-primary">{t('security.password')}</p>
+                <p className="font-medium text-text-primary">
+                  {t('security.password')}
+                </p>
                 <p className="text-sm text-text-secondary">
                   {t('security.passwordNote')}
                 </p>

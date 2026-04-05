@@ -130,7 +130,9 @@ export const VerifyEmailPage: React.FC = () => {
       setTimeout(() => navigate('/dashboard', { replace: true }), 2000);
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
-      setError(error.response?.data?.message || t('common:verifyEmail.invalidCode'));
+      setError(
+        error.response?.data?.message || t('common:verifyEmail.invalidCode')
+      );
       setDigits(['', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
     }
@@ -157,7 +159,9 @@ export const VerifyEmailPage: React.FC = () => {
             <h2 className="text-2xl font-bold text-text-primary mb-2">
               {t('common:verifyEmail.verifying')}
             </h2>
-            <p className="text-text-secondary">{t('common:verifyEmail.pleaseWait')}</p>
+            <p className="text-text-secondary">
+              {t('common:verifyEmail.pleaseWait')}
+            </p>
           </div>
         </div>
       </div>
@@ -175,7 +179,9 @@ export const VerifyEmailPage: React.FC = () => {
             <h2 className="text-2xl font-bold text-text-primary mb-2">
               {t('common:verifyEmail.verified')}
             </h2>
-            <p className="text-text-secondary">{t('common:verifyEmail.redirecting')}</p>
+            <p className="text-text-secondary">
+              {t('common:verifyEmail.redirecting')}
+            </p>
           </div>
         </div>
       </div>
@@ -235,7 +241,9 @@ export const VerifyEmailPage: React.FC = () => {
               disabled={verifyMutation.isPending || digits.some((d) => !d)}
               className="w-full bg-primary-500 text-white py-3 px-6 rounded-lg hover:bg-primary-600 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {verifyMutation.isPending ? t('common:verifyEmail.verifyingButton') : t('common:verifyEmail.verifyButton')}
+              {verifyMutation.isPending
+                ? t('common:verifyEmail.verifyingButton')
+                : t('common:verifyEmail.verifyButton')}
             </button>
           </form>
 

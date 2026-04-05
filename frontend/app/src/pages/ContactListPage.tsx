@@ -47,11 +47,12 @@ export const ContactListPage = () => {
   const { canEditData } = useTeam();
 
   const SORT_OPTIONS = useMemo(
-    () => [
-      { value: 'createdAt', label: t('list.sort.dateCreated') },
-      { value: 'displayName', label: t('list.sort.name') },
-      { value: 'activeContractCount', label: t('list.sort.activeContracts') },
-    ] as const,
+    () =>
+      [
+        { value: 'createdAt', label: t('list.sort.dateCreated') },
+        { value: 'displayName', label: t('list.sort.name') },
+        { value: 'activeContractCount', label: t('list.sort.activeContracts') },
+      ] as const,
     [t]
   );
   const [searchTerm, setSearchTerm] = useState('');
@@ -304,11 +305,11 @@ export const ContactListPage = () => {
           <div>
             <div className="flex items-center gap-3 mb-1">
               <Users className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-              <h1 className="text-3xl font-bold text-text-primary">{t('list.title')}</h1>
+              <h1 className="text-3xl font-bold text-text-primary">
+                {t('list.title')}
+              </h1>
             </div>
-            <p className="text-text-secondary ml-11">
-              {t('list.subtitle')}
-            </p>
+            <p className="text-text-secondary ml-11">{t('list.subtitle')}</p>
           </div>
           <div className="flex items-center gap-2">
             <RefreshButton
@@ -393,7 +394,9 @@ export const ContactListPage = () => {
             <button
               onClick={() => handleSortChange(sort ?? 'createdAt')}
               className="px-2 py-2 border border-border-strong rounded bg-surface-card text-text-secondary hover:border-primary-500 text-sm"
-              title={direction === 'asc' ? t('list.sortAsc') : t('list.sortDesc')}
+              title={
+                direction === 'asc' ? t('list.sortAsc') : t('list.sortDesc')
+              }
             >
               {direction === 'asc' ? '↑' : '↓'}
             </button>
@@ -554,7 +557,11 @@ export const ContactListPage = () => {
                         }));
                       }
                     }}
-                    placeholder={quickAdd.contactType === 'INDIVIDUAL' ? t('list.quickAddForm.firstNameRequired') : t('list.quickAddForm.firstName')}
+                    placeholder={
+                      quickAdd.contactType === 'INDIVIDUAL'
+                        ? t('list.quickAddForm.firstNameRequired')
+                        : t('list.quickAddForm.firstName')
+                    }
                     className={`w-full border rounded px-3 py-2 text-sm bg-surface-card text-text-primary ${
                       quickAddErrors.firstName
                         ? 'border-error-text'
@@ -640,7 +647,9 @@ export const ContactListPage = () => {
                     className="bg-primary-500 text-white px-4 py-1.5 text-sm rounded hover:bg-primary-600 transition-colors flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Save className="h-3.5 w-3.5" />
-                    {createMutation.isPending ? t('list.quickAddForm.creating') : t('common:buttons.create')}
+                    {createMutation.isPending
+                      ? t('list.quickAddForm.creating')
+                      : t('common:buttons.create')}
                   </button>
                   {quickAddDupBlocking && (
                     <div className="absolute bottom-full right-0 mb-2 px-3 py-2 text-xs font-medium text-white bg-neutral-800 dark:bg-neutral-700 rounded-lg whitespace-nowrap opacity-0 group-hover/submit:opacity-100 transition-opacity duration-150 shadow-lg pointer-events-none">

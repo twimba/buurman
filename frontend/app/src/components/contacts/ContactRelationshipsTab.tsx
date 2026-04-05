@@ -214,7 +214,9 @@ export const ContactRelationshipsTab = ({
                       </div>
                     )}
                     <p className="text-xs text-text-muted mt-1">
-                      {t('relationships.added', { time: formatRelative(rel.createdAt) })}
+                      {t('relationships.added', {
+                        time: formatRelative(rel.createdAt),
+                      })}
                     </p>
                   </div>
                 </div>
@@ -246,7 +248,11 @@ export const ContactRelationshipsTab = ({
       <ModalWrapper
         open={showFormModal}
         onClose={handleCloseForm}
-        title={editingRelationship ? t('relationships.editRelationship') : t('relationships.addRelationship')}
+        title={
+          editingRelationship
+            ? t('relationships.editRelationship')
+            : t('relationships.addRelationship')
+        }
         size="md"
         footer={
           <div className="flex gap-3 justify-end">
@@ -259,7 +265,9 @@ export const ContactRelationshipsTab = ({
               isLoading={createMutation.isPending || updateMutation.isPending}
               disabled={!editingRelationship && !form.targetContactIdentifier}
             >
-              {editingRelationship ? t('relationships.saveChanges') : t('common:buttons.create')}
+              {editingRelationship
+                ? t('relationships.saveChanges')
+                : t('common:buttons.create')}
             </Button>
           </div>
         }

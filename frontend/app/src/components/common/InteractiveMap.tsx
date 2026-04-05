@@ -271,9 +271,7 @@ export const InteractiveMap = ({
         <p className="text-text-secondary font-medium mb-1">
           {t('map.locationNotFound')}
         </p>
-        <p className="text-sm text-text-secondary">
-          {t('map.couldNotFind')}
-        </p>
+        <p className="text-sm text-text-secondary">{t('map.couldNotFind')}</p>
         <div className="mt-3 text-xs text-text-muted bg-surface-inset rounded p-2 font-mono">
           {street}, {city}
         </div>

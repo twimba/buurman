@@ -126,8 +126,7 @@ public class TeamPreferencesRepository {
     prefs.setTimezone(record.getTimezone());
     prefs.setDateFormat(record.getDateFormat());
     prefs.setFiscalYearStartMonth(record.getFiscalYearStartMonth());
-    prefs.setDefaultLanguage(
-        Optional.ofNullable(record.get(DEFAULT_LANGUAGE)).orElse("en"));
+    prefs.setDefaultLanguage(Optional.ofNullable(record.get(DEFAULT_LANGUAGE)).orElse("en"));
     prefs.setTakeoutRetentionDays(record.getTakeoutRetentionDays());
     prefs.setOnboardingCompletedAt(
         Optional.ofNullable(record.getOnboardingCompletedAt()).map(ldt -> ldt.toInstant(UTC)));

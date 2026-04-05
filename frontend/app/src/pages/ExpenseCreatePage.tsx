@@ -216,7 +216,8 @@ export const ExpenseCreatePage = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 <div>
                   <label className="block text-sm font-medium text-text-secondary mb-2">
-                    {t('form.property')} <span className="text-error-text">*</span>
+                    {t('form.property')}{' '}
+                    <span className="text-error-text">*</span>
                   </label>
                   <PropertySelector
                     value={bulkPropertyId}
@@ -226,7 +227,8 @@ export const ExpenseCreatePage = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-text-secondary mb-2">
-                    {t('form.currency')} <span className="text-error-text">*</span>
+                    {t('form.currency')}{' '}
+                    <span className="text-error-text">*</span>
                   </label>
                   <CurrencySelector
                     value={bulkCurrency || defaultCurrency || ''}

@@ -191,12 +191,24 @@ export const DocumentsPage = () => {
               }}
               className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
             >
-              <option value="">{t('documentsPage.entityTypeFilter.all')}</option>
-              <option value="PROPERTY">{t('documentsPage.entityTypeFilter.property')}</option>
-              <option value="CONTACT">{t('documentsPage.entityTypeFilter.contact')}</option>
-              <option value="CONTRACT">{t('documentsPage.entityTypeFilter.contract')}</option>
-              <option value="PAYMENT">{t('documentsPage.entityTypeFilter.payment')}</option>
-              <option value="EXPENSE">{t('documentsPage.entityTypeFilter.expense')}</option>
+              <option value="">
+                {t('documentsPage.entityTypeFilter.all')}
+              </option>
+              <option value="PROPERTY">
+                {t('documentsPage.entityTypeFilter.property')}
+              </option>
+              <option value="CONTACT">
+                {t('documentsPage.entityTypeFilter.contact')}
+              </option>
+              <option value="CONTRACT">
+                {t('documentsPage.entityTypeFilter.contract')}
+              </option>
+              <option value="PAYMENT">
+                {t('documentsPage.entityTypeFilter.payment')}
+              </option>
+              <option value="EXPENSE">
+                {t('documentsPage.entityTypeFilter.expense')}
+              </option>
             </select>
           </div>
         </div>
@@ -231,8 +243,13 @@ export const DocumentsPage = () => {
                 </button>
                 <span className="text-sm text-text-secondary">
                   {hasSelection
-                    ? t('documentsPage.selection.selected', { selected: selectedDocuments.size, total: documentsData?.totalElements ?? documents.length })
-                    : t('documentsPage.selection.count', { count: documentsData?.totalElements ?? documents.length })}
+                    ? t('documentsPage.selection.selected', {
+                        selected: selectedDocuments.size,
+                        total: documentsData?.totalElements ?? documents.length,
+                      })
+                    : t('documentsPage.selection.count', {
+                        count: documentsData?.totalElements ?? documents.length,
+                      })}
                 </span>
               </div>
 
@@ -513,12 +530,16 @@ export const DocumentsPage = () => {
           message={
             pendingBulkDelete.length === 1
               ? t('deleteDialog.messageSingle')
-              : t('deleteDialog.messagePlural', { count: pendingBulkDelete.length })
+              : t('deleteDialog.messagePlural', {
+                  count: pendingBulkDelete.length,
+                })
           }
           confirmLabel={
             pendingBulkDelete.length === 1
               ? t('deleteDialog.confirmSingle')
-              : t('deleteDialog.confirmPlural', { count: pendingBulkDelete.length })
+              : t('deleteDialog.confirmPlural', {
+                  count: pendingBulkDelete.length,
+                })
           }
           variant="danger"
           onConfirm={confirmDelete}

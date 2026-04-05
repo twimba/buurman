@@ -164,14 +164,18 @@ export const PaymentCreatePage = () => {
           </button>
           <div className="flex-1">
             <h1 className="text-2xl font-bold text-text-primary">
-              {registerMode ? t('create.titleRegister') : t('create.titleSchedule')}
+              {registerMode
+                ? t('create.titleRegister')
+                : t('create.titleSchedule')}
             </h1>
             {addedCount > 0 && (
               <p className="flex items-center gap-1.5 text-sm text-success-text mt-1">
                 <CheckCircle className="h-3.5 w-3.5" />
                 {t('create.addedCount', {
                   count: addedCount,
-                  action: registerMode ? t('create.actionRegistered') : t('create.actionScheduled'),
+                  action: registerMode
+                    ? t('create.actionRegistered')
+                    : t('create.actionScheduled'),
                 })}
               </p>
             )}
@@ -201,9 +205,7 @@ export const PaymentCreatePage = () => {
           {showWarning && (
             <div className="mb-4 flex items-start gap-2 p-3 bg-warning-bg border border-warning-border rounded text-sm text-warning-text">
               <AlertTriangle className="h-4 w-4 flex-shrink-0 mt-0.5" />
-              <span>
-                {t('create.contractInactiveWarning')}
-              </span>
+              <span>{t('create.contractInactiveWarning')}</span>
             </div>
           )}
 
@@ -257,7 +259,8 @@ export const PaymentCreatePage = () => {
               {/* Currency selector for bulk */}
               <div className="mb-6">
                 <label className="block text-sm font-medium text-text-secondary mb-2">
-                  {t('form.currency')} <span className="text-error-text">*</span>
+                  {t('form.currency')}{' '}
+                  <span className="text-error-text">*</span>
                 </label>
                 <CurrencySelector
                   value={bulkCurrency || defaultCurrency || ''}

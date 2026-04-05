@@ -111,7 +111,9 @@ export const InvitationPage = () => {
       <div className="min-h-screen bg-surface-inset flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-12 w-12 animate-spin text-primary-500 mx-auto" />
-          <p className="mt-4 text-text-secondary">{t('common:invitation.loading')}</p>
+          <p className="mt-4 text-text-secondary">
+            {t('common:invitation.loading')}
+          </p>
         </div>
       </div>
     );
@@ -194,7 +196,9 @@ export const InvitationPage = () => {
             {t('common:invitation.youreInvited')}
           </h1>
           <p className="text-text-secondary">
-            {t('common:invitation.inviterMessage', { name: invitation.inviterName })}
+            {t('common:invitation.inviterMessage', {
+              name: invitation.inviterName,
+            })}
           </p>
         </div>
 
@@ -204,15 +208,21 @@ export const InvitationPage = () => {
           </h2>
           <div className="space-y-2 text-sm text-text-secondary">
             <p>
-              <span className="font-medium">{t('common:invitation.yourRole')}</span>{' '}
+              <span className="font-medium">
+                {t('common:invitation.yourRole')}
+              </span>{' '}
               {formatRole(invitation.role)}
             </p>
             <p>
-              <span className="font-medium">{t('common:invitation.invitedEmail')}</span>{' '}
+              <span className="font-medium">
+                {t('common:invitation.invitedEmail')}
+              </span>{' '}
               {invitation.email}
             </p>
             <p>
-              <span className="font-medium">{t('common:invitation.expires')}</span>{' '}
+              <span className="font-medium">
+                {t('common:invitation.expires')}
+              </span>{' '}
               {formatDate(invitation.expiresAt)}
             </p>
           </div>

@@ -31,7 +31,6 @@ import com.buurman.domain.NotificationOutbox;
 import com.buurman.domain.NotificationStatus;
 import com.buurman.domain.NotificationType;
 import com.buurman.domain.TeamMember;
-import com.buurman.domain.TeamPreferences;
 import com.buurman.domain.User;
 import com.buurman.domain.UserNotificationTypePreference;
 import com.buurman.domain.UserPreferences;

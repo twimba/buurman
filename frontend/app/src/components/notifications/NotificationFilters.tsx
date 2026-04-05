@@ -11,13 +11,15 @@ const notificationTypeKeys: Record<NotificationType, string> = {
   [NotificationType.WELCOME]: 'notifications.types.welcome',
   [NotificationType.VERIFICATION_CODE]: 'notifications.types.verificationCode',
   [NotificationType.TEAM_INVITATION]: 'notifications.types.teamInvitation',
-  [NotificationType.INVITATION_ACCEPTED]: 'notifications.types.invitationAccepted',
+  [NotificationType.INVITATION_ACCEPTED]:
+    'notifications.types.invitationAccepted',
   [NotificationType.PASSWORD_CHANGED]: 'notifications.types.passwordChanged',
   [NotificationType.PAYMENT_REMINDER]: 'notifications.types.paymentReminder',
   [NotificationType.CONTRACT_EXPIRY]: 'notifications.types.contractExpiry',
   [NotificationType.PROPERTY_CREATED]: 'notifications.types.propertyCreated',
   [NotificationType.CONTRACT_CREATED]: 'notifications.types.contractCreated',
-  [NotificationType.CONTRACT_STATUS_CHANGED]: 'notifications.types.contractStatusChanged',
+  [NotificationType.CONTRACT_STATUS_CHANGED]:
+    'notifications.types.contractStatusChanged',
   [NotificationType.CONTRACT_REOPENED]: 'notifications.types.contractReopened',
   [NotificationType.PAYMENT_PAID]: 'notifications.types.paymentPaid',
   [NotificationType.PAYMENT_RECEIVAL]: 'notifications.types.paymentReceival',

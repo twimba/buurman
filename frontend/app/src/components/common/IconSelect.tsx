@@ -77,7 +77,9 @@ export const IconSelect = ({
             <span className="flex-1 truncate">{selected.label}</span>
           </>
         ) : (
-          <span className="flex-1 text-text-muted">{t('selectors.select')}</span>
+          <span className="flex-1 text-text-muted">
+            {t('selectors.select')}
+          </span>
         )}
         <ChevronDown
           size={14}

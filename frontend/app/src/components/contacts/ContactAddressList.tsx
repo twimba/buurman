@@ -221,7 +221,9 @@ export const ContactAddressList = ({ contactId }: ContactAddressListProps) => {
     return (
       <div className="text-center py-12">
         <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
-        <p className="mt-2 text-text-secondary">{t('addresses.loadingAddresses')}</p>
+        <p className="mt-2 text-text-secondary">
+          {t('addresses.loadingAddresses')}
+        </p>
       </div>
     );
   }

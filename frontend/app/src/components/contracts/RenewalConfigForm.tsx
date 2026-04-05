@@ -111,7 +111,9 @@ export const RenewalConfigForm = ({
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary-500 bg-primary-500/10 rounded-md hover:bg-primary-500/20 transition-colors disabled:opacity-50"
           >
             <Download className="h-3.5 w-3.5" />
-            {loadingDefaults ? t('common:buttons.loading') : t('form.loadJurisdictionDefaults')}
+            {loadingDefaults
+              ? t('common:buttons.loading')
+              : t('form.loadJurisdictionDefaults')}
           </button>
           {jurisdictionDefaults?.disclaimer && (
             <p className="text-[11px] text-text-muted italic">

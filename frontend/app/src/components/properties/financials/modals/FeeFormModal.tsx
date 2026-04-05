@@ -201,7 +201,9 @@ export const FeeFormModal = ({
       <div className="bg-surface-card rounded-lg shadow-xl dark:shadow-black/20 max-w-lg w-full mx-4 max-h-[90vh] flex flex-col">
         <div className="flex items-center justify-between p-4 border-b border-border-strong flex-shrink-0">
           <h2 className="text-lg font-semibold text-text-primary">
-            {isEdit ? t('financials.modals.editFee') : t('financials.modals.addFee')}
+            {isEdit
+              ? t('financials.modals.editFee')
+              : t('financials.modals.addFee')}
           </h2>
           <button
             type="button"
@@ -219,7 +221,9 @@ export const FeeFormModal = ({
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1">{t('financials.labels.feeType')} *</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1">
+                {t('financials.labels.feeType')} *
+              </label>
               <select
                 value={formData.feeType}
                 onChange={(e) =>
@@ -240,7 +244,9 @@ export const FeeFormModal = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1">{t('financials.labels.name')}</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1">
+                {t('financials.labels.name')}
+              </label>
               <input
                 type="text"
                 value={formData.name ?? ''}
@@ -252,7 +258,9 @@ export const FeeFormModal = ({
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-text-secondary mb-1">{t('financials.labels.annualAmount')} *</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1">
+                {t('financials.labels.annualAmount')} *
+              </label>
               <MoneyInput
                 value={formData.annualAmount}
                 onChange={(v) =>
@@ -263,7 +271,9 @@ export const FeeFormModal = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1">{t('financials.labels.paymentFrequency')}</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1">
+                {t('financials.labels.paymentFrequency')}
+              </label>
               <select
                 value={formData.paymentFrequency ?? PaymentFrequency.MONTHLY}
                 onChange={(e) => {
@@ -289,7 +299,9 @@ export const FeeFormModal = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1">{t('financials.labels.status')}</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1">
+                {t('financials.labels.status')}
+              </label>
               <select
                 value={formData.status ?? FeeStatus.ACTIVE}
                 onChange={(e) =>
@@ -309,7 +321,9 @@ export const FeeFormModal = ({
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-text-secondary mb-1">{t('financials.labels.dueMonths')}</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1">
+                {t('financials.labels.dueMonths')}
+              </label>
               <MonthMultiSelect
                 value={formData.dueMonths}
                 onChange={(val) => {
@@ -330,7 +344,9 @@ export const FeeFormModal = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1">{t('financials.labels.startDate')}</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1">
+                {t('financials.labels.startDate')}
+              </label>
               <input
                 type="date"
                 value={formData.startDate ?? ''}
@@ -342,7 +358,9 @@ export const FeeFormModal = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1">{t('financials.labels.endDate')}</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1">
+                {t('financials.labels.endDate')}
+              </label>
               <input
                 type="date"
                 value={formData.endDate ?? ''}
@@ -354,7 +372,9 @@ export const FeeFormModal = ({
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-text-secondary mb-1">{t('financials.labels.notes')}</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1">
+                {t('financials.labels.notes')}
+              </label>
               <RichTextEditor
                 value={formData.notes ?? ''}
                 onChange={(value) =>
@@ -371,7 +391,9 @@ export const FeeFormModal = ({
             type="button"
             onClick={onClose}
             className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset"
-          >{t('common:buttons.cancel')}</button>
+          >
+            {t('common:buttons.cancel')}
+          </button>
           <button
             type="submit"
             form="fee-form"

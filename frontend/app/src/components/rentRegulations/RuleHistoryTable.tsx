@@ -120,7 +120,9 @@ export const RuleHistoryTable = ({ rules }: RuleHistoryTableProps) => {
                   </td>
                   <td className="px-4 py-3 text-text-secondary">
                     {rule.noticePeriodDays != null
-                      ? t('rentRegulations.days', { count: rule.noticePeriodDays })
+                      ? t('rentRegulations.days', {
+                          count: rule.noticePeriodDays,
+                        })
                       : '-'}
                   </td>
                   <td className="px-4 py-3">

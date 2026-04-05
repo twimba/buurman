@@ -145,7 +145,9 @@ export const RentRegulationsPage = () => {
                       <div className="flex items-center gap-2 mb-3">
                         <CalendarDays className="h-4 w-4 text-primary-500 dark:text-primary-300" />
                         <h3 className="text-sm font-semibold text-primary-500 dark:text-primary-300">
-                          {t('rentRegulations.currentRules', { year: currentYear })}
+                          {t('rentRegulations.currentRules', {
+                            year: currentYear,
+                          })}
                         </h3>
                       </div>
                       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -172,7 +174,8 @@ export const RentRegulationsPage = () => {
                             {t('rentRegulations.effectiveDate')}
                           </p>
                           <p className="text-sm font-semibold text-text-primary">
-                            {currentYearRule.effectiveDate ?? t('rentRegulations.notSet')}
+                            {currentYearRule.effectiveDate ??
+                              t('rentRegulations.notSet')}
                           </p>
                         </div>
                         <div>
@@ -181,7 +184,9 @@ export const RentRegulationsPage = () => {
                           </p>
                           <p className="text-sm font-semibold text-text-primary">
                             {currentYearRule.noticePeriodDays != null
-                              ? t('rentRegulations.days', { count: currentYearRule.noticePeriodDays })
+                              ? t('rentRegulations.days', {
+                                  count: currentYearRule.noticePeriodDays,
+                                })
                               : t('rentRegulations.na')}
                           </p>
                         </div>
@@ -192,7 +197,9 @@ export const RentRegulationsPage = () => {
                   {/* Rules table */}
                   <div>
                     <h3 className="text-lg font-semibold text-text-primary mb-3">
-                      {selectedRegion ? t('rentRegulations.regionalRules') : t('rentRegulations.regulationHistory')}
+                      {selectedRegion
+                        ? t('rentRegulations.regionalRules')
+                        : t('rentRegulations.regulationHistory')}
                     </h3>
                     {displayRules && <RuleHistoryTable rules={displayRules} />}
                   </div>

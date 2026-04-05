@@ -20,7 +20,10 @@ export const ContractsPage = () => {
       { value: undefined, label: t('list.allStatuses') },
       { value: ContractStatus.ACTIVE, label: t('list.active') },
       { value: ContractStatus.DRAFT, label: t('list.draft') },
-      { value: ContractStatus.PENDING_SIGNATURE, label: t('list.pendingSignature') },
+      {
+        value: ContractStatus.PENDING_SIGNATURE,
+        label: t('list.pendingSignature'),
+      },
       { value: ContractStatus.EXPIRED, label: t('list.expired') },
       { value: ContractStatus.TERMINATED, label: t('list.terminated') },
     ],
@@ -108,9 +111,7 @@ export const ContractsPage = () => {
                 {t('list.title')}
               </h1>
             </div>
-            <p className="text-text-secondary ml-11">
-              {t('list.subtitle')}
-            </p>
+            <p className="text-text-secondary ml-11">{t('list.subtitle')}</p>
           </div>
           <div className="flex items-center gap-2">
             <RefreshButton
@@ -132,7 +133,9 @@ export const ContractsPage = () => {
         <div className="mb-6 bg-surface-card rounded-lg border border-border-default p-4">
           <div className="flex items-center gap-2 mb-3">
             <Filter className="h-5 w-5 text-text-secondary " />
-            <h2 className="font-semibold text-text-primary">{t('list.filters')}</h2>
+            <h2 className="font-semibold text-text-primary">
+              {t('list.filters')}
+            </h2>
           </div>
 
           <div>

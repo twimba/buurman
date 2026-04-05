@@ -63,7 +63,9 @@ describe('getErrorMessage', () => {
         },
       });
       const result = getErrorMessage(error);
-      expect(result).toContain('Rent amount: must be positive, must be less than 999999');
+      expect(result).toContain(
+        'Rent amount: must be positive, must be less than 999999'
+      );
       expect(result).toContain('Start date: must be in the future');
     });
 

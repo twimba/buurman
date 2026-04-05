@@ -43,7 +43,9 @@ export const PaymentCard = ({ payment }: PaymentCardProps) => {
         <div className="mb-3 space-y-2">
           {payment.property && (
             <div>
-              <p className="text-xs text-text-secondary">{t('card.property')}</p>
+              <p className="text-xs text-text-secondary">
+                {t('card.property')}
+              </p>
               <p className="text-sm font-medium text-text-primary">
                 {payment.property.street}, {payment.property.city}
               </p>
@@ -72,7 +74,9 @@ export const PaymentCard = ({ payment }: PaymentCardProps) => {
               {payment.receivedAmount > 0 &&
                 payment.status !== PaymentStatus.PAID && (
                   <p className="text-xs text-text-secondary">
-                    {t('card.balance', { amount: `${getCurrencySymbol(payment.currency)} ${(payment.balance ?? 0).toFixed(2)}` })}
+                    {t('card.balance', {
+                      amount: `${getCurrencySymbol(payment.currency)} ${(payment.balance ?? 0).toFixed(2)}`,
+                    })}
                   </p>
                 )}
             </div>
@@ -94,7 +98,9 @@ export const PaymentCard = ({ payment }: PaymentCardProps) => {
             <div className="flex items-center gap-2 text-success-text">
               <CheckCircle className="h-4 w-4" />
               <div>
-                <p className="text-xs text-text-secondary">{t('card.paidOn')}</p>
+                <p className="text-xs text-text-secondary">
+                  {t('card.paidOn')}
+                </p>
                 <p className="text-sm font-medium">
                   {formatDate(payment.paymentDate)}
                 </p>

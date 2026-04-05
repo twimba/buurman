@@ -6,10 +6,7 @@ interface WorkInProgressProps {
   message?: string;
 }
 
-export const WorkInProgress = ({
-  pageName,
-  message,
-}: WorkInProgressProps) => {
+export const WorkInProgress = ({ pageName, message }: WorkInProgressProps) => {
   const { t } = useTranslation('common');
 
   const resolvedMessage = message ?? t('wip.message');
@@ -39,9 +36,7 @@ export const WorkInProgress = ({
         <p className="text-lg text-text-secondary mb-2">{resolvedMessage}</p>
 
         {/* Subtext */}
-        <p className="text-sm text-text-secondary">
-          {t('wip.subtext')}
-        </p>
+        <p className="text-sm text-text-secondary">{t('wip.subtext')}</p>
 
         {/* Decorative dots */}
         <div className="mt-8 flex justify-center gap-2">

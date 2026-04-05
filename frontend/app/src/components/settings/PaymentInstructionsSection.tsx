@@ -147,7 +147,9 @@ export const PaymentInstructionsSection = () => {
       {showForm && (
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
           <h3 className="text-lg font-semibold text-text-primary mb-4">
-            {editingId ? t('paymentInstructions.editTitle') : t('paymentInstructions.newTitle')}
+            {editingId
+              ? t('paymentInstructions.editTitle')
+              : t('paymentInstructions.newTitle')}
           </h3>
           {editingId ? (
             <PaymentInstructionEditForm

@@ -142,9 +142,7 @@ export const PropertyExpensesTab = ({
       ) : expenses.length === 0 ? (
         <div className="text-center py-12">
           <Receipt className="h-12 w-12 text-text-disabled mx-auto mb-3" />
-          <p className="text-text-secondary mb-4">
-            {t('expenses.empty')}
-          </p>
+          <p className="text-text-secondary mb-4">{t('expenses.empty')}</p>
           <button
             onClick={() => navigate(`/expenses/new?propertyId=${propertyId}`)}
             disabled={!canEditData}
@@ -268,7 +266,14 @@ export const PropertyExpensesTab = ({
           {totalPages > 1 && (
             <div className="flex items-center justify-between mt-4 pt-4 border-t border-border-default">
               <div className="text-sm text-text-secondary">
-                {t('expenses.pagination.showing', { from: (currentPage - 1) * perPage + 1, to: Math.min(currentPage * perPage, filteredAndSortedExpenses.length), total: filteredAndSortedExpenses.length })}
+                {t('expenses.pagination.showing', {
+                  from: (currentPage - 1) * perPage + 1,
+                  to: Math.min(
+                    currentPage * perPage,
+                    filteredAndSortedExpenses.length
+                  ),
+                  total: filteredAndSortedExpenses.length,
+                })}
               </div>
               <div className="flex gap-2">
                 <button
@@ -279,7 +284,8 @@ export const PropertyExpensesTab = ({
                   {t('pagination.previous', { ns: 'common' })}
                 </button>
                 <span className="px-3 py-1 text-sm text-text-secondary">
-                  {t('pagination.page', { ns: 'common' })} {currentPage} {t('pagination.of', { ns: 'common' })} {totalPages}
+                  {t('pagination.page', { ns: 'common' })} {currentPage}{' '}
+                  {t('pagination.of', { ns: 'common' })} {totalPages}
                 </span>
                 <button
                   onClick={() => setCurrentPage(currentPage + 1)}

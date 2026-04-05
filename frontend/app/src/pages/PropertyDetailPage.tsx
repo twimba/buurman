@@ -494,7 +494,9 @@ export const PropertyDetailPage = () => {
                   <div>
                     <div className="flex items-center gap-2 text-text-secondary mb-1">
                       <Bed className="h-5 w-5" />
-                      <span className="text-sm font-medium">{t('detail.specs.bedrooms')}</span>
+                      <span className="text-sm font-medium">
+                        {t('detail.specs.bedrooms')}
+                      </span>
                     </div>
                     <p className="text-2xl font-semibold text-text-primary">
                       {property.residentialDetails.bedrooms}
@@ -506,7 +508,9 @@ export const PropertyDetailPage = () => {
                   <div>
                     <div className="flex items-center gap-2 text-text-secondary mb-1">
                       <Bath className="h-5 w-5" />
-                      <span className="text-sm font-medium">{t('detail.specs.bathrooms')}</span>
+                      <span className="text-sm font-medium">
+                        {t('detail.specs.bathrooms')}
+                      </span>
                     </div>
                     <p className="text-2xl font-semibold text-text-primary">
                       {property.residentialDetails.bathrooms}
@@ -518,7 +522,9 @@ export const PropertyDetailPage = () => {
                   <div>
                     <div className="flex items-center gap-2 text-text-secondary mb-1">
                       <Ruler className="h-5 w-5" />
-                      <span className="text-sm font-medium">{t('detail.specs.area')}</span>
+                      <span className="text-sm font-medium">
+                        {t('detail.specs.area')}
+                      </span>
                     </div>
                     <p className="text-2xl font-semibold text-text-primary">
                       {property.areaValue}
@@ -530,7 +536,9 @@ export const PropertyDetailPage = () => {
                 <div>
                   <div className="flex items-center gap-2 text-text-secondary mb-1">
                     <PropertyTypeIcon type={property.propertyType} size={20} />
-                    <span className="text-sm font-medium">{t('detail.specs.type')}</span>
+                    <span className="text-sm font-medium">
+                      {t('detail.specs.type')}
+                    </span>
                   </div>
                   <p className="text-lg font-semibold text-text-primary">
                     {PROPERTY_TYPE_LABELS[property.propertyType] ??
@@ -541,7 +549,9 @@ export const PropertyDetailPage = () => {
                 <div>
                   <div className="flex items-center gap-2 text-text-secondary mb-1">
                     <MapPin className="h-5 w-5" />
-                    <span className="text-sm font-medium">{t('detail.specs.street')}</span>
+                    <span className="text-sm font-medium">
+                      {t('detail.specs.street')}
+                    </span>
                   </div>
                   <p className="text-lg text-text-primary">{property.street}</p>
                 </div>
@@ -549,7 +559,9 @@ export const PropertyDetailPage = () => {
                 <div>
                   <div className="flex items-center gap-2 text-text-secondary mb-1">
                     <MapPin className="h-5 w-5" />
-                    <span className="text-sm font-medium">{t('detail.specs.city')}</span>
+                    <span className="text-sm font-medium">
+                      {t('detail.specs.city')}
+                    </span>
                   </div>
                   <p className="text-lg text-text-primary">{property.city}</p>
                 </div>
@@ -557,7 +569,9 @@ export const PropertyDetailPage = () => {
                 <div>
                   <div className="flex items-center gap-2 text-text-secondary mb-1">
                     <MapPin className="h-5 w-5" />
-                    <span className="text-sm font-medium">{t('detail.specs.postalCode')}</span>
+                    <span className="text-sm font-medium">
+                      {t('detail.specs.postalCode')}
+                    </span>
                   </div>
                   <p className="text-lg text-text-primary">
                     {property.postalCode}
@@ -567,7 +581,9 @@ export const PropertyDetailPage = () => {
                 <div>
                   <div className="flex items-center gap-2 text-text-secondary mb-1">
                     <MapPin className="h-5 w-5" />
-                    <span className="text-sm font-medium">{t('detail.specs.country')}</span>
+                    <span className="text-sm font-medium">
+                      {t('detail.specs.country')}
+                    </span>
                   </div>
                   <p className="text-lg text-text-primary">
                     {property.countryCode}

@@ -128,9 +128,7 @@ export const PortfolioDashboard = () => {
     return (
       <Card padding="lg" className="text-center">
         <Home className="h-10 w-10 text-text-secondary mx-auto mb-3" />
-        <p className="text-text-secondary">
-          {t('dashboard.addProperties')}
-        </p>
+        <p className="text-text-secondary">{t('dashboard.addProperties')}</p>
       </Card>
     );
   }
@@ -139,11 +137,11 @@ export const PortfolioDashboard = () => {
     return (
       <Card padding="lg" className="text-center">
         <BarChart3 className="h-10 w-10 text-text-secondary mx-auto mb-3" />
-        <p className="text-text-secondary">
-          {t('dashboard.addFinancialData')}
-        </p>
+        <p className="text-text-secondary">{t('dashboard.addFinancialData')}</p>
         <p className="text-xs text-text-muted mt-1">
-          {t('dashboard.propertiesNoData', { count: dashboard.totalProperties })}
+          {t('dashboard.propertiesNoData', {
+            count: dashboard.totalProperties,
+          })}
         </p>
       </Card>
     );
@@ -155,9 +153,14 @@ export const PortfolioDashboard = () => {
       <Card>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3 flex-wrap">
-            <h2 className="text-lg font-semibold text-text-primary">{t("dashboard.portfolioOverview")}</h2>
+            <h2 className="text-lg font-semibold text-text-primary">
+              {t('dashboard.portfolioOverview')}
+            </h2>
             <span className="text-xs text-text-secondary bg-surface-inset px-2 py-1 rounded-md">
-              {t('dashboard.propertiesWithData', { withData: dashboard.propertiesWithFinancialData, total: dashboard.totalProperties })}
+              {t('dashboard.propertiesWithData', {
+                withData: dashboard.propertiesWithFinancialData,
+                total: dashboard.totalProperties,
+              })}
             </span>
           </div>
           <div className="flex items-center gap-3">
@@ -208,7 +211,7 @@ export const PortfolioDashboard = () => {
       {/* Cash Flow + Allocation */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ChartCard
-          title={t("dashboard.charts.cashFlow")}
+          title={t('dashboard.charts.cashFlow')}
           icon={<BarChart3 className="h-5 w-5" />}
         >
           <PortfolioCashFlowChart
@@ -219,7 +222,7 @@ export const PortfolioDashboard = () => {
         </ChartCard>
 
         <ChartCard
-          title={t("dashboard.charts.allocation")}
+          title={t('dashboard.charts.allocation')}
           icon={<PieChart className="h-5 w-5" />}
         >
           <PortfolioAllocationChart
@@ -232,7 +235,7 @@ export const PortfolioDashboard = () => {
       {/* Comparison + Equity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ChartCard
-          title={t("dashboard.charts.propertyComparison")}
+          title={t('dashboard.charts.propertyComparison')}
           icon={<TrendingUp className="h-5 w-5" />}
         >
           <PropertyComparisonChart
@@ -243,7 +246,7 @@ export const PortfolioDashboard = () => {
         </ChartCard>
 
         <ChartCard
-          title={t("dashboard.charts.equityComposition")}
+          title={t('dashboard.charts.equityComposition')}
           icon={<Activity className="h-5 w-5" />}
         >
           <EquityCompositionChart
@@ -256,7 +259,7 @@ export const PortfolioDashboard = () => {
 
       {/* Performance Table */}
       <ChartCard
-        title={t("dashboard.charts.performance")}
+        title={t('dashboard.charts.performance')}
         icon={<Table2 className="h-5 w-5" />}
       >
         <PropertyPerformanceTable
@@ -267,7 +270,7 @@ export const PortfolioDashboard = () => {
 
       {/* Occupancy */}
       <ChartCard
-        title={t("dashboard.charts.occupancy")}
+        title={t('dashboard.charts.occupancy')}
         icon={<Home className="h-5 w-5" />}
       >
         <PortfolioOccupancyChart
@@ -277,7 +280,9 @@ export const PortfolioDashboard = () => {
       </ChartCard>
 
       {/* Disclaimer */}
-      <p className="text-xs text-text-muted text-center">{t("dashboard.disclaimer")}</p>
+      <p className="text-xs text-text-muted text-center">
+        {t('dashboard.disclaimer')}
+      </p>
     </div>
   );
 };

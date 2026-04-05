@@ -213,9 +213,7 @@ export const ExtensionTimeline = ({
         </div>
       ) : extensions.length === 0 ? (
         <div className="text-center py-8">
-          <p className="text-sm text-text-secondary">
-            {t('extensions.empty')}
-          </p>
+          <p className="text-sm text-text-secondary">{t('extensions.empty')}</p>
         </div>
       ) : (
         <div className="space-y-3">

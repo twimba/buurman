@@ -21,21 +21,31 @@ export const PropertyListPage = () => {
   const navigate = useNavigate();
   const { canEditData } = useTeam();
 
-  const categoryFilters = useMemo<{ value: PropertyCategory | undefined; label: string }[]>(() => [
-    { value: undefined, label: t('list.allCategories') },
-    ...Object.values(PropertyCategory).map((cat) => ({
-      value: cat,
-      label: PROPERTY_CATEGORY_LABELS[cat],
-    })),
-  ], [t]);
+  const categoryFilters = useMemo<
+    { value: PropertyCategory | undefined; label: string }[]
+  >(
+    () => [
+      { value: undefined, label: t('list.allCategories') },
+      ...Object.values(PropertyCategory).map((cat) => ({
+        value: cat,
+        label: PROPERTY_CATEGORY_LABELS[cat],
+      })),
+    ],
+    [t]
+  );
 
-  const statusFilters = useMemo<{ value: PropertyStatus | undefined; label: string }[]>(() => [
-    { value: undefined, label: t('list.allStatuses') },
-    ...Object.values(PropertyStatus).map((status) => ({
-      value: status,
-      label: PROPERTY_STATUS_LABELS[status],
-    })),
-  ], [t]);
+  const statusFilters = useMemo<
+    { value: PropertyStatus | undefined; label: string }[]
+  >(
+    () => [
+      { value: undefined, label: t('list.allStatuses') },
+      ...Object.values(PropertyStatus).map((status) => ({
+        value: status,
+        label: PROPERTY_STATUS_LABELS[status],
+      })),
+    ],
+    [t]
+  );
   const [statusFilter, setStatusFilter] = useState<PropertyStatus | undefined>(
     undefined
   );
@@ -125,9 +135,7 @@ export const PropertyListPage = () => {
                 {t('list.title')}
               </h1>
             </div>
-            <p className="text-text-secondary ml-11">
-              {t('list.subtitle')}
-            </p>
+            <p className="text-text-secondary ml-11">{t('list.subtitle')}</p>
           </div>
           <div className="flex items-center gap-2">
             <RefreshButton
@@ -149,7 +157,9 @@ export const PropertyListPage = () => {
         <div className="mb-6 bg-surface-card rounded-lg border border-border-default p-4 space-y-4">
           <div className="flex items-center gap-2">
             <Filter className="h-5 w-5 text-text-secondary " />
-            <h2 className="font-semibold text-text-primary">{t('list.filters')}</h2>
+            <h2 className="font-semibold text-text-primary">
+              {t('list.filters')}
+            </h2>
           </div>
 
           {/* Search */}

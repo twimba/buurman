@@ -507,7 +507,8 @@ public class PaymentRepository {
             .from(PAYMENTS)
             .join(cpTable)
             .on(
-                cpContractId.eq(PAYMENTS.CONTRACT_ID)
+                cpContractId
+                    .eq(PAYMENTS.CONTRACT_ID)
                     .and(cpTeamId.eq(teamId))
                     .and(cpRole.eq("PRIMARY_TENANT"))
                     .and(cpDeletedAt.isNull()))
@@ -579,7 +580,8 @@ public class PaymentRepository {
             .from(PAYMENTS)
             .join(cpTable)
             .on(
-                cpContractId.eq(PAYMENTS.CONTRACT_ID)
+                cpContractId
+                    .eq(PAYMENTS.CONTRACT_ID)
                     .and(cpTeamId.eq(teamId))
                     .and(cpRole.eq("PRIMARY_TENANT"))
                     .and(cpDeletedAt.isNull()))

@@ -139,10 +139,14 @@ export const MyTeamsSection = () => {
                         >
                           {formatRole(inv.role)}
                         </span>
-                        <span>{t('myTeams.invitedBy', { name: inv.inviterName })}</span>
+                        <span>
+                          {t('myTeams.invitedBy', { name: inv.inviterName })}
+                        </span>
                       </div>
                       <p className="text-xs text-text-muted mt-1">
-                        {t('myTeams.expires', { date: formatDate(inv.expiresAt) })}
+                        {t('myTeams.expires', {
+                          date: formatDate(inv.expiresAt),
+                        })}
                       </p>
                     </div>
                   </div>

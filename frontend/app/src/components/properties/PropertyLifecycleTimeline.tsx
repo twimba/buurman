@@ -401,7 +401,9 @@ const BarTooltip = ({
               opacity: 0.9,
             }}
           >
-            {isContract ? t('lifecycle.openContract') : t('lifecycle.clickToEdit')}
+            {isContract
+              ? t('lifecycle.openContract')
+              : t('lifecycle.clickToEdit')}
           </div>
         )}
       </div>

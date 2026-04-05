@@ -38,22 +38,25 @@ export const AdminNotificationsPage = () => {
   const { canEditTeamSettings, isLoading: teamLoading } = useTeam();
   const navigate = useNavigate();
 
-  const typeLabels: Record<string, string> = useMemo(() => ({
-    WELCOME: t('notifications.typeLabels.welcome'),
-    VERIFICATION_CODE: t('notifications.typeLabels.verification'),
-    TEAM_INVITATION: t('notifications.typeLabels.invitation'),
-    INVITATION_ACCEPTED: t('notifications.typeLabels.accepted'),
-    PASSWORD_CHANGED: t('notifications.typeLabels.password'),
-    PAYMENT_REMINDER: t('notifications.typeLabels.payment'),
-    CONTRACT_EXPIRY: t('notifications.typeLabels.contract'),
-    PROPERTY_CREATED: t('notifications.typeLabels.property'),
-    CONTRACT_CREATED: t('notifications.typeLabels.newContract'),
-    CONTRACT_STATUS_CHANGED: t('notifications.typeLabels.statusChange'),
-    CONTRACT_REOPENED: t('notifications.typeLabels.reopened'),
-    PAYMENT_PAID: t('notifications.typeLabels.paid'),
-    PAYMENT_RECEIVAL: t('notifications.typeLabels.receival'),
-    EXPENSE_CREATED: t('notifications.typeLabels.expense'),
-  }), [t]);
+  const typeLabels: Record<string, string> = useMemo(
+    () => ({
+      WELCOME: t('notifications.typeLabels.welcome'),
+      VERIFICATION_CODE: t('notifications.typeLabels.verification'),
+      TEAM_INVITATION: t('notifications.typeLabels.invitation'),
+      INVITATION_ACCEPTED: t('notifications.typeLabels.accepted'),
+      PASSWORD_CHANGED: t('notifications.typeLabels.password'),
+      PAYMENT_REMINDER: t('notifications.typeLabels.payment'),
+      CONTRACT_EXPIRY: t('notifications.typeLabels.contract'),
+      PROPERTY_CREATED: t('notifications.typeLabels.property'),
+      CONTRACT_CREATED: t('notifications.typeLabels.newContract'),
+      CONTRACT_STATUS_CHANGED: t('notifications.typeLabels.statusChange'),
+      CONTRACT_REOPENED: t('notifications.typeLabels.reopened'),
+      PAYMENT_PAID: t('notifications.typeLabels.paid'),
+      PAYMENT_RECEIVAL: t('notifications.typeLabels.receival'),
+      EXPENSE_CREATED: t('notifications.typeLabels.expense'),
+    }),
+    [t]
+  );
   const { isEnabled } = useFeatureFlags();
 
   const emailBlocked = isEnabled(FeatureFlags.BLOCK_EMAIL_NOTIFICATIONS);

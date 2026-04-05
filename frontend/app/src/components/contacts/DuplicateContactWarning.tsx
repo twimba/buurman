@@ -146,7 +146,10 @@ export function DuplicateContactWarning({
                     </span>
                   )}
                   <span className="text-amber-500 dark:text-amber-500 ml-2">
-                    {t('duplicate.matchInfo', { matchType: match.matchType, matchField: match.matchField })}
+                    {t('duplicate.matchInfo', {
+                      matchType: match.matchType,
+                      matchField: match.matchField,
+                    })}
                   </span>
                 </span>
                 <a

@@ -45,7 +45,6 @@ describe('sanitizeRedirect', () => {
   });
 
   it('returns null for javascript: URI', () => {
-     
     expect(sanitizeRedirect('javascript:alert(1)')).toBeNull();
   });
 

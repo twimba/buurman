@@ -241,7 +241,9 @@ export const ContactNotesTab = ({ contactId }: ContactNotesTabProps) => {
                       {note.followUpDate && (
                         <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-warning-bg text-warning-text">
                           <Calendar className="h-3 w-3 inline mr-1" />
-                          {t('notes.followUp', { date: formatDate(note.followUpDate) })}
+                          {t('notes.followUp', {
+                            date: formatDate(note.followUpDate),
+                          })}
                         </span>
                       )}
                     </div>

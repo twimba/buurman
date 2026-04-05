@@ -13,8 +13,7 @@ public class EmailSubjectResolver {
 
   private final MessageSource emailMessageSource;
 
-  public EmailSubjectResolver(
-      @Qualifier("emailMessageSource") MessageSource emailMessageSource) {
+  public EmailSubjectResolver(@Qualifier("emailMessageSource") MessageSource emailMessageSource) {
     this.emailMessageSource = emailMessageSource;
   }
 
@@ -36,14 +35,18 @@ public class EmailSubjectResolver {
       case "team-invitation" -> new Object[] {getVar(variables, "teamName", "a team")};
       case "invitation-accepted" ->
           new Object[] {
-            getVar(variables, "memberName", "Someone"),
-            getVar(variables, "teamName", "your team")
+            getVar(variables, "memberName", "Someone"), getVar(variables, "teamName", "your team")
           };
-      case "payment-reminder", "contract-expiry", "property-created", "contract-created",
-          "contract-reopened", "payment-paid", "payment-receival", "expense-created" ->
+      case "payment-reminder",
+          "contract-expiry",
+          "property-created",
+          "contract-created",
+          "contract-reopened",
+          "payment-paid",
+          "payment-receival",
+          "expense-created" ->
           new Object[] {getVar(variables, "propertyName", "your property")};
-      case "contract-status-changed" ->
-          new Object[] {getVar(variables, "newStatus", "updated")};
+      case "contract-status-changed" -> new Object[] {getVar(variables, "newStatus", "updated")};
       case "notification-digest" ->
           new Object[] {
             getVar(variables, "count", ""), getVar(variables, "typeName", "Notifications")

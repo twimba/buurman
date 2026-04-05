@@ -152,7 +152,9 @@ export const PaymentHistorySection = () => {
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-text-secondary">{t('paymentHistory.nextPayment')}</p>
+              <p className="text-sm text-text-secondary">
+                {t('paymentHistory.nextPayment')}
+              </p>
               <p className="text-2xl font-bold text-text-primary mt-1">
                 {nextPayment.currency} {nextPayment.amount.toFixed(2)}
               </p>
@@ -167,11 +169,15 @@ export const PaymentHistorySection = () => {
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-text-secondary">{t('paymentHistory.totalPaid')}</p>
+              <p className="text-sm text-text-secondary">
+                {t('paymentHistory.totalPaid')}
+              </p>
               <p className="text-2xl font-bold text-text-primary mt-1">
                 EUR {totalPaid.toFixed(2)}
               </p>
-              <p className="text-xs text-text-secondary mt-1">{t('paymentHistory.allTime')}</p>
+              <p className="text-xs text-text-secondary mt-1">
+                {t('paymentHistory.allTime')}
+              </p>
             </div>
             <CreditCard className="h-12 w-12 text-success-text" />
           </div>
@@ -180,12 +186,16 @@ export const PaymentHistorySection = () => {
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-text-secondary">{t('paymentHistory.totalInvoices')}</p>
+              <p className="text-sm text-text-secondary">
+                {t('paymentHistory.totalInvoices')}
+              </p>
               <p className="text-2xl font-bold text-text-primary mt-1">
                 {invoices.length}
               </p>
               <p className="text-xs text-text-secondary mt-1">
-                {t('paymentHistory.paid', { count: invoices.filter((i) => i.status === 'paid').length })}
+                {t('paymentHistory.paid', {
+                  count: invoices.filter((i) => i.status === 'paid').length,
+                })}
               </p>
             </div>
             <Receipt className="h-12 w-12 text-purple-600" />

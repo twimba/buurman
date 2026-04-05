@@ -83,7 +83,9 @@ export const PropertyTimeline = ({
               </div>
               <div className="text-sm text-text-secondary">
                 {formatDate(entry.startDate)} &mdash;{' '}
-                {entry.endDate ? formatDate(entry.endDate) : t('timeline.ongoing')}
+                {entry.endDate
+                  ? formatDate(entry.endDate)
+                  : t('timeline.ongoing')}
               </div>
               {entry.metadata && (
                 <div className="text-xs text-text-secondary mt-1">

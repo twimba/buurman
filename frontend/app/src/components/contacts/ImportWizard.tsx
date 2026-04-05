@@ -338,7 +338,12 @@ export const ImportWizard = ({ open, onClose }: ImportWizardProps) => {
 
   const hasMappings = Object.values(mappings).some((v) => v !== '');
 
-  const stepTitles = [t('import.steps.upload'), t('import.steps.map'), t('import.steps.preview'), t('import.steps.complete')];
+  const stepTitles = [
+    t('import.steps.upload'),
+    t('import.steps.map'),
+    t('import.steps.preview'),
+    t('import.steps.complete'),
+  ];
 
   return (
     <ModalWrapper
@@ -406,7 +411,6 @@ export const ImportWizard = ({ open, onClose }: ImportWizardProps) => {
             </p>
             <p className="text-sm text-text-muted">
               {t('import.supportedFormats')}
-              
             </p>
             <input
               ref={fileInputRef}
@@ -477,11 +481,11 @@ export const ImportWizard = ({ open, onClose }: ImportWizardProps) => {
               className="rounded border-border-strong text-primary-600 focus:ring-primary-500"
               disabled={uploadMutation.isPending}
             />
-            <span className="text-text-secondary">
-              {t('import.headerRow')}
-            </span>
+            <span className="text-text-secondary">{t('import.headerRow')}</span>
             {uploadMutation.isPending && (
-              <span className="text-xs text-text-muted">{t('import.reparsing')}</span>
+              <span className="text-xs text-text-muted">
+                {t('import.reparsing')}
+              </span>
             )}
           </label>
 
@@ -583,7 +587,9 @@ export const ImportWizard = ({ open, onClose }: ImportWizardProps) => {
           {uploadResponse.previewRows.length > 0 && (
             <div>
               <label className="text-sm font-medium text-text-secondary mb-2 block">
-                {t('import.previewRows', { count: uploadResponse.previewRows.length })}
+                {t('import.previewRows', {
+                  count: uploadResponse.previewRows.length,
+                })}
               </label>
               <div className="border border-border-default rounded-lg overflow-x-auto">
                 <table className="w-full text-sm">
@@ -670,19 +676,25 @@ export const ImportWizard = ({ open, onClose }: ImportWizardProps) => {
               <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                 {previewResponse.toCreate}
               </p>
-              <p className="text-xs text-text-muted mt-1">{t('import.toCreate')}</p>
+              <p className="text-xs text-text-muted mt-1">
+                {t('import.toCreate')}
+              </p>
             </div>
             <div className="bg-surface-card border border-border-default rounded-lg p-4 text-center">
               <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
                 {previewResponse.toSkip}
               </p>
-              <p className="text-xs text-text-muted mt-1">{t('import.toSkip')}</p>
+              <p className="text-xs text-text-muted mt-1">
+                {t('import.toSkip')}
+              </p>
             </div>
             <div className="bg-surface-card border border-border-default rounded-lg p-4 text-center">
               <p className="text-2xl font-bold text-red-600 dark:text-red-400">
                 {previewResponse.errors}
               </p>
-              <p className="text-xs text-text-muted mt-1">{t('import.errors')}</p>
+              <p className="text-xs text-text-muted mt-1">
+                {t('import.errors')}
+              </p>
             </div>
           </div>
 
@@ -692,7 +704,9 @@ export const ImportWizard = ({ open, onClose }: ImportWizardProps) => {
               <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
-                  {t('import.rowsNotImported', { count: previewResponse.errors })}
+                  {t('import.rowsNotImported', {
+                    count: previewResponse.errors,
+                  })}
                 </p>
                 <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-0.5">
                   {t('import.errorSkipNote')}
@@ -759,7 +773,9 @@ export const ImportWizard = ({ open, onClose }: ImportWizardProps) => {
                         {item.status === 'SKIP' &&
                           item.duplicateOfDisplayName && (
                             <span className="text-yellow-700 dark:text-yellow-300">
-                              {t('import.duplicateOf', { name: item.duplicateOfDisplayName })}
+                              {t('import.duplicateOf', {
+                                name: item.duplicateOfDisplayName,
+                              })}
                             </span>
                           )}
                       </td>
@@ -772,7 +788,10 @@ export const ImportWizard = ({ open, onClose }: ImportWizardProps) => {
 
           {previewResponse.totalRows > previewResponse.items.length && (
             <p className="text-xs text-text-muted text-center">
-              {t('import.showingOfTotal', { shown: previewResponse.items.length, total: previewResponse.totalRows })}
+              {t('import.showingOfTotal', {
+                shown: previewResponse.items.length,
+                total: previewResponse.totalRows,
+              })}
             </p>
           )}
 
@@ -835,13 +854,17 @@ export const ImportWizard = ({ open, onClose }: ImportWizardProps) => {
               <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                 {executeResponse.importedCount}
               </p>
-              <p className="text-xs text-text-muted mt-1">{t('import.imported')}</p>
+              <p className="text-xs text-text-muted mt-1">
+                {t('import.imported')}
+              </p>
             </div>
             <div className="bg-surface-card border border-border-default rounded-lg p-4 text-center">
               <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
                 {executeResponse.skippedCount}
               </p>
-              <p className="text-xs text-text-muted mt-1">{t('import.skipped')}</p>
+              <p className="text-xs text-text-muted mt-1">
+                {t('import.skipped')}
+              </p>
             </div>
             <div className="bg-surface-card border border-border-default rounded-lg p-4 text-center">
               <p className="text-2xl font-bold text-red-600 dark:text-red-400">

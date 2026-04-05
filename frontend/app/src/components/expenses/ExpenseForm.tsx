@@ -345,7 +345,12 @@ export const ExpenseForm = ({
           disabled={isLoading}
         >
           <Save className="h-4 w-4" />
-          {isLoading ? t('form.saving') : expense ? t('form.updateExpense') : t('form.createExpense')}{t('form.expenseSuffix')}
+          {isLoading
+            ? t('form.saving')
+            : expense
+              ? t('form.updateExpense')
+              : t('form.createExpense')}
+          {t('form.expenseSuffix')}
         </button>
       </div>
     </form>

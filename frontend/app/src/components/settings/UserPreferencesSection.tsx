@@ -267,7 +267,9 @@ export const UserPreferencesSection = () => {
                   }`}
                 >
                   <Sun className="h-6 w-6 mx-auto text-yellow-500 mb-2" />
-                  <p className="text-sm font-medium text-text-primary">{t('preferences.appearance.light')}</p>
+                  <p className="text-sm font-medium text-text-primary">
+                    {t('preferences.appearance.light')}
+                  </p>
                 </button>
                 <button
                   onClick={() => handleThemeChange('dark')}
@@ -278,7 +280,9 @@ export const UserPreferencesSection = () => {
                   }`}
                 >
                   <Moon className="h-6 w-6 mx-auto text-indigo-500 mb-2" />
-                  <p className="text-sm font-medium text-text-primary">{t('preferences.appearance.dark')}</p>
+                  <p className="text-sm font-medium text-text-primary">
+                    {t('preferences.appearance.dark')}
+                  </p>
                 </button>
                 <button
                   onClick={() => handleThemeChange('system')}
@@ -292,7 +296,9 @@ export const UserPreferencesSection = () => {
                     <Sun className="h-5 w-5 text-yellow-500" />
                     <Moon className="h-5 w-5 text-indigo-500" />
                   </div>
-                  <p className="text-sm font-medium text-text-primary">{t('preferences.appearance.auto')}</p>
+                  <p className="text-sm font-medium text-text-primary">
+                    {t('preferences.appearance.auto')}
+                  </p>
                 </button>
               </div>
               <p className="text-xs text-text-secondary mt-2">
@@ -487,7 +493,6 @@ export const UserPreferencesSection = () => {
                               <div className="flex items-center justify-center gap-1">
                                 <MessageSquare className="h-3.5 w-3.5" />
                                 SMS
-
                               </div>
                             </th>
                           )}

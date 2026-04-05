@@ -4,12 +4,26 @@ import { renderWithProviders } from '@/test/test-utils';
 import { BulkDataGrid, type BulkColumnDef } from '../BulkDataGrid';
 
 const columns: BulkColumnDef[] = [
-  { key: 'name', label: 'Name', type: 'text', required: true, placeholder: 'Enter name' },
-  { key: 'amount', label: 'Amount', type: 'number', required: true, placeholder: '0.00' },
+  {
+    key: 'name',
+    label: 'Name',
+    type: 'text',
+    required: true,
+    placeholder: 'Enter name',
+  },
+  {
+    key: 'amount',
+    label: 'Amount',
+    type: 'number',
+    required: true,
+    placeholder: '0.00',
+  },
   { key: 'date', label: 'Date', type: 'date', required: false },
 ];
 
-function renderGrid(overrides: Partial<Parameters<typeof BulkDataGrid>[0]> = {}) {
+function renderGrid(
+  overrides: Partial<Parameters<typeof BulkDataGrid>[0]> = {}
+) {
   const onSubmit = vi.fn();
   const result = renderWithProviders(
     <BulkDataGrid

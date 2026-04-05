@@ -103,8 +103,12 @@ export const CalendarFeedsSection = () => {
     ];
     const labels: Record<CalendarFeedType, string> = {
       [CalendarFeedType.ALL_PAYMENTS]: t('calendarFeeds.feedTypes.allPayments'),
-      [CalendarFeedType.PROPERTY_PAYMENTS]: t('calendarFeeds.feedTypes.propertyPayments'),
-      [CalendarFeedType.CONTACT_PAYMENTS]: t('calendarFeeds.feedTypes.contactPayments'),
+      [CalendarFeedType.PROPERTY_PAYMENTS]: t(
+        'calendarFeeds.feedTypes.propertyPayments'
+      ),
+      [CalendarFeedType.CONTACT_PAYMENTS]: t(
+        'calendarFeeds.feedTypes.contactPayments'
+      ),
       [CalendarFeedType.CONTRACT]: t('calendarFeeds.feedTypes.contract'),
     };
     const icons: Record<CalendarFeedType, typeof Calendar> = {
@@ -298,9 +302,7 @@ export const CalendarFeedsSection = () => {
       {feeds.length === 0 && (
         <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-12 text-center">
           <Calendar className="h-12 w-12 text-text-disabled mx-auto mb-3" />
-          <p className="text-text-secondary">
-            {t('calendarFeeds.empty')}
-          </p>
+          <p className="text-text-secondary">{t('calendarFeeds.empty')}</p>
         </div>
       )}
 

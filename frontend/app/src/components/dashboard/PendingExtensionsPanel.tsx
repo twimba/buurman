@@ -33,7 +33,9 @@ export const PendingExtensionsPanel = ({
       <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
         <div className="flex items-center gap-3 mb-4">
           <FileStack className="h-5 w-5 text-warning-text" />
-          <h2 className="text-lg font-semibold text-text-primary">{t("dashboard.pendingExtensions.title")}</h2>
+          <h2 className="text-lg font-semibold text-text-primary">
+            {t('dashboard.pendingExtensions.title')}
+          </h2>
         </div>
         <div className="flex justify-center py-4">
           <LoadingSpinner />
@@ -51,9 +53,13 @@ export const PendingExtensionsPanel = ({
       <div className="flex items-center gap-3 mb-4">
         <FileStack className="h-5 w-5 text-warning-text" />
         <div>
-          <h2 className="text-lg font-semibold text-text-primary">{t("dashboard.pendingExtensions.title")}</h2>
+          <h2 className="text-lg font-semibold text-text-primary">
+            {t('dashboard.pendingExtensions.title')}
+          </h2>
           <p className="text-sm text-text-secondary">
-            {t('dashboard.pendingExtensions.awaitingAction', { count: draftExtensions.length })}
+            {t('dashboard.pendingExtensions.awaitingAction', {
+              count: draftExtensions.length,
+            })}
           </p>
         </div>
       </div>
@@ -72,10 +78,14 @@ export const PendingExtensionsPanel = ({
             >
               <div className="flex items-center gap-2">
                 <span className="font-medium text-text-primary text-sm">
-                  {t('dashboard.pendingExtensions.extensionNumber', { number: ext.extensionNumber })}
+                  {t('dashboard.pendingExtensions.extensionNumber', {
+                    number: ext.extensionNumber,
+                  })}
                 </span>
                 <span className="text-xs text-text-muted">
-                  {t('dashboard.pendingExtensions.contractNumber', { id: ext.contractIdentifier })}
+                  {t('dashboard.pendingExtensions.contractNumber', {
+                    id: ext.contractIdentifier,
+                  })}
                 </span>
               </div>
               <p className="text-xs text-text-secondary mt-0.5">
@@ -98,7 +108,9 @@ export const PendingExtensionsPanel = ({
                   className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-success-text bg-success-bg rounded-md hover:opacity-80 transition-colors disabled:opacity-50"
                   title="Activate"
                 >
-                  <Check className="h-3.5 w-3.5" />{t('dashboard.pendingExtensions.activate')}</button>
+                  <Check className="h-3.5 w-3.5" />
+                  {t('dashboard.pendingExtensions.activate')}
+                </button>
                 <button
                   onClick={() =>
                     onDecline(ext.contractIdentifier, ext.identifier)
@@ -106,7 +118,9 @@ export const PendingExtensionsPanel = ({
                   className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-error-text bg-error-bg rounded-md hover:opacity-80 transition-colors"
                   title="Decline"
                 >
-                  <XCircle className="h-3.5 w-3.5" />{t('dashboard.pendingExtensions.decline')}</button>
+                  <XCircle className="h-3.5 w-3.5" />
+                  {t('dashboard.pendingExtensions.decline')}
+                </button>
               </div>
             )}
           </div>

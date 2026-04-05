@@ -121,11 +121,21 @@ export const PhotosPage = () => {
               className="w-full pl-10 pr-4 py-2 border border-border-strong rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-surface-card text-text-primary"
             >
               <option value="">{t('photosPage.entityTypeFilter.all')}</option>
-              <option value="PROPERTY">{t('photosPage.entityTypeFilter.property')}</option>
-              <option value="CONTACT">{t('photosPage.entityTypeFilter.contact')}</option>
-              <option value="CONTRACT">{t('photosPage.entityTypeFilter.contract')}</option>
-              <option value="PAYMENT">{t('photosPage.entityTypeFilter.payment')}</option>
-              <option value="EXPENSE">{t('photosPage.entityTypeFilter.expense')}</option>
+              <option value="PROPERTY">
+                {t('photosPage.entityTypeFilter.property')}
+              </option>
+              <option value="CONTACT">
+                {t('photosPage.entityTypeFilter.contact')}
+              </option>
+              <option value="CONTRACT">
+                {t('photosPage.entityTypeFilter.contract')}
+              </option>
+              <option value="PAYMENT">
+                {t('photosPage.entityTypeFilter.payment')}
+              </option>
+              <option value="EXPENSE">
+                {t('photosPage.entityTypeFilter.expense')}
+              </option>
             </select>
           </div>
         </div>

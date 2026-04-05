@@ -56,7 +56,9 @@ export const PropertyComparisonChart = ({
 
   if (sorted.length === 0) {
     return (
-      <div className="flex items-center justify-center h-80 text-text-secondary text-sm">{t("dashboard.comparison.noData")}</div>
+      <div className="flex items-center justify-center h-80 text-text-secondary text-sm">
+        {t('dashboard.comparison.noData')}
+      </div>
     );
   }
 

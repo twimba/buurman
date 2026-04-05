@@ -170,10 +170,7 @@ public class AuthService {
 
       // Save user preferences with selected language
       UserPreferences prefs =
-          UserPreferences.builder()
-              .userId(user.getId())
-              .language(request.language())
-              .build();
+          UserPreferences.builder().userId(user.getId()).language(request.language()).build();
       userPreferencesRepository.save(prefs);
 
       final User finalUser = user;

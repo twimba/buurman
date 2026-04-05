@@ -38,7 +38,6 @@ const CustomTooltip = ({
         <p className="font-semibold text-text-primary">{payload[0].name}</p>
         <p className="text-sm text-text-secondary">
           {value} {value === 1 ? 'property' : 'properties'} ({percentage}%)
-
         </p>
       </div>
     );
@@ -58,10 +57,22 @@ export const PropertyStatusChart = ({
     () =>
       [
         { name: t('statusChart.occupied'), value: occupied, color: '#059669' },
-        { name: t('statusChart.selfOccupied'), value: selfOccupied, color: '#0284c7' },
+        {
+          name: t('statusChart.selfOccupied'),
+          value: selfOccupied,
+          color: '#0284c7',
+        },
         { name: t('statusChart.vacant'), value: vacant, color: '#fbbf24' },
-        { name: t('statusChart.maintenance'), value: maintenance, color: '#f59e0b' },
-        { name: t('statusChart.unavailable'), value: unavailable, color: '#78716c' },
+        {
+          name: t('statusChart.maintenance'),
+          value: maintenance,
+          color: '#f59e0b',
+        },
+        {
+          name: t('statusChart.unavailable'),
+          value: unavailable,
+          color: '#78716c',
+        },
       ].filter((item) => item.value > 0),
     [occupied, selfOccupied, vacant, maintenance, unavailable, t]
   );

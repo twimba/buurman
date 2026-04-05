@@ -360,7 +360,9 @@ export const CreateExtensionModal = ({
               className="px-4 py-2 text-sm font-medium text-white bg-primary-500 rounded-md hover:bg-primary-600 disabled:opacity-50"
               disabled={isLoading}
             >
-              {isLoading ? t('common:buttons.loading') : t('extensions.createExtension')}
+              {isLoading
+                ? t('common:buttons.loading')
+                : t('extensions.createExtension')}
             </button>
           </div>
         </form>

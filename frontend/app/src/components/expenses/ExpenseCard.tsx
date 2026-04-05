@@ -44,7 +44,9 @@ export const ExpenseCard = ({ expense }: ExpenseCardProps) => {
             <div className="flex items-start gap-2">
               <MapPin className="h-4 w-4 text-text-muted mt-0.5" />
               <div>
-                <p className="text-xs text-text-secondary">{t('card.property')}</p>
+                <p className="text-xs text-text-secondary">
+                  {t('card.property')}
+                </p>
                 <p className="text-sm font-medium text-text-primary">
                   {expense.property.street}, {expense.property.city}
                 </p>
@@ -59,7 +61,9 @@ export const ExpenseCard = ({ expense }: ExpenseCardProps) => {
             <div className="flex items-start gap-2">
               <User className="h-4 w-4 text-text-muted mt-0.5" />
               <div>
-                <p className="text-xs text-text-secondary">{t('card.contact')}</p>
+                <p className="text-xs text-text-secondary">
+                  {t('card.contact')}
+                </p>
                 <p className="text-sm font-medium text-text-primary">
                   {expense.contact.firstName} {expense.contact.lastName}
                 </p>
@@ -82,7 +86,9 @@ export const ExpenseCard = ({ expense }: ExpenseCardProps) => {
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-text-muted " />
             <div>
-              <p className="text-xs text-text-secondary">{t('card.expenseDate')}</p>
+              <p className="text-xs text-text-secondary">
+                {t('card.expenseDate')}
+              </p>
               <p className="text-sm font-medium text-text-primary">
                 {formatDate(expense.expenseDate)}
               </p>

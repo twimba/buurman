@@ -30,11 +30,11 @@ export const SettingsPage = () => {
           <div className="mb-6">
             <div className="flex items-center gap-3 mb-1">
               <SettingsIcon className="h-8 w-8 text-primary-500 dark:text-primary-300" />
-              <h1 className="text-3xl font-bold text-text-primary">{t('page.title')}</h1>
+              <h1 className="text-3xl font-bold text-text-primary">
+                {t('page.title')}
+              </h1>
             </div>
-            <p className="text-text-secondary ml-11">
-              {t('page.subtitle')}
-            </p>
+            <p className="text-text-secondary ml-11">{t('page.subtitle')}</p>
           </div>
 
           {/* Tabs */}

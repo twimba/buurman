@@ -40,7 +40,9 @@ export const CurrencySelector = ({
         className="w-full border border-border-strong rounded px-3 py-2 pr-8 bg-surface-card hover:border-primary-500 dark:hover:border-primary-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 disabled:bg-surface-inset disabled:cursor-not-allowed text-sm text-text-primary text-left relative"
       >
         {displayValue || (
-          <span className="text-text-muted">{t('selectors.selectCurrency')}</span>
+          <span className="text-text-muted">
+            {t('selectors.selectCurrency')}
+          </span>
         )}
         <ChevronDown
           className={`absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted transition-transform ${isOpen ? 'rotate-180' : ''}`}

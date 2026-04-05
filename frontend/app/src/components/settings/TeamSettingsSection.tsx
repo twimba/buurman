@@ -200,7 +200,9 @@ export const TeamSettingsSection = () => {
                       {member.email}
                     </p>
                     <p className="text-xs text-text-secondary mt-1">
-                      {t('teamMembers.joined', { date: formatDate(member.joinedAt) })}
+                      {t('teamMembers.joined', {
+                        date: formatDate(member.joinedAt),
+                      })}
                     </p>
                   </div>
                 </div>
@@ -273,7 +275,9 @@ export const TeamSettingsSection = () => {
                     {t('teamMembers.pendingInvitations.title')}
                   </h2>
                   <p className="text-sm text-text-secondary mt-1">
-                    {t('teamMembers.pendingInvitations.count', { count: pendingInvitations.length })}
+                    {t('teamMembers.pendingInvitations.count', {
+                      count: pendingInvitations.length,
+                    })}
                   </p>
                 </div>
               </div>
@@ -298,11 +302,19 @@ export const TeamSettingsSection = () => {
                             {roleLabels[inv.role as Role]}
                           </span>
                           <span className="text-xs text-text-secondary">
-                            {t('teamMembers.pendingInvitations.invitedBy', { name: inv.inviterName })}
+                            {t('teamMembers.pendingInvitations.invitedBy', {
+                              name: inv.inviterName,
+                            })}
                           </span>
                         </div>
                         <p className="text-xs text-text-muted mt-1">
-                          {t('teamMembers.pendingInvitations.sent', { date: formatDate(inv.invitedAt) })} &middot; {t('teamMembers.pendingInvitations.expires', { date: formatDate(inv.expiresAt) })}
+                          {t('teamMembers.pendingInvitations.sent', {
+                            date: formatDate(inv.invitedAt),
+                          })}{' '}
+                          &middot;{' '}
+                          {t('teamMembers.pendingInvitations.expires', {
+                            date: formatDate(inv.expiresAt),
+                          })}
                         </p>
                       </div>
                     </div>
@@ -428,7 +440,9 @@ export const TeamSettingsSection = () => {
                 {t('teamMembers.roleModal.title')}
               </h3>
               <p className="text-sm text-text-secondary mt-1">
-                {t('teamMembers.roleModal.subtitle', { name: selectedMember.name })}
+                {t('teamMembers.roleModal.subtitle', {
+                  name: selectedMember.name,
+                })}
               </p>
             </div>
 

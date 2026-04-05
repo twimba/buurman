@@ -54,7 +54,9 @@ export function ImpersonatePage() {
         navigate('/dashboard', { replace: true });
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : t('common:impersonation.failedToExchange')
+          err instanceof Error
+            ? err.message
+            : t('common:impersonation.failedToExchange')
         );
       }
     };

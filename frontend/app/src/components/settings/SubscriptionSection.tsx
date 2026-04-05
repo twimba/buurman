@@ -159,7 +159,9 @@ export const SubscriptionSection = () => {
           🚀
         </div>
         <div className="relative">
-          <h2 className="text-2xl font-extrabold">{t('subscription.earlyAccess.title')} 🎁</h2>
+          <h2 className="text-2xl font-extrabold">
+            {t('subscription.earlyAccess.title')} 🎁
+          </h2>
           <p className="mt-2 text-white/90 text-base max-w-2xl">
             We&apos;re still building Buurman and this page is just a preview of
             what&apos;s coming. For now, enjoy <strong>all features</strong>{' '}
@@ -175,8 +177,12 @@ export const SubscriptionSection = () => {
       {/* Current Plan Card */}
       <div className="bg-surface-card rounded-lg shadow-sm border border-border-default">
         <div className="p-6 border-b border-border-default">
-          <h2 className="text-xl font-semibold text-text-primary">{t('subscription.currentPlan.title')}</h2>
-          <p className="text-sm text-text-secondary mt-1">{t('subscription.currentPlan.subtitle')}</p>
+          <h2 className="text-xl font-semibold text-text-primary">
+            {t('subscription.currentPlan.title')}
+          </h2>
+          <p className="text-sm text-text-secondary mt-1">
+            {t('subscription.currentPlan.subtitle')}
+          </p>
         </div>
 
         <div className="p-6">
@@ -203,7 +209,9 @@ export const SubscriptionSection = () => {
 
           <div className="mt-6 grid grid-cols-3 gap-4">
             <div className="p-4 bg-surface-page rounded-lg">
-              <p className="text-sm text-text-secondary">{t('subscription.currentPlan.properties')}</p>
+              <p className="text-sm text-text-secondary">
+                {t('subscription.currentPlan.properties')}
+              </p>
               <p className="text-2xl font-semibold text-text-primary mt-1">
                 {currentSubscription.currentProperties} /{' '}
                 {currentSubscription.propertiesLimit}
@@ -219,7 +227,9 @@ export const SubscriptionSection = () => {
             </div>
 
             <div className="p-4 bg-surface-page rounded-lg">
-              <p className="text-sm text-text-secondary">{t('subscription.currentPlan.teamMembers')}</p>
+              <p className="text-sm text-text-secondary">
+                {t('subscription.currentPlan.teamMembers')}
+              </p>
               <p className="text-2xl font-semibold text-text-primary mt-1">
                 3 / {currentSubscription.teamMembersLimit}
               </p>
@@ -234,21 +244,29 @@ export const SubscriptionSection = () => {
             </div>
 
             <div className="p-4 bg-surface-page rounded-lg">
-              <p className="text-sm text-text-secondary">{t('subscription.currentPlan.nextRenewal')}</p>
+              <p className="text-sm text-text-secondary">
+                {t('subscription.currentPlan.nextRenewal')}
+              </p>
               <div className="flex items-center gap-2 mt-1">
                 <Calendar className="h-5 w-5 text-text-secondary " />
                 <p className="text-lg font-semibold text-text-primary">
                   {formatDate(currentSubscription.nextRenewal)}
                 </p>
               </div>
-              <p className="text-xs text-text-secondary mt-1">{t('subscription.currentPlan.autoRenews')}</p>
+              <p className="text-xs text-text-secondary mt-1">
+                {t('subscription.currentPlan.autoRenews')}
+              </p>
             </div>
           </div>
 
           <div className="mt-6 flex gap-3">
             <button className="flex-1 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center justify-center gap-2">
-              <Zap className="h-4 w-4" />{t('subscription.currentPlan.changePlan')}</button>
-            <button className="px-4 py-2 border border-border-strong text-text-secondary rounded-lg hover:bg-surface-inset transition-colors">{t('subscription.currentPlan.cancelSubscription')}</button>
+              <Zap className="h-4 w-4" />
+              {t('subscription.currentPlan.changePlan')}
+            </button>
+            <button className="px-4 py-2 border border-border-strong text-text-secondary rounded-lg hover:bg-surface-inset transition-colors">
+              {t('subscription.currentPlan.cancelSubscription')}
+            </button>
           </div>
         </div>
       </div>
@@ -256,8 +274,12 @@ export const SubscriptionSection = () => {
       {/* Available Plans */}
       <div className="bg-surface-card rounded-lg shadow-sm border border-border-default">
         <div className="p-6 border-b border-border-default">
-          <h2 className="text-xl font-semibold text-text-primary">{t('subscription.plans.title')}</h2>
-          <p className="text-sm text-text-secondary mt-1">{t('subscription.plans.subtitle')}</p>
+          <h2 className="text-xl font-semibold text-text-primary">
+            {t('subscription.plans.title')}
+          </h2>
+          <p className="text-sm text-text-secondary mt-1">
+            {t('subscription.plans.subtitle')}
+          </p>
         </div>
 
         <div className="p-6">
@@ -266,7 +288,8 @@ export const SubscriptionSection = () => {
             <span
               className={`text-sm font-medium ${!isAnnual ? 'text-text-primary ' : 'text-text-secondary '}`}
             >
-              {t('subscription.plans.monthly')}</span>
+              {t('subscription.plans.monthly')}
+            </span>
             <button
               onClick={() => setIsAnnual(!isAnnual)}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
@@ -282,9 +305,12 @@ export const SubscriptionSection = () => {
             <span
               className={`text-sm font-medium ${isAnnual ? 'text-text-primary ' : 'text-text-secondary '}`}
             >
-              {t('subscription.plans.annual')}</span>
+              {t('subscription.plans.annual')}
+            </span>
             {isAnnual && (
-              <span className="px-2 py-0.5 text-xs font-bold bg-success-bg text-success-text rounded-full">{t('subscription.plans.save20')}</span>
+              <span className="px-2 py-0.5 text-xs font-bold bg-success-bg text-success-text rounded-full">
+                {t('subscription.plans.save20')}
+              </span>
             )}
           </div>
 
@@ -324,7 +350,9 @@ export const SubscriptionSection = () => {
                       €{price % 1 === 0 ? price : price.toFixed(2)}
                     </span>
                     <span className="text-text-secondary">
-                      {plan.id === 'free' ? t('subscription.plans.forever') : t('subscription.plans.perMonth')}
+                      {plan.id === 'free'
+                        ? t('subscription.plans.forever')
+                        : t('subscription.plans.perMonth')}
                     </span>
                   </div>
                   {plan.id !== 'free' && (
@@ -400,8 +428,12 @@ export const SubscriptionSection = () => {
         <div className="p-6 border-b border-border-default">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-text-primary">{t('subscription.paymentMethods.title')}</h2>
-              <p className="text-sm text-text-secondary mt-1">{t('subscription.paymentMethods.subtitle')}</p>
+              <h2 className="text-xl font-semibold text-text-primary">
+                {t('subscription.paymentMethods.title')}
+              </h2>
+              <p className="text-sm text-text-secondary mt-1">
+                {t('subscription.paymentMethods.subtitle')}
+              </p>
             </div>
             <button
               onClick={() => {
@@ -431,12 +463,17 @@ export const SubscriptionSection = () => {
                           : `SEPA •••• ${method.last4}`}
                       </p>
                       {method.isDefault && (
-                        <span className="px-2 py-0.5 bg-info-bg text-info-text text-xs font-semibold rounded">{t('subscription.paymentMethods.default')}</span>
+                        <span className="px-2 py-0.5 bg-info-bg text-info-text text-xs font-semibold rounded">
+                          {t('subscription.paymentMethods.default')}
+                        </span>
                       )}
                     </div>
                     {method.type === 'card' && (
                       <p className="text-sm text-text-secondary">
-                        {t('subscription.paymentMethods.expires', { month: method.expiryMonth, year: method.expiryYear })}
+                        {t('subscription.paymentMethods.expires', {
+                          month: method.expiryMonth,
+                          year: method.expiryYear,
+                        })}
                       </p>
                     )}
                   </div>
@@ -463,7 +500,9 @@ export const SubscriptionSection = () => {
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-surface-card rounded-lg shadow-xl max-w-md w-full mx-4">
             <div className="p-6 border-b border-border-default">
-              <h3 className="text-xl font-semibold text-text-primary">{t('subscription.confirmModal.title')}</h3>
+              <h3 className="text-xl font-semibold text-text-primary">
+                {t('subscription.confirmModal.title')}
+              </h3>
             </div>
 
             <div className="p-6">
@@ -495,11 +534,15 @@ export const SubscriptionSection = () => {
                   setSelectedPlan(null);
                 }}
                 className="px-4 py-2 border border-border-strong text-text-secondary rounded-lg hover:bg-surface-inset transition-colors"
-              >{t('common:buttons.cancel')}</button>
+              >
+                {t('common:buttons.cancel')}
+              </button>
               <button
                 onClick={confirmUpgrade}
                 className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
-              >{t('subscription.confirmModal.confirmChange')}</button>
+              >
+                {t('subscription.confirmModal.confirmChange')}
+              </button>
             </div>
           </div>
         </div>

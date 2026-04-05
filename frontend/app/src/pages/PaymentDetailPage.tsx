@@ -491,7 +491,9 @@ export const PaymentDetailPage = () => {
         {/* Header */}
         <PageHeader
           title={t('detail.titlePrefix', { id: payment.identifier })}
-          subtitle={t('detail.subtitlePrefix', { id: payment.contract.identifier })}
+          subtitle={t('detail.subtitlePrefix', {
+            id: payment.contract.identifier,
+          })}
           backTo={backTo}
           badge={<PaymentStatusBadge status={payment.status} />}
           actions={
@@ -577,7 +579,8 @@ export const PaymentDetailPage = () => {
               }`}
             >
               <FileText className="h-4 w-4" />
-              {t('tabs.documents')} {documents.length > 0 && `(${documents.length})`}
+              {t('tabs.documents')}{' '}
+              {documents.length > 0 && `(${documents.length})`}
             </button>
             <button
               onClick={() => setActiveTab('history')}
@@ -588,7 +591,8 @@ export const PaymentDetailPage = () => {
               }`}
             >
               <History className="h-4 w-4" />
-              {t('tabs.history')} {auditLog.length > 0 && `(${auditLog.length})`}
+              {t('tabs.history')}{' '}
+              {auditLog.length > 0 && `(${auditLog.length})`}
             </button>
           </div>
         </div>

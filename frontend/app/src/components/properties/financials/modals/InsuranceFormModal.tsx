@@ -104,7 +104,9 @@ export const InsuranceFormModal = ({
       <div className="bg-surface-card rounded-lg shadow-xl dark:shadow-black/20 max-w-lg w-full mx-4 max-h-[90vh] flex flex-col">
         <div className="flex items-center justify-between p-4 border-b border-border-strong flex-shrink-0">
           <h2 className="text-lg font-semibold text-text-primary">
-            {existing ? t('financials.modals.editInsurance') : t('financials.modals.addInsurance')}
+            {existing
+              ? t('financials.modals.editInsurance')
+              : t('financials.modals.addInsurance')}
           </h2>
           <button
             type="button"
@@ -122,7 +124,8 @@ export const InsuranceFormModal = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>
-                {t('financials.labels.insuranceType')} <span className="text-error-text">*</span>
+                {t('financials.labels.insuranceType')}{' '}
+                <span className="text-error-text">*</span>
               </label>
               <select
                 value={formData.insuranceType ?? ''}
@@ -139,7 +142,9 @@ export const InsuranceFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>{t('financials.labels.provider')}</label>
+              <label className={labelClass}>
+                {t('financials.labels.provider')}
+              </label>
               <input
                 type="text"
                 value={formData.provider ?? ''}
@@ -151,7 +156,9 @@ export const InsuranceFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>{t('financials.labels.policyNumber')}</label>
+              <label className={labelClass}>
+                {t('financials.labels.policyNumber')}
+              </label>
               <input
                 type="text"
                 value={formData.policyNumber ?? ''}
@@ -163,7 +170,9 @@ export const InsuranceFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>{t('financials.labels.coverageAmount')}</label>
+              <label className={labelClass}>
+                {t('financials.labels.coverageAmount')}
+              </label>
               <MoneyInput
                 value={formData.coverageAmount}
                 onChange={(v) => update('coverageAmount', v)}
@@ -175,7 +184,8 @@ export const InsuranceFormModal = ({
 
             <div className="min-w-0">
               <label className={labelClass}>
-                {t('financials.labels.annualPremium')} <span className="text-error-text">*</span>
+                {t('financials.labels.annualPremium')}{' '}
+                <span className="text-error-text">*</span>
               </label>
               <MoneyInput
                 value={formData.annualPremium}
@@ -187,7 +197,9 @@ export const InsuranceFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>{t('financials.labels.paymentFrequency')}</label>
+              <label className={labelClass}>
+                {t('financials.labels.paymentFrequency')}
+              </label>
               <select
                 value={formData.paymentFrequency ?? ''}
                 onChange={(e) =>
@@ -204,7 +216,9 @@ export const InsuranceFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>{t('financials.labels.startDate')}</label>
+              <label className={labelClass}>
+                {t('financials.labels.startDate')}
+              </label>
               <input
                 type="date"
                 value={formData.startDate ?? ''}
@@ -216,7 +230,9 @@ export const InsuranceFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>{t('financials.labels.endDate')}</label>
+              <label className={labelClass}>
+                {t('financials.labels.endDate')}
+              </label>
               <input
                 type="date"
                 value={formData.endDate ?? ''}
@@ -226,7 +242,9 @@ export const InsuranceFormModal = ({
             </div>
 
             <div>
-              <label className={labelClass}>{t('financials.labels.status')}</label>
+              <label className={labelClass}>
+                {t('financials.labels.status')}
+              </label>
               <select
                 value={formData.status ?? ''}
                 onChange={(e) => update('status', e.target.value || undefined)}
@@ -241,7 +259,9 @@ export const InsuranceFormModal = ({
             </div>
 
             <div className="col-span-2">
-              <label className={labelClass}>{t('financials.labels.notes')}</label>
+              <label className={labelClass}>
+                {t('financials.labels.notes')}
+              </label>
               <RichTextEditor
                 value={formData.notes ?? ''}
                 onChange={(value) => update('notes', value || undefined)}
@@ -256,14 +276,20 @@ export const InsuranceFormModal = ({
             type="button"
             onClick={onClose}
             className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset"
-          >{t('common:buttons.cancel')}</button>
+          >
+            {t('common:buttons.cancel')}
+          </button>
           <button
             type="submit"
             onClick={handleSubmit}
             disabled={isLoading}
             className="bg-primary-500 text-white px-4 py-2 text-sm font-medium rounded-md hover:bg-primary-600 disabled:opacity-50"
           >
-            {isLoading ? t('financials.saving') : existing ? t('common:buttons.saveChanges') : t('common:buttons.create')}
+            {isLoading
+              ? t('financials.saving')
+              : existing
+                ? t('common:buttons.saveChanges')
+                : t('common:buttons.create')}
           </button>
         </div>
       </div>

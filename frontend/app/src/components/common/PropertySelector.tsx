@@ -258,7 +258,9 @@ export const PropertySelector = ({
           onKeyDown={handleKeyDown}
           disabled={disabled}
           placeholder={
-            isOpen ? t('selectors.typeToSearch') : (placeholder ?? t('selectors.selectProperty'))
+            isOpen
+              ? t('selectors.typeToSearch')
+              : (placeholder ?? t('selectors.selectProperty'))
           }
           autoComplete="off"
           className="w-full border border-border-strong rounded px-3 py-2 pr-8 bg-surface-card hover:border-primary-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 disabled:bg-surface-inset disabled:cursor-not-allowed text-left text-sm text-text-primary"

@@ -91,7 +91,9 @@ const LoginPage: React.FC = () => {
                 <Users className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-1">{t('common:login.features.trackContacts')}</h3>
+                <h3 className="font-semibold text-lg mb-1">
+                  {t('common:login.features.trackContacts')}
+                </h3>
                 <p className="text-primary-200">
                   {t('common:login.features.trackContactsDesc')}
                 </p>
@@ -103,7 +105,9 @@ const LoginPage: React.FC = () => {
                 <FileText className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-1">{t('common:login.features.handleFinances')}</h3>
+                <h3 className="font-semibold text-lg mb-1">
+                  {t('common:login.features.handleFinances')}
+                </h3>
                 <p className="text-primary-200">
                   {t('common:login.features.handleFinancesDesc')}
                 </p>

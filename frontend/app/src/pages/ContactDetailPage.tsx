@@ -500,7 +500,8 @@ export const ContactDetailPage = () => {
               }`}
             >
               <MapPin className="h-4 w-4" />
-              {t('detail.tabs.addresses')} {addresses.length > 0 && `(${addresses.length})`}
+              {t('detail.tabs.addresses')}{' '}
+              {addresses.length > 0 && `(${addresses.length})`}
             </button>
           </div>
         </div>
@@ -688,7 +689,9 @@ export const ContactDetailPage = () => {
                   <div className="flex items-center gap-3">
                     <User className="h-5 w-5 text-text-muted" />
                     <div>
-                      <p className="text-sm text-text-secondary">{t('detail.name')}</p>
+                      <p className="text-sm text-text-secondary">
+                        {t('detail.name')}
+                      </p>
                       <p className="font-medium text-text-primary">
                         {contact.firstName} {contact.lastName}
                       </p>
@@ -698,7 +701,9 @@ export const ContactDetailPage = () => {
                     <div className="flex items-center gap-3">
                       <Building2 className="h-5 w-5 text-text-muted" />
                       <div>
-                        <p className="text-sm text-text-secondary">{t('detail.company')}</p>
+                        <p className="text-sm text-text-secondary">
+                          {t('detail.company')}
+                        </p>
                         <p className="font-medium text-text-primary">
                           {contact.companyName}
                           {contact.tradeName && (
@@ -713,7 +718,9 @@ export const ContactDetailPage = () => {
                   <div className="flex items-center gap-3">
                     <Mail className="h-5 w-5 text-text-muted" />
                     <div>
-                      <p className="text-sm text-text-secondary">{t('detail.email')}</p>
+                      <p className="text-sm text-text-secondary">
+                        {t('detail.email')}
+                      </p>
                       <p className="font-medium text-text-primary">
                         {contact.email ? (
                           <a
@@ -734,7 +741,9 @@ export const ContactDetailPage = () => {
                     <div className="flex items-center gap-3">
                       <Phone className="h-5 w-5 text-text-muted" />
                       <div>
-                        <p className="text-sm text-text-secondary">{t('detail.phone')}</p>
+                        <p className="text-sm text-text-secondary">
+                          {t('detail.phone')}
+                        </p>
                         <p className="font-medium text-text-primary">
                           <a
                             href={`tel:${contact.phone}`}
@@ -924,18 +933,23 @@ export const ContactDetailPage = () => {
               {isMetadataExpanded && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-4">
                   <div>
-                    <span className="text-text-secondary">{t('detail.metadata.created')}</span>{' '}
+                    <span className="text-text-secondary">
+                      {t('detail.metadata.created')}
+                    </span>{' '}
                     <span className="text-text-primary">
                       {formatDate(contact.createdAt)} {t('detail.metadata.at')}{' '}
                       {new Date(contact.createdAt).toLocaleTimeString()}
                     </span>
                   </div>
                   <div>
-                    <span className="text-text-secondary">{t('detail.metadata.lastUpdated')}</span>{' '}
+                    <span className="text-text-secondary">
+                      {t('detail.metadata.lastUpdated')}
+                    </span>{' '}
                     <span className="text-text-primary">
                       {contact.updatedAt ? (
                         <>
-                          {formatDate(contact.updatedAt)} {t('detail.metadata.at')}{' '}
+                          {formatDate(contact.updatedAt)}{' '}
+                          {t('detail.metadata.at')}{' '}
                           {new Date(contact.updatedAt).toLocaleTimeString()}
                         </>
                       ) : (

@@ -36,9 +36,7 @@ export const AdminApiDocsPage = () => {
             {t('apiDocs.title')}
           </h1>
         </div>
-        <p className="text-text-secondary ml-11">
-          {t('apiDocs.subtitle')}
-        </p>
+        <p className="text-text-secondary ml-11">{t('apiDocs.subtitle')}</p>
       </div>
       <div className="flex-1 px-4 pb-4">
         <SwaggerUI

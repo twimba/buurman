@@ -152,7 +152,9 @@ export const ExpenseDetailPage = () => {
                 leftIcon={<Trash2 />}
                 onClick={() => setShowDeleteModal(true)}
                 disabled={!canEditData}
-              >{t('common:buttons.delete')}</Button>
+              >
+                {t('common:buttons.delete')}
+              </Button>
             </>
           }
         />
@@ -167,7 +169,9 @@ export const ExpenseDetailPage = () => {
                   ? 'border-b-2 border-primary-500 text-primary-500'
                   : 'text-text-secondary hover:text-text-primary'
               }`}
-            >{t('tabs.details')}</button>
+            >
+              {t('tabs.details')}
+            </button>
             <button
               onClick={() => setActiveTab('documents')}
               className={`pb-3 px-1 font-medium transition-colors flex items-center gap-2 ${
@@ -177,7 +181,8 @@ export const ExpenseDetailPage = () => {
               }`}
             >
               <FileText className="h-4 w-4" />
-              {t('tabs.documents')} {documents.length > 0 && `(${documents.length})`}
+              {t('tabs.documents')}{' '}
+              {documents.length > 0 && `(${documents.length})`}
             </button>
             <button
               onClick={() => setActiveTab('history')}
@@ -188,7 +193,8 @@ export const ExpenseDetailPage = () => {
               }`}
             >
               <History className="h-4 w-4" />
-              {t('tabs.history')} {auditLog.length > 0 && `(${auditLog.length})`}
+              {t('tabs.history')}{' '}
+              {auditLog.length > 0 && `(${auditLog.length})`}
             </button>
           </div>
         </div>
@@ -197,7 +203,9 @@ export const ExpenseDetailPage = () => {
         {activeTab === 'details' &&
           (isEditing ? (
             <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-              <h2 className="text-lg font-semibold text-text-primary mb-4">{t('detail.editExpense')}</h2>
+              <h2 className="text-lg font-semibold text-text-primary mb-4">
+                {t('detail.editExpense')}
+              </h2>
               <ExpenseForm
                 expense={expense}
                 onSubmit={handleUpdate}
@@ -209,12 +217,16 @@ export const ExpenseDetailPage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Expense Details */}
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-                <h2 className="text-lg font-semibold text-text-primary mb-4">{t('detail.expenseDetails')}</h2>
+                <h2 className="text-lg font-semibold text-text-primary mb-4">
+                  {t('detail.expenseDetails')}
+                </h2>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <DollarSign className="h-5 w-5 text-text-muted " />
                     <div>
-                      <p className="text-sm text-text-secondary">{t('detail.amount')}</p>
+                      <p className="text-sm text-text-secondary">
+                        {t('detail.amount')}
+                      </p>
                       <p className="font-medium text-text-primary text-lg">
                         {expense.currency} {expense.amount.toFixed(2)}
                       </p>
@@ -223,7 +235,9 @@ export const ExpenseDetailPage = () => {
                   <div className="flex items-center gap-3">
                     <Calendar className="h-5 w-5 text-text-muted " />
                     <div>
-                      <p className="text-sm text-text-secondary">{t('detail.expenseDate')}</p>
+                      <p className="text-sm text-text-secondary">
+                        {t('detail.expenseDate')}
+                      </p>
                       <p className="font-medium text-text-primary">
                         {formatDate(expense.expenseDate)}
                       </p>
@@ -232,7 +246,9 @@ export const ExpenseDetailPage = () => {
                   <div className="flex items-center gap-3">
                     <Package className="h-5 w-5 text-text-muted " />
                     <div>
-                      <p className="text-sm text-text-secondary">{t('detail.category')}</p>
+                      <p className="text-sm text-text-secondary">
+                        {t('detail.category')}
+                      </p>
                       <p className="font-medium text-text-primary">
                         {formatExpenseCategory(expense.category)}
                       </p>
@@ -241,7 +257,9 @@ export const ExpenseDetailPage = () => {
                   <div className="flex items-start gap-3">
                     <Receipt className="h-5 w-5 text-text-muted mt-1" />
                     <div>
-                      <p className="text-sm text-text-secondary">{t('detail.description')}</p>
+                      <p className="text-sm text-text-secondary">
+                        {t('detail.description')}
+                      </p>
                       <p className="font-medium text-text-primary">
                         {expense.description}
                       </p>
@@ -252,12 +270,16 @@ export const ExpenseDetailPage = () => {
 
               {/* Property & Contact Info */}
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-                <h2 className="text-lg font-semibold text-text-primary mb-4">{t('detail.propertyAndContact')}</h2>
+                <h2 className="text-lg font-semibold text-text-primary mb-4">
+                  {t('detail.propertyAndContact')}
+                </h2>
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
                     <Home className="h-5 w-5 text-text-muted mt-1" />
                     <div className="flex-1">
-                      <p className="text-sm text-text-secondary">{t('detail.property')}</p>
+                      <p className="text-sm text-text-secondary">
+                        {t('detail.property')}
+                      </p>
                       <button
                         onClick={() =>
                           navigate(`/properties/${expense.property.identifier}`)
@@ -274,7 +296,9 @@ export const ExpenseDetailPage = () => {
                   <div className="flex items-start gap-3">
                     <User className="h-5 w-5 text-text-muted mt-1" />
                     <div className="flex-1">
-                      <p className="text-sm text-text-secondary">{t('detail.contact')}</p>
+                      <p className="text-sm text-text-secondary">
+                        {t('detail.contact')}
+                      </p>
                       {expense.contact ? (
                         <>
                           <button
@@ -293,7 +317,9 @@ export const ExpenseDetailPage = () => {
                           </p>
                         </>
                       ) : (
-                        <p className="text-sm text-text-muted">{t('detail.noContactLinked')}</p>
+                        <p className="text-sm text-text-muted">
+                          {t('detail.noContactLinked')}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -303,7 +329,9 @@ export const ExpenseDetailPage = () => {
               {/* Notes */}
               {expense.notes && (
                 <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6 lg:col-span-2">
-                  <h2 className="text-lg font-semibold text-text-primary mb-4">{t('detail.notes')}</h2>
+                  <h2 className="text-lg font-semibold text-text-primary mb-4">
+                    {t('detail.notes')}
+                  </h2>
                   <RichTextDisplay content={expense.notes} />
                 </div>
               )}
@@ -314,7 +342,9 @@ export const ExpenseDetailPage = () => {
                   onClick={() => setIsMetadataExpanded(!isMetadataExpanded)}
                   className="w-full flex items-center justify-between text-left group"
                 >
-                  <h2 className="text-lg font-semibold text-text-primary">{t('detail.metadata')}</h2>
+                  <h2 className="text-lg font-semibold text-text-primary">
+                    {t('detail.metadata')}
+                  </h2>
                   {isMetadataExpanded ? (
                     <ChevronUp className="h-5 w-5 text-text-secondary group-hover:text-text-secondary " />
                   ) : (
@@ -324,14 +354,18 @@ export const ExpenseDetailPage = () => {
                 {isMetadataExpanded && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-4">
                     <div>
-                      <span className="text-text-secondary">{t('detail.created')}</span>{' '}
+                      <span className="text-text-secondary">
+                        {t('detail.created')}
+                      </span>{' '}
                       <span className="text-text-primary">
                         {formatDate(expense.createdAt)} at{' '}
                         {new Date(expense.createdAt).toLocaleTimeString()}
                       </span>
                     </div>
                     <div>
-                      <span className="text-text-secondary">{t('detail.lastUpdated')}</span>{' '}
+                      <span className="text-text-secondary">
+                        {t('detail.lastUpdated')}
+                      </span>{' '}
                       <span className="text-text-primary">
                         {formatDate(expense.updatedAt)} at{' '}
                         {new Date(expense.updatedAt).toLocaleTimeString()}
@@ -362,7 +396,9 @@ export const ExpenseDetailPage = () => {
 
         {activeTab === 'history' && (
           <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
-            <h2 className="text-xl font-semibold text-text-primary mb-4">{t('history.title')}</h2>
+            <h2 className="text-xl font-semibold text-text-primary mb-4">
+              {t('history.title')}
+            </h2>
             {auditLoading ? (
               <div className="flex items-center justify-center py-8">
                 <LoadingSpinner />
@@ -440,14 +476,20 @@ export const ExpenseDetailPage = () => {
                             )}
                           </div>
                           {hasChanges && (
-                            <p className="text-xs text-primary-500 mt-1">{isExpanded ? t('history.clickToHide') : t('history.clickToView')}</p>
+                            <p className="text-xs text-primary-500 mt-1">
+                              {isExpanded
+                                ? t('history.clickToHide')
+                                : t('history.clickToView')}
+                            </p>
                           )}
                         </div>
                       </div>
 
                       {isExpanded && hasChanges && (
                         <div className="bg-surface-page px-4 py-3 border-t border-border-default">
-                          <h4 className="text-xs font-semibold text-text-secondary mb-2 uppercase">{t('history.changedFields')}</h4>
+                          <h4 className="text-xs font-semibold text-text-secondary mb-2 uppercase">
+                            {t('history.changedFields')}
+                          </h4>
                           <div className="space-y-2">
                             {Object.entries(activity.changedFields ?? {}).map(
                               ([field]) => (
@@ -463,7 +505,9 @@ export const ExpenseDetailPage = () => {
                                   </div>
                                   <div className="grid grid-cols-2 gap-2">
                                     <div>
-                                      <span className="text-text-secondary">{t('history.old')}{' '}</span>
+                                      <span className="text-text-secondary">
+                                        {t('history.old')}{' '}
+                                      </span>
                                       {typeof activity.oldValues?.[field] ===
                                         'string' &&
                                       /<[a-z][\s\S]*>/i.test(
@@ -482,7 +526,9 @@ export const ExpenseDetailPage = () => {
                                       )}
                                     </div>
                                     <div>
-                                      <span className="text-text-secondary">{t('history.new')}{' '}</span>
+                                      <span className="text-text-secondary">
+                                        {t('history.new')}{' '}
+                                      </span>
                                       {typeof activity.newValues?.[field] ===
                                         'string' &&
                                       /<[a-z][\s\S]*>/i.test(
@@ -515,7 +561,9 @@ export const ExpenseDetailPage = () => {
               <div className="text-center py-8">
                 <History className="h-12 w-12 text-text-disabled mx-auto mb-3" />
                 <p className="text-text-secondary">{t('history.empty')}</p>
-                <p className="text-sm text-text-muted mt-1">{t('history.emptySubtitle')}</p>
+                <p className="text-sm text-text-muted mt-1">
+                  {t('history.emptySubtitle')}
+                </p>
               </div>
             )}
           </div>
@@ -526,18 +574,26 @@ export const ExpenseDetailPage = () => {
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-surface-card rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
-            <h2 className="text-lg font-semibold text-text-primary mb-4">{t('deleteDialog.title')}</h2>
-            <p className="text-text-secondary mb-6">{t('deleteDialog.message')}</p>
+            <h2 className="text-lg font-semibold text-text-primary mb-4">
+              {t('deleteDialog.title')}
+            </h2>
+            <p className="text-text-secondary mb-6">
+              {t('deleteDialog.message')}
+            </p>
             <div className="flex justify-end gap-3">
               <Button
                 variant="secondary"
                 onClick={() => setShowDeleteModal(false)}
-              >{t('common:buttons.cancel')}</Button>
+              >
+                {t('common:buttons.cancel')}
+              </Button>
               <Button
                 variant="danger"
                 onClick={handleDelete}
                 isLoading={deleteExpenseMutation.isPending}
-              >{t('common:buttons.delete')}</Button>
+              >
+                {t('common:buttons.delete')}
+              </Button>
             </div>
           </div>
         </div>

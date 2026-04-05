@@ -38,7 +38,9 @@ export function ImpersonationGuard({
     return (
       <>
         {fallback ?? (
-          <span className="text-sm text-text-muted">{t('impersonation.readOnly')}</span>
+          <span className="text-sm text-text-muted">
+            {t('impersonation.readOnly')}
+          </span>
         )}
       </>
     );

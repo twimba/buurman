@@ -31,7 +31,6 @@ import com.buurman.domain.Notification;
 import com.buurman.domain.NotificationChannel;
 import com.buurman.domain.NotificationOutbox;
 import com.buurman.domain.NotificationType;
-import com.buurman.domain.TeamPreferences;
 import com.buurman.domain.UserPreferences;
 import com.buurman.repository.NotificationOutboxRepository;
 import com.buurman.repository.NotificationRepository;

@@ -114,7 +114,9 @@ export const PhotoGrid = ({
     return (
       <div className="text-center py-12 bg-surface-page rounded-lg">
         <Upload className="h-12 w-12 text-text-muted mx-auto mb-3" />
-        <p className="text-text-secondary">{emptyMessage ?? t('photoGrid.noPhotos')}</p>
+        <p className="text-text-secondary">
+          {emptyMessage ?? t('photoGrid.noPhotos')}
+        </p>
       </div>
     );
   }
@@ -136,7 +138,10 @@ export const PhotoGrid = ({
           </button>
           <span className="text-sm text-text-secondary">
             {hasSelection
-              ? t('photoGrid.selection.selected', { selected: selectedPhotos.size, total: displayCount })
+              ? t('photoGrid.selection.selected', {
+                  selected: selectedPhotos.size,
+                  total: displayCount,
+                })
               : t('photoGrid.selection.count', { count: displayCount })}
           </span>
         </div>
@@ -155,7 +160,9 @@ export const PhotoGrid = ({
                 ) : (
                   <Download className="h-4 w-4" />
                 )}
-                {isBulkDownloading ? t('photoGrid.downloading') : t('common:buttons.download')}
+                {isBulkDownloading
+                  ? t('photoGrid.downloading')
+                  : t('common:buttons.download')}
               </button>
             )}
             {onBulkDelete && (
@@ -197,7 +204,9 @@ export const PhotoGrid = ({
                   <div className="flex items-center justify-center h-full">
                     <div className="text-center p-4">
                       <AlertCircle className="h-8 w-8 text-text-muted mx-auto mb-2" />
-                      <p className="text-xs text-text-secondary">{t('photoGrid.noUrl')}</p>
+                      <p className="text-xs text-text-secondary">
+                        {t('photoGrid.noUrl')}
+                      </p>
                     </div>
                   </div>
                 ) : hasError ? (

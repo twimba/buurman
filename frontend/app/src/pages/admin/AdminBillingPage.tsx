@@ -32,9 +32,7 @@ export const AdminBillingPage = () => {
               {t('billing.title')}
             </h1>
           </div>
-          <p className="text-text-secondary ml-11">
-            {t('billing.subtitle')}
-          </p>
+          <p className="text-text-secondary ml-11">{t('billing.subtitle')}</p>
         </div>
         <ImpersonationGuard
           blockAlways

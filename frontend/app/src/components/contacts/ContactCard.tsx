@@ -155,7 +155,9 @@ export const ContactCard = ({ contact }: ContactCardProps) => {
             </div>
             <span className="text-xs">
               {t('card.payment', { count: balance.outstandingPaymentCount })}{' '}
-              {balance.status === 'OVERDUE' ? t('card.overdue') : t('card.pending')}
+              {balance.status === 'OVERDUE'
+                ? t('card.overdue')
+                : t('card.pending')}
             </span>
           </div>
         )}
@@ -170,11 +172,18 @@ export const ContactCard = ({ contact }: ContactCardProps) => {
             <div className="flex items-center gap-2">
               <Shield className="h-4 w-4" />
               <span className="text-sm font-medium">
-                {t('card.guarantees', { amount: formatCurrency(balance.guaranteedAmount, balance.currency) })}
+                {t('card.guarantees', {
+                  amount: formatCurrency(
+                    balance.guaranteedAmount,
+                    balance.currency
+                  ),
+                })}
               </span>
             </div>
             <span className="text-xs">
-              {t('card.payment', { count: balance.guaranteedPaymentCount ?? 0 })}
+              {t('card.payment', {
+                count: balance.guaranteedPaymentCount ?? 0,
+              })}
             </span>
           </div>
         )}
@@ -185,7 +194,9 @@ export const ContactCard = ({ contact }: ContactCardProps) => {
           <FileText className="h-4 w-4" />
           <span className="text-sm">
             {contact.activeContractCount > 0
-              ? t('card.activeContracts', { count: contact.activeContractCount })
+              ? t('card.activeContracts', {
+                  count: contact.activeContractCount,
+                })
               : t('card.noActiveContracts')}
           </span>
         </div>

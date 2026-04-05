@@ -290,8 +290,9 @@ export const ContractForm = ({
         (c) => typeof c.amount !== 'number' || c.amount <= 0
       );
       if (invalidAmounts) {
-        newErrors.rentComponents =
-          t('form.validation.componentAmountsPositive');
+        newErrors.rentComponents = t(
+          'form.validation.componentAmountsPositive'
+        );
       }
       const missingOtherDesc = formData.rentComponents.some(
         (c) =>
@@ -299,8 +300,9 @@ export const ContractForm = ({
           (!c.description || !c.description.trim())
       );
       if (missingOtherDesc) {
-        newErrors.rentComponents =
-          t('form.validation.otherDescriptionRequired');
+        newErrors.rentComponents = t(
+          'form.validation.otherDescriptionRequired'
+        );
       }
       // Validate total > 0
       const total = formData.rentComponents.reduce(

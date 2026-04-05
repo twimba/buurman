@@ -76,27 +76,27 @@ const EmailBodyPreview = ({ body }: { body: string }) => {
 const SmsBodyPreview = ({ body }: { body: string }) => {
   const { t } = useTranslation('admin');
   return (
-  <div className="flex justify-center">
-    <div className="w-[300px] rounded-2xl bg-neutral-900 dark:bg-neutral-950 p-4 shadow-inner">
-      {/* Phone header */}
-      <div className="flex items-center justify-center gap-1.5 mb-3 text-[10px] text-text-secondary">
-        <Smartphone className="h-3 w-3" />
-        {t('notifications.details.smsMessage')}
-      </div>
-      {/* Message bubble */}
-      <div className="flex justify-start">
-        <div className="relative max-w-[240px] bg-neutral-100 rounded-2xl rounded-bl-sm px-3.5 py-2.5">
-          <p className="text-sm text-text-primary whitespace-pre-wrap break-words leading-relaxed">
-            {body}
-          </p>
+    <div className="flex justify-center">
+      <div className="w-[300px] rounded-2xl bg-neutral-900 dark:bg-neutral-950 p-4 shadow-inner">
+        {/* Phone header */}
+        <div className="flex items-center justify-center gap-1.5 mb-3 text-[10px] text-text-secondary">
+          <Smartphone className="h-3 w-3" />
+          {t('notifications.details.smsMessage')}
+        </div>
+        {/* Message bubble */}
+        <div className="flex justify-start">
+          <div className="relative max-w-[240px] bg-neutral-100 rounded-2xl rounded-bl-sm px-3.5 py-2.5">
+            <p className="text-sm text-text-primary whitespace-pre-wrap break-words leading-relaxed">
+              {body}
+            </p>
+          </div>
+        </div>
+        {/* Timestamp */}
+        <div className="text-right mt-1.5 text-[10px] text-text-secondary">
+          {t('notifications.details.delivered')}
         </div>
       </div>
-      {/* Timestamp */}
-      <div className="text-right mt-1.5 text-[10px] text-text-secondary">
-        {t('notifications.details.delivered')}
-      </div>
     </div>
-  </div>
   );
 };
 
@@ -175,22 +175,30 @@ export const NotificationDetailModal = ({
               <div className="flex items-start gap-2 rounded-lg bg-info-bg border border-info-border p-3 text-sm text-info-text">
                 <Info className="h-4 w-4 mt-0.5 shrink-0" />
                 <span>
-                  {t('notifications.details.demoBlocked', { channel: notification.channel.toLowerCase() })}
+                  {t('notifications.details.demoBlocked', {
+                    channel: notification.channel.toLowerCase(),
+                  })}
                 </span>
               </div>
             )}
 
             <dl className="space-y-3 text-sm">
               <div>
-                <dt className="text-text-secondary">{t('notifications.details.type')}</dt>
+                <dt className="text-text-secondary">
+                  {t('notifications.details.type')}
+                </dt>
                 <dd className="font-medium text-text-primary">
-                  {typeKeys[notification.notificationType] ? t(typeKeys[notification.notificationType]) : notification.notificationType}
+                  {typeKeys[notification.notificationType]
+                    ? t(typeKeys[notification.notificationType])
+                    : notification.notificationType}
                 </dd>
               </div>
 
               {notification.subject && (
                 <div>
-                  <dt className="text-text-secondary">{t('notifications.details.subject')}</dt>
+                  <dt className="text-text-secondary">
+                    {t('notifications.details.subject')}
+                  </dt>
                   <dd className="font-medium text-text-primary">
                     {notification.subject}
                   </dd>
@@ -199,7 +207,9 @@ export const NotificationDetailModal = ({
 
               {notification.body && (
                 <div>
-                  <dt className="text-text-secondary mb-2">{t('notifications.details.content')}</dt>
+                  <dt className="text-text-secondary mb-2">
+                    {t('notifications.details.content')}
+                  </dt>
                   <dd>
                     {notification.channel === NotificationChannel.EMAIL ? (
                       <EmailBodyPreview body={notification.body} />
@@ -211,7 +221,9 @@ export const NotificationDetailModal = ({
               )}
 
               <div>
-                <dt className="text-text-secondary">{t('notifications.details.recipient')}</dt>
+                <dt className="text-text-secondary">
+                  {t('notifications.details.recipient')}
+                </dt>
                 <dd className="font-medium text-text-primary">
                   {notification.recipientEmail}
                   {notification.recipientPhone && (
@@ -223,7 +235,9 @@ export const NotificationDetailModal = ({
               </div>
 
               <div>
-                <dt className="text-text-secondary">{t('notifications.details.sentAt')}</dt>
+                <dt className="text-text-secondary">
+                  {t('notifications.details.sentAt')}
+                </dt>
                 <dd className="font-medium text-text-primary">
                   {formatDate(notification.createdAt)}
                 </dd>
@@ -231,7 +245,9 @@ export const NotificationDetailModal = ({
 
               {notification.statusUpdatedAt && (
                 <div>
-                  <dt className="text-text-secondary">{t('notifications.details.statusUpdated')}</dt>
+                  <dt className="text-text-secondary">
+                    {t('notifications.details.statusUpdated')}
+                  </dt>
                   <dd className="font-medium text-text-primary">
                     {formatDate(notification.statusUpdatedAt)}
                   </dd>
@@ -240,7 +256,9 @@ export const NotificationDetailModal = ({
 
               {notification.providerStatus && (
                 <div>
-                  <dt className="text-text-secondary">{t('notifications.details.providerStatus')}</dt>
+                  <dt className="text-text-secondary">
+                    {t('notifications.details.providerStatus')}
+                  </dt>
                   <dd className="flex items-center gap-2 font-medium text-text-primary">
                     {notification.providerStatus}
                     {onRefreshStatus && (
@@ -264,7 +282,9 @@ export const NotificationDetailModal = ({
 
               {notification.providerError && (
                 <div>
-                  <dt className="text-text-secondary">{t('notifications.details.error')}</dt>
+                  <dt className="text-text-secondary">
+                    {t('notifications.details.error')}
+                  </dt>
                   <dd className="font-medium text-error-text">
                     {notification.providerError}
                   </dd>
@@ -274,24 +294,38 @@ export const NotificationDetailModal = ({
               {notification.channel === NotificationChannel.EMAIL &&
                 (notification.openCount > 0 || notification.clickCount > 0) && (
                   <div>
-                    <dt className="text-text-secondary mb-1">{t('notifications.details.engagement')}</dt>
+                    <dt className="text-text-secondary mb-1">
+                      {t('notifications.details.engagement')}
+                    </dt>
                     <dd className="flex items-center gap-4">
                       <span className="inline-flex items-center gap-1.5 text-sm font-medium text-text-primary">
                         <Eye className="h-3.5 w-3.5 text-primary-500" />
-                        {t('notifications.details.open', { count: notification.openCount })}
+                        {t('notifications.details.open', {
+                          count: notification.openCount,
+                        })}
                         {notification.firstOpenedAt && (
                           <span className="text-xs text-text-secondary ml-1">
-                            ({t('notifications.details.first', { date: formatDate(notification.firstOpenedAt) })})
+                            (
+                            {t('notifications.details.first', {
+                              date: formatDate(notification.firstOpenedAt),
+                            })}
+                            )
                           </span>
                         )}
                       </span>
                       {notification.clickCount > 0 && (
                         <span className="inline-flex items-center gap-1.5 text-sm font-medium text-text-primary">
                           <MousePointerClick className="h-3.5 w-3.5 text-success-text" />
-                          {t('notifications.details.click', { count: notification.clickCount })}
+                          {t('notifications.details.click', {
+                            count: notification.clickCount,
+                          })}
                           {notification.firstClickedAt && (
                             <span className="text-xs text-text-secondary ml-1">
-                              ({t('notifications.details.first', { date: formatDate(notification.firstClickedAt) })})
+                              (
+                              {t('notifications.details.first', {
+                                date: formatDate(notification.firstClickedAt),
+                              })}
+                              )
                             </span>
                           )}
                         </span>
@@ -302,7 +336,9 @@ export const NotificationDetailModal = ({
 
               {notification.resentFromIdentifier && (
                 <div>
-                  <dt className="text-text-secondary">{t('notifications.details.resentFrom')}</dt>
+                  <dt className="text-text-secondary">
+                    {t('notifications.details.resentFrom')}
+                  </dt>
                   <dd className="font-mono text-xs">
                     {onViewNotification ? (
                       <button
@@ -326,7 +362,9 @@ export const NotificationDetailModal = ({
 
               {notification.resendReason && (
                 <div>
-                  <dt className="text-text-secondary">{t('notifications.details.resendReason')}</dt>
+                  <dt className="text-text-secondary">
+                    {t('notifications.details.resendReason')}
+                  </dt>
                   <dd className="font-medium text-text-primary">
                     {notification.resendReason}
                   </dd>

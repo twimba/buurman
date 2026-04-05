@@ -161,8 +161,15 @@ export const CurrencyChangeModal = ({
                   </div>
                   <div className="text-xs text-warning-text mt-1">
                     {mode === 'RELABEL'
-                      ? t('currencyChange.relabelWarning', { from: currentCurrency, to: newCurrency })
-                      : t('currencyChange.convertWarning', { rate: conversionRate, from: currentCurrency, to: newCurrency })}
+                      ? t('currencyChange.relabelWarning', {
+                          from: currentCurrency,
+                          to: newCurrency,
+                        })
+                      : t('currencyChange.convertWarning', {
+                          rate: conversionRate,
+                          from: currentCurrency,
+                          to: newCurrency,
+                        })}
                   </div>
                   <label className="flex items-center gap-2 mt-3 cursor-pointer">
                     <input

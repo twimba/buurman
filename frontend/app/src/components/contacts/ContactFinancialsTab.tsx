@@ -74,9 +74,7 @@ export const ContactFinancialsTab = ({
         {expenses.length === 0 ? (
           <div className="text-center py-8">
             <Receipt className="h-12 w-12 text-text-disabled mx-auto mb-3" />
-            <p className="text-text-secondary">
-              {t('financials.noExpenses')}
-            </p>
+            <p className="text-text-secondary">{t('financials.noExpenses')}</p>
           </div>
         ) : (
           <>
@@ -143,7 +141,9 @@ export const ContactFinancialsTab = ({
             {expenseTotal && (
               <div className="mt-4 pt-3 border-t border-border-default flex justify-end">
                 <div className="text-sm">
-                  <span className="text-text-secondary">{t('financials.total')} </span>
+                  <span className="text-text-secondary">
+                    {t('financials.total')}{' '}
+                  </span>
                   <span className="font-semibold text-text-primary">
                     {getCurrencySymbol(expenseTotal.currency)}{' '}
                     {expenseTotal.total.toFixed(2)}
@@ -167,9 +167,7 @@ export const ContactFinancialsTab = ({
         {payments.length === 0 ? (
           <div className="text-center py-8">
             <CreditCard className="h-12 w-12 text-text-disabled mx-auto mb-3" />
-            <p className="text-text-secondary">
-              {t('financials.noPayments')}
-            </p>
+            <p className="text-text-secondary">{t('financials.noPayments')}</p>
           </div>
         ) : (
           <>
@@ -236,14 +234,18 @@ export const ContactFinancialsTab = ({
             {paymentTotal && (
               <div className="mt-4 pt-3 border-t border-border-default flex justify-end gap-6">
                 <div className="text-sm">
-                  <span className="text-text-secondary">{t('financials.total')} </span>
+                  <span className="text-text-secondary">
+                    {t('financials.total')}{' '}
+                  </span>
                   <span className="font-semibold text-text-primary">
                     {getCurrencySymbol(paymentTotal.currency)}{' '}
                     {paymentTotal.total.toFixed(2)}
                   </span>
                 </div>
                 <div className="text-sm">
-                  <span className="text-text-secondary">{t('financials.received')} </span>
+                  <span className="text-text-secondary">
+                    {t('financials.received')}{' '}
+                  </span>
                   <span className="font-semibold text-success-text">
                     {getCurrencySymbol(paymentTotal.currency)}{' '}
                     {paymentTotal.received.toFixed(2)}

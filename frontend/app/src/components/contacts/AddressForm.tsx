@@ -293,8 +293,12 @@ export const AddressForm = ({
               }
               className="w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
             >
-              <option value={AddressStatus.ACTIVE}>{t('common:status.active')}</option>
-              <option value={AddressStatus.INACTIVE}>{t('common:status.inactive')}</option>
+              <option value={AddressStatus.ACTIVE}>
+                {t('common:status.active')}
+              </option>
+              <option value={AddressStatus.INACTIVE}>
+                {t('common:status.inactive')}
+              </option>
             </select>
           </div>
         )}

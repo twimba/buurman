@@ -296,7 +296,9 @@ export const AdjustRentModal = ({
             className="px-4 py-2 text-sm font-medium text-white bg-primary-500 rounded-md hover:bg-primary-600 disabled:opacity-50"
             disabled={isLoading || parsedAmount === null || parsedAmount <= 0}
           >
-            {isLoading ? t('adjustRent.saving') : t('adjustRent.adjustRentButton')}
+            {isLoading
+              ? t('adjustRent.saving')
+              : t('adjustRent.adjustRentButton')}
           </button>
         </>
       }
@@ -322,9 +324,7 @@ export const AdjustRentModal = ({
           {isRetroactive ? (
             <div className="mt-2 flex items-start gap-1.5 text-xs text-info-text">
               <Info className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
-              <span>
-                {t('adjustRent.retroactiveNote')}
-              </span>
+              <span>{t('adjustRent.retroactiveNote')}</span>
             </div>
           ) : (
             <p className="mt-1 text-xs text-text-muted">
@@ -438,7 +438,9 @@ export const AdjustRentModal = ({
                           </span>
                           {current && (
                             <span className="text-[10px] text-text-muted">
-                              {t('adjustRent.was', { amount: formatCurrency(oldAmount, currency) })}
+                              {t('adjustRent.was', {
+                                amount: formatCurrency(oldAmount, currency),
+                              })}
                             </span>
                           )}
                         </div>

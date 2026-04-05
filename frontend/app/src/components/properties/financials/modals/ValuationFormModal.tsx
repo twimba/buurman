@@ -99,7 +99,9 @@ export const ValuationFormModal = ({
       <div className="bg-surface-card rounded-lg shadow-xl dark:shadow-black/20 max-w-lg w-full mx-4">
         <div className="flex items-center justify-between p-4 border-b border-border-strong">
           <h2 className="text-lg font-semibold text-text-primary">
-            {existing ? t('financials.modals.editValuation') : t('financials.modals.addValuation')}
+            {existing
+              ? t('financials.modals.editValuation')
+              : t('financials.modals.addValuation')}
           </h2>
           <button
             type="button"
@@ -116,7 +118,9 @@ export const ValuationFormModal = ({
           className="p-4 space-y-4"
         >
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">{t('financials.labels.valuationType')}</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">
+              {t('financials.labels.valuationType')}
+            </label>
             <select
               value={formData.valuationType}
               onChange={(e) =>
@@ -136,7 +140,9 @@ export const ValuationFormModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">{t('financials.labels.valuationDate')} <span className="text-error-text">*</span>
+            <label className="block text-sm font-medium text-text-secondary mb-1">
+              {t('financials.labels.valuationDate')}{' '}
+              <span className="text-error-text">*</span>
             </label>
             <input
               type="date"
@@ -150,7 +156,9 @@ export const ValuationFormModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">{t('financials.labels.amount')} <span className="text-error-text">*</span>
+            <label className="block text-sm font-medium text-text-secondary mb-1">
+              {t('financials.labels.amount')}{' '}
+              <span className="text-error-text">*</span>
             </label>
             <MoneyInput
               value={formData.amount ?? undefined}
@@ -160,7 +168,9 @@ export const ValuationFormModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">{t('financials.labels.source')}</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">
+              {t('financials.labels.source')}
+            </label>
             <input
               type="text"
               value={formData.source ?? ''}
@@ -173,7 +183,9 @@ export const ValuationFormModal = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1">{t('financials.labels.notes')}</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">
+              {t('financials.labels.notes')}
+            </label>
             <RichTextEditor
               value={formData.notes ?? ''}
               onChange={(value) =>
@@ -189,7 +201,9 @@ export const ValuationFormModal = ({
             type="button"
             onClick={onClose}
             className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface-card border border-border-strong rounded-md hover:bg-surface-inset"
-          >{t('common:buttons.cancel')}</button>
+          >
+            {t('common:buttons.cancel')}
+          </button>
           <button
             type="submit"
             form="valuation-form"

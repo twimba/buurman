@@ -201,7 +201,9 @@ export const DocumentList = ({
     <div className="space-y-4">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-text-primary">{t('documents.title')}</h3>
+        <h3 className="text-lg font-semibold text-text-primary">
+          {t('documents.title')}
+        </h3>
         {!readOnly && (
           <label className="cursor-pointer bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2">
             <Upload className="h-4 w-4" />
@@ -242,7 +244,10 @@ export const DocumentList = ({
               </button>
               <span className="text-sm text-text-secondary">
                 {hasSelection
-                  ? t('documents.selection.selected', { selected: selectedDocuments.size, total: documents.length })
+                  ? t('documents.selection.selected', {
+                      selected: selectedDocuments.size,
+                      total: documents.length,
+                    })
                   : t('documents.selection.count', { count: documents.length })}
               </span>
             </div>
@@ -454,12 +459,18 @@ export const DocumentList = ({
       {/* Delete Confirmation */}
       {pendingBulkDelete && (
         <ConfirmDialog
-          title={t('documents.delete.title', { count: pendingBulkDelete.length })}
-          message={t('documents.delete.message', { count: pendingBulkDelete.length })}
+          title={t('documents.delete.title', {
+            count: pendingBulkDelete.length,
+          })}
+          message={t('documents.delete.message', {
+            count: pendingBulkDelete.length,
+          })}
           confirmLabel={
             pendingBulkDelete.length === 1
               ? t('buttons.delete', { ns: 'common' })
-              : t('documents.delete.confirmLabel', { count: pendingBulkDelete.length })
+              : t('documents.delete.confirmLabel', {
+                  count: pendingBulkDelete.length,
+                })
           }
           variant="danger"
           onConfirm={confirmDelete}
@@ -481,7 +492,9 @@ export const DocumentList = ({
                 </h3>
                 {selectedFiles.length > 1 && (
                   <span className="px-2 py-0.5 text-xs font-medium bg-primary-500/10 text-primary-500 rounded-full">
-                    {t('documents.upload.files', { count: selectedFiles.length })}
+                    {t('documents.upload.files', {
+                      count: selectedFiles.length,
+                    })}
                   </span>
                 )}
               </div>
@@ -569,7 +582,10 @@ export const DocumentList = ({
                 {uploadProgress ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    {t('documents.upload.uploading', { current: uploadProgress.current, total: uploadProgress.total })}
+                    {t('documents.upload.uploading', {
+                      current: uploadProgress.current,
+                      total: uploadProgress.total,
+                    })}
                     <div
                       role="progressbar"
                       aria-valuenow={uploadProgress.current}
@@ -585,7 +601,9 @@ export const DocumentList = ({
                   <>
                     <Upload className="h-4 w-4" />
                     {selectedFiles.length > 1
-                      ? t('documents.upload.uploadCount', { count: selectedFiles.length })
+                      ? t('documents.upload.uploadCount', {
+                          count: selectedFiles.length,
+                        })
                       : t('buttons.upload', { ns: 'common' })}
                   </>
                 )}

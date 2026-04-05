@@ -23,9 +23,15 @@ export const RentIncreaseWizardPage = () => {
   const STEPS = useMemo(
     () => [
       { key: 'year' as WizardStep, label: t('rentIncrease.steps.selectYear') },
-      { key: 'adjust' as WizardStep, label: t('rentIncrease.steps.adjustRents') },
+      {
+        key: 'adjust' as WizardStep,
+        label: t('rentIncrease.steps.adjustRents'),
+      },
       { key: 'review' as WizardStep, label: t('rentIncrease.steps.review') },
-      { key: 'confirmation' as WizardStep, label: t('rentIncrease.steps.confirmation') },
+      {
+        key: 'confirmation' as WizardStep,
+        label: t('rentIncrease.steps.confirmation'),
+      },
     ],
     [t]
   );

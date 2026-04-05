@@ -212,8 +212,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(Exception.class)
   public ProblemDetail handleGenericException(Exception ex, HttpServletRequest request) {
     log.error("Unhandled exception", ex);
-    ProblemDetail problem =
-        forStatusAndDetail(INTERNAL_SERVER_ERROR, msg("error.internal.detail"));
+    ProblemDetail problem = forStatusAndDetail(INTERNAL_SERVER_ERROR, msg("error.internal.detail"));
     problem.setTitle(msg("error.internal.title"));
     problem.setInstance(URI.create(request.getRequestURI()));
     return problem;

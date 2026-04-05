@@ -208,7 +208,9 @@ export const DocumentPreviewModal = ({
             ) : (
               <div className="text-center py-12">
                 <p className="text-text-secondary mb-4">
-                  {t('preview.previewNotAvailable', { mimeType: document.mimeType })}
+                  {t('preview.previewNotAvailable', {
+                    mimeType: document.mimeType,
+                  })}
                 </p>
                 <a
                   href={document.downloadUrl ?? undefined}

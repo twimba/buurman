@@ -251,7 +251,9 @@ export const ImportHistory = () => {
                       {imp.revertedAt && (
                         <div className="flex items-center gap-2 text-sm text-text-muted bg-surface-card border border-border-default rounded-lg px-3 py-2">
                           <AlertTriangle className="h-4 w-4 text-yellow-500" />
-                          {t('importHistory.revertedOn', { date: formatDate(imp.revertedAt) })}
+                          {t('importHistory.revertedOn', {
+                            date: formatDate(imp.revertedAt),
+                          })}
                         </div>
                       )}
 
@@ -259,7 +261,9 @@ export const ImportHistory = () => {
                       {detail.items.length > 0 && (
                         <div>
                           <p className="text-xs font-medium text-text-muted mb-2">
-                            {t('importHistory.importedContacts', { count: detail.items.length })}
+                            {t('importHistory.importedContacts', {
+                              count: detail.items.length,
+                            })}
                           </p>
                           <div className="grid gap-1 max-h-48 overflow-y-auto">
                             {detail.items.map((item) => (
@@ -272,7 +276,9 @@ export const ImportHistory = () => {
                                   {item.displayName}
                                 </span>
                                 <span className="text-xs text-text-muted">
-                                  {t('importHistory.rowNumber', { number: item.rowNumber })}
+                                  {t('importHistory.rowNumber', {
+                                    number: item.rowNumber,
+                                  })}
                                 </span>
                               </Link>
                             ))}

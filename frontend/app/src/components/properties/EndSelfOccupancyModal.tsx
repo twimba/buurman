@@ -82,7 +82,9 @@ export const EndSelfOccupancyModal = ({
               }
               className="w-full px-3 py-2 rounded-lg border border-border-default bg-surface-card text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
-              <option value="">{t('selfOccupancy.form.reasonPlaceholder')}</option>
+              <option value="">
+                {t('selfOccupancy.form.reasonPlaceholder')}
+              </option>
               {Object.values(OccupancyEndReason).map((r) => (
                 <option key={r} value={r}>
                   {OCCUPANCY_END_REASON_LABELS[r]}

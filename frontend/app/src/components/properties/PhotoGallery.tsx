@@ -138,7 +138,9 @@ export const PhotoGallery = ({
     <div className="space-y-4">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-text-primary">{t('photos.title')}</h3>
+        <h3 className="text-lg font-semibold text-text-primary">
+          {t('photos.title')}
+        </h3>
         {!readOnly && (
           <label className="cursor-pointer bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 transition-colors flex items-center gap-2">
             <Upload className="h-4 w-4" />
@@ -231,16 +233,24 @@ export const PhotoGallery = ({
           const isSingle = pendingBulkDelete.length === 1;
           return (
             <ConfirmDialog
-              title={t('photos.delete.title', { count: pendingBulkDelete.length })}
+              title={t('photos.delete.title', {
+                count: pendingBulkDelete.length,
+              })}
               message={
                 includesMain
-                  ? t('photos.delete.mainPhotoWarning', { count: pendingBulkDelete.length })
-                  : t('photos.delete.message', { count: pendingBulkDelete.length })
+                  ? t('photos.delete.mainPhotoWarning', {
+                      count: pendingBulkDelete.length,
+                    })
+                  : t('photos.delete.message', {
+                      count: pendingBulkDelete.length,
+                    })
               }
               confirmLabel={
                 isSingle
                   ? t('buttons.delete', { ns: 'common' })
-                  : t('photos.delete.confirmLabel', { count: pendingBulkDelete.length })
+                  : t('photos.delete.confirmLabel', {
+                      count: pendingBulkDelete.length,
+                    })
               }
               variant="danger"
               onConfirm={confirmDelete}
@@ -344,7 +354,10 @@ export const PhotoGallery = ({
                 {uploadProgress ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    {t('photos.upload.uploading', { current: uploadProgress.current, total: uploadProgress.total })}
+                    {t('photos.upload.uploading', {
+                      current: uploadProgress.current,
+                      total: uploadProgress.total,
+                    })}
                     <div
                       role="progressbar"
                       aria-valuenow={uploadProgress.current}
@@ -360,7 +373,9 @@ export const PhotoGallery = ({
                   <>
                     <Upload className="h-4 w-4" />
                     {selectedFiles.length > 1
-                      ? t('photos.upload.uploadCount', { count: selectedFiles.length })
+                      ? t('photos.upload.uploadCount', {
+                          count: selectedFiles.length,
+                        })
                       : t('buttons.upload', { ns: 'common' })}
                   </>
                 )}

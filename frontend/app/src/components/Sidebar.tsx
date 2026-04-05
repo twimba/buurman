@@ -77,7 +77,11 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
 
   const navigation: NavItem[] = useMemo(
     () => [
-      { name: t('sidebar.dashboard'), href: '/dashboard', icon: LayoutDashboard },
+      {
+        name: t('sidebar.dashboard'),
+        href: '/dashboard',
+        icon: LayoutDashboard,
+      },
       { name: t('sidebar.properties'), href: '/properties', icon: Home },
       { name: t('sidebar.contacts'), href: '/contacts', icon: Users },
       {
@@ -85,7 +89,11 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
         href: '/contracts',
         icon: FileText,
         children: [
-          { name: t('sidebar.rentRegulations'), href: '/rent-regulations', icon: Scale },
+          {
+            name: t('sidebar.rentRegulations'),
+            href: '/rent-regulations',
+            icon: Scale,
+          },
           {
             name: t('sidebar.rentAdjustments'),
             href: '/rent-increases/apply',
@@ -114,13 +122,37 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
 
   const administrationNavigation = useMemo(
     () => [
-      { name: t('admin.preferences'), href: '/admin/preferences', icon: Settings },
-      { name: t('admin.teamMembers'), href: '/admin/team-members', icon: Users },
-      { name: t('admin.calendarFeeds'), href: '/admin/calendar-feeds', icon: Calendar },
-      { name: t('admin.notifications'), href: '/admin/notifications', icon: Bell },
-      { name: t('admin.dataExport'), href: '/admin/data-export', icon: Download },
+      {
+        name: t('admin.preferences'),
+        href: '/admin/preferences',
+        icon: Settings,
+      },
+      {
+        name: t('admin.teamMembers'),
+        href: '/admin/team-members',
+        icon: Users,
+      },
+      {
+        name: t('admin.calendarFeeds'),
+        href: '/admin/calendar-feeds',
+        icon: Calendar,
+      },
+      {
+        name: t('admin.notifications'),
+        href: '/admin/notifications',
+        icon: Bell,
+      },
+      {
+        name: t('admin.dataExport'),
+        href: '/admin/data-export',
+        icon: Download,
+      },
       { name: t('admin.billing'), href: '/admin/billing', icon: Receipt },
-      { name: t('admin.activityLog'), href: '/admin/activity-log', icon: ClipboardList },
+      {
+        name: t('admin.activityLog'),
+        href: '/admin/activity-log',
+        icon: ClipboardList,
+      },
       {
         name: t('admin.apiDocs'),
         href: '/admin/api-docs',
@@ -225,7 +257,11 @@ export const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
             <button
               onClick={onToggleCollapse}
               className="hidden lg:flex flex-shrink-0 p-1 rounded-md text-text-muted hover:text-text-secondary hover:bg-surface-inset transition-colors"
-              title={collapsed ? t('common:sidebar.expand') : t('common:sidebar.collapse')}
+              title={
+                collapsed
+                  ? t('common:sidebar.expand')
+                  : t('common:sidebar.collapse')
+              }
             >
               {collapsed ? (
                 <ChevronsRight className="h-4 w-4" />

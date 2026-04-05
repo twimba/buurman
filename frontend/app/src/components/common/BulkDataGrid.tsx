@@ -386,9 +386,7 @@ export const BulkDataGrid = ({
       {nonEmptyRows.length === 0 && (
         <div className="flex items-center gap-2 p-3 bg-surface-inset border border-dashed border-border-strong rounded-lg text-sm text-text-secondary">
           <ClipboardPaste className="h-4 w-4 flex-shrink-0" />
-          <span>
-            {t('bulkGrid.pasteHint')}
-          </span>
+          <span>{t('bulkGrid.pasteHint')}</span>
         </div>
       )}
 
@@ -562,19 +560,25 @@ export const BulkDataGrid = ({
         <div className="flex items-center gap-4">
           {/* Stats */}
           <div className="flex items-center gap-3 text-xs text-text-secondary">
-            <span>{t('bulkGrid.rowCount', { count: nonEmptyRows.length })}</span>
+            <span>
+              {t('bulkGrid.rowCount', { count: nonEmptyRows.length })}
+            </span>
             <span className="text-text-disabled">|</span>
             <span>{t('bulkGrid.validCount', { count: validRows.length })}</span>
             {successCount > 0 && (
               <>
                 <span className="text-text-disabled">|</span>
-                <span className="text-success-text">{t('bulkGrid.savedCount', { count: successCount })}</span>
+                <span className="text-success-text">
+                  {t('bulkGrid.savedCount', { count: successCount })}
+                </span>
               </>
             )}
             {errorCount > 0 && (
               <>
                 <span className="text-text-disabled">|</span>
-                <span className="text-error-text">{t('bulkGrid.failedCount', { count: errorCount })}</span>
+                <span className="text-error-text">
+                  {t('bulkGrid.failedCount', { count: errorCount })}
+                </span>
               </>
             )}
           </div>
@@ -594,7 +598,8 @@ export const BulkDataGrid = ({
             ) : (
               <>
                 <Send className="h-4 w-4" />
-                {t('buttons.submit')} {submittableCount > 0 ? `(${submittableCount})` : ''}
+                {t('buttons.submit')}{' '}
+                {submittableCount > 0 ? `(${submittableCount})` : ''}
               </>
             )}
           </button>

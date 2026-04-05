@@ -89,12 +89,8 @@ export const PropertyMap = ({
     return (
       <div className="bg-gray-50 rounded-lg p-8 text-center">
         <MapPin className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-        <p className="text-gray-600 font-medium mb-1">
-          {t('map.unavailable')}
-        </p>
-        <p className="text-sm text-gray-500">
-          {t('map.configureApiKey')}
-        </p>
+        <p className="text-gray-600 font-medium mb-1">{t('map.unavailable')}</p>
+        <p className="text-sm text-gray-500">{t('map.configureApiKey')}</p>
         <div className="mt-3 text-xs text-gray-400 bg-gray-100 rounded p-2 font-mono">
           {street}, {city}, {postalCode}, {countryCode}
         </div>
@@ -117,7 +113,9 @@ export const PropertyMap = ({
     return (
       <div className="bg-gray-50 rounded-lg p-8 text-center">
         <MapPin className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-        <p className="text-gray-600 font-medium mb-1">{t('map.locationNotFound')}</p>
+        <p className="text-gray-600 font-medium mb-1">
+          {t('map.locationNotFound')}
+        </p>
         <p className="text-sm text-gray-500">
           {error || t('map.couldNotFind')}
         </p>
