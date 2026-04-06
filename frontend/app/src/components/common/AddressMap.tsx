@@ -30,7 +30,7 @@ export const AddressMap = ({
   onCoordinatesChange,
   height = 'h-96',
 }: AddressMapProps) => {
-  const { t } = useTranslation('properties');
+  const { t, i18n } = useTranslation('properties');
   const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -132,7 +132,7 @@ export const AddressMap = ({
     <div
       className={`w-full ${height} rounded-lg overflow-hidden border border-gray-200`}
     >
-      <APIProvider apiKey={apiKey}>
+      <APIProvider key={i18n.language} apiKey={apiKey}>
         <Map
           center={coordinates}
           zoom={15}

@@ -122,7 +122,7 @@ export const InteractiveMap = ({
   height = 'h-96',
   defaultCountryCode,
 }: InteractiveMapProps) => {
-  const { t } = useTranslation('properties');
+  const { t, i18n } = useTranslation('properties');
   const apiKey = env('VITE_GOOGLE_MAPS_API_KEY');
   const mapsChannel = parseGoogleMapsChannel(env('VITE_GOOGLE_MAPS_CHANNEL'));
   const [clickToPlaceActive, setClickToPlaceActive] = useState(false);
@@ -222,7 +222,7 @@ export const InteractiveMap = ({
         <div
           className={`w-full ${height} rounded-lg overflow-hidden border border-border-default `}
         >
-          <APIProvider {...apiProviderProps}>
+          <APIProvider key={i18n.language} {...apiProviderProps}>
             <Map
               center={center}
               zoom={5}
@@ -292,7 +292,7 @@ export const InteractiveMap = ({
       <div
         className={`w-full ${height} rounded-lg overflow-hidden border border-border-default `}
       >
-        <APIProvider {...apiProviderProps}>
+        <APIProvider key={i18n.language} {...apiProviderProps}>
           <Map
             center={coordinates}
             zoom={zoom}
