@@ -71,7 +71,9 @@ export default function CountryMetadataForm({
         return (
           <div key={group.key}>
             <h4 className="text-sm font-medium text-text-primary mb-3">
-              {t(`countryMetadata.groups.${group.key}`, { defaultValue: group.label })}
+              {t(`countryMetadata.groups.${group.key}`, {
+                defaultValue: group.label,
+              })}
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {fields.map((field) => (
@@ -170,9 +172,13 @@ function MetadataField({
   disabled,
 }: MetadataFieldProps) {
   const { t } = useTranslation('contracts');
-  const tLabel = t(`countryMetadata.fields.${field.name}`, { defaultValue: field.label });
+  const tLabel = t(`countryMetadata.fields.${field.name}`, {
+    defaultValue: field.label,
+  });
   const tHelpText = field.helpText
-    ? t(`countryMetadata.helpText.${field.name}`, { defaultValue: field.helpText })
+    ? t(`countryMetadata.helpText.${field.name}`, {
+        defaultValue: field.helpText,
+      })
     : undefined;
   const tUnit = field.unit
     ? t(`countryMetadata.units.${field.name}`, { defaultValue: field.unit })
@@ -219,9 +225,7 @@ function MetadataField({
                 aria-label={tLabel}
               />
               <div className="w-9 h-5 bg-surface-inset peer-focus:ring-2 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-card after:border-border-default after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-500 peer-disabled:opacity-50" />
-              <span className="ml-3 text-sm text-text-primary">
-                {tLabel}
-              </span>
+              <span className="ml-3 text-sm text-text-primary">{tLabel}</span>
             </label>
           </div>
           <HelpText text={tHelpText} />
@@ -252,11 +256,7 @@ function MetadataField({
     case 'INTEGER':
       return (
         <div>
-          <FieldLabel
-            label={tLabel}
-            unit={tUnit}
-            required={field.required}
-          />
+          <FieldLabel label={tLabel} unit={tUnit} required={field.required} />
           <input
             type="number"
             step="1"
@@ -279,11 +279,7 @@ function MetadataField({
     case 'DECIMAL':
       return (
         <div>
-          <FieldLabel
-            label={tLabel}
-            unit={tUnit}
-            required={field.required}
-          />
+          <FieldLabel label={tLabel} unit={tUnit} required={field.required} />
           <input
             type="number"
             step="0.01"

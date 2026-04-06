@@ -400,37 +400,61 @@ export const PropertyCharacteristicsForm = ({
           <SelectField
             label={t('characteristics.construction.constructionType')}
             value={formData.constructionType}
-            options={translatedOptions(CONSTRUCTION_TYPES, t, 'enums.characteristics.constructionType')}
+            options={translatedOptions(
+              CONSTRUCTION_TYPES,
+              t,
+              'enums.characteristics.constructionType'
+            )}
             onChange={(v) => onChange('constructionType', v)}
           />
           <SelectField
             label={t('characteristics.construction.foundationType')}
             value={formData.foundationType}
-            options={translatedOptions(FOUNDATION_TYPES, t, 'enums.characteristics.foundationType')}
+            options={translatedOptions(
+              FOUNDATION_TYPES,
+              t,
+              'enums.characteristics.foundationType'
+            )}
             onChange={(v) => onChange('foundationType', v)}
           />
           <SelectField
             label={t('characteristics.construction.roofType')}
             value={formData.roofType}
-            options={translatedOptions(ROOF_TYPES, t, 'enums.characteristics.roofType')}
+            options={translatedOptions(
+              ROOF_TYPES,
+              t,
+              'enums.characteristics.roofType'
+            )}
             onChange={(v) => onChange('roofType', v)}
           />
           <SelectField
             label={t('characteristics.construction.wallConstruction')}
             value={formData.wallConstruction}
-            options={translatedOptions(CONSTRUCTION_TYPES, t, 'enums.characteristics.constructionType')}
+            options={translatedOptions(
+              CONSTRUCTION_TYPES,
+              t,
+              'enums.characteristics.constructionType'
+            )}
             onChange={(v) => onChange('wallConstruction', v)}
           />
           <SelectField
             label={t('characteristics.construction.flooringType')}
             value={formData.flooringType}
-            options={translatedOptions(FLOORING_TYPES, t, 'enums.characteristics.flooringType')}
+            options={translatedOptions(
+              FLOORING_TYPES,
+              t,
+              'enums.characteristics.flooringType'
+            )}
             onChange={(v) => onChange('flooringType', v)}
           />
           <SelectField
             label={t('characteristics.construction.windowType')}
             value={formData.windowType}
-            options={translatedOptions(WINDOW_TYPES, t, 'enums.characteristics.windowType')}
+            options={translatedOptions(
+              WINDOW_TYPES,
+              t,
+              'enums.characteristics.windowType'
+            )}
             onChange={(v) => onChange('windowType', v)}
           />
           <NumberField
@@ -482,19 +506,31 @@ export const PropertyCharacteristicsForm = ({
           <SelectField
             label={t('characteristics.energy.heatingType')}
             value={formData.heatingType}
-            options={translatedOptions(HEATING_TYPES, t, 'enums.characteristics.heatingType')}
+            options={translatedOptions(
+              HEATING_TYPES,
+              t,
+              'enums.characteristics.heatingType'
+            )}
             onChange={(v) => onChange('heatingType', v)}
           />
           <SelectField
             label={t('characteristics.energy.coolingType')}
             value={formData.coolingType}
-            options={translatedOptions(COOLING_TYPES, t, 'enums.characteristics.coolingType')}
+            options={translatedOptions(
+              COOLING_TYPES,
+              t,
+              'enums.characteristics.coolingType'
+            )}
             onChange={(v) => onChange('coolingType', v)}
           />
           <SelectField
             label={t('characteristics.energy.hotWaterSystem')}
             value={formData.hotWaterSystem}
-            options={translatedOptions(HOT_WATER_SYSTEMS, t, 'enums.characteristics.hotWaterSystem')}
+            options={translatedOptions(
+              HOT_WATER_SYSTEMS,
+              t,
+              'enums.characteristics.hotWaterSystem'
+            )}
             onChange={(v) => onChange('hotWaterSystem', v)}
           />
           <RichTextNotesField
@@ -516,7 +552,11 @@ export const PropertyCharacteristicsForm = ({
           <SelectField
             label={t('characteristics.utilities.electricityConnection')}
             value={formData.electricityConnectionType}
-            options={translatedOptions(ELECTRICITY_CONNECTION_TYPES, t, 'enums.characteristics.electricityConnectionType')}
+            options={translatedOptions(
+              ELECTRICITY_CONNECTION_TYPES,
+              t,
+              'enums.characteristics.electricityConnectionType'
+            )}
             onChange={(v) => onChange('electricityConnectionType', v)}
           />
           <MeasurementField
@@ -532,7 +572,11 @@ export const PropertyCharacteristicsForm = ({
           <SelectField
             label={t('characteristics.utilities.waterConnection')}
             value={formData.waterConnectionType}
-            options={translatedOptions(WATER_CONNECTION_TYPES, t, 'enums.characteristics.waterConnectionType')}
+            options={translatedOptions(
+              WATER_CONNECTION_TYPES,
+              t,
+              'enums.characteristics.waterConnectionType'
+            )}
             onChange={(v) => onChange('waterConnectionType', v)}
           />
           <ToggleField
@@ -543,13 +587,21 @@ export const PropertyCharacteristicsForm = ({
           <SelectField
             label={t('characteristics.utilities.sewageType')}
             value={formData.sewageType}
-            options={translatedOptions(SEWAGE_TYPES, t, 'enums.characteristics.sewageType')}
+            options={translatedOptions(
+              SEWAGE_TYPES,
+              t,
+              'enums.characteristics.sewageType'
+            )}
             onChange={(v) => onChange('sewageType', v)}
           />
           <SelectField
             label={t('characteristics.utilities.internetConnection')}
             value={formData.internetConnectionType}
-            options={translatedOptions(INTERNET_CONNECTION_TYPES, t, 'enums.characteristics.internetConnectionType')}
+            options={translatedOptions(
+              INTERNET_CONNECTION_TYPES,
+              t,
+              'enums.characteristics.internetConnectionType'
+            )}
             onChange={(v) => onChange('internetConnectionType', v)}
           />
           <MeasurementField
@@ -564,7 +616,11 @@ export const PropertyCharacteristicsForm = ({
           <SelectField
             label={t('characteristics.utilities.internetStatus')}
             value={formData.internetStatus}
-            options={translatedOptions(INTERNET_STATUSES, t, 'enums.characteristics.internetStatus')}
+            options={translatedOptions(
+              INTERNET_STATUSES,
+              t,
+              'enums.characteristics.internetStatus'
+            )}
             onChange={(v) => onChange('internetStatus', v)}
           />
         </div>
@@ -587,7 +643,11 @@ export const PropertyCharacteristicsForm = ({
           <SelectField
             label={t('characteristics.parking.parkingType')}
             value={formData.parkingType}
-            options={translatedOptions(PARKING_TYPES, t, 'enums.characteristics.parkingType')}
+            options={translatedOptions(
+              PARKING_TYPES,
+              t,
+              'enums.characteristics.parkingType'
+            )}
             onChange={(v) => onChange('parkingType', v)}
           />
         </div>
@@ -773,7 +833,9 @@ const OutdoorAreasSection = ({
               className="flex items-center gap-3 bg-surface-page rounded px-3 py-2"
             >
               <span className="text-sm font-medium text-text-secondary flex-1">
-                {t(`enums.characteristics.outdoorAreaType.${area.type}`, { defaultValue: humanize(area.type) })}
+                {t(`enums.characteristics.outdoorAreaType.${area.type}`, {
+                  defaultValue: humanize(area.type),
+                })}
               </span>
               {area.areaValue && (
                 <span className="text-sm text-text-secondary">
@@ -797,7 +859,11 @@ const OutdoorAreasSection = ({
           <SelectField
             label={t('characteristics.outdoorAreas.type')}
             value={newType}
-            options={translatedOptions(OUTDOOR_AREA_TYPES, t, 'enums.characteristics.outdoorAreaType')}
+            options={translatedOptions(
+              OUTDOOR_AREA_TYPES,
+              t,
+              'enums.characteristics.outdoorAreaType'
+            )}
             onChange={(v) => setNewType(v || 'GARDEN')}
           />
           <NumberField
@@ -902,7 +968,11 @@ const ResidentialDetailsSection = ({
         <SelectField
           label={t('characteristics.residential.petPolicy')}
           value={details.petPolicy ?? null}
-          options={translatedOptions(PET_POLICIES, t, 'enums.characteristics.petPolicy')}
+          options={translatedOptions(
+            PET_POLICIES,
+            t,
+            'enums.characteristics.petPolicy'
+          )}
           onChange={(v) => update('petPolicy', v)}
         />
       </div>
@@ -1281,25 +1351,41 @@ const AgriculturalDetailsSection = ({
         <SelectField
           label={t('characteristics.agricultural.soilType')}
           value={details.soilType ?? null}
-          options={translatedOptions(SOIL_TYPES, t, 'enums.characteristics.soilType')}
+          options={translatedOptions(
+            SOIL_TYPES,
+            t,
+            'enums.characteristics.soilType'
+          )}
           onChange={(v) => update('soilType', v)}
         />
         <SelectField
           label={t('characteristics.agricultural.waterSource')}
           value={details.waterSource ?? null}
-          options={translatedOptions(WATER_SOURCES, t, 'enums.characteristics.waterSource')}
+          options={translatedOptions(
+            WATER_SOURCES,
+            t,
+            'enums.characteristics.waterSource'
+          )}
           onChange={(v) => update('waterSource', v)}
         />
         <SelectField
           label={t('characteristics.agricultural.irrigationType')}
           value={details.irrigationType ?? null}
-          options={translatedOptions(IRRIGATION_TYPES, t, 'enums.characteristics.irrigationType')}
+          options={translatedOptions(
+            IRRIGATION_TYPES,
+            t,
+            'enums.characteristics.irrigationType'
+          )}
           onChange={(v) => update('irrigationType', v)}
         />
         <SelectField
           label={t('characteristics.agricultural.fencingType')}
           value={details.fencingType ?? null}
-          options={translatedOptions(FENCING_TYPES, t, 'enums.characteristics.fencingType')}
+          options={translatedOptions(
+            FENCING_TYPES,
+            t,
+            'enums.characteristics.fencingType'
+          )}
           onChange={(v) => update('fencingType', v)}
         />
         <div>
@@ -1407,7 +1493,9 @@ const AmenitiesSection = ({
           .map(([category, amenities]) => (
             <div key={category}>
               <h4 className="text-sm font-semibold text-text-secondary mb-2 uppercase tracking-wide">
-                {t(`enums.amenities.categories.${category}`, { defaultValue: humanize(category) })}
+                {t(`enums.amenities.categories.${category}`, {
+                  defaultValue: humanize(category),
+                })}
               </h4>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1">
                 {amenities.map((amenity) => {

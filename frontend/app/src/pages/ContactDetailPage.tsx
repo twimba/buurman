@@ -580,7 +580,11 @@ export const ContactDetailPage = () => {
                     </p>
                   </div>
                 </div>
-                <StatusBadge label={t('detail.balance.allPaid')} color="green" size="sm" />
+                <StatusBadge
+                  label={t('detail.balance.allPaid')}
+                  color="green"
+                  size="sm"
+                />
               </div>
             )}
             {contact.balanceSummary &&
@@ -664,7 +668,11 @@ export const ContactDetailPage = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <StatusBadge label={t('detail.balance.guarantor')} color="blue" size="sm" />
+                    <StatusBadge
+                      label={t('detail.balance.guarantor')}
+                      color="blue"
+                      size="sm"
+                    />
                     <p className="text-xs text-text-muted mt-1">
                       {contact.balanceSummary.guaranteedPaymentCount ?? 0}{' '}
                       payment
@@ -896,7 +904,8 @@ export const ContactDetailPage = () => {
                     >
                       <AlertCircle className="h-4 w-4 text-error-text flex-shrink-0" />
                       <span className="text-error-text font-medium">
-                        {t('detail.overduePrefix')} {formatDate(note.followUpDate ?? '')}
+                        {t('detail.overduePrefix')}{' '}
+                        {formatDate(note.followUpDate ?? '')}
                       </span>
                       <span className="text-text-secondary truncate">
                         {note.subject ?? note.body.substring(0, 60)}
