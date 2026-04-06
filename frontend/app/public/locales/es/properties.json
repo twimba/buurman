@@ -145,7 +145,13 @@
       "at": "a las"
     },
     "yes": "Sí",
-    "no": "No"
+    "no": "No",
+    "deleteProperty": "Eliminar Propiedad",
+    "deletePropertyConfirm": "¿Está seguro de que desea eliminar esta propiedad?",
+    "cannotBeUndone": "Esta acción no se puede deshacer.",
+    "deleteWwsConfirm": "¿Eliminar cálculo WWS?",
+    "deleteWwsMessage": "Esto eliminará permanentemente el cálculo guardado de esta propiedad.",
+    "deleteWwsHistoryMessage": "Esto eliminará permanentemente este cálculo histórico."
   },
   "form": {
     "address": "Dirección",

@@ -77,7 +77,7 @@ const formatEnumValue = (value: string | null): string => {
     return '';
   }
   return value
-    .replace(/_/g, '')
+    .replace(/_/g, ' ')
     .replace(/\b\w/g, (c) => c.toUpperCase())
     .replace(/\bAc\b/g, 'AC')
     .replace(/\bCo\b/g, 'CO')
@@ -86,6 +86,20 @@ const formatEnumValue = (value: string | null): string => {
 
 export const PropertyDetailPage = () => {
   const { t } = useTranslation(['properties', 'common']);
+  const te = (enumGroup: string, value: string | null): string => {
+    if (!value) {
+      return '';
+    }
+    const humanized = value
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, (c) => c.toUpperCase())
+      .replace(/\bAc\b/g, 'AC')
+      .replace(/\bCo\b/g, 'CO')
+      .replace(/\bDsl\b/g, 'DSL');
+    return t(`enums.characteristics.${enumGroup}.${value}`, {
+      defaultValue: humanized,
+    });
+  };
   const { id = '' } = useParams<{ id: string }>();
   const { statusLabel, typeLabel, categoryLabel } = usePropertyLabels();
   const navigate = useNavigate();
@@ -613,7 +627,7 @@ export const PropertyDetailPage = () => {
                   {property.yearBuilt != null && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        Year Built
+                        {t('detail.construction.yearBuilt')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
                         {property.yearBuilt}
@@ -623,7 +637,7 @@ export const PropertyDetailPage = () => {
                   {property.yearLastRenovated != null && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        Last Renovated
+                        {t('detail.construction.lastRenovated')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
                         {property.yearLastRenovated}
@@ -633,67 +647,67 @@ export const PropertyDetailPage = () => {
                   {property.constructionType && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        Construction
+                        {t('detail.construction.construction')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
-                        {formatEnumValue(property.constructionType)}
+                        {te('constructionType', property.constructionType)}
                       </div>
                     </div>
                   )}
                   {property.foundationType && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        Foundation
+                        {t('detail.construction.foundation')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
-                        {formatEnumValue(property.foundationType)}
+                        {te('foundationType', property.foundationType)}
                       </div>
                     </div>
                   )}
                   {property.roofType && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        Roof
+                        {t('detail.construction.roof')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
-                        {formatEnumValue(property.roofType)}
+                        {te('roofType', property.roofType)}
                       </div>
                     </div>
                   )}
                   {property.wallConstruction && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        Wall Construction
+                        {t('detail.construction.wallConstruction')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
-                        {formatEnumValue(property.wallConstruction)}
+                        {te('wallConstruction', property.wallConstruction)}
                       </div>
                     </div>
                   )}
                   {property.flooringType && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        Flooring
+                        {t('detail.construction.flooring')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
-                        {formatEnumValue(property.flooringType)}
+                        {te('flooringType', property.flooringType)}
                       </div>
                     </div>
                   )}
                   {property.windowType && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        Windows
+                        {t('detail.construction.windows')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
-                        {formatEnumValue(property.windowType)}
+                        {te('windowType', property.windowType)}
                       </div>
                     </div>
                   )}
                   {property.numberOfFloors != null && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        Floors
+                        {t('detail.construction.floors')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
                         {property.numberOfFloors}
@@ -704,7 +718,7 @@ export const PropertyDetailPage = () => {
                 {property.structuralNotes && (
                   <div className="mt-4">
                     <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                      Structural Notes
+                      {t('detail.construction.structuralNotes')}
                     </div>
                     <div
                       className="text-sm text-text-primary mt-1 prose prose-sm dark:prose-invert max-w-none"
@@ -732,7 +746,7 @@ export const PropertyDetailPage = () => {
                   {property.energyEfficiencyRating && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        Energy Rating
+                        {t('detail.energy.energyRating')}
                       </div>
                       <div className="mt-1">
                         <span
@@ -760,7 +774,7 @@ export const PropertyDetailPage = () => {
                   {property.energyCertificateExpiryDate && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        Certificate Expiry
+                        {t('detail.energy.certificateExpiry')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
                         {formatDate(property.energyCertificateExpiryDate)}
@@ -770,30 +784,30 @@ export const PropertyDetailPage = () => {
                   {property.heatingType && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        Heating
+                        {t('detail.energy.heating')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
-                        {formatEnumValue(property.heatingType)}
+                        {te('heatingType', property.heatingType)}
                       </div>
                     </div>
                   )}
                   {property.coolingType && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        Cooling
+                        {t('detail.energy.cooling')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
-                        {formatEnumValue(property.coolingType)}
+                        {te('coolingType', property.coolingType)}
                       </div>
                     </div>
                   )}
                   {property.hotWaterSystem && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        Hot Water
+                        {t('detail.energy.hotWater')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
-                        {formatEnumValue(property.hotWaterSystem)}
+                        {te('hotWaterSystem', property.hotWaterSystem)}
                       </div>
                     </div>
                   )}
@@ -801,7 +815,7 @@ export const PropertyDetailPage = () => {
                 {property.insulationNotes && (
                   <div className="mt-4">
                     <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                      Insulation Notes
+                      {t('detail.energy.insulationNotes')}
                     </div>
                     <div
                       className="text-sm text-text-primary mt-1 prose prose-sm dark:prose-invert max-w-none"
@@ -830,17 +844,17 @@ export const PropertyDetailPage = () => {
                   {property.electricityConnectionType && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        Electricity
+                        {t('detail.utilities.electricity')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
-                        {formatEnumValue(property.electricityConnectionType)}
+                        {te('electricityConnectionType', property.electricityConnectionType)}
                       </div>
                     </div>
                   )}
                   {property.electricityCapacityValue != null && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        Capacity
+                        {t('detail.utilities.capacity')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
                         {property.electricityCapacityValue}{' '}
@@ -853,45 +867,45 @@ export const PropertyDetailPage = () => {
                   {property.waterConnectionType && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        Water
+                        {t('detail.utilities.water')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
-                        {formatEnumValue(property.waterConnectionType)}
+                        {te('waterConnectionType', property.waterConnectionType)}
                       </div>
                     </div>
                   )}
                   <div>
                     <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                      Gas Connection
+                      {t('detail.utilities.gasConnection')}
                     </div>
                     <div className="text-sm font-medium text-text-primary mt-1">
-                      {property.hasGasConnection ? 'Yes' : 'No'}
+                      {property.hasGasConnection ? t('detail.yes') : t('detail.no')}
                     </div>
                   </div>
                   {property.sewageType && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        Sewage
+                        {t('detail.utilities.sewage')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
-                        {formatEnumValue(property.sewageType)}
+                        {te('sewageType', property.sewageType)}
                       </div>
                     </div>
                   )}
                   {property.internetConnectionType && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        Internet
+                        {t('detail.utilities.internet')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
-                        {formatEnumValue(property.internetConnectionType)}
+                        {te('internetConnectionType', property.internetConnectionType)}
                       </div>
                     </div>
                   )}
                   {property.internetMaxSpeedValue != null && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        Internet Speed
+                        {t('detail.utilities.internetSpeed')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
                         {property.internetMaxSpeedValue}{' '}
@@ -904,10 +918,10 @@ export const PropertyDetailPage = () => {
                   {property.internetStatus && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        Internet Status
+                        {t('detail.utilities.internetStatus')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
-                        {formatEnumValue(property.internetStatus)}
+                        {te('internetStatus', property.internetStatus)}
                       </div>
                     </div>
                   )}
@@ -919,13 +933,13 @@ export const PropertyDetailPage = () => {
             {(property.parkingSpaces != null || property.parkingType) && (
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
                 <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
-                  Parking
+                  {t('detail.parking.title')}
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {property.parkingSpaces != null && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        Parking Spaces
+                        {t('detail.parking.parkingSpaces')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
                         {property.parkingSpaces}
@@ -935,10 +949,10 @@ export const PropertyDetailPage = () => {
                   {property.parkingType && (
                     <div>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                        Parking Type
+                        {t('detail.parking.parkingType')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
-                        {formatEnumValue(property.parkingType)}
+                        {te('parkingType', property.parkingType)}
                       </div>
                     </div>
                   )}
@@ -950,7 +964,7 @@ export const PropertyDetailPage = () => {
             {property.outdoorAreas && property.outdoorAreas.length > 0 && (
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
                 <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
-                  Outdoor Areas
+                  {t('detail.outdoorAreas.title')}
                 </h3>
                 <div className="flex flex-wrap gap-x-6 gap-y-2">
                   {property.outdoorAreas.map((area) => (
@@ -961,7 +975,7 @@ export const PropertyDetailPage = () => {
                       <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                         {'\u2713'}
                       </span>
-                      {formatEnumValue(area.type)}
+                      {te('outdoorAreaType', area.type)}
                       {area.areaValue != null
                         ? ` - ${area.areaValue} m\u00B2`
                         : ''}
@@ -975,7 +989,7 @@ export const PropertyDetailPage = () => {
             {property.amenities && property.amenities.length > 0 && (
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
                 <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
-                  Amenities
+                  {t('detail.amenities.title')}
                 </h3>
                 <div className="space-y-4">
                   {Object.entries(
@@ -992,7 +1006,7 @@ export const PropertyDetailPage = () => {
                   ).map(([category, items]) => (
                     <div key={category}>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide mb-2">
-                        {formatEnumValue(category)}
+                        {t(`enums.amenities.categories.${category}`, { defaultValue: formatEnumValue(category) })}
                       </div>
                       <div className="flex flex-wrap gap-x-6 gap-y-2">
                         {(items ?? []).map((amenity) => (
@@ -1032,7 +1046,7 @@ export const PropertyDetailPage = () => {
                       <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                         {'\u2713'}
                       </span>
-                      Smoke Detectors
+                      {t('detail.safety.smokeDetectors')}
                     </span>
                   )}
                   {property.hasCoDetectors && (
@@ -1040,7 +1054,7 @@ export const PropertyDetailPage = () => {
                       <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                         {'\u2713'}
                       </span>
-                      CO Detectors
+                      {t('detail.safety.coDetectors')}
                     </span>
                   )}
                   {property.hasFireExtinguisher && (
@@ -1048,7 +1062,7 @@ export const PropertyDetailPage = () => {
                       <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                         {'\u2713'}
                       </span>
-                      Fire Extinguisher
+                      {t('detail.safety.fireExtinguisher')}
                     </span>
                   )}
                   {property.hasSprinklerSystem && (
@@ -1056,7 +1070,7 @@ export const PropertyDetailPage = () => {
                       <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                         {'\u2713'}
                       </span>
-                      Sprinkler System
+                      {t('detail.safety.sprinklerSystem')}
                     </span>
                   )}
                   {property.hasAlarmSystem && (
@@ -1064,7 +1078,7 @@ export const PropertyDetailPage = () => {
                       <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                         {'\u2713'}
                       </span>
-                      Alarm System
+                      {t('detail.safety.alarmSystem')}
                     </span>
                   )}
                   {property.hasSecurityCameras && (
@@ -1072,7 +1086,7 @@ export const PropertyDetailPage = () => {
                       <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                         {'\u2713'}
                       </span>
-                      Security Cameras
+                      {t('detail.safety.securityCameras')}
                     </span>
                   )}
                   {property.hasSecureEntry && (
@@ -1080,14 +1094,14 @@ export const PropertyDetailPage = () => {
                       <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                         {'\u2713'}
                       </span>
-                      Secure Entry
+                      {t('detail.safety.secureEntry')}
                     </span>
                   )}
                 </div>
                 {property.safetyNotes && (
                   <div className="mt-4">
                     <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                      Safety Notes
+                      {t('detail.safety.safetyNotes')}
                     </div>
                     <div
                       className="text-sm text-text-primary mt-1 prose prose-sm dark:prose-invert max-w-none"
@@ -1108,7 +1122,7 @@ export const PropertyDetailPage = () => {
               property.accessibilityNotes) && (
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
                 <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-4">
-                  Accessibility
+                  {t('detail.accessibility.title')}
                 </h3>
                 <div className="flex flex-wrap gap-x-6 gap-y-2">
                   {property.isWheelchairAccessible && (
@@ -1116,7 +1130,7 @@ export const PropertyDetailPage = () => {
                       <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                         {'\u2713'}
                       </span>
-                      Wheelchair Accessible
+                      {t('detail.accessibility.wheelchairAccessible')}
                     </span>
                   )}
                   {property.hasElevator && (
@@ -1124,7 +1138,7 @@ export const PropertyDetailPage = () => {
                       <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                         {'\u2713'}
                       </span>
-                      Elevator
+                      {t('detail.accessibility.elevator')}
                     </span>
                   )}
                   {property.hasStepFreeEntrance && (
@@ -1132,7 +1146,7 @@ export const PropertyDetailPage = () => {
                       <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                         {'\u2713'}
                       </span>
-                      Step-Free Entrance
+                      {t('detail.accessibility.stepFreeEntrance')}
                     </span>
                   )}
                   {property.hasAdaptedBathroom && (
@@ -1140,14 +1154,14 @@ export const PropertyDetailPage = () => {
                       <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                         {'\u2713'}
                       </span>
-                      Adapted Bathroom
+                      {t('detail.accessibility.adaptedBathroom')}
                     </span>
                   )}
                 </div>
                 {property.accessibilityNotes && (
                   <div className="mt-4">
                     <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                      Accessibility Notes
+                      {t('detail.accessibility.accessibilityNotes')}
                     </div>
                     <div
                       className="text-sm text-text-primary mt-1 prose prose-sm dark:prose-invert max-w-none"
@@ -1165,7 +1179,7 @@ export const PropertyDetailPage = () => {
               <div className="bg-surface-card rounded-lg shadow-sm border border-border-default p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide">
-                    WWS Points
+                    {t('detail.wws.title')}
                   </h3>
                   <div className="flex items-center gap-3">
                     {latestWws?.identifier && (
@@ -1173,7 +1187,7 @@ export const PropertyDetailPage = () => {
                         onClick={() => setShowDeleteWwsConfirm(true)}
                         className="inline-flex items-center gap-1.5 text-xs font-medium text-error-text hover:text-error-text/80 transition-colors"
                       >
-                        Delete
+                        {t('common:buttons.delete')}
                       </button>
                     )}
                     <button
@@ -1181,7 +1195,7 @@ export const PropertyDetailPage = () => {
                       className="inline-flex items-center gap-1.5 text-xs font-medium text-primary-500 hover:text-primary-600 transition-colors"
                     >
                       <Calculator className="h-3.5 w-3.5" />
-                      {latestWws ? 'Recalculate' : 'Calculate'}
+                      {latestWws ? t('detail.wws.recalculate') : t('detail.wws.calculate')}
                     </button>
                   </div>
                 </div>
@@ -1191,7 +1205,7 @@ export const PropertyDetailPage = () => {
                       <div className="text-2xl font-bold text-text-primary">
                         {latestWws.totalPoints}
                         <span className="text-sm font-normal text-text-secondary ml-1.5">
-                          points
+                          {t('detail.wws.points')}
                         </span>
                       </div>
                       <span
@@ -1204,18 +1218,18 @@ export const PropertyDetailPage = () => {
                         }`}
                       >
                         {latestWws.sectorClassification === 'REGULATED' &&
-                          'Regulated'}
+                          t('detail.wws.regulated')}
                         {latestWws.sectorClassification === 'MID_SEGMENT' &&
-                          'Mid-Segment'}
+                          t('detail.wws.midSegment')}
                         {latestWws.sectorClassification === 'FREE_SECTOR' &&
-                          'Free Sector'}
+                          t('detail.wws.freeSector')}
                       </span>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       {latestWws.maxRentIndication != null && (
                         <div>
                           <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                            Max Rent
+                            {t('detail.wws.maxRent')}
                           </div>
                           <div className="text-sm font-semibold text-text-primary mt-0.5">
                             EUR {latestWws.maxRentIndication.toFixed(2)}
@@ -1224,7 +1238,7 @@ export const PropertyDetailPage = () => {
                       )}
                       <div>
                         <div className="text-xs font-medium text-text-secondary uppercase tracking-wide">
-                          Calculated
+                          {t('detail.wws.calculated')}
                         </div>
                         <div className="text-sm text-text-primary mt-0.5">
                           {new Date(
@@ -1240,7 +1254,7 @@ export const PropertyDetailPage = () => {
                       className="flex items-center gap-1.5 text-xs text-text-secondary hover:text-text-secondary transition-colors mt-1"
                     >
                       <History className="h-3 w-3" />
-                      History
+                      {t('detail.wws.history')}
                       <ChevronDown
                         className={`h-3 w-3 transition-transform ${showWwsHistory ? 'rotate-180' : ''}`}
                       />
@@ -1270,11 +1284,11 @@ export const PropertyDetailPage = () => {
                                   }`}
                                 >
                                   {calc.sectorClassification === 'REGULATED' &&
-                                    'Regulated'}
+                                    t('detail.wws.regulated')}
                                   {calc.sectorClassification ===
-                                    'MID_SEGMENT' && 'Mid-Segment'}
+                                    'MID_SEGMENT' && t('detail.wws.midSegment')}
                                   {calc.sectorClassification ===
-                                    'FREE_SECTOR' && 'Free Sector'}
+                                    'FREE_SECTOR' && t('detail.wws.freeSector')}
                                 </span>
                               </div>
                               <div className="flex items-center gap-2">
@@ -1303,7 +1317,7 @@ export const PropertyDetailPage = () => {
                           (c) => c.identifier !== latestWws?.identifier
                         ).length === 0 && (
                           <p className="text-xs text-text-secondary">
-                            No previous calculations.
+                            {t('detail.wws.noPreviousCalculations')}
                           </p>
                         )}
                       </div>
@@ -1311,7 +1325,7 @@ export const PropertyDetailPage = () => {
 
                     {showWwsHistory && wwsHistory.length <= 1 && (
                       <p className="mt-3 text-xs text-text-secondary">
-                        No previous calculations.
+                        {t('detail.wws.noPreviousCalculations')}
                       </p>
                     )}
                   </div>
@@ -1321,11 +1335,10 @@ export const PropertyDetailPage = () => {
                       <Calculator className="h-5 w-5 text-text-secondary " />
                     </div>
                     <p className="text-sm text-text-secondary">
-                      No calculation yet
+                      {t('detail.wws.noCalculation')}
                     </p>
                     <p className="text-xs text-text-secondary mt-1">
-                      Calculate the WWS points to determine the maximum
-                      regulated rent for this property.
+                      {t('detail.wws.noCalculationDescription')}
                     </p>
                   </div>
                 )}
@@ -1339,7 +1352,7 @@ export const PropertyDetailPage = () => {
                 className="w-full flex items-center justify-between text-left group"
               >
                 <h2 className="text-lg font-semibold text-text-primary">
-                  Metadata
+                  {t('detail.metadata.title')}
                 </h2>
                 {isMetadataExpanded ? (
                   <ChevronUp className="h-5 w-5 text-text-secondary group-hover:text-text-secondary " />
@@ -1350,16 +1363,16 @@ export const PropertyDetailPage = () => {
               {isMetadataExpanded && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-4">
                   <div>
-                    <span className="text-text-secondary">Created:</span>{' '}
+                    <span className="text-text-secondary">{t('detail.metadata.created')}</span>{' '}
                     <span className="text-text-primary">
-                      {formatDate(property.createdAt)} at{' '}
+                      {formatDate(property.createdAt)} {t('detail.metadata.at')}{' '}
                       {new Date(property.createdAt).toLocaleTimeString()}
                     </span>
                   </div>
                   <div>
-                    <span className="text-text-secondary">Last Updated:</span>{' '}
+                    <span className="text-text-secondary">{t('detail.metadata.lastUpdated')}</span>{' '}
                     <span className="text-text-primary">
-                      {formatDate(property.updatedAt)} at{' '}
+                      {formatDate(property.updatedAt)} {t('detail.metadata.at')}{' '}
                       {new Date(property.updatedAt).toLocaleTimeString()}
                     </span>
                   </div>
@@ -1402,13 +1415,13 @@ export const PropertyDetailPage = () => {
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-surface-card rounded-lg p-6 max-w-md w-full mx-4">
             <h3 className="text-lg font-semibold text-text-primary mb-4">
-              Delete Self-Occupancy Period
+              {t('contracts.selfOccupancy.deleteTitle')}
             </h3>
             <p className="text-text-secondary mb-2">
-              Are you sure you want to delete this self-occupancy period?
+              {t('contracts.selfOccupancy.deleteMessage')}
             </p>
             <p className="text-sm text-error-text mb-6">
-              This action cannot be undone.
+              {t('contracts.selfOccupancy.deleteWarning')}
             </p>
             <div className="flex gap-3 justify-end">
               <Button
@@ -1416,7 +1429,7 @@ export const PropertyDetailPage = () => {
                 onClick={() => setDeleteOccupancyPeriodId(null)}
                 disabled={deleteOccupancyMutation.isPending}
               >
-                Cancel
+                {t('common:buttons.cancel')}
               </Button>
               <Button
                 variant="danger"
@@ -1428,7 +1441,7 @@ export const PropertyDetailPage = () => {
                 }}
                 isLoading={deleteOccupancyMutation.isPending}
               >
-                Delete
+                {t('common:buttons.delete')}
               </Button>
             </div>
           </div>
@@ -1477,18 +1490,17 @@ export const PropertyDetailPage = () => {
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-surface-card rounded-lg p-6 max-w-sm w-full mx-4">
             <h3 className="text-base font-semibold text-text-primary mb-2">
-              Delete WWS calculation?
+              {t('detail.deleteWwsConfirm')}
             </h3>
             <p className="text-sm text-text-secondary mb-5">
-              This will permanently remove the saved calculation from this
-              property.
+              {t('detail.deleteWwsMessage')}
             </p>
             <div className="flex justify-end gap-2">
               <Button
                 variant="ghost"
                 onClick={() => setShowDeleteWwsConfirm(false)}
               >
-                Cancel
+                {t('common:buttons.cancel')}
               </Button>
               <Button
                 variant="primary"
@@ -1503,7 +1515,7 @@ export const PropertyDetailPage = () => {
                 isLoading={deleteWwsMutation.isPending}
                 className="bg-error-text hover:bg-error-text/90"
               >
-                Delete
+                {t('common:buttons.delete')}
               </Button>
             </div>
           </div>
@@ -1514,17 +1526,17 @@ export const PropertyDetailPage = () => {
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-surface-card rounded-lg p-6 max-w-sm w-full mx-4">
             <h3 className="text-base font-semibold text-text-primary mb-2">
-              Delete WWS calculation?
+              {t('detail.deleteWwsConfirm')}
             </h3>
             <p className="text-sm text-text-secondary mb-5">
-              This will permanently remove this historic calculation.
+              {t('detail.deleteWwsHistoryMessage')}
             </p>
             <div className="flex justify-end gap-2">
               <Button
                 variant="ghost"
                 onClick={() => setDeleteWwsHistoryId(null)}
               >
-                Cancel
+                {t('common:buttons.cancel')}
               </Button>
               <Button
                 variant="primary"
@@ -1536,7 +1548,7 @@ export const PropertyDetailPage = () => {
                 isLoading={deleteWwsMutation.isPending}
                 className="bg-error-text hover:bg-error-text/90"
               >
-                Delete
+                {t('common:buttons.delete')}
               </Button>
             </div>
           </div>
@@ -1547,13 +1559,13 @@ export const PropertyDetailPage = () => {
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-surface-card rounded-lg p-6 max-w-md w-full mx-4">
             <h3 className="text-lg font-semibold text-text-primary mb-4">
-              Delete Property
+              {t('detail.deleteProperty')}
             </h3>
             <p className="text-text-secondary mb-2">
-              Are you sure you want to delete this property?
+              {t('detail.deletePropertyConfirm')}
             </p>
             <p className="text-sm text-error-text mb-6">
-              This action cannot be undone.
+              {t('detail.cannotBeUndone')}
             </p>
             <div className="flex gap-3 justify-end">
               <Button
@@ -1561,7 +1573,7 @@ export const PropertyDetailPage = () => {
                 onClick={() => setShowDeleteModal(false)}
                 disabled={deletePropertyMutation.isPending}
               >
-                Cancel
+                {t('common:buttons.cancel')}
               </Button>
               <Button
                 variant="danger"
@@ -1569,7 +1581,7 @@ export const PropertyDetailPage = () => {
                 onClick={handleDelete}
                 isLoading={deletePropertyMutation.isPending}
               >
-                Delete
+                {t('common:buttons.delete')}
               </Button>
             </div>
           </div>

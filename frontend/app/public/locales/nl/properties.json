@@ -145,7 +145,13 @@
       "at": "om"
     },
     "yes": "Ja",
-    "no": "Nee"
+    "no": "Nee",
+    "deleteProperty": "Pand verwijderen",
+    "deletePropertyConfirm": "Weet u zeker dat u dit pand wilt verwijderen?",
+    "cannotBeUndone": "Deze actie kan niet ongedaan worden gemaakt.",
+    "deleteWwsConfirm": "WWS-berekening verwijderen?",
+    "deleteWwsMessage": "Dit verwijdert de opgeslagen berekening permanent van dit pand.",
+    "deleteWwsHistoryMessage": "Dit verwijdert deze historische berekening permanent."
   },
   "form": {
     "address": "Adres",

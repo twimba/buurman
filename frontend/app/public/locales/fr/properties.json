@@ -145,7 +145,13 @@
       "at": "à"
     },
     "yes": "Oui",
-    "no": "Non"
+    "no": "Non",
+    "deleteProperty": "Supprimer le bien",
+    "deletePropertyConfirm": "Êtes-vous sûr de vouloir supprimer ce bien ?",
+    "cannotBeUndone": "Cette action est irréversible.",
+    "deleteWwsConfirm": "Supprimer le calcul WWS ?",
+    "deleteWwsMessage": "Cela supprimera définitivement le calcul enregistré de ce bien.",
+    "deleteWwsHistoryMessage": "Cela supprimera définitivement ce calcul historique."
   },
   "form": {
     "address": "Adresse",

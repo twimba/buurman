@@ -28,7 +28,7 @@ export const PropertyMap = ({
   longitude,
   onCoordinatesChange,
 }: PropertyMapProps) => {
-  const { t, i18n } = useTranslation('properties');
+  const { t } = useTranslation('properties');
   const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -128,7 +128,7 @@ export const PropertyMap = ({
 
   return (
     <div className="w-full h-96 rounded-lg overflow-hidden border border-gray-200">
-      <APIProvider key={i18n.language} apiKey={apiKey}>
+      <APIProvider apiKey={apiKey}>
         <Map
           center={coordinates}
           zoom={15}

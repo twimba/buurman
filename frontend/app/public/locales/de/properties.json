@@ -145,7 +145,13 @@
       "at": "um"
     },
     "yes": "Ja",
-    "no": "Nein"
+    "no": "Nein",
+    "deleteProperty": "Immobilie löschen",
+    "deletePropertyConfirm": "Sind Sie sicher, dass Sie diese Immobilie löschen möchten?",
+    "cannotBeUndone": "Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleteWwsConfirm": "WWS-Berechnung löschen?",
+    "deleteWwsMessage": "Dadurch wird die gespeicherte Berechnung dauerhaft von dieser Immobilie entfernt.",
+    "deleteWwsHistoryMessage": "Dadurch wird diese historische Berechnung dauerhaft entfernt."
   },
   "form": {
     "address": "Adresse",
