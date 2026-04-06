@@ -1,0 +1,140 @@
+{
+  "page": {
+    "title": "Έξοδα",
+    "subtitle": "Παρακολουθήστε τα έξοδα και τα κόστη ακινήτων"
+  },
+  "actions": {
+    "addExpense": "Προσθήκη Εξόδου"
+  },
+  "stats": {
+    "totalExpenses": "Συνολικά Έξοδα",
+    "categorySummary": "σε {{category}}",
+    "categorySummaryAll": "σε {{count}} κατηγορίες",
+    "topCategories": "Κορυφαίες Κατηγορίες",
+    "noData": "Δεν υπάρχουν διαθέσιμα δεδομένα",
+    "lastSixMonths": "Τελευταίοι 6 Μήνες",
+    "tooltipExpenses": "Έξοδα"
+  },
+  "filters": {
+    "title": "Φίλτρα",
+    "property": "Ακίνητο",
+    "category": "Κατηγορία",
+    "allProperties": "Όλα τα Ακίνητα",
+    "allCategories": "Όλες οι Κατηγορίες"
+  },
+  "category": {
+    "MAINTENANCE": "Συντήρηση",
+    "REPAIR": "Επισκευή",
+    "UTILITY": "Πάγια",
+    "TAX": "Φόρος",
+    "INSURANCE": "Ασφάλεια",
+    "LEGAL": "Νομικά",
+    "MARKETING": "Μάρκετινγκ",
+    "CLEANING": "Καθαρισμός",
+    "LANDSCAPING": "Κηπουρική",
+    "PROPERTY_MANAGEMENT": "Διαχείριση Ακινήτων",
+    "FEES": "Τέλη",
+    "PROPERTY_TAX": "Φόρος Ακινήτων",
+    "OTHER": "Άλλο"
+  },
+  "table": {
+    "date": "Ημερομηνία",
+    "expenseNumber": "Έξοδο #",
+    "description": "Περιγραφή",
+    "category": "Κατηγορία",
+    "property": "Ακίνητο",
+    "amount": "Ποσό"
+  },
+  "empty": {
+    "title": "Δεν βρέθηκαν έξοδα",
+    "filtered": "Δοκιμάστε να προσαρμόσετε τα φίλτρα σας",
+    "noData": "Ξεκινήστε καταγράφοντας το πρώτο σας έξοδο"
+  },
+  "card": {
+    "expenseId": "Έξοδο #{{id}}",
+    "property": "Ακίνητο",
+    "contact": "Επαφή",
+    "amount": "Ποσό",
+    "expenseDate": "Ημερομηνία Εξόδου",
+    "documentsAttached": "{{count}} έγγραφο(α) επισυναπτόμενα"
+  },
+  "form": {
+    "property": "Ακίνητο",
+    "category": "Κατηγορία",
+    "contact": "Επαφή",
+    "amount": "Ποσό",
+    "expenseDate": "Ημερομηνία Εξόδου",
+    "description": "Περιγραφή",
+    "descriptionPlaceholder": "π.χ. Επισκευή υδραυλικών στο μπάνιο",
+    "notes": "Σημειώσεις",
+    "notesPlaceholder": "Προσθέστε τυχόν πρόσθετες σημειώσεις για αυτό το έξοδο...",
+    "continueAdding": "Συνέχεια προσθήκης",
+    "today": "Σήμερα",
+    "updateExpense": "Ενημέρωση",
+    "createExpense": "Δημιουργία",
+    "expenseSuffix": " Εξόδου",
+    "saving": "Αποθήκευση...",
+    "currency": "Νόμισμα"
+  },
+  "validation": {
+    "propertyRequired": "Το ακίνητο είναι υποχρεωτικό",
+    "amountRequired": "Το ποσό πρέπει να είναι μεγαλύτερο από 0",
+    "currencyRequired": "Το νόμισμα είναι υποχρεωτικό",
+    "expenseDateRequired": "Η ημερομηνία εξόδου είναι υποχρεωτική",
+    "descriptionRequired": "Η περιγραφή είναι υποχρεωτική"
+  },
+  "create": {
+    "title": "Προσθήκη Νέου Εξόδου",
+    "addedCount": "{{count}} έξοδο προστέθηκε σε αυτήν τη συνεδρία",
+    "addedCount_other": "{{count}} έξοδα προστέθηκαν σε αυτήν τη συνεδρία",
+    "single": "Μεμονωμένο",
+    "bulk": "Μαζικό"
+  },
+  "detail": {
+    "titlePrefix": "Έξοδο #{{id}}",
+    "expenseDetails": "Λεπτομέρειες Εξόδου",
+    "propertyAndContact": "Ακίνητο & Επαφή",
+    "amount": "Ποσό",
+    "expenseDate": "Ημερομηνία Εξόδου",
+    "category": "Κατηγορία",
+    "description": "Περιγραφή",
+    "property": "Ακίνητο",
+    "contact": "Επαφή",
+    "noContactLinked": "Δεν συνδέεται επαφή",
+    "notes": "Σημειώσεις",
+    "metadata": "Μεταδεδομένα",
+    "created": "Δημιουργήθηκε:",
+    "lastUpdated": "Τελευταία Ενημέρωση:",
+    "editExpense": "Επεξεργασία Εξόδου"
+  },
+  "tabs": {
+    "details": "Λεπτομέρειες",
+    "documents": "Έγγραφα",
+    "history": "Ιστορικό"
+  },
+  "history": {
+    "title": "Ιστορικό Εξόδου",
+    "empty": "Δεν υπάρχει διαθέσιμο ιστορικό",
+    "emptySubtitle": "Οι αλλαγές σε αυτό το έξοδο θα εμφανιστούν εδώ",
+    "clickToView": "Κάντε κλικ για προβολή αλλαγών",
+    "clickToHide": "Κάντε κλικ για απόκρυψη αλλαγών",
+    "changedFields": "Αλλαγμένα Πεδία",
+    "old": "Παλιό:",
+    "new": "Νέο:",
+    "impersonated": "Πλαστοπροσωπία"
+  },
+  "deleteDialog": {
+    "title": "Διαγραφή Εξόδου",
+    "message": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το έξοδο; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.",
+    "messageWithRelated": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το έξοδο; Όλα τα σχετικά έγγραφα θα διαγραφούν επίσης. Αυτή η ενέργεια δεν μπορεί να αναιρεθεί."
+  },
+  "tooltips": {
+    "viewExpense": "Προβολή εξόδου",
+    "deleteExpense": "Διαγραφή εξόδου"
+  },
+  "errors": {
+    "loadFailed": "Αποτυχία φόρτωσης εξόδων",
+    "loadExpenseFailed": "Αποτυχία φόρτωσης εξόδου",
+    "loadHistoryFailed": "Αποτυχία φόρτωσης ιστορικού"
+  }
+}

@@ -177,6 +177,13 @@ export const UserPreferencesSection = () => {
     { value: 'es', label: 'Español' },
     { value: 'de', label: 'Deutsch' },
     { value: 'fr', label: 'Français' },
+    { value: 'it', label: 'Italiano' },
+    { value: 'sv', label: 'Svenska' },
+    { value: 'fi', label: 'Suomi' },
+    { value: 'el', label: 'Ελληνικά' },
+    { value: 'pl', label: 'Polski' },
+    { value: 'da', label: 'Dansk' },
+    { value: 'nb', label: 'Norsk' },
   ];
 
   const dateFormats = [

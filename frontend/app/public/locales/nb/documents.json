@@ -1,0 +1,98 @@
+{
+  "documentsPage": {
+    "title": "Dokumentbibliotek",
+    "subtitle": "Søk og administrer alle dokumentene dine på ett sted",
+    "searchPlaceholder": "Søk etter dokumenter etter tittel, filnavn eller notater...",
+    "entityTypeFilter": {
+      "all": "Alle typer",
+      "property": "Eiendommer",
+      "contact": "Kontakter",
+      "contract": "Kontrakter",
+      "payment": "Betalinger",
+      "expense": "Utgifter"
+    },
+    "table": {
+      "document": "Dokument",
+      "type": "Type",
+      "size": "Størrelse",
+      "uploaded": "Lastet opp",
+      "actions": "Handlinger"
+    },
+    "selection": {
+      "selected": "{{selected}} av {{total}} valgt",
+      "count": "{{count}} dokument",
+      "count_other": "{{count}} dokumenter"
+    },
+    "empty": "Ingen dokumenter funnet",
+    "editModal": "Rediger dokument"
+  },
+  "photosPage": {
+    "title": "Bildebibliotek",
+    "subtitle": "Bla gjennom og administrer alle bildene dine på ett sted",
+    "searchPlaceholder": "Søk etter bilder etter tittel, filnavn eller notater...",
+    "entityTypeFilter": {
+      "all": "Alle typer",
+      "property": "Eiendommer",
+      "contact": "Kontakter",
+      "contract": "Kontrakter",
+      "payment": "Betalinger",
+      "expense": "Utgifter"
+    },
+    "empty": "Ingen bilder funnet",
+    "editModal": "Rediger bilde"
+  },
+  "photoGrid": {
+    "noPhotos": "Ingen bilder ennå",
+    "failedToLoad": "Kunne ikke laste bilder",
+    "failedToLoadImage": "Kunne ikke laste",
+    "noUrl": "Ingen URL",
+    "main": "Hovedbilde",
+    "selection": {
+      "selected": "{{selected}} av {{total}} valgt",
+      "count": "{{count}} bilde",
+      "count_other": "{{count}} bilder"
+    },
+    "downloading": "Laster ned...",
+    "tooltips": {
+      "setAsMain": "Sett som hovedbilde",
+      "editTitleNotes": "Rediger tittel og notater",
+      "deletePhoto": "Slett bilde"
+    }
+  },
+  "preview": {
+    "previewNotAvailable": "Forhåndsvisning er ikke tilgjengelig for denne filtypen ({{mimeType}})",
+    "downloadFile": "Last ned fil",
+    "notes": "Notater:",
+    "tooltips": {
+      "editTitleNotes": "Rediger tittel og notater",
+      "download": "Last ned",
+      "openInNewTab": "Åpne i ny fane",
+      "close": "Lukk",
+      "previous": "Forrige",
+      "next": "Neste"
+    }
+  },
+  "deleteDialog": {
+    "titleSingle": "Slett dokument",
+    "titlePlural": "Slett dokumenter",
+    "messageSingle": "Er du sikker på at du vil slette dette dokumentet? Denne handlingen kan ikke angres.",
+    "messagePlural": "Du er i ferd med å slette {{count}} dokumenter. Denne handlingen kan ikke angres.",
+    "confirmSingle": "Slett",
+    "confirmPlural": "Slett {{count}} dokumenter"
+  },
+  "deletePhotoDialog": {
+    "titleSingle": "Slett bilde",
+    "titlePlural": "Slett bilder",
+    "messageSingle": "Er du sikker på at du vil slette dette bildet? Denne handlingen kan ikke angres.",
+    "messagePlural": "Du er i ferd med å slette {{count}} bilder. Denne handlingen kan ikke angres.",
+    "mainPhotoSingle": "Dette er hovedbildet. Sletting betyr at denne eiendommen ikke lenger har et hovedbilde. Denne handlingen kan ikke angres.",
+    "mainPhotoPlural": "Du er i ferd med å slette {{count}} bilder, inkludert hovedbildet. Denne eiendommen vil ikke lenger ha et hovedbilde. Denne handlingen kan ikke angres.",
+    "confirmSingle": "Slett",
+    "confirmPlural": "Slett {{count}} bilder"
+  },
+  "tooltips": {
+    "preview": "Forhåndsvisning",
+    "editTitleNotes": "Rediger tittel og notater",
+    "delete": "Slett"
+  }
+}

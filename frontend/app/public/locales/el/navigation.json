@@ -1,0 +1,29 @@
+{
+  "sidebar": {
+    "dashboard": "Πίνακας Ελέγχου",
+    "properties": "Ακίνητα",
+    "contacts": "Επαφές",
+    "contracts": "Συμβόλαια",
+    "rentRegulations": "Κανονισμοί Ενοικίων",
+    "rentAdjustments": "Αναπροσαρμογές Ενοικίων",
+    "paymentInstructions": "Οδηγίες Πληρωμής",
+    "payments": "Πληρωμές",
+    "expenses": "Έξοδα",
+    "documents": "Έγγραφα",
+    "photos": "Φωτογραφίες",
+    "reports": "Αναφορές"
+  },
+  "admin": {
+    "title": "Διαχείριση",
+    "preferences": "Προτιμήσεις",
+    "teamMembers": "Μέλη Ομάδας",
+    "calendarFeeds": "Ροές Ημερολογίου",
+    "notifications": "Ειδοποιήσεις",
+    "dataExport": "Εξαγωγή Δεδομένων",
+    "billing": "Συνδρομή & Χρεώσεις",
+    "activityLog": "Αρχείο Δραστηριότητας",
+    "apiDocs": "Τεκμηρίωση API"
+  },
+  "settings": "Ρυθμίσεις",
+  "signOut": "Αποσύνδεση"
+}

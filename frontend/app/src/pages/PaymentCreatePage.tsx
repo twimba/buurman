@@ -21,23 +21,6 @@ import { getErrorMessage } from '@/utils/errorMessages';
 
 type Mode = 'single' | 'bulk';
 
-const BULK_COLUMNS: BulkColumnDef[] = [
-  {
-    key: 'date',
-    label: 'Date',
-    type: 'date',
-    required: true,
-    placeholder: 'YYYY-MM-DD',
-  },
-  {
-    key: 'amount',
-    label: 'Amount',
-    type: 'number',
-    required: true,
-    placeholder: '0.00',
-  },
-];
-
 export const PaymentCreatePage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation('payments');
@@ -45,6 +28,26 @@ export const PaymentCreatePage = () => {
   const [searchParams] = useSearchParams();
   const createPaymentMutation = useCreatePayment();
   const { defaultCurrency, defaultDateFormat } = useTeamDefaults();
+
+  const bulkColumns: BulkColumnDef[] = useMemo(
+    () => [
+      {
+        key: 'date',
+        label: t('bulkColumns.date'),
+        type: 'date',
+        required: true,
+        placeholder: 'YYYY-MM-DD',
+      },
+      {
+        key: 'amount',
+        label: t('bulkColumns.amount'),
+        type: 'number',
+        required: true,
+        placeholder: '0.00',
+      },
+    ],
+    [t]
+  );
 
   const prefilledContractId = searchParams.get('contractId') ?? '';
   const registerMode = searchParams.get('register') === 'true';
@@ -270,7 +273,7 @@ export const PaymentCreatePage = () => {
               </div>
 
               <BulkDataGrid
-                columns={BULK_COLUMNS}
+                columns={bulkColumns}
                 onSubmit={handleBulkSubmit}
                 isSubmitting={bulkSubmitting}
                 disabled={

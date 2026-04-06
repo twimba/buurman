@@ -1,0 +1,201 @@
+{
+  "page": {
+    "title": "Betalinger",
+    "subtitle": "Spoer lejebetalinger og indtaegter"
+  },
+  "actions": {
+    "schedulePayment": "Planlæg betaling",
+    "registerPayment": "Registrer betaling",
+    "registerReceival": "Registrer modtagelse",
+    "markAsPaid": "Marker som betalt"
+  },
+  "stats": {
+    "pendingPayments": "Afventende betalinger",
+    "pendingCount": "{{count}} betaling",
+    "pendingCount_other": "{{count}} betalinger",
+    "overduePayments": "Forfaldne betalinger",
+    "overdueCount": "{{count}} betaling forfalden",
+    "overdueCount_other": "{{count}} betalinger forfaldne",
+    "overdueAction": "Handling paakraevet: Gennemgaa forfaldne betalinger",
+    "allCaughtUp": "Helt ajourfoert!",
+    "noOverdue": "Ingen forfaldne betalinger. Bliv ved det gode arbejde!",
+    "lastSixMonths": "Sidste 6 maaneder",
+    "tooltipReceived": "Modtaget"
+  },
+  "filters": {
+    "title": "Filtre",
+    "property": "Ejendom",
+    "contract": "Kontrakt",
+    "status": "Status",
+    "allStatuses": "Alle statusser",
+    "allProperties": "Alle ejendomme",
+    "allContracts": "Alle kontrakter"
+  },
+  "status": {
+    "pending": "Afventer",
+    "partiallyPaid": "Delvis",
+    "paid": "Betalt",
+    "overdue": "Forfalden",
+    "late": "Forsinket",
+    "cancelled": "Annulleret"
+  },
+  "table": {
+    "dueDate": "Forfaldsdato",
+    "paymentNumber": "Betaling #",
+    "contract": "Kontrakt",
+    "amount": "Beloeb",
+    "status": "Status",
+    "balance": "Saldo: {{amount}}"
+  },
+  "empty": {
+    "title": "Ingen betalinger fundet",
+    "filtered": "Proev at justere dine filtre",
+    "noData": "Kom i gang ved at registrere din foerste betaling"
+  },
+  "card": {
+    "paymentId": "Betaling #{{id}}",
+    "contractId": "Kontrakt #{{id}}",
+    "property": "Ejendom",
+    "contact": "Kontakt",
+    "amount": "Beloeb",
+    "balance": "Saldo: {{amount}}",
+    "dueDate": "Forfaldsdato",
+    "paidOn": "Betalt den"
+  },
+  "form": {
+    "amount": "Beloeb",
+    "dueDate": "Forfaldsdato",
+    "paymentDate": "Betalingsdato",
+    "contact": "Kontakt",
+    "notes": "Noter",
+    "notesPlaceholder": "Tilfoej eventuelle yderligere noter om denne betaling...",
+    "continueAdding": "Fortsaet med at tilfoeje flere",
+    "today": "I dag",
+    "clear": "Ryd",
+    "updatePayment": "Opdater betaling",
+    "saving": "Gemmer...",
+    "contract": "Kontrakt",
+    "currency": "Valuta",
+    "selectContractFirst": "Vaelg venligst en kontrakt foerst",
+    "rentPeriodNotice": "Denne dato falder i en anden lejeperiode ({{amount}}/md fra {{from}}{{to}}). {{current}}",
+    "rentPeriodNoticeTo": " til {{date}}",
+    "rentPeriodCurrentRent": "Aktuel leje er {{amount}}/md.",
+    "rentPeriodWarning": "Denne dato falder i en anden lejeperiode ({{currency}}{{amount}}/md fra {{from}}{{to}}).",
+    "rentPeriodTo": " til {{date}}",
+    "currentRentInfo": "Aktuel leje er {{currency}}{{amount}}/md."
+  },
+  "validation": {
+    "amountRequired": "Beloeb skal vaere stoerre end 0",
+    "dueDateRequired": "Forfaldsdato er paakraevet",
+    "currencyRequired": "Valuta er paakraevet",
+    "paymentDateRequired": "Betalingsdato er paakraevet"
+  },
+  "bulkColumns": {
+    "date": "Dato",
+    "amount": "Beloeb"
+  },
+  "create": {
+    "titleRegister": "Registrer betaling",
+    "titleSchedule": "Planlæg betaling",
+    "addedCount": "{{count}} betaling {{action}} i denne session",
+    "addedCount_other": "{{count}} betalinger {{action}} i denne session",
+    "actionRegistered": "registreret",
+    "actionScheduled": "planlagt",
+    "single": "Enkelt",
+    "bulk": "Masse",
+    "contractInactiveWarning": "Den tilknyttede kontrakt er ikke aktiv. Vaelg venligst en aktiv kontrakt."
+  },
+  "detail": {
+    "titlePrefix": "Betaling #{{id}}",
+    "subtitlePrefix": "Kontrakt #{{id}}",
+    "paymentDetails": "Betalingsdetaljer",
+    "relatedInformation": "Relateret information",
+    "amount": "Beloeb",
+    "received": "Modtaget",
+    "balance": "Saldo",
+    "dueDate": "Forfaldsdato",
+    "paymentDate": "Betalingsdato",
+    "contract": "Kontrakt",
+    "contractId": "Kontrakt #{{id}}",
+    "property": "Ejendom",
+    "contact": "Kontakt",
+    "notes": "Noter",
+    "metadata": "Metadata",
+    "created": "Oprettet:",
+    "lastUpdated": "Sidst opdateret:",
+    "editPayment": "Rediger betaling"
+  },
+  "tabs": {
+    "details": "Detaljer",
+    "receivals": "Modtagelser",
+    "documents": "Dokumenter",
+    "history": "Historik"
+  },
+  "receivals": {
+    "title": "Modtagelser ({{count}})",
+    "totalAmount": "Samlet beloeb",
+    "received": "Modtaget",
+    "balance": "Saldo",
+    "empty": "Ingen modtagelser registreret endnu",
+    "searchPlaceholder": "Soeg efter beloeb, dato eller noter...",
+    "date": "Dato",
+    "amount": "Beloeb",
+    "notes": "Noter",
+    "actions": "Handlinger",
+    "showing": "Viser {{from}} til {{to}} af {{total}}",
+    "remainingBalance": "Restaerende saldo:",
+    "receivalDate": "Modtagelsesdato",
+    "notesOptional": "Noter (valgfrit)",
+    "notesPlaceholder": "Tilfoej noter om denne modtagelse...",
+    "register": "Registrer"
+  },
+  "history": {
+    "title": "Betalingshistorik",
+    "empty": "Ingen historik tilgaengelig",
+    "emptySubtitle": "Aendringer af denne betaling vil blive vist her",
+    "clickToView": "Klik for at se aendringer",
+    "clickToHide": "Klik for at skjule aendringer",
+    "changedFields": "Aendrede felter",
+    "old": "Gammel:",
+    "new": "Ny:",
+    "impersonated": "Efterlignet",
+    "na": "N/A",
+    "none": "Ingen",
+    "receivalOn": "{{amount}} den {{date}}"
+  },
+  "deleteDialog": {
+    "title": "Slet betaling",
+    "message": "Er du sikker paa, at du vil slette denne betaling? Denne handling kan ikke fortrydes.",
+    "messageWithRelated": "Er du sikker paa, at du vil slette denne betaling? Alle relaterede data (modtagelser, dokumenter) vil ogsaa blive slettet. Denne handling kan ikke fortrydes."
+  },
+  "markPaidDialog": {
+    "title": "Marker betaling som betalt",
+    "balanceMessage": "Dette registrerer en modtagelse for den restaerende saldo paa {{amount}} og markerer betalingen som fuldt betalt.",
+    "paymentDate": "Betalingsdato",
+    "notesOptional": "Noter (valgfrit)",
+    "notesPlaceholder": "Tilfoej eventuelle noter om denne betaling..."
+  },
+  "receivalDialog": {
+    "title": "Registrer modtagelse",
+    "remainingBalance": "Restaerende saldo:",
+    "amount": "Beloeb",
+    "receivalDate": "Modtagelsesdato",
+    "notesOptional": "Noter (valgfrit)",
+    "notesPlaceholder": "Tilfoej noter om denne modtagelse...",
+    "register": "Registrer"
+  },
+  "tooltips": {
+    "viewPayment": "Vis betaling",
+    "deletePayment": "Slet betaling",
+    "editReceival": "Rediger modtagelse",
+    "deleteReceival": "Slet modtagelse",
+    "save": "Gem",
+    "previous": "Forrige",
+    "next": "Naeste"
+  },
+  "errors": {
+    "loadFailed": "Kunne ikke indlaese betalinger",
+    "loadPaymentFailed": "Kunne ikke indlaese betaling",
+    "loadHistoryFailed": "Kunne ikke indlaese historik"
+  }
+}

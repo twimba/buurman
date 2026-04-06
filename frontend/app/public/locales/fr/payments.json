@@ -90,6 +90,10 @@
     "currencyRequired": "La devise est obligatoire",
     "paymentDateRequired": "La date de paiement est obligatoire"
   },
+  "bulkColumns": {
+    "date": "Date",
+    "amount": "Montant"
+  },
   "create": {
     "titleRegister": "Enregistrer un paiement",
     "titleSchedule": "Planifier un paiement",

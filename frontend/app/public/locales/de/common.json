@@ -328,6 +328,20 @@
       "daysLeft": "Verbleibende Tage",
       "mode": "Modus",
       "rent": "Miete"
+    },
+    "portfolio": {
+      "notAvailable": "k. A.",
+      "portfolioValue": "Portfoliowert",
+      "totalEquity": "Gesamtes Eigenkapital",
+      "monthlyCashFlow": "Monatlicher Cashflow",
+      "wtdCapRate": "Gew. Cap Rate",
+      "wtdCashOnCash": "Gew. Cash-on-Cash",
+      "occupancy": "Belegung"
+    },
+    "allocation": {
+      "noData": "Keine Allokationsdaten verfügbar",
+      "byCategory": "Nach Kategorie",
+      "byCountry": "Nach Land"
     }
   },
   "wws": {

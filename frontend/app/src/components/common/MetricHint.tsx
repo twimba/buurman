@@ -42,12 +42,14 @@ interface TooltipPos {
 export function MetricHint({
   label,
   hint: explicitHint,
+  hintKey: explicitHintKey,
 }: {
   label: string;
   hint?: string;
+  hintKey?: string;
 }) {
   const { t } = useTranslation('common');
-  const hintKey = HINT_KEYS[label];
+  const hintKey = explicitHintKey ?? HINT_KEYS[label];
   const resolved = explicitHint ?? (hintKey ? t(hintKey) : undefined);
   const triggerRef = useRef<HTMLSpanElement>(null);
   const [pos, setPos] = useState<TooltipPos | null>(null);

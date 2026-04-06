@@ -328,6 +328,20 @@
       "daysLeft": "Jours restants",
       "mode": "Mode",
       "rent": "Loyer"
+    },
+    "portfolio": {
+      "notAvailable": "N/D",
+      "portfolioValue": "Valeur du portefeuille",
+      "totalEquity": "Capitaux propres totaux",
+      "monthlyCashFlow": "Flux de trésorerie mensuel",
+      "wtdCapRate": "Cap Rate pond.",
+      "wtdCashOnCash": "Cash-on-Cash pond.",
+      "occupancy": "Occupation"
+    },
+    "allocation": {
+      "noData": "Aucune donnée de répartition disponible",
+      "byCategory": "Par catégorie",
+      "byCountry": "Par pays"
     }
   },
   "wws": {

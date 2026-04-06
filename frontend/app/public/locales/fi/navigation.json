@@ -1,0 +1,29 @@
+{
+  "sidebar": {
+    "dashboard": "Hallintapaneeli",
+    "properties": "Kohteet",
+    "contacts": "Yhteystiedot",
+    "contracts": "Sopimukset",
+    "rentRegulations": "Vuokrasaately",
+    "rentAdjustments": "Vuokrantarkistukset",
+    "paymentInstructions": "Maksuohjeet",
+    "payments": "Maksut",
+    "expenses": "Kulut",
+    "documents": "Asiakirjat",
+    "photos": "Valokuvat",
+    "reports": "Raportit"
+  },
+  "admin": {
+    "title": "Hallinta",
+    "preferences": "Asetukset",
+    "teamMembers": "Tiimin jasenet",
+    "calendarFeeds": "Kalenterisyotteet",
+    "notifications": "Ilmoitukset",
+    "dataExport": "Tietojen vienti",
+    "billing": "Tilaus ja laskutus",
+    "activityLog": "Toimintoloki",
+    "apiDocs": "API-dokumentaatio"
+  },
+  "settings": "Asetukset",
+  "signOut": "Kirjaudu ulos"
+}

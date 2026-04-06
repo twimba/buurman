@@ -9,7 +9,7 @@ i18n
   .use(initReactI18next)
   .init({
     fallbackLng: 'en',
-    supportedLngs: ['en', 'nl', 'pt', 'es', 'fr', 'de'],
+    supportedLngs: ['en', 'nl', 'pt', 'es', 'fr', 'de', 'it', 'sv', 'fi', 'el', 'pl', 'da', 'nb'],
     ns: [
       'common',
       'navigation',
@@ -27,7 +27,7 @@ i18n
       loadPath: '/locales/{{lng}}/{{ns}}.json',
     },
     detection: {
-      order: ['localStorage', 'navigator'],
+      order: ['localStorage'],
       lookupLocalStorage: 'buurman-language',
       caches: ['localStorage'],
     },

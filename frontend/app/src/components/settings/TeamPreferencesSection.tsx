@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   DollarSign,
   Calendar,
@@ -20,8 +20,16 @@ import { CountrySelector } from '../common/CountrySelector';
 import { CurrencyChangeModal } from './CurrencyChangeModal';
 import { useCurrencies, getCurrencySymbol } from '@/hooks/useCurrencies';
 
+const getLocalizedMonths = (locale: string) =>
+  Array.from({ length: 12 }, (_, i) => ({
+    value: String(i + 1).padStart(2, '0'),
+    label: new Intl.DateTimeFormat(locale, { month: 'long' }).format(
+      new Date(2000, i)
+    ),
+  }));
+
 export const TeamPreferencesSection = () => {
-  const { t } = useTranslation('settings');
+  const { t, i18n } = useTranslation('settings');
   const { canEditTeamSettings } = useTeam();
   const { data: team } = useCurrentTeam();
   const { data: settingsData, isLoading } = useTeamSettings(team?.identifier);
@@ -55,20 +63,10 @@ export const TeamPreferencesSection = () => {
     });
   }
 
-  const months = [
-    { value: '01', label: 'January' },
-    { value: '02', label: 'February' },
-    { value: '03', label: 'March' },
-    { value: '04', label: 'April' },
-    { value: '05', label: 'May' },
-    { value: '06', label: 'June' },
-    { value: '07', label: 'July' },
-    { value: '08', label: 'August' },
-    { value: '09', label: 'September' },
-    { value: '10', label: 'October' },
-    { value: '11', label: 'November' },
-    { value: '12', label: 'December' },
-  ];
+  const months = useMemo(
+    () => getLocalizedMonths(i18n.language),
+    [i18n.language]
+  );
 
   const handlePreferenceChange = (key: string, value: string) => {
     setPreferences((prev) => ({ ...prev, [key]: value }));

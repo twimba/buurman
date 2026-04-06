@@ -128,7 +128,9 @@
       "allPaid": "Todo Pagado",
       "outstandingBalance": "Saldo Pendiente",
       "guaranteedAmount": "Importe Garantizado",
-      "guarantor": "Garante"
+      "guarantor": "Garante",
+      "overdue": "Vencido",
+      "pending": "Pendiente"
     }
   },
   "card": {

@@ -15,6 +15,7 @@ import {
   EyeOff,
 } from 'lucide-react';
 import { PublicBroadcastBanner } from '../components/common/BroadcastBanner';
+import PublicLanguageSelector from '../components/common/PublicLanguageSelector';
 
 import { env } from '../config/env';
 
@@ -293,7 +294,7 @@ const LoginPage: React.FC = () => {
           </div>
 
           {/* Additional Info */}
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center space-y-3">
             <p className="text-sm text-text-secondary">
               {t('auth.needHelp')}{' '}
               <a
@@ -305,6 +306,7 @@ const LoginPage: React.FC = () => {
                 {t('auth.contactSupport')}
               </a>
             </p>
+            <PublicLanguageSelector />
           </div>
         </div>
       </div>

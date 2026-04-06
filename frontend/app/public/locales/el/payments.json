@@ -1,0 +1,201 @@
+{
+  "page": {
+    "title": "Πληρωμές",
+    "subtitle": "Παρακολουθήστε πληρωμές ενοικίων και έσοδα"
+  },
+  "actions": {
+    "schedulePayment": "Προγραμματισμός Πληρωμής",
+    "registerPayment": "Καταχώρηση Πληρωμής",
+    "registerReceival": "Καταχώρηση Είσπραξης",
+    "markAsPaid": "Σήμανση ως Πληρωμένη"
+  },
+  "stats": {
+    "pendingPayments": "Εκκρεμείς Πληρωμές",
+    "pendingCount": "{{count}} πληρωμή",
+    "pendingCount_other": "{{count}} πληρωμές",
+    "overduePayments": "Εκπρόθεσμες Πληρωμές",
+    "overdueCount": "{{count}} πληρωμή εκπρόθεσμη",
+    "overdueCount_other": "{{count}} πληρωμές εκπρόθεσμες",
+    "overdueAction": "Απαιτείται ενέργεια: Ελέγξτε τις εκπρόθεσμες πληρωμές",
+    "allCaughtUp": "Όλα ενημερωμένα!",
+    "noOverdue": "Δεν υπάρχουν εκπρόθεσμες πληρωμές. Συνεχίστε έτσι!",
+    "lastSixMonths": "Τελευταίοι 6 Μήνες",
+    "tooltipReceived": "Εισπράχθηκαν"
+  },
+  "filters": {
+    "title": "Φίλτρα",
+    "property": "Ακίνητο",
+    "contract": "Συμβόλαιο",
+    "status": "Κατάσταση",
+    "allStatuses": "Όλες οι Καταστάσεις",
+    "allProperties": "Όλα τα Ακίνητα",
+    "allContracts": "Όλα τα Συμβόλαια"
+  },
+  "status": {
+    "pending": "Σε εκκρεμότητα",
+    "partiallyPaid": "Μερική",
+    "paid": "Πληρωμένη",
+    "overdue": "Εκπρόθεσμη",
+    "late": "Καθυστερημένη",
+    "cancelled": "Ακυρωμένη"
+  },
+  "table": {
+    "dueDate": "Ημερομηνία Λήξης",
+    "paymentNumber": "Πληρωμή #",
+    "contract": "Συμβόλαιο",
+    "amount": "Ποσό",
+    "status": "Κατάσταση",
+    "balance": "Υπόλοιπο: {{amount}}"
+  },
+  "empty": {
+    "title": "Δεν βρέθηκαν πληρωμές",
+    "filtered": "Δοκιμάστε να προσαρμόσετε τα φίλτρα σας",
+    "noData": "Ξεκινήστε καταγράφοντας την πρώτη σας πληρωμή"
+  },
+  "card": {
+    "paymentId": "Πληρωμή #{{id}}",
+    "contractId": "Συμβόλαιο #{{id}}",
+    "property": "Ακίνητο",
+    "contact": "Επαφή",
+    "amount": "Ποσό",
+    "balance": "Υπόλοιπο: {{amount}}",
+    "dueDate": "Ημερομηνία Λήξης",
+    "paidOn": "Πληρώθηκε στις"
+  },
+  "form": {
+    "amount": "Ποσό",
+    "dueDate": "Ημερομηνία Λήξης",
+    "paymentDate": "Ημερομηνία Πληρωμής",
+    "contact": "Επαφή",
+    "notes": "Σημειώσεις",
+    "notesPlaceholder": "Προσθέστε τυχόν πρόσθετες σημειώσεις για αυτήν την πληρωμή...",
+    "continueAdding": "Συνέχεια προσθήκης",
+    "today": "Σήμερα",
+    "clear": "Εκκαθάριση",
+    "updatePayment": "Ενημέρωση Πληρωμής",
+    "saving": "Αποθήκευση...",
+    "contract": "Συμβόλαιο",
+    "currency": "Νόμισμα",
+    "selectContractFirst": "Παρακαλώ επιλέξτε πρώτα ένα συμβόλαιο",
+    "rentPeriodNotice": "Αυτή η ημερομηνία ανήκει σε διαφορετική περίοδο ενοικίου ({{amount}}/μήνα από {{from}}{{to}}). {{current}}",
+    "rentPeriodNoticeTo": " έως {{date}}",
+    "rentPeriodCurrentRent": "Τρέχον ενοίκιο {{amount}}/μήνα.",
+    "rentPeriodWarning": "Αυτή η ημερομηνία ανήκει σε διαφορετική περίοδο ενοικίου ({{currency}}{{amount}}/μήνα από {{from}}{{to}}).",
+    "rentPeriodTo": " έως {{date}}",
+    "currentRentInfo": "Τρέχον ενοίκιο {{currency}}{{amount}}/μήνα."
+  },
+  "validation": {
+    "amountRequired": "Το ποσό πρέπει να είναι μεγαλύτερο από 0",
+    "dueDateRequired": "Η ημερομηνία λήξης είναι υποχρεωτική",
+    "currencyRequired": "Το νόμισμα είναι υποχρεωτικό",
+    "paymentDateRequired": "Η ημερομηνία πληρωμής είναι υποχρεωτική"
+  },
+  "bulkColumns": {
+    "date": "Ημερομηνία",
+    "amount": "Ποσό"
+  },
+  "create": {
+    "titleRegister": "Καταχώρηση Πληρωμής",
+    "titleSchedule": "Προγραμματισμός Πληρωμής",
+    "addedCount": "{{count}} πληρωμή {{action}} σε αυτήν τη συνεδρία",
+    "addedCount_other": "{{count}} πληρωμές {{action}} σε αυτήν τη συνεδρία",
+    "actionRegistered": "καταχωρήθηκε",
+    "actionScheduled": "προγραμματίστηκε",
+    "single": "Μεμονωμένη",
+    "bulk": "Μαζική",
+    "contractInactiveWarning": "Το συνδεδεμένο συμβόλαιο δεν είναι ενεργό. Παρακαλώ επιλέξτε ένα ενεργό συμβόλαιο."
+  },
+  "detail": {
+    "titlePrefix": "Πληρωμή #{{id}}",
+    "subtitlePrefix": "Συμβόλαιο #{{id}}",
+    "paymentDetails": "Λεπτομέρειες Πληρωμής",
+    "relatedInformation": "Σχετικές Πληροφορίες",
+    "amount": "Ποσό",
+    "received": "Εισπράχθηκε",
+    "balance": "Υπόλοιπο",
+    "dueDate": "Ημερομηνία Λήξης",
+    "paymentDate": "Ημερομηνία Πληρωμής",
+    "contract": "Συμβόλαιο",
+    "contractId": "Συμβόλαιο #{{id}}",
+    "property": "Ακίνητο",
+    "contact": "Επαφή",
+    "notes": "Σημειώσεις",
+    "metadata": "Μεταδεδομένα",
+    "created": "Δημιουργήθηκε:",
+    "lastUpdated": "Τελευταία Ενημέρωση:",
+    "editPayment": "Επεξεργασία Πληρωμής"
+  },
+  "tabs": {
+    "details": "Λεπτομέρειες",
+    "receivals": "Εισπράξεις",
+    "documents": "Έγγραφα",
+    "history": "Ιστορικό"
+  },
+  "receivals": {
+    "title": "Εισπράξεις ({{count}})",
+    "totalAmount": "Συνολικό Ποσό",
+    "received": "Εισπράχθηκε",
+    "balance": "Υπόλοιπο",
+    "empty": "Δεν έχουν καταχωρηθεί εισπράξεις ακόμα",
+    "searchPlaceholder": "Αναζήτηση ανά ποσό, ημερομηνία ή σημειώσεις...",
+    "date": "Ημερομηνία",
+    "amount": "Ποσό",
+    "notes": "Σημειώσεις",
+    "actions": "Ενέργειες",
+    "showing": "Εμφάνιση {{from}} έως {{to}} από {{total}}",
+    "remainingBalance": "Υπολειπόμενο υπόλοιπο:",
+    "receivalDate": "Ημερομηνία Είσπραξης",
+    "notesOptional": "Σημειώσεις (Προαιρετικό)",
+    "notesPlaceholder": "Προσθέστε σημειώσεις για αυτήν την είσπραξη...",
+    "register": "Καταχώρηση"
+  },
+  "history": {
+    "title": "Ιστορικό Πληρωμής",
+    "empty": "Δεν υπάρχει διαθέσιμο ιστορικό",
+    "emptySubtitle": "Οι αλλαγές σε αυτήν την πληρωμή θα εμφανιστούν εδώ",
+    "clickToView": "Κάντε κλικ για προβολή αλλαγών",
+    "clickToHide": "Κάντε κλικ για απόκρυψη αλλαγών",
+    "changedFields": "Αλλαγμένα Πεδία",
+    "old": "Παλιό:",
+    "new": "Νέο:",
+    "impersonated": "Πλαστοπροσωπία",
+    "na": "Δ/Ε",
+    "none": "Κανένα",
+    "receivalOn": "{{amount}} στις {{date}}"
+  },
+  "deleteDialog": {
+    "title": "Διαγραφή Πληρωμής",
+    "message": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτήν την πληρωμή; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.",
+    "messageWithRelated": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτήν την πληρωμή; Όλα τα σχετικά δεδομένα (εισπράξεις, έγγραφα) θα διαγραφούν επίσης. Αυτή η ενέργεια δεν μπορεί να αναιρεθεί."
+  },
+  "markPaidDialog": {
+    "title": "Σήμανση Πληρωμής ως Πληρωμένη",
+    "balanceMessage": "Αυτό θα καταχωρήσει μια είσπραξη για το υπολειπόμενο υπόλοιπο {{amount}} και θα σημάνει την πληρωμή ως πλήρως εξοφλημένη.",
+    "paymentDate": "Ημερομηνία Πληρωμής",
+    "notesOptional": "Σημειώσεις (Προαιρετικό)",
+    "notesPlaceholder": "Προσθέστε τυχόν σημειώσεις για αυτήν την πληρωμή..."
+  },
+  "receivalDialog": {
+    "title": "Καταχώρηση Είσπραξης",
+    "remainingBalance": "Υπολειπόμενο υπόλοιπο:",
+    "amount": "Ποσό",
+    "receivalDate": "Ημερομηνία Είσπραξης",
+    "notesOptional": "Σημειώσεις (Προαιρετικό)",
+    "notesPlaceholder": "Προσθέστε σημειώσεις για αυτήν την είσπραξη...",
+    "register": "Καταχώρηση"
+  },
+  "tooltips": {
+    "viewPayment": "Προβολή πληρωμής",
+    "deletePayment": "Διαγραφή πληρωμής",
+    "editReceival": "Επεξεργασία είσπραξης",
+    "deleteReceival": "Διαγραφή είσπραξης",
+    "save": "Αποθήκευση",
+    "previous": "Προηγούμενο",
+    "next": "Επόμενο"
+  },
+  "errors": {
+    "loadFailed": "Αποτυχία φόρτωσης πληρωμών",
+    "loadPaymentFailed": "Αποτυχία φόρτωσης πληρωμής",
+    "loadHistoryFailed": "Αποτυχία φόρτωσης ιστορικού"
+  }
+}

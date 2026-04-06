@@ -1,5 +1,6 @@
 package com.buurman.repository;
 
+import static com.buurman.jooq.generated.Tables.TEAMS;
 import static com.buurman.jooq.generated.Tables.TEAM_PREFERENCES;
 import static java.time.ZoneOffset.UTC;
 
@@ -99,12 +100,15 @@ public class TeamPreferencesRepository {
     return prefs;
   }
 
-  /** Find all team IDs where auto payment generation is enabled. */
+  /** Find all non-demo team IDs where auto payment generation is enabled. */
   public List<UUID> findTeamIdsWithAutoGenerationEnabled() {
     return List.copyOf(
         dsl.select(TEAM_PREFERENCES.TEAM_ID)
             .from(TEAM_PREFERENCES)
+            .join(TEAMS)
+            .on(TEAMS.ID.eq(TEAM_PREFERENCES.TEAM_ID))
             .where(TEAM_PREFERENCES.AUTO_GENERATION_ENABLED.isTrue())
+            .and(TEAMS.DEMO.isFalse())
             .fetch(TEAM_PREFERENCES.TEAM_ID));
   }
 

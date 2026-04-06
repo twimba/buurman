@@ -1,0 +1,377 @@
+{
+  "page": {
+    "title": "Installningar",
+    "subtitle": "Hantera din personliga profil och installningar",
+    "impersonationBlocked": "Installningar kan inte andras under en imitation-session."
+  },
+  "tabs": {
+    "profile": "Profil & Sakerhet",
+    "preferences": "Mina preferenser",
+    "teams": "Mina team"
+  },
+  "profile": {
+    "title": "Profilinformation",
+    "subtitle": "Uppdatera din personliga information och avatar",
+    "editProfile": "Redigera profil",
+    "firstName": "Fornamn",
+    "lastName": "Efternamn",
+    "emailAddress": "E-postadress",
+    "emailChangeNote": "E-postadressen kan inte andras. Kontakta support om du behover uppdatera den.",
+    "phoneNumber": "Telefonnummer",
+    "verified": "Verifierad",
+    "unverified": "Overifierad",
+    "phoneNotAllowed": "Telefonnummer fran detta land ar inte tillatna",
+    "phoneTypeNotAllowed": "Denna telefonnummertyp ({{type}}) ar inte tillaten",
+    "verification": {
+      "enterCode": "Nastan dar! Ange koden som skickades till",
+      "invalidCode": "Ogiltig eller utgangen kod. Forsok igen.",
+      "sending": "Skickar...",
+      "resendIn": "Skicka igen om {{seconds}}s",
+      "resendCode": "Skicka kod igen",
+      "cancelling": "Avbryter...",
+      "changeNumber": "Andra nummer"
+    },
+    "failedToLoad": "Det gick inte att ladda profildata",
+    "tryAgain": "Forsok igen"
+  },
+  "security": {
+    "title": "Sakerhetsinstellningar",
+    "subtitle": "Hantera ditt losenord och sakerhetspreferenser",
+    "password": "Losenord",
+    "passwordNote": "Losenordsandringar hanteras via din identitetsleverantor",
+    "changePassword": "Andra losenord",
+    "securityEmailNote": "Sakerhetsmeddelanden (losenordsaterstallning, verifiering, inbjudningar) skickas alltid oavsett plan."
+  },
+  "preferences": {
+    "title": "Anvandarinstellningar",
+    "subtitle": "Anpassa din personliga upplevelse",
+    "failedToLoad": "Det gick inte att ladda installningar",
+    "tryAgain": "Forsok igen",
+    "appearance": {
+      "title": "Utseende",
+      "theme": "Tema",
+      "light": "Ljust",
+      "dark": "Morkt",
+      "auto": "Auto",
+      "autoDescription": "Autolage foljer dina systeminstellningar"
+    },
+    "languageRegion": {
+      "title": "Sprak & Region",
+      "language": "Sprak",
+      "dateFormat": "Datumformat"
+    },
+    "timezone": {
+      "title": "Tidszon"
+    },
+    "notifications": {
+      "title": "Aviseringar",
+      "email": "E-postaviseringar",
+      "emailDescription": "Ta emot aviseringar via e-post",
+      "sms": "SMS-aviseringar",
+      "smsDescription": "Ta emot aviseringar via SMS (kraver telefonnummer)",
+      "configurePerType": "Konfigurera aviseringar per typ",
+      "notificationType": "Aviseringstyp",
+      "emailColumnDisabled": "E-postkolumnen ar inaktiverad eftersom den globala e-postvaxeln ar avstangd",
+      "smsColumnDisabled": "SMS-kolumnen ar inaktiverad eftersom den globala SMS-vaxeln ar avstangd"
+    }
+  },
+  "teamPreferences": {
+    "title": "Teaminstellningar",
+    "subtitle": "Konfigurera standardinstellningar for ditt team",
+    "teamIdentity": {
+      "title": "Teamidentitet",
+      "teamName": "Teamnamn",
+      "placeholder": "Ange teamnamn",
+      "description": "Visningsnamnet for ditt team"
+    },
+    "currency": {
+      "title": "Valutainstellningar",
+      "teamCurrency": "Teamvaluta",
+      "change": "Andra",
+      "description": "All finansiell data anvander denna valuta. Att andra den paverkar alla befintliga poster."
+    },
+    "defaultCountry": {
+      "title": "Standardland",
+      "label": "Standardland",
+      "placeholder": "Ingen standard (valj varje gang)",
+      "description": "Detta blir det forvalda landet for nya fastigheter och kontaktadresser"
+    },
+    "fiscalYear": {
+      "title": "Rakenskapsar",
+      "fiscalYearStart": "Rakenskapsarets start",
+      "description": "Forsta manaden i ditt rakenskapsar for finansiella rapporter"
+    }
+  },
+  "currencyChange": {
+    "title": "Andra teamvaluta",
+    "currentCurrency": "Aktuell valuta",
+    "newCurrency": "Ny valuta",
+    "changeMode": "Andringslaege",
+    "relabelOnly": "Byt bara etikett",
+    "relabelDescription": "Andra valutakoder utan att modifiera belopp. Anvand nar beloppen redan ar inmatade i malvalutan.",
+    "convertAtRate": "Konvertera till fast kurs",
+    "convertDescription": "Multiplicera alla belopp med en omrakningskurs. All befintlig finansiell data kommer att raknas om.",
+    "conversionRate": "Omrakningskurs (1 {{from}} = {{rate}} {{to}})",
+    "irreversible": "Denna atgard ar ooaterkallelig",
+    "relabelWarning": "Alla valutakoder kommer att andras fran {{from}} till {{to}}. Belopp kommer inte att modifieras.",
+    "convertWarning": "Alla belopp multipliceras med {{rate}} och valutakoder andras fran {{from}} till {{to}}.",
+    "understandCannotUndo": "Jag forstar att detta inte kan angras",
+    "changing": "Andrar...",
+    "confirmChange": "Bekrafta andring",
+    "changeCurrency": "Andra valuta"
+  },
+  "teamMembers": {
+    "title": "Teammedlemmar",
+    "memberCount": "{{count}} medlem",
+    "memberCount_other": "{{count}} medlemmar",
+    "inviteMember": "Bjud in medlem",
+    "you": "Du",
+    "owner": "Agare",
+    "joined": "Gick med {{date}}",
+    "changeRole": "Andra roll",
+    "transferOwnership": "Overfar agarskap",
+    "removeMember": "Ta bort medlem",
+    "roles": {
+      "admin": "Admin",
+      "editor": "Redaktor",
+      "viewer": "Lasare",
+      "adminDescription": "Full tillgang till alla funktioner och installningar",
+      "editorDescription": "Kan skapa och redigera fastigheter, kontakter och kontrakt",
+      "viewerDescription": "Skrivskyddad tillgang till all data",
+      "label": "Roller:"
+    },
+    "pendingInvitations": {
+      "title": "Vantande inbjudningar",
+      "count": "{{count}} vantande inbjudan",
+      "count_other": "{{count}} vantande inbjudningar",
+      "invitedBy": "Inbjuden av {{name}}",
+      "sent": "Skickad {{date}}",
+      "expires": "Gar ut {{date}}",
+      "resend": "Skicka igen"
+    },
+    "inviteModal": {
+      "title": "Bjud in teammedlem",
+      "subtitle": "Skicka en inbjudan att ga med i ditt team",
+      "emailAddress": "E-postadress",
+      "role": "Roll",
+      "sendInvitation": "Skicka inbjudan"
+    },
+    "roleModal": {
+      "title": "Andra medlemsroll",
+      "subtitle": "Uppdatera roll for {{name}}",
+      "newRole": "Ny roll",
+      "updateRole": "Uppdatera roll"
+    },
+    "transferModal": {
+      "title": "Overfar agarskap",
+      "message": "Ar du saker pa att du vill overfora teamagarskapet till <strong>{{name}}</strong>? Denna atgard kan inte angras av dig. Den nya agaren far full kontroll over teamet.",
+      "confirm": "Overfar agarskap"
+    },
+    "removeModal": {
+      "title": "Ta bort teammedlem",
+      "message": "Ar du saker pa att du vill ta bort <strong>{{name}}</strong> fran ditt team? De forlorar tillgang till all teamdata.",
+      "confirm": "Ta bort medlem"
+    }
+  },
+  "myTeams": {
+    "title": "Mina team",
+    "active": "Aktiv",
+    "pending": "Vantande",
+    "member": "{{count}} medlem",
+    "member_other": "{{count}} medlemmar",
+    "accept": "Acceptera",
+    "pendingInvitations": "Vantande inbjudningar",
+    "invitedBy": "Inbjuden av {{name}}",
+    "expires": "Gar ut {{date}}",
+    "roles": {
+      "admin": "Administratorer",
+      "editor": "Redaktor",
+      "viewer": "Lasare"
+    }
+  },
+  "subscription": {
+    "earlyAccess": {
+      "title": "Allt ar gratis just nu!",
+      "description": "Vi bygger fortfarande Buurman och denna sida ar bara en forhandsvisning av vad som kommer. For tillfallet, njut av <strong>alla funktioner</strong> utan begransningar och utan kostnad. Kor pa!",
+      "noSurprises": "Vi meddelar dig i god tid innan fakturering borjar. Inga overraskningar, vi lovar."
+    },
+    "currentPlan": {
+      "title": "Aktuell prenumeration",
+      "subtitle": "Hantera din prenumerationsplan och fakturering",
+      "properties": "Fastigheter",
+      "teamMembers": "Teammedlemmar",
+      "nextRenewal": "Nasta fornyelse",
+      "autoRenews": "Fornyar automatiskt",
+      "changePlan": "Andra plan",
+      "cancelSubscription": "Avsluta prenumeration"
+    },
+    "plans": {
+      "title": "Tillgangliga planer",
+      "subtitle": "Valj den plan som passar dina behov bast",
+      "monthly": "Manatlig",
+      "annual": "Arsvis",
+      "save20": "Spara 20%",
+      "forever": "/for alltid",
+      "perMonth": "/manad",
+      "billedAnnually": "Faktureras arsvis till {{amount}}",
+      "billedMonthly": "Faktureras manatligen, avsluta nar som helst",
+      "perfectToStart": "Perfekt for att komma igang",
+      "currentPlan": "Aktuell plan",
+      "downgradeToFree": "Nedgradera till Gratis",
+      "downgrade": "Nedgradera",
+      "upgrade": "Uppgradera",
+      "mostPopular": "Mest popular",
+      "freeForever": "GRATIS FÖR ALLTID"
+    },
+    "confirmModal": {
+      "title": "Bekrafta planbyte",
+      "message": "Ar du saker pa att du vill byta till <strong>{{plan}}</strong>-planen? Din fakturering justeras darefter.",
+      "billingNote": "Du debiteras {{amount}}/manad{{annual}} fran din nasta faktureringscykel.",
+      "billedAnnually": " ({{total}} faktureras arsvis)",
+      "confirmChange": "Bekrafta andring"
+    },
+    "paymentMethods": {
+      "title": "Betalningsmetoder",
+      "subtitle": "Hantera dina betalningsmetoder",
+      "addPaymentMethod": "Lagg till betalningsmetod",
+      "default": "Standard",
+      "expires": "Gar ut {{month}}/{{year}}"
+    }
+  },
+  "paymentHistory": {
+    "nextPayment": "Nasta betalning",
+    "totalPaid": "Totalt betalt",
+    "allTime": "Hela perioden",
+    "totalInvoices": "Totalt antal fakturor",
+    "paid": "{{count}} betalda",
+    "title": "Betalningshistorik",
+    "subtitle": "Visa och ladda ner dina fakturor",
+    "searchPlaceholder": "Sok efter fakturanummer, plan eller betalningsmetod...",
+    "statusFilter": "Statusfilter",
+    "allStatuses": "Alla statusar",
+    "invoice": "Faktura",
+    "date": "Datum",
+    "plan": "Plan",
+    "paymentMethod": "Betalningsmetod",
+    "amount": "Belopp",
+    "status": "Status",
+    "actions": "Atgarder",
+    "download": "Ladda ner",
+    "noInvoices": "Inga fakturor hittades",
+    "adjustFilters": "Forsok justera dina filter eller din sokning",
+    "historyWillAppear": "Din betalningshistorik visas har",
+    "statuses": {
+      "paid": "Betald",
+      "pending": "Vantande",
+      "failed": "Misslyckad"
+    }
+  },
+  "paymentInstructions": {
+    "title": "Betalningsinstruktioner",
+    "subtitle": "Definiera atervandningsbara mallar for betalningsinstruktioner for dina kontrakt",
+    "addInstruction": "Lagg till instruktion",
+    "editTitle": "Redigera betalningsinstruktion",
+    "newTitle": "Ny betalningsinstruktion",
+    "name": "Namn *",
+    "namePlaceholder": "t.ex. Huvudbankkonto",
+    "paymentMethod": "Betalningsinstruktion *",
+    "description": "Beskrivning",
+    "descriptionPlaceholder": "Instruktioner for kontakten...",
+    "bankName": "Banknamn",
+    "accountHolder": "Kontoinnehavare",
+    "iban": "IBAN",
+    "bicSwift": "BIC / SWIFT",
+    "accountNumber": "Kontonummer",
+    "routingNumber": "Routingnummer",
+    "paymentReference": "Betalningsreferens",
+    "paymentReferencePlaceholder": "Referens att inkludera vid betalning",
+    "setAsDefault": "Ange som standardbetalningsmetod",
+    "setAsDefaultShort": "Ange som standard",
+    "creating": "Skapar...",
+    "saving": "Sparar...",
+    "empty": {
+      "title": "Inga betalningsinstruktioner",
+      "subtitle": "Lagg till din forsta betalningsmetod for att anvanda med kontrakt.",
+      "addInstruction": "Lagg till betalningsinstruktion"
+    },
+    "default": "Standard",
+    "holder": "Innehavare:",
+    "account": "Konto:",
+    "routing": "Routing:",
+    "loading": "Laddar..."
+  },
+  "calendarFeeds": {
+    "title": "Kalenderfloden",
+    "subtitle": "Prenumerera pa betalningsforfallodata i Google Kalender, Apple Kalender eller nagon app som stoder iCalendar-floden. Varje flode har en unik URL som du kan lagga till som en kalenderprenumeration.",
+    "createAllPayments": "Skapa flode for alla betalningar",
+    "previewCalendar": "Forhandsvisa kalender",
+    "copyUrl": "Kopiera URL",
+    "regenerateUrl": "Regenerera URL",
+    "deleteFeed": "Ta bort flode",
+    "regenerateWarning": "Att regenerera ogiltiggor den aktuella URL:en.",
+    "regenerate": "Regenerera",
+    "deleteConfirm": "Ta bort detta kalenderflode?",
+    "empty": "Inga kalenderfloden annu. Skapa ett for att komma igang.",
+    "copied": "Flodes-URL kopierad till urklipp",
+    "copyFailed": "Det gick inte att kopiera lanken",
+    "feedTypes": {
+      "allPayments": "Alla betalningar",
+      "propertyPayments": "Fastighetsbetalningar",
+      "contactPayments": "Kontaktbetalningar",
+      "contract": "Kontrakt"
+    },
+    "preview": {
+      "subtitle": "Forhandsvisning av kalenderflode",
+      "today": "Idag",
+      "errorMessage": "Det gick inte att ladda kalenderflode. Flodes-URL:en kan vara ogiltig eller otillganglig.",
+      "emailPreview": "E-postforhandsvisning",
+      "smsMessage": "SMS-meddelande"
+    }
+  },
+  "onboarding": {
+    "welcome": "Valkommen till Buurman",
+    "subtitle": "Lat oss konfigurera dina teaminstellningar",
+    "chooseLanguage": "Valj ditt sprak",
+    "chooseLanguageDesc": "Valj sprak for Buurman-granssnittet.",
+    "whereProperties": "Var finns dina fastigheter?",
+    "wherePropertiesDesc": "Detta anger din standardvaluta och datumformat.",
+    "searchCountries": "Sok lander...",
+    "teamCurrency": "Teamvaluta",
+    "teamCurrencyDesc": "All finansiell data anvander denna valuta. Du kan andra den senare i installningarna.",
+    "suggestedFor": "Foreslagen for {{country}}",
+    "selected": "Vald",
+    "dateFormat": "Datumformat",
+    "dateFormatDesc": "Hur ska datum visas?",
+    "summary": "Sammanfattning",
+    "summaryLanguage": "Sprak",
+    "summaryCountry": "Land",
+    "summaryCurrency": "Valuta",
+    "summaryDateFormat": "Datumformat",
+    "skipForNow": "Hoppa over for tillfallet",
+    "saving": "Sparar...",
+    "completeSetup": "Slutfor installationen"
+  },
+  "dataExport": {
+    "title": "Dataexport",
+    "subtitle": "Exportera all din teamdata som ett nedladdningsbart arkiv. Exporter inkluderar fastigheter, kontakter, kontrakt, betalningar, kostnader och dokument.",
+    "requestExport": "Begara export",
+    "inProgress": "En export pagar redan. Vanta tills den ar klar innan du begar en ny.",
+    "failedToLoad": "Det gick inte att ladda exporter",
+    "tryAgain": "Forsok igen",
+    "empty": "Inga exporter annu. Begara din forsta dataexport ovan.",
+    "dataExportLabel": "Dataexport",
+    "requested": "Begard {{date}}",
+    "completed": "Slutford {{date}}",
+    "expires": "Gar ut {{date}}",
+    "percentComplete": "{{percent}}% klart",
+    "adminOnly": "Endast teamadministratorer kan exportera data.",
+    "deleteTitle": "Ta bort export",
+    "deleteMessage": "Ar du saker pa att du vill ta bort denna dataexport? Den exporterade filen tas bort permanent. Denna atgard kan inte angras.",
+    "statuses": {
+      "pending": "Vantande",
+      "processing": "Bearbetar",
+      "completed": "Slutford",
+      "failed": "Misslyckad"
+    }
+  }
+}

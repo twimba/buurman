@@ -18,6 +18,13 @@ export const supportedLanguages = [
   { value: 'es', label: 'Español' },
   { value: 'fr', label: 'Français' },
   { value: 'de', label: 'Deutsch' },
+  { value: 'it', label: 'Italiano' },
+  { value: 'sv', label: 'Svenska' },
+  { value: 'fi', label: 'Suomi' },
+  { value: 'el', label: 'Ελληνικά' },
+  { value: 'pl', label: 'Polski' },
+  { value: 'da', label: 'Dansk' },
+  { value: 'nb', label: 'Norsk' },
 ] as const;
 
 interface LocaleContextType {

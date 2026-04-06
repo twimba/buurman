@@ -1,0 +1,140 @@
+{
+  "page": {
+    "title": "Kulut",
+    "subtitle": "Seuraa kiinteiston kuluja ja kustannuksia"
+  },
+  "actions": {
+    "addExpense": "Lisaa kulu"
+  },
+  "stats": {
+    "totalExpenses": "Kulut yhteensa",
+    "categorySummary": "kategoriassa {{category}}",
+    "categorySummaryAll": "{{count}} kategoriassa",
+    "topCategories": "Suurimmat kategoriat",
+    "noData": "Tietoja ei ole saatavilla",
+    "lastSixMonths": "Viimeiset 6 kuukautta",
+    "tooltipExpenses": "Kulut"
+  },
+  "filters": {
+    "title": "Suodattimet",
+    "property": "Kohde",
+    "category": "Kategoria",
+    "allProperties": "Kaikki kohteet",
+    "allCategories": "Kaikki kategoriat"
+  },
+  "category": {
+    "MAINTENANCE": "Yllapito",
+    "REPAIR": "Korjaus",
+    "UTILITY": "Kayttokulut",
+    "TAX": "Vero",
+    "INSURANCE": "Vakuutus",
+    "LEGAL": "Oikeudelliset",
+    "MARKETING": "Markkinointi",
+    "CLEANING": "Siivous",
+    "LANDSCAPING": "Pihanhoito",
+    "PROPERTY_MANAGEMENT": "Kiinteistonhoito",
+    "FEES": "Maksut",
+    "PROPERTY_TAX": "Kiinteistovero",
+    "OTHER": "Muu"
+  },
+  "table": {
+    "date": "Paivamaara",
+    "expenseNumber": "Kulu #",
+    "description": "Kuvaus",
+    "category": "Kategoria",
+    "property": "Kohde",
+    "amount": "Summa"
+  },
+  "empty": {
+    "title": "Kuluja ei loytynyt",
+    "filtered": "Kokeile muuttaa suodattimia",
+    "noData": "Aloita kirjaamalla ensimmainen kulu"
+  },
+  "card": {
+    "expenseId": "Kulu #{{id}}",
+    "property": "Kohde",
+    "contact": "Yhteystieto",
+    "amount": "Summa",
+    "expenseDate": "Kulun paivamaara",
+    "documentsAttached": "{{count}} asiakirjaa liitetty"
+  },
+  "form": {
+    "property": "Kohde",
+    "category": "Kategoria",
+    "contact": "Yhteystieto",
+    "amount": "Summa",
+    "expenseDate": "Kulun paivamaara",
+    "description": "Kuvaus",
+    "descriptionPlaceholder": "esim. Putkityot kylpyhuoneessa",
+    "notes": "Muistiinpanot",
+    "notesPlaceholder": "Lisaa lisamuistiinpanoja tasta kulusta...",
+    "continueAdding": "Jatka lisaamista",
+    "today": "Tanaan",
+    "updateExpense": "Paivita",
+    "createExpense": "Luo",
+    "expenseSuffix": " kulu",
+    "saving": "Tallennetaan...",
+    "currency": "Valuutta"
+  },
+  "validation": {
+    "propertyRequired": "Kohde on pakollinen",
+    "amountRequired": "Summan on oltava suurempi kuin 0",
+    "currencyRequired": "Valuutta on pakollinen",
+    "expenseDateRequired": "Kulun paivamaara on pakollinen",
+    "descriptionRequired": "Kuvaus on pakollinen"
+  },
+  "create": {
+    "title": "Lisaa uusi kulu",
+    "addedCount": "{{count}} kulu lisatty talla istunnolla",
+    "addedCount_other": "{{count}} kulua lisatty talla istunnolla",
+    "single": "Yksittainen",
+    "bulk": "Joukkosyotto"
+  },
+  "detail": {
+    "titlePrefix": "Kulu #{{id}}",
+    "expenseDetails": "Kulun tiedot",
+    "propertyAndContact": "Kohde ja yhteystieto",
+    "amount": "Summa",
+    "expenseDate": "Kulun paivamaara",
+    "category": "Kategoria",
+    "description": "Kuvaus",
+    "property": "Kohde",
+    "contact": "Yhteystieto",
+    "noContactLinked": "Ei linkitettya yhteystietoa",
+    "notes": "Muistiinpanot",
+    "metadata": "Metatiedot",
+    "created": "Luotu:",
+    "lastUpdated": "Viimeksi paivitetty:",
+    "editExpense": "Muokkaa kulua"
+  },
+  "tabs": {
+    "details": "Tiedot",
+    "documents": "Asiakirjat",
+    "history": "Historia"
+  },
+  "history": {
+    "title": "Kulun historia",
+    "empty": "Historiaa ei ole saatavilla",
+    "emptySubtitle": "Taman kulun muutokset naytetaan taalla",
+    "clickToView": "Nayta muutokset klikkaamalla",
+    "clickToHide": "Piilota muutokset klikkaamalla",
+    "changedFields": "Muuttuneet kentat",
+    "old": "Vanha:",
+    "new": "Uusi:",
+    "impersonated": "Toisena kayttajana"
+  },
+  "deleteDialog": {
+    "title": "Poista kulu",
+    "message": "Haluatko varmasti poistaa taman kulun? Tata toimintoa ei voi kumota.",
+    "messageWithRelated": "Haluatko varmasti poistaa taman kulun? Kaikki liittyvat asiakirjat poistetaan myos. Tata toimintoa ei voi kumota."
+  },
+  "tooltips": {
+    "viewExpense": "Nayta kulu",
+    "deleteExpense": "Poista kulu"
+  },
+  "errors": {
+    "loadFailed": "Kulujen lataus epaonnistui",
+    "loadExpenseFailed": "Kulun lataus epaonnistui",
+    "loadHistoryFailed": "Historian lataus epaonnistui"
+  }
+}

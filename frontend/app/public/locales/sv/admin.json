@@ -1,0 +1,306 @@
+{
+  "apiDocs": {
+    "title": "API-dokumentation",
+    "subtitle": "Utforska och testa Buurman REST API"
+  },
+  "billing": {
+    "title": "Prenumeration & Fakturering",
+    "subtitle": "Hantera din prenumerationsplan och visa faktureringshistorik",
+    "impersonationBlocked": "Faktureringsoperationer ar inte tillgangliga under en imitation-session."
+  },
+  "calendarFeeds": {
+    "title": "Kalenderfloden",
+    "pageSubtitle": "Hantera iCalendar-floden for forfallodata for betalningar och kontraktshändelser"
+  },
+  "dataExport": {
+    "title": "Dataexport",
+    "pageSubtitle": "Exportera ditt teams data som ett nedladdningsbart arkiv"
+  },
+  "notifications": {
+    "title": "Aviseringar",
+    "subtitle": "Spara och hantera alla aviseringar som skickats inom ditt team",
+    "loading": "Laddar aviseringar...",
+    "noResults": "Inga aviseringar hittades",
+    "view": "Visa",
+    "viewDetails": "Visa detaljer",
+    "resend": "Skicka igen",
+    "resendNotification": "Skicka avisering igen",
+    "resendConfirm": {
+      "title": "Skicka avisering igen",
+      "message": "Detta skapar en ny avisering och forsoker leverera den igen. Den ursprungliga aviseringen finns kvar i loggen."
+    },
+    "demoBanner": {
+      "title": "Demokonto -- aviseringar simuleras",
+      "emailAndSms": "E-post- och SMS-aviseringar registreras men levereras inte.",
+      "emailOnly": "E-postaviseringar registreras men levereras inte.",
+      "smsOnly": "SMS-aviseringar registreras men levereras inte."
+    },
+    "stats": {
+      "total": "Totalt",
+      "delivered": "Levererade",
+      "pending": "Vantande",
+      "failed": "Misslyckade",
+      "byChannel": "Per kanal",
+      "demoBlocked": "Demoblockerad"
+    },
+    "table": {
+      "type": "Typ",
+      "channel": "Kanal",
+      "recipient": "Mottagare",
+      "subjectBody": "Amne / Innehall",
+      "status": "Status",
+      "date": "Datum",
+      "actions": "Atgarder"
+    },
+    "typeLabels": {
+      "welcome": "Valkommen",
+      "verification": "Verifiering",
+      "invitation": "Inbjudan",
+      "accepted": "Accepterad",
+      "password": "Losenord",
+      "payment": "Betalning",
+      "contract": "Kontrakt",
+      "property": "Fastighet",
+      "newContract": "Nytt kontrakt",
+      "statusChange": "Statusandring",
+      "reopened": "Ateroppad",
+      "paid": "Betald",
+      "receival": "Mottagning",
+      "expense": "Kostnad"
+    },
+    "details": {
+      "title": "Aviseringsdetaljer",
+      "demoBlocked": "Denna avisering levererades inte eftersom detta ar ett demokonto. I ett riktigt konto hade den skickats via {{channel}}.",
+      "type": "Typ",
+      "subject": "Amne",
+      "content": "Innehall",
+      "recipient": "Mottagare",
+      "sentAt": "Skickad",
+      "statusUpdated": "Status uppdaterad",
+      "providerStatus": "Leverantorstatus",
+      "refresh": "Uppdatera",
+      "error": "Fel",
+      "engagement": "Engagemang",
+      "open": "{{count}} oppning",
+      "open_other": "{{count}} oppningar",
+      "click": "{{count}} klick",
+      "click_other": "{{count}} klick",
+      "first": "forsta: {{date}}",
+      "resentFrom": "Aterskickad fran",
+      "resendReason": "Anledning till aterskickning",
+      "resend": "Skicka igen",
+      "emailPreview": "E-postforhandsvisning",
+      "smsMessage": "SMS-meddelande",
+      "delivered": "Levererad"
+    },
+    "filters": {
+      "searchByEmail": "Sok efter e-post...",
+      "allTypes": "Alla typer",
+      "allChannels": "Alla kanaler",
+      "allStatuses": "Alla statusar",
+      "fromDate": "Fran datum",
+      "toDate": "Till datum"
+    },
+    "types": {
+      "welcome": "Valkommen",
+      "verificationCode": "Verifieringskod",
+      "teamInvitation": "Teaminbjudan",
+      "invitationAccepted": "Inbjudan accepterad",
+      "passwordChanged": "Losenord andrat",
+      "paymentReminder": "Betalningspaminnelse",
+      "contractExpiry": "Kontraktsutgang",
+      "propertyCreated": "Fastighet skapad",
+      "contractCreated": "Kontrakt skapat",
+      "contractStatusChanged": "Kontraktsstatus andrad",
+      "contractReopened": "Kontrakt ateroppnat",
+      "paymentPaid": "Betalning genomford",
+      "paymentReceival": "Betalning mottagen",
+      "expenseCreated": "Kostnad skapad"
+    },
+    "statuses": {
+      "pending": "Vantande",
+      "queued": "I ko",
+      "sent": "Skickad",
+      "delivered": "Levererad",
+      "failed": "Misslyckad",
+      "bounced": "Studsat",
+      "rejected": "Avvisad",
+      "demo": "Demo"
+    }
+  },
+  "paymentInstructions": {
+    "title": "Betalningsinstruktioner",
+    "pageSubtitle": "Hantera mallar for betalningsinstruktioner for ditt team"
+  },
+  "preferences": {
+    "title": "Installningar",
+    "subtitle": "Konfigurera teamovergripande installningar och regionala preferenser"
+  },
+  "teamMembers": {
+    "title": "Teammedlemmar",
+    "subtitle": "Hantera teammedlemmar, roller och inbjudningar",
+    "impersonationBlocked": "Andring av teammedlemskap ar inte tillgangligt under en imitation-session."
+  },
+  "transactions": {
+    "title": "Transaktionshistorik",
+    "subtitle": "Fullstandig historik over inkomster och utgifter",
+    "searchPlaceholder": "Sok transaktioner...",
+    "allTypes": "Alla typer",
+    "incomeOnly": "Endast inkomster",
+    "expensesOnly": "Endast utgifter",
+    "totalIncome": "Total inkomst",
+    "totalExpenses": "Totala utgifter",
+    "netTotal": "Netto totalt",
+    "noTransactions": "Inga transaktioner hittades",
+    "downloadFailed": "Nedladdningen misslyckades. Forsok igen.",
+    "table": {
+      "date": "Datum",
+      "type": "Typ",
+      "description": "Beskrivning",
+      "property": "Fastighet",
+      "amount": "Belopp"
+    }
+  },
+  "dashboard": {
+    "portfolioOverview": "Portfoljoversikt",
+    "propertiesWithData": "{{withData}} av {{total}} fastigheter har finansiell data",
+    "addProperties": "Lagg till fastigheter for att se din portfoljpanel.",
+    "addFinancialData": "Lagg till finansiell data till dina fastigheter for att se portfoljanalys.",
+    "propertiesNoData": "{{count}} fastigheter hittades, men ingen har finansiell data annu.",
+    "exporting": "Exporterar...",
+    "disclaimer": "Nyckeltalen ar enbart i informationssyfte.",
+    "charts": {
+      "cashFlow": "Portfoljens kassaflode",
+      "allocation": "Portfoljfordelning",
+      "propertyComparison": "Fastighetsjamforelse",
+      "equityComposition": "Eget kapital-sammansattning",
+      "performance": "Fastighetsprestanda",
+      "occupancy": "Portfoljens belaggning"
+    },
+    "cashFlow": {
+      "noData": "Ingen kassaflodesdata tillganglig",
+      "income": "Inkomst",
+      "expenses": "Utgifter",
+      "mortgage": "Bolan",
+      "net": "Netto"
+    },
+    "allocation": {
+      "noData": "Ingen fordelningsdata tillganglig",
+      "byCategory": "Per kategori",
+      "byCountry": "Per land"
+    },
+    "comparison": {
+      "noData": "Ingen fastighetsjamforelsedata tillganglig",
+      "monthlyCashFlow": "Manatligt kassaflode"
+    },
+    "equity": {
+      "noData": "Ingen eget kapital-data tillganglig",
+      "equity": "Eget kapital",
+      "mortgage": "Bolan"
+    },
+    "performanceTable": {
+      "noData": "Ingen fastighetsprestandadata tillganglig",
+      "property": "Fastighet",
+      "category": "Kategori",
+      "monthlyCF": "Manatligt KF",
+      "annualNOI": "Arligt NOI",
+      "capRate": "Cap Rate",
+      "coc": "CoC",
+      "occupancy": "Belaggning",
+      "dataPercent": "Data %"
+    },
+    "occupancy": {
+      "noData": "Ingen belaggningsdata tillganglig",
+      "contactOccupancy": "Kontaktbelaggning",
+      "selfOccupancy": "Eget boende"
+    },
+    "pendingExtensions": {
+      "title": "Vantande forlangningar",
+      "awaitingAction": "{{count}} forlangning vantar pa atgard",
+      "awaitingAction_other": "{{count}} forlangningar vantar pa atgard",
+      "extensionNumber": "Forlangning #{{number}}",
+      "contractNumber": "Kontrakt #{{id}}",
+      "until": "till {{date}}",
+      "activate": "Aktivera",
+      "decline": "Avboj"
+    },
+    "pendingInvitations": {
+      "title": "Vantande teaminbjudningar",
+      "invitedToOne": "Du har blivit inbjuden att ga med i ett team",
+      "invitedToMany": "Du har blivit inbjuden att ga med i {{count}} team",
+      "invitedBy": "Inbjuden av {{name}}",
+      "expires": "Gar ut {{date}}",
+      "accept": "Acceptera"
+    },
+    "upcomingRenewals": {
+      "title": "Kommande fornyelser",
+      "property": "Fastighet",
+      "contact": "Kontakt",
+      "endDate": "Slutdatum",
+      "daysLeft": "Dagar kvar",
+      "mode": "Lage",
+      "rent": "Hyra",
+      "renewalModes": {
+        "none": "Ingen",
+        "automatic": "Auto",
+        "manual": "Manuell"
+      }
+    }
+  },
+  "reports": {
+    "title": "Finansiella rapporter",
+    "subtitle": "Omfattande finansiell oversikt och analys",
+    "transactions": "Transaktioner",
+    "failedToLoad": "Det gick inte att ladda finansiella rapporter",
+    "period": "Period:",
+    "month": "Manad",
+    "quarter": "Kvartal",
+    "year": "Ar",
+    "allTime": "Hela perioden",
+    "custom": "Anpassad",
+    "to": "till",
+    "advancedFilters": "Avancerade filter",
+    "properties": "Fastigheter",
+    "clearAll": "Rensa alla",
+    "noProperties": "Inga fastigheter hittades",
+    "totalIncome": "Total inkomst",
+    "totalExpenses": "Totala utgifter",
+    "netProfit": "Nettovinst",
+    "income": "Inkomst",
+    "expenses": "Utgifter",
+    "amount": "Belopp",
+    "downloadPdf": "Ladda ner PDF",
+    "incomeTrend": {
+      "title": "Inkomsttrend",
+      "subtitle": "Manatlig inkomst, utgifter och nettovinst",
+      "line": "Linje",
+      "bar": "Stapel"
+    },
+    "expenseBreakdown": {
+      "title": "Utgiftsfordelning",
+      "subtitle": "Per kategori for vald period",
+      "pie": "Cirkel",
+      "bar": "Stapel",
+      "noData": "Ingen utgiftsdata for vald period"
+    },
+    "propertyPerformance": {
+      "title": "Fastighetsprestanda",
+      "subtitle": "Inkomst, utgifter och nettovinst per fastighet",
+      "property": "Fastighet",
+      "income": "Inkomst",
+      "expenses": "Utgifter",
+      "netProfit": "Nettovinst",
+      "margin": "Marginal",
+      "total": "Totalt",
+      "noData": "Ingen fastighetsdata for vald period"
+    },
+    "occupancyTrend": {
+      "title": "Belaggningstrend",
+      "subtitle": "Manatlig belaggningsgrad i procent",
+      "occupancyRate": "Belaggningsgrad (%)"
+    }
+  },
+  "auditLog": {
+    "failedToLoad": "Det gick inte att ladda aktivitetsloggar"
+  }
+}

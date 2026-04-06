@@ -256,6 +256,7 @@ function AddComponentButton({
   onAdd: (type: RentComponentType) => void;
   disabled: boolean;
 }) {
+  const { t } = useTranslation('contracts');
   return (
     <div className="relative inline-block">
       <select

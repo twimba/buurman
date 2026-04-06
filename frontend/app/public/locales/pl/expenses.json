@@ -1,0 +1,140 @@
+{
+  "page": {
+    "title": "Wydatki",
+    "subtitle": "Śledź wydatki i koszty nieruchomości"
+  },
+  "actions": {
+    "addExpense": "Dodaj wydatek"
+  },
+  "stats": {
+    "totalExpenses": "Łączne wydatki",
+    "categorySummary": "w kategorii {{category}}",
+    "categorySummaryAll": "w {{count}} kategoriach",
+    "topCategories": "Główne kategorie",
+    "noData": "Brak dostępnych danych",
+    "lastSixMonths": "Ostatnie 6 miesięcy",
+    "tooltipExpenses": "Wydatki"
+  },
+  "filters": {
+    "title": "Filtry",
+    "property": "Nieruchomość",
+    "category": "Kategoria",
+    "allProperties": "Wszystkie nieruchomości",
+    "allCategories": "Wszystkie kategorie"
+  },
+  "category": {
+    "MAINTENANCE": "Konserwacja",
+    "REPAIR": "Naprawa",
+    "UTILITY": "Media",
+    "TAX": "Podatek",
+    "INSURANCE": "Ubezpieczenie",
+    "LEGAL": "Prawne",
+    "MARKETING": "Marketing",
+    "CLEANING": "Sprzątanie",
+    "LANDSCAPING": "Ogrodnictwo",
+    "PROPERTY_MANAGEMENT": "Zarządzanie nieruchomością",
+    "FEES": "Opłaty",
+    "PROPERTY_TAX": "Podatek od nieruchomości",
+    "OTHER": "Inne"
+  },
+  "table": {
+    "date": "Data",
+    "expenseNumber": "Wydatek #",
+    "description": "Opis",
+    "category": "Kategoria",
+    "property": "Nieruchomość",
+    "amount": "Kwota"
+  },
+  "empty": {
+    "title": "Nie znaleziono wydatków",
+    "filtered": "Spróbuj dostosować filtry",
+    "noData": "Zacznij od zarejestrowania pierwszego wydatku"
+  },
+  "card": {
+    "expenseId": "Wydatek #{{id}}",
+    "property": "Nieruchomość",
+    "contact": "Kontakt",
+    "amount": "Kwota",
+    "expenseDate": "Data wydatku",
+    "documentsAttached": "{{count}} załączonych dokumentów"
+  },
+  "form": {
+    "property": "Nieruchomość",
+    "category": "Kategoria",
+    "contact": "Kontakt",
+    "amount": "Kwota",
+    "expenseDate": "Data wydatku",
+    "description": "Opis",
+    "descriptionPlaceholder": "np. Naprawa hydrauliki w łazience",
+    "notes": "Notatki",
+    "notesPlaceholder": "Dodaj dodatkowe uwagi dotyczące tego wydatku...",
+    "continueAdding": "Kontynuuj dodawanie",
+    "today": "Dzisiaj",
+    "updateExpense": "Zaktualizuj",
+    "createExpense": "Utwórz",
+    "expenseSuffix": " wydatek",
+    "saving": "Zapisywanie...",
+    "currency": "Waluta"
+  },
+  "validation": {
+    "propertyRequired": "Nieruchomość jest wymagana",
+    "amountRequired": "Kwota musi być większa od 0",
+    "currencyRequired": "Waluta jest wymagana",
+    "expenseDateRequired": "Data wydatku jest wymagana",
+    "descriptionRequired": "Opis jest wymagany"
+  },
+  "create": {
+    "title": "Dodaj nowy wydatek",
+    "addedCount": "{{count}} wydatek dodany w tej sesji",
+    "addedCount_other": "{{count}} wydatków dodanych w tej sesji",
+    "single": "Pojedynczy",
+    "bulk": "Zbiorczy"
+  },
+  "detail": {
+    "titlePrefix": "Wydatek #{{id}}",
+    "expenseDetails": "Szczegóły wydatku",
+    "propertyAndContact": "Nieruchomość i kontakt",
+    "amount": "Kwota",
+    "expenseDate": "Data wydatku",
+    "category": "Kategoria",
+    "description": "Opis",
+    "property": "Nieruchomość",
+    "contact": "Kontakt",
+    "noContactLinked": "Brak powiązanego kontaktu",
+    "notes": "Notatki",
+    "metadata": "Metadane",
+    "created": "Utworzono:",
+    "lastUpdated": "Ostatnia aktualizacja:",
+    "editExpense": "Edytuj wydatek"
+  },
+  "tabs": {
+    "details": "Szczegóły",
+    "documents": "Dokumenty",
+    "history": "Historia"
+  },
+  "history": {
+    "title": "Historia wydatku",
+    "empty": "Brak dostępnej historii",
+    "emptySubtitle": "Zmiany w tym wydatku pojawią się tutaj",
+    "clickToView": "Kliknij, aby wyświetlić zmiany",
+    "clickToHide": "Kliknij, aby ukryć zmiany",
+    "changedFields": "Zmienione pola",
+    "old": "Poprzednia:",
+    "new": "Nowa:",
+    "impersonated": "Podszywany"
+  },
+  "deleteDialog": {
+    "title": "Usuń wydatek",
+    "message": "Czy na pewno chcesz usunąć ten wydatek? Tej akcji nie można cofnąć.",
+    "messageWithRelated": "Czy na pewno chcesz usunąć ten wydatek? Wszystkie powiązane dokumenty również zostaną usunięte. Tej akcji nie można cofnąć."
+  },
+  "tooltips": {
+    "viewExpense": "Wyświetl wydatek",
+    "deleteExpense": "Usuń wydatek"
+  },
+  "errors": {
+    "loadFailed": "Nie udało się załadować wydatków",
+    "loadExpenseFailed": "Nie udało się załadować wydatku",
+    "loadHistoryFailed": "Nie udało się załadować historii"
+  }
+}

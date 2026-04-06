@@ -580,7 +580,7 @@ export const ContactDetailPage = () => {
                     </p>
                   </div>
                 </div>
-                <StatusBadge label="All paid" color="green" size="sm" />
+                <StatusBadge label={t('detail.balance.allPaid')} color="green" size="sm" />
               </div>
             )}
             {contact.balanceSummary &&
@@ -621,8 +621,8 @@ export const ContactDetailPage = () => {
                     <StatusBadge
                       label={
                         contact.balanceSummary.status === 'OVERDUE'
-                          ? 'Overdue'
-                          : 'Pending'
+                          ? t('detail.balance.overdue')
+                          : t('detail.balance.pending')
                       }
                       color={
                         contact.balanceSummary.status === 'OVERDUE'
@@ -664,7 +664,7 @@ export const ContactDetailPage = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <StatusBadge label="Guarantor" color="blue" size="sm" />
+                    <StatusBadge label={t('detail.balance.guarantor')} color="blue" size="sm" />
                     <p className="text-xs text-text-muted mt-1">
                       {contact.balanceSummary.guaranteedPaymentCount ?? 0}{' '}
                       payment
@@ -896,7 +896,7 @@ export const ContactDetailPage = () => {
                     >
                       <AlertCircle className="h-4 w-4 text-error-text flex-shrink-0" />
                       <span className="text-error-text font-medium">
-                        Overdue: {formatDate(note.followUpDate ?? '')}
+                        {t('detail.overduePrefix')} {formatDate(note.followUpDate ?? '')}
                       </span>
                       <span className="text-text-secondary truncate">
                         {note.subject ?? note.body.substring(0, 60)}

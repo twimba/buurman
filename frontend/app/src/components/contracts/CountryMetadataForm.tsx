@@ -71,7 +71,7 @@ export default function CountryMetadataForm({
         return (
           <div key={group.key}>
             <h4 className="text-sm font-medium text-text-primary mb-3">
-              {group.label}
+              {t(`countryMetadata.groups.${group.key}`, { defaultValue: group.label })}
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {fields.map((field) => (
@@ -169,6 +169,14 @@ function MetadataField({
   fractionalDigits,
   disabled,
 }: MetadataFieldProps) {
+  const { t } = useTranslation('contracts');
+  const tLabel = t(`countryMetadata.fields.${field.name}`, { defaultValue: field.label });
+  const tHelpText = field.helpText
+    ? t(`countryMetadata.helpText.${field.name}`, { defaultValue: field.helpText })
+    : undefined;
+  const tUnit = field.unit
+    ? t(`countryMetadata.units.${field.name}`, { defaultValue: field.unit })
+    : undefined;
   const inputClasses =
     'block w-full rounded-md border border-border-strong bg-surface-card px-3 py-2 text-sm text-text-primary placeholder-text-muted focus:border-primary-500 focus:ring-1 focus:ring-primary-500 disabled:bg-surface-inset disabled:cursor-not-allowed';
 
@@ -183,7 +191,7 @@ function MetadataField({
 
       return (
         <div>
-          <FieldLabel label={field.label} required={field.required} />
+          <FieldLabel label={tLabel} required={field.required} />
           <MoneyInput
             value={majorAmount}
             onChange={(v) =>
@@ -192,7 +200,7 @@ function MetadataField({
             currency={fieldCurrency}
             disabled={disabled}
           />
-          <HelpText text={field.helpText} />
+          <HelpText text={tHelpText} />
         </div>
       );
     }
@@ -208,22 +216,22 @@ function MetadataField({
                 onChange={(e) => onChange(e.target.checked)}
                 disabled={disabled}
                 className="sr-only peer"
-                aria-label={field.label}
+                aria-label={tLabel}
               />
               <div className="w-9 h-5 bg-surface-inset peer-focus:ring-2 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-card after:border-border-default after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-500 peer-disabled:opacity-50" />
               <span className="ml-3 text-sm text-text-primary">
-                {field.label}
+                {tLabel}
               </span>
             </label>
           </div>
-          <HelpText text={field.helpText} />
+          <HelpText text={tHelpText} />
         </div>
       );
 
     case 'ENUM':
       return (
         <div>
-          <FieldLabel label={field.label} required={field.required} />
+          <FieldLabel label={tLabel} required={field.required} />
           <select
             value={(value as string) ?? ''}
             onChange={(e) => onChange(e.target.value || null)}
@@ -237,7 +245,7 @@ function MetadataField({
               </option>
             ))}
           </select>
-          <HelpText text={field.helpText} />
+          <HelpText text={tHelpText} />
         </div>
       );
 
@@ -245,8 +253,8 @@ function MetadataField({
       return (
         <div>
           <FieldLabel
-            label={field.label}
-            unit={field.unit}
+            label={tLabel}
+            unit={tUnit}
             required={field.required}
           />
           <input
@@ -261,10 +269,10 @@ function MetadataField({
               onChange(v === '' || Number.isNaN(parsed) ? null : parsed);
             }}
             disabled={disabled}
-            placeholder={field.label}
+            placeholder={tLabel}
             className={inputClasses}
           />
-          <HelpText text={field.helpText} />
+          <HelpText text={tHelpText} />
         </div>
       );
 
@@ -272,8 +280,8 @@ function MetadataField({
       return (
         <div>
           <FieldLabel
-            label={field.label}
-            unit={field.unit}
+            label={tLabel}
+            unit={tUnit}
             required={field.required}
           />
           <input
@@ -288,10 +296,10 @@ function MetadataField({
               onChange(v === '' || Number.isNaN(parsed) ? null : parsed);
             }}
             disabled={disabled}
-            placeholder={field.label}
+            placeholder={tLabel}
             className={inputClasses}
           />
-          <HelpText text={field.helpText} />
+          <HelpText text={tHelpText} />
         </div>
       );
 
@@ -299,17 +307,17 @@ function MetadataField({
     default:
       return (
         <div>
-          <FieldLabel label={field.label} required={field.required} />
+          <FieldLabel label={tLabel} required={field.required} />
           <input
             type="text"
             value={(value as string) ?? ''}
             onChange={(e) => onChange(e.target.value || null)}
             disabled={disabled}
-            placeholder={field.label}
+            placeholder={tLabel}
             pattern={field.validation.pattern ?? undefined}
             className={inputClasses}
           />
-          <HelpText text={field.helpText} />
+          <HelpText text={tHelpText} />
         </div>
       );
   }

@@ -1,0 +1,201 @@
+{
+  "page": {
+    "title": "Maksut",
+    "subtitle": "Seuraa vuokramaksuja ja tuloja"
+  },
+  "actions": {
+    "schedulePayment": "Ajoita maksu",
+    "registerPayment": "Kirjaa maksu",
+    "registerReceival": "Kirjaa vastaanotto",
+    "markAsPaid": "Merkitse maksetuksi"
+  },
+  "stats": {
+    "pendingPayments": "Odottavat maksut",
+    "pendingCount": "{{count}} maksu",
+    "pendingCount_other": "{{count}} maksua",
+    "overduePayments": "Myohastyyneet maksut",
+    "overdueCount": "{{count}} maksu myohassa",
+    "overdueCount_other": "{{count}} maksua myohassa",
+    "overdueAction": "Toimenpide vaaditaan: tarkista myohastyneet maksut",
+    "allCaughtUp": "Kaikki ajan tasalla!",
+    "noOverdue": "Ei myohastyneita maksuja. Hyva tyota!",
+    "lastSixMonths": "Viimeiset 6 kuukautta",
+    "tooltipReceived": "Vastaanotettu"
+  },
+  "filters": {
+    "title": "Suodattimet",
+    "property": "Kohde",
+    "contract": "Sopimus",
+    "status": "Tila",
+    "allStatuses": "Kaikki tilat",
+    "allProperties": "Kaikki kohteet",
+    "allContracts": "Kaikki sopimukset"
+  },
+  "status": {
+    "pending": "Odottaa",
+    "partiallyPaid": "Osittainen",
+    "paid": "Maksettu",
+    "overdue": "Myohassa",
+    "late": "Myohassa",
+    "cancelled": "Peruutettu"
+  },
+  "table": {
+    "dueDate": "Erapaiva",
+    "paymentNumber": "Maksu #",
+    "contract": "Sopimus",
+    "amount": "Summa",
+    "status": "Tila",
+    "balance": "Saldo: {{amount}}"
+  },
+  "empty": {
+    "title": "Maksuja ei loytynyt",
+    "filtered": "Kokeile muuttaa suodattimia",
+    "noData": "Aloita kirjaamalla ensimmainen maksu"
+  },
+  "card": {
+    "paymentId": "Maksu #{{id}}",
+    "contractId": "Sopimus #{{id}}",
+    "property": "Kohde",
+    "contact": "Yhteystieto",
+    "amount": "Summa",
+    "balance": "Saldo: {{amount}}",
+    "dueDate": "Erapaiva",
+    "paidOn": "Maksettu"
+  },
+  "form": {
+    "amount": "Summa",
+    "dueDate": "Erapaiva",
+    "paymentDate": "Maksupaivamaara",
+    "contact": "Yhteystieto",
+    "notes": "Muistiinpanot",
+    "notesPlaceholder": "Lisaa lisamuistiinpanoja tasta maksusta...",
+    "continueAdding": "Jatka lisaamista",
+    "today": "Tanaan",
+    "clear": "Tyhjenna",
+    "updatePayment": "Paivita maksu",
+    "saving": "Tallennetaan...",
+    "contract": "Sopimus",
+    "currency": "Valuutta",
+    "selectContractFirst": "Valitse ensin sopimus",
+    "rentPeriodNotice": "Tama paivamaara osuu eri vuokrajaksolle ({{amount}}/kk alkaen {{from}}{{to}}). {{current}}",
+    "rentPeriodNoticeTo": " {{date}} asti",
+    "rentPeriodCurrentRent": "Nykyinen vuokra on {{amount}}/kk.",
+    "rentPeriodWarning": "Tama paivamaara osuu eri vuokrajaksolle ({{currency}}{{amount}}/kk alkaen {{from}}{{to}}).",
+    "rentPeriodTo": " {{date}} asti",
+    "currentRentInfo": "Nykyinen vuokra on {{currency}}{{amount}}/kk."
+  },
+  "validation": {
+    "amountRequired": "Summan on oltava suurempi kuin 0",
+    "dueDateRequired": "Erapaiva on pakollinen",
+    "currencyRequired": "Valuutta on pakollinen",
+    "paymentDateRequired": "Maksupaivamaara on pakollinen"
+  },
+  "bulkColumns": {
+    "date": "Paivamaara",
+    "amount": "Summa"
+  },
+  "create": {
+    "titleRegister": "Kirjaa maksu",
+    "titleSchedule": "Ajoita maksu",
+    "addedCount": "{{count}} maksu {{action}} talla istunnolla",
+    "addedCount_other": "{{count}} maksua {{action}} talla istunnolla",
+    "actionRegistered": "kirjattu",
+    "actionScheduled": "ajoitettu",
+    "single": "Yksittainen",
+    "bulk": "Joukkosyotto",
+    "contractInactiveWarning": "Linkitetty sopimus ei ole aktiivinen. Valitse aktiivinen sopimus."
+  },
+  "detail": {
+    "titlePrefix": "Maksu #{{id}}",
+    "subtitlePrefix": "Sopimus #{{id}}",
+    "paymentDetails": "Maksun tiedot",
+    "relatedInformation": "Liittyvat tiedot",
+    "amount": "Summa",
+    "received": "Vastaanotettu",
+    "balance": "Saldo",
+    "dueDate": "Erapaiva",
+    "paymentDate": "Maksupaivamaara",
+    "contract": "Sopimus",
+    "contractId": "Sopimus #{{id}}",
+    "property": "Kohde",
+    "contact": "Yhteystieto",
+    "notes": "Muistiinpanot",
+    "metadata": "Metatiedot",
+    "created": "Luotu:",
+    "lastUpdated": "Viimeksi paivitetty:",
+    "editPayment": "Muokkaa maksua"
+  },
+  "tabs": {
+    "details": "Tiedot",
+    "receivals": "Vastaanotot",
+    "documents": "Asiakirjat",
+    "history": "Historia"
+  },
+  "receivals": {
+    "title": "Vastaanotot ({{count}})",
+    "totalAmount": "Kokonaissumma",
+    "received": "Vastaanotettu",
+    "balance": "Saldo",
+    "empty": "Vastaanottoja ei ole viela kirjattu",
+    "searchPlaceholder": "Hae summan, paivamaaran tai muistiinpanojen perusteella...",
+    "date": "Paivamaara",
+    "amount": "Summa",
+    "notes": "Muistiinpanot",
+    "actions": "Toiminnot",
+    "showing": "Naytettavissa {{from}}-{{to}} / {{total}}",
+    "remainingBalance": "Jaljella oleva saldo:",
+    "receivalDate": "Vastaanottopaivamaara",
+    "notesOptional": "Muistiinpanot (valinnainen)",
+    "notesPlaceholder": "Lisaa muistiinpanoja tasta vastaanotosta...",
+    "register": "Kirjaa"
+  },
+  "history": {
+    "title": "Maksuhistoria",
+    "empty": "Historiaa ei ole saatavilla",
+    "emptySubtitle": "Taman maksun muutokset naytetaan taalla",
+    "clickToView": "Nayta muutokset klikkaamalla",
+    "clickToHide": "Piilota muutokset klikkaamalla",
+    "changedFields": "Muuttuneet kentat",
+    "old": "Vanha:",
+    "new": "Uusi:",
+    "impersonated": "Toisena kayttajana",
+    "na": "N/A",
+    "none": "Ei mitaan",
+    "receivalOn": "{{amount}} paivana {{date}}"
+  },
+  "deleteDialog": {
+    "title": "Poista maksu",
+    "message": "Haluatko varmasti poistaa taman maksun? Tata toimintoa ei voi kumota.",
+    "messageWithRelated": "Haluatko varmasti poistaa taman maksun? Kaikki liittyvat tiedot (vastaanotot, asiakirjat) poistetaan myos. Tata toimintoa ei voi kumota."
+  },
+  "markPaidDialog": {
+    "title": "Merkitse maksu maksetuksi",
+    "balanceMessage": "Tama kirjaa vastaanoton jaljella olevalle saldolle {{amount}} ja merkitsee maksun kokonaan maksetuksi.",
+    "paymentDate": "Maksupaivamaara",
+    "notesOptional": "Muistiinpanot (valinnainen)",
+    "notesPlaceholder": "Lisaa muistiinpanoja tasta maksusta..."
+  },
+  "receivalDialog": {
+    "title": "Kirjaa vastaanotto",
+    "remainingBalance": "Jaljella oleva saldo:",
+    "amount": "Summa",
+    "receivalDate": "Vastaanottopaivamaara",
+    "notesOptional": "Muistiinpanot (valinnainen)",
+    "notesPlaceholder": "Lisaa muistiinpanoja tasta vastaanotosta...",
+    "register": "Kirjaa"
+  },
+  "tooltips": {
+    "viewPayment": "Nayta maksu",
+    "deletePayment": "Poista maksu",
+    "editReceival": "Muokkaa vastaanottoa",
+    "deleteReceival": "Poista vastaanotto",
+    "save": "Tallenna",
+    "previous": "Edellinen",
+    "next": "Seuraava"
+  },
+  "errors": {
+    "loadFailed": "Maksujen lataus epaonnistui",
+    "loadPaymentFailed": "Maksun lataus epaonnistui",
+    "loadHistoryFailed": "Historian lataus epaonnistui"
+  }
+}

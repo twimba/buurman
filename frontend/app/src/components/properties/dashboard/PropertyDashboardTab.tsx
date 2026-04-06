@@ -526,54 +526,63 @@ function SummaryCards({ metrics }: { metrics: DashboardSummaryMetrics }) {
   const cards = [
     {
       label: t('dashboard.summary.totalRoi'),
+      hintKey: 'metricHints.totalROI',
       value: fmtPct(metrics.totalRoiPercent),
       icon: <TrendingUp className="h-5 w-5" />,
       positive: (metrics.totalRoiPercent ?? 0) >= 0,
     },
     {
       label: t('dashboard.summary.annualizedRoi'),
+      hintKey: 'metricHints.annualizedROI',
       value: fmtPct(metrics.annualizedRoiPercent),
       icon: <Percent className="h-5 w-5" />,
       positive: (metrics.annualizedRoiPercent ?? 0) >= 0,
     },
     {
       label: t('dashboard.summary.capRate'),
+      hintKey: 'metricHints.capRate',
       value: fmtPct(metrics.capRatePercent),
       icon: <Percent className="h-5 w-5" />,
       positive: (metrics.capRatePercent ?? 0) >= 0,
     },
     {
       label: t('dashboard.summary.cashOnCash'),
+      hintKey: 'metricHints.cashOnCash',
       value: fmtPct(metrics.cashOnCashPercent),
       icon: <Percent className="h-5 w-5" />,
       positive: (metrics.cashOnCashPercent ?? 0) >= 0,
     },
     {
       label: t('dashboard.summary.monthlyCashFlow'),
+      hintKey: 'metricHints.monthlyCF',
       value: fmtMoney(metrics.monthlyCashFlow),
       icon: <DollarSign className="h-5 w-5" />,
       positive: (metrics.monthlyCashFlow ?? 0) >= 0,
     },
     {
       label: t('dashboard.summary.annualNoi'),
+      hintKey: 'metricHints.annualNOI',
       value: fmtMoney(metrics.annualNoi),
       icon: <DollarSign className="h-5 w-5" />,
       positive: (metrics.annualNoi ?? 0) >= 0,
     },
     {
       label: t('dashboard.summary.totalEquity'),
+      hintKey: undefined,
       value: fmtMoney(metrics.totalEquity),
       icon: <Home className="h-5 w-5" />,
       positive: (metrics.totalEquity ?? 0) >= 0,
     },
     {
       label: t('dashboard.summary.equityGrowth'),
+      hintKey: undefined,
       value: fmtPct(metrics.equityGrowthPercent),
       icon: <TrendingUp className="h-5 w-5" />,
       positive: (metrics.equityGrowthPercent ?? 0) >= 0,
     },
     {
       label: t('dashboard.summary.occupancy'),
+      hintKey: 'metricHints.occupancyRate',
       value:
         metrics.occupancyRatePercent != null
           ? `${metrics.occupancyRatePercent.toFixed(1)}%`
@@ -583,6 +592,7 @@ function SummaryCards({ metrics }: { metrics: DashboardSummaryMetrics }) {
     },
     {
       label: t('dashboard.summary.grossRentMultiplier'),
+      hintKey: 'metricHints.grossRentMultiplier',
       value:
         metrics.grossRentMultiplier != null
           ? `${metrics.grossRentMultiplier.toFixed(1)}x`
@@ -612,7 +622,7 @@ function SummaryCards({ metrics }: { metrics: DashboardSummaryMetrics }) {
               {card.icon}
             </span>
             <span className="text-xs text-text-secondary font-medium">
-              <MetricHint label={card.label} />
+              <MetricHint label={card.label} hintKey={card.hintKey} />
             </span>
           </div>
           <div

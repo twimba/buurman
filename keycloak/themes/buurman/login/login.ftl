@@ -1,12 +1,12 @@
 <#import "template.ftl" as layout>
 <@layout.registrationLayout displayMessage=!messagesPerField.existsError('username','password') displayInfo=realm.password && realm.registrationAllowed && !registrationDisabled??; section>
     <#if section = "header">
-        <h2 class="kc-page-title">Welcome back</h2>
-        <p class="kc-page-subtitle">Sign in to manage your properties</p>
+        <h2 class="kc-page-title">${msg("loginWelcome")}</h2>
+        <p class="kc-page-subtitle">${msg("loginSubtitle")}</p>
     <#elseif section = "form">
     <div id="kc-demo-banner" class="kc-demo-banner" style="display:none">
-        <div class="kc-demo-badge">&#9734; LIVE DEMO &#9734;</div>
-        <p class="kc-demo-text">Logging you in &mdash; hang tight!</p>
+        <div class="kc-demo-badge">${msg("demoLabel")}</div>
+        <p class="kc-demo-text">${msg("demoText")}</p>
         <div class="kc-demo-spinner"></div>
     </div>
     <div id="kc-form">
@@ -20,7 +20,7 @@
 
                     <input tabindex="1" id="username" class="kc-input" name="username" value="${(login.username!'')}"  type="text" autofocus autocomplete="username"
                            aria-invalid="<#if messagesPerField.existsError('username','password')>true</#if>"
-                           placeholder="<#if !realm.loginWithEmailAllowed>Username<#elseif !realm.registrationEmailAsUsername>Username or email<#else>Email</#if>"
+                           placeholder="<#if !realm.loginWithEmailAllowed>${msg("placeholderUsername")}<#elseif !realm.registrationEmailAsUsername>${msg("placeholderUsernameOrEmail")}<#else>${msg("placeholderEmail")}</#if>"
                     />
 
                     <#if messagesPerField.existsError('username','password')>
@@ -37,7 +37,7 @@
                     <div class="kc-password-wrapper">
                         <input tabindex="2" id="password" class="kc-input" name="password" type="password" autocomplete="current-password"
                                aria-invalid="<#if messagesPerField.existsError('username','password')>true</#if>"
-                               placeholder="Enter your password"
+                               placeholder="${msg("placeholderPassword")}"
                         />
                         <button type="button" class="kc-password-toggle" tabindex="6" aria-label="Toggle password visibility" onclick="togglePasswordVisibility(this)">
                             <svg class="eye-open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>

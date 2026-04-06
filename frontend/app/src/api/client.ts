@@ -40,7 +40,7 @@ client.interceptors.request.use(
     } else if (keycloak.authenticated && keycloak.token) {
       config.headers.Authorization = `Bearer ${keycloak.token}`;
     }
-    const SUPPORTED_LANGS = ['en', 'nl', 'pt', 'es', 'fr', 'de'];
+    const SUPPORTED_LANGS = ['en', 'nl', 'pt', 'es', 'fr', 'de', 'it', 'sv', 'fi', 'el', 'pl', 'da', 'nb'];
     const storedLang = localStorage.getItem('buurman-language');
     config.headers['Accept-Language'] =
       storedLang && SUPPORTED_LANGS.includes(storedLang) ? storedLang : 'en';

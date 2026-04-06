@@ -90,6 +90,10 @@
     "currencyRequired": "Currency is required",
     "paymentDateRequired": "Payment date is required"
   },
+  "bulkColumns": {
+    "date": "Date",
+    "amount": "Amount"
+  },
   "create": {
     "titleRegister": "Register Payment",
     "titleSchedule": "Schedule Payment",

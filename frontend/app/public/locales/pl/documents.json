@@ -1,0 +1,98 @@
+{
+  "documentsPage": {
+    "title": "Biblioteka dokumentów",
+    "subtitle": "Wyszukuj i zarządzaj wszystkimi dokumentami w jednym miejscu",
+    "searchPlaceholder": "Szukaj dokumentów po tytule, nazwie pliku lub notatkach...",
+    "entityTypeFilter": {
+      "all": "Wszystkie typy",
+      "property": "Nieruchomości",
+      "contact": "Kontakty",
+      "contract": "Umowy",
+      "payment": "Płatności",
+      "expense": "Wydatki"
+    },
+    "table": {
+      "document": "Dokument",
+      "type": "Typ",
+      "size": "Rozmiar",
+      "uploaded": "Przesłano",
+      "actions": "Akcje"
+    },
+    "selection": {
+      "selected": "{{selected}} z {{total}} zaznaczonych",
+      "count": "{{count}} dokument",
+      "count_other": "{{count}} dokumentów"
+    },
+    "empty": "Nie znaleziono dokumentów",
+    "editModal": "Edytuj dokument"
+  },
+  "photosPage": {
+    "title": "Biblioteka zdjęć",
+    "subtitle": "Przeglądaj i zarządzaj wszystkimi zdjęciami w jednym miejscu",
+    "searchPlaceholder": "Szukaj zdjęć po tytule, nazwie pliku lub notatkach...",
+    "entityTypeFilter": {
+      "all": "Wszystkie typy",
+      "property": "Nieruchomości",
+      "contact": "Kontakty",
+      "contract": "Umowy",
+      "payment": "Płatności",
+      "expense": "Wydatki"
+    },
+    "empty": "Nie znaleziono zdjęć",
+    "editModal": "Edytuj zdjęcie"
+  },
+  "photoGrid": {
+    "noPhotos": "Brak zdjęć",
+    "failedToLoad": "Nie udało się załadować zdjęć",
+    "failedToLoadImage": "Nie udało się załadować",
+    "noUrl": "Brak URL",
+    "main": "Główne",
+    "selection": {
+      "selected": "{{selected}} z {{total}} zaznaczonych",
+      "count": "{{count}} zdjęcie",
+      "count_other": "{{count}} zdjęć"
+    },
+    "downloading": "Pobieranie...",
+    "tooltips": {
+      "setAsMain": "Ustaw jako główne zdjęcie",
+      "editTitleNotes": "Edytuj tytuł i notatki",
+      "deletePhoto": "Usuń zdjęcie"
+    }
+  },
+  "preview": {
+    "previewNotAvailable": "Podgląd niedostępny dla tego typu pliku ({{mimeType}})",
+    "downloadFile": "Pobierz plik",
+    "notes": "Notatki:",
+    "tooltips": {
+      "editTitleNotes": "Edytuj tytuł i notatki",
+      "download": "Pobierz",
+      "openInNewTab": "Otwórz w nowej karcie",
+      "close": "Zamknij",
+      "previous": "Poprzedni",
+      "next": "Następny"
+    }
+  },
+  "deleteDialog": {
+    "titleSingle": "Usuń dokument",
+    "titlePlural": "Usuń dokumenty",
+    "messageSingle": "Czy na pewno chcesz usunąć ten dokument? Tej akcji nie można cofnąć.",
+    "messagePlural": "Zamierzasz usunąć {{count}} dokumentów. Tej akcji nie można cofnąć.",
+    "confirmSingle": "Usuń",
+    "confirmPlural": "Usuń {{count}} dokumentów"
+  },
+  "deletePhotoDialog": {
+    "titleSingle": "Usuń zdjęcie",
+    "titlePlural": "Usuń zdjęcia",
+    "messageSingle": "Czy na pewno chcesz usunąć to zdjęcie? Tej akcji nie można cofnąć.",
+    "messagePlural": "Zamierzasz usunąć {{count}} zdjęć. Tej akcji nie można cofnąć.",
+    "mainPhotoSingle": "To jest główne zdjęcie. Jego usunięcie sprawi, że ta nieruchomość nie będzie miała głównego zdjęcia. Tej akcji nie można cofnąć.",
+    "mainPhotoPlural": "Zamierzasz usunąć {{count}} zdjęć, w tym główne zdjęcie. Ta nieruchomość nie będzie miała głównego zdjęcia. Tej akcji nie można cofnąć.",
+    "confirmSingle": "Usuń",
+    "confirmPlural": "Usuń {{count}} zdjęć"
+  },
+  "tooltips": {
+    "preview": "Podgląd",
+    "editTitleNotes": "Edytuj tytuł i notatki",
+    "delete": "Usuń"
+  }
+}

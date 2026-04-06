@@ -90,6 +90,10 @@
     "currencyRequired": "A moeda é obrigatória",
     "paymentDateRequired": "A data de pagamento é obrigatória"
   },
+  "bulkColumns": {
+    "date": "Data",
+    "amount": "Montante"
+  },
   "create": {
     "titleRegister": "Registar Pagamento",
     "titleSchedule": "Agendar Pagamento",

@@ -128,7 +128,9 @@
       "allPaid": "Alles bezahlt",
       "outstandingBalance": "Offener Saldo",
       "guaranteedAmount": "Garantierter Betrag",
-      "guarantor": "Bürge"
+      "guarantor": "Bürge",
+      "overdue": "Überfällig",
+      "pending": "Ausstehend"
     }
   },
   "card": {

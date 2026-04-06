@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ContractStatus } from '@/types/contract';
 import { Home, User } from 'lucide-react';
 
@@ -20,12 +21,12 @@ const statusColors: Record<ContractStatus, string> = {
   [ContractStatus.TERMINATED]: 'bg-error-text',
 };
 
-const statusLabels: Record<ContractStatus, string> = {
-  [ContractStatus.DRAFT]: 'Draft',
-  [ContractStatus.PENDING_SIGNATURE]: 'Pending',
-  [ContractStatus.ACTIVE]: 'Active',
-  [ContractStatus.EXPIRED]: 'Expired',
-  [ContractStatus.TERMINATED]: 'Terminated',
+const statusLabelKeys: Record<ContractStatus, string> = {
+  [ContractStatus.DRAFT]: 'statuses.draft',
+  [ContractStatus.PENDING_SIGNATURE]: 'statuses.pending',
+  [ContractStatus.ACTIVE]: 'statuses.active',
+  [ContractStatus.EXPIRED]: 'statuses.expired',
+  [ContractStatus.TERMINATED]: 'statuses.terminated',
 };
 
 export const ContractCell = ({
@@ -38,6 +39,7 @@ export const ContractCell = ({
   onClick,
 }: ContractCellProps) => {
   const navigate = useNavigate();
+  const { t } = useTranslation('contracts');
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -70,7 +72,7 @@ export const ContractCell = ({
         <div className="flex-shrink-0 pt-1">
           <div
             className={`w-2 h-2 rounded-full ${statusColors[contractStatus]}`}
-            title={statusLabels[contractStatus]}
+            title={t(statusLabelKeys[contractStatus])}
           />
         </div>
 

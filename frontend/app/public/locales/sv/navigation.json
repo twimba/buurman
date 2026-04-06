@@ -1,0 +1,29 @@
+{
+  "sidebar": {
+    "dashboard": "Oversikt",
+    "properties": "Fastigheter",
+    "contacts": "Kontakter",
+    "contracts": "Kontrakt",
+    "rentRegulations": "Hyresregleringar",
+    "rentAdjustments": "Hyresjusteringar",
+    "paymentInstructions": "Betalningsinstruktioner",
+    "payments": "Betalningar",
+    "expenses": "Kostnader",
+    "documents": "Dokument",
+    "photos": "Foton",
+    "reports": "Rapporter"
+  },
+  "admin": {
+    "title": "Administration",
+    "preferences": "Installningar",
+    "teamMembers": "Teammedlemmar",
+    "calendarFeeds": "Kalenderfloden",
+    "notifications": "Aviseringar",
+    "dataExport": "Dataexport",
+    "billing": "Prenumeration & Fakturering",
+    "activityLog": "Aktivitetslogg",
+    "apiDocs": "API-dokumentation"
+  },
+  "settings": "Installningar",
+  "signOut": "Logga ut"
+}

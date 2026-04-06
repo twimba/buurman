@@ -1,0 +1,140 @@
+{
+  "page": {
+    "title": "Utgifter",
+    "subtitle": "Spor eiendomsutgifter og kostnader"
+  },
+  "actions": {
+    "addExpense": "Legg til utgift"
+  },
+  "stats": {
+    "totalExpenses": "Totale utgifter",
+    "categorySummary": "i {{category}}",
+    "categorySummaryAll": "på tvers av {{count}} kategorier",
+    "topCategories": "Toppkategorier",
+    "noData": "Ingen data tilgjengelig",
+    "lastSixMonths": "Siste 6 måneder",
+    "tooltipExpenses": "Utgifter"
+  },
+  "filters": {
+    "title": "Filtre",
+    "property": "Eiendom",
+    "category": "Kategori",
+    "allProperties": "Alle eiendommer",
+    "allCategories": "Alle kategorier"
+  },
+  "category": {
+    "MAINTENANCE": "Vedlikehold",
+    "REPAIR": "Reparasjon",
+    "UTILITY": "Strøm/vann",
+    "TAX": "Skatt",
+    "INSURANCE": "Forsikring",
+    "LEGAL": "Juridisk",
+    "MARKETING": "Markedsføring",
+    "CLEANING": "Rengjøring",
+    "LANDSCAPING": "Hagearbeid",
+    "PROPERTY_MANAGEMENT": "Eiendomsforvaltning",
+    "FEES": "Gebyrer",
+    "PROPERTY_TAX": "Eiendomsskatt",
+    "OTHER": "Annet"
+  },
+  "table": {
+    "date": "Dato",
+    "expenseNumber": "Utgift #",
+    "description": "Beskrivelse",
+    "category": "Kategori",
+    "property": "Eiendom",
+    "amount": "Beløp"
+  },
+  "empty": {
+    "title": "Ingen utgifter funnet",
+    "filtered": "Prøv å justere filtrene",
+    "noData": "Kom i gang ved å registrere din første utgift"
+  },
+  "card": {
+    "expenseId": "Utgift #{{id}}",
+    "property": "Eiendom",
+    "contact": "Kontakt",
+    "amount": "Beløp",
+    "expenseDate": "Utgiftsdato",
+    "documentsAttached": "{{count}} dokument(er) vedlagt"
+  },
+  "form": {
+    "property": "Eiendom",
+    "category": "Kategori",
+    "contact": "Kontakt",
+    "amount": "Beløp",
+    "expenseDate": "Utgiftsdato",
+    "description": "Beskrivelse",
+    "descriptionPlaceholder": "f.eks. Rørleggerarbeid på badet",
+    "notes": "Notater",
+    "notesPlaceholder": "Legg til eventuelle tilleggsnotater om denne utgiften...",
+    "continueAdding": "Fortsett å legge til flere",
+    "today": "I dag",
+    "updateExpense": "Oppdater",
+    "createExpense": "Opprett",
+    "expenseSuffix": " utgift",
+    "saving": "Lagrer...",
+    "currency": "Valuta"
+  },
+  "validation": {
+    "propertyRequired": "Eiendom er obligatorisk",
+    "amountRequired": "Beløpet må være større enn 0",
+    "currencyRequired": "Valuta er obligatorisk",
+    "expenseDateRequired": "Utgiftsdato er obligatorisk",
+    "descriptionRequired": "Beskrivelse er obligatorisk"
+  },
+  "create": {
+    "title": "Legg til ny utgift",
+    "addedCount": "{{count}} utgift lagt til i denne økten",
+    "addedCount_other": "{{count}} utgifter lagt til i denne økten",
+    "single": "Enkelt",
+    "bulk": "Masse"
+  },
+  "detail": {
+    "titlePrefix": "Utgift #{{id}}",
+    "expenseDetails": "Utgiftsdetaljer",
+    "propertyAndContact": "Eiendom og kontakt",
+    "amount": "Beløp",
+    "expenseDate": "Utgiftsdato",
+    "category": "Kategori",
+    "description": "Beskrivelse",
+    "property": "Eiendom",
+    "contact": "Kontakt",
+    "noContactLinked": "Ingen kontakt tilknyttet",
+    "notes": "Notater",
+    "metadata": "Metadata",
+    "created": "Opprettet:",
+    "lastUpdated": "Sist oppdatert:",
+    "editExpense": "Rediger utgift"
+  },
+  "tabs": {
+    "details": "Detaljer",
+    "documents": "Dokumenter",
+    "history": "Historikk"
+  },
+  "history": {
+    "title": "Utgiftshistorikk",
+    "empty": "Ingen historikk tilgjengelig",
+    "emptySubtitle": "Endringer i denne utgiften vises her",
+    "clickToView": "Klikk for å vise endringer",
+    "clickToHide": "Klikk for å skjule endringer",
+    "changedFields": "Endrede felter",
+    "old": "Gammel:",
+    "new": "Ny:",
+    "impersonated": "Representert"
+  },
+  "deleteDialog": {
+    "title": "Slett utgift",
+    "message": "Er du sikker på at du vil slette denne utgiften? Denne handlingen kan ikke angres.",
+    "messageWithRelated": "Er du sikker på at du vil slette denne utgiften? Alle relaterte dokumenter vil også bli slettet. Denne handlingen kan ikke angres."
+  },
+  "tooltips": {
+    "viewExpense": "Vis utgift",
+    "deleteExpense": "Slett utgift"
+  },
+  "errors": {
+    "loadFailed": "Kunne ikke laste utgifter",
+    "loadExpenseFailed": "Kunne ikke laste utgift",
+    "loadHistoryFailed": "Kunne ikke laste historikk"
+  }
+}

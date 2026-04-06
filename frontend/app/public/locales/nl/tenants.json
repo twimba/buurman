@@ -128,7 +128,9 @@
       "allPaid": "Alles betaald",
       "outstandingBalance": "Openstaand saldo",
       "guaranteedAmount": "Garantiebedrag",
-      "guarantor": "Borg"
+      "guarantor": "Borg",
+      "overdue": "Achterstallig",
+      "pending": "In afwachting"
     }
   },
   "card": {

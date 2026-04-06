@@ -1,0 +1,140 @@
+{
+  "page": {
+    "title": "Udgifter",
+    "subtitle": "Spoer ejendomsudgifter og omkostninger"
+  },
+  "actions": {
+    "addExpense": "Tilfoej udgift"
+  },
+  "stats": {
+    "totalExpenses": "Samlede udgifter",
+    "categorySummary": "i {{category}}",
+    "categorySummaryAll": "paa tvaers af {{count}} kategorier",
+    "topCategories": "Topkategorier",
+    "noData": "Ingen data tilgaengelig",
+    "lastSixMonths": "Sidste 6 maaneder",
+    "tooltipExpenses": "Udgifter"
+  },
+  "filters": {
+    "title": "Filtre",
+    "property": "Ejendom",
+    "category": "Kategori",
+    "allProperties": "Alle ejendomme",
+    "allCategories": "Alle kategorier"
+  },
+  "category": {
+    "MAINTENANCE": "Vedligeholdelse",
+    "REPAIR": "Reparation",
+    "UTILITY": "Forsyning",
+    "TAX": "Skat",
+    "INSURANCE": "Forsikring",
+    "LEGAL": "Juridisk",
+    "MARKETING": "Markedsfoering",
+    "CLEANING": "Rengoering",
+    "LANDSCAPING": "Havearbejde",
+    "PROPERTY_MANAGEMENT": "Ejendomsadministration",
+    "FEES": "Gebyrer",
+    "PROPERTY_TAX": "Ejendomsskatter",
+    "OTHER": "Andet"
+  },
+  "table": {
+    "date": "Dato",
+    "expenseNumber": "Udgift #",
+    "description": "Beskrivelse",
+    "category": "Kategori",
+    "property": "Ejendom",
+    "amount": "Beloeb"
+  },
+  "empty": {
+    "title": "Ingen udgifter fundet",
+    "filtered": "Proev at justere dine filtre",
+    "noData": "Kom i gang ved at registrere din foerste udgift"
+  },
+  "card": {
+    "expenseId": "Udgift #{{id}}",
+    "property": "Ejendom",
+    "contact": "Kontakt",
+    "amount": "Beloeb",
+    "expenseDate": "Udgiftsdato",
+    "documentsAttached": "{{count}} dokument(er) vedhaeftet"
+  },
+  "form": {
+    "property": "Ejendom",
+    "category": "Kategori",
+    "contact": "Kontakt",
+    "amount": "Beloeb",
+    "expenseDate": "Udgiftsdato",
+    "description": "Beskrivelse",
+    "descriptionPlaceholder": "f.eks. VVS-reparation paa badevaerelse",
+    "notes": "Noter",
+    "notesPlaceholder": "Tilfoej eventuelle yderligere noter om denne udgift...",
+    "continueAdding": "Fortsaet med at tilfoeje flere",
+    "today": "I dag",
+    "updateExpense": "Opdater",
+    "createExpense": "Opret",
+    "expenseSuffix": " udgift",
+    "saving": "Gemmer...",
+    "currency": "Valuta"
+  },
+  "validation": {
+    "propertyRequired": "Ejendom er paakraevet",
+    "amountRequired": "Beloeb skal vaere stoerre end 0",
+    "currencyRequired": "Valuta er paakraevet",
+    "expenseDateRequired": "Udgiftsdato er paakraevet",
+    "descriptionRequired": "Beskrivelse er paakraevet"
+  },
+  "create": {
+    "title": "Tilfoej ny udgift",
+    "addedCount": "{{count}} udgift tilfojet i denne session",
+    "addedCount_other": "{{count}} udgifter tilfojet i denne session",
+    "single": "Enkelt",
+    "bulk": "Masse"
+  },
+  "detail": {
+    "titlePrefix": "Udgift #{{id}}",
+    "expenseDetails": "Udgiftsdetaljer",
+    "propertyAndContact": "Ejendom & Kontakt",
+    "amount": "Beloeb",
+    "expenseDate": "Udgiftsdato",
+    "category": "Kategori",
+    "description": "Beskrivelse",
+    "property": "Ejendom",
+    "contact": "Kontakt",
+    "noContactLinked": "Ingen kontakt tilknyttet",
+    "notes": "Noter",
+    "metadata": "Metadata",
+    "created": "Oprettet:",
+    "lastUpdated": "Sidst opdateret:",
+    "editExpense": "Rediger udgift"
+  },
+  "tabs": {
+    "details": "Detaljer",
+    "documents": "Dokumenter",
+    "history": "Historik"
+  },
+  "history": {
+    "title": "Udgiftshistorik",
+    "empty": "Ingen historik tilgaengelig",
+    "emptySubtitle": "Aendringer af denne udgift vil blive vist her",
+    "clickToView": "Klik for at se aendringer",
+    "clickToHide": "Klik for at skjule aendringer",
+    "changedFields": "Aendrede felter",
+    "old": "Gammel:",
+    "new": "Ny:",
+    "impersonated": "Efterlignet"
+  },
+  "deleteDialog": {
+    "title": "Slet udgift",
+    "message": "Er du sikker paa, at du vil slette denne udgift? Denne handling kan ikke fortrydes.",
+    "messageWithRelated": "Er du sikker paa, at du vil slette denne udgift? Alle relaterede dokumenter vil ogsaa blive slettet. Denne handling kan ikke fortrydes."
+  },
+  "tooltips": {
+    "viewExpense": "Vis udgift",
+    "deleteExpense": "Slet udgift"
+  },
+  "errors": {
+    "loadFailed": "Kunne ikke indlaese udgifter",
+    "loadExpenseFailed": "Kunne ikke indlaese udgift",
+    "loadHistoryFailed": "Kunne ikke indlaese historik"
+  }
+}

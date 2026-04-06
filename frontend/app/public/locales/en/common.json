@@ -328,6 +328,20 @@
       "daysLeft": "Days Left",
       "mode": "Mode",
       "rent": "Rent"
+    },
+    "portfolio": {
+      "notAvailable": "N/A",
+      "portfolioValue": "Portfolio Value",
+      "totalEquity": "Total Equity",
+      "monthlyCashFlow": "Monthly Cash Flow",
+      "wtdCapRate": "Wtd Cap Rate",
+      "wtdCashOnCash": "Wtd Cash-on-Cash",
+      "occupancy": "Occupancy"
+    },
+    "allocation": {
+      "noData": "No allocation data available",
+      "byCategory": "By Category",
+      "byCountry": "By Country"
     }
   },
   "wws": {

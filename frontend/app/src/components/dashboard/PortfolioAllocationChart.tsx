@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import type { AllocationData, AllocationSlice } from '@/types/portfolio';
 
@@ -39,6 +40,7 @@ export const PortfolioAllocationChart = ({
   data,
   isDark,
 }: PortfolioAllocationChartProps) => {
+  const { t } = useTranslation('common');
   const [view, setView] = useState<'category' | 'country'>('category');
   const slices: AllocationSlice[] =
     view === 'category' ? data.byCategory : data.byCountry;
@@ -58,7 +60,7 @@ export const PortfolioAllocationChart = ({
   if (slices.length === 0) {
     return (
       <div className="flex items-center justify-center h-80 text-text-secondary text-sm">
-        No allocation data available
+        {t('dashboard.allocation.noData')}
       </div>
     );
   }
@@ -74,7 +76,7 @@ export const PortfolioAllocationChart = ({
               : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
           }`}
         >
-          By Category
+          {t('dashboard.allocation.byCategory')}
         </button>
         <button
           onClick={() => setView('country')}
@@ -84,7 +86,7 @@ export const PortfolioAllocationChart = ({
               : 'bg-surface-inset text-text-secondary hover:bg-neutral-100'
           }`}
         >
-          By Country
+          {t('dashboard.allocation.byCountry')}
         </button>
       </div>
       <div className="flex items-center gap-6">

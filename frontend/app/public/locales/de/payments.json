@@ -90,6 +90,10 @@
     "currencyRequired": "Währung ist erforderlich",
     "paymentDateRequired": "Zahlungsdatum ist erforderlich"
   },
+  "bulkColumns": {
+    "date": "Datum",
+    "amount": "Betrag"
+  },
   "create": {
     "titleRegister": "Zahlung registrieren",
     "titleSchedule": "Zahlung planen",

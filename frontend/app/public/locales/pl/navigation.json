@@ -1,0 +1,29 @@
+{
+  "sidebar": {
+    "dashboard": "Panel",
+    "properties": "Nieruchomości",
+    "contacts": "Kontakty",
+    "contracts": "Umowy",
+    "rentRegulations": "Przepisy czynszowe",
+    "rentAdjustments": "Korekty czynszu",
+    "paymentInstructions": "Instrukcje płatności",
+    "payments": "Płatności",
+    "expenses": "Wydatki",
+    "documents": "Dokumenty",
+    "photos": "Zdjęcia",
+    "reports": "Raporty"
+  },
+  "admin": {
+    "title": "Administracja",
+    "preferences": "Preferencje",
+    "teamMembers": "Członkowie zespołu",
+    "calendarFeeds": "Kanały kalendarza",
+    "notifications": "Powiadomienia",
+    "dataExport": "Eksport danych",
+    "billing": "Subskrypcja i płatności",
+    "activityLog": "Dziennik aktywności",
+    "apiDocs": "Dokumentacja API"
+  },
+  "settings": "Ustawienia",
+  "signOut": "Wyloguj się"
+}

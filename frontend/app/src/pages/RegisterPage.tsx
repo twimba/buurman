@@ -26,11 +26,10 @@ import {
   XCircle,
 } from 'lucide-react';
 import { PublicBroadcastBanner } from '../components/common/BroadcastBanner';
-import { supportedLanguages } from '../context/LocaleContext';
-import i18n from '../i18n';
+import PublicLanguageSelector from '../components/common/PublicLanguageSelector';
 
 const RegisterPage: React.FC = () => {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const invitationToken = searchParams.get('invitation') ?? undefined;
@@ -80,7 +79,6 @@ const RegisterPage: React.FC = () => {
     email: '',
     firstName: '',
     lastName: '',
-    language: i18n.language || 'en',
     password: '',
     confirmPassword: '',
   });
@@ -182,7 +180,7 @@ const RegisterPage: React.FC = () => {
         firstName: formData.firstName,
         lastName: formData.lastName,
         password: formData.password,
-        language: formData.language,
+        language: i18n.language,
         invitationToken,
         registrationInvitationCode:
           invitationRequired && !invitationToken
@@ -503,32 +501,6 @@ const RegisterPage: React.FC = () => {
 
                     <div>
                       <label className="block text-sm font-medium text-text-secondary mb-1.5">
-                        {t('auth.language')}
-                      </label>
-                      <select
-                        name="language"
-                        value={formData.language}
-                        onChange={(e) => {
-                          const lang = e.target.value;
-                          i18n.changeLanguage(lang);
-                          localStorage.setItem('buurman-language', lang);
-                          setFormData({
-                            ...formData,
-                            language: lang,
-                          });
-                        }}
-                        className="w-full border border-border-strong rounded-lg px-4 py-2.5 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-20 transition-colors"
-                      >
-                        {supportedLanguages.map((lang) => (
-                          <option key={lang.value} value={lang.value}>
-                            {lang.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-text-secondary mb-1.5">
                         {t('auth.email')}
                       </label>
                       <input
@@ -746,7 +718,7 @@ const RegisterPage: React.FC = () => {
           </div>
 
           {/* Additional Info */}
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center space-y-3">
             <p className="text-sm text-text-secondary">
               {t('auth.needHelp')}{' '}
               <a
@@ -758,6 +730,7 @@ const RegisterPage: React.FC = () => {
                 {t('auth.contactSupport')}
               </a>
             </p>
+            <PublicLanguageSelector />
           </div>
         </div>
       </div>

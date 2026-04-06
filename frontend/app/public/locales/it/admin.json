@@ -1,0 +1,306 @@
+{
+  "apiDocs": {
+    "title": "Documentazione API",
+    "subtitle": "Esplora e testa l'API REST di Buurman"
+  },
+  "billing": {
+    "title": "Abbonamento e fatturazione",
+    "subtitle": "Gestisca il Suo piano di abbonamento e consulti la cronologia di fatturazione",
+    "impersonationBlocked": "Le operazioni di fatturazione non sono disponibili durante una sessione di impersonificazione."
+  },
+  "calendarFeeds": {
+    "title": "Feed calendario",
+    "pageSubtitle": "Gestisca i feed iCalendar per le scadenze dei pagamenti e gli eventi contrattuali"
+  },
+  "dataExport": {
+    "title": "Esportazione dati",
+    "pageSubtitle": "Esporti i dati del Suo team come archivio scaricabile"
+  },
+  "notifications": {
+    "title": "Notifiche",
+    "subtitle": "Monitori e gestisca tutte le notifiche inviate nel Suo team",
+    "loading": "Caricamento notifiche...",
+    "noResults": "Nessuna notifica trovata",
+    "view": "Visualizza",
+    "viewDetails": "Visualizza dettagli",
+    "resend": "Reinvia",
+    "resendNotification": "Reinvia notifica",
+    "resendConfirm": {
+      "title": "Reinvia notifica",
+      "message": "Verrà creata una nuova notifica con un nuovo tentativo di consegna. La notifica originale rimarrà nel registro."
+    },
+    "demoBanner": {
+      "title": "Account demo — le notifiche sono simulate",
+      "emailAndSms": "Le notifiche email e SMS vengono registrate ma non effettivamente inviate.",
+      "emailOnly": "Le notifiche email vengono registrate ma non effettivamente inviate.",
+      "smsOnly": "Le notifiche SMS vengono registrate ma non effettivamente inviate."
+    },
+    "stats": {
+      "total": "Totale",
+      "delivered": "Consegnate",
+      "pending": "In attesa",
+      "failed": "Non riuscite",
+      "byChannel": "Per canale",
+      "demoBlocked": "Bloccate (demo)"
+    },
+    "table": {
+      "type": "Tipo",
+      "channel": "Canale",
+      "recipient": "Destinatario",
+      "subjectBody": "Oggetto / Corpo",
+      "status": "Stato",
+      "date": "Data",
+      "actions": "Azioni"
+    },
+    "typeLabels": {
+      "welcome": "Benvenuto",
+      "verification": "Verifica",
+      "invitation": "Invito",
+      "accepted": "Accettato",
+      "password": "Password",
+      "payment": "Pagamento",
+      "contract": "Contratto",
+      "property": "Immobile",
+      "newContract": "Nuovo contratto",
+      "statusChange": "Cambio di stato",
+      "reopened": "Riaperto",
+      "paid": "Pagato",
+      "receival": "Incasso",
+      "expense": "Spesa"
+    },
+    "details": {
+      "title": "Dettagli notifica",
+      "demoBlocked": "Questa notifica non è stata consegnata perché si tratta di un account demo. In un account reale verrebbe inviata tramite {{channel}}.",
+      "type": "Tipo",
+      "subject": "Oggetto",
+      "content": "Contenuto",
+      "recipient": "Destinatario",
+      "sentAt": "Inviata il",
+      "statusUpdated": "Stato aggiornato",
+      "providerStatus": "Stato del provider",
+      "refresh": "Aggiorna",
+      "error": "Errore",
+      "engagement": "Interazione",
+      "open": "{{count}} apertura",
+      "open_other": "{{count}} aperture",
+      "click": "{{count}} clic",
+      "click_other": "{{count}} clic",
+      "first": "prima: {{date}}",
+      "resentFrom": "Reinviata da",
+      "resendReason": "Motivo del reinvio",
+      "resend": "Reinvia",
+      "emailPreview": "Anteprima email",
+      "smsMessage": "Messaggio SMS",
+      "delivered": "Consegnata"
+    },
+    "filters": {
+      "searchByEmail": "Cerca per email...",
+      "allTypes": "Tutti i tipi",
+      "allChannels": "Tutti i canali",
+      "allStatuses": "Tutti gli stati",
+      "fromDate": "Dalla data",
+      "toDate": "Alla data"
+    },
+    "types": {
+      "welcome": "Benvenuto",
+      "verificationCode": "Codice di verifica",
+      "teamInvitation": "Invito al team",
+      "invitationAccepted": "Invito accettato",
+      "passwordChanged": "Password modificata",
+      "paymentReminder": "Promemoria di pagamento",
+      "contractExpiry": "Scadenza contratto",
+      "propertyCreated": "Immobile creato",
+      "contractCreated": "Contratto creato",
+      "contractStatusChanged": "Stato contratto modificato",
+      "contractReopened": "Contratto riaperto",
+      "paymentPaid": "Pagamento effettuato",
+      "paymentReceival": "Incasso pagamento",
+      "expenseCreated": "Spesa registrata"
+    },
+    "statuses": {
+      "pending": "In attesa",
+      "queued": "In coda",
+      "sent": "Inviata",
+      "delivered": "Consegnata",
+      "failed": "Non riuscita",
+      "bounced": "Respinta",
+      "rejected": "Rifiutata",
+      "demo": "Demo"
+    }
+  },
+  "paymentInstructions": {
+    "title": "Istruzioni di pagamento",
+    "pageSubtitle": "Gestisca i modelli di istruzioni di pagamento per il Suo team"
+  },
+  "preferences": {
+    "title": "Preferenze",
+    "subtitle": "Configuri le preferenze del team e le impostazioni regionali"
+  },
+  "teamMembers": {
+    "title": "Membri del team",
+    "subtitle": "Gestisca i membri del team, i ruoli e gli inviti",
+    "impersonationBlocked": "Le modifiche ai membri del team non sono disponibili durante una sessione di impersonificazione."
+  },
+  "transactions": {
+    "title": "Cronologia transazioni",
+    "subtitle": "Cronologia completa di entrate e uscite",
+    "searchPlaceholder": "Cerca transazioni...",
+    "allTypes": "Tutti i tipi",
+    "incomeOnly": "Solo entrate",
+    "expensesOnly": "Solo uscite",
+    "totalIncome": "Entrate totali",
+    "totalExpenses": "Uscite totali",
+    "netTotal": "Totale netto",
+    "noTransactions": "Nessuna transazione trovata",
+    "downloadFailed": "Download non riuscito. Riprovi.",
+    "table": {
+      "date": "Data",
+      "type": "Tipo",
+      "description": "Descrizione",
+      "property": "Immobile",
+      "amount": "Importo"
+    }
+  },
+  "dashboard": {
+    "portfolioOverview": "Panoramica del portafoglio",
+    "propertiesWithData": "{{withData}} di {{total}} immobili hanno dati finanziari",
+    "addProperties": "Aggiunga degli immobili per visualizzare la dashboard del portafoglio.",
+    "addFinancialData": "Aggiunga dati finanziari ai Suoi immobili per visualizzare le analisi del portafoglio.",
+    "propertiesNoData": "{{count}} immobili trovati, ma nessuno ha ancora dati finanziari.",
+    "exporting": "Esportazione...",
+    "disclaimer": "Le metriche sono fornite solo a scopo informativo.",
+    "charts": {
+      "cashFlow": "Flusso di cassa del portafoglio",
+      "allocation": "Allocazione del portafoglio",
+      "propertyComparison": "Confronto immobili",
+      "equityComposition": "Composizione del patrimonio",
+      "performance": "Performance degli immobili",
+      "occupancy": "Occupazione del portafoglio"
+    },
+    "cashFlow": {
+      "noData": "Nessun dato sul flusso di cassa disponibile",
+      "income": "Entrate",
+      "expenses": "Uscite",
+      "mortgage": "Mutuo",
+      "net": "Netto"
+    },
+    "allocation": {
+      "noData": "Nessun dato sull'allocazione disponibile",
+      "byCategory": "Per categoria",
+      "byCountry": "Per paese"
+    },
+    "comparison": {
+      "noData": "Nessun dato di confronto degli immobili disponibile",
+      "monthlyCashFlow": "Flusso di cassa mensile"
+    },
+    "equity": {
+      "noData": "Nessun dato sul patrimonio disponibile",
+      "equity": "Patrimonio",
+      "mortgage": "Mutuo"
+    },
+    "performanceTable": {
+      "noData": "Nessun dato sulla performance degli immobili disponibile",
+      "property": "Immobile",
+      "category": "Categoria",
+      "monthlyCF": "CF mensile",
+      "annualNOI": "NOI annuale",
+      "capRate": "Cap Rate",
+      "coc": "CoC",
+      "occupancy": "Occupazione",
+      "dataPercent": "Dati %"
+    },
+    "occupancy": {
+      "noData": "Nessun dato sull'occupazione disponibile",
+      "contactOccupancy": "Occupazione da contatti",
+      "selfOccupancy": "Uso proprio"
+    },
+    "pendingExtensions": {
+      "title": "Proroghe in attesa",
+      "awaitingAction": "{{count}} proroga in attesa di azione",
+      "awaitingAction_other": "{{count}} proroghe in attesa di azione",
+      "extensionNumber": "Proroga #{{number}}",
+      "contractNumber": "Contratto #{{id}}",
+      "until": "fino al {{date}}",
+      "activate": "Attiva",
+      "decline": "Rifiuta"
+    },
+    "pendingInvitations": {
+      "title": "Inviti al team in attesa",
+      "invitedToOne": "Ha ricevuto un invito a unirsi a un team",
+      "invitedToMany": "Ha ricevuto un invito a unirsi a {{count}} team",
+      "invitedBy": "Invitato da {{name}}",
+      "expires": "Scade il {{date}}",
+      "accept": "Accetta"
+    },
+    "upcomingRenewals": {
+      "title": "Rinnovi imminenti",
+      "property": "Immobile",
+      "contact": "Contatto",
+      "endDate": "Data di fine",
+      "daysLeft": "Giorni rimasti",
+      "mode": "Modalità",
+      "rent": "Canone",
+      "renewalModes": {
+        "none": "Nessuno",
+        "automatic": "Automatico",
+        "manual": "Manuale"
+      }
+    }
+  },
+  "reports": {
+    "title": "Report finanziari",
+    "subtitle": "Panoramica finanziaria completa e analisi",
+    "transactions": "Transazioni",
+    "failedToLoad": "Impossibile caricare i report finanziari",
+    "period": "Periodo:",
+    "month": "Mese",
+    "quarter": "Trimestre",
+    "year": "Anno",
+    "allTime": "Tutto il periodo",
+    "custom": "Personalizzato",
+    "to": "a",
+    "advancedFilters": "Filtri avanzati",
+    "properties": "Immobili",
+    "clearAll": "Cancella tutto",
+    "noProperties": "Nessun immobile trovato",
+    "totalIncome": "Entrate totali",
+    "totalExpenses": "Uscite totali",
+    "netProfit": "Utile netto",
+    "income": "Entrate",
+    "expenses": "Uscite",
+    "amount": "Importo",
+    "downloadPdf": "Scarica PDF",
+    "incomeTrend": {
+      "title": "Andamento delle entrate",
+      "subtitle": "Entrate, uscite e utile netto mensili",
+      "line": "Linea",
+      "bar": "Barre"
+    },
+    "expenseBreakdown": {
+      "title": "Ripartizione delle uscite",
+      "subtitle": "Per categoria nel periodo selezionato",
+      "pie": "Torta",
+      "bar": "Barre",
+      "noData": "Nessun dato sulle uscite per il periodo selezionato"
+    },
+    "propertyPerformance": {
+      "title": "Performance degli immobili",
+      "subtitle": "Entrate, uscite e utile netto per immobile",
+      "property": "Immobile",
+      "income": "Entrate",
+      "expenses": "Uscite",
+      "netProfit": "Utile netto",
+      "margin": "Margine",
+      "total": "Totale",
+      "noData": "Nessun dato sugli immobili per il periodo selezionato"
+    },
+    "occupancyTrend": {
+      "title": "Andamento dell'occupazione",
+      "subtitle": "Percentuale mensile del tasso di occupazione",
+      "occupancyRate": "Tasso di occupazione (%)"
+    }
+  },
+  "auditLog": {
+    "failedToLoad": "Impossibile caricare i registri di attività"
+  }
+}

@@ -6,19 +6,6 @@ import {
 } from '@/hooks/useTeamHooks';
 import { useFormatDate } from '@/hooks/useFormatDate';
 
-const formatRole = (role: string) => {
-  switch (role) {
-    case 'TEAM_ADMIN':
-      return t('dashboard.pendingInvitations.roles.admin');
-    case 'TEAM_EDITOR':
-      return t('dashboard.pendingInvitations.roles.editor');
-    case 'TEAM_VIEWER':
-      return t('dashboard.pendingInvitations.roles.viewer');
-    default:
-      return role;
-  }
-};
-
 const roleBadgeClass = (role: string) => {
   switch (role) {
     case 'TEAM_ADMIN':
@@ -32,6 +19,19 @@ const roleBadgeClass = (role: string) => {
 
 export const PendingInvitationsPanel = () => {
   const { t } = useTranslation('common');
+
+  const formatRole = (role: string) => {
+    switch (role) {
+      case 'TEAM_ADMIN':
+        return t('dashboard.pendingInvitations.roles.admin');
+      case 'TEAM_EDITOR':
+        return t('dashboard.pendingInvitations.roles.editor');
+      case 'TEAM_VIEWER':
+        return t('dashboard.pendingInvitations.roles.viewer');
+      default:
+        return role;
+    }
+  };
   const { data: invitations, isLoading } = usePendingInvitations();
   const acceptMutation = useAcceptInvitation();
   const { formatDate } = useFormatDate();

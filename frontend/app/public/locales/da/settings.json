@@ -1,0 +1,377 @@
+{
+  "page": {
+    "title": "Indstillinger",
+    "subtitle": "Administrer din personlige profil og praeferencer",
+    "impersonationBlocked": "Indstillinger kan ikke aendres under en efterligningssession."
+  },
+  "tabs": {
+    "profile": "Profil & Sikkerhed",
+    "preferences": "Mine praeferencer",
+    "teams": "Mine teams"
+  },
+  "profile": {
+    "title": "Profilinformation",
+    "subtitle": "Opdater dine personlige oplysninger og avatar",
+    "editProfile": "Rediger profil",
+    "firstName": "Fornavn",
+    "lastName": "Efternavn",
+    "emailAddress": "E-mailadresse",
+    "emailChangeNote": "E-mailadressen kan ikke aendres. Kontakt support, hvis du har brug for at opdatere den.",
+    "phoneNumber": "Telefonnummer",
+    "verified": "Verificeret",
+    "unverified": "Ikke verificeret",
+    "phoneNotAllowed": "Telefonnumre fra dette land er ikke tilladt",
+    "phoneTypeNotAllowed": "Denne telefonnummertype ({{type}}) er ikke tilladt",
+    "verification": {
+      "enterCode": "Naesten der! Indtast koden sendt til",
+      "invalidCode": "Ugyldig eller udloebet kode. Proev venligst igen.",
+      "sending": "Sender...",
+      "resendIn": "Gensend om {{seconds}}s",
+      "resendCode": "Gensend kode",
+      "cancelling": "Annullerer...",
+      "changeNumber": "Skift nummer"
+    },
+    "failedToLoad": "Kunne ikke indlaese profildata",
+    "tryAgain": "Proev igen"
+  },
+  "security": {
+    "title": "Sikkerhedsindstillinger",
+    "subtitle": "Administrer din adgangskode og sikkerhedspraeferencer",
+    "password": "Adgangskode",
+    "passwordNote": "Adgangskodeaendringer administreres via din identitetsudbyder",
+    "changePassword": "Skift adgangskode",
+    "securityEmailNote": "Sikkerhedse-mails (nulstilling af adgangskode, verifikation, invitationer) sendes altid uanset abonnement."
+  },
+  "preferences": {
+    "title": "Brugerpræferencer",
+    "subtitle": "Tilpas din personlige oplevelse",
+    "failedToLoad": "Kunne ikke indlaese praeferencer",
+    "tryAgain": "Proev igen",
+    "appearance": {
+      "title": "Udseende",
+      "theme": "Tema",
+      "light": "Lyst",
+      "dark": "Moerkt",
+      "auto": "Auto",
+      "autoDescription": "Autotilstand foelger dine systemindstillinger"
+    },
+    "languageRegion": {
+      "title": "Sprog & Region",
+      "language": "Sprog",
+      "dateFormat": "Datoformat"
+    },
+    "timezone": {
+      "title": "Tidszone"
+    },
+    "notifications": {
+      "title": "Notifikationer",
+      "email": "E-mail-notifikationer",
+      "emailDescription": "Modtag notifikationer via e-mail",
+      "sms": "SMS-notifikationer",
+      "smsDescription": "Modtag notifikationer via sms (kraever telefonnummer)",
+      "configurePerType": "Konfigurer notifikationer per type",
+      "notificationType": "Notifikationstype",
+      "emailColumnDisabled": "E-mail-kolonnen er deaktiveret, fordi den globale e-mail-kontakt er slaaet fra",
+      "smsColumnDisabled": "SMS-kolonnen er deaktiveret, fordi den globale SMS-kontakt er slaaet fra"
+    }
+  },
+  "teamPreferences": {
+    "title": "Teampraeferencer",
+    "subtitle": "Konfigurer standardindstillinger for dit team",
+    "teamIdentity": {
+      "title": "Teamidentitet",
+      "teamName": "Teamnavn",
+      "placeholder": "Indtast teamnavn",
+      "description": "Visningsnavnet for dit team"
+    },
+    "currency": {
+      "title": "Valutaindstillinger",
+      "teamCurrency": "Teamvaluta",
+      "change": "Skift",
+      "description": "Alle finansielle data bruger denne valuta. AEndring paavirker alle eksisterende poster."
+    },
+    "defaultCountry": {
+      "title": "Standardland",
+      "label": "Standardland",
+      "placeholder": "Intet standardland (vaelg hver gang)",
+      "description": "Dette vil vaere det forudvalgte land for nye ejendomme og kontaktadresser"
+    },
+    "fiscalYear": {
+      "title": "Regnskabsaar",
+      "fiscalYearStart": "Regnskabsaarets start",
+      "description": "Foerste maaned i dit regnskabsaar for finansielle rapporter"
+    }
+  },
+  "currencyChange": {
+    "title": "Skift teamvaluta",
+    "currentCurrency": "Aktuel valuta",
+    "newCurrency": "Ny valuta",
+    "changeMode": "AEndringstilstand",
+    "relabelOnly": "Kun omdoeb",
+    "relabelDescription": "Skift valutakoder uden at aendre beloeb. Brug naar beloeb allerede er indtastet i maalvalutaen.",
+    "convertAtRate": "Konverter til fast kurs",
+    "convertDescription": "Gang alle beloeb med en konverteringskurs. Alle eksisterende finansielle data genberegnes.",
+    "conversionRate": "Konverteringskurs (1 {{from}} = {{rate}} {{to}})",
+    "irreversible": "Denne handling er irreversibel",
+    "relabelWarning": "Alle valutakoder aendres fra {{from}} til {{to}}. Beloeb aendres ikke.",
+    "convertWarning": "Alle beloeb ganges med {{rate}} og valutakoder aendres fra {{from}} til {{to}}.",
+    "understandCannotUndo": "Jeg forstaar, at dette ikke kan fortrydes",
+    "changing": "AEndrer...",
+    "confirmChange": "Bekraeft aendring",
+    "changeCurrency": "Skift valuta"
+  },
+  "teamMembers": {
+    "title": "Teammedlemmer",
+    "memberCount": "{{count}} medlem",
+    "memberCount_other": "{{count}} medlemmer",
+    "inviteMember": "Inviter medlem",
+    "you": "Dig",
+    "owner": "Ejer",
+    "joined": "Tilsluttet {{date}}",
+    "changeRole": "Skift rolle",
+    "transferOwnership": "Overdrag ejerskab",
+    "removeMember": "Fjern medlem",
+    "roles": {
+      "admin": "Admin",
+      "editor": "Redaktoer",
+      "viewer": "Laeser",
+      "adminDescription": "Fuld adgang til alle funktioner og indstillinger",
+      "editorDescription": "Kan oprette og redigere ejendomme, kontakter og kontrakter",
+      "viewerDescription": "Skrivebeskyttet adgang til alle data",
+      "label": "Roller:"
+    },
+    "pendingInvitations": {
+      "title": "Afventende invitationer",
+      "count": "{{count}} afventende invitation",
+      "count_other": "{{count}} afventende invitationer",
+      "invitedBy": "Inviteret af {{name}}",
+      "sent": "Sendt {{date}}",
+      "expires": "Udloeber {{date}}",
+      "resend": "Gensend"
+    },
+    "inviteModal": {
+      "title": "Inviter teammedlem",
+      "subtitle": "Send en invitation til at deltage i dit team",
+      "emailAddress": "E-mailadresse",
+      "role": "Rolle",
+      "sendInvitation": "Send invitation"
+    },
+    "roleModal": {
+      "title": "Skift medlemsrolle",
+      "subtitle": "Opdater rolle for {{name}}",
+      "newRole": "Ny rolle",
+      "updateRole": "Opdater rolle"
+    },
+    "transferModal": {
+      "title": "Overdrag ejerskab",
+      "message": "Er du sikker paa, at du vil overdrage teamejerskab til <strong>{{name}}</strong>? Denne handling kan ikke fortrydes af dig. Den nye ejer faar fuld kontrol over teamet.",
+      "confirm": "Overdrag ejerskab"
+    },
+    "removeModal": {
+      "title": "Fjern teammedlem",
+      "message": "Er du sikker paa, at du vil fjerne <strong>{{name}}</strong> fra dit team? De mister adgang til alle teamdata.",
+      "confirm": "Fjern medlem"
+    }
+  },
+  "myTeams": {
+    "title": "Mine teams",
+    "active": "Aktiv",
+    "pending": "Afventer",
+    "member": "{{count}} medlem",
+    "member_other": "{{count}} medlemmer",
+    "accept": "Accepter",
+    "pendingInvitations": "Afventende invitationer",
+    "invitedBy": "Inviteret af {{name}}",
+    "expires": "Udloeber {{date}}",
+    "roles": {
+      "admin": "Administrator",
+      "editor": "Redaktoer",
+      "viewer": "Laeser"
+    }
+  },
+  "subscription": {
+    "earlyAccess": {
+      "title": "Alt er gratis lige nu!",
+      "description": "Vi bygger stadig Buurman, og denne side er blot en forhåndsvisning af, hvad der kommer. Indtil videre kan du nyde <strong>alle funktioner</strong> uden begraensninger og uden omkostninger. Gaa bare loes!",
+      "noSurprises": "Vi giver dig god besked, foer fakturering begynder. Ingen overraskelser, lovet."
+    },
+    "currentPlan": {
+      "title": "Aktuelt abonnement",
+      "subtitle": "Administrer dit abonnement og fakturering",
+      "properties": "Ejendomme",
+      "teamMembers": "Teammedlemmer",
+      "nextRenewal": "Naeste fornyelse",
+      "autoRenews": "Fornyes automatisk",
+      "changePlan": "Skift abonnement",
+      "cancelSubscription": "Annuller abonnement"
+    },
+    "plans": {
+      "title": "Tilgaengelige abonnementer",
+      "subtitle": "Vaelg det abonnement, der passer bedst til dine behov",
+      "monthly": "Maanedlig",
+      "annual": "Aarlig",
+      "save20": "Spar 20%",
+      "forever": "/for evigt",
+      "perMonth": "/maaned",
+      "billedAnnually": "Faktureres aarligt til {{amount}}",
+      "billedMonthly": "Faktureres maanedligt, opsig naarsom helst",
+      "perfectToStart": "Perfekt til at komme i gang",
+      "currentPlan": "Aktuelt abonnement",
+      "downgradeToFree": "Nedgrader til gratis",
+      "downgrade": "Nedgrader",
+      "upgrade": "Opgrader",
+      "mostPopular": "Mest populaer",
+      "freeForever": "GRATIS FOR EVIGT"
+    },
+    "confirmModal": {
+      "title": "Bekraeft abonnementsskift",
+      "message": "Er du sikker paa, at du vil skifte til <strong>{{plan}}</strong>-abonnementet? Din fakturering justeres tilsvarende.",
+      "billingNote": "Du faktureres {{amount}}/maaned{{annual}} fra din naeste faktureringsperiode.",
+      "billedAnnually": " ({{total}} faktureret aarligt)",
+      "confirmChange": "Bekraeft aendring"
+    },
+    "paymentMethods": {
+      "title": "Betalingsmetoder",
+      "subtitle": "Administrer dine betalingsmetoder",
+      "addPaymentMethod": "Tilfoej betalingsmetode",
+      "default": "Standard",
+      "expires": "Udloeber {{month}}/{{year}}"
+    }
+  },
+  "paymentHistory": {
+    "nextPayment": "Naeste betaling",
+    "totalPaid": "Samlet betalt",
+    "allTime": "Al tid",
+    "totalInvoices": "Fakturaer i alt",
+    "paid": "{{count}} betalt",
+    "title": "Betalingshistorik",
+    "subtitle": "Se og download dine fakturaer",
+    "searchPlaceholder": "Soeg efter fakturanummer, abonnement eller betalingsmetode...",
+    "statusFilter": "Statusfilter",
+    "allStatuses": "Alle statusser",
+    "invoice": "Faktura",
+    "date": "Dato",
+    "plan": "Abonnement",
+    "paymentMethod": "Betalingsmetode",
+    "amount": "Beloeb",
+    "status": "Status",
+    "actions": "Handlinger",
+    "download": "Download",
+    "noInvoices": "Ingen fakturaer fundet",
+    "adjustFilters": "Proev at justere dine filtre eller soegning",
+    "historyWillAppear": "Din betalingshistorik vil blive vist her",
+    "statuses": {
+      "paid": "Betalt",
+      "pending": "Afventer",
+      "failed": "Fejlet"
+    }
+  },
+  "paymentInstructions": {
+    "title": "Betalingsinstruktioner",
+    "subtitle": "Definer genbrugbare betalingsinstruktionsskabeloner til dine kontrakter",
+    "addInstruction": "Tilfoej instruktion",
+    "editTitle": "Rediger betalingsinstruktion",
+    "newTitle": "Ny betalingsinstruktion",
+    "name": "Navn *",
+    "namePlaceholder": "f.eks. Hovedbankkonto",
+    "paymentMethod": "Betalingsinstruktion *",
+    "description": "Beskrivelse",
+    "descriptionPlaceholder": "Instruktioner til kontakten...",
+    "bankName": "Banknavn",
+    "accountHolder": "Kontohaver",
+    "iban": "IBAN",
+    "bicSwift": "BIC / SWIFT",
+    "accountNumber": "Kontonummer",
+    "routingNumber": "Registreringsnummer",
+    "paymentReference": "Betalingsreference",
+    "paymentReferencePlaceholder": "Reference der skal medtages ved betaling",
+    "setAsDefault": "Saet som standard betalingsmetode",
+    "setAsDefaultShort": "Saet som standard",
+    "creating": "Opretter...",
+    "saving": "Gemmer...",
+    "empty": {
+      "title": "Ingen betalingsinstruktioner",
+      "subtitle": "Tilfoej din foerste betalingsmetode til brug med kontrakter.",
+      "addInstruction": "Tilfoej betalingsinstruktion"
+    },
+    "default": "Standard",
+    "holder": "Kontohaver:",
+    "account": "Konto:",
+    "routing": "Registrering:",
+    "loading": "Indlaeser..."
+  },
+  "calendarFeeds": {
+    "title": "Kalenderfeeds",
+    "subtitle": "Abonner paa betalingsfrister i Google Kalender, Apple Kalender eller enhver app, der understoetter iCalendar-feeds. Hvert feed har en unik URL, du kan tilfoeje som kalenderabonnement.",
+    "createAllPayments": "Opret alle betalinger-feed",
+    "previewCalendar": "Forhåndsvis kalender",
+    "copyUrl": "Kopier URL",
+    "regenerateUrl": "Generer URL igen",
+    "deleteFeed": "Slet feed",
+    "regenerateWarning": "Gengenerering vil ugyldeggoere den aktuelle URL.",
+    "regenerate": "Generer igen",
+    "deleteConfirm": "Slet dette kalenderfeed?",
+    "empty": "Ingen kalenderfeeds endnu. Opret et for at komme i gang.",
+    "copied": "Feed-URL kopieret til udklipsholder",
+    "copyFailed": "Kunne ikke kopiere link",
+    "feedTypes": {
+      "allPayments": "Alle betalinger",
+      "propertyPayments": "Ejendomsbetalinger",
+      "contactPayments": "Kontaktbetalinger",
+      "contract": "Kontrakt"
+    },
+    "preview": {
+      "subtitle": "Forhåndsvisning af kalenderfeed",
+      "today": "I dag",
+      "errorMessage": "Kunne ikke indlaese kalenderfeed. Feed-URL'en kan vaere ugyldig eller utilgaengelig.",
+      "emailPreview": "E-mail-forhåndsvisning",
+      "smsMessage": "SMS-besked"
+    }
+  },
+  "onboarding": {
+    "welcome": "Velkommen til Buurman",
+    "subtitle": "Lad os opsaette dine teampraeferencer",
+    "chooseLanguage": "Vaelg dit sprog",
+    "chooseLanguageDesc": "Vaelg sproget for Buurman-graensefladen.",
+    "whereProperties": "Hvor ligger dine ejendomme?",
+    "wherePropertiesDesc": "Dette saetter din standardvaluta og datoformat.",
+    "searchCountries": "Soeg lande...",
+    "teamCurrency": "Teamvaluta",
+    "teamCurrencyDesc": "Alle finansielle data bruger denne valuta. Du kan aendre den senere i indstillinger.",
+    "suggestedFor": "Foreslaaet for {{country}}",
+    "selected": "Valgt",
+    "dateFormat": "Datoformat",
+    "dateFormatDesc": "Hvordan skal datoer vises?",
+    "summary": "Opsummering",
+    "summaryLanguage": "Sprog",
+    "summaryCountry": "Land",
+    "summaryCurrency": "Valuta",
+    "summaryDateFormat": "Datoformat",
+    "skipForNow": "Spring over for nu",
+    "saving": "Gemmer...",
+    "completeSetup": "Fuldfoed opsaetning"
+  },
+  "dataExport": {
+    "title": "Dataeksport",
+    "subtitle": "Eksporter alle dine teamdata som et downloadbart arkiv. Eksporter inkluderer ejendomme, kontakter, kontrakter, betalinger, udgifter og dokumenter.",
+    "requestExport": "Anmod om eksport",
+    "inProgress": "En eksport er allerede i gang. Vent venligst til den er faerdig, foer du anmoder om en ny.",
+    "failedToLoad": "Kunne ikke indlaese eksporter",
+    "tryAgain": "Proev igen",
+    "empty": "Ingen eksporter endnu. Anmod om din foerste dataeksport ovenfor.",
+    "dataExportLabel": "Dataeksport",
+    "requested": "Anmodet {{date}}",
+    "completed": "Faerdig {{date}}",
+    "expires": "Udloeber {{date}}",
+    "percentComplete": "{{percent}}% faerdig",
+    "adminOnly": "Kun teamadministratorer kan eksportere data.",
+    "deleteTitle": "Slet eksport",
+    "deleteMessage": "Er du sikker paa, at du vil slette denne dataeksport? Den eksporterede fil fjernes permanent. Denne handling kan ikke fortrydes.",
+    "statuses": {
+      "pending": "Afventer",
+      "processing": "Behandler",
+      "completed": "Faerdig",
+      "failed": "Fejlet"
+    }
+  }
+}

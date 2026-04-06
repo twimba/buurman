@@ -84,33 +84,39 @@ export const PaymentHistorySection = () => {
     plan: 'Professional',
   };
 
-  const statusFilters = [
-    { value: undefined, label: 'All Statuses' },
-    { value: 'paid', label: 'Paid' },
-    { value: 'pending', label: 'Pending' },
-    { value: 'failed', label: 'Failed' },
-  ];
+  const statusFilters = useMemo(
+    () => [
+      { value: undefined, label: t('paymentHistory.allStatuses') },
+      { value: 'paid', label: t('paymentHistory.statuses.paid') },
+      { value: 'pending', label: t('paymentHistory.statuses.pending') },
+      { value: 'failed', label: t('paymentHistory.statuses.failed') },
+    ],
+    [t]
+  );
 
-  const statusConfig = {
-    paid: {
-      label: 'Paid',
-      color: 'bg-success-bg text-success-text',
-      icon: CheckCircle,
-      iconColor: 'text-success-text',
-    },
-    pending: {
-      label: 'Pending',
-      color: 'bg-warning-bg text-warning-text',
-      icon: Clock,
-      iconColor: 'text-warning-text',
-    },
-    failed: {
-      label: 'Failed',
-      color: 'bg-error-bg text-error-text',
-      icon: XCircle,
-      iconColor: 'text-error-text',
-    },
-  };
+  const statusConfig = useMemo(
+    () => ({
+      paid: {
+        label: t('paymentHistory.statuses.paid'),
+        color: 'bg-success-bg text-success-text',
+        icon: CheckCircle,
+        iconColor: 'text-success-text',
+      },
+      pending: {
+        label: t('paymentHistory.statuses.pending'),
+        color: 'bg-warning-bg text-warning-text',
+        icon: Clock,
+        iconColor: 'text-warning-text',
+      },
+      failed: {
+        label: t('paymentHistory.statuses.failed'),
+        color: 'bg-error-bg text-error-text',
+        icon: XCircle,
+        iconColor: 'text-error-text',
+      },
+    }),
+    [t]
+  );
 
   const filteredInvoices = useMemo(() => {
     let filtered = invoices;
@@ -230,7 +236,7 @@ export const PaymentHistorySection = () => {
           <div className="flex items-center gap-2">
             <Filter className="h-5 w-5 text-text-secondary " />
             <h3 className="font-semibold text-text-primary text-sm">
-              Status Filter
+              {t('paymentHistory.statusFilter')}
             </h3>
           </div>
           <div className="flex gap-2 flex-wrap">
@@ -256,25 +262,25 @@ export const PaymentHistorySection = () => {
             <thead className="bg-surface-page">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Invoice
+                  {t('paymentHistory.invoice')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Date
+                  {t('paymentHistory.date')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Plan
+                  {t('paymentHistory.plan')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Payment Method
+                  {t('paymentHistory.paymentMethod')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Amount
+                  {t('paymentHistory.amount')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Status
+                  {t('paymentHistory.status')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Actions
+                  {t('paymentHistory.actions')}
                 </th>
               </tr>
             </thead>
@@ -326,7 +332,7 @@ export const PaymentHistorySection = () => {
                         }`}
                       >
                         <Download className="h-4 w-4" />
-                        Download
+                        {t('paymentHistory.download')}
                       </button>
                     </td>
                   </tr>

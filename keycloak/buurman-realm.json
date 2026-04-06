@@ -292,9 +292,9 @@
       ]
     }
   ],
-  "internationalizationEnabled": false,
-  "supportedLocales": [],
-  "defaultLocale": "",
+  "internationalizationEnabled": true,
+  "supportedLocales": ["en", "nl", "pt", "es", "fr", "de", "it", "sv", "fi", "el", "pl", "da", "nb"],
+  "defaultLocale": "en",
   "smtpServer": {},
   "eventsEnabled": false,
   "eventsListeners": [

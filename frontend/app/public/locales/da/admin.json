@@ -1,0 +1,306 @@
+{
+  "apiDocs": {
+    "title": "API-dokumentation",
+    "subtitle": "Udforsk og test Buurman REST API'et"
+  },
+  "billing": {
+    "title": "Abonnement & Fakturering",
+    "subtitle": "Administrer dit abonnement og se faktureringshistorik",
+    "impersonationBlocked": "Faktureringshandlinger er ikke tilgaengelige under en efterligningssession."
+  },
+  "calendarFeeds": {
+    "title": "Kalenderfeeds",
+    "pageSubtitle": "Administrer iCalendar-feeds for betalingsfrister og kontraktbegivenheder"
+  },
+  "dataExport": {
+    "title": "Dataeksport",
+    "pageSubtitle": "Eksporter dit teams data som et downloadbart arkiv"
+  },
+  "notifications": {
+    "title": "Notifikationer",
+    "subtitle": "Spoer og administrer alle notifikationer sendt paa tvaers af dit team",
+    "loading": "Indlaeser notifikationer...",
+    "noResults": "Ingen notifikationer fundet",
+    "view": "Vis",
+    "viewDetails": "Vis detaljer",
+    "resend": "Gensend",
+    "resendNotification": "Gensend notifikation",
+    "resendConfirm": {
+      "title": "Gensend notifikation",
+      "message": "Dette opretter en ny notifikation og forsoeger levering igen. Den oprindelige notifikation forbliver i loggen."
+    },
+    "demoBanner": {
+      "title": "Demokonto - notifikationer er simulerede",
+      "emailAndSms": "E-mail- og SMS-notifikationer registreres, men leveres ikke faktisk.",
+      "emailOnly": "E-mail-notifikationer registreres, men leveres ikke faktisk.",
+      "smsOnly": "SMS-notifikationer registreres, men leveres ikke faktisk."
+    },
+    "stats": {
+      "total": "Total",
+      "delivered": "Leveret",
+      "pending": "Afventer",
+      "failed": "Fejlet",
+      "byChannel": "Efter kanal",
+      "demoBlocked": "Demoblokeret"
+    },
+    "table": {
+      "type": "Type",
+      "channel": "Kanal",
+      "recipient": "Modtager",
+      "subjectBody": "Emne / Indhold",
+      "status": "Status",
+      "date": "Dato",
+      "actions": "Handlinger"
+    },
+    "typeLabels": {
+      "welcome": "Velkommen",
+      "verification": "Verifikation",
+      "invitation": "Invitation",
+      "accepted": "Accepteret",
+      "password": "Adgangskode",
+      "payment": "Betaling",
+      "contract": "Kontrakt",
+      "property": "Ejendom",
+      "newContract": "Ny kontrakt",
+      "statusChange": "Statusaendring",
+      "reopened": "Genaabnet",
+      "paid": "Betalt",
+      "receival": "Modtagelse",
+      "expense": "Udgift"
+    },
+    "details": {
+      "title": "Notifikationsdetaljer",
+      "demoBlocked": "Denne notifikation blev ikke leveret, fordi dette er en demokonto. I en rigtig konto ville den vaere sendt via {{channel}}.",
+      "type": "Type",
+      "subject": "Emne",
+      "content": "Indhold",
+      "recipient": "Modtager",
+      "sentAt": "Sendt",
+      "statusUpdated": "Status opdateret",
+      "providerStatus": "Udbyders status",
+      "refresh": "Opdater",
+      "error": "Fejl",
+      "engagement": "Engagement",
+      "open": "{{count}} aabning",
+      "open_other": "{{count}} aabninger",
+      "click": "{{count}} klik",
+      "click_other": "{{count}} klik",
+      "first": "foerste: {{date}}",
+      "resentFrom": "Gensendt fra",
+      "resendReason": "Aarsag til gensendelse",
+      "resend": "Gensend",
+      "emailPreview": "E-mail-forhåndsvisning",
+      "smsMessage": "SMS-besked",
+      "delivered": "Leveret"
+    },
+    "filters": {
+      "searchByEmail": "Soeg efter e-mail...",
+      "allTypes": "Alle typer",
+      "allChannels": "Alle kanaler",
+      "allStatuses": "Alle statusser",
+      "fromDate": "Fra dato",
+      "toDate": "Til dato"
+    },
+    "types": {
+      "welcome": "Velkommen",
+      "verificationCode": "Verifikationskode",
+      "teamInvitation": "Teaminvitation",
+      "invitationAccepted": "Invitation accepteret",
+      "passwordChanged": "Adgangskode aendret",
+      "paymentReminder": "Betalingspaamindelse",
+      "contractExpiry": "Kontraktudloeb",
+      "propertyCreated": "Ejendom oprettet",
+      "contractCreated": "Kontrakt oprettet",
+      "contractStatusChanged": "Kontraktstatus aendret",
+      "contractReopened": "Kontrakt genaabnet",
+      "paymentPaid": "Betaling betalt",
+      "paymentReceival": "Betalingsmodtagelse",
+      "expenseCreated": "Udgift oprettet"
+    },
+    "statuses": {
+      "pending": "Afventer",
+      "queued": "I koe",
+      "sent": "Sendt",
+      "delivered": "Leveret",
+      "failed": "Fejlet",
+      "bounced": "Afvist",
+      "rejected": "Afvist",
+      "demo": "Demo"
+    }
+  },
+  "paymentInstructions": {
+    "title": "Betalingsinstruktioner",
+    "pageSubtitle": "Administrer betalingsinstruktionsskabeloner for dit team"
+  },
+  "preferences": {
+    "title": "Praeferencer",
+    "subtitle": "Konfigurer teamdaekkende praeferencer og regionale indstillinger"
+  },
+  "teamMembers": {
+    "title": "Teammedlemmer",
+    "subtitle": "Administrer teammedlemmer, roller og invitationer",
+    "impersonationBlocked": "Teammedlemskabsaendringer er ikke tilgaengelige under en efterligningssession."
+  },
+  "transactions": {
+    "title": "Transaktionshistorik",
+    "subtitle": "Komplet historik over indtaegter og udgifter",
+    "searchPlaceholder": "Soeg i transaktioner...",
+    "allTypes": "Alle typer",
+    "incomeOnly": "Kun indtaegter",
+    "expensesOnly": "Kun udgifter",
+    "totalIncome": "Samlede indtaegter",
+    "totalExpenses": "Samlede udgifter",
+    "netTotal": "Nettototal",
+    "noTransactions": "Ingen transaktioner fundet",
+    "downloadFailed": "Download mislykkedes. Proev venligst igen.",
+    "table": {
+      "date": "Dato",
+      "type": "Type",
+      "description": "Beskrivelse",
+      "property": "Ejendom",
+      "amount": "Beloeb"
+    }
+  },
+  "dashboard": {
+    "portfolioOverview": "Portefoeljeoversigt",
+    "propertiesWithData": "{{withData}} af {{total}} ejendomme har finansielle data",
+    "addProperties": "Tilfoej ejendomme for at se dit portefoelje-dashboard.",
+    "addFinancialData": "Tilfoej finansielle data til dine ejendomme for at se portefoeljeanalyser.",
+    "propertiesNoData": "{{count}} ejendomme fundet, men ingen har finansielle data endnu.",
+    "exporting": "Eksporterer...",
+    "disclaimer": "Noegletal er kun til informationsformaal.",
+    "charts": {
+      "cashFlow": "Portefoeljens pengestroem",
+      "allocation": "Portefoelje-allokering",
+      "propertyComparison": "Ejendomssammenligning",
+      "equityComposition": "Egenkapitalsammensaetning",
+      "performance": "Ejendomsydelse",
+      "occupancy": "Portefoeljens udlejningsgrad"
+    },
+    "cashFlow": {
+      "noData": "Ingen pengestroemsdata tilgaengelig",
+      "income": "Indtaegter",
+      "expenses": "Udgifter",
+      "mortgage": "Realkredit",
+      "net": "Netto"
+    },
+    "allocation": {
+      "noData": "Ingen allokeringsdata tilgaengelig",
+      "byCategory": "Efter kategori",
+      "byCountry": "Efter land"
+    },
+    "comparison": {
+      "noData": "Ingen ejendomssammenligningsdata tilgaengelig",
+      "monthlyCashFlow": "Maanedlig pengestroem"
+    },
+    "equity": {
+      "noData": "Ingen egenkapitaldata tilgaengelig",
+      "equity": "Egenkapital",
+      "mortgage": "Realkredit"
+    },
+    "performanceTable": {
+      "noData": "Ingen ejendomsydelsesdata tilgaengelig",
+      "property": "Ejendom",
+      "category": "Kategori",
+      "monthlyCF": "Maanedlig CF",
+      "annualNOI": "Aarlig NOI",
+      "capRate": "Cap Rate",
+      "coc": "CoC",
+      "occupancy": "Udlejningsgrad",
+      "dataPercent": "Data %"
+    },
+    "occupancy": {
+      "noData": "Ingen udlejningsgradsdata tilgaengelig",
+      "contactOccupancy": "Kontaktudlejning",
+      "selfOccupancy": "Selvbeboelse"
+    },
+    "pendingExtensions": {
+      "title": "Afventende forlaengelser",
+      "awaitingAction": "{{count}} forlaengelse afventer handling",
+      "awaitingAction_other": "{{count}} forlaengelser afventer handling",
+      "extensionNumber": "Forlaengelse #{{number}}",
+      "contractNumber": "Kontrakt #{{id}}",
+      "until": "til {{date}}",
+      "activate": "Aktiver",
+      "decline": "Afvis"
+    },
+    "pendingInvitations": {
+      "title": "Afventende teaminvitationer",
+      "invitedToOne": "Du er blevet inviteret til at deltage i et team",
+      "invitedToMany": "Du er blevet inviteret til at deltage i {{count}} teams",
+      "invitedBy": "Inviteret af {{name}}",
+      "expires": "Udloeber {{date}}",
+      "accept": "Accepter"
+    },
+    "upcomingRenewals": {
+      "title": "Kommende fornyelser",
+      "property": "Ejendom",
+      "contact": "Kontakt",
+      "endDate": "Slutdato",
+      "daysLeft": "Dage tilbage",
+      "mode": "Tilstand",
+      "rent": "Leje",
+      "renewalModes": {
+        "none": "Ingen",
+        "automatic": "Auto",
+        "manual": "Manuel"
+      }
+    }
+  },
+  "reports": {
+    "title": "Finansielle rapporter",
+    "subtitle": "Omfattende finansiel oversigt og analyser",
+    "transactions": "Transaktioner",
+    "failedToLoad": "Kunne ikke indlaese finansielle rapporter",
+    "period": "Periode:",
+    "month": "Maaned",
+    "quarter": "Kvartal",
+    "year": "Aar",
+    "allTime": "Al tid",
+    "custom": "Brugerdefineret",
+    "to": "til",
+    "advancedFilters": "Avancerede filtre",
+    "properties": "Ejendomme",
+    "clearAll": "Ryd alle",
+    "noProperties": "Ingen ejendomme fundet",
+    "totalIncome": "Samlede indtaegter",
+    "totalExpenses": "Samlede udgifter",
+    "netProfit": "Nettoresultat",
+    "income": "Indtaegter",
+    "expenses": "Udgifter",
+    "amount": "Beloeb",
+    "downloadPdf": "Download PDF",
+    "incomeTrend": {
+      "title": "Indtaegtstendens",
+      "subtitle": "Maanedlige indtaegter, udgifter og nettoresultat",
+      "line": "Linje",
+      "bar": "Soejle"
+    },
+    "expenseBreakdown": {
+      "title": "Udgiftsfordeling",
+      "subtitle": "Efter kategori for valgt periode",
+      "pie": "Cirkel",
+      "bar": "Soejle",
+      "noData": "Ingen udgiftsdata for valgt periode"
+    },
+    "propertyPerformance": {
+      "title": "Ejendomsydelse",
+      "subtitle": "Indtaegter, udgifter og nettoresultat per ejendom",
+      "property": "Ejendom",
+      "income": "Indtaegter",
+      "expenses": "Udgifter",
+      "netProfit": "Nettoresultat",
+      "margin": "Margin",
+      "total": "Total",
+      "noData": "Ingen ejendomsdata for valgt periode"
+    },
+    "occupancyTrend": {
+      "title": "Udlejningsgradstendens",
+      "subtitle": "Maanedlig udlejningsgradsprocent",
+      "occupancyRate": "Udlejningsgrad (%)"
+    }
+  },
+  "auditLog": {
+    "failedToLoad": "Kunne ikke indlaese aktivitetslogger"
+  }
+}

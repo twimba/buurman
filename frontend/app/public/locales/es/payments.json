@@ -90,6 +90,10 @@
     "currencyRequired": "La moneda es obligatoria",
     "paymentDateRequired": "La fecha de pago es obligatoria"
   },
+  "bulkColumns": {
+    "date": "Fecha",
+    "amount": "Importe"
+  },
   "create": {
     "titleRegister": "Registrar Pago",
     "titleSchedule": "Programar Pago",

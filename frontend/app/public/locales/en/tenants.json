@@ -128,7 +128,9 @@
       "allPaid": "All Paid",
       "outstandingBalance": "Outstanding Balance",
       "guaranteedAmount": "Guaranteed Amount",
-      "guarantor": "Guarantor"
+      "guarantor": "Guarantor",
+      "overdue": "Overdue",
+      "pending": "Pending"
     }
   },
   "card": {

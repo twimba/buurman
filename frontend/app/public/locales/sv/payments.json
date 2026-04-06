@@ -1,0 +1,201 @@
+{
+  "page": {
+    "title": "Betalningar",
+    "subtitle": "Spara hyresbetalningar och inkomster"
+  },
+  "actions": {
+    "schedulePayment": "Schemalagd betalning",
+    "registerPayment": "Registrera betalning",
+    "registerReceival": "Registrera mottagning",
+    "markAsPaid": "Markera som betald"
+  },
+  "stats": {
+    "pendingPayments": "Vantande betalningar",
+    "pendingCount": "{{count}} betalning",
+    "pendingCount_other": "{{count}} betalningar",
+    "overduePayments": "Forsenade betalningar",
+    "overdueCount": "{{count}} betalning forsenad",
+    "overdueCount_other": "{{count}} betalningar forsende",
+    "overdueAction": "Atgard kravs: Granska forsende betalningar",
+    "allCaughtUp": "Allt ar aktuellt!",
+    "noOverdue": "Inga forsende betalningar. Fortsatt det goda arbetet!",
+    "lastSixMonths": "Senaste 6 manaderna",
+    "tooltipReceived": "Mottaget"
+  },
+  "filters": {
+    "title": "Filter",
+    "property": "Fastighet",
+    "contract": "Kontrakt",
+    "status": "Status",
+    "allStatuses": "Alla statusar",
+    "allProperties": "Alla fastigheter",
+    "allContracts": "Alla kontrakt"
+  },
+  "status": {
+    "pending": "Vantande",
+    "partiallyPaid": "Delvis",
+    "paid": "Betald",
+    "overdue": "Forsenad",
+    "late": "Sen",
+    "cancelled": "Avbruten"
+  },
+  "table": {
+    "dueDate": "Forfallodatum",
+    "paymentNumber": "Betalning #",
+    "contract": "Kontrakt",
+    "amount": "Belopp",
+    "status": "Status",
+    "balance": "Saldo: {{amount}}"
+  },
+  "empty": {
+    "title": "Inga betalningar hittades",
+    "filtered": "Forsok justera dina filter",
+    "noData": "Kom igang genom att registrera din forsta betalning"
+  },
+  "card": {
+    "paymentId": "Betalning #{{id}}",
+    "contractId": "Kontrakt #{{id}}",
+    "property": "Fastighet",
+    "contact": "Kontakt",
+    "amount": "Belopp",
+    "balance": "Saldo: {{amount}}",
+    "dueDate": "Forfallodatum",
+    "paidOn": "Betald"
+  },
+  "form": {
+    "amount": "Belopp",
+    "dueDate": "Forfallodatum",
+    "paymentDate": "Betalningsdatum",
+    "contact": "Kontakt",
+    "notes": "Anteckningar",
+    "notesPlaceholder": "Lagg till ytterligare anteckningar om denna betalning...",
+    "continueAdding": "Fortsatt lagga till fler",
+    "today": "Idag",
+    "clear": "Rensa",
+    "updatePayment": "Uppdatera betalning",
+    "saving": "Sparar...",
+    "contract": "Kontrakt",
+    "currency": "Valuta",
+    "selectContractFirst": "Valj ett kontrakt forst",
+    "rentPeriodNotice": "Detta datum faller i en annan hyresperiod ({{amount}}/man fran {{from}}{{to}}). {{current}}",
+    "rentPeriodNoticeTo": " till {{date}}",
+    "rentPeriodCurrentRent": "Aktuell hyra ar {{amount}}/man.",
+    "rentPeriodWarning": "Detta datum faller i en annan hyresperiod ({{currency}}{{amount}}/man fran {{from}}{{to}}).",
+    "rentPeriodTo": " till {{date}}",
+    "currentRentInfo": "Aktuell hyra ar {{currency}}{{amount}}/man."
+  },
+  "validation": {
+    "amountRequired": "Beloppet maste vara storre an 0",
+    "dueDateRequired": "Forfallodatum ar obligatoriskt",
+    "currencyRequired": "Valuta ar obligatorisk",
+    "paymentDateRequired": "Betalningsdatum ar obligatoriskt"
+  },
+  "bulkColumns": {
+    "date": "Datum",
+    "amount": "Belopp"
+  },
+  "create": {
+    "titleRegister": "Registrera betalning",
+    "titleSchedule": "Schemalagd betalning",
+    "addedCount": "{{count}} betalning {{action}} denna session",
+    "addedCount_other": "{{count}} betalningar {{action}} denna session",
+    "actionRegistered": "registrerad",
+    "actionScheduled": "schemalaged",
+    "single": "Enskild",
+    "bulk": "Flera",
+    "contractInactiveWarning": "Det lankade kontraktet ar inte aktivt. Valj ett aktivt kontrakt."
+  },
+  "detail": {
+    "titlePrefix": "Betalning #{{id}}",
+    "subtitlePrefix": "Kontrakt #{{id}}",
+    "paymentDetails": "Betalningsdetaljer",
+    "relatedInformation": "Relaterad information",
+    "amount": "Belopp",
+    "received": "Mottaget",
+    "balance": "Saldo",
+    "dueDate": "Forfallodatum",
+    "paymentDate": "Betalningsdatum",
+    "contract": "Kontrakt",
+    "contractId": "Kontrakt #{{id}}",
+    "property": "Fastighet",
+    "contact": "Kontakt",
+    "notes": "Anteckningar",
+    "metadata": "Metadata",
+    "created": "Skapad:",
+    "lastUpdated": "Senast uppdaterad:",
+    "editPayment": "Redigera betalning"
+  },
+  "tabs": {
+    "details": "Detaljer",
+    "receivals": "Mottagningar",
+    "documents": "Dokument",
+    "history": "Historik"
+  },
+  "receivals": {
+    "title": "Mottagningar ({{count}})",
+    "totalAmount": "Totalt belopp",
+    "received": "Mottaget",
+    "balance": "Saldo",
+    "empty": "Inga mottagningar registrerade annu",
+    "searchPlaceholder": "Sok efter belopp, datum eller anteckningar...",
+    "date": "Datum",
+    "amount": "Belopp",
+    "notes": "Anteckningar",
+    "actions": "Atgarder",
+    "showing": "Visar {{from}} till {{to}} av {{total}}",
+    "remainingBalance": "Aterstaende saldo:",
+    "receivalDate": "Mottagningsdatum",
+    "notesOptional": "Anteckningar (valfritt)",
+    "notesPlaceholder": "Lagg till anteckningar om denna mottagning...",
+    "register": "Registrera"
+  },
+  "history": {
+    "title": "Betalningshistorik",
+    "empty": "Ingen historik tillganglig",
+    "emptySubtitle": "Andringar i denna betalning visas har",
+    "clickToView": "Klicka for att visa andringar",
+    "clickToHide": "Klicka for att dolja andringar",
+    "changedFields": "Andrade falt",
+    "old": "Gammal:",
+    "new": "Ny:",
+    "impersonated": "Imiterad",
+    "na": "Ej tillampligt",
+    "none": "Ingen",
+    "receivalOn": "{{amount}} den {{date}}"
+  },
+  "deleteDialog": {
+    "title": "Ta bort betalning",
+    "message": "Ar du saker pa att du vill ta bort denna betalning? Denna atgard kan inte angras.",
+    "messageWithRelated": "Ar du saker pa att du vill ta bort denna betalning? All relaterad data (mottagningar, dokument) kommer ocksa att tas bort. Denna atgard kan inte angras."
+  },
+  "markPaidDialog": {
+    "title": "Markera betalning som betald",
+    "balanceMessage": "Detta registrerar en mottagning for det aterstaende saldot pa {{amount}} och markerar betalningen som fullt betald.",
+    "paymentDate": "Betalningsdatum",
+    "notesOptional": "Anteckningar (valfritt)",
+    "notesPlaceholder": "Lagg till anteckningar om denna betalning..."
+  },
+  "receivalDialog": {
+    "title": "Registrera mottagning",
+    "remainingBalance": "Aterstaende saldo:",
+    "amount": "Belopp",
+    "receivalDate": "Mottagningsdatum",
+    "notesOptional": "Anteckningar (valfritt)",
+    "notesPlaceholder": "Lagg till anteckningar om denna mottagning...",
+    "register": "Registrera"
+  },
+  "tooltips": {
+    "viewPayment": "Visa betalning",
+    "deletePayment": "Ta bort betalning",
+    "editReceival": "Redigera mottagning",
+    "deleteReceival": "Ta bort mottagning",
+    "save": "Spara",
+    "previous": "Foregaende",
+    "next": "Nasta"
+  },
+  "errors": {
+    "loadFailed": "Det gick inte att ladda betalningar",
+    "loadPaymentFailed": "Det gick inte att ladda betalning",
+    "loadHistoryFailed": "Det gick inte att ladda historik"
+  }
+}

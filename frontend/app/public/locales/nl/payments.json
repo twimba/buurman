@@ -90,6 +90,10 @@
     "currencyRequired": "Valuta is verplicht",
     "paymentDateRequired": "Betaaldatum is verplicht"
   },
+  "bulkColumns": {
+    "date": "Datum",
+    "amount": "Bedrag"
+  },
   "create": {
     "titleRegister": "Betaling registreren",
     "titleSchedule": "Betaling plannen",

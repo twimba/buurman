@@ -328,6 +328,20 @@
       "daysLeft": "Dagen resterend",
       "mode": "Modus",
       "rent": "Huur"
+    },
+    "portfolio": {
+      "notAvailable": "N.v.t.",
+      "portfolioValue": "Portefeuillewaarde",
+      "totalEquity": "Totaal eigen vermogen",
+      "monthlyCashFlow": "Maandelijkse kasstroom",
+      "wtdCapRate": "Gew. Cap Rate",
+      "wtdCashOnCash": "Gew. Cash-on-Cash",
+      "occupancy": "Bezetting"
+    },
+    "allocation": {
+      "noData": "Geen allocatiegegevens beschikbaar",
+      "byCategory": "Per categorie",
+      "byCountry": "Per land"
     }
   },
   "wws": {

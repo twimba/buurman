@@ -154,6 +154,167 @@
     "deleteWwsHistoryMessage": "This will permanently remove this historic calculation."
   },
   "enums": {
+    "characteristics": {
+      "constructionType": {
+        "BRICK": "Brick",
+        "CONCRETE": "Concrete",
+        "WOOD": "Wood",
+        "STEEL": "Steel",
+        "MIXED": "Mixed",
+        "OTHER": "Other"
+      },
+      "foundationType": {
+        "CONCRETE_SLAB": "Concrete Slab",
+        "CRAWL_SPACE": "Crawl Space",
+        "BASEMENT": "Basement",
+        "PILE": "Pile",
+        "OTHER": "Other"
+      },
+      "roofType": {
+        "FLAT": "Flat",
+        "PITCHED": "Pitched",
+        "HIP": "Hip",
+        "GABLE": "Gable",
+        "MANSARD": "Mansard",
+        "OTHER": "Other"
+      },
+      "flooringType": {
+        "HARDWOOD": "Hardwood",
+        "LAMINATE": "Laminate",
+        "TILE": "Tile",
+        "VINYL": "Vinyl",
+        "CARPET": "Carpet",
+        "CONCRETE": "Concrete",
+        "MIXED": "Mixed",
+        "OTHER": "Other"
+      },
+      "windowType": {
+        "SINGLE_PANE": "Single Pane",
+        "DOUBLE_PANE": "Double Pane",
+        "TRIPLE_PANE": "Triple Pane",
+        "OTHER": "Other"
+      },
+      "heatingType": {
+        "CENTRAL": "Central",
+        "DISTRICT": "District",
+        "HEAT_PUMP": "Heat Pump",
+        "ELECTRIC": "Electric",
+        "GAS": "Gas",
+        "NONE": "None",
+        "OTHER": "Other"
+      },
+      "coolingType": {
+        "CENTRAL_AC": "Central AC",
+        "SPLIT_AC": "Split AC",
+        "EVAPORATIVE": "Evaporative",
+        "NONE": "None",
+        "OTHER": "Other"
+      },
+      "hotWaterSystem": {
+        "BOILER": "Boiler",
+        "TANKLESS": "Tankless",
+        "HEAT_PUMP": "Heat Pump",
+        "SOLAR": "Solar",
+        "ELECTRIC": "Electric",
+        "OTHER": "Other"
+      },
+      "sewageType": {
+        "MUNICIPAL": "Municipal",
+        "SEPTIC": "Septic",
+        "OTHER": "Other"
+      },
+      "internetConnectionType": {
+        "FIBER": "Fiber",
+        "CABLE": "Cable",
+        "DSL": "DSL",
+        "NONE": "None",
+        "OTHER": "Other"
+      },
+      "internetStatus": {
+        "ACTIVE": "Active",
+        "AVAILABLE": "Available",
+        "NOT_AVAILABLE": "Not Available",
+        "UNKNOWN": "Unknown"
+      },
+      "electricityConnectionType": {
+        "SINGLE_PHASE": "Single Phase",
+        "THREE_PHASE": "Three Phase"
+      },
+      "waterConnectionType": {
+        "MUNICIPAL": "Municipal",
+        "WELL": "Well",
+        "SHARED": "Shared",
+        "OTHER": "Other"
+      },
+      "parkingType": {
+        "GARAGE": "Garage",
+        "CARPORT": "Carport",
+        "DRIVEWAY": "Driveway",
+        "STREET": "Street",
+        "UNDERGROUND": "Underground",
+        "NONE": "None",
+        "OTHER": "Other"
+      },
+      "outdoorAreaType": {
+        "BALCONY": "Balcony",
+        "TERRACE": "Terrace",
+        "GARDEN": "Garden",
+        "ROOFTOP": "Rooftop",
+        "PATIO": "Patio",
+        "YARD": "Yard",
+        "OTHER": "Other",
+        "PARKING_LOT": "Parking Lot",
+        "COURTYARD": "Courtyard",
+        "LOADING_AREA": "Loading Area",
+        "STORAGE_AREA": "Storage Area",
+        "PASTURE": "Pasture",
+        "PADDOCK": "Paddock",
+        "ORCHARD_AREA": "Orchard Area",
+        "GREENHOUSE_AREA": "Greenhouse Area"
+      },
+      "petPolicy": {
+        "ALLOWED": "Allowed",
+        "NOT_ALLOWED": "Not Allowed",
+        "NEGOTIABLE": "Negotiable",
+        "SMALL_PETS_ONLY": "Small Pets Only"
+      },
+      "soilType": {
+        "CLAY": "Clay",
+        "SANDY": "Sandy",
+        "LOAM": "Loam",
+        "SILT": "Silt",
+        "PEAT": "Peat",
+        "CHALK": "Chalk",
+        "MIXED": "Mixed",
+        "OTHER": "Other"
+      },
+      "irrigationType": {
+        "DRIP": "Drip",
+        "SPRINKLER": "Sprinkler",
+        "FLOOD": "Flood",
+        "CENTER_PIVOT": "Center Pivot",
+        "NONE": "None",
+        "OTHER": "Other"
+      },
+      "waterSource": {
+        "RIVER": "River",
+        "WELL": "Well",
+        "MUNICIPAL": "Municipal",
+        "RAINWATER": "Rainwater",
+        "CANAL": "Canal",
+        "NONE": "None",
+        "OTHER": "Other"
+      },
+      "fencingType": {
+        "WIRE": "Wire",
+        "WOODEN": "Wooden",
+        "ELECTRIC": "Electric",
+        "HEDGE": "Hedge",
+        "STONE": "Stone",
+        "NONE": "None",
+        "OTHER": "Other"
+      }
+    },
     "categories": {
       "RESIDENTIAL": "Residential",
       "COMMERCIAL": "Commercial",
@@ -206,6 +367,16 @@
       "UNDER_RENOVATION": "Under Renovation",
       "FALLOW": "Fallow",
       "LISTED": "Listed"
+    },
+    "amenities": {
+      "categories": {
+        "APPLIANCE": "Appliances",
+        "COMFORT": "Comfort",
+        "LEISURE": "Leisure",
+        "PARKING": "Parking",
+        "SERVICE": "Services",
+        "STORAGE": "Storage"
+      }
     }
   },
   "dashboard": {

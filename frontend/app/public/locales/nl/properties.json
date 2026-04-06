@@ -656,6 +656,167 @@
     "clickToEdit": "Klik om te bewerken"
   },
   "enums": {
+    "characteristics": {
+      "constructionType": {
+        "BRICK": "Baksteen",
+        "CONCRETE": "Beton",
+        "WOOD": "Hout",
+        "STEEL": "Staal",
+        "MIXED": "Gemengd",
+        "OTHER": "Overig"
+      },
+      "foundationType": {
+        "CONCRETE_SLAB": "Betonvloer",
+        "CRAWL_SPACE": "Kruipruimte",
+        "BASEMENT": "Kelder",
+        "PILE": "Paalfundering",
+        "OTHER": "Overig"
+      },
+      "roofType": {
+        "FLAT": "Plat dak",
+        "PITCHED": "Zadeldak",
+        "HIP": "Schilddak",
+        "GABLE": "Puntdak",
+        "MANSARD": "Mansardedak",
+        "OTHER": "Overig"
+      },
+      "flooringType": {
+        "HARDWOOD": "Massief hout",
+        "LAMINATE": "Laminaat",
+        "TILE": "Tegels",
+        "VINYL": "Vinyl",
+        "CARPET": "Tapijt",
+        "CONCRETE": "Beton",
+        "MIXED": "Gemengd",
+        "OTHER": "Overig"
+      },
+      "windowType": {
+        "SINGLE_PANE": "Enkelvoudig glas",
+        "DOUBLE_PANE": "Dubbel glas",
+        "TRIPLE_PANE": "Drievoudig glas",
+        "OTHER": "Overig"
+      },
+      "heatingType": {
+        "CENTRAL": "Centrale verwarming",
+        "DISTRICT": "Stadsverwarming",
+        "HEAT_PUMP": "Warmtepomp",
+        "ELECTRIC": "Elektrisch",
+        "GAS": "Gas",
+        "NONE": "Geen",
+        "OTHER": "Overig"
+      },
+      "coolingType": {
+        "CENTRAL_AC": "Centrale airco",
+        "SPLIT_AC": "Split-airco",
+        "EVAPORATIVE": "Verdampingskoeling",
+        "NONE": "Geen",
+        "OTHER": "Overig"
+      },
+      "hotWaterSystem": {
+        "BOILER": "Boiler",
+        "TANKLESS": "Doorstroomboiler",
+        "HEAT_PUMP": "Warmtepomp",
+        "SOLAR": "Zonne-energie",
+        "ELECTRIC": "Elektrisch",
+        "OTHER": "Overig"
+      },
+      "sewageType": {
+        "MUNICIPAL": "Gemeentelijk",
+        "SEPTIC": "Septische tank",
+        "OTHER": "Overig"
+      },
+      "internetConnectionType": {
+        "FIBER": "Glasvezel",
+        "CABLE": "Kabel",
+        "DSL": "DSL",
+        "NONE": "Geen",
+        "OTHER": "Overig"
+      },
+      "internetStatus": {
+        "ACTIVE": "Actief",
+        "AVAILABLE": "Beschikbaar",
+        "NOT_AVAILABLE": "Niet beschikbaar",
+        "UNKNOWN": "Onbekend"
+      },
+      "electricityConnectionType": {
+        "SINGLE_PHASE": "Enkelfasig",
+        "THREE_PHASE": "Driefasig"
+      },
+      "waterConnectionType": {
+        "MUNICIPAL": "Gemeentelijk",
+        "WELL": "Bron",
+        "SHARED": "Gedeeld",
+        "OTHER": "Overig"
+      },
+      "parkingType": {
+        "GARAGE": "Garage",
+        "CARPORT": "Carport",
+        "DRIVEWAY": "Oprit",
+        "STREET": "Straat",
+        "UNDERGROUND": "Ondergronds",
+        "NONE": "Geen",
+        "OTHER": "Overig"
+      },
+      "outdoorAreaType": {
+        "BALCONY": "Balkon",
+        "TERRACE": "Terras",
+        "GARDEN": "Tuin",
+        "ROOFTOP": "Dakterras",
+        "PATIO": "Patio",
+        "YARD": "Erf",
+        "OTHER": "Overig",
+        "PARKING_LOT": "Parkeerterrein",
+        "COURTYARD": "Binnenplaats",
+        "LOADING_AREA": "Laadzone",
+        "STORAGE_AREA": "Opslagzone",
+        "PASTURE": "Weide",
+        "PADDOCK": "Paddock",
+        "ORCHARD_AREA": "Boomgaard",
+        "GREENHOUSE_AREA": "Kas"
+      },
+      "petPolicy": {
+        "ALLOWED": "Toegestaan",
+        "NOT_ALLOWED": "Niet toegestaan",
+        "NEGOTIABLE": "Bespreekbaar",
+        "SMALL_PETS_ONLY": "Alleen kleine huisdieren"
+      },
+      "soilType": {
+        "CLAY": "Klei",
+        "SANDY": "Zandig",
+        "LOAM": "Leem",
+        "SILT": "Slib",
+        "PEAT": "Veen",
+        "CHALK": "Krijt",
+        "MIXED": "Gemengd",
+        "OTHER": "Overig"
+      },
+      "irrigationType": {
+        "DRIP": "Druppelirrigatie",
+        "SPRINKLER": "Besproeier",
+        "FLOOD": "Overstromingsirrigatie",
+        "CENTER_PIVOT": "Centrale pivot",
+        "NONE": "Geen",
+        "OTHER": "Overig"
+      },
+      "waterSource": {
+        "RIVER": "Rivier",
+        "WELL": "Bron",
+        "MUNICIPAL": "Gemeentelijk",
+        "RAINWATER": "Regenwater",
+        "CANAL": "Kanaal",
+        "NONE": "Geen",
+        "OTHER": "Overig"
+      },
+      "fencingType": {
+        "WIRE": "Draad",
+        "WOODEN": "Hout",
+        "ELECTRIC": "Elektrisch",
+        "HEDGE": "Haag",
+        "STONE": "Steen",
+        "NONE": "Geen",
+        "OTHER": "Overig"
+      }
+    },
     "categories": {
       "RESIDENTIAL": "Residentieel",
       "COMMERCIAL": "Commercieel",
@@ -708,6 +869,16 @@
       "UNDER_RENOVATION": "In Renovatie",
       "FALLOW": "Braakliggend",
       "LISTED": "Te Huur"
+    },
+    "amenities": {
+      "categories": {
+        "APPLIANCE": "Apparatuur",
+        "COMFORT": "Comfort",
+        "LEISURE": "Vrije tijd",
+        "PARKING": "Parkeren",
+        "SERVICE": "Services",
+        "STORAGE": "Opslag"
+      }
     }
   },
   "dashboard": {

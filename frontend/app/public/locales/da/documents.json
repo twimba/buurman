@@ -1,0 +1,98 @@
+{
+  "documentsPage": {
+    "title": "Dokumentbibliotek",
+    "subtitle": "Soeg og administrer alle dine dokumenter ét sted",
+    "searchPlaceholder": "Soeg dokumenter efter titel, filnavn eller noter...",
+    "entityTypeFilter": {
+      "all": "Alle typer",
+      "property": "Ejendomme",
+      "contact": "Kontakter",
+      "contract": "Kontrakter",
+      "payment": "Betalinger",
+      "expense": "Udgifter"
+    },
+    "table": {
+      "document": "Dokument",
+      "type": "Type",
+      "size": "Stoerrelse",
+      "uploaded": "Uploadet",
+      "actions": "Handlinger"
+    },
+    "selection": {
+      "selected": "{{selected}} af {{total}} valgt",
+      "count": "{{count}} dokument",
+      "count_other": "{{count}} dokumenter"
+    },
+    "empty": "Ingen dokumenter fundet",
+    "editModal": "Rediger dokument"
+  },
+  "photosPage": {
+    "title": "Fotobibliotek",
+    "subtitle": "Gennemse og administrer alle dine fotos ét sted",
+    "searchPlaceholder": "Soeg fotos efter titel, filnavn eller noter...",
+    "entityTypeFilter": {
+      "all": "Alle typer",
+      "property": "Ejendomme",
+      "contact": "Kontakter",
+      "contract": "Kontrakter",
+      "payment": "Betalinger",
+      "expense": "Udgifter"
+    },
+    "empty": "Ingen fotos fundet",
+    "editModal": "Rediger foto"
+  },
+  "photoGrid": {
+    "noPhotos": "Ingen fotos endnu",
+    "failedToLoad": "Kunne ikke indlaese fotos",
+    "failedToLoadImage": "Kunne ikke indlaese",
+    "noUrl": "Ingen URL",
+    "main": "Hovedbillede",
+    "selection": {
+      "selected": "{{selected}} af {{total}} valgt",
+      "count": "{{count}} foto",
+      "count_other": "{{count}} fotos"
+    },
+    "downloading": "Downloader...",
+    "tooltips": {
+      "setAsMain": "Saet som hovedfoto",
+      "editTitleNotes": "Rediger titel & noter",
+      "deletePhoto": "Slet foto"
+    }
+  },
+  "preview": {
+    "previewNotAvailable": "Forhåndsvisning ikke tilgaengelig for denne filtype ({{mimeType}})",
+    "downloadFile": "Download fil",
+    "notes": "Noter:",
+    "tooltips": {
+      "editTitleNotes": "Rediger titel & noter",
+      "download": "Download",
+      "openInNewTab": "Aabn i ny fane",
+      "close": "Luk",
+      "previous": "Forrige",
+      "next": "Naeste"
+    }
+  },
+  "deleteDialog": {
+    "titleSingle": "Slet dokument",
+    "titlePlural": "Slet dokumenter",
+    "messageSingle": "Er du sikker paa, at du vil slette dette dokument? Denne handling kan ikke fortrydes.",
+    "messagePlural": "Du er ved at slette {{count}} dokumenter. Denne handling kan ikke fortrydes.",
+    "confirmSingle": "Slet",
+    "confirmPlural": "Slet {{count}} dokumenter"
+  },
+  "deletePhotoDialog": {
+    "titleSingle": "Slet foto",
+    "titlePlural": "Slet fotos",
+    "messageSingle": "Er du sikker paa, at du vil slette dette foto? Denne handling kan ikke fortrydes.",
+    "messagePlural": "Du er ved at slette {{count}} fotos. Denne handling kan ikke fortrydes.",
+    "mainPhotoSingle": "Dette er hovedfotoet. Sletning betyder, at denne ejendom ikke laengere har et hovedfoto. Denne handling kan ikke fortrydes.",
+    "mainPhotoPlural": "Du er ved at slette {{count}} fotos, inklusive hovedfotoet. Denne ejendom vil ikke laengere have et hovedfoto. Denne handling kan ikke fortrydes.",
+    "confirmSingle": "Slet",
+    "confirmPlural": "Slet {{count}} fotos"
+  },
+  "tooltips": {
+    "preview": "Forhåndsvisning",
+    "editTitleNotes": "Rediger titel & noter",
+    "delete": "Slet"
+  }
+}

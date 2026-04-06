@@ -128,7 +128,9 @@
       "allPaid": "Tudo Pago",
       "outstandingBalance": "Saldo Pendente",
       "guaranteedAmount": "Montante Garantido",
-      "guarantor": "Fiador"
+      "guarantor": "Fiador",
+      "overdue": "Em atraso",
+      "pending": "Pendente"
     }
   },
   "card": {
