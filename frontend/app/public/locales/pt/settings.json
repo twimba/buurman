@@ -100,6 +100,11 @@
       "title": "Ano Fiscal",
       "fiscalYearStart": "Início do Ano Fiscal",
       "description": "Primeiro mês do seu ano fiscal para relatórios financeiros"
+    },
+    "defaultLanguage": {
+      "title": "Idioma Predefinido",
+      "label": "Idioma da Equipa",
+      "description": "Utilizado para notificações por email enviadas a membros da equipa e contactos que não definiram uma preferência de idioma pessoal"
     }
   },
   "currencyChange": {

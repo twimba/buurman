@@ -100,6 +100,11 @@
       "title": "Boekjaar",
       "fiscalYearStart": "Begin boekjaar",
       "description": "Eerste maand van uw boekjaar voor financiële rapportages"
+    },
+    "defaultLanguage": {
+      "title": "Standaardtaal",
+      "label": "Teamtaal",
+      "description": "Gebruikt voor e-mailnotificaties naar teamleden en contacten die geen persoonlijke taalvoorkeur hebben ingesteld"
     }
   },
   "currencyChange": {

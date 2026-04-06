@@ -100,6 +100,11 @@
       "title": "Anno fiscale",
       "fiscalYearStart": "Inizio anno fiscale",
       "description": "Primo mese dell'anno fiscale per i report finanziari"
+    },
+    "defaultLanguage": {
+      "title": "Lingua predefinita",
+      "label": "Lingua del team",
+      "description": "Utilizzata per le notifiche email inviate ai membri del team e ai contatti che non hanno impostato una preferenza di lingua personale"
     }
   },
   "currencyChange": {

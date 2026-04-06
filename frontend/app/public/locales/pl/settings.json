@@ -100,6 +100,11 @@
       "title": "Rok podatkowy",
       "fiscalYearStart": "Początek roku podatkowego",
       "description": "Pierwszy miesiąc roku podatkowego dla raportów finansowych"
+    },
+    "defaultLanguage": {
+      "title": "Domyślny język",
+      "label": "Język zespołu",
+      "description": "Używany do powiadomień e-mail wysyłanych do członków zespołu i kontaktów, które nie ustawiły osobistej preferencji językowej"
     }
   },
   "currencyChange": {

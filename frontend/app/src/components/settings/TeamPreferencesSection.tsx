@@ -7,6 +7,7 @@ import {
   MapPin,
   Building,
   ArrowRightLeft,
+  Globe,
 } from 'lucide-react';
 import {
   useCurrentTeam,
@@ -45,6 +46,7 @@ export const TeamPreferencesSection = () => {
     defaultCurrency: '',
     defaultCountryCode: '',
     fiscalYearStart: '01',
+    defaultLanguage: 'en',
   });
 
   // Sync team name from server
@@ -60,6 +62,7 @@ export const TeamPreferencesSection = () => {
       defaultCurrency: settingsData.regional.defaultCurrency ?? '',
       defaultCountryCode: settingsData.regional.defaultCountryCode ?? '',
       fiscalYearStart: settingsData.regional.fiscalYearStartMonth ?? '01',
+      defaultLanguage: settingsData.regional.defaultLanguage ?? 'en',
     });
   }
 
@@ -79,6 +82,7 @@ export const TeamPreferencesSection = () => {
         regional: {
           defaultCountryCode: preferences.defaultCountryCode || undefined,
           fiscalYearStartMonth: preferences.fiscalYearStart,
+          defaultLanguage: preferences.defaultLanguage,
         },
       });
 
@@ -255,6 +259,47 @@ export const TeamPreferencesSection = () => {
               </select>
               <p className="text-xs text-text-secondary mt-1">
                 {t('teamPreferences.fiscalYear.description')}
+              </p>
+            </div>
+          </div>
+
+          {/* Default Language */}
+          <div className="space-y-4 pt-6 border-t border-border-default">
+            <div className="flex items-center gap-2">
+              <Globe className="h-5 w-5 text-text-secondary" />
+              <h3 className="text-lg font-semibold text-text-primary">
+                {t('teamPreferences.defaultLanguage.title')}
+              </h3>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-text-secondary mb-1">
+                {t('teamPreferences.defaultLanguage.label')}
+              </label>
+              <select
+                value={preferences.defaultLanguage}
+                onChange={(e) =>
+                  handlePreferenceChange('defaultLanguage', e.target.value)
+                }
+                disabled={!canEditTeamSettings}
+                className="w-full px-3 py-2 border border-border-strong rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-surface-inset disabled:cursor-not-allowed"
+              >
+                <option value="en">English</option>
+                <option value="nl">Nederlands</option>
+                <option value="pt">Português</option>
+                <option value="es">Español</option>
+                <option value="fr">Français</option>
+                <option value="de">Deutsch</option>
+                <option value="it">Italiano</option>
+                <option value="sv">Svenska</option>
+                <option value="fi">Suomi</option>
+                <option value="el">Ελληνικά</option>
+                <option value="pl">Polski</option>
+                <option value="da">Dansk</option>
+                <option value="nb">Norsk</option>
+              </select>
+              <p className="text-xs text-text-secondary mt-1">
+                {t('teamPreferences.defaultLanguage.description')}
               </p>
             </div>
           </div>

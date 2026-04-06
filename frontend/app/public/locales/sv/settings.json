@@ -100,6 +100,11 @@
       "title": "Rakenskapsar",
       "fiscalYearStart": "Rakenskapsarets start",
       "description": "Forsta manaden i ditt rakenskapsar for finansiella rapporter"
+    },
+    "defaultLanguage": {
+      "title": "Standardsprak",
+      "label": "Teamsprak",
+      "description": "Anvands for e-postaviseringar till teammedlemmar och kontakter som inte har angett en personlig sprakpreferens"
     }
   },
   "currencyChange": {

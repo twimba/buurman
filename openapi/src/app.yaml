@@ -1289,6 +1289,13 @@ components:
             - es
             - fr
             - de
+            - it
+            - sv
+            - fi
+            - el
+            - pl
+            - da
+            - nb
     UpdateTeamSettingsRequest:
       type: object
       properties:

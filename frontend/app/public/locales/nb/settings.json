@@ -100,6 +100,11 @@
       "title": "Regnskapsår",
       "fiscalYearStart": "Regnskapsår start",
       "description": "Første måned i regnskapsåret for finansielle rapporter"
+    },
+    "defaultLanguage": {
+      "title": "Standardspråk",
+      "label": "Teamspråk",
+      "description": "Brukes for e-postvarsler sendt til teammedlemmer og kontakter som ikke har angitt en personlig språkpreferanse"
     }
   },
   "currencyChange": {

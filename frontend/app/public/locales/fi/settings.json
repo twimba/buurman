@@ -100,6 +100,11 @@
       "title": "Tilikausi",
       "fiscalYearStart": "Tilikauden alku",
       "description": "Tilikauden ensimmainen kuukausi talousraportteja varten"
+    },
+    "defaultLanguage": {
+      "title": "Oletuskieli",
+      "label": "Tiimin kieli",
+      "description": "Kaytetaan sahkopostiilmoituksissa tiimin jaseneille ja yhteystiedoille, jotka eivat ole asettaneet henkilokohtaista kieliasetusta"
     }
   },
   "currencyChange": {

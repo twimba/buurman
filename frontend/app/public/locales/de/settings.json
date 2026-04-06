@@ -100,6 +100,11 @@
       "title": "Geschäftsjahr",
       "fiscalYearStart": "Beginn des Geschäftsjahres",
       "description": "Erster Monat Ihres Geschäftsjahres für Finanzberichte"
+    },
+    "defaultLanguage": {
+      "title": "Standardsprache",
+      "label": "Teamsprache",
+      "description": "Wird für E-Mail-Benachrichtigungen an Teammitglieder und Kontakte verwendet, die keine persönliche Spracheinstellung festgelegt haben"
     }
   },
   "currencyChange": {
