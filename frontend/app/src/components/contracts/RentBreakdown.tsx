@@ -123,7 +123,8 @@ export const RentBreakdown = ({
     return (
       <div>
         <label className="block text-sm font-medium text-text-secondary mb-1">
-          Rent Amount <span className="text-error-text">*</span>
+          {t('rentBreakdown.rentAmount')}{' '}
+          <span className="text-error-text">*</span>
         </label>
         <MoneyInput
           value={typeof value === 'number' ? value : undefined}
@@ -138,7 +139,7 @@ export const RentBreakdown = ({
           className="mt-1 text-xs text-primary-500 hover:text-primary-600 transition-colors"
           disabled={disabled}
         >
-          Break down rent into components
+          {t('rentBreakdown.breakDown')}
         </button>
       </div>
     );
@@ -148,7 +149,7 @@ export const RentBreakdown = ({
     <div className="col-span-1 lg:col-span-2">
       <div className="flex items-center justify-between mb-2">
         <label className="block text-sm font-medium text-text-secondary">
-          Rent Breakdown <span className="text-error-text">*</span>
+          {t('rentBreakdown.title')} <span className="text-error-text">*</span>
         </label>
         <button
           type="button"
@@ -156,7 +157,7 @@ export const RentBreakdown = ({
           className="text-xs text-primary-500 hover:text-primary-600 transition-colors"
           disabled={disabled}
         >
-          Use single amount
+          {t('rentBreakdown.useSingleAmount')}
         </button>
       </div>
 
@@ -224,7 +225,7 @@ export const RentBreakdown = ({
         {/* Total row */}
         <div className="flex items-center gap-2 pt-2 border-t border-border-default">
           <span className="text-sm font-semibold text-text-primary min-w-[140px]">
-            Total
+            {t('rentBreakdown.total')}
           </span>
           <span className="flex-1 text-sm font-semibold text-text-primary">
             {formattedTotal}

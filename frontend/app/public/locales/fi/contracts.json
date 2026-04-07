@@ -141,7 +141,8 @@
       "notesPlaceholder": "Valinnainen syy...",
       "saving": "Tallennetaan...",
       "changeInstructions": "Vaihda ohjeet",
-      "setInstructions": "Aseta ohjeet"
+      "setInstructions": "Aseta ohjeet",
+      "unnamed": "Nimetön"
     },
     "notes": "Muistiinpanot",
     "renewalConfig": {
@@ -356,8 +357,35 @@
       "rentAmountPositive": "Vuokrasumman on oltava suurempi kuin 0",
       "baseRentRequired": "Perusvuokrakomponentti on pakollinen",
       "componentAmountsPositive": "Kaikkien komponenttisummien on oltava suurempia kuin 0",
-      "otherDescriptionRequired": "Mukautettu komponentti vaatii kuvauksen"
-    }
+      "otherDescriptionRequired": "Mukautettu komponentti vaatii kuvauksen",
+      "required": "Pakollinen",
+      "invalidEmail": "Virheellinen sähköpostiosoite",
+      "rentCurrencyRequired": "Vuokran valuutta vaaditaan",
+      "depositCurrencyRequired": "Vakuuden valuutta vaaditaan",
+      "securityDepositCurrencyRequired": "Vakuusmaksun valuutta vaaditaan",
+      "endDateRequired": "Päättymispäivä vaaditaan määräaikaisille sopimuksille",
+      "endDateAfterStart": "Päättymispäivän on oltava sama tai myöhäisempi kuin aloituspäivä",
+      "paymentDueDayRange": "Eräpäivän on oltava välillä 1–31"
+    },
+    "contractParties": "Sopimuspuolet",
+    "contractDetails": "Sopimuksen tiedot",
+    "financialTerms": "Taloudelliset ehdot",
+    "paymentTerms": "Maksuehdot",
+    "termination": "Irtisanominen",
+    "today": "Tänään",
+    "termsAndConditions": "Sopimusehdot",
+    "termsAndConditionsPlaceholder": "Kirjoita sopimuksen ehdot",
+    "signedDate": "Allekirjoituspäivä",
+    "securityDeposit": "Vakuusmaksu",
+    "paymentDueDay": "Eräpäivä (1–31)",
+    "lateFeePercentage": "Viivästyskorko (%)",
+    "terminationNoticeDays": "Irtisanomisaika (päivää)",
+    "countryRentalDetails": "{{country}} vuokraustiedot",
+    "countryRegulatoryFields": "{{country}}-kohtaiset sääntelykentät",
+    "setCountryForFields": "Aseta maa valitulle kiinteistölle nähdäksesi maakohtaiset sääntelykentät.",
+    "dismissDuplicateWarning": "Tarkista yllä oleva kaksoiskappalevaroitus ja sulje se jatkaaksesi",
+    "dismissDuplicateFirst": "Sulje ensin kaksoiskappalevaroitus",
+    "change": "Muuta"
   },
   "statusChange": {
     "title": "Vaihda sopimuksen tila",
@@ -536,11 +564,50 @@
   },
   "generateDocuments": {
     "title": "Luo asiakirjat",
-    "description": "Luo sopimusasiakirjat pohjista."
+    "description": "Luo sopimusasiakirjat pohjista.",
+    "regenerateTitle": "Luo asiakirjat uudelleen",
+    "regenerateDescription": "Olemassa olevat asiakirjat korvataan",
+    "selectDescription": "Valitse asiakirjatyypit ja kielet",
+    "documentTypes": "Asiakirjatyypit",
+    "languages": "Kielet",
+    "officialLanguage": "Virallinen kieli",
+    "translation": "Käännös",
+    "willGenerate_one": "Luo 1 asiakirjan ja tallentaa sopimusasiakirjoihin",
+    "willGenerate_other": "Luo {{count}} asiakirjaa ja tallentaa sopimusasiakirjoihin",
+    "regenerating": "Luodaan uudelleen...",
+    "generating": "Luodaan...",
+    "regenerateButton_one": "Luo 1 asiakirja uudelleen",
+    "regenerateButton_other": "Luo {{count}} asiakirjaa uudelleen",
+    "generateButton_one": "Luo 1 asiakirja",
+    "generateButton_other": "Luo {{count}} asiakirjaa",
+    "types": {
+      "EXTENSION_ADDENDUM": {
+        "label": "Jatkolisäys",
+        "description": "Virallinen sopimuksen jatkosopimus"
+      },
+      "RENT_INCREASE_LETTER": {
+        "label": "Vuokrankorotuskirje",
+        "description": "Ilmoitus vuokralaiselle vuokramuutoksista"
+      }
+    }
   },
   "generateRentChange": {
     "title": "Luo vuokranmuutosilmoitus",
-    "description": "Luo vuokranmuutosilmoitus."
+    "description": "Luo vuokranmuutosilmoitus.",
+    "regenerateTitle": "Luo vuokramuutosasiakirja uudelleen",
+    "regenerateDescription": "Olemassa olevat asiakirjat korvataan",
+    "selectDescription": "Valitse kielet vuokramuutosilmoitusta varten",
+    "languages": "Kielet",
+    "officialLanguage": "Virallinen kieli",
+    "translation": "Käännös",
+    "willGenerate_one": "Luo 1 asiakirjan",
+    "willGenerate_other": "Luo {{count}} asiakirjaa",
+    "regenerating": "Luodaan uudelleen...",
+    "generating": "Luodaan...",
+    "regenerateButton_one": "Luo 1 asiakirja uudelleen",
+    "regenerateButton_other": "Luo {{count}} asiakirjaa uudelleen",
+    "generateButton_one": "Luo 1 asiakirja",
+    "generateButton_other": "Luo {{count}} asiakirjaa"
   },
   "enums": {
     "partyRoles": {
@@ -566,6 +633,17 @@
       "SUPERSEDED": "Korvattu",
       "CANCELLED": "Peruutettu",
       "DECLINED": "Hylatty"
+    },
+    "contractTypes": {
+      "FIXED_TERM": "Määräaikainen",
+      "INDEFINITE": "Toistaiseksi voimassa oleva"
+    },
+    "paymentFrequencies": {
+      "MONTHLY": "Kuukausittain",
+      "QUARTERLY": "Neljännesvuosittain",
+      "ANNUALLY": "Vuosittain",
+      "BIWEEKLY": "Kahden viikon välein",
+      "WEEKLY": "Viikoittain"
     }
   },
   "countryMetadata": {
@@ -711,5 +789,41 @@
   },
   "rentTimeline": {
     "adjustButton": "Säädä"
+  },
+  "rentPeriod": {
+    "present": "Tällä hetkellä",
+    "rentChange": "Vuokramuutos",
+    "regenerate": "Luo uudelleen",
+    "generateDocument": "Luo asiakirja",
+    "generateDocumentTitle": "Luo vuokramuutosasiakirja",
+    "historyCount_one": "Historia (1 jakso)",
+    "historyCount_other": "Historia ({{count}} jaksoa)",
+    "deleteConfirm": "Haluatko varmasti poistaa tämän vuokrajakson?"
+  },
+  "rentBreakdown": {
+    "rentAmount": "Vuokrasumma",
+    "breakDown": "Jaa vuokra osiin",
+    "title": "Vuokran erittely",
+    "useSingleAmount": "Käytä yhtä summaa",
+    "total": "Yhteensä"
+  },
+  "renewalConfig": {
+    "title": "Uusimisasetukset",
+    "renewalMode": "Uusimistapa",
+    "modes": {
+      "NONE": "Ei uusimista",
+      "AUTOMATIC": "Automaattinen",
+      "MANUAL": "Manuaalinen"
+    },
+    "modeDescriptions": {
+      "AUTOMATIC": "Sopimus uusitaan automaattisesti, kun irtisanomisaika päättyy. Jos yhteyshenkilön vahvistus vaaditaan, jatko jää odottamaan vahvistusta.",
+      "MANUAL": "Saat muistutuksen, kun irtisanomisaika lähestyy. Jatkot on luotava ja aktivoitava manuaalisesti."
+    },
+    "adjustmentTypes": {
+      "NONE": "Ei muutosta",
+      "FIXED_PERCENTAGE": "Kiinteä prosentti",
+      "FIXED_AMOUNT": "Kiinteä summa",
+      "MANUAL": "Manuaalinen"
+    }
   }
 }

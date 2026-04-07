@@ -376,6 +376,33 @@
         "PARKING": "Parking",
         "SERVICE": "Services",
         "STORAGE": "Storage"
+      },
+      "items": {
+        "SWIMMING_POOL": "Swimming Pool",
+        "GYM": "Gym",
+        "SAUNA": "Sauna",
+        "FIREPLACE": "Fireplace",
+        "BUILT_IN_VACUUM": "Built-in Vacuum",
+        "IN_UNIT_LAUNDRY": "In-unit Laundry",
+        "SHARED_LAUNDRY": "Shared Laundry",
+        "DISHWASHER": "Dishwasher",
+        "STORAGE_UNIT": "Storage Unit",
+        "BIKE_STORAGE": "Bike Storage",
+        "FURNISHED": "Furnished",
+        "DOORMAN_CONCIERGE": "Doorman / Concierge",
+        "CONFERENCE_ROOM": "Conference Room",
+        "RECEPTION_AREA": "Reception Area",
+        "SERVER_ROOM": "Server Room",
+        "KITCHENETTE": "Kitchenette",
+        "LOADING_BAY": "Loading Bay",
+        "COMPRESSED_AIR_SYSTEM": "Compressed Air System",
+        "CHEMICAL_STORAGE": "Chemical Storage",
+        "OVERHEAD_CRANE": "Overhead Crane",
+        "IRRIGATION_SYSTEM": "Irrigation System",
+        "GRAIN_SILO": "Grain Silo",
+        "LIVESTOCK_SHELTER": "Livestock Shelter",
+        "COLD_STORAGE": "Cold Storage",
+        "SECURITY_BOOTH": "Security Booth"
       }
     }
   },

@@ -376,6 +376,33 @@
         "PARKING": "Pysäköinti",
         "SERVICE": "Palvelut",
         "STORAGE": "Säilytys"
+      },
+      "items": {
+        "SWIMMING_POOL": "Uima-allas",
+        "GYM": "Kuntosali",
+        "SAUNA": "Sauna",
+        "FIREPLACE": "Takka",
+        "BUILT_IN_VACUUM": "Keskuspölynimuri",
+        "IN_UNIT_LAUNDRY": "Pesukone asunnossa",
+        "SHARED_LAUNDRY": "Yhteinen pesutupa",
+        "DISHWASHER": "Astianpesukone",
+        "STORAGE_UNIT": "Varasto",
+        "BIKE_STORAGE": "Pyörävarasto",
+        "FURNISHED": "Kalustettu",
+        "DOORMAN_CONCIERGE": "Vahtimestari / Concierge",
+        "CONFERENCE_ROOM": "Kokoushuone",
+        "RECEPTION_AREA": "Vastaanotto",
+        "SERVER_ROOM": "Palvelinhuone",
+        "KITCHENETTE": "Keittiönurkkaus",
+        "LOADING_BAY": "Lastauslaituri",
+        "COMPRESSED_AIR_SYSTEM": "Paineilmajärjestelmä",
+        "CHEMICAL_STORAGE": "Kemikaalivarasto",
+        "OVERHEAD_CRANE": "Siltanosturi",
+        "IRRIGATION_SYSTEM": "Kastelujärjestelmä",
+        "GRAIN_SILO": "Viljasiilo",
+        "LIVESTOCK_SHELTER": "Eläinsuoja",
+        "COLD_STORAGE": "Kylmävarasto",
+        "SECURITY_BOOTH": "Vartijakoppi"
       }
     }
   },

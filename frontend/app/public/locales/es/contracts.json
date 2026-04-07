@@ -141,7 +141,8 @@
       "notesPlaceholder": "Motivo opcional...",
       "saving": "Guardando...",
       "changeInstructions": "Cambiar Instrucciones",
-      "setInstructions": "Establecer Instrucciones"
+      "setInstructions": "Establecer Instrucciones",
+      "unnamed": "Sin nombre"
     },
     "notes": "Notas",
     "renewalConfig": {
@@ -356,8 +357,35 @@
       "rentAmountPositive": "El importe del alquiler debe ser mayor que 0",
       "baseRentRequired": "El componente de alquiler base es obligatorio",
       "componentAmountsPositive": "Todos los importes de los componentes deben ser mayores que 0",
-      "otherDescriptionRequired": "El componente personalizado requiere una descripción"
-    }
+      "otherDescriptionRequired": "El componente personalizado requiere una descripción",
+      "required": "Obligatorio",
+      "invalidEmail": "Correo electrónico inválido",
+      "rentCurrencyRequired": "La moneda del alquiler es obligatoria",
+      "depositCurrencyRequired": "La moneda del depósito es obligatoria",
+      "securityDepositCurrencyRequired": "La moneda del depósito de garantía es obligatoria",
+      "endDateRequired": "La fecha de fin es obligatoria para contratos a plazo fijo",
+      "endDateAfterStart": "La fecha de fin debe ser igual o posterior a la fecha de inicio",
+      "paymentDueDayRange": "El día de vencimiento debe estar entre 1 y 31"
+    },
+    "contractParties": "Partes del contrato",
+    "contractDetails": "Detalles del contrato",
+    "financialTerms": "Condiciones financieras",
+    "paymentTerms": "Condiciones de pago",
+    "termination": "Rescisión",
+    "today": "Hoy",
+    "termsAndConditions": "Términos y condiciones",
+    "termsAndConditionsPlaceholder": "Ingrese los términos y condiciones del contrato",
+    "signedDate": "Fecha de firma",
+    "securityDeposit": "Depósito de garantía",
+    "paymentDueDay": "Día de vencimiento del pago (1–31)",
+    "lateFeePercentage": "Porcentaje de mora",
+    "terminationNoticeDays": "Días de preaviso para rescisión",
+    "countryRentalDetails": "Detalles de alquiler en {{country}}",
+    "countryRegulatoryFields": "Campos regulatorios específicos de {{country}}",
+    "setCountryForFields": "Establezca un país en la propiedad seleccionada para ver los campos regulatorios específicos del país.",
+    "dismissDuplicateWarning": "Revise la advertencia de duplicado anterior y descártela para continuar",
+    "dismissDuplicateFirst": "Descarte primero la advertencia de duplicado",
+    "change": "Cambiar"
   },
   "statusChange": {
     "title": "Cambiar Estado del Contrato",
@@ -536,11 +564,50 @@
   },
   "generateDocuments": {
     "title": "Generar Documentos",
-    "description": "Generar documentos de contrato a partir de plantillas."
+    "description": "Generar documentos de contrato a partir de plantillas.",
+    "regenerateTitle": "Regenerar documentos",
+    "regenerateDescription": "Los documentos existentes serán reemplazados",
+    "selectDescription": "Seleccionar tipos de documentos e idiomas",
+    "documentTypes": "Tipos de documentos",
+    "languages": "Idiomas",
+    "officialLanguage": "Idioma oficial",
+    "translation": "Traducción",
+    "willGenerate_one": "Generará 1 documento y lo guardará en los documentos del contrato",
+    "willGenerate_other": "Generará {{count}} documentos y los guardará en los documentos del contrato",
+    "regenerating": "Regenerando...",
+    "generating": "Generando...",
+    "regenerateButton_one": "Regenerar 1 documento",
+    "regenerateButton_other": "Regenerar {{count}} documentos",
+    "generateButton_one": "Generar 1 documento",
+    "generateButton_other": "Generar {{count}} documentos",
+    "types": {
+      "EXTENSION_ADDENDUM": {
+        "label": "Adenda de extensión",
+        "description": "Acuerdo formal de extensión de contrato"
+      },
+      "RENT_INCREASE_LETTER": {
+        "label": "Carta de aumento de alquiler",
+        "description": "Notificación al inquilino de cambios en el alquiler"
+      }
+    }
   },
   "generateRentChange": {
     "title": "Generar Cambio de Alquiler",
-    "description": "Generar una notificación de cambio de alquiler."
+    "description": "Generar una notificación de cambio de alquiler.",
+    "regenerateTitle": "Regenerar documento de cambio de alquiler",
+    "regenerateDescription": "Los documentos existentes serán reemplazados",
+    "selectDescription": "Seleccionar idiomas para la notificación de cambio de alquiler",
+    "languages": "Idiomas",
+    "officialLanguage": "Idioma oficial",
+    "translation": "Traducción",
+    "willGenerate_one": "Generará 1 documento",
+    "willGenerate_other": "Generará {{count}} documentos",
+    "regenerating": "Regenerando...",
+    "generating": "Generando...",
+    "regenerateButton_one": "Regenerar 1 documento",
+    "regenerateButton_other": "Regenerar {{count}} documentos",
+    "generateButton_one": "Generar 1 documento",
+    "generateButton_other": "Generar {{count}} documentos"
   },
   "enums": {
     "partyRoles": {
@@ -566,6 +633,17 @@
       "SUPERSEDED": "Reemplazado",
       "CANCELLED": "Cancelado",
       "DECLINED": "Rechazado"
+    },
+    "contractTypes": {
+      "FIXED_TERM": "Plazo fijo",
+      "INDEFINITE": "Indefinido"
+    },
+    "paymentFrequencies": {
+      "MONTHLY": "Mensual",
+      "QUARTERLY": "Trimestral",
+      "ANNUALLY": "Anual",
+      "BIWEEKLY": "Quincenal",
+      "WEEKLY": "Semanal"
     }
   },
   "countryMetadata": {
@@ -711,5 +789,41 @@
   },
   "rentTimeline": {
     "adjustButton": "Ajustar"
+  },
+  "rentPeriod": {
+    "present": "Presente",
+    "rentChange": "Cambio de alquiler",
+    "regenerate": "Regenerar",
+    "generateDocument": "Generar documento",
+    "generateDocumentTitle": "Generar documento de cambio de alquiler",
+    "historyCount_one": "Historial (1 período)",
+    "historyCount_other": "Historial ({{count}} períodos)",
+    "deleteConfirm": "¿Está seguro de que desea eliminar este período de alquiler?"
+  },
+  "rentBreakdown": {
+    "rentAmount": "Importe del alquiler",
+    "breakDown": "Desglosar el alquiler en componentes",
+    "title": "Desglose del alquiler",
+    "useSingleAmount": "Usar importe único",
+    "total": "Total"
+  },
+  "renewalConfig": {
+    "title": "Configuración de renovación",
+    "renewalMode": "Modo de renovación",
+    "modes": {
+      "NONE": "Sin renovación",
+      "AUTOMATIC": "Automático",
+      "MANUAL": "Manual"
+    },
+    "modeDescriptions": {
+      "AUTOMATIC": "El contrato se extenderá automáticamente cuando expire el período de notificación. Si se requiere confirmación del contacto, la extensión permanecerá pendiente hasta ser confirmada.",
+      "MANUAL": "Recibirá un recordatorio cuando se acerque el período de notificación. Las extensiones deben crearse y activarse manualmente."
+    },
+    "adjustmentTypes": {
+      "NONE": "Sin ajuste",
+      "FIXED_PERCENTAGE": "Porcentaje fijo",
+      "FIXED_AMOUNT": "Importe fijo",
+      "MANUAL": "Manual"
+    }
   }
 }

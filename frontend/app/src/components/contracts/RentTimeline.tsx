@@ -115,7 +115,7 @@ export const RentTimeline = ({
   };
 
   const handleDeletePeriod = (periodIdentifier: string) => {
-    if (window.confirm('Are you sure you want to delete this rent period?')) {
+    if (window.confirm(t('rentPeriod.deleteConfirm'))) {
       deleteRentPeriod.mutate(periodIdentifier);
     }
   };
@@ -160,14 +160,15 @@ export const RentTimeline = ({
             ) : (
               <ChevronDown className="h-4 w-4" />
             )}
-            Rent History ({periods.length} period
-            {periods.length !== 1 ? 's' : ''})
+            {t('rentPeriod.historyCount', { count: periods.length })}
           </button>
 
           {isExpanded && (
             <div className="mt-3 space-y-2">
               {isLoading ? (
-                <p className="text-sm text-text-muted">Loading...</p>
+                <p className="text-sm text-text-muted">
+                  {t('common:buttons.loading')}
+                </p>
               ) : (
                 periods.map((period) => (
                   <RentPeriodRow
@@ -177,6 +178,7 @@ export const RentTimeline = ({
                     countryCode={countryCode}
                     currency={currency}
                     formatDate={formatDate}
+                    t={t}
                     canEdit={canEditData}
                     onDelete={
                       canEditData && isFuturePeriod(period.effectiveFrom)
@@ -231,6 +233,7 @@ function RentPeriodRow({
   countryCode,
   currency,
   formatDate,
+  t,
   canEdit,
   onDelete,
   onGenerateDocuments,
@@ -241,6 +244,7 @@ function RentPeriodRow({
   countryCode?: string;
   currency: string;
   formatDate: (date: string) => string;
+  t: (key: string) => string;
   canEdit: boolean;
   onDelete?: () => void;
   onGenerateDocuments: () => void;
@@ -285,7 +289,7 @@ function RentPeriodRow({
           {formatDate(period.effectiveFrom)}
           {period.effectiveTo
             ? ` - ${formatDate(period.effectiveTo)}`
-            : ' - Present'}
+            : ` - ${t('rentPeriod.present')}`}
         </p>
         {period.notes && (
           <div className="mt-1 text-xs text-text-secondary">
@@ -298,7 +302,7 @@ function RentPeriodRow({
           <div className="mt-2 flex items-center gap-2 flex-wrap">
             <FileText className="h-3.5 w-3.5 text-primary-500 shrink-0" />
             <span className="text-[11px] font-medium text-text-secondary shrink-0">
-              Rent Change
+              {t('rentPeriod.rentChange')}
             </span>
             <div className="flex items-center gap-1 flex-wrap">
               {sortedDocs.map((doc) => {
@@ -328,7 +332,7 @@ function RentPeriodRow({
                 className="flex items-center gap-1 px-2 py-1 text-[11px] font-medium text-text-muted rounded hover:text-primary-500 hover:bg-primary-500/5 transition-colors ml-auto"
               >
                 <RefreshCw className="h-3 w-3" />
-                Regenerate
+                {t('rentPeriod.regenerate')}
               </button>
             )}
           </div>
@@ -337,10 +341,10 @@ function RentPeriodRow({
             <button
               onClick={onGenerateDocuments}
               className="flex items-center gap-1 px-2 py-1 text-[11px] font-medium text-primary-500 bg-primary-500/10 rounded hover:bg-primary-500/20 transition-colors"
-              title="Generate rent change document"
+              title={t('rentPeriod.generateDocumentTitle')}
             >
               <FolderDown className="h-3 w-3" />
-              Generate Document
+              {t('rentPeriod.generateDocument')}
             </button>
           </div>
         ) : null}

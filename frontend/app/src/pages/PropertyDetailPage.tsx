@@ -847,7 +847,10 @@ export const PropertyDetailPage = () => {
                         {t('detail.utilities.electricity')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
-                        {te('electricityConnectionType', property.electricityConnectionType)}
+                        {te(
+                          'electricityConnectionType',
+                          property.electricityConnectionType
+                        )}
                       </div>
                     </div>
                   )}
@@ -870,7 +873,10 @@ export const PropertyDetailPage = () => {
                         {t('detail.utilities.water')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
-                        {te('waterConnectionType', property.waterConnectionType)}
+                        {te(
+                          'waterConnectionType',
+                          property.waterConnectionType
+                        )}
                       </div>
                     </div>
                   )}
@@ -879,7 +885,9 @@ export const PropertyDetailPage = () => {
                       {t('detail.utilities.gasConnection')}
                     </div>
                     <div className="text-sm font-medium text-text-primary mt-1">
-                      {property.hasGasConnection ? t('detail.yes') : t('detail.no')}
+                      {property.hasGasConnection
+                        ? t('detail.yes')
+                        : t('detail.no')}
                     </div>
                   </div>
                   {property.sewageType && (
@@ -898,7 +906,10 @@ export const PropertyDetailPage = () => {
                         {t('detail.utilities.internet')}
                       </div>
                       <div className="text-sm font-medium text-text-primary mt-1">
-                        {te('internetConnectionType', property.internetConnectionType)}
+                        {te(
+                          'internetConnectionType',
+                          property.internetConnectionType
+                        )}
                       </div>
                     </div>
                   )}
@@ -1006,7 +1017,9 @@ export const PropertyDetailPage = () => {
                   ).map(([category, items]) => (
                     <div key={category}>
                       <div className="text-xs font-medium text-text-secondary uppercase tracking-wide mb-2">
-                        {t(`enums.amenities.categories.${category}`, { defaultValue: formatEnumValue(category) })}
+                        {t(`enums.amenities.categories.${category}`, {
+                          defaultValue: formatEnumValue(category),
+                        })}
                       </div>
                       <div className="flex flex-wrap gap-x-6 gap-y-2">
                         {(items ?? []).map((amenity) => (
@@ -1017,7 +1030,9 @@ export const PropertyDetailPage = () => {
                             <span className="flex-shrink-0 w-5 h-5 rounded-full bg-success-bg text-success-text flex items-center justify-center text-xs font-bold">
                               {'\u2713'}
                             </span>
-                            {amenity.amenityName}
+                            {t(`enums.amenities.items.${amenity.amenityName}`, {
+                              defaultValue: amenity.amenityName,
+                            })}
                           </span>
                         ))}
                       </div>
@@ -1195,7 +1210,9 @@ export const PropertyDetailPage = () => {
                       className="inline-flex items-center gap-1.5 text-xs font-medium text-primary-500 hover:text-primary-600 transition-colors"
                     >
                       <Calculator className="h-3.5 w-3.5" />
-                      {latestWws ? t('detail.wws.recalculate') : t('detail.wws.calculate')}
+                      {latestWws
+                        ? t('detail.wws.recalculate')
+                        : t('detail.wws.calculate')}
                     </button>
                   </div>
                 </div>
@@ -1363,14 +1380,18 @@ export const PropertyDetailPage = () => {
               {isMetadataExpanded && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-4">
                   <div>
-                    <span className="text-text-secondary">{t('detail.metadata.created')}</span>{' '}
+                    <span className="text-text-secondary">
+                      {t('detail.metadata.created')}
+                    </span>{' '}
                     <span className="text-text-primary">
                       {formatDate(property.createdAt)} {t('detail.metadata.at')}{' '}
                       {new Date(property.createdAt).toLocaleTimeString()}
                     </span>
                   </div>
                   <div>
-                    <span className="text-text-secondary">{t('detail.metadata.lastUpdated')}</span>{' '}
+                    <span className="text-text-secondary">
+                      {t('detail.metadata.lastUpdated')}
+                    </span>{' '}
                     <span className="text-text-primary">
                       {formatDate(property.updatedAt)} {t('detail.metadata.at')}{' '}
                       {new Date(property.updatedAt).toLocaleTimeString()}

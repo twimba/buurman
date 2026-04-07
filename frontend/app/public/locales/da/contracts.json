@@ -141,7 +141,8 @@
       "notesPlaceholder": "Valgfri aarsag...",
       "saving": "Gemmer...",
       "changeInstructions": "Skift instruktioner",
-      "setInstructions": "Saet instruktioner"
+      "setInstructions": "Saet instruktioner",
+      "unnamed": "Unavngivet"
     },
     "notes": "Noter",
     "renewalConfig": {
@@ -356,8 +357,35 @@
       "rentAmountPositive": "Lejebeloeb skal vaere stoerre end 0",
       "baseRentRequired": "Basislejekomponent er paakraevet",
       "componentAmountsPositive": "Alle komponentbeloeb skal vaere stoerre end 0",
-      "otherDescriptionRequired": "Brugerdefineret komponent kraever en beskrivelse"
-    }
+      "otherDescriptionRequired": "Brugerdefineret komponent kraever en beskrivelse",
+      "required": "Påkrævet",
+      "invalidEmail": "Ugyldig e-mailadresse",
+      "rentCurrencyRequired": "Lejevaluta er påkrævet",
+      "depositCurrencyRequired": "Depositumvaluta er påkrævet",
+      "securityDepositCurrencyRequired": "Valuta for sikkerhedsdeposit er påkrævet",
+      "endDateRequired": "Slutdato er påkrævet for tidsbegrænsede aftaler",
+      "endDateAfterStart": "Slutdato skal være lig med eller efter startdato",
+      "paymentDueDayRange": "Betalingsdag skal være mellem 1 og 31"
+    },
+    "contractParties": "Aftaleparter",
+    "contractDetails": "Aftaledetaljer",
+    "financialTerms": "Finansielle betingelser",
+    "paymentTerms": "Betalingsbetingelser",
+    "termination": "Opsigelse",
+    "today": "I dag",
+    "termsAndConditions": "Vilkår og betingelser",
+    "termsAndConditionsPlaceholder": "Indtast aftalens vilkår og betingelser",
+    "signedDate": "Underskriftsdato",
+    "securityDeposit": "Sikkerhedsdeposit",
+    "paymentDueDay": "Betalingsdag (1–31)",
+    "lateFeePercentage": "Morarenteprocent",
+    "terminationNoticeDays": "Opsigelsesvarseldage",
+    "countryRentalDetails": "{{country}} lejeoplysninger",
+    "countryRegulatoryFields": "Regulatoriske felter specifikke for {{country}}",
+    "setCountryForFields": "Angiv et land på den valgte ejendom for at se landespecifikke regulatoriske felter.",
+    "dismissDuplicateWarning": "Gennemgå duplikatadvarslen ovenfor og afvis den for at fortsætte",
+    "dismissDuplicateFirst": "Afvis duplikatadvarslen først",
+    "change": "Skift"
   },
   "statusChange": {
     "title": "Skift kontraktstatus",
@@ -536,11 +564,50 @@
   },
   "generateDocuments": {
     "title": "Generer dokumenter",
-    "description": "Generer kontraktdokumenter fra skabeloner."
+    "description": "Generer kontraktdokumenter fra skabeloner.",
+    "regenerateTitle": "Generer dokumenter igen",
+    "regenerateDescription": "Eksisterende dokumenter vil blive erstattet",
+    "selectDescription": "Vælg dokumenttyper og sprog",
+    "documentTypes": "Dokumenttyper",
+    "languages": "Sprog",
+    "officialLanguage": "Officielt sprog",
+    "translation": "Oversættelse",
+    "willGenerate_one": "Genererer 1 dokument og gemmer i kontraktdokumenter",
+    "willGenerate_other": "Genererer {{count}} dokumenter og gemmer i kontraktdokumenter",
+    "regenerating": "Genererer igen...",
+    "generating": "Genererer...",
+    "regenerateButton_one": "Generer 1 dokument igen",
+    "regenerateButton_other": "Generer {{count}} dokumenter igen",
+    "generateButton_one": "Generer 1 dokument",
+    "generateButton_other": "Generer {{count}} dokumenter",
+    "types": {
+      "EXTENSION_ADDENDUM": {
+        "label": "Forlængelsestillæg",
+        "description": "Formel aftale om kontraktforlængelse"
+      },
+      "RENT_INCREASE_LETTER": {
+        "label": "Lejestigning brev",
+        "description": "Meddelelse til lejer om lejeændringer"
+      }
+    }
   },
   "generateRentChange": {
     "title": "Generer lejeskift",
-    "description": "Generer en lejeskiftsmeddelelse."
+    "description": "Generer en lejeskiftsmeddelelse.",
+    "regenerateTitle": "Generer lejeændringsdokument igen",
+    "regenerateDescription": "Eksisterende dokumenter vil blive erstattet",
+    "selectDescription": "Vælg sprog til lejeændringsmeddelelsen",
+    "languages": "Sprog",
+    "officialLanguage": "Officielt sprog",
+    "translation": "Oversættelse",
+    "willGenerate_one": "Genererer 1 dokument",
+    "willGenerate_other": "Genererer {{count}} dokumenter",
+    "regenerating": "Genererer igen...",
+    "generating": "Genererer...",
+    "regenerateButton_one": "Generer 1 dokument igen",
+    "regenerateButton_other": "Generer {{count}} dokumenter igen",
+    "generateButton_one": "Generer 1 dokument",
+    "generateButton_other": "Generer {{count}} dokumenter"
   },
   "enums": {
     "partyRoles": {
@@ -566,6 +633,17 @@
       "SUPERSEDED": "Erstattet",
       "CANCELLED": "Annulleret",
       "DECLINED": "Afvist"
+    },
+    "contractTypes": {
+      "FIXED_TERM": "Tidsbegrænset",
+      "INDEFINITE": "Tidsubegrænset"
+    },
+    "paymentFrequencies": {
+      "MONTHLY": "Månedligt",
+      "QUARTERLY": "Kvartalsvist",
+      "ANNUALLY": "Årligt",
+      "BIWEEKLY": "Hver anden uge",
+      "WEEKLY": "Ugentligt"
     }
   },
   "countryMetadata": {
@@ -711,5 +789,41 @@
   },
   "rentTimeline": {
     "adjustButton": "Juster"
+  },
+  "rentPeriod": {
+    "present": "Nuværende",
+    "rentChange": "Lejeændring",
+    "regenerate": "Generer igen",
+    "generateDocument": "Generer dokument",
+    "generateDocumentTitle": "Generer lejeændringsdokument",
+    "historyCount_one": "Historik (1 periode)",
+    "historyCount_other": "Historik ({{count}} perioder)",
+    "deleteConfirm": "Er du sikker på, at du vil slette denne lejeperiode?"
+  },
+  "rentBreakdown": {
+    "rentAmount": "Lejebeløb",
+    "breakDown": "Opdel lejen i komponenter",
+    "title": "Lejeopdeling",
+    "useSingleAmount": "Brug enkelt beløb",
+    "total": "Total"
+  },
+  "renewalConfig": {
+    "title": "Fornyelseskonfiguration",
+    "renewalMode": "Fornyelsestilstand",
+    "modes": {
+      "NONE": "Ingen fornyelse",
+      "AUTOMATIC": "Automatisk",
+      "MANUAL": "Manuel"
+    },
+    "modeDescriptions": {
+      "AUTOMATIC": "Kontrakten forlænges automatisk, når opsigelsesvinduet udløber. Hvis kontaktbekræftelse er påkrævet, forbliver forlængelsen afventende indtil bekræftelse.",
+      "MANUAL": "Du modtager en påmindelse, når opsigelsesvinduet nærmer sig. Forlængelser skal oprettes og aktiveres manuelt."
+    },
+    "adjustmentTypes": {
+      "NONE": "Ingen justering",
+      "FIXED_PERCENTAGE": "Fast procent",
+      "FIXED_AMOUNT": "Fast beløb",
+      "MANUAL": "Manuel"
+    }
   }
 }

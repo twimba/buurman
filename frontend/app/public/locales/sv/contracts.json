@@ -141,7 +141,8 @@
       "notesPlaceholder": "Valfri anledning...",
       "saving": "Sparar...",
       "changeInstructions": "Andra instruktioner",
-      "setInstructions": "Ange instruktioner"
+      "setInstructions": "Ange instruktioner",
+      "unnamed": "Namnlös"
     },
     "notes": "Anteckningar",
     "renewalConfig": {
@@ -356,8 +357,35 @@
       "rentAmountPositive": "Hyresbeloppet maste vara storre an 0",
       "baseRentRequired": "Bashyreskomponent ar obligatorisk",
       "componentAmountsPositive": "Alla komponentbelopp maste vara storre an 0",
-      "otherDescriptionRequired": "Anpassad komponent kraver en beskrivning"
-    }
+      "otherDescriptionRequired": "Anpassad komponent kraver en beskrivning",
+      "required": "Obligatoriskt",
+      "invalidEmail": "Ogiltig e-postadress",
+      "rentCurrencyRequired": "Hyresvaluta krävs",
+      "depositCurrencyRequired": "Depositionsvaluta krävs",
+      "securityDepositCurrencyRequired": "Valuta för säkerhetsdeposition krävs",
+      "endDateRequired": "Slutdatum krävs för tidsbegränsade kontrakt",
+      "endDateAfterStart": "Slutdatum måste vara samma som eller efter startdatum",
+      "paymentDueDayRange": "Betalningsförfallodag måste vara mellan 1 och 31"
+    },
+    "contractParties": "Kontraktsparter",
+    "contractDetails": "Kontraktsdetaljer",
+    "financialTerms": "Ekonomiska villkor",
+    "paymentTerms": "Betalningsvillkor",
+    "termination": "Uppsägning",
+    "today": "Idag",
+    "termsAndConditions": "Allmänna villkor",
+    "termsAndConditionsPlaceholder": "Ange kontraktets allmänna villkor",
+    "signedDate": "Underteckningsdatum",
+    "securityDeposit": "Säkerhetsdeposition",
+    "paymentDueDay": "Betalningsförfallodag (1–31)",
+    "lateFeePercentage": "Förseningsavgift (%)",
+    "terminationNoticeDays": "Uppsägningstid (dagar)",
+    "countryRentalDetails": "{{country}} hyresuppgifter",
+    "countryRegulatoryFields": "Regulatoriska fält specifika för {{country}}",
+    "setCountryForFields": "Ange ett land för den valda fastigheten för att se landsspecifika regulatoriska fält.",
+    "dismissDuplicateWarning": "Granska dubblettvarningen ovan och avfärda den för att fortsätta",
+    "dismissDuplicateFirst": "Avfärda dubblettvarningen först",
+    "change": "Ändra"
   },
   "statusChange": {
     "title": "Andra kontraktsstatus",
@@ -536,11 +564,50 @@
   },
   "generateDocuments": {
     "title": "Generera dokument",
-    "description": "Generera kontraktsdokument fran mallar."
+    "description": "Generera kontraktsdokument fran mallar.",
+    "regenerateTitle": "Generera om dokument",
+    "regenerateDescription": "Befintliga dokument kommer att ersättas",
+    "selectDescription": "Välj dokumenttyper och språk",
+    "documentTypes": "Dokumenttyper",
+    "languages": "Språk",
+    "officialLanguage": "Officiellt språk",
+    "translation": "Översättning",
+    "willGenerate_one": "Genererar 1 dokument och sparar i kontraktsdokument",
+    "willGenerate_other": "Genererar {{count}} dokument och sparar i kontraktsdokument",
+    "regenerating": "Genererar om...",
+    "generating": "Genererar...",
+    "regenerateButton_one": "Generera om 1 dokument",
+    "regenerateButton_other": "Generera om {{count}} dokument",
+    "generateButton_one": "Generera 1 dokument",
+    "generateButton_other": "Generera {{count}} dokument",
+    "types": {
+      "EXTENSION_ADDENDUM": {
+        "label": "Förlängningstillägg",
+        "description": "Formellt avtal om kontraktsförlängning"
+      },
+      "RENT_INCREASE_LETTER": {
+        "label": "Hyreshöjningsbrev",
+        "description": "Meddelande till hyresgäst om hyresändringar"
+      }
+    }
   },
   "generateRentChange": {
     "title": "Generera hyresandring",
-    "description": "Generera en notifikation om hyresandring."
+    "description": "Generera en notifikation om hyresandring.",
+    "regenerateTitle": "Generera om hyresändringsdokument",
+    "regenerateDescription": "Befintliga dokument kommer att ersättas",
+    "selectDescription": "Välj språk för hyresändringsmeddelandet",
+    "languages": "Språk",
+    "officialLanguage": "Officiellt språk",
+    "translation": "Översättning",
+    "willGenerate_one": "Genererar 1 dokument",
+    "willGenerate_other": "Genererar {{count}} dokument",
+    "regenerating": "Genererar om...",
+    "generating": "Genererar...",
+    "regenerateButton_one": "Generera om 1 dokument",
+    "regenerateButton_other": "Generera om {{count}} dokument",
+    "generateButton_one": "Generera 1 dokument",
+    "generateButton_other": "Generera {{count}} dokument"
   },
   "enums": {
     "partyRoles": {
@@ -566,6 +633,17 @@
       "SUPERSEDED": "Ersatt",
       "CANCELLED": "Avbruten",
       "DECLINED": "Avbojd"
+    },
+    "contractTypes": {
+      "FIXED_TERM": "Tidsbegränsat",
+      "INDEFINITE": "Tillsvidare"
+    },
+    "paymentFrequencies": {
+      "MONTHLY": "Månadsvis",
+      "QUARTERLY": "Kvartalsvis",
+      "ANNUALLY": "Årligen",
+      "BIWEEKLY": "Varannan vecka",
+      "WEEKLY": "Veckovis"
     }
   },
   "countryMetadata": {
@@ -711,5 +789,41 @@
   },
   "rentTimeline": {
     "adjustButton": "Justera"
+  },
+  "rentPeriod": {
+    "present": "Nuvarande",
+    "rentChange": "Hyresändring",
+    "regenerate": "Generera om",
+    "generateDocument": "Generera dokument",
+    "generateDocumentTitle": "Generera dokument för hyresändring",
+    "historyCount_one": "Historik (1 period)",
+    "historyCount_other": "Historik ({{count}} perioder)",
+    "deleteConfirm": "Är du säker på att du vill ta bort denna hyresperiod?"
+  },
+  "rentBreakdown": {
+    "rentAmount": "Hyresbelopp",
+    "breakDown": "Dela upp hyran i komponenter",
+    "title": "Hyresuppdelning",
+    "useSingleAmount": "Använd ett belopp",
+    "total": "Totalt"
+  },
+  "renewalConfig": {
+    "title": "Förlängningskonfiguration",
+    "renewalMode": "Förlängningsläge",
+    "modes": {
+      "NONE": "Ingen förlängning",
+      "AUTOMATIC": "Automatisk",
+      "MANUAL": "Manuell"
+    },
+    "modeDescriptions": {
+      "AUTOMATIC": "Kontraktet förlängs automatiskt när uppsägningstiden löper ut. Om kontaktbekräftelse krävs förblir förlängningen väntande tills den bekräftas.",
+      "MANUAL": "Du får en påminnelse när uppsägningstiden närmar sig. Förlängningar måste skapas och aktiveras manuellt."
+    },
+    "adjustmentTypes": {
+      "NONE": "Ingen justering",
+      "FIXED_PERCENTAGE": "Fast procentsats",
+      "FIXED_AMOUNT": "Fast belopp",
+      "MANUAL": "Manuell"
+    }
   }
 }

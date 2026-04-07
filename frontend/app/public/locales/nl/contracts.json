@@ -141,7 +141,8 @@
       "notesPlaceholder": "Optionele reden...",
       "saving": "Opslaan...",
       "changeInstructions": "Instructies Wijzigen",
-      "setInstructions": "Instructies Instellen"
+      "setInstructions": "Instructies Instellen",
+      "unnamed": "Naamloos"
     },
     "notes": "Notities",
     "renewalConfig": {
@@ -356,8 +357,35 @@
       "rentAmountPositive": "Huurbedrag moet groter zijn dan 0",
       "baseRentRequired": "Basishuurcomponent is verplicht",
       "componentAmountsPositive": "Alle componentbedragen moeten groter zijn dan 0",
-      "otherDescriptionRequired": "Aangepast component vereist een omschrijving"
-    }
+      "otherDescriptionRequired": "Aangepast component vereist een omschrijving",
+      "required": "Verplicht",
+      "invalidEmail": "Ongeldig e-mailadres",
+      "rentCurrencyRequired": "Huurvaluta is verplicht",
+      "depositCurrencyRequired": "Depositovaluta is verplicht",
+      "securityDepositCurrencyRequired": "Valuta voor borgsom is verplicht",
+      "endDateRequired": "Einddatum is verplicht voor contracten met vaste looptijd",
+      "endDateAfterStart": "Einddatum moet op of na de startdatum liggen",
+      "paymentDueDayRange": "Betaaldag moet tussen 1 en 31 liggen"
+    },
+    "contractParties": "Contractpartijen",
+    "contractDetails": "Contractdetails",
+    "financialTerms": "Financiële voorwaarden",
+    "paymentTerms": "Betalingsvoorwaarden",
+    "termination": "Beëindiging",
+    "today": "Vandaag",
+    "termsAndConditions": "Algemene voorwaarden",
+    "termsAndConditionsPlaceholder": "Voer de contractvoorwaarden in",
+    "signedDate": "Ondertekeningsdatum",
+    "securityDeposit": "Borgsom",
+    "paymentDueDay": "Betaaldag (1–31)",
+    "lateFeePercentage": "Percentage late betaling",
+    "terminationNoticeDays": "Opzegtermijn (dagen)",
+    "countryRentalDetails": "{{country}} huurgegevens",
+    "countryRegulatoryFields": "Regelgevingsvelden specifiek voor {{country}}",
+    "setCountryForFields": "Stel een land in op het geselecteerde pand om landspecifieke regelgevingsvelden te zien.",
+    "dismissDuplicateWarning": "Bekijk de duplicaatwaarschuwing hierboven en sluit deze om door te gaan",
+    "dismissDuplicateFirst": "Sluit eerst de duplicaatwaarschuwing",
+    "change": "Wijzigen"
   },
   "statusChange": {
     "title": "Contractstatus wijzigen",
@@ -536,11 +564,50 @@
   },
   "generateDocuments": {
     "title": "Documenten genereren",
-    "description": "Genereer contractdocumenten uit sjablonen."
+    "description": "Genereer contractdocumenten uit sjablonen.",
+    "regenerateTitle": "Documenten opnieuw genereren",
+    "regenerateDescription": "Bestaande documenten worden vervangen",
+    "selectDescription": "Selecteer documenttypes en talen",
+    "documentTypes": "Documenttypes",
+    "languages": "Talen",
+    "officialLanguage": "Officiële taal",
+    "translation": "Vertaling",
+    "willGenerate_one": "Genereert 1 document en slaat op bij contractdocumenten",
+    "willGenerate_other": "Genereert {{count}} documenten en slaat op bij contractdocumenten",
+    "regenerating": "Opnieuw genereren...",
+    "generating": "Genereren...",
+    "regenerateButton_one": "1 document opnieuw genereren",
+    "regenerateButton_other": "{{count}} documenten opnieuw genereren",
+    "generateButton_one": "1 document genereren",
+    "generateButton_other": "{{count}} documenten genereren",
+    "types": {
+      "EXTENSION_ADDENDUM": {
+        "label": "Verlengingsaddendum",
+        "description": "Formele contractverlengingsovereenkomst"
+      },
+      "RENT_INCREASE_LETTER": {
+        "label": "Huurverhogingsbrief",
+        "description": "Kennisgeving van huurwijzigingen aan huurder"
+      }
+    }
   },
   "generateRentChange": {
     "title": "Huurwijziging genereren",
-    "description": "Genereer een huurwijzigingsmelding."
+    "description": "Genereer een huurwijzigingsmelding.",
+    "regenerateTitle": "Huurwijzigingsdocument opnieuw genereren",
+    "regenerateDescription": "Bestaande documenten worden vervangen",
+    "selectDescription": "Selecteer talen voor de huurwijzigingsmelding",
+    "languages": "Talen",
+    "officialLanguage": "Officiële taal",
+    "translation": "Vertaling",
+    "willGenerate_one": "Genereert 1 document",
+    "willGenerate_other": "Genereert {{count}} documenten",
+    "regenerating": "Opnieuw genereren...",
+    "generating": "Genereren...",
+    "regenerateButton_one": "1 document opnieuw genereren",
+    "regenerateButton_other": "{{count}} documenten opnieuw genereren",
+    "generateButton_one": "1 document genereren",
+    "generateButton_other": "{{count}} documenten genereren"
   },
   "enums": {
     "partyRoles": {
@@ -566,6 +633,17 @@
       "SUPERSEDED": "Vervangen",
       "CANCELLED": "Geannuleerd",
       "DECLINED": "Afgewezen"
+    },
+    "contractTypes": {
+      "FIXED_TERM": "Bepaalde tijd",
+      "INDEFINITE": "Onbepaalde tijd"
+    },
+    "paymentFrequencies": {
+      "MONTHLY": "Maandelijks",
+      "QUARTERLY": "Kwartaal",
+      "ANNUALLY": "Jaarlijks",
+      "BIWEEKLY": "Tweewekelijks",
+      "WEEKLY": "Wekelijks"
     }
   },
   "countryMetadata": {
@@ -711,5 +789,41 @@
   },
   "rentTimeline": {
     "adjustButton": "Aanpassen"
+  },
+  "rentPeriod": {
+    "present": "Heden",
+    "rentChange": "Huurwijziging",
+    "regenerate": "Opnieuw genereren",
+    "generateDocument": "Document genereren",
+    "generateDocumentTitle": "Huurwijzigingsdocument genereren",
+    "historyCount_one": "Geschiedenis (1 periode)",
+    "historyCount_other": "Geschiedenis ({{count}} perioden)",
+    "deleteConfirm": "Weet u zeker dat u deze huurperiode wilt verwijderen?"
+  },
+  "rentBreakdown": {
+    "rentAmount": "Huurbedrag",
+    "breakDown": "Huur opsplitsen in componenten",
+    "title": "Huuroverzicht",
+    "useSingleAmount": "Gebruik één bedrag",
+    "total": "Totaal"
+  },
+  "renewalConfig": {
+    "title": "Verlengingsconfiguratie",
+    "renewalMode": "Verlengingsmodus",
+    "modes": {
+      "NONE": "Geen verlenging",
+      "AUTOMATIC": "Automatisch",
+      "MANUAL": "Handmatig"
+    },
+    "modeDescriptions": {
+      "AUTOMATIC": "Het contract wordt automatisch verlengd wanneer het opzegtermijn verstrijkt. Als bevestiging van de huurder vereist is, blijft de verlenging in afwachting totdat deze is bevestigd.",
+      "MANUAL": "U ontvangt een herinnering wanneer het opzegtermijn nadert. Verlengingen moeten handmatig worden aangemaakt en geactiveerd."
+    },
+    "adjustmentTypes": {
+      "NONE": "Geen aanpassing",
+      "FIXED_PERCENTAGE": "Vast percentage",
+      "FIXED_AMOUNT": "Vast bedrag",
+      "MANUAL": "Handmatig"
+    }
   }
 }

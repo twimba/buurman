@@ -196,7 +196,7 @@ export const PropertyAuditTab = ({ propertyId }: PropertyAuditTabProps) => {
                                 className="bg-surface-card rounded p-2 text-xs"
                               >
                                 <div className="font-semibold text-text-secondary mb-1">
-                                  File Name
+                                  {t('audit.fileName')}
                                 </div>
                                 <div className="text-text-primary">
                                   {String(value)}
@@ -204,7 +204,7 @@ export const PropertyAuditTab = ({ propertyId }: PropertyAuditTabProps) => {
                                 {title ? (
                                   <>
                                     <div className="font-semibold text-text-secondary mb-1 mt-2">
-                                      Title
+                                      {t('audit.titleLabel')}
                                     </div>
                                     <div className="text-text-primary">
                                       {String(title)}
@@ -212,10 +212,12 @@ export const PropertyAuditTab = ({ propertyId }: PropertyAuditTabProps) => {
                                   </>
                                 ) : null}
                                 <div className="font-semibold text-text-secondary mb-1 mt-2">
-                                  Type
+                                  {t('audit.typeLabel')}
                                 </div>
                                 <div className="text-text-primary">
-                                  {category === 'PHOTO' ? 'Photo' : 'Document'}
+                                  {category === 'PHOTO'
+                                    ? t('audit.photo')
+                                    : t('audit.document')}
                                 </div>
                               </div>
                             );
@@ -243,7 +245,7 @@ export const PropertyAuditTab = ({ propertyId }: PropertyAuditTabProps) => {
                               <div className="grid grid-cols-2 gap-2">
                                 <div>
                                   <span className="text-text-secondary">
-                                    Old:{' '}
+                                    {t('audit.old')}{' '}
                                   </span>
                                   {typeof activity.oldValues?.[field] ===
                                     'string' &&
@@ -264,7 +266,7 @@ export const PropertyAuditTab = ({ propertyId }: PropertyAuditTabProps) => {
                                 </div>
                                 <div>
                                   <span className="text-text-secondary">
-                                    New:{' '}
+                                    {t('audit.new')}{' '}
                                   </span>
                                   {typeof activity.newValues?.[field] ===
                                     'string' &&

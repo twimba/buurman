@@ -376,6 +376,33 @@
         "PARKING": "Parkering",
         "SERVICE": "Services",
         "STORAGE": "Opbevaring"
+      },
+      "items": {
+        "SWIMMING_POOL": "Svømmebassin",
+        "GYM": "Fitnesslokale",
+        "SAUNA": "Sauna",
+        "FIREPLACE": "Pejs",
+        "BUILT_IN_VACUUM": "Centralstøvsuger",
+        "IN_UNIT_LAUNDRY": "Vaskemaskine i bolig",
+        "SHARED_LAUNDRY": "Fælles vaskeri",
+        "DISHWASHER": "Opvaskemaskine",
+        "STORAGE_UNIT": "Opbevaringsrum",
+        "BIKE_STORAGE": "Cykelkælder",
+        "FURNISHED": "Møbleret",
+        "DOORMAN_CONCIERGE": "Portner / Concierge",
+        "CONFERENCE_ROOM": "Mødelokale",
+        "RECEPTION_AREA": "Reception",
+        "SERVER_ROOM": "Serverrum",
+        "KITCHENETTE": "Tekøkken",
+        "LOADING_BAY": "Læsserampe",
+        "COMPRESSED_AIR_SYSTEM": "Trykluftssystem",
+        "CHEMICAL_STORAGE": "Kemikalielager",
+        "OVERHEAD_CRANE": "Traverskran",
+        "IRRIGATION_SYSTEM": "Vandingssystem",
+        "GRAIN_SILO": "Kornsilo",
+        "LIVESTOCK_SHELTER": "Stald",
+        "COLD_STORAGE": "Kølerum",
+        "SECURITY_BOOTH": "Vagtbod"
       }
     }
   },

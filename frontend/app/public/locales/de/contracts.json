@@ -141,7 +141,8 @@
       "notesPlaceholder": "Optionaler Grund...",
       "saving": "Speichern...",
       "changeInstructions": "Anweisungen Ändern",
-      "setInstructions": "Anweisungen Festlegen"
+      "setInstructions": "Anweisungen Festlegen",
+      "unnamed": "Unbenannt"
     },
     "notes": "Notizen",
     "renewalConfig": {
@@ -356,8 +357,35 @@
       "rentAmountPositive": "Mietbetrag muss größer als 0 sein",
       "baseRentRequired": "Grundmiete-Komponente ist erforderlich",
       "componentAmountsPositive": "Alle Komponentenbeträge müssen größer als 0 sein",
-      "otherDescriptionRequired": "Benutzerdefinierte Komponente erfordert eine Beschreibung"
-    }
+      "otherDescriptionRequired": "Benutzerdefinierte Komponente erfordert eine Beschreibung",
+      "required": "Pflichtfeld",
+      "invalidEmail": "Ungültige E-Mail-Adresse",
+      "rentCurrencyRequired": "Mietwährung ist erforderlich",
+      "depositCurrencyRequired": "Kautionswährung ist erforderlich",
+      "securityDepositCurrencyRequired": "Währung für Sicherheitsleistung ist erforderlich",
+      "endDateRequired": "Enddatum ist für befristete Verträge erforderlich",
+      "endDateAfterStart": "Enddatum muss am oder nach dem Startdatum liegen",
+      "paymentDueDayRange": "Fälligkeitstag muss zwischen 1 und 31 liegen"
+    },
+    "contractParties": "Vertragsparteien",
+    "contractDetails": "Vertragsdetails",
+    "financialTerms": "Finanzielle Bedingungen",
+    "paymentTerms": "Zahlungsbedingungen",
+    "termination": "Kündigung",
+    "today": "Heute",
+    "termsAndConditions": "Allgemeine Geschäftsbedingungen",
+    "termsAndConditionsPlaceholder": "Vertragsbedingungen eingeben",
+    "signedDate": "Unterzeichnungsdatum",
+    "securityDeposit": "Kaution",
+    "paymentDueDay": "Fälligkeitstag (1–31)",
+    "lateFeePercentage": "Verzugszinssatz",
+    "terminationNoticeDays": "Kündigungsfrist (Tage)",
+    "countryRentalDetails": "{{country}} Mietdetails",
+    "countryRegulatoryFields": "Regulatorische Felder spezifisch für {{country}}",
+    "setCountryForFields": "Legen Sie ein Land für die ausgewählte Immobilie fest, um länderspezifische Regulierungsfelder zu sehen.",
+    "dismissDuplicateWarning": "Überprüfen Sie die obige Duplikatwarnung und schließen Sie sie, um fortzufahren",
+    "dismissDuplicateFirst": "Schließen Sie zuerst die Duplikatwarnung",
+    "change": "Ändern"
   },
   "statusChange": {
     "title": "Vertragsstatus ändern",
@@ -536,11 +564,50 @@
   },
   "generateDocuments": {
     "title": "Dokumente generieren",
-    "description": "Vertragsdokumente aus Vorlagen generieren."
+    "description": "Vertragsdokumente aus Vorlagen generieren.",
+    "regenerateTitle": "Dokumente neu generieren",
+    "regenerateDescription": "Bestehende Dokumente werden ersetzt",
+    "selectDescription": "Dokumenttypen und Sprachen auswählen",
+    "documentTypes": "Dokumenttypen",
+    "languages": "Sprachen",
+    "officialLanguage": "Amtssprache",
+    "translation": "Übersetzung",
+    "willGenerate_one": "Generiert 1 Dokument und speichert es bei den Vertragsdokumenten",
+    "willGenerate_other": "Generiert {{count}} Dokumente und speichert sie bei den Vertragsdokumenten",
+    "regenerating": "Wird neu generiert...",
+    "generating": "Wird generiert...",
+    "regenerateButton_one": "1 Dokument neu generieren",
+    "regenerateButton_other": "{{count}} Dokumente neu generieren",
+    "generateButton_one": "1 Dokument generieren",
+    "generateButton_other": "{{count}} Dokumente generieren",
+    "types": {
+      "EXTENSION_ADDENDUM": {
+        "label": "Verlängerungsanhang",
+        "description": "Formelle Vertragsverlängerungsvereinbarung"
+      },
+      "RENT_INCREASE_LETTER": {
+        "label": "Mieterhöhungsschreiben",
+        "description": "Benachrichtigung des Mieters über Mietänderungen"
+      }
+    }
   },
   "generateRentChange": {
     "title": "Mietänderung generieren",
-    "description": "Eine Mietänderungsbenachrichtigung generieren."
+    "description": "Eine Mietänderungsbenachrichtigung generieren.",
+    "regenerateTitle": "Mietänderungsdokument neu generieren",
+    "regenerateDescription": "Bestehende Dokumente werden ersetzt",
+    "selectDescription": "Sprachen für die Mietänderungsbenachrichtigung auswählen",
+    "languages": "Sprachen",
+    "officialLanguage": "Amtssprache",
+    "translation": "Übersetzung",
+    "willGenerate_one": "Generiert 1 Dokument",
+    "willGenerate_other": "Generiert {{count}} Dokumente",
+    "regenerating": "Wird neu generiert...",
+    "generating": "Wird generiert...",
+    "regenerateButton_one": "1 Dokument neu generieren",
+    "regenerateButton_other": "{{count}} Dokumente neu generieren",
+    "generateButton_one": "1 Dokument generieren",
+    "generateButton_other": "{{count}} Dokumente generieren"
   },
   "enums": {
     "partyRoles": {
@@ -566,6 +633,17 @@
       "SUPERSEDED": "Ersetzt",
       "CANCELLED": "Storniert",
       "DECLINED": "Abgelehnt"
+    },
+    "contractTypes": {
+      "FIXED_TERM": "Befristet",
+      "INDEFINITE": "Unbefristet"
+    },
+    "paymentFrequencies": {
+      "MONTHLY": "Monatlich",
+      "QUARTERLY": "Vierteljährlich",
+      "ANNUALLY": "Jährlich",
+      "BIWEEKLY": "Zweiwöchentlich",
+      "WEEKLY": "Wöchentlich"
     }
   },
   "countryMetadata": {
@@ -711,5 +789,41 @@
   },
   "rentTimeline": {
     "adjustButton": "Anpassen"
+  },
+  "rentPeriod": {
+    "present": "Heute",
+    "rentChange": "Mietänderung",
+    "regenerate": "Neu generieren",
+    "generateDocument": "Dokument generieren",
+    "generateDocumentTitle": "Mietänderungsdokument generieren",
+    "historyCount_one": "Verlauf (1 Zeitraum)",
+    "historyCount_other": "Verlauf ({{count}} Zeiträume)",
+    "deleteConfirm": "Sind Sie sicher, dass Sie diesen Mietzeitraum löschen möchten?"
+  },
+  "rentBreakdown": {
+    "rentAmount": "Mietbetrag",
+    "breakDown": "Miete in Komponenten aufschlüsseln",
+    "title": "Mietaufschlüsselung",
+    "useSingleAmount": "Einzelbetrag verwenden",
+    "total": "Gesamt"
+  },
+  "renewalConfig": {
+    "title": "Verlängerungskonfiguration",
+    "renewalMode": "Verlängerungsmodus",
+    "modes": {
+      "NONE": "Keine Verlängerung",
+      "AUTOMATIC": "Automatisch",
+      "MANUAL": "Manuell"
+    },
+    "modeDescriptions": {
+      "AUTOMATIC": "Der Vertrag wird automatisch verlängert, wenn das Kündigungsfenster abläuft. Wenn eine Kontaktbestätigung erforderlich ist, bleibt die Verlängerung bis zur Bestätigung ausstehend.",
+      "MANUAL": "Sie erhalten eine Erinnerung, wenn sich das Kündigungsfenster nähert. Verlängerungen müssen manuell erstellt und aktiviert werden."
+    },
+    "adjustmentTypes": {
+      "NONE": "Keine Anpassung",
+      "FIXED_PERCENTAGE": "Fester Prozentsatz",
+      "FIXED_AMOUNT": "Fester Betrag",
+      "MANUAL": "Manuell"
+    }
   }
 }

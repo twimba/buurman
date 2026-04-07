@@ -141,7 +141,8 @@
       "notesPlaceholder": "Motivo opcional...",
       "saving": "A guardar...",
       "changeInstructions": "Alterar Instruções",
-      "setInstructions": "Definir Instruções"
+      "setInstructions": "Definir Instruções",
+      "unnamed": "Sem nome"
     },
     "notes": "Notas",
     "renewalConfig": {
@@ -356,8 +357,35 @@
       "rentAmountPositive": "O valor da renda deve ser superior a 0",
       "baseRentRequired": "O componente de renda base é obrigatório",
       "componentAmountsPositive": "Todos os montantes dos componentes devem ser superiores a 0",
-      "otherDescriptionRequired": "O componente personalizado requer uma descrição"
-    }
+      "otherDescriptionRequired": "O componente personalizado requer uma descrição",
+      "required": "Obrigatório",
+      "invalidEmail": "E-mail inválido",
+      "rentCurrencyRequired": "A moeda do aluguel é obrigatória",
+      "depositCurrencyRequired": "A moeda do depósito é obrigatória",
+      "securityDepositCurrencyRequired": "A moeda do depósito de segurança é obrigatória",
+      "endDateRequired": "A data de término é obrigatória para contratos a prazo fixo",
+      "endDateAfterStart": "A data de término deve ser igual ou posterior à data de início",
+      "paymentDueDayRange": "O dia de vencimento deve estar entre 1 e 31"
+    },
+    "contractParties": "Partes do contrato",
+    "contractDetails": "Detalhes do contrato",
+    "financialTerms": "Condições financeiras",
+    "paymentTerms": "Condições de pagamento",
+    "termination": "Rescisão",
+    "today": "Hoje",
+    "termsAndConditions": "Termos e condições",
+    "termsAndConditionsPlaceholder": "Insira os termos e condições do contrato",
+    "signedDate": "Data de assinatura",
+    "securityDeposit": "Depósito de segurança",
+    "paymentDueDay": "Dia de vencimento (1–31)",
+    "lateFeePercentage": "Percentual de multa por atraso",
+    "terminationNoticeDays": "Prazo de aviso prévio (dias)",
+    "countryRentalDetails": "Detalhes de locação em {{country}}",
+    "countryRegulatoryFields": "Campos regulatórios específicos de {{country}}",
+    "setCountryForFields": "Defina um país no imóvel selecionado para ver os campos regulatórios específicos do país.",
+    "dismissDuplicateWarning": "Revise o aviso de duplicata acima e dispense-o para continuar",
+    "dismissDuplicateFirst": "Dispense primeiro o aviso de duplicata",
+    "change": "Alterar"
   },
   "statusChange": {
     "title": "Alterar Estado do Contrato",
@@ -536,11 +564,50 @@
   },
   "generateDocuments": {
     "title": "Gerar Documentos",
-    "description": "Gerar documentos de contrato a partir de modelos."
+    "description": "Gerar documentos de contrato a partir de modelos.",
+    "regenerateTitle": "Regenerar documentos",
+    "regenerateDescription": "Os documentos existentes serão substituídos",
+    "selectDescription": "Selecionar tipos de documentos e idiomas",
+    "documentTypes": "Tipos de documentos",
+    "languages": "Idiomas",
+    "officialLanguage": "Idioma oficial",
+    "translation": "Tradução",
+    "willGenerate_one": "Irá gerar 1 documento e guardar nos documentos do contrato",
+    "willGenerate_other": "Irá gerar {{count}} documentos e guardar nos documentos do contrato",
+    "regenerating": "A regenerar...",
+    "generating": "A gerar...",
+    "regenerateButton_one": "Regenerar 1 documento",
+    "regenerateButton_other": "Regenerar {{count}} documentos",
+    "generateButton_one": "Gerar 1 documento",
+    "generateButton_other": "Gerar {{count}} documentos",
+    "types": {
+      "EXTENSION_ADDENDUM": {
+        "label": "Adenda de extensão",
+        "description": "Acordo formal de extensão de contrato"
+      },
+      "RENT_INCREASE_LETTER": {
+        "label": "Carta de aumento de renda",
+        "description": "Notificação ao inquilino de alterações de renda"
+      }
+    }
   },
   "generateRentChange": {
     "title": "Gerar Alteração de Renda",
-    "description": "Gerar uma notificação de alteração de renda."
+    "description": "Gerar uma notificação de alteração de renda.",
+    "regenerateTitle": "Regenerar documento de alteração de renda",
+    "regenerateDescription": "Os documentos existentes serão substituídos",
+    "selectDescription": "Selecionar idiomas para a notificação de alteração de renda",
+    "languages": "Idiomas",
+    "officialLanguage": "Idioma oficial",
+    "translation": "Tradução",
+    "willGenerate_one": "Irá gerar 1 documento",
+    "willGenerate_other": "Irá gerar {{count}} documentos",
+    "regenerating": "A regenerar...",
+    "generating": "A gerar...",
+    "regenerateButton_one": "Regenerar 1 documento",
+    "regenerateButton_other": "Regenerar {{count}} documentos",
+    "generateButton_one": "Gerar 1 documento",
+    "generateButton_other": "Gerar {{count}} documentos"
   },
   "enums": {
     "partyRoles": {
@@ -566,6 +633,17 @@
       "SUPERSEDED": "Substituído",
       "CANCELLED": "Cancelado",
       "DECLINED": "Recusado"
+    },
+    "contractTypes": {
+      "FIXED_TERM": "Prazo fixo",
+      "INDEFINITE": "Prazo indeterminado"
+    },
+    "paymentFrequencies": {
+      "MONTHLY": "Mensal",
+      "QUARTERLY": "Trimestral",
+      "ANNUALLY": "Anual",
+      "BIWEEKLY": "Quinzenal",
+      "WEEKLY": "Semanal"
     }
   },
   "countryMetadata": {
@@ -711,5 +789,41 @@
   },
   "rentTimeline": {
     "adjustButton": "Ajustar"
+  },
+  "rentPeriod": {
+    "present": "Presente",
+    "rentChange": "Alteração de renda",
+    "regenerate": "Regenerar",
+    "generateDocument": "Gerar documento",
+    "generateDocumentTitle": "Gerar documento de alteração de renda",
+    "historyCount_one": "Histórico (1 período)",
+    "historyCount_other": "Histórico ({{count}} períodos)",
+    "deleteConfirm": "Tem a certeza de que deseja eliminar este período de renda?"
+  },
+  "rentBreakdown": {
+    "rentAmount": "Valor da renda",
+    "breakDown": "Detalhar a renda em componentes",
+    "title": "Detalhe da renda",
+    "useSingleAmount": "Usar valor único",
+    "total": "Total"
+  },
+  "renewalConfig": {
+    "title": "Configuração de renovação",
+    "renewalMode": "Modo de renovação",
+    "modes": {
+      "NONE": "Sem renovação",
+      "AUTOMATIC": "Automático",
+      "MANUAL": "Manual"
+    },
+    "modeDescriptions": {
+      "AUTOMATIC": "O contrato será automaticamente prolongado quando o período de aviso expirar. Se for necessária confirmação do contato, a prorrogação fica pendente até ser confirmada.",
+      "MANUAL": "Receberá um lembrete quando o período de aviso se aproximar. As prorrogações devem ser criadas e ativadas manualmente."
+    },
+    "adjustmentTypes": {
+      "NONE": "Sem ajuste",
+      "FIXED_PERCENTAGE": "Percentagem fixa",
+      "FIXED_AMOUNT": "Valor fixo",
+      "MANUAL": "Manual"
+    }
   }
 }

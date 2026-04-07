@@ -735,6 +735,33 @@
         "PARKING": "Stationnement",
         "SERVICE": "Services",
         "STORAGE": "Rangement"
+      },
+      "items": {
+        "SWIMMING_POOL": "Piscine",
+        "GYM": "Salle de sport",
+        "SAUNA": "Sauna",
+        "FIREPLACE": "Cheminée",
+        "BUILT_IN_VACUUM": "Aspirateur centralisé",
+        "IN_UNIT_LAUNDRY": "Lave-linge intégré",
+        "SHARED_LAUNDRY": "Buanderie commune",
+        "DISHWASHER": "Lave-vaisselle",
+        "STORAGE_UNIT": "Cellier",
+        "BIKE_STORAGE": "Local à vélos",
+        "FURNISHED": "Meublé",
+        "DOORMAN_CONCIERGE": "Gardien / Concierge",
+        "CONFERENCE_ROOM": "Salle de conférence",
+        "RECEPTION_AREA": "Accueil",
+        "SERVER_ROOM": "Salle serveur",
+        "KITCHENETTE": "Kitchenette",
+        "LOADING_BAY": "Quai de chargement",
+        "COMPRESSED_AIR_SYSTEM": "Système d'air comprimé",
+        "CHEMICAL_STORAGE": "Stockage chimique",
+        "OVERHEAD_CRANE": "Pont roulant",
+        "IRRIGATION_SYSTEM": "Système d'irrigation",
+        "GRAIN_SILO": "Silo à grains",
+        "LIVESTOCK_SHELTER": "Étable",
+        "COLD_STORAGE": "Chambre froide",
+        "SECURITY_BOOTH": "Poste de sécurité"
       }
     }
   },

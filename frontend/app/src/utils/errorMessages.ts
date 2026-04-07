@@ -100,6 +100,11 @@ export const getErrorMessage = (error: unknown, t?: TFunction): string => {
       );
     }
 
+    // 409 CONFLICT = BusinessRuleException: always user-facing, translate or show as-is
+    if (error.response?.status === 409 && data?.detail) {
+      return formatBusinessRuleError(data.detail, t);
+    }
+
     // Check for ProblemDetail format (RFC 7807)
     if (data?.detail) {
       return formatErrorMessage(data.detail, t);
@@ -158,6 +163,81 @@ export const getErrorMessage = (error: unknown, t?: TFunction): string => {
   return t
     ? t('errors.generic')
     : 'An unexpected error occurred. Please try again.';
+};
+
+// Maps exact BusinessRuleException messages (backend) to i18n keys.
+// All 409 CONFLICT responses come from BusinessRuleException and are user-facing by design.
+const BUSINESS_RULE_KEYS: Record<string, string> = {
+  'Extensions can only be created for fixed-term contracts':
+    'errors.businessRules.extensionsFixedTermOnly',
+  'Extensions can only be created for active contracts':
+    'errors.businessRules.extensionsActiveOnly',
+  'Contract already has a pending draft extension':
+    'errors.businessRules.extensionPendingDraft',
+  'Contract already has a pending or active extension':
+    'errors.businessRules.extensionPendingOrActive',
+  'Contract already has an active extension':
+    'errors.businessRules.extensionAlreadyActive',
+  'Cannot extend indefinite contract':
+    'errors.businessRules.cannotExtendIndefinite',
+  'Contact confirmation required before activation':
+    'errors.businessRules.contactConfirmationRequired',
+  'Maximum number of renewals reached':
+    'errors.businessRules.maxRenewalsReached',
+  'Can only generate payments for ACTIVE contracts':
+    'errors.businessRules.paymentsActiveContractOnly',
+  'Payment is already marked as paid':
+    'errors.businessRules.paymentAlreadyPaid',
+  'Payment is already fully paid':
+    'errors.businessRules.paymentAlreadyFullyPaid',
+  'Cannot mark a cancelled payment as paid':
+    'errors.businessRules.cannotMarkCancelledPaid',
+  'Cannot register receival on a cancelled payment':
+    'errors.businessRules.cannotReceiveCancelled',
+  'Can only edit rent periods that have not yet taken effect':
+    'errors.businessRules.cannotEditActivePeriod',
+  'Effective date cannot be before the contract start date':
+    'errors.businessRules.effectiveDateBeforeStart',
+  'Effective date cannot be after the contract end date':
+    'errors.businessRules.effectiveDateAfterEnd',
+  'End date cannot be before start date':
+    'errors.businessRules.endDateBeforeStart',
+  'Amenity already linked to this property':
+    'errors.businessRules.amenityAlreadyLinked',
+  'A user with this email or username already exists':
+    'errors.businessRules.userAlreadyExists',
+  'User already member of this team':
+    'errors.businessRules.userAlreadyMember',
+  'Cannot remove yourself': 'errors.businessRules.cannotRemoveYourself',
+  'Cannot change your own role': 'errors.businessRules.cannotChangeOwnRole',
+  'Cannot transfer ownership to yourself':
+    'errors.businessRules.cannotTransferToSelf',
+  'Cannot leave team you own. Transfer ownership first.':
+    'errors.businessRules.cannotLeaveOwnedTeam',
+  'Cannot send an invalid invitation':
+    'errors.businessRules.invalidInvitation',
+  'Invalid invitation code': 'errors.businessRules.invalidInvitationCode',
+  'Invitation already accepted': 'errors.businessRules.invitationAccepted',
+  'Invitation code is no longer valid':
+    'errors.businessRules.invitationExpiredCode',
+  'Invitation does not belong to this team':
+    'errors.businessRules.invitationWrongTeam',
+  'Invitation email does not match': 'errors.businessRules.invitationEmailMismatch',
+  'Invitation expired': 'errors.businessRules.invitationExpired',
+  'Invitation is already revoked': 'errors.businessRules.invitationRevoked',
+  'Email sending is not configured': 'errors.businessRules.emailNotConfigured',
+  'SMS sending is not configured': 'errors.businessRules.smsNotConfigured',
+};
+
+const formatBusinessRuleError = (message: string, t?: TFunction): string => {
+  if (t) {
+    const key = BUSINESS_RULE_KEYS[message];
+    if (key) {
+      return t(key);
+    }
+  }
+  // Unknown business rule: show the backend message directly (it's user-facing by design)
+  return message;
 };
 
 const ERROR_MAPPING_KEYS: Record<string, string> = {

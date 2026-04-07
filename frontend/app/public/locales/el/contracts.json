@@ -141,7 +141,8 @@
       "notesPlaceholder": "Προαιρετικός λόγος...",
       "saving": "Αποθήκευση...",
       "changeInstructions": "Αλλαγή Οδηγιών",
-      "setInstructions": "Ορισμός Οδηγιών"
+      "setInstructions": "Ορισμός Οδηγιών",
+      "unnamed": "Χωρίς όνομα"
     },
     "notes": "Σημειώσεις",
     "renewalConfig": {
@@ -356,8 +357,35 @@
       "rentAmountPositive": "Το ποσό ενοικίου πρέπει να είναι μεγαλύτερο από 0",
       "baseRentRequired": "Το στοιχείο βασικού ενοικίου είναι υποχρεωτικό",
       "componentAmountsPositive": "Όλα τα ποσά στοιχείων πρέπει να είναι μεγαλύτερα από 0",
-      "otherDescriptionRequired": "Το προσαρμοσμένο στοιχείο απαιτεί περιγραφή"
-    }
+      "otherDescriptionRequired": "Το προσαρμοσμένο στοιχείο απαιτεί περιγραφή",
+      "required": "Υποχρεωτικό",
+      "invalidEmail": "Μη έγκυρο email",
+      "rentCurrencyRequired": "Το νόμισμα ενοικίου είναι υποχρεωτικό",
+      "depositCurrencyRequired": "Το νόμισμα κατάθεσης είναι υποχρεωτικό",
+      "securityDepositCurrencyRequired": "Το νόμισμα εγγυοδοσίας είναι υποχρεωτικό",
+      "endDateRequired": "Η ημερομηνία λήξης είναι υποχρεωτική για συμβόλαια ορισμένου χρόνου",
+      "endDateAfterStart": "Η ημερομηνία λήξης πρέπει να είναι ίδια ή μεταγενέστερη της ημερομηνίας έναρξης",
+      "paymentDueDayRange": "Η ημέρα πληρωμής πρέπει να είναι μεταξύ 1 και 31"
+    },
+    "contractParties": "Συμβαλλόμενα μέρη",
+    "contractDetails": "Λεπτομέρειες συμβολαίου",
+    "financialTerms": "Οικονομικοί όροι",
+    "paymentTerms": "Όροι πληρωμής",
+    "termination": "Λύση σύμβασης",
+    "today": "Σήμερα",
+    "termsAndConditions": "Όροι και προϋποθέσεις",
+    "termsAndConditionsPlaceholder": "Εισάγετε τους όρους και προϋποθέσεις του συμβολαίου",
+    "signedDate": "Ημερομηνία υπογραφής",
+    "securityDeposit": "Εγγυοδοσία",
+    "paymentDueDay": "Ημέρα λήξης πληρωμής (1–31)",
+    "lateFeePercentage": "Ποσοστό καθυστερημένης πληρωμής",
+    "terminationNoticeDays": "Ημέρες προειδοποίησης καταγγελίας",
+    "countryRentalDetails": "Στοιχεία ενοικίασης {{country}}",
+    "countryRegulatoryFields": "Ρυθμιστικά πεδία ειδικά για {{country}}",
+    "setCountryForFields": "Ορίστε χώρα στο επιλεγμένο ακίνητο για να δείτε τα ειδικά κανονιστικά πεδία.",
+    "dismissDuplicateWarning": "Ελέγξτε την παραπάνω προειδοποίηση διπλότυπου και απορρίψτε την για να συνεχίσετε",
+    "dismissDuplicateFirst": "Απορρίψτε πρώτα την προειδοποίηση διπλότυπου",
+    "change": "Αλλαγή"
   },
   "statusChange": {
     "title": "Αλλαγή Κατάστασης Συμβολαίου",
@@ -536,11 +564,50 @@
   },
   "generateDocuments": {
     "title": "Δημιουργία Εγγράφων",
-    "description": "Δημιουργήστε έγγραφα συμβολαίου από πρότυπα."
+    "description": "Δημιουργήστε έγγραφα συμβολαίου από πρότυπα.",
+    "regenerateTitle": "Εκ νέου δημιουργία εγγράφων",
+    "regenerateDescription": "Τα υπάρχοντα έγγραφα θα αντικατασταθούν",
+    "selectDescription": "Επιλογή τύπων εγγράφων και γλωσσών",
+    "documentTypes": "Τύποι εγγράφων",
+    "languages": "Γλώσσες",
+    "officialLanguage": "Επίσημη γλώσσα",
+    "translation": "Μετάφραση",
+    "willGenerate_one": "Θα δημιουργήσει 1 έγγραφο και θα το αποθηκεύσει στα έγγραφα συμβολαίου",
+    "willGenerate_other": "Θα δημιουργήσει {{count}} έγγραφα και θα τα αποθηκεύσει στα έγγραφα συμβολαίου",
+    "regenerating": "Εκ νέου δημιουργία...",
+    "generating": "Δημιουργία...",
+    "regenerateButton_one": "Εκ νέου δημιουργία 1 εγγράφου",
+    "regenerateButton_other": "Εκ νέου δημιουργία {{count}} εγγράφων",
+    "generateButton_one": "Δημιουργία 1 εγγράφου",
+    "generateButton_other": "Δημιουργία {{count}} εγγράφων",
+    "types": {
+      "EXTENSION_ADDENDUM": {
+        "label": "Πρόσθετο παράταση",
+        "description": "Επίσημη συμφωνία παράτασης συμβολαίου"
+      },
+      "RENT_INCREASE_LETTER": {
+        "label": "Επιστολή αύξησης ενοικίου",
+        "description": "Ειδοποίηση ενοικιαστή για αλλαγές ενοικίου"
+      }
+    }
   },
   "generateRentChange": {
     "title": "Δημιουργία Αλλαγής Ενοικίου",
-    "description": "Δημιουργήστε ειδοποίηση αλλαγής ενοικίου."
+    "description": "Δημιουργήστε ειδοποίηση αλλαγής ενοικίου.",
+    "regenerateTitle": "Εκ νέου δημιουργία εγγράφου αλλαγής ενοικίου",
+    "regenerateDescription": "Τα υπάρχοντα έγγραφα θα αντικατασταθούν",
+    "selectDescription": "Επιλογή γλωσσών για την ειδοποίηση αλλαγής ενοικίου",
+    "languages": "Γλώσσες",
+    "officialLanguage": "Επίσημη γλώσσα",
+    "translation": "Μετάφραση",
+    "willGenerate_one": "Θα δημιουργήσει 1 έγγραφο",
+    "willGenerate_other": "Θα δημιουργήσει {{count}} έγγραφα",
+    "regenerating": "Εκ νέου δημιουργία...",
+    "generating": "Δημιουργία...",
+    "regenerateButton_one": "Εκ νέου δημιουργία 1 εγγράφου",
+    "regenerateButton_other": "Εκ νέου δημιουργία {{count}} εγγράφων",
+    "generateButton_one": "Δημιουργία 1 εγγράφου",
+    "generateButton_other": "Δημιουργία {{count}} εγγράφων"
   },
   "enums": {
     "partyRoles": {
@@ -566,6 +633,17 @@
       "SUPERSEDED": "Αντικαταστάθηκε",
       "CANCELLED": "Ακυρώθηκε",
       "DECLINED": "Απορρίφθηκε"
+    },
+    "contractTypes": {
+      "FIXED_TERM": "Ορισμένου χρόνου",
+      "INDEFINITE": "Αορίστου χρόνου"
+    },
+    "paymentFrequencies": {
+      "MONTHLY": "Μηνιαίως",
+      "QUARTERLY": "Τριμηνιαίως",
+      "ANNUALLY": "Ετησίως",
+      "BIWEEKLY": "Κάθε δύο εβδομάδες",
+      "WEEKLY": "Εβδομαδιαίως"
     }
   },
   "countryMetadata": {
@@ -711,5 +789,41 @@
   },
   "rentTimeline": {
     "adjustButton": "Ρύθμιση"
+  },
+  "rentPeriod": {
+    "present": "Παρόν",
+    "rentChange": "Αλλαγή ενοικίου",
+    "regenerate": "Εκ νέου δημιουργία",
+    "generateDocument": "Δημιουργία εγγράφου",
+    "generateDocumentTitle": "Δημιουργία εγγράφου αλλαγής ενοικίου",
+    "historyCount_one": "Ιστορικό (1 περίοδος)",
+    "historyCount_other": "Ιστορικό ({{count}} περίοδοι)",
+    "deleteConfirm": "Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτή την περίοδο ενοικίου;"
+  },
+  "rentBreakdown": {
+    "rentAmount": "Ποσό ενοικίου",
+    "breakDown": "Ανάλυση ενοικίου σε συστατικά",
+    "title": "Ανάλυση ενοικίου",
+    "useSingleAmount": "Χρήση ενιαίου ποσού",
+    "total": "Σύνολο"
+  },
+  "renewalConfig": {
+    "title": "Διαμόρφωση ανανέωσης",
+    "renewalMode": "Τρόπος ανανέωσης",
+    "modes": {
+      "NONE": "Χωρίς ανανέωση",
+      "AUTOMATIC": "Αυτόματος",
+      "MANUAL": "Μη αυτόματος"
+    },
+    "modeDescriptions": {
+      "AUTOMATIC": "Το συμβόλαιο θα παρατείνεται αυτόματα όταν λήξει η περίοδος προειδοποίησης. Εάν απαιτείται επιβεβαίωση επαφής, η παράταση παραμένει σε εκκρεμότητα μέχρι να επιβεβαιωθεί.",
+      "MANUAL": "Θα λαμβάνετε υπενθύμιση όταν πλησιάζει η περίοδος προειδοποίησης. Οι παρατάσεις πρέπει να δημιουργούνται και να ενεργοποιούνται χειροκίνητα."
+    },
+    "adjustmentTypes": {
+      "NONE": "Χωρίς προσαρμογή",
+      "FIXED_PERCENTAGE": "Σταθερό ποσοστό",
+      "FIXED_AMOUNT": "Σταθερό ποσό",
+      "MANUAL": "Μη αυτόματος"
+    }
   }
 }

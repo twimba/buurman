@@ -141,7 +141,8 @@
       "notesPlaceholder": "Raison optionnelle...",
       "saving": "Enregistrement...",
       "changeInstructions": "Modifier les Instructions",
-      "setInstructions": "Définir les Instructions"
+      "setInstructions": "Définir les Instructions",
+      "unnamed": "Sans nom"
     },
     "notes": "Notes",
     "renewalConfig": {
@@ -356,8 +357,35 @@
       "rentAmountPositive": "Le montant du loyer doit être supérieur à 0",
       "baseRentRequired": "La composante de loyer de base est obligatoire",
       "componentAmountsPositive": "Tous les montants des composantes doivent être supérieurs à 0",
-      "otherDescriptionRequired": "La composante personnalisée nécessite une description"
-    }
+      "otherDescriptionRequired": "La composante personnalisée nécessite une description",
+      "required": "Obligatoire",
+      "invalidEmail": "Adresse e-mail invalide",
+      "rentCurrencyRequired": "La devise du loyer est obligatoire",
+      "depositCurrencyRequired": "La devise du dépôt est obligatoire",
+      "securityDepositCurrencyRequired": "La devise du dépôt de garantie est obligatoire",
+      "endDateRequired": "La date de fin est obligatoire pour les contrats à durée déterminée",
+      "endDateAfterStart": "La date de fin doit être égale ou postérieure à la date de début",
+      "paymentDueDayRange": "Le jour d'échéance doit être compris entre 1 et 31"
+    },
+    "contractParties": "Parties au contrat",
+    "contractDetails": "Détails du contrat",
+    "financialTerms": "Conditions financières",
+    "paymentTerms": "Conditions de paiement",
+    "termination": "Résiliation",
+    "today": "Aujourd'hui",
+    "termsAndConditions": "Termes et conditions",
+    "termsAndConditionsPlaceholder": "Saisir les termes et conditions du contrat",
+    "signedDate": "Date de signature",
+    "securityDeposit": "Dépôt de garantie",
+    "paymentDueDay": "Jour d'échéance (1–31)",
+    "lateFeePercentage": "Taux de pénalité de retard",
+    "terminationNoticeDays": "Délai de préavis (jours)",
+    "countryRentalDetails": "Détails de location en {{country}}",
+    "countryRegulatoryFields": "Champs réglementaires spécifiques à {{country}}",
+    "setCountryForFields": "Définissez un pays sur le bien sélectionné pour voir les champs réglementaires spécifiques au pays.",
+    "dismissDuplicateWarning": "Examinez l'avertissement de doublon ci-dessus et ignorez-le pour continuer",
+    "dismissDuplicateFirst": "Ignorez d'abord l'avertissement de doublon",
+    "change": "Modifier"
   },
   "statusChange": {
     "title": "Changer le statut du contrat",
@@ -536,11 +564,50 @@
   },
   "generateDocuments": {
     "title": "Générer des documents",
-    "description": "Générer des documents de contrat à partir de modèles."
+    "description": "Générer des documents de contrat à partir de modèles.",
+    "regenerateTitle": "Régénérer les documents",
+    "regenerateDescription": "Les documents existants seront remplacés",
+    "selectDescription": "Sélectionner les types de documents et les langues",
+    "documentTypes": "Types de documents",
+    "languages": "Langues",
+    "officialLanguage": "Langue officielle",
+    "translation": "Traduction",
+    "willGenerate_one": "Générera 1 document et l'enregistrera dans les documents du contrat",
+    "willGenerate_other": "Générera {{count}} documents et les enregistrera dans les documents du contrat",
+    "regenerating": "Régénération...",
+    "generating": "Génération...",
+    "regenerateButton_one": "Régénérer 1 document",
+    "regenerateButton_other": "Régénérer {{count}} documents",
+    "generateButton_one": "Générer 1 document",
+    "generateButton_other": "Générer {{count}} documents",
+    "types": {
+      "EXTENSION_ADDENDUM": {
+        "label": "Avenant de prolongation",
+        "description": "Accord formel de prolongation de contrat"
+      },
+      "RENT_INCREASE_LETTER": {
+        "label": "Lettre d'augmentation de loyer",
+        "description": "Notification au locataire des modifications de loyer"
+      }
+    }
   },
   "generateRentChange": {
     "title": "Générer un changement de loyer",
-    "description": "Générer une notification de changement de loyer."
+    "description": "Générer une notification de changement de loyer.",
+    "regenerateTitle": "Régénérer le document de modification de loyer",
+    "regenerateDescription": "Les documents existants seront remplacés",
+    "selectDescription": "Sélectionner les langues pour la notification de modification de loyer",
+    "languages": "Langues",
+    "officialLanguage": "Langue officielle",
+    "translation": "Traduction",
+    "willGenerate_one": "Générera 1 document",
+    "willGenerate_other": "Générera {{count}} documents",
+    "regenerating": "Régénération...",
+    "generating": "Génération...",
+    "regenerateButton_one": "Régénérer 1 document",
+    "regenerateButton_other": "Régénérer {{count}} documents",
+    "generateButton_one": "Générer 1 document",
+    "generateButton_other": "Générer {{count}} documents"
   },
   "enums": {
     "partyRoles": {
@@ -566,6 +633,17 @@
       "SUPERSEDED": "Remplacé",
       "CANCELLED": "Annulé",
       "DECLINED": "Refusé"
+    },
+    "contractTypes": {
+      "FIXED_TERM": "Durée déterminée",
+      "INDEFINITE": "Durée indéterminée"
+    },
+    "paymentFrequencies": {
+      "MONTHLY": "Mensuel",
+      "QUARTERLY": "Trimestriel",
+      "ANNUALLY": "Annuel",
+      "BIWEEKLY": "Bimensuel",
+      "WEEKLY": "Hebdomadaire"
     }
   },
   "countryMetadata": {
@@ -711,5 +789,41 @@
   },
   "rentTimeline": {
     "adjustButton": "Ajuster"
+  },
+  "rentPeriod": {
+    "present": "Présent",
+    "rentChange": "Modification du loyer",
+    "regenerate": "Régénérer",
+    "generateDocument": "Générer le document",
+    "generateDocumentTitle": "Générer le document de modification de loyer",
+    "historyCount_one": "Historique (1 période)",
+    "historyCount_other": "Historique ({{count}} périodes)",
+    "deleteConfirm": "Êtes-vous sûr de vouloir supprimer cette période de loyer ?"
+  },
+  "rentBreakdown": {
+    "rentAmount": "Montant du loyer",
+    "breakDown": "Décomposer le loyer en composantes",
+    "title": "Décomposition du loyer",
+    "useSingleAmount": "Utiliser un montant unique",
+    "total": "Total"
+  },
+  "renewalConfig": {
+    "title": "Configuration du renouvellement",
+    "renewalMode": "Mode de renouvellement",
+    "modes": {
+      "NONE": "Sans renouvellement",
+      "AUTOMATIC": "Automatique",
+      "MANUAL": "Manuel"
+    },
+    "modeDescriptions": {
+      "AUTOMATIC": "Le contrat sera automatiquement prolongé lorsque la fenêtre de préavis expire. Si une confirmation du contact est requise, la prolongation reste en attente jusqu'à confirmation.",
+      "MANUAL": "Vous recevrez un rappel lorsque la fenêtre de préavis approche. Les prolongations doivent être créées et activées manuellement."
+    },
+    "adjustmentTypes": {
+      "NONE": "Pas d'ajustement",
+      "FIXED_PERCENTAGE": "Pourcentage fixe",
+      "FIXED_AMOUNT": "Montant fixe",
+      "MANUAL": "Manuel"
+    }
   }
 }

@@ -376,6 +376,33 @@
         "PARKING": "Parkering",
         "SERVICE": "Tjänster",
         "STORAGE": "Förvaring"
+      },
+      "items": {
+        "SWIMMING_POOL": "Simbassäng",
+        "GYM": "Gym",
+        "SAUNA": "Bastu",
+        "FIREPLACE": "Öppen spis",
+        "BUILT_IN_VACUUM": "Centraldammsugare",
+        "IN_UNIT_LAUNDRY": "Tvättmaskin i lägenheten",
+        "SHARED_LAUNDRY": "Gemensam tvättstuga",
+        "DISHWASHER": "Diskmaskin",
+        "STORAGE_UNIT": "Förråd",
+        "BIKE_STORAGE": "Cykelförråd",
+        "FURNISHED": "Möblerad",
+        "DOORMAN_CONCIERGE": "Portvakt / Concierge",
+        "CONFERENCE_ROOM": "Konferensrum",
+        "RECEPTION_AREA": "Reception",
+        "SERVER_ROOM": "Serverrum",
+        "KITCHENETTE": "Pentry",
+        "LOADING_BAY": "Lastkaj",
+        "COMPRESSED_AIR_SYSTEM": "Tryckluftssystem",
+        "CHEMICAL_STORAGE": "Kemikalieförråd",
+        "OVERHEAD_CRANE": "Traverss",
+        "IRRIGATION_SYSTEM": "Bevattningssystem",
+        "GRAIN_SILO": "Spannmålssilo",
+        "LIVESTOCK_SHELTER": "Djurstall",
+        "COLD_STORAGE": "Kylrum",
+        "SECURITY_BOOTH": "Vaktbod"
       }
     }
   },

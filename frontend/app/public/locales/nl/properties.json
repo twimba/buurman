@@ -884,6 +884,33 @@
         "PARKING": "Parkeren",
         "SERVICE": "Services",
         "STORAGE": "Opslag"
+      },
+      "items": {
+        "SWIMMING_POOL": "Zwembad",
+        "GYM": "Fitnessruimte",
+        "SAUNA": "Sauna",
+        "FIREPLACE": "Open haard",
+        "BUILT_IN_VACUUM": "Inbouwstofzuiger",
+        "IN_UNIT_LAUNDRY": "Wasmachine in woning",
+        "SHARED_LAUNDRY": "Gemeenschappelijke wasruimte",
+        "DISHWASHER": "Vaatwasser",
+        "STORAGE_UNIT": "Berging",
+        "BIKE_STORAGE": "Fietsenstalling",
+        "FURNISHED": "Gemeubileerd",
+        "DOORMAN_CONCIERGE": "Portier / Conciërge",
+        "CONFERENCE_ROOM": "Vergaderruimte",
+        "RECEPTION_AREA": "Receptie",
+        "SERVER_ROOM": "Serverruimte",
+        "KITCHENETTE": "Pantry",
+        "LOADING_BAY": "Laadperron",
+        "COMPRESSED_AIR_SYSTEM": "Persluchtinstallatie",
+        "CHEMICAL_STORAGE": "Chemische opslag",
+        "OVERHEAD_CRANE": "Bovenloopkraan",
+        "IRRIGATION_SYSTEM": "Irrigatiesysteem",
+        "GRAIN_SILO": "Graansilo",
+        "LIVESTOCK_SHELTER": "Veestal",
+        "COLD_STORAGE": "Koelruimte",
+        "SECURITY_BOOTH": "Beveiligingsloge"
       }
     }
   },

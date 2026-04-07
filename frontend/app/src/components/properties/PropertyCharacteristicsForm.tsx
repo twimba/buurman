@@ -1515,7 +1515,9 @@ const AmenitiesSection = ({
                           className="rounded border-border-strong text-primary-500 focus:ring-primary-500"
                         />
                         <span className="text-sm text-text-secondary">
-                          {amenity.name}
+                          {t(`enums.amenities.items.${amenity.name}`, {
+                            defaultValue: amenity.name,
+                          })}
                         </span>
                       </label>
                       {checked && existing?.notes && (

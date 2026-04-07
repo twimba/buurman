@@ -141,7 +141,8 @@
       "notesPlaceholder": "Motivo facoltativo...",
       "saving": "Salvataggio...",
       "changeInstructions": "Modifica istruzioni",
-      "setInstructions": "Imposta istruzioni"
+      "setInstructions": "Imposta istruzioni",
+      "unnamed": "Senza nome"
     },
     "notes": "Note",
     "renewalConfig": {
@@ -356,8 +357,35 @@
       "rentAmountPositive": "L'importo del canone deve essere maggiore di 0",
       "baseRentRequired": "La componente del canone base è obbligatoria",
       "componentAmountsPositive": "Tutti gli importi delle componenti devono essere maggiori di 0",
-      "otherDescriptionRequired": "La componente personalizzata richiede una descrizione"
-    }
+      "otherDescriptionRequired": "La componente personalizzata richiede una descrizione",
+      "required": "Obbligatorio",
+      "invalidEmail": "Indirizzo e-mail non valido",
+      "rentCurrencyRequired": "La valuta dell'affitto è obbligatoria",
+      "depositCurrencyRequired": "La valuta del deposito è obbligatoria",
+      "securityDepositCurrencyRequired": "La valuta del deposito cauzionale è obbligatoria",
+      "endDateRequired": "La data di fine è obbligatoria per i contratti a termine",
+      "endDateAfterStart": "La data di fine deve essere uguale o successiva alla data di inizio",
+      "paymentDueDayRange": "Il giorno di scadenza deve essere compreso tra 1 e 31"
+    },
+    "contractParties": "Parti del contratto",
+    "contractDetails": "Dettagli del contratto",
+    "financialTerms": "Condizioni finanziarie",
+    "paymentTerms": "Condizioni di pagamento",
+    "termination": "Risoluzione",
+    "today": "Oggi",
+    "termsAndConditions": "Termini e condizioni",
+    "termsAndConditionsPlaceholder": "Inserire i termini e le condizioni del contratto",
+    "signedDate": "Data di firma",
+    "securityDeposit": "Deposito cauzionale",
+    "paymentDueDay": "Giorno di scadenza (1–31)",
+    "lateFeePercentage": "Percentuale mora",
+    "terminationNoticeDays": "Giorni di preavviso per risoluzione",
+    "countryRentalDetails": "Dettagli locazione in {{country}}",
+    "countryRegulatoryFields": "Campi normativi specifici per {{country}}",
+    "setCountryForFields": "Imposta un paese sulla proprietà selezionata per visualizzare i campi normativi specifici del paese.",
+    "dismissDuplicateWarning": "Esamina l'avviso di duplicato sopra e ignoralo per continuare",
+    "dismissDuplicateFirst": "Ignora prima l'avviso di duplicato",
+    "change": "Modifica"
   },
   "statusChange": {
     "title": "Cambia stato del contratto",
@@ -536,11 +564,50 @@
   },
   "generateDocuments": {
     "title": "Genera documenti",
-    "description": "Generi i documenti contrattuali dai modelli."
+    "description": "Generi i documenti contrattuali dai modelli.",
+    "regenerateTitle": "Rigenera documenti",
+    "regenerateDescription": "I documenti esistenti verranno sostituiti",
+    "selectDescription": "Seleziona tipi di documento e lingue",
+    "documentTypes": "Tipi di documento",
+    "languages": "Lingue",
+    "officialLanguage": "Lingua ufficiale",
+    "translation": "Traduzione",
+    "willGenerate_one": "Genererà 1 documento e lo salverà nei documenti del contratto",
+    "willGenerate_other": "Genererà {{count}} documenti e li salverà nei documenti del contratto",
+    "regenerating": "Rigenerazione in corso...",
+    "generating": "Generazione in corso...",
+    "regenerateButton_one": "Rigenera 1 documento",
+    "regenerateButton_other": "Rigenera {{count}} documenti",
+    "generateButton_one": "Genera 1 documento",
+    "generateButton_other": "Genera {{count}} documenti",
+    "types": {
+      "EXTENSION_ADDENDUM": {
+        "label": "Addendum di proroga",
+        "description": "Accordo formale di proroga del contratto"
+      },
+      "RENT_INCREASE_LETTER": {
+        "label": "Lettera di aumento affitto",
+        "description": "Notifica al conduttore delle modifiche dell'affitto"
+      }
+    }
   },
   "generateRentChange": {
     "title": "Genera variazione del canone",
-    "description": "Generi una notifica di variazione del canone."
+    "description": "Generi una notifica di variazione del canone.",
+    "regenerateTitle": "Rigenera documento di modifica affitto",
+    "regenerateDescription": "I documenti esistenti verranno sostituiti",
+    "selectDescription": "Seleziona le lingue per la notifica di modifica affitto",
+    "languages": "Lingue",
+    "officialLanguage": "Lingua ufficiale",
+    "translation": "Traduzione",
+    "willGenerate_one": "Genererà 1 documento",
+    "willGenerate_other": "Genererà {{count}} documenti",
+    "regenerating": "Rigenerazione in corso...",
+    "generating": "Generazione in corso...",
+    "regenerateButton_one": "Rigenera 1 documento",
+    "regenerateButton_other": "Rigenera {{count}} documenti",
+    "generateButton_one": "Genera 1 documento",
+    "generateButton_other": "Genera {{count}} documenti"
   },
   "enums": {
     "partyRoles": {
@@ -566,6 +633,17 @@
       "SUPERSEDED": "Sostituita",
       "CANCELLED": "Annullata",
       "DECLINED": "Rifiutata"
+    },
+    "contractTypes": {
+      "FIXED_TERM": "Durata determinata",
+      "INDEFINITE": "Durata indeterminata"
+    },
+    "paymentFrequencies": {
+      "MONTHLY": "Mensile",
+      "QUARTERLY": "Trimestrale",
+      "ANNUALLY": "Annuale",
+      "BIWEEKLY": "Quindicinale",
+      "WEEKLY": "Settimanale"
     }
   },
   "countryMetadata": {
@@ -711,5 +789,41 @@
   },
   "rentTimeline": {
     "adjustButton": "Regola"
+  },
+  "rentPeriod": {
+    "present": "Presente",
+    "rentChange": "Modifica dell'affitto",
+    "regenerate": "Rigenera",
+    "generateDocument": "Genera documento",
+    "generateDocumentTitle": "Genera documento di modifica dell'affitto",
+    "historyCount_one": "Storico (1 periodo)",
+    "historyCount_other": "Storico ({{count}} periodi)",
+    "deleteConfirm": "Sei sicuro di voler eliminare questo periodo di affitto?"
+  },
+  "rentBreakdown": {
+    "rentAmount": "Importo affitto",
+    "breakDown": "Suddividi l'affitto in componenti",
+    "title": "Suddivisione affitto",
+    "useSingleAmount": "Usa importo singolo",
+    "total": "Totale"
+  },
+  "renewalConfig": {
+    "title": "Configurazione rinnovo",
+    "renewalMode": "Modalità di rinnovo",
+    "modes": {
+      "NONE": "Nessun rinnovo",
+      "AUTOMATIC": "Automatico",
+      "MANUAL": "Manuale"
+    },
+    "modeDescriptions": {
+      "AUTOMATIC": "Il contratto verrà automaticamente prolungato quando scade la finestra di preavviso. Se è richiesta la conferma del contatto, il rinnovo rimane in attesa fino alla conferma.",
+      "MANUAL": "Riceverai un promemoria quando si avvicina la finestra di preavviso. I rinnovi devono essere creati e attivati manualmente."
+    },
+    "adjustmentTypes": {
+      "NONE": "Nessuna modifica",
+      "FIXED_PERCENTAGE": "Percentuale fissa",
+      "FIXED_AMOUNT": "Importo fisso",
+      "MANUAL": "Manuale"
+    }
   }
 }

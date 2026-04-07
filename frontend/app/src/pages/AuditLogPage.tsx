@@ -366,7 +366,10 @@ export const AuditLogPage = () => {
                             <span
                               className={`px-2 py-1 text-xs font-semibold rounded ${getEntityTypeColor(activity.entityType)}`}
                             >
-                              {activity.entityType}
+                              {t(
+                                `common:auditLog.entityTypes.${activity.entityType.toLowerCase()}`,
+                                { defaultValue: activity.entityType }
+                              )}
                             </span>
                           </td>
                           <td
@@ -376,7 +379,10 @@ export const AuditLogPage = () => {
                             <span
                               className={`px-2 py-1 text-xs font-semibold rounded ${getActionColor(activity.action)}`}
                             >
-                              {activity.action}
+                              {t(
+                                `common:auditLog.actions.${activity.action.toLowerCase()}d`,
+                                { defaultValue: activity.action }
+                              )}
                             </span>
                           </td>
                           <td

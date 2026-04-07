@@ -230,7 +230,7 @@ export const ContractPaymentInstructionSection = ({
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-medium text-text-primary">
-                  {current.name || 'Unnamed'}
+                  {current.name || t('overview.paymentInstructions.unnamed')}
                 </span>
                 <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-surface-inset text-text-secondary">
                   {PaymentMethodLabels[
@@ -653,7 +653,7 @@ const HistoryEntry = ({
                 isCurrent ? 'text-text-primary' : 'text-text-secondary'
               }`}
             >
-              {entry.name || 'Unnamed'}
+              {entry.name || t('overview.paymentInstructions.unnamed')}
             </span>
             <span className="px-1.5 py-0.5 text-xs rounded bg-surface-inset text-text-secondary">
               {PaymentMethodLabels[entry.paymentMethod as PaymentMethod] ||

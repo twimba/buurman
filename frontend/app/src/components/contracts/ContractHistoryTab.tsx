@@ -140,7 +140,7 @@ export const ContractHistoryTab = ({ contractId }: ContractHistoryTabProps) => {
                                 className="bg-surface-card rounded p-2 text-xs"
                               >
                                 <div className="font-semibold text-text-secondary mb-1">
-                                  File Name
+                                  {t('history.fileName')}
                                 </div>
                                 <div className="text-text-primary">
                                   {String(value)}
@@ -148,7 +148,7 @@ export const ContractHistoryTab = ({ contractId }: ContractHistoryTabProps) => {
                                 {title ? (
                                   <>
                                     <div className="font-semibold text-text-secondary mb-1 mt-2">
-                                      Title
+                                      {t('history.titleField')}
                                     </div>
                                     <div className="text-text-primary">
                                       {String(title)}
@@ -156,10 +156,12 @@ export const ContractHistoryTab = ({ contractId }: ContractHistoryTabProps) => {
                                   </>
                                 ) : null}
                                 <div className="font-semibold text-text-secondary mb-1 mt-2">
-                                  Type
+                                  {t('history.typeField')}
                                 </div>
                                 <div className="text-text-primary">
-                                  {category === 'PHOTO' ? 'Photo' : 'Document'}
+                                  {category === 'PHOTO'
+                                    ? t('history.photo')
+                                    : t('history.document')}
                                 </div>
                               </div>
                             );
@@ -188,7 +190,7 @@ export const ContractHistoryTab = ({ contractId }: ContractHistoryTabProps) => {
                               <div className="grid grid-cols-2 gap-2">
                                 <div>
                                   <span className="text-text-secondary">
-                                    Old:{' '}
+                                    {t('history.old')}{' '}
                                   </span>
                                   {typeof activity.oldValues?.[field] ===
                                     'string' &&
@@ -209,7 +211,7 @@ export const ContractHistoryTab = ({ contractId }: ContractHistoryTabProps) => {
                                 </div>
                                 <div>
                                   <span className="text-text-secondary">
-                                    New:{' '}
+                                    {t('history.new')}{' '}
                                   </span>
                                   {typeof activity.newValues?.[field] ===
                                     'string' &&

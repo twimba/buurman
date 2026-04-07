@@ -141,7 +141,8 @@
       "notesPlaceholder": "Opcjonalny powód...",
       "saving": "Zapisywanie...",
       "changeInstructions": "Zmień instrukcje",
-      "setInstructions": "Ustaw instrukcje"
+      "setInstructions": "Ustaw instrukcje",
+      "unnamed": "Bez nazwy"
     },
     "notes": "Notatki",
     "renewalConfig": {
@@ -356,8 +357,35 @@
       "rentAmountPositive": "Kwota czynszu musi być większa od 0",
       "baseRentRequired": "Składnik czynszu bazowego jest wymagany",
       "componentAmountsPositive": "Wszystkie kwoty składników muszą być większe od 0",
-      "otherDescriptionRequired": "Niestandardowy składnik wymaga opisu"
-    }
+      "otherDescriptionRequired": "Niestandardowy składnik wymaga opisu",
+      "required": "Wymagane",
+      "invalidEmail": "Nieprawidłowy adres e-mail",
+      "rentCurrencyRequired": "Waluta czynszu jest wymagana",
+      "depositCurrencyRequired": "Waluta depozytu jest wymagana",
+      "securityDepositCurrencyRequired": "Waluta kaucji jest wymagana",
+      "endDateRequired": "Data zakończenia jest wymagana dla umów na czas określony",
+      "endDateAfterStart": "Data zakończenia musi być taka sama lub późniejsza niż data rozpoczęcia",
+      "paymentDueDayRange": "Dzień płatności musi być między 1 a 31"
+    },
+    "contractParties": "Strony umowy",
+    "contractDetails": "Szczegóły umowy",
+    "financialTerms": "Warunki finansowe",
+    "paymentTerms": "Warunki płatności",
+    "termination": "Wypowiedzenie",
+    "today": "Dzisiaj",
+    "termsAndConditions": "Warunki i postanowienia",
+    "termsAndConditionsPlaceholder": "Wpisz warunki i postanowienia umowy",
+    "signedDate": "Data podpisania",
+    "securityDeposit": "Kaucja",
+    "paymentDueDay": "Dzień płatności (1–31)",
+    "lateFeePercentage": "Procent opłaty za zwłokę",
+    "terminationNoticeDays": "Okres wypowiedzenia (dni)",
+    "countryRentalDetails": "Szczegóły najmu w {{country}}",
+    "countryRegulatoryFields": "Pola regulacyjne specyficzne dla {{country}}",
+    "setCountryForFields": "Ustaw kraj dla wybranej nieruchomości, aby zobaczyć pola regulacyjne specyficzne dla kraju.",
+    "dismissDuplicateWarning": "Przejrzyj ostrzeżenie o duplikacie powyżej i odrzuć je, aby kontynuować",
+    "dismissDuplicateFirst": "Najpierw odrzuć ostrzeżenie o duplikacie",
+    "change": "Zmień"
   },
   "statusChange": {
     "title": "Zmień status umowy",
@@ -536,11 +564,50 @@
   },
   "generateDocuments": {
     "title": "Generuj dokumenty",
-    "description": "Wygeneruj dokumenty umowy na podstawie szablonów."
+    "description": "Wygeneruj dokumenty umowy na podstawie szablonów.",
+    "regenerateTitle": "Wygeneruj dokumenty ponownie",
+    "regenerateDescription": "Istniejące dokumenty zostaną zastąpione",
+    "selectDescription": "Wybierz typy dokumentów i języki",
+    "documentTypes": "Typy dokumentów",
+    "languages": "Języki",
+    "officialLanguage": "Język urzędowy",
+    "translation": "Tłumaczenie",
+    "willGenerate_one": "Wygeneruje 1 dokument i zapisze w dokumentach umowy",
+    "willGenerate_other": "Wygeneruje {{count}} dokumentów i zapisze w dokumentach umowy",
+    "regenerating": "Ponowne generowanie...",
+    "generating": "Generowanie...",
+    "regenerateButton_one": "Wygeneruj ponownie 1 dokument",
+    "regenerateButton_other": "Wygeneruj ponownie {{count}} dokumentów",
+    "generateButton_one": "Wygeneruj 1 dokument",
+    "generateButton_other": "Wygeneruj {{count}} dokumentów",
+    "types": {
+      "EXTENSION_ADDENDUM": {
+        "label": "Aneks przedłużenia",
+        "description": "Formalna umowa przedłużenia kontraktu"
+      },
+      "RENT_INCREASE_LETTER": {
+        "label": "Pismo o podwyżce czynszu",
+        "description": "Powiadomienie najemcy o zmianach czynszu"
+      }
+    }
   },
   "generateRentChange": {
     "title": "Generuj powiadomienie o zmianie czynszu",
-    "description": "Wygeneruj powiadomienie o zmianie czynszu."
+    "description": "Wygeneruj powiadomienie o zmianie czynszu.",
+    "regenerateTitle": "Wygeneruj dokument zmiany czynszu ponownie",
+    "regenerateDescription": "Istniejące dokumenty zostaną zastąpione",
+    "selectDescription": "Wybierz języki dla powiadomienia o zmianie czynszu",
+    "languages": "Języki",
+    "officialLanguage": "Język urzędowy",
+    "translation": "Tłumaczenie",
+    "willGenerate_one": "Wygeneruje 1 dokument",
+    "willGenerate_other": "Wygeneruje {{count}} dokumentów",
+    "regenerating": "Ponowne generowanie...",
+    "generating": "Generowanie...",
+    "regenerateButton_one": "Wygeneruj ponownie 1 dokument",
+    "regenerateButton_other": "Wygeneruj ponownie {{count}} dokumentów",
+    "generateButton_one": "Wygeneruj 1 dokument",
+    "generateButton_other": "Wygeneruj {{count}} dokumentów"
   },
   "enums": {
     "partyRoles": {
@@ -566,6 +633,17 @@
       "SUPERSEDED": "Zastąpione",
       "CANCELLED": "Anulowane",
       "DECLINED": "Odrzucone"
+    },
+    "contractTypes": {
+      "FIXED_TERM": "Na czas określony",
+      "INDEFINITE": "Na czas nieokreślony"
+    },
+    "paymentFrequencies": {
+      "MONTHLY": "Miesięcznie",
+      "QUARTERLY": "Kwartalnie",
+      "ANNUALLY": "Rocznie",
+      "BIWEEKLY": "Co dwa tygodnie",
+      "WEEKLY": "Tygodniowo"
     }
   },
   "countryMetadata": {
@@ -711,5 +789,41 @@
   },
   "rentTimeline": {
     "adjustButton": "Dostosuj"
+  },
+  "rentPeriod": {
+    "present": "Obecny",
+    "rentChange": "Zmiana czynszu",
+    "regenerate": "Wygeneruj ponownie",
+    "generateDocument": "Wygeneruj dokument",
+    "generateDocumentTitle": "Wygeneruj dokument zmiany czynszu",
+    "historyCount_one": "Historia (1 okres)",
+    "historyCount_other": "Historia ({{count}} okresy)",
+    "deleteConfirm": "Czy na pewno chcesz usunąć ten okres czynszu?"
+  },
+  "rentBreakdown": {
+    "rentAmount": "Kwota czynszu",
+    "breakDown": "Podziel czynsz na składniki",
+    "title": "Podział czynszu",
+    "useSingleAmount": "Użyj jednej kwoty",
+    "total": "Suma"
+  },
+  "renewalConfig": {
+    "title": "Konfiguracja odnowienia",
+    "renewalMode": "Tryb odnowienia",
+    "modes": {
+      "NONE": "Bez odnowienia",
+      "AUTOMATIC": "Automatyczny",
+      "MANUAL": "Ręczny"
+    },
+    "modeDescriptions": {
+      "AUTOMATIC": "Umowa zostanie automatycznie przedłużona po upływie okresu wypowiedzenia. Jeśli wymagane jest potwierdzenie kontaktu, przedłużenie pozostaje w oczekiwaniu do potwierdzenia.",
+      "MANUAL": "Otrzymasz przypomnienie, gdy zbliży się okres wypowiedzenia. Przedłużenia muszą być tworzone i aktywowane ręcznie."
+    },
+    "adjustmentTypes": {
+      "NONE": "Brak korekty",
+      "FIXED_PERCENTAGE": "Stały procent",
+      "FIXED_AMOUNT": "Stała kwota",
+      "MANUAL": "Ręczny"
+    }
   }
 }

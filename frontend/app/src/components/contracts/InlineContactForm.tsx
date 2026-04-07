@@ -27,7 +27,7 @@ export const InlineContactForm = ({
   disabled,
   onBlockingChange,
 }: InlineContactFormProps) => {
-  const { t } = useTranslation('contracts');
+  const { t } = useTranslation(['contracts', 'common']);
   const inputClass =
     'w-full border border-border-strong rounded px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 bg-surface-card text-text-primary text-sm';
 
@@ -52,7 +52,7 @@ export const InlineContactForm = ({
         disabled={disabled}
       >
         <ArrowLeft className="h-3 w-3" />
-        Select existing contact
+        {t('overview.addPartyForm.selectExisting')}
       </button>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -79,7 +79,7 @@ export const InlineContactForm = ({
         </div>
         <div>
           <label className="block text-xs font-medium text-text-secondary mb-1">
-            Last Name
+            {t('common:fieldLabels.lastName')}
           </label>
           <input
             type="text"
@@ -94,7 +94,7 @@ export const InlineContactForm = ({
         </div>
         <div>
           <label className="block text-xs font-medium text-text-secondary mb-1">
-            Email
+            {t('common:fieldLabels.email')}
           </label>
           <input
             type="email"
@@ -112,7 +112,7 @@ export const InlineContactForm = ({
         </div>
         <div>
           <label className="block text-xs font-medium text-text-secondary mb-1">
-            Phone
+            {t('common:fieldLabels.phone')}
           </label>
           <PhoneInput
             value={value.phone ?? null}
@@ -122,7 +122,7 @@ export const InlineContactForm = ({
         </div>
         <div>
           <label className="block text-xs font-medium text-text-secondary mb-1">
-            Tax Number
+            {t('common:fieldLabels.taxNumber')}
           </label>
           <input
             type="text"
@@ -137,7 +137,7 @@ export const InlineContactForm = ({
         </div>
         <div>
           <label className="block text-xs font-medium text-text-secondary mb-1">
-            ID Number
+            {t('common:fieldLabels.idNumber')}
           </label>
           <input
             type="text"

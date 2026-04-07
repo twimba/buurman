@@ -376,6 +376,33 @@
         "PARKING": "Πάρκινγκ",
         "SERVICE": "Υπηρεσίες",
         "STORAGE": "Αποθήκευση"
+      },
+      "items": {
+        "SWIMMING_POOL": "Πισίνα",
+        "GYM": "Γυμναστήριο",
+        "SAUNA": "Σάουνα",
+        "FIREPLACE": "Τζάκι",
+        "BUILT_IN_VACUUM": "Κεντρική σκούπα",
+        "IN_UNIT_LAUNDRY": "Πλυντήριο εντός μονάδας",
+        "SHARED_LAUNDRY": "Κοινόχρηστο πλυντήριο",
+        "DISHWASHER": "Πλυντήριο πιάτων",
+        "STORAGE_UNIT": "Αποθήκη",
+        "BIKE_STORAGE": "Αποθήκη ποδηλάτων",
+        "FURNISHED": "Επιπλωμένο",
+        "DOORMAN_CONCIERGE": "Θυρωρός / Concierge",
+        "CONFERENCE_ROOM": "Αίθουσα συνεδριάσεων",
+        "RECEPTION_AREA": "Χώρος υποδοχής",
+        "SERVER_ROOM": "Αίθουσα διακομιστών",
+        "KITCHENETTE": "Μικρή κουζίνα",
+        "LOADING_BAY": "Ράμπα φόρτωσης",
+        "COMPRESSED_AIR_SYSTEM": "Σύστημα πεπιεσμένου αέρα",
+        "CHEMICAL_STORAGE": "Αποθήκη χημικών",
+        "OVERHEAD_CRANE": "Γερανογέφυρα",
+        "IRRIGATION_SYSTEM": "Σύστημα άρδευσης",
+        "GRAIN_SILO": "Σιλό σιτηρών",
+        "LIVESTOCK_SHELTER": "Στάβλος",
+        "COLD_STORAGE": "Ψυκτικός θάλαμος",
+        "SECURITY_BOOTH": "Φυλάκιο ασφαλείας"
       }
     }
   },

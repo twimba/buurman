@@ -83,13 +83,13 @@ export const GenerateRentChangeModal = ({
         <div className="p-4 border-b border-border-default">
           <h3 className="text-lg font-semibold text-text-primary">
             {regenerate
-              ? 'Regenerate Rent Change Document'
-              : 'Generate Rent Change Document'}
+              ? t('generateRentChange.regenerateTitle')
+              : t('generateRentChange.title')}
           </h3>
           <p className="text-sm text-text-secondary mt-1">
             {regenerate
-              ? 'Existing documents will be replaced'
-              : 'Select languages for the rent change notification'}
+              ? t('generateRentChange.regenerateDescription')
+              : t('generateRentChange.selectDescription')}
           </p>
         </div>
 
@@ -98,17 +98,17 @@ export const GenerateRentChangeModal = ({
           <div>
             <label className="flex items-center gap-1.5 text-sm font-medium text-text-primary mb-2">
               <Languages className="h-4 w-4" />
-              Languages
+              {t('generateRentChange.languages')}
             </label>
             {officialLanguages.length > 0 && (
               <div className="flex items-center gap-4 mb-2 text-xs text-text-muted">
                 <span className="flex items-center gap-1">
                   <Shield className="h-3 w-3 text-amber-500" />
-                  Official language
+                  {t('generateRentChange.officialLanguage')}
                 </span>
                 <span className="flex items-center gap-1">
                   <Globe className="h-3 w-3 text-sky-500" />
-                  Translation
+                  {t('generateRentChange.translation')}
                 </span>
               </div>
             )}
@@ -173,12 +173,7 @@ export const GenerateRentChangeModal = ({
           {/* Summary */}
           {totalDocuments > 0 && (
             <div className="bg-surface-inset rounded-md px-3 py-2 text-sm text-text-secondary">
-              Will generate{' '}
-              <span className="font-medium text-text-primary">
-                {totalDocuments}
-              </span>{' '}
-              document{totalDocuments !== 1 ? 's' : ''} and save to contract
-              documents
+              {t('generateRentChange.willGenerate', { count: totalDocuments })}
             </div>
           )}
         </div>
@@ -201,9 +196,15 @@ export const GenerateRentChangeModal = ({
           >
             {generateDocs.isPending
               ? regenerate
-                ? 'Regenerating...'
-                : 'Generating...'
-              : `${regenerate ? 'Regenerate' : 'Generate'} ${totalDocuments} Document${totalDocuments !== 1 ? 's' : ''}`}
+                ? t('generateRentChange.regenerating')
+                : t('generateRentChange.generating')
+              : regenerate
+                ? t('generateRentChange.regenerateButton', {
+                    count: totalDocuments,
+                  })
+                : t('generateRentChange.generateButton', {
+                    count: totalDocuments,
+                  })}
           </button>
         </div>
       </div>
