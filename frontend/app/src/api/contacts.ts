@@ -338,6 +338,19 @@ export const eraseContactData = async (contactId: string): Promise<void> => {
   await client.post(`/contacts/${contactId}/erase`);
 };
 
+// --- Booklet ---
+
+export const downloadContactBooklet = async (
+  contactId: string,
+  lang?: string
+): Promise<Blob> => {
+  const response = await client.get(`/booklets/contact/${contactId}`, {
+    responseType: 'blob',
+    params: lang ? { lang } : undefined,
+  });
+  return new Blob([response.data], { type: 'application/pdf' });
+};
+
 // --- Export ---
 
 export const exportContactsCsv = async (): Promise<Blob> => {

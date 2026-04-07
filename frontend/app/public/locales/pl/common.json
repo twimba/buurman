@@ -480,7 +480,7 @@
       "passwordRequirements": "Hasło nie spełnia wszystkich wymagań",
       "passwordsMismatch": "Hasła nie są zgodne"
     },
-    "copyright": "\u00a9 2026 Buurman. Wszelkie prawa zastrzeżone.",
+    "copyright": "© 2026 Buurman. Wszelkie prawa zastrzeżone.",
     "freeForSmallLandlords": "Bezpłatne dla małych wynajmujących",
     "welcomeBack": "Witaj ponownie",
     "propertiesWaiting": "Twoje nieruchomości czekają na Ciebie",
@@ -586,5 +586,12 @@
     "resendIn": "Wyślij ponownie za {{seconds}}s",
     "sending": "Wysyłanie...",
     "resendCode": "Wyślij ponownie kod"
+  },
+  "bookletDownload": {
+    "button": "Broszura",
+    "title": "Pobierz broszurę",
+    "description": "Wybierz język dla swojej broszury",
+    "yourLanguage": "Twój język",
+    "downloadFailed": "Nie udało się pobrać broszury"
   }
 }

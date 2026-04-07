@@ -586,5 +586,12 @@
     "resendIn": "Reinvia tra {{seconds}}s",
     "sending": "Invio...",
     "resendCode": "Reinvia codice"
+  },
+  "bookletDownload": {
+    "button": "Libretto",
+    "title": "Scarica libretto",
+    "description": "Seleziona una lingua per il tuo libretto",
+    "yourLanguage": "La tua lingua",
+    "downloadFailed": "Impossibile scaricare il libretto"
   }
 }

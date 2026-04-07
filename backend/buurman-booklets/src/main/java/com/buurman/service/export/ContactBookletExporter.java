@@ -34,6 +34,8 @@ import java.util.TreeMap;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
 import com.buurman.domain.Contact;
@@ -61,10 +63,7 @@ import com.buurman.service.ContractPartyService;
 import com.buurman.service.EffectiveEndDateHelper;
 import com.buurman.util.CurrencyUtils;
 
-import lombok.RequiredArgsConstructor;
-
 @Component
-@RequiredArgsConstructor
 public class ContactBookletExporter {
 
   private final ContactRepository contactRepository;
@@ -78,9 +77,43 @@ public class ContactBookletExporter {
   private final PropertyRepository propertyRepository;
   private final ContractPartyService contractPartyService;
   private final PdfRenderer pdfRenderer;
+  private final MessageSource messageSource;
   private final Clock clock;
 
-  public byte[] generate(ContactIdentifier contactIdentifier, UUID teamId) {
+  public ContactBookletExporter(
+      ContactRepository contactRepository,
+      ContactAddressRepository contactAddressRepository,
+      ContactNoteRepository contactNoteRepository,
+      ContactRelationshipRepository contactRelationshipRepository,
+      UserRepository userRepository,
+      ContractRepository contractRepository,
+      ContractExtensionRepository contractExtensionRepository,
+      PaymentRepository paymentRepository,
+      PropertyRepository propertyRepository,
+      ContractPartyService contractPartyService,
+      PdfRenderer pdfRenderer,
+      @Qualifier("bookletMessageSource") MessageSource messageSource,
+      Clock clock) {
+    this.contactRepository = contactRepository;
+    this.contactAddressRepository = contactAddressRepository;
+    this.contactNoteRepository = contactNoteRepository;
+    this.contactRelationshipRepository = contactRelationshipRepository;
+    this.userRepository = userRepository;
+    this.contractRepository = contractRepository;
+    this.contractExtensionRepository = contractExtensionRepository;
+    this.paymentRepository = paymentRepository;
+    this.propertyRepository = propertyRepository;
+    this.contractPartyService = contractPartyService;
+    this.pdfRenderer = pdfRenderer;
+    this.messageSource = messageSource;
+    this.clock = clock;
+  }
+
+  private String msg(String key, Locale locale) {
+    return messageSource.getMessage(key, null, key, locale);
+  }
+
+  public byte[] generate(ContactIdentifier contactIdentifier, UUID teamId, Locale locale) {
     Contact contact = contactRepository.getByIdentifierAndTeamId(contactIdentifier, teamId);
 
     List<ContactAddress> addresses =
@@ -139,7 +172,8 @@ public class ContactBookletExporter {
             extensionsByContract,
             notes,
             relationships,
-            teamId);
+            teamId,
+            locale);
     return pdfRenderer.renderHtml(html);
   }
 
@@ -155,9 +189,10 @@ public class ContactBookletExporter {
       Map<UUID, List<ContractExtension>> extensionsByContract,
       List<ContactNote> notes,
       List<ContactRelationship> relationships,
-      UUID teamId) {
-    DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.ENGLISH);
-    DateTimeFormatter shortFmt = DateTimeFormatter.ofPattern("MMM d, yyyy");
+      UUID teamId,
+      Locale locale) {
+    DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("d MMMM yyyy", locale);
+    DateTimeFormatter shortFmt = DateTimeFormatter.ofPattern("MMM d, yyyy", locale);
     String generatedDate = LocalDate.now(clock).format(dateFmt);
 
     String fullName = escapeHtml(contact.getDisplayName());
@@ -196,7 +231,8 @@ public class ContactBookletExporter {
         generatedDate,
         activeContracts,
         contracts.size(),
-        currentPropertyName);
+        currentPropertyName,
+        locale);
     appendProfilePage(
         html,
         contact,
@@ -205,13 +241,14 @@ public class ContactBookletExporter {
         totalPaid,
         totalPending,
         activeContracts,
-        contracts.size());
-    appendAddressesPage(html, addresses);
+        contracts.size(),
+        locale);
+    appendAddressesPage(html, addresses, locale);
     appendRentalHistoryPage(
-        html, contracts, propertyMap, contractRoles, extensionsByContract, shortFmt);
-    appendPaymentHistoryPage(html, allPayments, shortFmt);
-    appendNotesPage(html, notes, contact, shortFmt);
-    appendRelationshipsPage(html, relationships, contact, teamId);
+        html, contracts, propertyMap, contractRoles, extensionsByContract, shortFmt, locale);
+    appendPaymentHistoryPage(html, allPayments, shortFmt, locale);
+    appendNotesPage(html, notes, contact, shortFmt, locale);
+    appendRelationshipsPage(html, relationships, contact, teamId, locale);
 
     appendDocumentEnd(html);
     return html.toString();
@@ -226,21 +263,22 @@ public class ContactBookletExporter {
       String generatedDate,
       long activeContracts,
       int totalContracts,
-      String currentPropertyName) {
-    appendCoverStart(html, "CONTACT BOOKLET", fullName, generatedDate);
+      String currentPropertyName,
+      Locale locale) {
+    appendCoverStart(html, msg("cover.title", locale), fullName, generatedDate);
 
     html.append("<table class='cover-summary'>");
     html.append("<tr>");
-    appendCoverCell(html, "Type", contact.getContactType().getDisplayName());
-    appendCoverCell(html, "Email", contact.getEmail().map(BookletHelper::escapeHtml).orElse("—"));
+    appendCoverCell(html, msg("cover.type", locale), contact.getContactType().getDisplayName());
+    appendCoverCell(html, msg("cover.email", locale), contact.getEmail().map(BookletHelper::escapeHtml).orElse("—"));
     html.append("</tr><tr>");
-    appendCoverCell(html, "Phone", contact.getPhone().map(BookletHelper::escapeHtml).orElse("—"));
-    appendCoverCell(html, "Active Contracts", String.valueOf(activeContracts));
+    appendCoverCell(html, msg("cover.phone", locale), contact.getPhone().map(BookletHelper::escapeHtml).orElse("—"));
+    appendCoverCell(html, msg("cover.active.contracts", locale), String.valueOf(activeContracts));
     html.append("</tr><tr>");
-    appendCoverCell(html, "Total Contracts", String.valueOf(totalContracts));
-    appendCoverCell(html, "Current Property", currentPropertyName);
+    appendCoverCell(html, msg("cover.total.contracts", locale), String.valueOf(totalContracts));
+    appendCoverCell(html, msg("cover.current.property", locale), currentPropertyName);
     html.append("</tr><tr>");
-    appendCoverCell(html, "Reference", contact.getIdentifier().orElseThrow().value());
+    appendCoverCell(html, msg("cover.reference", locale), contact.getIdentifier().orElseThrow().value());
     appendCoverCell(html, "", "");
     html.append("</tr>");
     html.append("</table>");
@@ -258,8 +296,9 @@ public class ContactBookletExporter {
       BigDecimal totalPaid,
       BigDecimal totalPending,
       long activeContracts,
-      int totalContracts) {
-    appendPageStart(html, "Contact Profile");
+      int totalContracts,
+      Locale locale) {
+    appendPageStart(html, msg("page.contact.profile", locale));
 
     // Tags row (if any)
     if (!contact.getTags().isEmpty()) {
@@ -277,15 +316,15 @@ public class ContactBookletExporter {
     }
 
     boolean isIndividual = contact.getContactType() == ContactType.INDIVIDUAL;
-    String sectionTitle = isIndividual ? "Personal Information" : "Organisation Information";
+    String sectionTitle = isIndividual ? msg("section.personal.information", locale) : msg("section.organisation.information", locale);
     appendSectionTitle(html, sectionTitle);
     html.append("<table class='detail-grid'>");
     html.append("<tr>");
-    appendField(html, "Display Name", fullName);
-    appendField(html, "Contact Type", contact.getContactType().getDisplayName());
+    appendField(html, msg("field.display.name", locale), fullName);
+    appendField(html, msg("field.contact.type", locale), contact.getContactType().getDisplayName());
     html.append("</tr><tr>");
-    appendField(html, "Email", contact.getEmail().orElse(null));
-    appendField(html, "Phone", contact.getPhone().orElse(null));
+    appendField(html, msg("field.email", locale), contact.getEmail().orElse(null));
+    appendField(html, msg("field.phone", locale), contact.getPhone().orElse(null));
     html.append("</tr>");
 
     if (isIndividual) {
@@ -293,28 +332,28 @@ public class ContactBookletExporter {
       if (contact.getDateOfBirth().isPresent() || contact.getIdExpiryDate().isPresent()) {
         html.append("<tr>");
         appendField(
-            html, "Date of Birth", contact.getDateOfBirth().map(Object::toString).orElse(null));
+            html, msg("field.date.of.birth", locale), contact.getDateOfBirth().map(Object::toString).orElse(null));
         appendField(
-            html, "ID Expiry Date", contact.getIdExpiryDate().map(Object::toString).orElse(null));
+            html, msg("field.id.expiry.date", locale), contact.getIdExpiryDate().map(Object::toString).orElse(null));
         html.append("</tr>");
       }
     } else {
       // Company / Service Provider fields
       if (contact.getCompanyName().isPresent() || contact.getTradeName().isPresent()) {
         html.append("<tr>");
-        appendField(html, "Company Name", contact.getCompanyName().orElse(null));
-        appendField(html, "Trade Name", contact.getTradeName().orElse(null));
+        appendField(html, msg("field.company.name", locale), contact.getCompanyName().orElse(null));
+        appendField(html, msg("field.trade.name", locale), contact.getTradeName().orElse(null));
         html.append("</tr>");
       }
       if (contact.getIndustry().isPresent() || contact.getWebsite().isPresent()) {
         html.append("<tr>");
-        appendField(html, "Industry", contact.getIndustry().orElse(null));
-        appendField(html, "Website", contact.getWebsite().orElse(null));
+        appendField(html, msg("field.industry", locale), contact.getIndustry().orElse(null));
+        appendField(html, msg("field.website", locale), contact.getWebsite().orElse(null));
         html.append("</tr>");
       }
       if (contact.getInvoiceEmail().isPresent()) {
         html.append("<tr>");
-        appendField(html, "Invoice Email", contact.getInvoiceEmail().orElse(null));
+        appendField(html, msg("field.invoice.email", locale), contact.getInvoiceEmail().orElse(null));
         appendField(html, "", null);
         html.append("</tr>");
       }
@@ -322,13 +361,13 @@ public class ContactBookletExporter {
 
     if (contact.getTaxNumber().isPresent() || contact.getIdNumber().isPresent()) {
       html.append("<tr>");
-      appendField(html, "Tax Number", contact.getTaxNumber().orElse(null));
-      appendField(html, "Government ID", contact.getIdNumber().orElse(null));
+      appendField(html, msg("field.tax.number", locale), contact.getTaxNumber().orElse(null));
+      appendField(html, msg("field.government.id", locale), contact.getIdNumber().orElse(null));
       html.append("</tr>");
     }
     html.append("<tr>");
-    appendField(html, "Reference", "#" + contact.getIdentifier().orElseThrow().value());
-    appendField(html, "Current Property", currentPropertyName);
+    appendField(html, msg("field.reference", locale), "#" + contact.getIdentifier().orElseThrow().value());
+    appendField(html, msg("field.current.property", locale), currentPropertyName);
     html.append("</tr>");
     html.append("</table>");
 
@@ -337,16 +376,18 @@ public class ContactBookletExporter {
         .filter(s -> !s.isBlank())
         .ifPresent(
             notes ->
-                html.append("<div class='text-block'><strong>Notes</strong><br/>")
+                html.append("<div class='text-block'><strong>")
+                    .append(msg("section.notes", locale))
+                    .append("</strong><br/>")
                     .append(sanitizeRichText(notes))
                     .append("</div>"));
 
-    appendSectionTitle(html, "Financial Summary");
+    appendSectionTitle(html, msg("section.financial.summary", locale));
     html.append("<table class='summary-grid'><tr>");
-    appendSummaryCard(html, "Total Paid", fmt(totalPaid), null, "#f0fdf4", "#166534", "#059669");
+    appendSummaryCard(html, msg("summary.total.paid", locale), fmt(totalPaid), null, "#f0fdf4", "#166534", "#059669");
     appendSummaryCard(
         html,
-        "Outstanding",
+        msg("summary.outstanding", locale),
         fmt(totalPending),
         null,
         totalPending.compareTo(BigDecimal.ZERO) > 0 ? "#fef2f2" : "#f0fdf4",
@@ -354,7 +395,7 @@ public class ContactBookletExporter {
         totalPending.compareTo(BigDecimal.ZERO) > 0 ? "#dc2626" : "#059669");
     appendSummaryCard(
         html,
-        "Active Contracts",
+        msg("summary.active.contracts", locale),
         String.valueOf(activeContracts),
         null,
         "#f0f9ff",
@@ -362,7 +403,7 @@ public class ContactBookletExporter {
         "#0284c7");
     appendSummaryCard(
         html,
-        "Total Contracts",
+        msg("summary.total.contracts", locale),
         String.valueOf(totalContracts),
         null,
         "#f9fafb",
@@ -375,19 +416,21 @@ public class ContactBookletExporter {
 
   // -- Page: Addresses ---
 
-  private void appendAddressesPage(StringBuilder html, List<ContactAddress> addresses) {
+  private void appendAddressesPage(StringBuilder html, List<ContactAddress> addresses, Locale locale) {
     if (addresses.isEmpty()) {
       return;
     }
 
-    appendPageStart(html, "Addresses");
+    appendPageStart(html, msg("page.addresses", locale));
     html.append("<p style='font-size:13px;color:#78716c;margin-bottom:16px;'>")
         .append(addresses.size())
-        .append(" address(es) on file</p>");
+        .append(" ")
+        .append(msg("label.addresses.on.file", locale))
+        .append("</p>");
 
     for (ContactAddress addr : addresses) {
       String type =
-          addr.getAddressType() != null ? formatEnumValue(addr.getAddressType().name()) : "Other";
+          addr.getAddressType() != null ? formatEnumValue(addr.getAddressType().name()) : msg("value.other", locale);
       boolean isActive = addr.getStatus() != null && addr.getStatus().name().equals("ACTIVE");
       String borderColor = isActive ? "#0284c7" : "#a8a29e";
 
@@ -405,10 +448,11 @@ public class ContactBookletExporter {
           .append("</span>");
       if (isActive) {
         html.append(
-            "<span style='display:inline-block;font-size:10px;font-weight:600;"
-                + "letter-spacing:0.8px;text-transform:uppercase;padding:2px 10px;"
-                + "border-radius:3px;margin-left:8px;color:#166534;background-color:#f0fdf4;'>"
-                + "Active</span>");
+                "<span style='display:inline-block;font-size:10px;font-weight:600;"
+                    + "letter-spacing:0.8px;text-transform:uppercase;padding:2px 10px;"
+                    + "border-radius:3px;margin-left:8px;color:#166534;background-color:#f0fdf4;'>")
+            .append(msg("value.active", locale))
+            .append("</span>");
       }
 
       html.append("<div style='font-size:15px;font-weight:600;color:#292524;margin-top:8px;'>")
@@ -439,22 +483,25 @@ public class ContactBookletExporter {
       Map<UUID, Property> propertyMap,
       Map<UUID, ContractPartyRole> contractRoles,
       Map<UUID, List<ContractExtension>> extensionsByContract,
-      DateTimeFormatter shortFmt) {
+      DateTimeFormatter shortFmt,
+      Locale locale) {
     if (contracts.isEmpty()) {
       return;
     }
 
-    appendPageStart(html, "Rental History");
+    appendPageStart(html, msg("page.rental.history", locale));
     html.append("<p style='font-size:13px;color:#78716c;margin-bottom:16px;'>")
         .append(contracts.size())
-        .append(" contract(s) on record</p>");
+        .append(" ")
+        .append(msg("label.contracts.on.record", locale))
+        .append("</p>");
 
     for (Contract contract : contracts) {
       Property property = propertyMap.get(contract.getPropertyId());
       String propertyName =
           property != null
               ? escapeHtml(property.getStreet()) + ", " + escapeHtml(property.getCity())
-              : "Unknown";
+              : msg("value.unknown", locale);
       ContractPartyRole role = contractRoles.get(contract.getId());
       String roleLabel = role != null ? formatEnumValue(role.name()) : "—";
       String statusName = contract.getStatus() != null ? contract.getStatus().name() : "DRAFT";
@@ -493,33 +540,33 @@ public class ContactBookletExporter {
           .append("</div>");
 
       html.append("<table class='detail-grid'><tr>");
-      appendField(html, "Contract ID", "#" + contract.getIdentifier().orElseThrow().value());
+      appendField(html, msg("field.contract.id", locale), "#" + contract.getIdentifier().orElseThrow().value());
       appendField(
           html,
-          "Type",
+          msg("field.contract.type", locale),
           contract.getContractType() != null
               ? formatEnumValue(contract.getContractType().name())
               : "—");
       html.append("</tr><tr>");
       appendField(
           html,
-          "Start Date",
+          msg("field.start.date", locale),
           contract.getStartDate() != null ? contract.getStartDate().format(shortFmt) : "—");
       List<ContractExtension> extensions =
           extensionsByContract.getOrDefault(contract.getId(), List.of());
       Optional<LocalDate> effectiveEndDate =
           EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), extensions);
       appendField(
-          html, "End Date", effectiveEndDate.map(d -> d.format(shortFmt)).orElse("Ongoing"));
+          html, msg("field.end.date", locale), effectiveEndDate.map(d -> d.format(shortFmt)).orElse(msg("value.ongoing", locale)));
       html.append("</tr><tr>");
       appendField(
           html,
-          "Rent Amount",
+          msg("field.rent.amount", locale),
           CurrencyUtils.formatCurrency(
               contract.getRentAmount().value(), contract.getRentAmount().currency()));
       appendField(
           html,
-          "Payment Frequency",
+          msg("field.payment.frequency", locale),
           contract.getPaymentFrequency() != null
               ? formatEnumValue(contract.getPaymentFrequency().name())
               : "—");
@@ -534,12 +581,12 @@ public class ContactBookletExporter {
   // -- Page: Payment History ---
 
   private void appendPaymentHistoryPage(
-      StringBuilder html, List<Payment> allPayments, DateTimeFormatter shortFmt) {
+      StringBuilder html, List<Payment> allPayments, DateTimeFormatter shortFmt, Locale locale) {
     if (allPayments.isEmpty()) {
       return;
     }
 
-    appendPageStart(html, "Payment History");
+    appendPageStart(html, msg("page.payment.history", locale));
 
     // Year summary
     Map<Integer, BigDecimal[]> yearPayments = new TreeMap<>(Comparator.reverseOrder());
@@ -573,7 +620,9 @@ public class ContactBookletExporter {
             .append(String.format("%,.2f", entry.getValue()[0]))
             .append("</div>");
         if (entry.getValue()[1].compareTo(BigDecimal.ZERO) > 0) {
-          html.append("<div style='font-size:11px;color:#dc2626;margin-top:4px;'>Outstanding: ")
+          html.append("<div style='font-size:11px;color:#dc2626;margin-top:4px;'>")
+              .append(msg("label.outstanding", locale))
+              .append(": ")
               .append(String.format("%,.2f", entry.getValue()[1]))
               .append("</div>");
         }
@@ -583,7 +632,7 @@ public class ContactBookletExporter {
     }
 
     // Recent payments table
-    appendSectionTitle(html, "Recent Payments");
+    appendSectionTitle(html, msg("section.recent.payments", locale));
     List<Payment> sortedPayments =
         allPayments.stream()
             .sorted(
@@ -607,7 +656,10 @@ public class ContactBookletExporter {
             .toList();
 
     html.append("<table class='payment-table'><thead><tr>");
-    html.append("<th>Due Date</th><th>Amount</th><th>Payment Date</th><th>Status</th>");
+    html.append("<th>").append(msg("col.due.date", locale)).append("</th>");
+    html.append("<th>").append(msg("col.amount", locale)).append("</th>");
+    html.append("<th>").append(msg("col.payment.date", locale)).append("</th>");
+    html.append("<th>").append(msg("col.status", locale)).append("</th>");
     html.append("</tr></thead><tbody>");
 
     for (Payment payment : sortedPayments) {
@@ -649,12 +701,12 @@ public class ContactBookletExporter {
   // -- Page: Notes ---
 
   private void appendNotesPage(
-      StringBuilder html, List<ContactNote> notes, Contact contact, DateTimeFormatter dateFmt) {
+      StringBuilder html, List<ContactNote> notes, Contact contact, DateTimeFormatter dateFmt, Locale locale) {
     if (notes.isEmpty()) {
       return;
     }
 
-    appendPageStart(html, "Notes");
+    appendPageStart(html, msg("page.notes", locale));
 
     // Batch-load user names for note authors
     List<UUID> creatorIds = notes.stream().map(ContactNote::getCreatedBy).distinct().toList();
@@ -671,7 +723,7 @@ public class ContactBookletExporter {
       html.append("<span style='font-size:11px;color:#6b7280;'>");
       html.append(escapeHtml(note.getInteractionType().getDisplayName()));
       if (note.isPinned()) {
-        html.append(" &bull; Pinned");
+        html.append(" &bull; ").append(msg("value.pinned", locale));
       }
       html.append("</span>");
       html.append("<span style='font-size:11px;color:#6b7280;'>");
@@ -680,7 +732,7 @@ public class ContactBookletExporter {
               .atZone(java.time.ZoneId.systemDefault())
               .toLocalDate()
               .format(dateFmt));
-      String authorName = userNames.getOrDefault(note.getCreatedBy(), "Unknown");
+      String authorName = userNames.getOrDefault(note.getCreatedBy(), msg("value.unknown", locale));
       html.append(" &bull; ").append(escapeHtml(authorName));
       html.append("</span>");
       html.append("</div>");
@@ -708,12 +760,12 @@ public class ContactBookletExporter {
   // -- Page: Relationships ---
 
   private void appendRelationshipsPage(
-      StringBuilder html, List<ContactRelationship> relationships, Contact contact, UUID teamId) {
+      StringBuilder html, List<ContactRelationship> relationships, Contact contact, UUID teamId, Locale locale) {
     if (relationships.isEmpty()) {
       return;
     }
 
-    appendPageStart(html, "Relationships");
+    appendPageStart(html, msg("page.relationships", locale));
 
     // Bulk-load related contacts
     List<UUID> relatedIds =
@@ -734,7 +786,9 @@ public class ContactBookletExporter {
 
     html.append("<table class='payment-table'>");
     html.append("<thead><tr>");
-    html.append("<th>Related Contact</th><th>Relationship</th><th>Notes</th>");
+    html.append("<th>").append(msg("col.related.contact", locale)).append("</th>");
+    html.append("<th>").append(msg("col.relationship", locale)).append("</th>");
+    html.append("<th>").append(msg("col.notes", locale)).append("</th>");
     html.append("</tr></thead><tbody>");
 
     for (ContactRelationship rel : relationships) {
@@ -748,7 +802,7 @@ public class ContactBookletExporter {
         displayLabel = rel.getRelationshipType().inverseDisplayName();
       }
 
-      String relatedName = escapeHtml(contactNames.getOrDefault(relatedContactId, "Unknown"));
+      String relatedName = escapeHtml(contactNames.getOrDefault(relatedContactId, msg("value.unknown", locale)));
 
       html.append("<tr>");
       html.append("<td>").append(relatedName).append("</td>");

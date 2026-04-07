@@ -480,7 +480,7 @@
       "passwordRequirements": "Passordet oppfyller ikke alle krav",
       "passwordsMismatch": "Passordene stemmer ikke"
     },
-    "copyright": "\u00a9 2026 Buurman. Alle rettigheter forbeholdt.",
+    "copyright": "© 2026 Buurman. Alle rettigheter forbeholdt.",
     "freeForSmallLandlords": "Gratis for små utleiere",
     "welcomeBack": "Velkommen tilbake",
     "propertiesWaiting": "Eiendommene dine venter på deg",
@@ -586,5 +586,12 @@
     "resendIn": "Send på nytt om {{seconds}}s",
     "sending": "Sender...",
     "resendCode": "Send kode på nytt"
+  },
+  "bookletDownload": {
+    "button": "Hefte",
+    "title": "Last ned hefte",
+    "description": "Velg et språk for heftet ditt",
+    "yourLanguage": "Ditt språk",
+    "downloadFailed": "Nedlasting av hefte mislyktes"
   }
 }

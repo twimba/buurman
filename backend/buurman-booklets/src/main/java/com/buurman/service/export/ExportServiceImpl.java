@@ -4,6 +4,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -56,21 +57,27 @@ public class ExportServiceImpl implements ExportService {
   }
 
   @Override
-  public byte[] generatePropertyBrochurePDF(PropertyIdentifier propertyIdentifier, UUID teamId) {
+  public byte[] generatePropertyBrochurePDF(
+      PropertyIdentifier propertyIdentifier, UUID teamId, Locale locale) {
     return withMetrics(
-        "property_brochure", () -> propertyBookletExporter.generate(propertyIdentifier, teamId));
+        "property_brochure",
+        () -> propertyBookletExporter.generate(propertyIdentifier, teamId, locale));
   }
 
   @Override
-  public byte[] generateContractReportPDF(ContractIdentifier contractIdentifier, UUID teamId) {
+  public byte[] generateContractReportPDF(
+      ContractIdentifier contractIdentifier, UUID teamId, Locale locale) {
     return withMetrics(
-        "contract_report", () -> contractBookletExporter.generate(contractIdentifier, teamId));
+        "contract_report",
+        () -> contractBookletExporter.generate(contractIdentifier, teamId, locale));
   }
 
   @Override
-  public byte[] generateContactReportPDF(ContactIdentifier contactIdentifier, UUID teamId) {
+  public byte[] generateContactReportPDF(
+      ContactIdentifier contactIdentifier, UUID teamId, Locale locale) {
     return withMetrics(
-        "contact_report", () -> contactBookletExporter.generate(contactIdentifier, teamId));
+        "contact_report",
+        () -> contactBookletExporter.generate(contactIdentifier, teamId, locale));
   }
 
   @Override

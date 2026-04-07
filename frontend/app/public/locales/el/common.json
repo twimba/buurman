@@ -586,5 +586,12 @@
     "resendIn": "Επαναποστολή σε {{seconds}}δ",
     "sending": "Αποστολή...",
     "resendCode": "Επαναποστολή Κωδικού"
+  },
+  "bookletDownload": {
+    "button": "Φυλλάδιο",
+    "title": "Λήψη φυλλαδίου",
+    "description": "Επιλέξτε γλώσσα για το φυλλάδιό σας",
+    "yourLanguage": "Η γλώσσα σας",
+    "downloadFailed": "Αποτυχία λήψης φυλλαδίου"
   }
 }

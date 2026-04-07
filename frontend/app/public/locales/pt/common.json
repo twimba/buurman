@@ -586,5 +586,12 @@
     "resendIn": "Reenviar em {{seconds}}s",
     "sending": "A enviar...",
     "resendCode": "Reenviar Código"
+  },
+  "bookletDownload": {
+    "button": "Caderno",
+    "title": "Baixar caderno",
+    "description": "Selecione um idioma para o seu caderno",
+    "yourLanguage": "Seu idioma",
+    "downloadFailed": "Falha ao baixar o caderno"
   }
 }

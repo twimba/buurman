@@ -586,5 +586,12 @@
     "resendIn": "Opnieuw versturen over {{seconds}}s",
     "sending": "Verzenden...",
     "resendCode": "Code opnieuw versturen"
+  },
+  "bookletDownload": {
+    "button": "Boekje",
+    "title": "Boekje downloaden",
+    "description": "Selecteer een taal voor uw boekje",
+    "yourLanguage": "Uw taal",
+    "downloadFailed": "Downloaden van boekje mislukt"
   }
 }

@@ -10,8 +10,9 @@ import {
   useDuplicateContract,
 } from '@/hooks/useContractHooks';
 import { downloadContractBooklet } from '@/api/contracts';
+import { BookletDownloadButton } from '@/components/common/BookletDownloadButton';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { Button, PageHeader, Skeleton, useToast } from '@buurman/ui';
+import { Button, PageHeader, Skeleton } from '@buurman/ui';
 import { ContractStatusBadge } from '@/components/contracts/ContractStatusBadge';
 import { ChangeContractStatusModal } from '@/components/contracts/ChangeContractStatusModal';
 import { ContractOverviewTab } from '@/components/contracts/ContractOverviewTab';
@@ -30,7 +31,6 @@ import {
   RefreshCw,
   RotateCcw,
   Copy,
-  Download,
   Repeat,
 } from 'lucide-react';
 import { ChangeContractStatusRequest, ContractStatus } from '@/types/contract';
@@ -40,7 +40,6 @@ export const ContractDetailPage = () => {
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData } = useTeam();
-  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useTabState('overview', [
     'overview',
     'payments',
@@ -113,21 +112,16 @@ export const ContractDetailPage = () => {
     }
   };
 
-  const handleDownloadBooklet = async () => {
-    try {
-      const blob = await downloadContractBooklet(id);
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'contract-booklet.pdf';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error('Failed to download booklet:', err);
-      showToast(t('detail.bookletDownloadFailed'), 'error');
-    }
+  const handleDownloadBooklet = async (lang: string) => {
+    const blob = await downloadContractBooklet(id, lang);
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `contract-booklet-${lang}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
   };
 
   if (isLoading) {
@@ -194,13 +188,7 @@ export const ContractDetailPage = () => {
           badge={<ContractStatusBadge status={contract.status} />}
           actions={
             <>
-              <Button
-                variant="secondary"
-                leftIcon={<Download />}
-                onClick={handleDownloadBooklet}
-              >
-                {t('detail.booklet')}
-              </Button>
+              <BookletDownloadButton onDownload={handleDownloadBooklet} />
               {!canReopen && (
                 <Button
                   variant="primary"

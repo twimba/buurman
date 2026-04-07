@@ -586,5 +586,12 @@
     "resendIn": "Renvoyer dans {{seconds}}s",
     "sending": "Envoi...",
     "resendCode": "Renvoyer le code"
+  },
+  "bookletDownload": {
+    "button": "Livret",
+    "title": "Télécharger le livret",
+    "description": "Sélectionnez une langue pour votre livret",
+    "yourLanguage": "Votre langue",
+    "downloadFailed": "Échec du téléchargement du livret"
   }
 }

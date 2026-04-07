@@ -21,6 +21,7 @@ import { PropertyTypeIcon } from '@/components/common/PropertyTypeIcon';
 import { EditSelfOccupancyModal } from '@/components/properties/EditSelfOccupancyModal';
 import { CalendarFeedResponseFeedType as CalendarFeedType } from '@/generated/models';
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
+import { BookletDownloadButton } from '@/components/common/BookletDownloadButton';
 import { WwsCalculatorModal } from '@/components/wws/WwsCalculatorModal';
 import { InteractiveMap } from '@/components/common/InteractiveMap';
 import { usePropertyLabels } from '@/hooks/usePropertyLabels';
@@ -34,7 +35,7 @@ import { PropertyAuditTab } from '@/components/properties/PropertyAuditTab';
 import { FeatureGate } from '@/components/FeatureGate';
 import { FeatureFlags } from '@/constants/featureFlags';
 import { ErrorMessage } from '@/components/ErrorMessage';
-import { Button, PageHeader, Skeleton, useToast } from '@buurman/ui';
+import { Button, PageHeader, Skeleton } from '@buurman/ui';
 import { trackEvent } from '@/utils/analytics';
 import { AnalyticsEvent } from '@/constants/analyticsEvents';
 import { useTeam } from '@/context/TeamContext';
@@ -54,7 +55,6 @@ import {
   Receipt,
   ChevronUp,
   ChevronDown,
-  Download,
   BarChart3,
   Wallet,
   Calculator,
@@ -105,7 +105,6 @@ export const PropertyDetailPage = () => {
   const navigate = useNavigate();
   const { canEditData, canManageMembers } = useTeam();
   const { formatDate } = useFormatDate();
-  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useTabState('info', [
     'info',
     'financials',
@@ -181,22 +180,17 @@ export const PropertyDetailPage = () => {
     }
   };
 
-  const handleDownloadBooklet = async () => {
-    try {
-      const blob = await downloadPropertyBooklet(id);
-      const pdfBlob = new Blob([blob], { type: 'application/pdf' });
-      const url = window.URL.createObjectURL(pdfBlob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'property-booklet.pdf';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error('Failed to download booklet:', err);
-      showToast(t('detail.bookletDownloadFailed'), 'error');
-    }
+  const handleDownloadBooklet = async (lang: string) => {
+    const blob = await downloadPropertyBooklet(id, lang);
+    const pdfBlob = new Blob([blob], { type: 'application/pdf' });
+    const url = window.URL.createObjectURL(pdfBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `property-booklet-${lang}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
   };
 
   if (isLoading) {
@@ -268,13 +262,7 @@ export const PropertyDetailPage = () => {
           }
           actions={
             <>
-              <Button
-                variant="primary"
-                leftIcon={<Download />}
-                onClick={handleDownloadBooklet}
-              >
-                {t('detail.booklet')}
-              </Button>
+              <BookletDownloadButton onDownload={handleDownloadBooklet} />
               {id && (
                 <CalendarFeedButton
                   feedType={CalendarFeedType.PROPERTY_PAYMENTS}

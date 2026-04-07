@@ -55,4 +55,21 @@ public class DocumentTemplateConfig {
     }
     return source;
   }
+
+  @Bean("bookletMessageSource")
+  public MessageSource bookletMessageSource(
+      @Value("${spring.thymeleaf.cache:true}") boolean cacheTemplates) {
+    ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
+    source.setBasenames(
+        "classpath:messages/document-property-booklet",
+        "classpath:messages/document-contract-booklet",
+        "classpath:messages/document-contact-booklet");
+    source.setDefaultEncoding("UTF-8");
+    source.setFallbackToSystemLocale(false);
+    source.setUseCodeAsDefaultMessage(true);
+    if (!cacheTemplates) {
+      source.setCacheSeconds(0);
+    }
+    return source;
+  }
 }

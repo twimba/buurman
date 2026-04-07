@@ -178,10 +178,12 @@ export interface GeneratePaymentsResponse {
 }
 
 export const downloadContractBooklet = async (
-  contractId: string
+  contractId: string,
+  lang?: string
 ): Promise<Blob> => {
   const response = await client.get(`/booklets/contract/${contractId}`, {
     responseType: 'blob',
+    params: lang ? { lang } : undefined,
   });
   return new Blob([response.data], { type: 'application/pdf' });
 };

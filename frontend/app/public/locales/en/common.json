@@ -586,5 +586,12 @@
     "resendIn": "Resend in {{seconds}}s",
     "sending": "Sending...",
     "resendCode": "Resend Code"
+  },
+  "bookletDownload": {
+    "button": "Booklet",
+    "title": "Download Booklet",
+    "description": "Select a language for your booklet",
+    "yourLanguage": "Your language",
+    "downloadFailed": "Failed to download booklet"
   }
 }

@@ -3,7 +3,9 @@ package com.buurman.controller;
 import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,7 @@ import com.buurman.service.export.RentChangeDocumentExporter;
 import com.buurman.service.export.RentChangeDocumentGenerationService;
 import com.buurman.service.export.RentIncreaseLetterExporter;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -39,30 +42,40 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BookletController implements BookletsApi {
 
+  private static final Set<String> SUPPORTED_LOCALES =
+      Set.of("en", "nl", "de", "es", "fr", "pt", "it", "sv", "fi", "el", "pl", "da", "nb");
+
   private final ExportService exportService;
   private final ContractExtensionAddendumExporter addendumExporter;
   private final RentIncreaseLetterExporter rentIncreaseLetterExporter;
   private final RentChangeDocumentExporter rentChangeDocumentExporter;
   private final ExtensionDocumentGenerationService extensionDocumentGenerationService;
   private final RentChangeDocumentGenerationService rentChangeDocumentGenerationService;
+  private final HttpServletRequest httpServletRequest;
   private final HttpServletResponse httpServletResponse;
 
   @Override
   public byte[] exportPropertyBooklet(PropertyIdentifier propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    Locale locale = resolveLocale(
+        Optional.ofNullable(httpServletRequest.getParameter("lang")).orElse("en"));
     httpServletResponse.setHeader(
         "Content-Disposition", "attachment; filename=property-booklet.pdf");
     httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
-    return exportService.generatePropertyBrochurePDF(propertyIdentifier, principal.requireTeamId());
+    return exportService.generatePropertyBrochurePDF(
+        propertyIdentifier, principal.requireTeamId(), locale);
   }
 
   @Override
   public byte[] exportContactBooklet(ContactIdentifier contactIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    Locale locale = resolveLocale(
+        Optional.ofNullable(httpServletRequest.getParameter("lang")).orElse("en"));
     httpServletResponse.setHeader(
         "Content-Disposition", "attachment; filename=contact-booklet.pdf");
     httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
-    return exportService.generateContactReportPDF(contactIdentifier, principal.requireTeamId());
+    return exportService.generateContactReportPDF(
+        contactIdentifier, principal.requireTeamId(), locale);
   }
 
   @Override
@@ -85,10 +98,20 @@ public class BookletController implements BookletsApi {
   @Override
   public byte[] exportContractBooklet(ContractIdentifier contractIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
+    Locale locale = resolveLocale(
+        Optional.ofNullable(httpServletRequest.getParameter("lang")).orElse("en"));
     httpServletResponse.setHeader(
         "Content-Disposition", "attachment; filename=contract-booklet.pdf");
     httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
-    return exportService.generateContractReportPDF(contractIdentifier, principal.requireTeamId());
+    return exportService.generateContractReportPDF(
+        contractIdentifier, principal.requireTeamId(), locale);
+  }
+
+  private static Locale resolveLocale(String lang) {
+    if (SUPPORTED_LOCALES.contains(lang)) {
+      return Locale.forLanguageTag(lang);
+    }
+    return Locale.ENGLISH;
   }
 
   @GetMapping("/contracts/{contractId}/extensions/{extensionId}/addendum")

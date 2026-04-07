@@ -480,7 +480,7 @@
       "passwordRequirements": "Salasana ei tayta kaikkia vaatimuksia",
       "passwordsMismatch": "Salasanat eivat tasmaa"
     },
-    "copyright": "\u00a9 2026 Buurman. Kaikki oikeudet pidatetaan.",
+    "copyright": "© 2026 Buurman. Kaikki oikeudet pidatetaan.",
     "freeForSmallLandlords": "Ilmainen pienille vuokranantajille",
     "welcomeBack": "Tervetuloa takaisin",
     "propertiesWaiting": "Kiinteistosi odottavat sinua",
@@ -586,5 +586,12 @@
     "resendIn": "Laheta uudelleen {{seconds}} s kuluttua",
     "sending": "Lahetetaan...",
     "resendCode": "Laheta koodi uudelleen"
+  },
+  "bookletDownload": {
+    "button": "Vihko",
+    "title": "Lataa vihko",
+    "description": "Valitse vihkon kieli",
+    "yourLanguage": "Kielesi",
+    "downloadFailed": "Vihkon lataaminen epäonnistui"
   }
 }

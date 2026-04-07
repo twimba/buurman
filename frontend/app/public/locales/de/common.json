@@ -586,5 +586,12 @@
     "resendIn": "Erneut senden in {{seconds}}s",
     "sending": "Wird gesendet...",
     "resendCode": "Code erneut senden"
+  },
+  "bookletDownload": {
+    "button": "Broschüre",
+    "title": "Broschüre herunterladen",
+    "description": "Wählen Sie eine Sprache für Ihre Broschüre",
+    "yourLanguage": "Ihre Sprache",
+    "downloadFailed": "Broschüre konnte nicht heruntergeladen werden"
   }
 }

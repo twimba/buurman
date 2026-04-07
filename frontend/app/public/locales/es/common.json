@@ -586,5 +586,12 @@
     "resendIn": "Reenviar en {{seconds}}s",
     "sending": "Enviando...",
     "resendCode": "Reenviar Código"
+  },
+  "bookletDownload": {
+    "button": "Folleto",
+    "title": "Descargar folleto",
+    "description": "Seleccione un idioma para su folleto",
+    "yourLanguage": "Su idioma",
+    "downloadFailed": "Error al descargar el folleto"
   }
 }

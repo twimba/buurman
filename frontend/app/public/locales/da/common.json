@@ -586,5 +586,12 @@
     "resendIn": "Gensend om {{seconds}}s",
     "sending": "Sender...",
     "resendCode": "Gensend kode"
+  },
+  "bookletDownload": {
+    "button": "Hæfte",
+    "title": "Download hæfte",
+    "description": "Vælg et sprog til dit hæfte",
+    "yourLanguage": "Dit sprog",
+    "downloadFailed": "Hentning af hæfte mislykkedes"
   }
 }

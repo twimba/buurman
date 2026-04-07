@@ -586,5 +586,12 @@
     "resendIn": "Skicka igen om {{seconds}}s",
     "sending": "Skickar...",
     "resendCode": "Skicka kod igen"
+  },
+  "bookletDownload": {
+    "button": "Häfte",
+    "title": "Ladda ned häfte",
+    "description": "Välj ett språk för ditt häfte",
+    "yourLanguage": "Ditt språk",
+    "downloadFailed": "Det gick inte att ladda ned häftet"
   }
 }

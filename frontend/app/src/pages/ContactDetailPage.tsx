@@ -19,6 +19,7 @@ import { useDeletePhoto } from '@/hooks/usePhotoHooks';
 import { useContracts } from '@/hooks/useContractHooks';
 import { CalendarFeedResponseFeedType as CalendarFeedType } from '@/generated/models';
 import { CalendarFeedButton } from '@/components/common/CalendarFeedPopover';
+import { BookletDownloadButton } from '@/components/common/BookletDownloadButton';
 import { LoadingSpinner, RichTextDisplay } from '@buurman/ui';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { trackEvent } from '@/utils/analytics';
@@ -54,7 +55,6 @@ import {
   Plus,
   ChevronUp,
   ChevronDown,
-  Download,
   Activity,
   Users,
   FolderOpen,
@@ -66,7 +66,7 @@ import {
   CheckCircle2,
   Shield,
 } from 'lucide-react';
-import client from '@/api/client';
+import { downloadContactBooklet } from '@/api/contacts';
 import { useFormatDate } from '@/hooks/useFormatDate';
 
 const ROLE_COLORS: Record<ContractPartyRole, string> = {
@@ -324,33 +324,19 @@ export const ContactDetailPage = () => {
           }
           actions={
             <>
-              <Button
-                variant="primary"
-                leftIcon={<Download />}
-                onClick={async () => {
-                  try {
-                    const response = await client.get(
-                      `/booklets/contact/${id}`,
-                      { responseType: 'blob' }
-                    );
-                    const blob = new Blob([response.data], {
-                      type: 'application/pdf',
-                    });
-                    const url = window.URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = 'contact-booklet.pdf';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    window.URL.revokeObjectURL(url);
-                  } catch {
-                    // Download error handled by browser
-                  }
+              <BookletDownloadButton
+                onDownload={async (lang) => {
+                  const blob = await downloadContactBooklet(id, lang);
+                  const url = window.URL.createObjectURL(blob);
+                  const link = document.createElement('a');
+                  link.href = url;
+                  link.download = `contact-booklet-${lang}.pdf`;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  window.URL.revokeObjectURL(url);
                 }}
-              >
-                {t('detail.booklet')}
-              </Button>
+              />
               {id && (
                 <CalendarFeedButton
                   feedType={CalendarFeedType.CONTACT_PAYMENTS}
