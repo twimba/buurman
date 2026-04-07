@@ -1404,17 +1404,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@posthog/core@npm:1.24.6":
-  version: 1.24.6
-  resolution: "@posthog/core@npm:1.24.6"
-  checksum: 10c0/38d9813ee4b526d55e28074eef98ffa262dd9e48b93a801708ab260fe272d617b36a1c8b696a0659a0c15b2e6d575d0c1ce3e9ed20abad561d8f6a7881c2c7ad
+"@posthog/core@npm:1.25.0":
+  version: 1.25.0
+  resolution: "@posthog/core@npm:1.25.0"
+  checksum: 10c0/6b94306fa07f54d60584218cf0a0ea3cb5cc288aff52e603016686801eec1288129e1d115e1d77b17d345835a4b3b7272e547b7604a44fd281f911479c633b72
   languageName: node
   linkType: hard
 
-"@posthog/types@npm:1.364.7":
-  version: 1.364.7
-  resolution: "@posthog/types@npm:1.364.7"
-  checksum: 10c0/fd045f080aaaa238acc1e5c5c68e54d1a3063ec7267c0d01f0d0965b99f9bdc71baf46bd5b55bd5fc76ad2351654e7283cf70949be121d922bf0b3fdfc25d2ba
+"@posthog/types@npm:1.365.0":
+  version: 1.365.0
+  resolution: "@posthog/types@npm:1.365.0"
+  checksum: 10c0/4b231ca45994cc6d3bf0ae566189bebd38305f43a113df495d35d9cd967e3b47655c069a626766b74ac20e90f489f6d87f8335d8364825129a8c7ec07a274622
   languageName: node
   linkType: hard
 
@@ -4483,14 +4483,14 @@ __metadata:
     keycloak-js: "npm:26.2.3"
     libphonenumber-js: "npm:1.12.41"
     lucide-react: "npm:1.7.0"
-    posthog-js: "npm:1.364.7"
+    posthog-js: "npm:1.365.0"
     prettier: "npm:3.8.1"
     react: "npm:19.2.4"
     react-dom: "npm:19.2.4"
     react-is: "npm:19.2.4"
     react-router-dom: "npm:7.14.0"
     recharts: "npm:3.8.1"
-    swagger-ui-react: "npm:^5.32.1"
+    swagger-ui-react: "npm:^5.32.2"
     tailwindcss: "npm:4.2.2"
     typescript: "npm:6.0.2"
     typescript-eslint: "npm:8.58.0"
@@ -4531,7 +4531,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.0.1"
     keycloak-js: "npm:26.2.3"
     lucide-react: "npm:1.7.0"
-    posthog-js: "npm:1.364.7"
+    posthog-js: "npm:1.365.0"
     prettier: "npm:3.8.1"
     react: "npm:19.2.4"
     react-dom: "npm:19.2.4"
@@ -7125,7 +7125,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.15.0, lodash@npm:^4.17.21":
+"lodash@npm:^4.15.0, lodash@npm:^4.18.1":
   version: 4.18.1
   resolution: "lodash@npm:4.18.1"
   checksum: 10c0/757228fc68805c59789e82185135cf85f05d0b2d3d54631d680ca79ec21944ec8314d4533639a14b8bcfbd97a517e78960933041a5af17ecb693ec6eecb99a27
@@ -7934,24 +7934,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-js@npm:1.364.7":
-  version: 1.364.7
-  resolution: "posthog-js@npm:1.364.7"
+"posthog-js@npm:1.365.0":
+  version: 1.365.0
+  resolution: "posthog-js@npm:1.365.0"
   dependencies:
     "@opentelemetry/api": "npm:^1.9.0"
     "@opentelemetry/api-logs": "npm:^0.208.0"
     "@opentelemetry/exporter-logs-otlp-http": "npm:^0.208.0"
     "@opentelemetry/resources": "npm:^2.2.0"
     "@opentelemetry/sdk-logs": "npm:^0.208.0"
-    "@posthog/core": "npm:1.24.6"
-    "@posthog/types": "npm:1.364.7"
+    "@posthog/core": "npm:1.25.0"
+    "@posthog/types": "npm:1.365.0"
     core-js: "npm:^3.38.1"
     dompurify: "npm:^3.3.2"
     fflate: "npm:^0.4.8"
     preact: "npm:^10.28.2"
     query-selector-shadow-dom: "npm:^1.0.1"
     web-vitals: "npm:^5.1.0"
-  checksum: 10c0/0ec42f88174b51a52abe361febb7dd967a3ef7710c3065130fc7158d2e6104a629cf844ab764b4f60528b38259505ad29397690a4eb104bbfad925bda8236783
+  checksum: 10c0/56c950bdd9ec4de327d9215f8c2dfe4b15a81a35038a67acf0369e8d8158aefd6980bce33ccc1c49665e631a73ac2e1e7fffe9c02d68ad878bb4957523736d0c
   languageName: node
   linkType: hard
 
@@ -9387,9 +9387,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swagger-ui-react@npm:^5.32.1":
-  version: 5.32.1
-  resolution: "swagger-ui-react@npm:5.32.1"
+"swagger-ui-react@npm:^5.32.2":
+  version: 5.32.2
+  resolution: "swagger-ui-react@npm:5.32.2"
   dependencies:
     "@babel/runtime-corejs3": "npm:^7.27.1"
     "@scarf/scarf": "npm:=1.4.0"
@@ -9403,7 +9403,7 @@ __metadata:
     immutable: "npm:^3.x.x"
     js-file-download: "npm:^0.4.12"
     js-yaml: "npm:=4.1.1"
-    lodash: "npm:^4.17.21"
+    lodash: "npm:^4.18.1"
     prop-types: "npm:^15.8.1"
     randexp: "npm:^0.5.3"
     randombytes: "npm:^2.1.0"
@@ -9428,7 +9428,7 @@ __metadata:
   peerDependencies:
     react: ">=16.8.0 <20"
     react-dom: ">=16.8.0 <20"
-  checksum: 10c0/0398d18ce63d0439db3b32b92e62b64f49a8733b99aa8406789d8e108d1f7c7f31fb097a10d901887d2d096939a27fd7d599f0e17e644febe81bda4684d464af
+  checksum: 10c0/7116f9351859468a095648486c0163b7d0e22cff2e28964f75b3ec3474b46fa2fcfcce269889e9349fab40da7aa48b343ae82ba3e6b58e7b6ab6317b53f2e047
   languageName: node
   linkType: hard
 
