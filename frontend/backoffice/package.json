@@ -22,7 +22,7 @@
     "@tiptap/pm": "3.22.3",
     "@tiptap/react": "3.22.3",
     "@tiptap/starter-kit": "3.22.3",
-    "axios": "1.14.0",
+    "axios": "1.15.0",
     "cronstrue": "3.14.0",
     "date-fns": "4.1.0",
     "dompurify": "3.3.3",
