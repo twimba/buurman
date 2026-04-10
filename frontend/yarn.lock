@@ -256,7 +256,7 @@ __metadata:
     eslint-plugin-react: "npm:7.37.5"
     eslint-plugin-react-hooks: "npm:7.0.1"
     lucide-react: "npm:1.8.0"
-    prettier: "npm:3.8.1"
+    prettier: "npm:3.8.2"
     tailwind-merge: "npm:^3.3.0"
     tailwindcss: "npm:4.2.2"
     typescript: "npm:6.0.2"
@@ -1238,10 +1238,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@posthog/types@npm:1.366.2":
-  version: 1.366.2
-  resolution: "@posthog/types@npm:1.366.2"
-  checksum: 10c0/63e88e1c6b9734f895318b92439c9a411ad96cc619a1bb8a53dc5be27e61c1f2d8f1411fe8737b899cf6dedc5e55c4fa15c5e2abdffa26afdd8ebefdde2e060c
+"@posthog/types@npm:1.367.0":
+  version: 1.367.0
+  resolution: "@posthog/types@npm:1.367.0"
+  checksum: 10c0/4441b1cd0170acd3a205f6e47089de20d9171e2ae8778b50ff976fc3ad61e9c8ec76b71742572afb88bfe95c5390aaff78035805c80108ab1d3575dfb104bd67
   languageName: node
   linkType: hard
 
@@ -4299,8 +4299,8 @@ __metadata:
     keycloak-js: "npm:26.2.3"
     libphonenumber-js: "npm:1.12.41"
     lucide-react: "npm:1.8.0"
-    posthog-js: "npm:1.366.2"
-    prettier: "npm:3.8.1"
+    posthog-js: "npm:1.367.0"
+    prettier: "npm:3.8.2"
     react: "npm:19.2.5"
     react-dom: "npm:19.2.5"
     react-is: "npm:19.2.5"
@@ -4347,8 +4347,8 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.0.1"
     keycloak-js: "npm:26.2.3"
     lucide-react: "npm:1.8.0"
-    posthog-js: "npm:1.366.2"
-    prettier: "npm:3.8.1"
+    posthog-js: "npm:1.367.0"
+    prettier: "npm:3.8.2"
     react: "npm:19.2.5"
     react-dom: "npm:19.2.5"
     react-router-dom: "npm:7.14.0"
@@ -7661,9 +7661,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-js@npm:1.366.2":
-  version: 1.366.2
-  resolution: "posthog-js@npm:1.366.2"
+"posthog-js@npm:1.367.0":
+  version: 1.367.0
+  resolution: "posthog-js@npm:1.367.0"
   dependencies:
     "@opentelemetry/api": "npm:^1.9.0"
     "@opentelemetry/api-logs": "npm:^0.208.0"
@@ -7671,14 +7671,14 @@ __metadata:
     "@opentelemetry/resources": "npm:^2.2.0"
     "@opentelemetry/sdk-logs": "npm:^0.208.0"
     "@posthog/core": "npm:1.25.2"
-    "@posthog/types": "npm:1.366.2"
+    "@posthog/types": "npm:1.367.0"
     core-js: "npm:^3.38.1"
     dompurify: "npm:^3.3.2"
     fflate: "npm:^0.4.8"
     preact: "npm:^10.28.2"
     query-selector-shadow-dom: "npm:^1.0.1"
     web-vitals: "npm:^5.1.0"
-  checksum: 10c0/2c9d6041aa0110e46508a02caa67a7b65de8c18848963741c3fddca9f19498fb92279b517f8280b69521f5545e6b13faac83828792941b9cecddf4f34b11d2e0
+  checksum: 10c0/888b14c3a7df4d70b10a4d07c3209e76968bc10db0d62304788c4510e210971577e96e66a1170ab6726b4899e07d92da3252acdbf9fca300e87a426fbc4e4537
   languageName: node
   linkType: hard
 
@@ -7703,12 +7703,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:3.8.1":
-  version: 3.8.1
-  resolution: "prettier@npm:3.8.1"
+"prettier@npm:3.8.2":
+  version: 3.8.2
+  resolution: "prettier@npm:3.8.2"
   bin:
     prettier: bin/prettier.cjs
-  checksum: 10c0/33169b594009e48f570471271be7eac7cdcf88a209eed39ac3b8d6d78984039bfa9132f82b7e6ba3b06711f3bfe0222a62a1bfb87c43f50c25a83df1b78a2c42
+  checksum: 10c0/2d64bd01d269c8dd6d8c423a2a2e1fb88230a53aac523204b327de40059ccf8bd8e6fe70b8ce6154b97ed4442e9fd878504ff8a5330f3a4f64bd13d1576f7652
   languageName: node
   linkType: hard
 
