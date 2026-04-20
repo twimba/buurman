@@ -1238,10 +1238,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@posthog/types@npm:1.369.2":
-  version: 1.369.2
-  resolution: "@posthog/types@npm:1.369.2"
-  checksum: 10c0/00f361fde9160f2369a73a755d4efccc19f6abd072a3c6dc2bf2c696f9e31938ae5e173d3a8dafc1eef4923f74b06b4ac3af3b3bdaabd29ef8287b3fc0c36161
+"@posthog/types@npm:1.369.3":
+  version: 1.369.3
+  resolution: "@posthog/types@npm:1.369.3"
+  checksum: 10c0/66a93c18a3d5a18a3e4af7b18dd54d114b2738f0292a538efb0dbd7ad4dd60858f58b38ac7ea46ddd5ed61996dd837b01e08d6e035450ea4e954c18dd5b36d89
   languageName: node
   linkType: hard
 
@@ -4121,6 +4121,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"axios@npm:1.15.1":
+  version: 1.15.1
+  resolution: "axios@npm:1.15.1"
+  dependencies:
+    follow-redirects: "npm:^1.15.11"
+    form-data: "npm:^4.0.5"
+    proxy-from-env: "npm:^2.1.0"
+  checksum: 10c0/f8b5f3aa954cc1da283e32ad81882967a371dfec7dcc75174fcae93093daeb5399aec2ec587d04779f46b00ff1c297ac9edf3fa596452d6a3d455ce5b58093a4
+  languageName: node
+  linkType: hard
+
 "balanced-match@npm:^1.0.0":
   version: 1.0.2
   resolution: "balanced-match@npm:1.0.2"
@@ -4251,7 +4262,7 @@ __metadata:
     "@types/swagger-ui-react": "npm:^5"
     "@vis.gl/react-google-maps": "npm:1.8.3"
     "@vitejs/plugin-react": "npm:6.0.1"
-    axios: "npm:1.15.0"
+    axios: "npm:1.15.1"
     date-fns: "npm:4.1.0"
     dompurify: "npm:3.4.0"
     eslint: "npm:10.2.0"
@@ -4262,7 +4273,7 @@ __metadata:
     keycloak-js: "npm:26.2.3"
     libphonenumber-js: "npm:1.12.41"
     lucide-react: "npm:1.8.0"
-    posthog-js: "npm:1.369.2"
+    posthog-js: "npm:1.369.3"
     prettier: "npm:3.8.3"
     react: "npm:19.2.5"
     react-dom: "npm:19.2.5"
@@ -4310,7 +4321,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.3"
     lucide-react: "npm:1.8.0"
-    posthog-js: "npm:1.369.2"
+    posthog-js: "npm:1.369.3"
     prettier: "npm:3.8.3"
     react: "npm:19.2.5"
     react-dom: "npm:19.2.5"
@@ -7605,9 +7616,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-js@npm:1.369.2":
-  version: 1.369.2
-  resolution: "posthog-js@npm:1.369.2"
+"posthog-js@npm:1.369.3":
+  version: 1.369.3
+  resolution: "posthog-js@npm:1.369.3"
   dependencies:
     "@opentelemetry/api": "npm:^1.9.0"
     "@opentelemetry/api-logs": "npm:^0.208.0"
@@ -7615,14 +7626,14 @@ __metadata:
     "@opentelemetry/resources": "npm:^2.2.0"
     "@opentelemetry/sdk-logs": "npm:^0.208.0"
     "@posthog/core": "npm:1.25.2"
-    "@posthog/types": "npm:1.369.2"
+    "@posthog/types": "npm:1.369.3"
     core-js: "npm:^3.38.1"
     dompurify: "npm:^3.3.2"
     fflate: "npm:^0.4.8"
     preact: "npm:^10.28.2"
     query-selector-shadow-dom: "npm:^1.0.1"
     web-vitals: "npm:^5.1.0"
-  checksum: 10c0/07024d17458600a62ed75850912caaf7c23b291e004b07e5647e62ff34a605547a43dff5544293a51ad4372f24af842e6baf5189183fdda2a34439a757bb57c4
+  checksum: 10c0/5b8e86d0871ec190a1d4a623aa1862e701bc4e401a41fc4165336a56564266c5449a9d1e00d70bb0035a20c154bce614c3b3688ab109c3eb7e7aa6c16c09de0b
   languageName: node
   linkType: hard
 
