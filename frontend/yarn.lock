@@ -1222,17 +1222,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@posthog/core@npm:1.25.2":
-  version: 1.25.2
-  resolution: "@posthog/core@npm:1.25.2"
-  checksum: 10c0/a462328aa50303417abe0c87a0e4a4760b2e836b74cc582449e0480f2f04b832d1d51ade883c4d7fde2bf7e820646a050577b3a9339dd534de4ddd5cadd4bd15
+"@posthog/core@npm:1.25.3":
+  version: 1.25.3
+  resolution: "@posthog/core@npm:1.25.3"
+  checksum: 10c0/3cd0cccb26259237b77cc079ce932d6d77f8a8b15da2b2724478acf5fad34df028a1f918eb0ad24bb8bcffdc772d4a86b954b6a879dcc0fc6f66cf9ff10a19e9
   languageName: node
   linkType: hard
 
-"@posthog/types@npm:1.369.3":
-  version: 1.369.3
-  resolution: "@posthog/types@npm:1.369.3"
-  checksum: 10c0/66a93c18a3d5a18a3e4af7b18dd54d114b2738f0292a538efb0dbd7ad4dd60858f58b38ac7ea46ddd5ed61996dd837b01e08d6e035450ea4e954c18dd5b36d89
+"@posthog/types@npm:1.369.5":
+  version: 1.369.5
+  resolution: "@posthog/types@npm:1.369.5"
+  checksum: 10c0/38880574d74438bae8c086b10ba7ecb35ceee7c9c9fc9d87eaf67eb4b15f10c5805a16c6c21082ea8d51dba7edebe3ac18d8f24844db5a62e47c686f00733968
   languageName: node
   linkType: hard
 
@@ -4101,14 +4101,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:1.15.1":
-  version: 1.15.1
-  resolution: "axios@npm:1.15.1"
+"axios@npm:1.15.2":
+  version: 1.15.2
+  resolution: "axios@npm:1.15.2"
   dependencies:
     follow-redirects: "npm:^1.15.11"
     form-data: "npm:^4.0.5"
     proxy-from-env: "npm:^2.1.0"
-  checksum: 10c0/f8b5f3aa954cc1da283e32ad81882967a371dfec7dcc75174fcae93093daeb5399aec2ec587d04779f46b00ff1c297ac9edf3fa596452d6a3d455ce5b58093a4
+  checksum: 10c0/4eeae0feeaa7fdc1ef24f81f8b378fdadedf4aebdd6bf224484675160f8744cf17b9b0d1c215279979940f7e8ce463beffa2f713099612e428eac238515c81d5
   languageName: node
   linkType: hard
 
@@ -4253,7 +4253,7 @@ __metadata:
     "@types/swagger-ui-react": "npm:^5"
     "@vis.gl/react-google-maps": "npm:1.8.3"
     "@vitejs/plugin-react": "npm:6.0.1"
-    axios: "npm:1.15.1"
+    axios: "npm:1.15.2"
     date-fns: "npm:4.1.0"
     dompurify: "npm:3.4.0"
     eslint: "npm:10.2.1"
@@ -4264,7 +4264,7 @@ __metadata:
     keycloak-js: "npm:26.2.3"
     libphonenumber-js: "npm:1.12.41"
     lucide-react: "npm:1.8.0"
-    posthog-js: "npm:1.369.3"
+    posthog-js: "npm:1.369.5"
     prettier: "npm:3.8.3"
     react: "npm:19.2.5"
     react-dom: "npm:19.2.5"
@@ -4303,7 +4303,7 @@ __metadata:
     "@types/react": "npm:19.2.14"
     "@types/react-dom": "npm:19.2.3"
     "@vitejs/plugin-react": "npm:6.0.1"
-    axios: "npm:1.15.1"
+    axios: "npm:1.15.2"
     cronstrue: "npm:3.14.0"
     date-fns: "npm:4.1.0"
     dompurify: "npm:3.4.0"
@@ -4312,7 +4312,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.3"
     lucide-react: "npm:1.8.0"
-    posthog-js: "npm:1.369.3"
+    posthog-js: "npm:1.369.5"
     prettier: "npm:3.8.3"
     react: "npm:19.2.5"
     react-dom: "npm:19.2.5"
@@ -7607,24 +7607,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-js@npm:1.369.3":
-  version: 1.369.3
-  resolution: "posthog-js@npm:1.369.3"
+"posthog-js@npm:1.369.5":
+  version: 1.369.5
+  resolution: "posthog-js@npm:1.369.5"
   dependencies:
     "@opentelemetry/api": "npm:^1.9.0"
     "@opentelemetry/api-logs": "npm:^0.208.0"
     "@opentelemetry/exporter-logs-otlp-http": "npm:^0.208.0"
     "@opentelemetry/resources": "npm:^2.2.0"
     "@opentelemetry/sdk-logs": "npm:^0.208.0"
-    "@posthog/core": "npm:1.25.2"
-    "@posthog/types": "npm:1.369.3"
+    "@posthog/core": "npm:1.25.3"
+    "@posthog/types": "npm:1.369.5"
     core-js: "npm:^3.38.1"
     dompurify: "npm:^3.3.2"
     fflate: "npm:^0.4.8"
     preact: "npm:^10.28.2"
     query-selector-shadow-dom: "npm:^1.0.1"
     web-vitals: "npm:^5.1.0"
-  checksum: 10c0/5b8e86d0871ec190a1d4a623aa1862e701bc4e401a41fc4165336a56564266c5449a9d1e00d70bb0035a20c154bce614c3b3688ab109c3eb7e7aa6c16c09de0b
+  checksum: 10c0/9716cca8a945635871d83f1acd4f7d0d59854553e8bb770e1e6cd6fe7f56da43a6ae94f4564df786ae6d343bfdbc7ae8556e0d8d6c67a48ccd4a96a90412cd7a
   languageName: node
   linkType: hard
 
