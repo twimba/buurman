@@ -1222,17 +1222,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@posthog/core@npm:1.26.0":
-  version: 1.26.0
-  resolution: "@posthog/core@npm:1.26.0"
-  checksum: 10c0/154478efc655179af05055cb86e73a4ce6b96401cd3cf9d1572c4f046ccff7018782b4c944ef7aefa41ab78cbafc7d1067c2f3419a436f3859b75b622612dfad
+"@posthog/core@npm:1.27.1":
+  version: 1.27.1
+  resolution: "@posthog/core@npm:1.27.1"
+  dependencies:
+    "@posthog/types": "npm:1.371.2"
+  checksum: 10c0/e14a4d0b0b4d5440b41d438684ee115aa35e8f72f1f1949eefc3a60ddf114b75be5334fd944a2dc8886a18fc7fa86d17126e28b4475167d671b46f296ae18eac
   languageName: node
   linkType: hard
 
-"@posthog/types@npm:1.370.1":
-  version: 1.370.1
-  resolution: "@posthog/types@npm:1.370.1"
-  checksum: 10c0/7bee4979d76168b6b0fd2433bb4c018f36f046dd8bd8ff4bb6a8d4dfa181a31b13ab7fd0de994909141cdca046ebb9a8c5e8783dfd940bef390cfeee94d19227
+"@posthog/types@npm:1.371.2":
+  version: 1.371.2
+  resolution: "@posthog/types@npm:1.371.2"
+  checksum: 10c0/70b1aef83177bca9606c31e4ad380f79b668e54ce5411d674eb581a1b7670b59369f6ca79d64a8e73aa7763a10c0194126eef3f8a840562f3f26d75ecd19a939
   languageName: node
   linkType: hard
 
@@ -4262,9 +4264,9 @@ __metadata:
     ical.js: "npm:^2.2.1"
     jsdom: "npm:26.1.0"
     keycloak-js: "npm:26.2.4"
-    libphonenumber-js: "npm:1.12.41"
+    libphonenumber-js: "npm:1.12.42"
     lucide-react: "npm:1.8.0"
-    posthog-js: "npm:1.370.1"
+    posthog-js: "npm:1.371.2"
     prettier: "npm:3.8.3"
     react: "npm:19.2.5"
     react-dom: "npm:19.2.5"
@@ -4312,7 +4314,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.4"
     lucide-react: "npm:1.8.0"
-    posthog-js: "npm:1.370.1"
+    posthog-js: "npm:1.371.2"
     prettier: "npm:3.8.3"
     react: "npm:19.2.5"
     react-dom: "npm:19.2.5"
@@ -6642,10 +6644,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"libphonenumber-js@npm:1.12.41":
-  version: 1.12.41
-  resolution: "libphonenumber-js@npm:1.12.41"
-  checksum: 10c0/dda2a3ada1d4271a93f6eb9cc9b061e294ab05e7efb71c5e2e2bea02f8f478d7b4359fcd3a67b8a377e53ca671d0303ffa78e3df4857901d5aa03ecfb19becf0
+"libphonenumber-js@npm:1.12.42":
+  version: 1.12.42
+  resolution: "libphonenumber-js@npm:1.12.42"
+  checksum: 10c0/55c1ac5ab2657868d84e85f426e8c17d33ffccbdefc8eff1248641d2d390377b566e024833374921549008466a3d8c796e767f066749c0d7f37c3c5b32561e29
   languageName: node
   linkType: hard
 
@@ -7619,24 +7621,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-js@npm:1.370.1":
-  version: 1.370.1
-  resolution: "posthog-js@npm:1.370.1"
+"posthog-js@npm:1.371.2":
+  version: 1.371.2
+  resolution: "posthog-js@npm:1.371.2"
   dependencies:
     "@opentelemetry/api": "npm:^1.9.0"
     "@opentelemetry/api-logs": "npm:^0.208.0"
     "@opentelemetry/exporter-logs-otlp-http": "npm:^0.208.0"
     "@opentelemetry/resources": "npm:^2.2.0"
     "@opentelemetry/sdk-logs": "npm:^0.208.0"
-    "@posthog/core": "npm:1.26.0"
-    "@posthog/types": "npm:1.370.1"
+    "@posthog/core": "npm:1.27.1"
+    "@posthog/types": "npm:1.371.2"
     core-js: "npm:^3.38.1"
     dompurify: "npm:^3.3.2"
     fflate: "npm:^0.4.8"
     preact: "npm:^10.28.2"
     query-selector-shadow-dom: "npm:^1.0.1"
     web-vitals: "npm:^5.1.0"
-  checksum: 10c0/2343c3d09b45195b06dd5592228bead09fdcaf963bdf158ff72a0e48acf7f5b57977be484ddff3814686e63c6288d180293dc7b47825ab281156364ece926cb3
+  checksum: 10c0/de3ddb2fa39b1ba671e924f8d40275ce50f873ab982906ed19067b516aed61342033ce480e628637783d02eaef4446458be7080c1398f04aa219d9587b7ca021
   languageName: node
   linkType: hard
 
