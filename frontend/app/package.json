@@ -39,7 +39,7 @@
     "dompurify": "3.4.1",
     "ical.js": "^2.2.1",
     "keycloak-js": "26.2.4",
-    "libphonenumber-js": "1.12.41",
+    "libphonenumber-js": "1.12.42",
     "lucide-react": "1.8.0",
     "posthog-js": "1.370.1",
     "react": "19.2.5",
