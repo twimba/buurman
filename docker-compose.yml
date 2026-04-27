@@ -166,7 +166,7 @@ services:
   prometheus:
     build:
       context: ./prometheus
-    image: prom/prometheus:v3.11.2
+    image: prom/prometheus:v3.11.3
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
