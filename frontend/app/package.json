@@ -36,7 +36,7 @@
     "@vis.gl/react-google-maps": "1.8.3",
     "axios": "1.15.2",
     "date-fns": "4.1.0",
-    "dompurify": "3.4.1",
+    "dompurify": "3.4.2",
     "ical.js": "^2.2.1",
     "keycloak-js": "26.2.4",
     "libphonenumber-js": "1.12.42",
