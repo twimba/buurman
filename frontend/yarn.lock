@@ -1222,19 +1222,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@posthog/core@npm:1.28.0":
-  version: 1.28.0
-  resolution: "@posthog/core@npm:1.28.0"
+"@posthog/core@npm:1.28.2":
+  version: 1.28.2
+  resolution: "@posthog/core@npm:1.28.2"
   dependencies:
-    "@posthog/types": "npm:1.372.6"
-  checksum: 10c0/c2533c3234ce8ad30c78d8d422bfab957185b9ba7511ce543708c59d6a1b4a1069da55123ab03ce76a293b86f314c5fb106f51332562a60a39ca44dcb1330b44
+    "@posthog/types": "npm:1.372.8"
+  checksum: 10c0/4f88842b9a18d0a1a5b3e604abcdbdfd74e1fe106ea2faee911334638d70c25199734e6e25f5f8ae2dc8a695420dd2b6e5c4df61e899180cd6bb5766397e8b15
   languageName: node
   linkType: hard
 
-"@posthog/types@npm:1.372.6":
-  version: 1.372.6
-  resolution: "@posthog/types@npm:1.372.6"
-  checksum: 10c0/8a5ffc122540e8261ec6a39934dc4723bef0ec4e70069bb939971342ff3b001fd00883117807fe3f8b252a5b313bf29aa90794712bc0e3d4241c38f5f046f015
+"@posthog/types@npm:1.372.8":
+  version: 1.372.8
+  resolution: "@posthog/types@npm:1.372.8"
+  checksum: 10c0/79f0b0553542808b3f1f301994b17bdd7fd2a4ead275d4d7f6b13ec3e17d70a4647c3739bc6239b9d7cdac6e541d58158f98fdb0f4197cbf9de118d766a4f3cc
   languageName: node
   linkType: hard
 
@@ -4094,14 +4094,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:1.15.2":
-  version: 1.15.2
-  resolution: "axios@npm:1.15.2"
+"axios@npm:1.16.0":
+  version: 1.16.0
+  resolution: "axios@npm:1.16.0"
   dependencies:
-    follow-redirects: "npm:^1.15.11"
+    follow-redirects: "npm:^1.16.0"
     form-data: "npm:^4.0.5"
     proxy-from-env: "npm:^2.1.0"
-  checksum: 10c0/4eeae0feeaa7fdc1ef24f81f8b378fdadedf4aebdd6bf224484675160f8744cf17b9b0d1c215279979940f7e8ce463beffa2f713099612e428eac238515c81d5
+  checksum: 10c0/1c91a5221b77b76072026b4cc95ecdf38f7c3e33e63423abec09a85e6e9a12279637dcc9ac2ba1fc333e0c447fb3b0f46d7965acb5d7cea02d188e9c6d425c0b
   languageName: node
   linkType: hard
 
@@ -4246,7 +4246,7 @@ __metadata:
     "@types/swagger-ui-react": "npm:^5"
     "@vis.gl/react-google-maps": "npm:1.8.3"
     "@vitejs/plugin-react": "npm:6.0.1"
-    axios: "npm:1.15.2"
+    axios: "npm:1.16.0"
     date-fns: "npm:4.1.0"
     dompurify: "npm:3.4.2"
     eslint: "npm:10.3.0"
@@ -4257,7 +4257,7 @@ __metadata:
     keycloak-js: "npm:26.2.4"
     libphonenumber-js: "npm:1.12.42"
     lucide-react: "npm:1.14.0"
-    posthog-js: "npm:1.372.6"
+    posthog-js: "npm:1.372.8"
     prettier: "npm:3.8.3"
     react: "npm:19.2.5"
     react-dom: "npm:19.2.5"
@@ -4296,7 +4296,7 @@ __metadata:
     "@types/react": "npm:19.2.14"
     "@types/react-dom": "npm:19.2.3"
     "@vitejs/plugin-react": "npm:6.0.1"
-    axios: "npm:1.15.2"
+    axios: "npm:1.16.0"
     cronstrue: "npm:3.14.0"
     date-fns: "npm:4.1.0"
     dompurify: "npm:3.4.2"
@@ -4305,7 +4305,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:7.1.1"
     keycloak-js: "npm:26.2.4"
     lucide-react: "npm:1.14.0"
-    posthog-js: "npm:1.372.6"
+    posthog-js: "npm:1.372.8"
     prettier: "npm:3.8.3"
     react: "npm:19.2.5"
     react-dom: "npm:19.2.5"
@@ -5631,7 +5631,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.15.11":
+"follow-redirects@npm:^1.15.11, follow-redirects@npm:^1.16.0":
   version: 1.16.0
   resolution: "follow-redirects@npm:1.16.0"
   peerDependenciesMeta:
@@ -7613,24 +7613,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-js@npm:1.372.6":
-  version: 1.372.6
-  resolution: "posthog-js@npm:1.372.6"
+"posthog-js@npm:1.372.8":
+  version: 1.372.8
+  resolution: "posthog-js@npm:1.372.8"
   dependencies:
     "@opentelemetry/api": "npm:^1.9.0"
     "@opentelemetry/api-logs": "npm:^0.208.0"
     "@opentelemetry/exporter-logs-otlp-http": "npm:^0.208.0"
     "@opentelemetry/resources": "npm:^2.2.0"
     "@opentelemetry/sdk-logs": "npm:^0.208.0"
-    "@posthog/core": "npm:1.28.0"
-    "@posthog/types": "npm:1.372.6"
+    "@posthog/core": "npm:1.28.2"
+    "@posthog/types": "npm:1.372.8"
     core-js: "npm:^3.38.1"
     dompurify: "npm:^3.3.2"
     fflate: "npm:^0.4.8"
     preact: "npm:^10.28.2"
     query-selector-shadow-dom: "npm:^1.0.1"
     web-vitals: "npm:^5.1.0"
-  checksum: 10c0/74bf964e02a365bea84e3238059e9b367b936dacee280b7db7a32a3b8cb59034b9c2508e72f93e75c7a25d655edd13ee637b887378a32be55e601a5b48369a45
+  checksum: 10c0/7f3aedc7543e1e56599a0eec5dab69a8485be0a62169fe43a2f24fb64370cd905d46087b304245c909803bddb03e14d120bb60cba7678164787d093b8aba33a1
   languageName: node
   linkType: hard
 
