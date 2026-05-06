@@ -42,9 +42,9 @@
     "libphonenumber-js": "1.12.42",
     "lucide-react": "1.14.0",
     "posthog-js": "1.372.8",
-    "react": "19.2.5",
-    "react-dom": "19.2.5",
-    "react-is": "19.2.5",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "react-is": "19.2.6",
     "react-router-dom": "7.15.0",
     "recharts": "3.8.1",
     "swagger-ui-react": "^5.32.5"
