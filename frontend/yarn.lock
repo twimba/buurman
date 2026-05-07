@@ -4255,7 +4255,7 @@ __metadata:
     ical.js: "npm:^2.2.1"
     jsdom: "npm:26.1.0"
     keycloak-js: "npm:26.2.4"
-    libphonenumber-js: "npm:1.12.42"
+    libphonenumber-js: "npm:1.12.43"
     lucide-react: "npm:1.14.0"
     posthog-js: "npm:1.372.9"
     prettier: "npm:3.8.3"
@@ -6647,10 +6647,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"libphonenumber-js@npm:1.12.42":
-  version: 1.12.42
-  resolution: "libphonenumber-js@npm:1.12.42"
-  checksum: 10c0/55c1ac5ab2657868d84e85f426e8c17d33ffccbdefc8eff1248641d2d390377b566e024833374921549008466a3d8c796e767f066749c0d7f37c3c5b32561e29
+"libphonenumber-js@npm:1.12.43":
+  version: 1.12.43
+  resolution: "libphonenumber-js@npm:1.12.43"
+  checksum: 10c0/b082dbe60091a68399e543031298e53ba9efd6b170e42f4962c61b115da458cda42bbf1caae49db490bde0cf1fbd7e23a4faaf2e77e395781bd74da526d45d40
   languageName: node
   linkType: hard
 
