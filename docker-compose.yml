@@ -212,7 +212,7 @@ services:
   grafana:
     build:
       context: ./grafana
-    image: grafana/grafana:12.4.2
+    image: grafana/grafana:13.0.1
     environment:
       # --- Server ---
       GF_SERVER_ROOT_URL: "https://${HOSTNAME_PREFIX:-}grafana.local.buurman.io"
