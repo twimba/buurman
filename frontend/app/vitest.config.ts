@@ -12,8 +12,9 @@ export default defineConfig({
     css: false,
   },
   resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
+    alias: [
+      { find: '@/i18n', replacement: path.resolve(__dirname, './src/test/i18n.mock.ts') },
+      { find: '@', replacement: path.resolve(__dirname, './src') },
+    ],
   },
 });

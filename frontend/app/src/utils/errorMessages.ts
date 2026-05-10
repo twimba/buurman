@@ -236,8 +236,7 @@ const formatBusinessRuleError = (message: string, t?: TFunction): string => {
       return t(key);
     }
   }
-  // Unknown business rule: show the backend message directly (it's user-facing by design)
-  return message;
+  return formatErrorMessage(message, t);
 };
 
 const ERROR_MAPPING_KEYS: Record<string, string> = {
