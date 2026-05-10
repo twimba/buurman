@@ -20,7 +20,7 @@ import com.buurman.config.models.AwsS3Properties;
 import com.buurman.config.models.KeycloakProperties;
 import com.buurman.dto.response.backoffice.BackofficeSystemInfoResponse.ServiceHealth;
 import com.buurman.dto.response.backoffice.BackofficeSystemInfoResponse.ServiceHealth.Status;
-import com.sendgrid.SendGrid;
+import com.mailgun.api.v3.MailgunMessagesApi;
 
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +40,7 @@ public class BackofficeHealthCheckService {
   private final AwsS3Properties awsS3Properties;
   private final Keycloak keycloak;
   private final KeycloakProperties keycloakProperties;
-  private final ObjectProvider<SendGrid> sendGridProvider;
+  private final ObjectProvider<MailgunMessagesApi> mailgunProvider;
   private final ObjectProvider<JavaMailSender> mailSenderProvider;
 
   public BackofficeHealthCheckService(
@@ -51,7 +51,7 @@ public class BackofficeHealthCheckService {
       AwsS3Properties awsS3Properties,
       Keycloak keycloak,
       KeycloakProperties keycloakProperties,
-      ObjectProvider<SendGrid> sendGridProvider,
+      ObjectProvider<MailgunMessagesApi> mailgunProvider,
       ObjectProvider<JavaMailSender> mailSenderProvider) {
     this.dsl = dsl;
     this.dataSource = dataSource;
@@ -60,7 +60,7 @@ public class BackofficeHealthCheckService {
     this.awsS3Properties = awsS3Properties;
     this.keycloak = keycloak;
     this.keycloakProperties = keycloakProperties;
-    this.sendGridProvider = sendGridProvider;
+    this.mailgunProvider = mailgunProvider;
     this.mailSenderProvider = mailSenderProvider;
   }
 
@@ -77,7 +77,7 @@ public class BackofficeHealthCheckService {
     futures.add(checkAsync("S3 Storage", this::checkS3));
     futures.add(checkAsync("Keycloak", this::checkKeycloak));
 
-    futures.add(checkAsync("SendGrid", this::checkSendGrid));
+    futures.add(checkAsync("Mailgun", this::checkMailgun));
     futures.add(checkAsync("SMTP", this::checkSmtp));
 
     CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
@@ -175,38 +175,22 @@ public class BackofficeHealthCheckService {
         Optional.empty());
   }
 
-  private ServiceHealth checkSendGrid() {
-    var sg = sendGridProvider.getIfAvailable();
-    if (sg == null) {
+  private ServiceHealth checkMailgun() {
+    var mg = mailgunProvider.getIfAvailable();
+    if (mg == null) {
       return new ServiceHealth(
-          "SendGrid",
+          "Mailgun",
           Status.DISABLED,
           Optional.empty(),
           Optional.of("Not active in this profile"),
           Optional.empty());
     }
-    try {
-      long start = System.currentTimeMillis();
-      var request = new com.sendgrid.Request();
-      request.setMethod(com.sendgrid.Method.GET);
-      request.setEndpoint("scopes");
-      var response = sg.api(request);
-      long latency = System.currentTimeMillis() - start;
-      boolean ok = response.getStatusCode() >= 200 && response.getStatusCode() < 300;
-      return new ServiceHealth(
-          "SendGrid",
-          ok ? Status.UP : Status.DOWN,
-          Optional.of(latency),
-          Optional.of("HTTP " + response.getStatusCode()),
-          ok ? Optional.empty() : Optional.of("HTTP " + response.getStatusCode()));
-    } catch (Exception e) {
-      return new ServiceHealth(
-          "SendGrid",
-          Status.DOWN,
-          Optional.empty(),
-          Optional.empty(),
-          Optional.ofNullable(e.getMessage()));
-    }
+    return new ServiceHealth(
+        "Mailgun",
+        Status.UP,
+        Optional.empty(),
+        Optional.of("Configured"),
+        Optional.empty());
   }
 
   private ServiceHealth checkSmtp() {

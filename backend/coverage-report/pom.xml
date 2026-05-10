@@ -74,7 +74,7 @@
                                 <exclude>com/buurman/config/QuartzJobsConfig*</exclude>
                                 <exclude>com/buurman/config/S3Config*</exclude>
                                 <exclude>com/buurman/config/NotificationQuartzConfig*</exclude>
-                                <exclude>com/buurman/config/SendGridConfig*</exclude>
+                                <exclude>com/buurman/config/MailgunConfig*</exclude>
                                 <exclude>com/buurman/config/DemoQuartzConfig*</exclude>
                                 <exclude>com/buurman/config/TakeoutQuartzConfig*</exclude>
 

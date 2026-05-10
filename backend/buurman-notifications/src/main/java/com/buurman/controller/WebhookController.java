@@ -1,20 +1,22 @@
 package com.buurman.controller;
 
-import java.security.Security;
-import java.security.interfaces.ECPublicKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Optional;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
 import org.jspecify.annotations.Nullable;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.buurman.config.models.SendGridProperties;
+import com.buurman.config.models.MailgunProperties;
 import com.buurman.config.models.TwilioProperties;
 import com.buurman.exception.ForbiddenException;
 import com.buurman.generated.api.WebhooksApi;
 import com.buurman.service.notification.WebhookService;
-import com.sendgrid.helpers.eventwebhook.EventWebhook;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.twilio.security.RequestValidator;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,35 +28,24 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class WebhookController implements WebhooksApi {
 
-  static {
-    if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-      Security.addProvider(new BouncyCastleProvider());
-    }
-  }
-
   private final WebhookService webhookService;
   private final TwilioProperties twilioProperties;
-  private final SendGridProperties sendGridProperties;
+  private final MailgunProperties mailgunProperties;
+  private final ObjectMapper objectMapper;
   private final HttpServletRequest httpServletRequest;
 
   @Override
-  public void handleSendGridEvents(
-      String body,
-      Optional<String> xTwilioEmailEventWebhookSignature,
-      Optional<String> xTwilioEmailEventWebhookTimestamp) {
+  public void handleMailgunEvents(String body) {
     try {
-      if (!verifySendGridSignature(
-          body,
-          xTwilioEmailEventWebhookSignature.orElse(null),
-          xTwilioEmailEventWebhookTimestamp.orElse(null))) {
-        log.warn("SendGrid webhook signature verification failed");
-        throw new ForbiddenException("SendGrid webhook signature verification failed");
+      if (!verifyMailgunSignature(body)) {
+        log.warn("Mailgun webhook signature verification failed");
+        throw new ForbiddenException("Mailgun webhook signature verification failed");
       }
-      webhookService.processSendGridEvents(body);
+      webhookService.processMailgunEvents(body);
     } catch (ForbiddenException e) {
       throw e;
     } catch (Exception e) {
-      log.error("Error processing SendGrid webhook: {}", e.getMessage(), e);
+      log.error("Error processing Mailgun webhook: {}", e.getMessage(), e);
     }
   }
 
@@ -74,35 +65,47 @@ public class WebhookController implements WebhooksApi {
     return "<Response></Response>";
   }
 
-  private boolean verifySendGridSignature(
-      String payload, @Nullable String signature, @Nullable String timestamp) {
-    Optional<String> verificationKey =
-        sendGridProperties.webhookVerificationKey().filter(k -> !k.isBlank());
-    if (verificationKey.isEmpty()) {
-      return true; // Skip verification in dev
-    }
-    if (signature == null || timestamp == null) {
-      return false;
+  private boolean verifyMailgunSignature(String body) {
+    Optional<String> signingKey = mailgunProperties.webhookSigningKey().filter(k -> !k.isBlank());
+    if (signingKey.isEmpty()) {
+      return true;
     }
     try {
-      EventWebhook eventWebhook = new EventWebhook();
-      ECPublicKey publicKey =
-          eventWebhook.ConvertPublicKeyToECDSA(
-              verificationKey.orElseThrow(
-                  () ->
-                      new IllegalStateException("Verification key verified present but missing")));
-      return eventWebhook.VerifySignature(publicKey, payload, signature, timestamp);
+      JsonNode root = objectMapper.readTree(body);
+      JsonNode sig = root.path("signature");
+      String timestamp = sig.path("timestamp").asText();
+      String token = sig.path("token").asText();
+      String signature = sig.path("signature").asText();
+
+      if (timestamp.isEmpty() || token.isEmpty() || signature.isEmpty()) {
+        return false;
+      }
+
+      Mac mac = Mac.getInstance("HmacSHA256");
+      mac.init(
+          new SecretKeySpec(
+              signingKey.orElseThrow().getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+      byte[] hash = mac.doFinal((timestamp + token).getBytes(StandardCharsets.UTF_8));
+      return bytesToHex(hash).equals(signature);
     } catch (Exception e) {
-      log.error("SendGrid signature verification error: {}", e.getMessage());
+      log.error("Mailgun signature verification error: {}", e.getMessage());
       return false;
     }
+  }
+
+  private static String bytesToHex(byte[] bytes) {
+    StringBuilder sb = new StringBuilder(bytes.length * 2);
+    for (byte b : bytes) {
+      sb.append(String.format("%02x", b));
+    }
+    return sb.toString();
   }
 
   private boolean verifyTwilioSignature(
       HttpServletRequest request, Map<String, String> params, @Nullable String signature) {
     String authToken = twilioProperties.authToken();
     if (authToken == null || authToken.isBlank()) {
-      return true; // Skip verification in dev
+      return true;
     }
     if (signature == null) {
       return false;

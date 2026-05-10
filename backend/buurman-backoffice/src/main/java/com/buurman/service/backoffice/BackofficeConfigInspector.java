@@ -15,7 +15,7 @@ import com.buurman.config.models.AwsS3Properties;
 import com.buurman.config.models.GoogleMapsProperties;
 import com.buurman.config.models.KeycloakProperties;
 import com.buurman.config.models.NotificationOutboxProperties;
-import com.buurman.config.models.SendGridProperties;
+import com.buurman.config.models.MailgunProperties;
 import com.buurman.config.models.TwilioProperties;
 import com.buurman.dto.response.backoffice.BackofficeSystemInfoResponse.ConfigEntry;
 
@@ -30,7 +30,7 @@ public class BackofficeConfigInspector {
   private final KeycloakProperties keycloakProperties;
   private final AwsS3Properties awsS3Properties;
   private final ObjectProvider<TwilioProperties> twilioPropertiesProvider;
-  private final ObjectProvider<SendGridProperties> sendGridPropertiesProvider;
+  private final ObjectProvider<MailgunProperties> mailgunPropertiesProvider;
   private final ObjectProvider<GoogleMapsProperties> googleMapsPropertiesProvider;
   private final ObjectProvider<NotificationOutboxProperties> notificationOutboxPropertiesProvider;
 
@@ -40,7 +40,7 @@ public class BackofficeConfigInspector {
       KeycloakProperties keycloakProperties,
       AwsS3Properties awsS3Properties,
       ObjectProvider<TwilioProperties> twilioPropertiesProvider,
-      ObjectProvider<SendGridProperties> sendGridPropertiesProvider,
+      ObjectProvider<MailgunProperties> mailgunPropertiesProvider,
       ObjectProvider<GoogleMapsProperties> googleMapsPropertiesProvider,
       ObjectProvider<NotificationOutboxProperties> notificationOutboxPropertiesProvider) {
     this.appProperties = appProperties;
@@ -48,7 +48,7 @@ public class BackofficeConfigInspector {
     this.keycloakProperties = keycloakProperties;
     this.awsS3Properties = awsS3Properties;
     this.twilioPropertiesProvider = twilioPropertiesProvider;
-    this.sendGridPropertiesProvider = sendGridPropertiesProvider;
+    this.mailgunPropertiesProvider = mailgunPropertiesProvider;
     this.googleMapsPropertiesProvider = googleMapsPropertiesProvider;
     this.notificationOutboxPropertiesProvider = notificationOutboxPropertiesProvider;
   }
@@ -62,7 +62,7 @@ public class BackofficeConfigInspector {
     addKeycloakConfig(entries);
     addS3Config(entries);
     addTwilioConfig(entries);
-    addSendGridConfig(entries);
+    addMailgunConfig(entries);
     addGoogleMapsConfig(entries);
     addFeatureFlagsConfig(entries);
     addNotificationOutboxConfig(entries);
@@ -153,12 +153,14 @@ public class BackofficeConfigInspector {
     }
   }
 
-  private void addSendGridConfig(List<ConfigEntry> entries) {
-    var sg = sendGridPropertiesProvider.getIfAvailable();
-    if (sg != null) {
-      addEntry(entries, "SendGrid", "apiKey", obfuscate("key", sg.apiKey()));
-      addEntry(entries, "SendGrid", "fromEmail", sg.fromEmail());
-      addEntry(entries, "SendGrid", "fromName", sg.fromName());
+  private void addMailgunConfig(List<ConfigEntry> entries) {
+    var mg = mailgunPropertiesProvider.getIfAvailable();
+    if (mg != null) {
+      addEntry(entries, "Mailgun", "apiKey", obfuscate("key", mg.apiKey()));
+      addEntry(entries, "Mailgun", "domain", mg.domain());
+      addEntry(entries, "Mailgun", "fromEmail", mg.fromEmail());
+      addEntry(entries, "Mailgun", "fromName", mg.fromName());
+      addEntry(entries, "Mailgun", "euRegion", String.valueOf(mg.euRegion()));
     }
   }
 

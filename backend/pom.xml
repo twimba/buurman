@@ -225,18 +225,11 @@
                 <version>3.0.3</version>
             </dependency>
 
-            <!-- SendGrid -->
+            <!-- Mailgun -->
             <dependency>
-                <groupId>com.sendgrid</groupId>
-                <artifactId>sendgrid-java</artifactId>
-                <version>4.10.3</version>
-            </dependency>
-
-            <!-- BouncyCastle -->
-            <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bcprov-jdk18on</artifactId>
-                <version>1.84</version>
+                <groupId>com.mailgun</groupId>
+                <artifactId>mailgun-java</artifactId>
+                <version>1.1.0</version>
             </dependency>
 
             <!-- Twilio -->
@@ -426,7 +419,7 @@
                             <exclude>com/buurman/config/QuartzJobsConfig*</exclude>
                             <exclude>com/buurman/config/S3Config*</exclude>
                             <exclude>com/buurman/config/NotificationQuartzConfig*</exclude>
-                            <exclude>com/buurman/config/SendGridConfig*</exclude>
+                            <exclude>com/buurman/config/MailgunConfig*</exclude>
                             <exclude>com/buurman/config/DemoQuartzConfig*</exclude>
                             <exclude>com/buurman/config/TakeoutQuartzConfig*</exclude>
 

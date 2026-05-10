@@ -183,8 +183,8 @@ paths:
     $ref: 'paths/users.yaml#/auth-me'
   /webhooks/twilio/status:
     $ref: 'paths/reference.yaml#/webhooks-twilio-status'
-  /webhooks/sendgrid/events:
-    $ref: 'paths/reference.yaml#/webhooks-sendgrid-events'
+  /webhooks/mailgun/events:
+    $ref: 'paths/reference.yaml#/webhooks-mailgun-events'
   /users/teams/{teamIdentifier}/leave:
     $ref: 'paths/users.yaml#/users-teams-leave'
   /users/switch-team:

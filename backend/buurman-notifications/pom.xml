@@ -32,14 +32,10 @@
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
-        <!-- SendGrid -->
+        <!-- Mailgun -->
         <dependency>
-            <groupId>com.sendgrid</groupId>
-            <artifactId>sendgrid-java</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk18on</artifactId>
+            <groupId>com.mailgun</groupId>
+            <artifactId>mailgun-java</artifactId>
         </dependency>
 
         <!-- Twilio -->

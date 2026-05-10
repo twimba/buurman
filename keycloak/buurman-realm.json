@@ -294,7 +294,21 @@
     }
   ],
   "internationalizationEnabled": true,
-  "supportedLocales": ["en", "nl", "pt", "es", "fr", "de", "it", "sv", "fi", "el", "pl", "da", "nb"],
+  "supportedLocales": [
+    "en",
+    "nl",
+    "pt",
+    "es",
+    "fr",
+    "de",
+    "it",
+    "sv",
+    "fi",
+    "el",
+    "pl",
+    "da",
+    "nb"
+  ],
   "defaultLocale": "en",
   "smtpServer": {
     "host": "mailpit",

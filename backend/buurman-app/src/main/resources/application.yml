@@ -112,12 +112,14 @@ app:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000,https://app.local.buurman.io}
     backoffice-allowed-origins: ${CORS_BACKOFFICE_ALLOWED_ORIGINS:http://localhost:5174,https://backoffice.local.buurman.io}
 
-# SendGrid Configuration
-sendgrid:
-  api-key: ${SENDGRID_API_KEY:}
-  from-email: ${SENDGRID_FROM_EMAIL:noreply@buurman.io}
-  from-name: ${SENDGRID_FROM_NAME:Buurman}
-  webhook-verification-key: ${SENDGRID_WEBHOOK_VERIFICATION_KEY:}
+# Mailgun Configuration
+mailgun:
+  api-key: ${MAILGUN_API_KEY:}
+  domain: ${MAILGUN_DOMAIN:}
+  from-email: ${MAILGUN_FROM_EMAIL:noreply@app.buurman.io}
+  from-name: ${MAILGUN_FROM_NAME:Buurman}
+  webhook-signing-key: ${MAILGUN_WEBHOOK_SIGNING_KEY:}
+  eu-region: ${MAILGUN_EU_REGION:true}
 
 # Twilio Configuration
 twilio:
