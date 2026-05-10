@@ -381,6 +381,14 @@
                         <skip>true</skip>
                     </configuration>
                 </plugin>
+                <!-- Pin to 2.x: maven-build-cache-extension 1.2.x does not set the artifact
+                     file reference when restoring from cache; install-plugin 3.x throws on
+                     null file whereas 2.x skips gracefully. -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>2.5.2</version>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
