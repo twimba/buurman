@@ -93,6 +93,7 @@
   "tooltips": {
     "preview": "Esikatselu",
     "editTitleNotes": "Muokkaa otsikkoa ja muistiinpanoja",
-    "delete": "Poista"
+    "delete": "Poista",
+    "download": "Lataa"
   }
 }

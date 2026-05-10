@@ -109,6 +109,7 @@ const TAB_IDS = [
 
 export const ContactDetailPage = () => {
   const { t } = useTranslation('tenants');
+  const { t: tCommon } = useTranslation('common');
   const { id = '' } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { canEditData, activeTeam } = useTeam();
@@ -377,7 +378,7 @@ export const ContactDetailPage = () => {
           <div
             className="flex gap-6 min-w-max"
             role="tablist"
-            aria-label="Contact detail tabs"
+            aria-label={tCommon('accessibility.contactDetailTabs')}
           >
             <button
               role="tab"
@@ -551,7 +552,7 @@ export const ContactDetailPage = () => {
               <div
                 className="rounded-lg shadow-sm border border-success-border bg-success-bg/30 p-4 flex items-center justify-between"
                 role="status"
-                aria-label="All payments are up to date"
+                aria-label={t('card.allPaidAriaLabel')}
               >
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-success-bg text-success-text">

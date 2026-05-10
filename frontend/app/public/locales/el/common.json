@@ -179,7 +179,9 @@
   },
   "accessibility": {
     "skipToContent": "Μετάβαση στο κύριο περιεχόμενο",
-    "dismiss": "Απόρριψη μηνύματος"
+    "dismiss": "Απόρριψη μηνύματος",
+    "togglePasswordVisibility": "Εναλλαγή ορατότητας κωδικού",
+    "contactDetailTabs": "Καρτέλες λεπτομερειών επαφής"
   },
   "sidebar": {
     "expand": "Ανάπτυξη πλαϊνής μπάρας",

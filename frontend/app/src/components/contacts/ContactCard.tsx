@@ -127,7 +127,7 @@ export const ContactCard = ({ contact }: ContactCardProps) => {
         <div
           className="flex items-center justify-between gap-2 px-3 py-2 mb-2 rounded bg-success-bg text-success-text"
           role="status"
-          aria-label="All payments are up to date"
+          aria-label={t('card.allPaidAriaLabel')}
         >
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4" />

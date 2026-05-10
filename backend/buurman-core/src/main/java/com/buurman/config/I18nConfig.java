@@ -35,7 +35,14 @@ public class I18nConfig implements WebMvcConfigurer {
             Locale.forLanguageTag("pt"),
             Locale.forLanguageTag("es"),
             Locale.FRENCH,
-            Locale.GERMAN));
+            Locale.GERMAN,
+            Locale.ITALIAN,
+            Locale.forLanguageTag("sv"),
+            Locale.forLanguageTag("fi"),
+            Locale.forLanguageTag("el"),
+            Locale.forLanguageTag("pl"),
+            Locale.forLanguageTag("da"),
+            Locale.forLanguageTag("nb")));
     return resolver;
   }
 }

@@ -505,7 +505,156 @@
     },
     "units": {
       "years": "ans",
-      "months": "mois"
+      "months": "mois",
+      "perYear": "/an"
+    },
+    "recurringCosts": "Coûts récurrents",
+    "insurances": "Assurances",
+    "taxes": "Taxes",
+    "fees": "Charges",
+    "na": "N/D",
+    "all": "Tout",
+    "term": "Durée",
+    "frequency": "Fréquence",
+    "actions": "Actions",
+    "total": "Total",
+    "empty": {
+      "noAcquisition": "Aucune donnée d'acquisition enregistrée.",
+      "noValuation": "Aucune donnée d'estimation enregistrée.",
+      "noFinancing": "Aucun instrument de financement enregistré.",
+      "noPayments": "Aucun paiement enregistré.",
+      "noInsurances": "Aucune assurance.",
+      "noTaxes": "Aucune taxe.",
+      "noFees": "Aucune charge."
+    },
+    "delete": {
+      "title": "Supprimer {{label}} ?",
+      "message": "Êtes-vous sûr de vouloir supprimer ce(tte) {{label}} ? Cette action est irréversible.",
+      "valuation": "estimation {{type}}",
+      "payment": "paiement ({{date}})",
+      "insurance": "assurance {{type}}",
+      "tax": "taxe {{type}}",
+      "fee": "charge {{type}}"
+    },
+    "toast": {
+      "paymentDeleted": "Paiement supprimé avec succès",
+      "paymentDeleteFailed": "Échec de la suppression du paiement",
+      "paymentsCreated_one": "{{count}} paiement créé avec succès",
+      "paymentsCreated_other": "{{count}} paiements créés avec succès"
+    },
+    "months": {
+      "jan": "Jan",
+      "feb": "Fév",
+      "mar": "Mar",
+      "apr": "Avr",
+      "may": "Mai",
+      "jun": "Jun",
+      "jul": "Jul",
+      "aug": "Août",
+      "sep": "Sep",
+      "oct": "Oct",
+      "nov": "Nov",
+      "dec": "Déc"
+    },
+    "acquisitionTypes": {
+      "PURCHASE": "Achat",
+      "INHERITANCE": "Héritage",
+      "GIFT": "Donation",
+      "FORECLOSURE": "Saisie",
+      "AUCTION": "Enchère",
+      "OTHER": "Autre"
+    },
+    "depreciationMethods": {
+      "STRAIGHT_LINE": "Linéaire",
+      "DECLINING_BALANCE": "Dégressif",
+      "NONE": "Aucune"
+    },
+    "valuationTypes": {
+      "MARKET": "Marché",
+      "APPRAISAL": "Expertise",
+      "TAX_ASSESSED": "Valeur fiscale",
+      "PURCHASE": "Prix d'achat",
+      "INSURANCE": "Assurance",
+      "USER_ESTIMATE": "Estimation utilisateur"
+    },
+    "financingTypes": {
+      "MORTGAGE": "Hypothèque",
+      "LEASING": "Leasing",
+      "LOAN": "Prêt",
+      "LINE_OF_CREDIT": "Ligne de crédit",
+      "PRIVATE_FINANCING": "Financement privé",
+      "OTHER": "Autre"
+    },
+    "rateTypes": {
+      "FIXED": "Fixe",
+      "VARIABLE": "Variable",
+      "INTEREST_ONLY": "Intérêts seuls",
+      "HYBRID": "Hybride"
+    },
+    "financingStatuses": {
+      "ACTIVE": "Actif",
+      "PAID_OFF": "Remboursé",
+      "REFINANCED": "Refinancé",
+      "DEFAULTED": "En défaut"
+    },
+    "paymentStatuses": {
+      "SCHEDULED": "Planifié",
+      "COMPLETED": "Complété",
+      "MISSED": "Manqué",
+      "LATE": "En retard"
+    },
+    "insuranceTypes": {
+      "BUILDING": "Bâtiment",
+      "LIABILITY": "Responsabilité civile",
+      "CONTENTS": "Contenu",
+      "FLOOD": "Inondation",
+      "EARTHQUAKE": "Séisme",
+      "UMBRELLA": "Multirisque",
+      "RENT_GUARANTEE": "Garantie loyers impayés",
+      "OTHER": "Autre"
+    },
+    "insuranceStatuses": {
+      "ACTIVE": "Active",
+      "EXPIRED": "Expirée",
+      "CANCELLED": "Annulée"
+    },
+    "taxTypes": {
+      "PROPERTY": "Foncier",
+      "MUNICIPAL": "Municipal",
+      "STATE": "Régional",
+      "LOCAL": "Local",
+      "LAND": "Terrain",
+      "SPECIAL_ASSESSMENT": "Taxe spéciale",
+      "OTHER": "Autre"
+    },
+    "taxStatuses": {
+      "ACTIVE": "Active",
+      "EXPIRED": "Expirée",
+      "EXEMPT": "Exonérée"
+    },
+    "feeTypes": {
+      "HOA": "Charges copropriété",
+      "MANAGEMENT": "Gestion",
+      "MAINTENANCE_RESERVE": "Provision pour entretien",
+      "CLEANING": "Nettoyage",
+      "GARDENING": "Jardinage",
+      "SECURITY": "Sécurité",
+      "WASTE_MANAGEMENT": "Gestion des déchets",
+      "WATER": "Eau",
+      "UTILITIES": "Charges générales",
+      "OTHER": "Autre"
+    },
+    "feeStatuses": {
+      "ACTIVE": "Active",
+      "EXPIRED": "Expirée",
+      "CANCELLED": "Annulée"
+    },
+    "paymentFrequencies": {
+      "MONTHLY": "Mensuel",
+      "QUARTERLY": "Trimestriel",
+      "SEMI_ANNUALLY": "Semestriel",
+      "ANNUALLY": "Annuel",
+      "CUSTOM": "Personnalisé"
     }
   },
   "lifecycle": {
@@ -834,6 +983,130 @@
       "expectedIncome": "Revenus attendus",
       "expectedExpenses": "Dépenses attendues",
       "expectedNet": "Net attendu"
+    }
+  },
+  "characteristics": {
+    "selectPlaceholder": "-- Sélectionner --",
+    "residential": {
+      "title": "Détails Résidentiels",
+      "bedrooms": "Chambres",
+      "bathrooms": "Salles de bain",
+      "furnished": "Meublé",
+      "petPolicy": "Politique animaux"
+    },
+    "commercial": {
+      "title": "Détails Commerciaux",
+      "usableArea": "Surface utile",
+      "commonArea": "Parties communes",
+      "floorLevel": "Niveau d'étage",
+      "ceilingHeight": "Hauteur sous plafond",
+      "maxOccupancy": "Capacité maximale",
+      "restroomCount": "Nombre de toilettes",
+      "zoningClassification": "Classement de zone",
+      "zoningPlaceholder": "ex. C-2, Commercial mixte",
+      "hasStorefront": "Vitrine",
+      "signageRights": "Droits d'affichage",
+      "kitchenFacility": "Cuisine",
+      "accessibilityCompliant": "Conforme accessibilité"
+    },
+    "industrial": {
+      "title": "Détails Industriels",
+      "clearHeight": "Hauteur libre",
+      "loadingDocks": "Quais de chargement",
+      "driveInDoors": "Portes de chargement",
+      "floorLoadCapacity": "Charge au sol",
+      "powerCapacity": "Puissance électrique",
+      "craneCapacity": "Capacité du pont roulant",
+      "yardArea": "Surface de cour",
+      "zoningClassification": "Classement de zone",
+      "zoningPlaceholder": "ex. I-1, Industrie légère",
+      "threePhasePower": "Triphasé",
+      "craneAvailable": "Pont roulant disponible",
+      "hazmatCertified": "Certifié matières dangereuses",
+      "ventilationSystem": "Système de ventilation",
+      "climateControl": "Climatisation"
+    },
+    "agricultural": {
+      "title": "Détails Agricoles",
+      "totalLandArea": "Surface totale du terrain",
+      "arableArea": "Surface arable",
+      "soilType": "Type de sol",
+      "waterSource": "Source d'eau",
+      "irrigationType": "Type d'irrigation",
+      "fencingType": "Type de clôture",
+      "currentUse": "Usage actuel",
+      "currentUsePlaceholder": "ex. Culture, Élevage",
+      "zoningClassification": "Classement de zone",
+      "zoningPlaceholder": "ex. A-1, Agricole",
+      "waterRights": "Droits sur l'eau",
+      "hasOutbuildings": "Dépendances",
+      "outbuildingDetails": "Détails des dépendances",
+      "outbuildingPlaceholder": "ex. Grange, Hangar, Garage à équipement"
+    },
+    "construction": {
+      "yearBuilt": "Année de construction",
+      "yearLastRenovated": "Dernière rénovation",
+      "constructionType": "Type de construction",
+      "foundationType": "Type de fondation",
+      "roofType": "Type de toiture",
+      "wallConstruction": "Construction des murs",
+      "flooringType": "Type de revêtement de sol",
+      "windowType": "Type de fenêtres",
+      "numberOfFloors": "Nombre d'étages",
+      "structuralNotes": "Notes structurelles",
+      "structuralNotesTooltip": "Détails structurels notables, rénovations ou problèmes"
+    },
+    "energy": {
+      "energyEfficiencyRating": "Classement énergétique",
+      "energyRatingTooltip": "Étiquette énergétique officielle (A++ à G)",
+      "certificateExpiry": "Expiration du certificat énergétique",
+      "certificateExpiryTooltip": "Date d'expiration du certificat énergétique actuel",
+      "heatingType": "Type de chauffage",
+      "coolingType": "Type de climatisation",
+      "hotWaterSystem": "Système d'eau chaude",
+      "insulationNotes": "Notes d'isolation",
+      "insulationTooltip": "Détails d'isolation des murs, toit, plancher"
+    },
+    "utilities": {
+      "electricityConnection": "Connexion électrique",
+      "electricityCapacity": "Capacité électrique",
+      "electricityCapacityTooltip": "Capacité du fusible principal",
+      "waterConnection": "Connexion eau",
+      "hasGasConnection": "Connexion gaz",
+      "sewageType": "Type d'assainissement",
+      "internetConnection": "Connexion internet",
+      "internetMaxSpeed": "Débit internet max",
+      "internetStatus": "Statut internet"
+    },
+    "parking": {
+      "parkingSpaces": "Places de parking",
+      "parkingType": "Type de parking"
+    },
+    "safety": {
+      "smokeDetectors": "Détecteurs de fumée",
+      "coDetectors": "Détecteurs de CO",
+      "fireExtinguisher": "Extincteur",
+      "sprinklerSystem": "Système sprinkler",
+      "alarmSystem": "Système d'alarme",
+      "securityCameras": "Caméras de sécurité",
+      "secureEntry": "Accès sécurisé",
+      "safetyNotes": "Notes de sécurité",
+      "safetyNotesTooltip": "Sorties de secours, date de dernière inspection, etc."
+    },
+    "accessibility": {
+      "wheelchairAccessible": "Accessible en fauteuil roulant",
+      "elevator": "Ascenseur",
+      "stepFreeEntrance": "Entrée sans marches",
+      "adaptedBathroom": "Salle de bain adaptée",
+      "accessibilityNotes": "Notes d'accessibilité",
+      "accessibilityNotesTooltip": "Largeurs de portes, disponibilité des rampes, etc."
+    },
+    "outdoorAreas": {
+      "type": "Type",
+      "area": "Surface",
+      "unit": "Unité",
+      "add": "Ajouter",
+      "addOutdoorArea": "Ajouter un espace extérieur"
     }
   }
 }

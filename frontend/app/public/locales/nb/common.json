@@ -179,7 +179,9 @@
   },
   "accessibility": {
     "skipToContent": "Gå til hovedinnhold",
-    "dismiss": "Lukk melding"
+    "dismiss": "Lukk melding",
+    "togglePasswordVisibility": "Bytt passordsynlighet",
+    "contactDetailTabs": "Kontaktdetaljer-faner"
   },
   "sidebar": {
     "expand": "Utvid sidefeltet",

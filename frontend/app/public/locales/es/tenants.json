@@ -142,7 +142,8 @@
     "payment_one": "{{count}} pago",
     "payment_other": "{{count}} pagos",
     "overdue": "vencido",
-    "pending": "pendiente"
+    "pending": "pendiente",
+    "allPaidAriaLabel": "Todos los pagos están al día"
   },
   "form": {
     "contactType": "Tipo de Contacto",

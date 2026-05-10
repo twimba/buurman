@@ -155,7 +155,7 @@ public class PropertyBookletExporter {
   }
 
   private String msg(String key, Locale locale) {
-    return messageSource.getMessage(key, null, key, locale);
+    return java.util.Objects.requireNonNullElse(messageSource.getMessage(key, null, key, locale), key);
   }
 
   public byte[] generate(PropertyIdentifier propertyIdentifier, UUID teamId, Locale locale) {

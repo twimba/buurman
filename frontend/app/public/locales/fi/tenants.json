@@ -142,7 +142,8 @@
     "payment_one": "{{count}} maksu",
     "payment_other": "{{count}} maksua",
     "overdue": "myohassa",
-    "pending": "odottaa"
+    "pending": "odottaa",
+    "allPaidAriaLabel": "Kaikki maksut ovat ajan tasalla"
   },
   "form": {
     "contactType": "Yhteystietotyyppi",

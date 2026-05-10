@@ -142,7 +142,8 @@
     "payment_one": "{{count}} betaling",
     "payment_other": "{{count}} betalinger",
     "overdue": "forfalt",
-    "pending": "ventende"
+    "pending": "ventende",
+    "allPaidAriaLabel": "Alle betalinger er oppdaterte"
   },
   "form": {
     "contactType": "Kontakttype",

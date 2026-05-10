@@ -545,7 +545,7 @@ const RegisterPage: React.FC = () => {
                           type="button"
                           onClick={() => setShowPassword((prev) => !prev)}
                           className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md border border-transparent text-text-muted hover:text-primary-500 hover:bg-primary-50 hover:border-primary-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/20 focus-visible:border-primary-500 transition-colors"
-                          aria-label="Toggle password visibility"
+                          aria-label={t('accessibility.togglePasswordVisibility')}
                         >
                           {showPassword ? (
                             <EyeOff className="h-[1.125rem] w-[1.125rem]" />
@@ -605,7 +605,7 @@ const RegisterPage: React.FC = () => {
                             setShowConfirmPassword((prev) => !prev)
                           }
                           className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md border border-transparent text-text-muted hover:text-primary-500 hover:bg-primary-50 hover:border-primary-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/20 focus-visible:border-primary-500 transition-colors"
-                          aria-label="Toggle password visibility"
+                          aria-label={t('accessibility.togglePasswordVisibility')}
                         >
                           {showConfirmPassword ? (
                             <EyeOff className="h-[1.125rem] w-[1.125rem]" />

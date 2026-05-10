@@ -179,7 +179,9 @@
   },
   "accessibility": {
     "skipToContent": "Skip to main content",
-    "dismiss": "Dismiss message"
+    "dismiss": "Dismiss message",
+    "togglePasswordVisibility": "Toggle password visibility",
+    "contactDetailTabs": "Contact detail tabs"
   },
   "sidebar": {
     "expand": "Expand sidebar",

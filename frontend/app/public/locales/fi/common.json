@@ -179,7 +179,9 @@
   },
   "accessibility": {
     "skipToContent": "Siirry paasisaltoon",
-    "dismiss": "Sulje viesti"
+    "dismiss": "Sulje viesti",
+    "togglePasswordVisibility": "Vaihda salasanan näkyvyyttä",
+    "contactDetailTabs": "Yhteystietojen yksityiskohtavälilehdet"
   },
   "sidebar": {
     "expand": "Laajenna sivupalkki",

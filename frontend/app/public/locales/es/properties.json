@@ -984,5 +984,129 @@
       "expectedExpenses": "Gastos esperados",
       "expectedNet": "Neto esperado"
     }
+  },
+  "characteristics": {
+    "selectPlaceholder": "-- Seleccionar --",
+    "residential": {
+      "title": "Detalles Residenciales",
+      "bedrooms": "Dormitorios",
+      "bathrooms": "Baños",
+      "furnished": "Amueblado",
+      "petPolicy": "Política de mascotas"
+    },
+    "commercial": {
+      "title": "Detalles Comerciales",
+      "usableArea": "Superficie útil",
+      "commonArea": "Zonas comunes",
+      "floorLevel": "Planta",
+      "ceilingHeight": "Altura de techo",
+      "maxOccupancy": "Aforo máximo",
+      "restroomCount": "Número de aseos",
+      "zoningClassification": "Clasificación de zona",
+      "zoningPlaceholder": "ej. C-2, Comercial mixto",
+      "hasStorefront": "Escaparate",
+      "signageRights": "Derechos de señalización",
+      "kitchenFacility": "Cocina",
+      "accessibilityCompliant": "Accesibilidad"
+    },
+    "industrial": {
+      "title": "Detalles Industriales",
+      "clearHeight": "Altura libre",
+      "loadingDocks": "Muelles de carga",
+      "driveInDoors": "Puertas de acceso",
+      "floorLoadCapacity": "Carga por m²",
+      "powerCapacity": "Potencia eléctrica",
+      "craneCapacity": "Capacidad del puente grúa",
+      "yardArea": "Superficie de patio",
+      "zoningClassification": "Clasificación de zona",
+      "zoningPlaceholder": "ej. I-1, Industrial ligero",
+      "threePhasePower": "Trifásico",
+      "craneAvailable": "Puente grúa disponible",
+      "hazmatCertified": "Certificado materias peligrosas",
+      "ventilationSystem": "Sistema de ventilación",
+      "climateControl": "Climatización"
+    },
+    "agricultural": {
+      "title": "Detalles Agrícolas",
+      "totalLandArea": "Superficie total del terreno",
+      "arableArea": "Superficie cultivable",
+      "soilType": "Tipo de suelo",
+      "waterSource": "Fuente de agua",
+      "irrigationType": "Tipo de riego",
+      "fencingType": "Tipo de vallado",
+      "currentUse": "Uso actual",
+      "currentUsePlaceholder": "ej. Cultivo, Ganadería",
+      "zoningClassification": "Clasificación de zona",
+      "zoningPlaceholder": "ej. A-1, Agrícola",
+      "waterRights": "Derechos de agua",
+      "hasOutbuildings": "Edificaciones auxiliares",
+      "outbuildingDetails": "Detalles de edificaciones auxiliares",
+      "outbuildingPlaceholder": "ej. Granero, Almacén, Garaje de maquinaria"
+    },
+    "construction": {
+      "yearBuilt": "Año de construcción",
+      "yearLastRenovated": "Última reforma",
+      "constructionType": "Tipo de construcción",
+      "foundationType": "Tipo de cimentación",
+      "roofType": "Tipo de tejado",
+      "wallConstruction": "Construcción de muros",
+      "flooringType": "Tipo de suelo",
+      "windowType": "Tipo de ventanas",
+      "numberOfFloors": "Número de plantas",
+      "structuralNotes": "Notas estructurales",
+      "structuralNotesTooltip": "Detalles estructurales, reformas o problemas relevantes"
+    },
+    "energy": {
+      "energyEfficiencyRating": "Calificación energética",
+      "energyRatingTooltip": "Etiqueta energética oficial (A++ a G)",
+      "certificateExpiry": "Vencimiento del certificado energético",
+      "certificateExpiryTooltip": "Fecha de vencimiento del certificado energético actual",
+      "heatingType": "Tipo de calefacción",
+      "coolingType": "Tipo de refrigeración",
+      "hotWaterSystem": "Sistema de agua caliente",
+      "insulationNotes": "Aislamiento",
+      "insulationTooltip": "Detalles de aislamiento de paredes, techo y suelo"
+    },
+    "utilities": {
+      "electricityConnection": "Conexión eléctrica",
+      "electricityCapacity": "Potencia contratada",
+      "electricityCapacityTooltip": "Capacidad del fusible principal",
+      "waterConnection": "Conexión de agua",
+      "hasGasConnection": "Conexión de gas",
+      "sewageType": "Tipo de alcantarillado",
+      "internetConnection": "Conexión a internet",
+      "internetMaxSpeed": "Velocidad máxima de internet",
+      "internetStatus": "Estado de internet"
+    },
+    "parking": {
+      "parkingSpaces": "Plazas de aparcamiento",
+      "parkingType": "Tipo de aparcamiento"
+    },
+    "safety": {
+      "smokeDetectors": "Detectores de humo",
+      "coDetectors": "Detectores de CO",
+      "fireExtinguisher": "Extintor",
+      "sprinklerSystem": "Sistema de rociadores",
+      "alarmSystem": "Sistema de alarma",
+      "securityCameras": "Cámaras de seguridad",
+      "secureEntry": "Acceso seguro",
+      "safetyNotes": "Notas de seguridad",
+      "safetyNotesTooltip": "Salidas de emergencia, fecha de última inspección, etc."
+    },
+    "accessibility": {
+      "wheelchairAccessible": "Accesible en silla de ruedas",
+      "elevator": "Ascensor",
+      "stepFreeEntrance": "Entrada sin escalones",
+      "adaptedBathroom": "Baño adaptado",
+      "accessibilityNotes": "Notas de accesibilidad",
+      "accessibilityNotesTooltip": "Anchura de puertas, rampas disponibles, etc."
+    },
+    "outdoorAreas": {
+      "type": "Tipo",
+      "area": "Superficie",
+      "unit": "Unidad",
+      "add": "Añadir",
+      "addOutdoorArea": "Añadir zona exterior"
+    }
   }
 }

@@ -114,7 +114,7 @@ public class ContractBookletExporter {
   }
 
   private String msg(String key, Locale locale) {
-    return messageSource.getMessage(key, null, key, locale);
+    return java.util.Objects.requireNonNullElse(messageSource.getMessage(key, null, key, locale), key);
   }
 
   private static final Map<String, String> PAYMENT_METHOD_LABELS =

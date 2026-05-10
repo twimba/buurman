@@ -110,7 +110,7 @@ public class ContactBookletExporter {
   }
 
   private String msg(String key, Locale locale) {
-    return messageSource.getMessage(key, null, key, locale);
+    return java.util.Objects.requireNonNullElse(messageSource.getMessage(key, null, key, locale), key);
   }
 
   public byte[] generate(ContactIdentifier contactIdentifier, UUID teamId, Locale locale) {

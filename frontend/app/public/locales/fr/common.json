@@ -179,7 +179,9 @@
   },
   "accessibility": {
     "skipToContent": "Aller au contenu principal",
-    "dismiss": "Fermer le message"
+    "dismiss": "Fermer le message",
+    "togglePasswordVisibility": "Afficher/masquer le mot de passe",
+    "contactDetailTabs": "Onglets détails du contact"
   },
   "sidebar": {
     "expand": "Développer la barre latérale",

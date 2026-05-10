@@ -179,7 +179,9 @@
   },
   "accessibility": {
     "skipToContent": "Ir para o conteúdo principal",
-    "dismiss": "Dispensar mensagem"
+    "dismiss": "Dispensar mensagem",
+    "togglePasswordVisibility": "Alternar visibilidade da senha",
+    "contactDetailTabs": "Abas de detalhe do contato"
   },
   "sidebar": {
     "expand": "Expandir barra lateral",

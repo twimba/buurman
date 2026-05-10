@@ -93,6 +93,7 @@
   "tooltips": {
     "preview": "Podgląd",
     "editTitleNotes": "Edytuj tytuł i notatki",
-    "delete": "Usuń"
+    "delete": "Usuń",
+    "download": "Pobierz"
   }
 }

@@ -142,7 +142,8 @@
     "payment_one": "{{count}} πληρωμή",
     "payment_other": "{{count}} πληρωμές",
     "overdue": "εκπρόθεσμη",
-    "pending": "σε εκκρεμότητα"
+    "pending": "σε εκκρεμότητα",
+    "allPaidAriaLabel": "Όλες οι πληρωμές είναι ενημερωμένες"
   },
   "form": {
     "contactType": "Τύπος Επαφής",

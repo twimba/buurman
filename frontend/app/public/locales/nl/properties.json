@@ -984,5 +984,129 @@
       "expectedExpenses": "Verwachte uitgaven",
       "expectedNet": "Verwacht netto"
     }
+  },
+  "characteristics": {
+    "selectPlaceholder": "-- Selecteer --",
+    "residential": {
+      "title": "Woondetails",
+      "bedrooms": "Slaapkamers",
+      "bathrooms": "Badkamers",
+      "furnished": "Gemeubileerd",
+      "petPolicy": "Huisdierenbeleid"
+    },
+    "commercial": {
+      "title": "Commerciële Details",
+      "usableArea": "Bruikbare oppervlakte",
+      "commonArea": "Gemeenschappelijke ruimte",
+      "floorLevel": "Verdieping",
+      "ceilingHeight": "Plafondshoogte",
+      "maxOccupancy": "Maximale bezetting",
+      "restroomCount": "Aantal toiletten",
+      "zoningClassification": "Bestemmingsplan",
+      "zoningPlaceholder": "bijv. Gemengd gebruik",
+      "hasStorefront": "Etalage aanwezig",
+      "signageRights": "Reclameborden",
+      "kitchenFacility": "Keukenruimte",
+      "accessibilityCompliant": "Toegankelijkheid"
+    },
+    "industrial": {
+      "title": "Industriële Details",
+      "clearHeight": "Vrije hoogte",
+      "loadingDocks": "Laadperrons",
+      "driveInDoors": "Rijdeuren",
+      "floorLoadCapacity": "Vloerbelasting",
+      "powerCapacity": "Elektrisch vermogen",
+      "craneCapacity": "Kraancapaciteit",
+      "yardArea": "Terreinoppervlak",
+      "zoningClassification": "Bestemmingsplan",
+      "zoningPlaceholder": "bijv. Bedrijventerrein",
+      "threePhasePower": "Drievoudige stroom",
+      "craneAvailable": "Kraan beschikbaar",
+      "hazmatCertified": "Gecertificeerd gevaarlijke stoffen",
+      "ventilationSystem": "Ventilatiesysteem",
+      "climateControl": "Klimaatbeheersing"
+    },
+    "agricultural": {
+      "title": "Agrarische Details",
+      "totalLandArea": "Totale grondoppervlakte",
+      "arableArea": "Bouwland",
+      "soilType": "Bodemtype",
+      "waterSource": "Waterbron",
+      "irrigationType": "Irrigatietype",
+      "fencingType": "Omheiningtype",
+      "currentUse": "Huidig gebruik",
+      "currentUsePlaceholder": "bijv. Akkerbouw, Veeteelt",
+      "zoningClassification": "Bestemmingsplan",
+      "zoningPlaceholder": "bijv. Agrarisch",
+      "waterRights": "Waterrechten",
+      "hasOutbuildings": "Bijgebouwen aanwezig",
+      "outbuildingDetails": "Details bijgebouwen",
+      "outbuildingPlaceholder": "bijv. Schuur, Opslagloods, Machinehal"
+    },
+    "construction": {
+      "yearBuilt": "Bouwjaar",
+      "yearLastRenovated": "Laatste renovatie",
+      "constructionType": "Bouwtype",
+      "foundationType": "Funderingstype",
+      "roofType": "Daktype",
+      "wallConstruction": "Wandconstructie",
+      "flooringType": "Vloertype",
+      "windowType": "Raamtype",
+      "numberOfFloors": "Aantal verdiepingen",
+      "structuralNotes": "Constructienotes",
+      "structuralNotesTooltip": "Opvallende constructiedetails, renovaties of gebreken"
+    },
+    "energy": {
+      "energyEfficiencyRating": "Energielabel",
+      "energyRatingTooltip": "Officieel energielabel (A++ tot G)",
+      "certificateExpiry": "Vervaldatum energiecertificaat",
+      "certificateExpiryTooltip": "Vervaldatum van het huidige energiecertificaat",
+      "heatingType": "Verwarmingstype",
+      "coolingType": "Koelingstype",
+      "hotWaterSystem": "Warmwatersysteem",
+      "insulationNotes": "Isolatie",
+      "insulationTooltip": "Details over muur-, dak- en vloerisolatie"
+    },
+    "utilities": {
+      "electricityConnection": "Elektriciteitsaansluiting",
+      "electricityCapacity": "Elektrisch vermogen",
+      "electricityCapacityTooltip": "Hoofdzekeringcapaciteit",
+      "waterConnection": "Wateraansluiting",
+      "hasGasConnection": "Gasaansluiting",
+      "sewageType": "Rioleringstype",
+      "internetConnection": "Internetverbinding",
+      "internetMaxSpeed": "Max. internetsnelheid",
+      "internetStatus": "Internetstatus"
+    },
+    "parking": {
+      "parkingSpaces": "Parkeerplaatsen",
+      "parkingType": "Parkeertype"
+    },
+    "safety": {
+      "smokeDetectors": "Rookmelders",
+      "coDetectors": "CO-melders",
+      "fireExtinguisher": "Brandblusser",
+      "sprinklerSystem": "Sprinklersysteem",
+      "alarmSystem": "Alarmsysteem",
+      "securityCameras": "Beveiligingscamera's",
+      "secureEntry": "Beveiligde toegang",
+      "safetyNotes": "Veiligheidsnotes",
+      "safetyNotesTooltip": "Vluchtwegen, datum laatste inspectie, etc."
+    },
+    "accessibility": {
+      "wheelchairAccessible": "Rolstoeltoegankelijk",
+      "elevator": "Lift",
+      "stepFreeEntrance": "Drempelvrije toegang",
+      "adaptedBathroom": "Aangepaste badkamer",
+      "accessibilityNotes": "Toegankelijkheidsnotes",
+      "accessibilityNotesTooltip": "Deurbreedtes, aanwezigheid van hellingbanen, etc."
+    },
+    "outdoorAreas": {
+      "type": "Type",
+      "area": "Oppervlakte",
+      "unit": "Eenheid",
+      "add": "Toevoegen",
+      "addOutdoorArea": "Buitenruimte toevoegen"
+    }
   }
 }

@@ -142,7 +142,8 @@
     "payment_one": "{{count}} pagamento",
     "payment_other": "{{count}} pagamenti",
     "overdue": "scaduto",
-    "pending": "in attesa"
+    "pending": "in attesa",
+    "allPaidAriaLabel": "Tutti i pagamenti sono aggiornati"
   },
   "form": {
     "contactType": "Tipo di contatto",

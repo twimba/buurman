@@ -179,7 +179,9 @@
   },
   "accessibility": {
     "skipToContent": "Spring til hovedindhold",
-    "dismiss": "Afvis besked"
+    "dismiss": "Afvis besked",
+    "togglePasswordVisibility": "Skift adgangskodesynlighed",
+    "contactDetailTabs": "Kontaktdetaljer-faner"
   },
   "sidebar": {
     "expand": "Udvid sidebjælke",

@@ -93,6 +93,7 @@
   "tooltips": {
     "preview": "Forhåndsvisning",
     "editTitleNotes": "Rediger titel & noter",
-    "delete": "Slet"
+    "delete": "Slet",
+    "download": "Download"
   }
 }

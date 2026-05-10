@@ -142,7 +142,8 @@
     "payment_one": "{{count}} betaling",
     "payment_other": "{{count}} betalingen",
     "overdue": "achterstallig",
-    "pending": "openstaand"
+    "pending": "openstaand",
+    "allPaidAriaLabel": "Alle betalingen zijn bijgewerkt"
   },
   "form": {
     "contactType": "Contacttype",

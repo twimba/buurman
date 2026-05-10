@@ -424,7 +424,7 @@ export const DocumentsPage = () => {
                               setPreviewIndex(documents.indexOf(doc))
                             }
                             className="p-1.5 text-text-secondary hover:bg-surface-inset rounded-md transition-colors"
-                            title="Preview"
+                            title={t('tooltips.preview')}
                           >
                             <Eye className="h-4 w-4" />
                           </button>
@@ -432,7 +432,7 @@ export const DocumentsPage = () => {
                             <button
                               onClick={() => setEditingDocument(doc)}
                               className="p-1.5 text-text-secondary hover:bg-surface-inset rounded-md transition-colors"
-                              title="Edit title & notes"
+                              title={t('tooltips.editTitleNotes')}
                             >
                               <Pencil className="h-4 w-4" />
                             </button>
@@ -442,7 +442,7 @@ export const DocumentsPage = () => {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="p-1.5 text-primary-500 hover:bg-info-bg rounded-md transition-colors"
-                            title="Download"
+                            title={t('tooltips.download')}
                           >
                             <Download className="h-4 w-4" />
                           </a>
@@ -450,7 +450,7 @@ export const DocumentsPage = () => {
                             <button
                               onClick={() => handleDelete(doc.identifier)}
                               className="p-1.5 text-error-text hover:bg-error-bg rounded-md transition-colors"
-                              title="Delete"
+                              title={t('tooltips.delete')}
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>

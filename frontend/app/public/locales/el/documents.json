@@ -93,6 +93,7 @@
   "tooltips": {
     "preview": "Προεπισκόπηση",
     "editTitleNotes": "Επεξεργασία τίτλου & σημειώσεων",
-    "delete": "Διαγραφή"
+    "delete": "Διαγραφή",
+    "download": "Λήψη"
   }
 }

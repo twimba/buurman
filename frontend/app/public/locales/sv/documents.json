@@ -93,6 +93,7 @@
   "tooltips": {
     "preview": "Forhandsvisning",
     "editTitleNotes": "Redigera titel och anteckningar",
-    "delete": "Ta bort"
+    "delete": "Ta bort",
+    "download": "Ladda ned"
   }
 }

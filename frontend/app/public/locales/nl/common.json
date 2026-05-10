@@ -179,7 +179,9 @@
   },
   "accessibility": {
     "skipToContent": "Ga naar hoofdinhoud",
-    "dismiss": "Bericht sluiten"
+    "dismiss": "Bericht sluiten",
+    "togglePasswordVisibility": "Wachtwoordzichtbaarheid omschakelen",
+    "contactDetailTabs": "Contact detail tabs"
   },
   "sidebar": {
     "expand": "Zijbalk uitklappen",

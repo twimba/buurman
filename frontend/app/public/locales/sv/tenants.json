@@ -142,7 +142,8 @@
     "payment_one": "{{count}} betalning",
     "payment_other": "{{count}} betalningar",
     "overdue": "forsenad",
-    "pending": "vantande"
+    "pending": "vantande",
+    "allPaidAriaLabel": "Alla betalningar är à jour"
   },
   "form": {
     "contactType": "Kontakttyp",

@@ -984,5 +984,129 @@
       "expectedExpenses": "Erwartete Ausgaben",
       "expectedNet": "Erwartetes Netto"
     }
+  },
+  "characteristics": {
+    "selectPlaceholder": "-- Auswählen --",
+    "residential": {
+      "title": "Wohnungsdetails",
+      "bedrooms": "Schlafzimmer",
+      "bathrooms": "Badezimmer",
+      "furnished": "Möbliert",
+      "petPolicy": "Haustierregelung"
+    },
+    "commercial": {
+      "title": "Gewerbliche Details",
+      "usableArea": "Nutzfläche",
+      "commonArea": "Gemeinschaftsfläche",
+      "floorLevel": "Stockwerk",
+      "ceilingHeight": "Deckenhöhe",
+      "maxOccupancy": "Maximale Belegung",
+      "restroomCount": "Anzahl Toiletten",
+      "zoningClassification": "Zonenklassifikation",
+      "zoningPlaceholder": "z.B. GE, Mischgebiet",
+      "hasStorefront": "Schaufenster vorhanden",
+      "signageRights": "Werberechte",
+      "kitchenFacility": "Kücheneinrichtung",
+      "accessibilityCompliant": "Barrierefreiheit"
+    },
+    "industrial": {
+      "title": "Industrielle Details",
+      "clearHeight": "Lichte Höhe",
+      "loadingDocks": "Laderampen",
+      "driveInDoors": "Einfahrttore",
+      "floorLoadCapacity": "Bodenbelastbarkeit",
+      "powerCapacity": "Stromanschlussleistung",
+      "craneCapacity": "Krankapazität",
+      "yardArea": "Hoffläche",
+      "zoningClassification": "Zonenklassifikation",
+      "zoningPlaceholder": "z.B. GI, Leichtindustrie",
+      "threePhasePower": "Dreiphasenstrom",
+      "craneAvailable": "Kran vorhanden",
+      "hazmatCertified": "Gefahrgut zertifiziert",
+      "ventilationSystem": "Belüftungsanlage",
+      "climateControl": "Klimaanlage"
+    },
+    "agricultural": {
+      "title": "Landwirtschaftliche Details",
+      "totalLandArea": "Gesamtfläche",
+      "arableArea": "Ackerfläche",
+      "soilType": "Bodenart",
+      "waterSource": "Wasserquelle",
+      "irrigationType": "Bewässerungsart",
+      "fencingType": "Einzäunungsart",
+      "currentUse": "Aktuelle Nutzung",
+      "currentUsePlaceholder": "z.B. Ackerbau, Viehzucht",
+      "zoningClassification": "Zonenklassifikation",
+      "zoningPlaceholder": "z.B. A-1, Landwirtschaft",
+      "waterRights": "Wasserrechte",
+      "hasOutbuildings": "Nebengebäude vorhanden",
+      "outbuildingDetails": "Details Nebengebäude",
+      "outbuildingPlaceholder": "z.B. Scheune, Lager, Maschinenhalle"
+    },
+    "construction": {
+      "yearBuilt": "Baujahr",
+      "yearLastRenovated": "Letzte Renovierung",
+      "constructionType": "Bauart",
+      "foundationType": "Fundamentart",
+      "roofType": "Dachform",
+      "wallConstruction": "Wandkonstruktion",
+      "flooringType": "Bodenbelag",
+      "windowType": "Fensterart",
+      "numberOfFloors": "Anzahl Stockwerke",
+      "structuralNotes": "Strukturelle Hinweise",
+      "structuralNotesTooltip": "Besondere Strukturmerkmale, Renovierungen oder Mängel"
+    },
+    "energy": {
+      "energyEfficiencyRating": "Energieeffizienzklasse",
+      "energyRatingTooltip": "Offizielle Energieklasse (A++ bis G)",
+      "certificateExpiry": "Ablauf Energieausweis",
+      "certificateExpiryTooltip": "Ablaufdatum des aktuellen Energieausweises",
+      "heatingType": "Heizungsart",
+      "coolingType": "Kühlungsart",
+      "hotWaterSystem": "Warmwassersystem",
+      "insulationNotes": "Dämmung",
+      "insulationTooltip": "Details zur Wand-, Dach- und Bodendämmung"
+    },
+    "utilities": {
+      "electricityConnection": "Stromanschluss",
+      "electricityCapacity": "Stromanschlussleistung",
+      "electricityCapacityTooltip": "Hauptsicherungsleistung",
+      "waterConnection": "Wasseranschluss",
+      "hasGasConnection": "Gasanschluss",
+      "sewageType": "Abwasserart",
+      "internetConnection": "Internetanschluss",
+      "internetMaxSpeed": "Max. Internetgeschwindigkeit",
+      "internetStatus": "Internetstatus"
+    },
+    "parking": {
+      "parkingSpaces": "Stellplätze",
+      "parkingType": "Parkplatzart"
+    },
+    "safety": {
+      "smokeDetectors": "Rauchmelder",
+      "coDetectors": "CO-Melder",
+      "fireExtinguisher": "Feuerlöscher",
+      "sprinklerSystem": "Sprinkleranlage",
+      "alarmSystem": "Alarmanlage",
+      "securityCameras": "Überwachungskameras",
+      "secureEntry": "Gesicherter Eingang",
+      "safetyNotes": "Sicherheitshinweise",
+      "safetyNotesTooltip": "Fluchtwege, letztes Prüfdatum, etc."
+    },
+    "accessibility": {
+      "wheelchairAccessible": "Rollstuhlgerecht",
+      "elevator": "Aufzug",
+      "stepFreeEntrance": "Stufenloser Eingang",
+      "adaptedBathroom": "Behindertengerechtes Bad",
+      "accessibilityNotes": "Barrierefreiheitshinweise",
+      "accessibilityNotesTooltip": "Türbreiten, Rampen, etc."
+    },
+    "outdoorAreas": {
+      "type": "Typ",
+      "area": "Fläche",
+      "unit": "Einheit",
+      "add": "Hinzufügen",
+      "addOutdoorArea": "Außenbereich hinzufügen"
+    }
   }
 }

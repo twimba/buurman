@@ -179,7 +179,9 @@
   },
   "accessibility": {
     "skipToContent": "Hoppa till huvudinnehall",
-    "dismiss": "Stang meddelande"
+    "dismiss": "Stang meddelande",
+    "togglePasswordVisibility": "Växla lösenordssynlighet",
+    "contactDetailTabs": "Kontaktdetaljer-flikar"
   },
   "sidebar": {
     "expand": "Expandera sidopanelen",
