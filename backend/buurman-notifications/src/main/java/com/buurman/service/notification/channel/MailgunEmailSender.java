@@ -64,9 +64,7 @@ public class MailgunEmailSender implements NotificationChannelSender {
               .recipientEmail()
               .orElseThrow(() -> new NotificationSendException("recipientEmail is required"));
       String subject =
-          request
-              .subject()
-              .orElseThrow(() -> new NotificationSendException("subject is required"));
+          request.subject().orElseThrow(() -> new NotificationSendException("subject is required"));
 
       Message message =
           Message.builder()

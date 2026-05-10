@@ -155,7 +155,8 @@ public class PropertyBookletExporter {
   }
 
   private String msg(String key, Locale locale) {
-    return java.util.Objects.requireNonNullElse(messageSource.getMessage(key, null, key, locale), key);
+    return java.util.Objects.requireNonNullElse(
+        messageSource.getMessage(key, null, key, locale), key);
   }
 
   public byte[] generate(PropertyIdentifier propertyIdentifier, UUID teamId, Locale locale) {
@@ -395,7 +396,8 @@ public class PropertyBookletExporter {
         html,
         msg("cover.year.built", locale),
         property.getYearBuilt().map(Object::toString).orElse("—"));
-    appendCoverCell(html, msg("cover.reference", locale), property.getIdentifier().orElseThrow().value());
+    appendCoverCell(
+        html, msg("cover.reference", locale), property.getIdentifier().orElseThrow().value());
     html.append("</tr>");
   }
 
@@ -432,7 +434,8 @@ public class PropertyBookletExporter {
             details.getCeilingHeightValue().orElse(null),
             details.getCeilingHeightUnit().orElse(null),
             "m"));
-    appendCoverCell(html, msg("cover.reference", locale), property.getIdentifier().orElseThrow().value());
+    appendCoverCell(
+        html, msg("cover.reference", locale), property.getIdentifier().orElseThrow().value());
     html.append("</tr>");
   }
 
@@ -472,7 +475,8 @@ public class PropertyBookletExporter {
             .map(v -> v + " " + details.getPowerCapacityUnit().orElse("kVA"))
             .orElse("—"));
     html.append("</tr><tr>");
-    appendCoverCell(html, msg("cover.reference", locale), property.getIdentifier().orElseThrow().value());
+    appendCoverCell(
+        html, msg("cover.reference", locale), property.getIdentifier().orElseThrow().value());
     html.append("<td></td>");
     html.append("</tr>");
   }
@@ -512,7 +516,8 @@ public class PropertyBookletExporter {
         msg("cover.current.use", locale),
         details.getCurrentUse().map(BookletHelper::formatEnumValue).orElse("—"));
     html.append("</tr><tr>");
-    appendCoverCell(html, msg("cover.reference", locale), property.getIdentifier().orElseThrow().value());
+    appendCoverCell(
+        html, msg("cover.reference", locale), property.getIdentifier().orElseThrow().value());
     html.append("<td></td>");
     html.append("</tr>");
   }
@@ -533,7 +538,8 @@ public class PropertyBookletExporter {
         msg("cover.year.built", locale),
         property.getYearBuilt().map(Object::toString).orElse("—"));
     html.append("</tr><tr>");
-    appendCoverCell(html, msg("cover.reference", locale), property.getIdentifier().orElseThrow().value());
+    appendCoverCell(
+        html, msg("cover.reference", locale), property.getIdentifier().orElseThrow().value());
     html.append("<td></td>");
     html.append("</tr>");
   }
@@ -556,7 +562,9 @@ public class PropertyBookletExporter {
     html.append("<table class='detail-grid'>");
     html.append("<tr>");
     appendField(
-        html, msg("field.property.type", locale), formatEnumValue(property.getPropertyType().name()));
+        html,
+        msg("field.property.type", locale),
+        formatEnumValue(property.getPropertyType().name()));
     appendField(html, msg("field.status", locale), formatEnumValue(property.getStatus().name()));
     html.append("</tr><tr>");
     appendField(html, msg("field.total.area", locale), area);
@@ -588,7 +596,8 @@ public class PropertyBookletExporter {
       appendAgriculturalDetailsSection(html, agriculturalDetails, locale);
     }
 
-    appendTextBlock(html, msg("field.structural.notes", locale), property.getStructuralNotes().orElse(null));
+    appendTextBlock(
+        html, msg("field.structural.notes", locale), property.getStructuralNotes().orElse(null));
 
     appendPageEnd(html);
   }
@@ -599,14 +608,21 @@ public class PropertyBookletExporter {
     html.append("<table class='detail-grid'>");
     html.append("<tr>");
     appendField(
-        html, msg("field.bedrooms", locale), details.getBedrooms().map(Object::toString).orElse("—"));
+        html,
+        msg("field.bedrooms", locale),
+        details.getBedrooms().map(Object::toString).orElse("—"));
     appendField(
-        html, msg("field.bathrooms", locale), details.getBathrooms().map(Object::toString).orElse("—"));
+        html,
+        msg("field.bathrooms", locale),
+        details.getBathrooms().map(Object::toString).orElse("—"));
     html.append("</tr><tr>");
     appendField(
         html,
         msg("field.furnished", locale),
-        details.getFurnished().map(v -> isTrue(v) ? msg("value.yes", locale) : msg("value.no", locale)).orElse("—"));
+        details
+            .getFurnished()
+            .map(v -> isTrue(v) ? msg("value.yes", locale) : msg("value.no", locale))
+            .orElse("—"));
     appendField(
         html,
         msg("field.pet.policy", locale),
@@ -632,7 +648,9 @@ public class PropertyBookletExporter {
             details.getCommonAreaValue().orElse(null), details.getCommonAreaUnit().orElse(null)));
     html.append("</tr><tr>");
     appendField(
-        html, msg("field.floor.level", locale), details.getFloorLevel().map(Object::toString).orElse("—"));
+        html,
+        msg("field.floor.level", locale),
+        details.getFloorLevel().map(Object::toString).orElse("—"));
     appendField(
         html,
         msg("field.ceiling.height", locale),
@@ -644,25 +662,41 @@ public class PropertyBookletExporter {
     appendField(
         html,
         msg("field.storefront", locale),
-        details.getHasStorefront().map(v -> isTrue(v) ? msg("value.yes", locale) : msg("value.no", locale)).orElse("—"));
+        details
+            .getHasStorefront()
+            .map(v -> isTrue(v) ? msg("value.yes", locale) : msg("value.no", locale))
+            .orElse("—"));
     appendField(
         html,
         msg("field.signage.rights", locale),
-        details.getHasSignageRights().map(v -> isTrue(v) ? msg("value.yes", locale) : msg("value.no", locale)).orElse("—"));
+        details
+            .getHasSignageRights()
+            .map(v -> isTrue(v) ? msg("value.yes", locale) : msg("value.no", locale))
+            .orElse("—"));
     html.append("</tr><tr>");
     appendField(
-        html, msg("field.max.occupancy", locale), details.getMaxOccupancy().map(Object::toString).orElse("—"));
+        html,
+        msg("field.max.occupancy", locale),
+        details.getMaxOccupancy().map(Object::toString).orElse("—"));
     appendField(
-        html, msg("field.restrooms", locale), details.getRestroomCount().map(Object::toString).orElse("—"));
+        html,
+        msg("field.restrooms", locale),
+        details.getRestroomCount().map(Object::toString).orElse("—"));
     html.append("</tr><tr>");
     appendField(
         html,
         msg("field.kitchen.facility", locale),
-        details.getHasKitchenFacility().map(v -> isTrue(v) ? msg("value.yes", locale) : msg("value.no", locale)).orElse("—"));
+        details
+            .getHasKitchenFacility()
+            .map(v -> isTrue(v) ? msg("value.yes", locale) : msg("value.no", locale))
+            .orElse("—"));
     appendField(
         html,
         msg("field.accessibility.compliant", locale),
-        details.getAccessibilityCompliant().map(v -> isTrue(v) ? msg("value.yes", locale) : msg("value.no", locale)).orElse("—"));
+        details
+            .getAccessibilityCompliant()
+            .map(v -> isTrue(v) ? msg("value.yes", locale) : msg("value.no", locale))
+            .orElse("—"));
     html.append("</tr><tr>");
     appendField(
         html,
@@ -686,10 +720,14 @@ public class PropertyBookletExporter {
             details.getClearHeightUnit().orElse(null),
             "m"));
     appendField(
-        html, msg("field.loading.docks", locale), details.getLoadingDocks().map(Object::toString).orElse("—"));
+        html,
+        msg("field.loading.docks", locale),
+        details.getLoadingDocks().map(Object::toString).orElse("—"));
     html.append("</tr><tr>");
     appendField(
-        html, msg("field.drive.in.doors", locale), details.getDriveInDoors().map(Object::toString).orElse("—"));
+        html,
+        msg("field.drive.in.doors", locale),
+        details.getDriveInDoors().map(Object::toString).orElse("—"));
     appendField(
         html,
         msg("field.floor.load.capacity", locale),
@@ -708,7 +746,10 @@ public class PropertyBookletExporter {
     appendField(
         html,
         msg("field.three.phase.power", locale),
-        details.getHasThreePhasePower().map(v -> isTrue(v) ? msg("value.yes", locale) : msg("value.no", locale)).orElse("—"));
+        details
+            .getHasThreePhasePower()
+            .map(v -> isTrue(v) ? msg("value.yes", locale) : msg("value.no", locale))
+            .orElse("—"));
     html.append("</tr><tr>");
     appendField(
         html,
@@ -734,16 +775,25 @@ public class PropertyBookletExporter {
     appendField(
         html,
         msg("field.hazmat.certification", locale),
-        details.getHasHazmatCertification().map(v -> isTrue(v) ? msg("value.yes", locale) : msg("value.no", locale)).orElse("—"));
+        details
+            .getHasHazmatCertification()
+            .map(v -> isTrue(v) ? msg("value.yes", locale) : msg("value.no", locale))
+            .orElse("—"));
     html.append("</tr><tr>");
     appendField(
         html,
         msg("field.ventilation.system", locale),
-        details.getHasVentilationSystem().map(v -> isTrue(v) ? msg("value.yes", locale) : msg("value.no", locale)).orElse("—"));
+        details
+            .getHasVentilationSystem()
+            .map(v -> isTrue(v) ? msg("value.yes", locale) : msg("value.no", locale))
+            .orElse("—"));
     appendField(
         html,
         msg("field.climate.control", locale),
-        details.getHasClimateControl().map(v -> isTrue(v) ? msg("value.yes", locale) : msg("value.no", locale)).orElse("—"));
+        details
+            .getHasClimateControl()
+            .map(v -> isTrue(v) ? msg("value.yes", locale) : msg("value.no", locale))
+            .orElse("—"));
     html.append("</tr><tr>");
     appendField(
         html,
@@ -782,7 +832,10 @@ public class PropertyBookletExporter {
     appendField(
         html,
         msg("field.water.rights", locale),
-        details.getHasWaterRights().map(v -> isTrue(v) ? msg("value.yes", locale) : msg("value.no", locale)).orElse("—"));
+        details
+            .getHasWaterRights()
+            .map(v -> isTrue(v) ? msg("value.yes", locale) : msg("value.no", locale))
+            .orElse("—"));
     html.append("</tr><tr>");
     appendField(
         html,
@@ -855,7 +908,9 @@ public class PropertyBookletExporter {
     if (property.getRoofType().isPresent() || property.getWindowType().isPresent()) {
       html.append("<tr>");
       appendField(
-          html, msg("field.roof.type", locale), formatEnumValue(property.getRoofType().orElse(null)));
+          html,
+          msg("field.roof.type", locale),
+          formatEnumValue(property.getRoofType().orElse(null)));
       appendField(
           html,
           msg("field.window.type", locale),
@@ -869,7 +924,9 @@ public class PropertyBookletExporter {
           msg("field.wall.construction", locale),
           formatEnumValue(property.getWallConstruction().orElse(null)));
       appendField(
-          html, msg("field.flooring", locale), formatEnumValue(property.getFlooringType().orElse(null)));
+          html,
+          msg("field.flooring", locale),
+          formatEnumValue(property.getFlooringType().orElse(null)));
       html.append("</tr>");
     }
     html.append("</table>");
@@ -927,8 +984,7 @@ public class PropertyBookletExporter {
           .append(";'>")
           .append(escapeHtml(property.getEnergyEfficiencyRating().orElse(null)))
           .append("</span>");
-      html.append(
-              "<span style='margin-left:12px;font-size:13px;color:#78716c;'>")
+      html.append("<span style='margin-left:12px;font-size:13px;color:#78716c;'>")
           .append(msg("field.energy.efficiency.rating", locale))
           .append("</span>");
       html.append("</div>");
@@ -965,7 +1021,8 @@ public class PropertyBookletExporter {
     }
     html.append("</table>");
 
-    appendTextBlock(html, msg("field.insulation.notes", locale), property.getInsulationNotes().orElse(null));
+    appendTextBlock(
+        html, msg("field.insulation.notes", locale), property.getInsulationNotes().orElse(null));
   }
 
   private void appendUtilitiesSection(StringBuilder html, Property property, Locale locale) {
@@ -992,11 +1049,17 @@ public class PropertyBookletExporter {
         || property.getHasGasConnection().isPresent()) {
       html.append("<tr>");
       appendField(
-          html, msg("field.water", locale), formatEnumValue(property.getWaterConnectionType().orElse(null)));
+          html,
+          msg("field.water", locale),
+          formatEnumValue(property.getWaterConnectionType().orElse(null)));
       String gasText =
           property
               .getHasGasConnection()
-              .map(g -> isTrue(g) ? msg("value.connected", locale) : msg("value.not.connected", locale))
+              .map(
+                  g ->
+                      isTrue(g)
+                          ? msg("value.connected", locale)
+                          : msg("value.not.connected", locale))
               .orElse("—");
       appendField(html, msg("field.gas.connection", locale), gasText);
       html.append("</tr>");
@@ -1004,7 +1067,9 @@ public class PropertyBookletExporter {
     if (property.getSewageType().isPresent() || property.getInternetConnectionType().isPresent()) {
       html.append("<tr>");
       appendField(
-          html, msg("field.sewage", locale), formatEnumValue(property.getSewageType().orElse(null)));
+          html,
+          msg("field.sewage", locale),
+          formatEnumValue(property.getSewageType().orElse(null)));
       appendField(
           html,
           msg("field.internet", locale),
@@ -1035,7 +1100,9 @@ public class PropertyBookletExporter {
     html.append("<table class='detail-grid'>");
     html.append("<tr>");
     appendField(
-        html, msg("field.parking.type", locale), formatEnumValue(property.getParkingType().orElse(null)));
+        html,
+        msg("field.parking.type", locale),
+        formatEnumValue(property.getParkingType().orElse(null)));
     appendField(
         html,
         msg("field.parking.spaces", locale),
@@ -1173,7 +1240,8 @@ public class PropertyBookletExporter {
           html, msg("check.secure.entry", locale), property.getHasSecureEntry().orElse(null));
       html.append("</div>");
 
-      appendTextBlock(html, msg("field.safety.notes", locale), property.getSafetyNotes().orElse(null));
+      appendTextBlock(
+          html, msg("field.safety.notes", locale), property.getSafetyNotes().orElse(null));
     }
 
     if (hasAccessibilityData) {
@@ -1185,14 +1253,15 @@ public class PropertyBookletExporter {
           html,
           msg("check.wheelchair.accessible", locale),
           property.getIsWheelchairAccessible().orElse(null));
-      appendCheckItem(
-          html, msg("check.elevator", locale), property.getHasElevator().orElse(null));
+      appendCheckItem(html, msg("check.elevator", locale), property.getHasElevator().orElse(null));
       appendCheckItem(
           html,
           msg("check.step.free.entrance", locale),
           property.getHasStepFreeEntrance().orElse(null));
       appendCheckItem(
-          html, msg("check.adapted.bathroom", locale), property.getHasAdaptedBathroom().orElse(null));
+          html,
+          msg("check.adapted.bathroom", locale),
+          property.getHasAdaptedBathroom().orElse(null));
       html.append("</div>");
 
       appendTextBlock(

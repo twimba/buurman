@@ -76,8 +76,7 @@ public class ExportServiceImpl implements ExportService {
   public byte[] generateContactReportPDF(
       ContactIdentifier contactIdentifier, UUID teamId, Locale locale) {
     return withMetrics(
-        "contact_report",
-        () -> contactBookletExporter.generate(contactIdentifier, teamId, locale));
+        "contact_report", () -> contactBookletExporter.generate(contactIdentifier, teamId, locale));
   }
 
   @Override

@@ -110,7 +110,8 @@ public class ContactBookletExporter {
   }
 
   private String msg(String key, Locale locale) {
-    return java.util.Objects.requireNonNullElse(messageSource.getMessage(key, null, key, locale), key);
+    return java.util.Objects.requireNonNullElse(
+        messageSource.getMessage(key, null, key, locale), key);
   }
 
   public byte[] generate(ContactIdentifier contactIdentifier, UUID teamId, Locale locale) {
@@ -270,15 +271,22 @@ public class ContactBookletExporter {
     html.append("<table class='cover-summary'>");
     html.append("<tr>");
     appendCoverCell(html, msg("cover.type", locale), contact.getContactType().getDisplayName());
-    appendCoverCell(html, msg("cover.email", locale), contact.getEmail().map(BookletHelper::escapeHtml).orElse("—"));
+    appendCoverCell(
+        html,
+        msg("cover.email", locale),
+        contact.getEmail().map(BookletHelper::escapeHtml).orElse("—"));
     html.append("</tr><tr>");
-    appendCoverCell(html, msg("cover.phone", locale), contact.getPhone().map(BookletHelper::escapeHtml).orElse("—"));
+    appendCoverCell(
+        html,
+        msg("cover.phone", locale),
+        contact.getPhone().map(BookletHelper::escapeHtml).orElse("—"));
     appendCoverCell(html, msg("cover.active.contracts", locale), String.valueOf(activeContracts));
     html.append("</tr><tr>");
     appendCoverCell(html, msg("cover.total.contracts", locale), String.valueOf(totalContracts));
     appendCoverCell(html, msg("cover.current.property", locale), currentPropertyName);
     html.append("</tr><tr>");
-    appendCoverCell(html, msg("cover.reference", locale), contact.getIdentifier().orElseThrow().value());
+    appendCoverCell(
+        html, msg("cover.reference", locale), contact.getIdentifier().orElseThrow().value());
     appendCoverCell(html, "", "");
     html.append("</tr>");
     html.append("</table>");
@@ -316,7 +324,10 @@ public class ContactBookletExporter {
     }
 
     boolean isIndividual = contact.getContactType() == ContactType.INDIVIDUAL;
-    String sectionTitle = isIndividual ? msg("section.personal.information", locale) : msg("section.organisation.information", locale);
+    String sectionTitle =
+        isIndividual
+            ? msg("section.personal.information", locale)
+            : msg("section.organisation.information", locale);
     appendSectionTitle(html, sectionTitle);
     html.append("<table class='detail-grid'>");
     html.append("<tr>");
@@ -332,9 +343,13 @@ public class ContactBookletExporter {
       if (contact.getDateOfBirth().isPresent() || contact.getIdExpiryDate().isPresent()) {
         html.append("<tr>");
         appendField(
-            html, msg("field.date.of.birth", locale), contact.getDateOfBirth().map(Object::toString).orElse(null));
+            html,
+            msg("field.date.of.birth", locale),
+            contact.getDateOfBirth().map(Object::toString).orElse(null));
         appendField(
-            html, msg("field.id.expiry.date", locale), contact.getIdExpiryDate().map(Object::toString).orElse(null));
+            html,
+            msg("field.id.expiry.date", locale),
+            contact.getIdExpiryDate().map(Object::toString).orElse(null));
         html.append("</tr>");
       }
     } else {
@@ -353,7 +368,8 @@ public class ContactBookletExporter {
       }
       if (contact.getInvoiceEmail().isPresent()) {
         html.append("<tr>");
-        appendField(html, msg("field.invoice.email", locale), contact.getInvoiceEmail().orElse(null));
+        appendField(
+            html, msg("field.invoice.email", locale), contact.getInvoiceEmail().orElse(null));
         appendField(html, "", null);
         html.append("</tr>");
       }
@@ -366,7 +382,8 @@ public class ContactBookletExporter {
       html.append("</tr>");
     }
     html.append("<tr>");
-    appendField(html, msg("field.reference", locale), "#" + contact.getIdentifier().orElseThrow().value());
+    appendField(
+        html, msg("field.reference", locale), "#" + contact.getIdentifier().orElseThrow().value());
     appendField(html, msg("field.current.property", locale), currentPropertyName);
     html.append("</tr>");
     html.append("</table>");
@@ -384,7 +401,14 @@ public class ContactBookletExporter {
 
     appendSectionTitle(html, msg("section.financial.summary", locale));
     html.append("<table class='summary-grid'><tr>");
-    appendSummaryCard(html, msg("summary.total.paid", locale), fmt(totalPaid), null, "#f0fdf4", "#166534", "#059669");
+    appendSummaryCard(
+        html,
+        msg("summary.total.paid", locale),
+        fmt(totalPaid),
+        null,
+        "#f0fdf4",
+        "#166534",
+        "#059669");
     appendSummaryCard(
         html,
         msg("summary.outstanding", locale),
@@ -416,7 +440,8 @@ public class ContactBookletExporter {
 
   // -- Page: Addresses ---
 
-  private void appendAddressesPage(StringBuilder html, List<ContactAddress> addresses, Locale locale) {
+  private void appendAddressesPage(
+      StringBuilder html, List<ContactAddress> addresses, Locale locale) {
     if (addresses.isEmpty()) {
       return;
     }
@@ -430,7 +455,9 @@ public class ContactBookletExporter {
 
     for (ContactAddress addr : addresses) {
       String type =
-          addr.getAddressType() != null ? formatEnumValue(addr.getAddressType().name()) : msg("value.other", locale);
+          addr.getAddressType() != null
+              ? formatEnumValue(addr.getAddressType().name())
+              : msg("value.other", locale);
       boolean isActive = addr.getStatus() != null && addr.getStatus().name().equals("ACTIVE");
       String borderColor = isActive ? "#0284c7" : "#a8a29e";
 
@@ -540,7 +567,10 @@ public class ContactBookletExporter {
           .append("</div>");
 
       html.append("<table class='detail-grid'><tr>");
-      appendField(html, msg("field.contract.id", locale), "#" + contract.getIdentifier().orElseThrow().value());
+      appendField(
+          html,
+          msg("field.contract.id", locale),
+          "#" + contract.getIdentifier().orElseThrow().value());
       appendField(
           html,
           msg("field.contract.type", locale),
@@ -557,7 +587,9 @@ public class ContactBookletExporter {
       Optional<LocalDate> effectiveEndDate =
           EffectiveEndDateHelper.computeEffectiveEndDate(contract.getEndDate(), extensions);
       appendField(
-          html, msg("field.end.date", locale), effectiveEndDate.map(d -> d.format(shortFmt)).orElse(msg("value.ongoing", locale)));
+          html,
+          msg("field.end.date", locale),
+          effectiveEndDate.map(d -> d.format(shortFmt)).orElse(msg("value.ongoing", locale)));
       html.append("</tr><tr>");
       appendField(
           html,
@@ -701,7 +733,11 @@ public class ContactBookletExporter {
   // -- Page: Notes ---
 
   private void appendNotesPage(
-      StringBuilder html, List<ContactNote> notes, Contact contact, DateTimeFormatter dateFmt, Locale locale) {
+      StringBuilder html,
+      List<ContactNote> notes,
+      Contact contact,
+      DateTimeFormatter dateFmt,
+      Locale locale) {
     if (notes.isEmpty()) {
       return;
     }
@@ -760,7 +796,11 @@ public class ContactBookletExporter {
   // -- Page: Relationships ---
 
   private void appendRelationshipsPage(
-      StringBuilder html, List<ContactRelationship> relationships, Contact contact, UUID teamId, Locale locale) {
+      StringBuilder html,
+      List<ContactRelationship> relationships,
+      Contact contact,
+      UUID teamId,
+      Locale locale) {
     if (relationships.isEmpty()) {
       return;
     }
@@ -802,7 +842,8 @@ public class ContactBookletExporter {
         displayLabel = rel.getRelationshipType().inverseDisplayName();
       }
 
-      String relatedName = escapeHtml(contactNames.getOrDefault(relatedContactId, msg("value.unknown", locale)));
+      String relatedName =
+          escapeHtml(contactNames.getOrDefault(relatedContactId, msg("value.unknown", locale)));
 
       html.append("<tr>");
       html.append("<td>").append(relatedName).append("</td>");

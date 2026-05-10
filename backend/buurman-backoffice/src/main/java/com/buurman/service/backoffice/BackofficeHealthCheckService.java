@@ -186,11 +186,7 @@ public class BackofficeHealthCheckService {
           Optional.empty());
     }
     return new ServiceHealth(
-        "Mailgun",
-        Status.UP,
-        Optional.empty(),
-        Optional.of("Configured"),
-        Optional.empty());
+        "Mailgun", Status.UP, Optional.empty(), Optional.of("Configured"), Optional.empty());
   }
 
   private ServiceHealth checkSmtp() {

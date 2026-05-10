@@ -57,8 +57,8 @@ public class BookletController implements BookletsApi {
   @Override
   public byte[] exportPropertyBooklet(PropertyIdentifier propertyIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    Locale locale = resolveLocale(
-        Optional.ofNullable(httpServletRequest.getParameter("lang")).orElse("en"));
+    Locale locale =
+        resolveLocale(Optional.ofNullable(httpServletRequest.getParameter("lang")).orElse("en"));
     httpServletResponse.setHeader(
         "Content-Disposition", "attachment; filename=property-booklet.pdf");
     httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
@@ -69,8 +69,8 @@ public class BookletController implements BookletsApi {
   @Override
   public byte[] exportContactBooklet(ContactIdentifier contactIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    Locale locale = resolveLocale(
-        Optional.ofNullable(httpServletRequest.getParameter("lang")).orElse("en"));
+    Locale locale =
+        resolveLocale(Optional.ofNullable(httpServletRequest.getParameter("lang")).orElse("en"));
     httpServletResponse.setHeader(
         "Content-Disposition", "attachment; filename=contact-booklet.pdf");
     httpServletResponse.setContentType(APPLICATION_PDF_VALUE);
@@ -98,8 +98,8 @@ public class BookletController implements BookletsApi {
   @Override
   public byte[] exportContractBooklet(ContractIdentifier contractIdentifier) {
     UserPrincipal principal = SecurityUtils.getCurrentPrincipal();
-    Locale locale = resolveLocale(
-        Optional.ofNullable(httpServletRequest.getParameter("lang")).orElse("en"));
+    Locale locale =
+        resolveLocale(Optional.ofNullable(httpServletRequest.getParameter("lang")).orElse("en"));
     httpServletResponse.setHeader(
         "Content-Disposition", "attachment; filename=contract-booklet.pdf");
     httpServletResponse.setContentType(APPLICATION_PDF_VALUE);

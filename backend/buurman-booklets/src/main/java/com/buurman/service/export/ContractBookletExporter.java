@@ -114,7 +114,8 @@ public class ContractBookletExporter {
   }
 
   private String msg(String key, Locale locale) {
-    return java.util.Objects.requireNonNullElse(messageSource.getMessage(key, null, key, locale), key);
+    return java.util.Objects.requireNonNullElse(
+        messageSource.getMessage(key, null, key, locale), key);
   }
 
   private static final Map<String, String> PAYMENT_METHOD_LABELS =
@@ -237,7 +238,15 @@ public class ContractBookletExporter {
     appendRunningFooter(html, generatedDate);
 
     appendCoverPage(
-        html, contract, property, primaryName, ccy, dateFmt, generatedDate, effectiveEndDate, locale);
+        html,
+        contract,
+        property,
+        primaryName,
+        ccy,
+        dateFmt,
+        generatedDate,
+        effectiveEndDate,
+        locale);
     appendContractDetailsPage(
         html, contract, property, rentPeriods, dateFmt, ccy, effectiveEndDate, locale);
     appendPartiesPage(html, parties, contactMap, locale);
@@ -284,7 +293,9 @@ public class ContractBookletExporter {
     String period =
         formatDate(contract.getStartDate(), dateFmt)
             + " — "
-            + effectiveEndDate.map(d -> formatDate(d, dateFmt)).orElse(msg("value.indefinite", locale));
+            + effectiveEndDate
+                .map(d -> formatDate(d, dateFmt))
+                .orElse(msg("value.indefinite", locale));
     appendCoverCell(html, msg("cover.contract.period", locale), period);
     html.append("</tr><tr>");
     appendCoverCell(
@@ -320,7 +331,8 @@ public class ContractBookletExporter {
     String statusStr = contract.getStatus() != null ? contract.getStatus().name() : "DRAFT";
     html.append("<table class='detail-grid'>");
     html.append("<tr>");
-    appendField(html, msg("field.contract.id", locale), contract.getIdentifier().orElseThrow().value());
+    appendField(
+        html, msg("field.contract.id", locale), contract.getIdentifier().orElseThrow().value());
     appendField(html, msg("field.status", locale), formatEnumValue(statusStr));
     html.append("</tr><tr>");
     appendField(
@@ -331,9 +343,13 @@ public class ContractBookletExporter {
     appendField(
         html,
         msg("field.signed.date", locale),
-        contract.getSignedDate().map(d -> formatDate(d, dateFmt)).orElse(msg("value.not.signed", locale)));
+        contract
+            .getSignedDate()
+            .map(d -> formatDate(d, dateFmt))
+            .orElse(msg("value.not.signed", locale)));
     html.append("</tr><tr>");
-    appendField(html, msg("field.start.date", locale), formatDate(contract.getStartDate(), dateFmt));
+    appendField(
+        html, msg("field.start.date", locale), formatDate(contract.getStartDate(), dateFmt));
     appendField(
         html,
         msg("field.end.date", locale),
@@ -345,7 +361,10 @@ public class ContractBookletExporter {
       appendField(
           html,
           msg("field.original.end.date", locale),
-          contract.getEndDate().map(d -> formatDate(d, dateFmt)).orElse(msg("value.indefinite", locale)));
+          contract
+              .getEndDate()
+              .map(d -> formatDate(d, dateFmt))
+              .orElse(msg("value.indefinite", locale)));
       appendField(html, "", null);
       html.append("</tr>");
     }
@@ -367,7 +386,10 @@ public class ContractBookletExporter {
         CurrencyUtils.formatCurrency(
             contract.getSecurityDeposit().map(com.buurman.util.MoneyAmount::value).orElse(null),
             ccy));
-    appendField(html, msg("field.currency", locale), CurrencyUtils.getCurrencySymbol(ccy) + " (" + ccy + ")");
+    appendField(
+        html,
+        msg("field.currency", locale),
+        CurrencyUtils.getCurrencySymbol(ccy) + " (" + ccy + ")");
     html.append("</tr><tr>");
     appendField(
         html,
@@ -377,7 +399,10 @@ public class ContractBookletExporter {
     appendField(
         html,
         msg("field.payment.due.day", locale),
-        contract.getPaymentDueDay().map(d -> msg("value.day.of.month", locale).replace("{0}", String.valueOf(d))).orElse("—"));
+        contract
+            .getPaymentDueDay()
+            .map(d -> msg("value.day.of.month", locale).replace("{0}", String.valueOf(d)))
+            .orElse("—"));
     html.append("</tr><tr>");
     appendField(
         html,
@@ -397,7 +422,9 @@ public class ContractBookletExporter {
             ? contract.getTerminationNoticeDays() + " " + msg("value.days", locale)
             : "—");
     appendField(
-        html, msg("field.late.fee", locale), contract.getLateFeePercentage().map(p -> p + "%").orElse("—"));
+        html,
+        msg("field.late.fee", locale),
+        contract.getLateFeePercentage().map(p -> p + "%").orElse("—"));
     html.append("</tr>");
     html.append("</table>");
 
@@ -438,10 +465,16 @@ public class ContractBookletExporter {
     html.append("</tr><tr>");
     appendField(html, msg("field.country", locale), escapeHtml(property.getCountryCode()));
     appendField(
-        html, msg("field.property.type", locale), formatEnumValue(property.getPropertyType().name()));
+        html,
+        msg("field.property.type", locale),
+        formatEnumValue(property.getPropertyType().name()));
     html.append("</tr><tr>");
-    appendField(html, msg("field.category", locale), formatEnumValue(property.getPropertyCategory().name()));
-    appendField(html, msg("field.property.id", locale), property.getIdentifier().orElseThrow().value());
+    appendField(
+        html,
+        msg("field.category", locale),
+        formatEnumValue(property.getPropertyCategory().name()));
+    appendField(
+        html, msg("field.property.id", locale), property.getIdentifier().orElseThrow().value());
     html.append("</tr><tr>");
     appendField(
         html,
@@ -565,7 +598,12 @@ public class ContractBookletExporter {
       Locale locale) {
     appendSectionTitle(
         html,
-        msg("section.rent.history", locale) + " (" + rentPeriods.size() + " " + msg("value.periods", locale) + ")");
+        msg("section.rent.history", locale)
+            + " ("
+            + rentPeriods.size()
+            + " "
+            + msg("value.periods", locale)
+            + ")");
 
     // Periods are already ordered by effective_from DESC from the repository
     List<ContractRentPeriod> sorted = new ArrayList<>(rentPeriods);
@@ -594,7 +632,9 @@ public class ContractBookletExporter {
           .append(
               period.getEffectiveTo().isPresent()
                   ? formatDate(period.getEffectiveTo().get(), dateFmt)
-                  : "<span style='color:#166534;font-weight:600;'>" + msg("value.current", locale) + "</span>")
+                  : "<span style='color:#166534;font-weight:600;'>"
+                      + msg("value.current", locale)
+                      + "</span>")
           .append("</td>");
       html.append("<td style='text-align:right;font-variant-numeric:tabular-nums;")
           .append(isCurrent ? "font-weight:600;" : "")
@@ -624,7 +664,9 @@ public class ContractBookletExporter {
               .append("%</span>");
         }
       } else {
-        html.append("<span style='color:#78716c;font-size:12px;'>").append(msg("value.initial", locale)).append("</span>");
+        html.append("<span style='color:#78716c;font-size:12px;'>")
+            .append(msg("value.initial", locale))
+            .append("</span>");
       }
       html.append("</td>");
 
@@ -728,14 +770,19 @@ public class ContractBookletExporter {
             .append("</span>");
       }
       if (isCurrent) {
-        html.append("<span class='pi-current'>").append(msg("value.current", locale)).append("</span>");
+        html.append("<span class='pi-current'>")
+            .append(msg("value.current", locale))
+            .append("</span>");
       }
       html.append("</div>");
 
       // Period
       String fromStr =
           cpi.getEffectiveFrom() != null ? formatDate(cpi.getEffectiveFrom(), dateFmt) : "—";
-      String toStr = cpi.getEffectiveTo().map(d -> formatDate(d, dateFmt)).orElse(msg("value.present", locale));
+      String toStr =
+          cpi.getEffectiveTo()
+              .map(d -> formatDate(d, dateFmt))
+              .orElse(msg("value.present", locale));
       html.append("<div class='pi-period'>")
           .append(fromStr)
           .append(" — ")
@@ -750,7 +797,9 @@ public class ContractBookletExporter {
         html.append("<tr>");
         appendField(html, msg("field.bank.name", locale), hasBank ? escapeHtml(piBankName) : null);
         appendField(
-            html, msg("field.account.holder", locale), hasHolder ? escapeHtml(piAccountHolder) : null);
+            html,
+            msg("field.account.holder", locale),
+            hasHolder ? escapeHtml(piAccountHolder) : null);
         html.append("</tr>");
       }
       boolean hasIban = piIban != null && !piIban.isBlank();
@@ -766,9 +815,13 @@ public class ContractBookletExporter {
       if (hasAccNum || hasRouting) {
         html.append("<tr>");
         appendField(
-            html, msg("field.account.number", locale), hasAccNum ? escapeHtml(piAccountNumber) : null);
+            html,
+            msg("field.account.number", locale),
+            hasAccNum ? escapeHtml(piAccountNumber) : null);
         appendField(
-            html, msg("field.routing.number", locale), hasRouting ? escapeHtml(piRoutingNumber) : null);
+            html,
+            msg("field.routing.number", locale),
+            hasRouting ? escapeHtml(piRoutingNumber) : null);
         html.append("</tr>");
       }
       if (piReference != null && !piReference.isBlank()) {

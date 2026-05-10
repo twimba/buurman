@@ -44,8 +44,7 @@ public class WebhookService {
       JsonNode eventData = root.path("event-data");
 
       String eventType = eventData.path("event").asText();
-      String messageId =
-          eventData.path("message").path("headers").path("message-id").asText();
+      String messageId = eventData.path("message").path("headers").path("message-id").asText();
 
       if (messageId.isEmpty() || eventType.isEmpty()) {
         log.warn("Mailgun webhook missing event type or message-id");
@@ -68,7 +67,8 @@ public class WebhookService {
       String reason = eventData.path("reason").asText(null);
 
       if (shouldUpdateStatus(messageId, status)) {
-        notificationRepository.updateStatusByProviderMessageId(messageId, status, eventType, reason);
+        notificationRepository.updateStatusByProviderMessageId(
+            messageId, status, eventType, reason);
         log.debug("Mailgun event: {} -> {} for message {}", eventType, status, messageId);
       } else {
         log.debug(
@@ -116,7 +116,8 @@ public class WebhookService {
         .orElse(true);
   }
 
-  private NotificationStatus mapMailgunStatus(String eventType, @org.jspecify.annotations.Nullable String severity) {
+  private NotificationStatus mapMailgunStatus(
+      String eventType, @org.jspecify.annotations.Nullable String severity) {
     return switch (eventType) {
       case "accepted" -> QUEUED;
       case "delivered" -> DELIVERED;

@@ -14,8 +14,8 @@ import com.buurman.config.models.AppProperties;
 import com.buurman.config.models.AwsS3Properties;
 import com.buurman.config.models.GoogleMapsProperties;
 import com.buurman.config.models.KeycloakProperties;
-import com.buurman.config.models.NotificationOutboxProperties;
 import com.buurman.config.models.MailgunProperties;
+import com.buurman.config.models.NotificationOutboxProperties;
 import com.buurman.config.models.TwilioProperties;
 import com.buurman.dto.response.backoffice.BackofficeSystemInfoResponse.ConfigEntry;
 

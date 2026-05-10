@@ -25,8 +25,7 @@ public interface ExportService {
   byte[] generateContractReportPDF(
       ContractIdentifier contractIdentifier, UUID teamId, Locale locale);
 
-  byte[] generateContactReportPDF(
-      ContactIdentifier contactIdentifier, UUID teamId, Locale locale);
+  byte[] generateContactReportPDF(ContactIdentifier contactIdentifier, UUID teamId, Locale locale);
 
   byte[] generatePropertyDashboardPDF(PropertyDashboardResponse dashboard);
 
