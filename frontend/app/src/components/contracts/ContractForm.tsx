@@ -153,8 +153,8 @@ export const ContractForm = ({
     renewalTermMonths: contract?.renewalTermMonths ?? undefined,
     maxRenewals: contract?.maxRenewals ?? undefined,
     landlordNoticeDays: contract?.landlordNoticeDays ?? 30,
-    contactNoticeDays: contract?.contactNoticeDays ?? 30,
-    requiresContactConfirmation: contract?.requiresContactConfirmation ?? false,
+    tenantNoticeDays: contract?.tenantNoticeDays ?? 30,
+    requiresTenantConfirmation: contract?.requiresTenantConfirmation ?? false,
     rentAdjustmentType: contract?.rentAdjustmentType ?? 'NONE',
     rentAdjustmentValue: contract?.rentAdjustmentValue ?? undefined,
     landlordType: contract?.landlordType ?? undefined,
@@ -919,8 +919,8 @@ export const ContractForm = ({
             renewalTermMonths={formData.renewalTermMonths}
             maxRenewals={formData.maxRenewals}
             landlordNoticeDays={formData.landlordNoticeDays}
-            contactNoticeDays={formData.contactNoticeDays}
-            requiresContactConfirmation={formData.requiresContactConfirmation}
+            tenantNoticeDays={formData.tenantNoticeDays}
+            requiresTenantConfirmation={formData.requiresTenantConfirmation}
             rentAdjustmentType={formData.rentAdjustmentType ?? 'NONE'}
             rentAdjustmentValue={formData.rentAdjustmentValue}
             countryCode={propertyCountryCode}

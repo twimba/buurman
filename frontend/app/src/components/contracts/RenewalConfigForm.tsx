@@ -11,8 +11,8 @@ interface RenewalConfigFormProps {
   renewalTermMonths?: number;
   maxRenewals?: number;
   landlordNoticeDays?: number;
-  contactNoticeDays?: number;
-  requiresContactConfirmation?: boolean;
+  tenantNoticeDays?: number;
+  requiresTenantConfirmation?: boolean;
   rentAdjustmentType: RentAdjustmentType;
   rentAdjustmentValue?: number;
   regionCode?: string;
@@ -26,8 +26,8 @@ export const RenewalConfigForm = ({
   renewalTermMonths,
   maxRenewals,
   landlordNoticeDays,
-  contactNoticeDays,
-  requiresContactConfirmation,
+  tenantNoticeDays,
+  requiresTenantConfirmation,
   rentAdjustmentType,
   rentAdjustmentValue,
   regionCode,
@@ -78,16 +78,16 @@ export const RenewalConfigForm = ({
     if (d.landlordNoticeDays) {
       onChange('landlordNoticeDays', parseInt(d.landlordNoticeDays, 10));
     }
-    if (d.contactNoticeDays) {
-      onChange('contactNoticeDays', parseInt(d.contactNoticeDays, 10));
+    if (d.tenantNoticeDays) {
+      onChange('tenantNoticeDays', parseInt(d.tenantNoticeDays, 10));
     }
     if (d.rentAdjustmentType) {
       onChange('rentAdjustmentType', d.rentAdjustmentType);
     }
-    if (d.requiresContactConfirmation) {
+    if (d.requiresTenantConfirmation) {
       onChange(
-        'requiresContactConfirmation',
-        d.requiresContactConfirmation === 'true'
+        'requiresTenantConfirmation',
+        d.requiresTenantConfirmation === 'true'
       );
     }
   };
@@ -229,19 +229,19 @@ export const RenewalConfigForm = ({
             </div>
             <div>
               <label
-                htmlFor="contactNoticeDays"
+                htmlFor="tenantNoticeDays"
                 className="block text-sm font-medium text-text-secondary mb-1"
               >
                 {t('form.contactNoticeDays')}
               </label>
               <input
-                id="contactNoticeDays"
+                id="tenantNoticeDays"
                 type="number"
                 min={0}
-                value={contactNoticeDays ?? ''}
+                value={tenantNoticeDays ?? ''}
                 onChange={(e) =>
                   onChange(
-                    'contactNoticeDays',
+                    'tenantNoticeDays',
                     e.target.value ? parseInt(e.target.value, 10) : undefined
                   )
                 }
@@ -255,32 +255,32 @@ export const RenewalConfigForm = ({
           {/* Contact Confirmation Toggle */}
           <div className="flex items-center justify-between">
             <label
-              htmlFor="requiresContactConfirmation"
+              htmlFor="requiresTenantConfirmation"
               className="text-sm font-medium text-text-secondary"
             >
               {t('form.requiresContactConfirmation')}
             </label>
             <button
               type="button"
-              id="requiresContactConfirmation"
+              id="requiresTenantConfirmation"
               role="switch"
-              aria-checked={requiresContactConfirmation ?? false}
+              aria-checked={requiresTenantConfirmation ?? false}
               onClick={() =>
                 onChange(
-                  'requiresContactConfirmation',
-                  !(requiresContactConfirmation ?? false)
+                  'requiresTenantConfirmation',
+                  !(requiresTenantConfirmation ?? false)
                 )
               }
               disabled={disabled}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${
-                requiresContactConfirmation
+                requiresTenantConfirmation
                   ? 'bg-primary-500'
                   : 'bg-surface-inset'
               } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
             >
               <span
                 className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  requiresContactConfirmation
+                  requiresTenantConfirmation
                     ? 'translate-x-6'
                     : 'translate-x-1'
                 }`}

@@ -101,8 +101,8 @@ export interface ContractResponse {
   renewalTermMonths?: number;
   maxRenewals?: number;
   landlordNoticeDays?: number;
-  contactNoticeDays?: number;
-  requiresContactConfirmation?: boolean;
+  tenantNoticeDays?: number;
+  requiresTenantConfirmation?: boolean;
   rentAdjustmentType?: RentAdjustmentType;
   rentAdjustmentValue?: number;
   landlordType?: LandlordType;
@@ -149,8 +149,8 @@ export interface CreateContractRequest {
   renewalTermMonths?: number;
   maxRenewals?: number;
   landlordNoticeDays?: number;
-  contactNoticeDays?: number;
-  requiresContactConfirmation?: boolean;
+  tenantNoticeDays?: number;
+  requiresTenantConfirmation?: boolean;
   rentAdjustmentType?: RentAdjustmentType;
   rentAdjustmentValue?: number;
   landlordType?: LandlordType;
@@ -181,8 +181,8 @@ export interface UpdateContractRequest {
   renewalTermMonths?: number;
   maxRenewals?: number;
   landlordNoticeDays?: number;
-  contactNoticeDays?: number;
-  requiresContactConfirmation?: boolean;
+  tenantNoticeDays?: number;
+  requiresTenantConfirmation?: boolean;
   rentAdjustmentType?: RentAdjustmentType;
   rentAdjustmentValue?: number;
   landlordType?: LandlordType;

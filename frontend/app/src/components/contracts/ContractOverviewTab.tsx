@@ -673,7 +673,7 @@ export const ContractOverviewTab = ({
                 </div>
               )}
             {(contract.landlordNoticeDays != null ||
-              contract.contactNoticeDays != null) && (
+              contract.tenantNoticeDays != null) && (
               <div className="pt-2 border-t border-border-default">
                 <p className="text-[11px] font-medium uppercase tracking-wider text-text-muted mb-2">
                   {t('overview.renewalConfig.noticePeriods')}
@@ -691,14 +691,14 @@ export const ContractOverviewTab = ({
                       </p>
                     </div>
                   )}
-                  {contract.contactNoticeDays != null && (
+                  {contract.tenantNoticeDays != null && (
                     <div className="flex items-center justify-between">
                       <p className="text-sm text-text-secondary">
                         {t('overview.renewalConfig.contact')}
                       </p>
                       <p className="text-sm font-medium text-text-primary">
                         {t('overview.renewalConfig.days', {
-                          count: contract.contactNoticeDays,
+                          count: contract.tenantNoticeDays,
                         })}
                       </p>
                     </div>
@@ -706,7 +706,7 @@ export const ContractOverviewTab = ({
                 </div>
               </div>
             )}
-            {contract.requiresContactConfirmation && (
+            {contract.requiresTenantConfirmation && (
               <div className="flex items-center justify-between pt-2 border-t border-border-default">
                 <p className="text-sm text-text-secondary">
                   {t('overview.renewalConfig.contactConfirmation')}
