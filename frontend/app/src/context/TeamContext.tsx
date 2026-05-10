@@ -48,7 +48,7 @@ const mapApiTeamToTeam = (apiTeam: UserTeamResponse): Team => ({
 
 export const TeamProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, token } = useAuth();
   const { active: isImpersonating } = useImpersonation();
 
   const {
@@ -59,7 +59,7 @@ export const TeamProvider = ({ children }: { children: ReactNode }) => {
     queryKey: ['user-teams'],
     queryFn: getUserTeams,
     staleTime: 30 * 1000, // 30 seconds
-    enabled: isAuthenticated || isImpersonating,
+    enabled: (isAuthenticated && !!token) || isImpersonating,
   });
 
   const teams: Team[] = teamsData?.map(mapApiTeamToTeam) ?? [];

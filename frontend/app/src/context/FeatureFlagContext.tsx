@@ -15,13 +15,13 @@ const FeatureFlagContext = createContext<FeatureFlagContextType | undefined>(
 );
 
 export const FeatureFlagProvider = ({ children }: { children: ReactNode }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, token } = useAuth();
 
   const { data: flags = {}, isLoading } = useQuery({
     queryKey: ['feature-flags'],
     queryFn: getFeatureFlags,
     staleTime: 60_000,
-    enabled: isAuthenticated,
+    enabled: isAuthenticated && !!token,
   });
 
   const isEnabled = useCallback(
