@@ -21,6 +21,7 @@ import com.buurman.mapper.DocumentMapper;
 import com.buurman.repository.ContractExtensionRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.DocumentRepository;
+import com.buurman.repository.TeamPreferencesRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.S3StorageService;
 
@@ -39,6 +40,7 @@ public class ExtensionDocumentGenerationService {
   private final ContractExtensionRepository extensionRepository;
   private final ContractRepository contractRepository;
   private final DocumentRepository documentRepository;
+  private final TeamPreferencesRepository teamPreferencesRepository;
   private final S3StorageService s3StorageService;
   private final DocumentMapper documentMapper;
 
@@ -66,9 +68,11 @@ public class ExtensionDocumentGenerationService {
             .orElseGet(
                 () -> {
                   List<String> contractLangs = contract.getDocumentLanguages();
-                  return (contractLangs != null && !contractLangs.isEmpty())
-                      ? contractLangs
-                      : List.of("en");
+                  if (contractLangs != null && !contractLangs.isEmpty()) {
+                    return contractLangs;
+                  }
+                  return List.of(
+                      teamPreferencesRepository.getByTeamId(teamId).getDefaultLanguage());
                 });
 
     List<String> validTypes = List.of("EXTENSION_ADDENDUM", "RENT_INCREASE_LETTER");

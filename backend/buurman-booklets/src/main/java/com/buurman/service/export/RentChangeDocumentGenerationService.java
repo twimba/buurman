@@ -22,6 +22,7 @@ import com.buurman.mapper.DocumentMapper;
 import com.buurman.repository.ContractRentPeriodRepository;
 import com.buurman.repository.ContractRepository;
 import com.buurman.repository.DocumentRepository;
+import com.buurman.repository.TeamPreferencesRepository;
 import com.buurman.security.UserPrincipal;
 import com.buurman.service.S3StorageService;
 
@@ -39,6 +40,7 @@ public class RentChangeDocumentGenerationService {
   private final ContractRentPeriodRepository rentPeriodRepository;
   private final ContractRepository contractRepository;
   private final DocumentRepository documentRepository;
+  private final TeamPreferencesRepository teamPreferencesRepository;
   private final S3StorageService s3StorageService;
   private final DocumentMapper documentMapper;
 
@@ -69,9 +71,11 @@ public class RentChangeDocumentGenerationService {
             .orElseGet(
                 () -> {
                   List<String> contractLangs = contract.getDocumentLanguages();
-                  return (contractLangs != null && !contractLangs.isEmpty())
-                      ? contractLangs
-                      : List.of("en");
+                  if (contractLangs != null && !contractLangs.isEmpty()) {
+                    return contractLangs;
+                  }
+                  return List.of(
+                      teamPreferencesRepository.getByTeamId(teamId).getDefaultLanguage());
                 });
 
     boolean replace = request.replaceExisting().orElse(false);
