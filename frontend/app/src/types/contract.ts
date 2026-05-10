@@ -125,70 +125,34 @@ export interface ContractSummary {
   status: ContractResponseStatus;
 }
 
-export interface CreateContractRequest {
-  propertyIdentifier: string;
-  parties: ContractPartyRequest[];
-  contractType: ContractResponseContractType;
-  startDate: string;
-  endDate?: string;
-  signedDate?: string;
-  rentAmount: number;
-  depositAmount?: number;
-  securityDeposit?: number;
-  rentAmountCurrency?: string;
-  depositAmountCurrency?: string;
-  securityDepositCurrency?: string;
-  paymentFrequency: ContractResponsePaymentFrequency;
-  paymentDueDay?: number;
-  terminationNoticeDays?: number;
-  lateFeePercentage?: number;
-  termsAndConditions?: string;
-  notes?: string;
-  countryMetadata?: Record<string, unknown>;
-  renewalMode?: RenewalMode;
-  renewalTermMonths?: number;
-  maxRenewals?: number;
-  landlordNoticeDays?: number;
-  tenantNoticeDays?: number;
-  requiresTenantConfirmation?: boolean;
-  rentAdjustmentType?: RentAdjustmentType;
-  rentAdjustmentValue?: number;
-  landlordType?: LandlordType;
-  regionCode?: string;
-  rentComponents?: RentComponentFormItem[];
-}
+import type {
+  CreateContractRequest as GeneratedCreateContractRequest,
+  UpdateContractRequest as GeneratedUpdateContractRequest,
+} from '../generated/models';
 
-export interface UpdateContractRequest {
-  propertyIdentifier: string;
-  contractType: ContractResponseContractType;
-  startDate: string;
-  endDate?: string;
-  signedDate?: string;
-  rentAmount: number;
-  depositAmount?: number;
-  securityDeposit?: number;
-  rentAmountCurrency?: string;
-  depositAmountCurrency?: string;
-  securityDepositCurrency?: string;
-  paymentFrequency: ContractResponsePaymentFrequency;
-  paymentDueDay?: number;
-  terminationNoticeDays?: number;
-  lateFeePercentage?: number;
-  termsAndConditions?: string;
-  notes?: string;
+// Derived from generated spec so top-level field names are enforced at compile time.
+// `parties` is overridden because the spec uses tenantIdentifier/newTenant but the
+// API uses contactIdentifier/newContact — tracked separately for a spec fix.
+// `countryMetadata` is overridden to optional: the spec marks it required but the
+// backend accepts requests without it for non-country-specific contracts.
+// `rentComponents` is overridden to RentComponentFormItem[] for form compatibility;
+// the submit function remaps to RentComponentRequest[] before sending.
+export type CreateContractRequest = Omit<
+  GeneratedCreateContractRequest,
+  'parties' | 'countryMetadata' | 'rentComponents'
+> & {
+  parties: ContractPartyRequest[];
   countryMetadata?: Record<string, unknown>;
-  renewalMode?: RenewalMode;
-  renewalTermMonths?: number;
-  maxRenewals?: number;
-  landlordNoticeDays?: number;
-  tenantNoticeDays?: number;
-  requiresTenantConfirmation?: boolean;
-  rentAdjustmentType?: RentAdjustmentType;
-  rentAdjustmentValue?: number;
-  landlordType?: LandlordType;
-  regionCode?: string;
   rentComponents?: RentComponentFormItem[];
-}
+};
+
+export type UpdateContractRequest = Omit<
+  GeneratedUpdateContractRequest,
+  'countryMetadata' | 'rentComponents'
+> & {
+  countryMetadata?: Record<string, unknown>;
+  rentComponents?: RentComponentFormItem[];
+};
 
 export interface RentPeriodResponse {
   identifier: string;

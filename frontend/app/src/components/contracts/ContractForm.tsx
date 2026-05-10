@@ -418,11 +418,12 @@ export const ContractForm = ({
 
       await onSubmit({
         ...formData,
-        endDate: formData.endDate || null,
-        signedDate: formData.signedDate || null,
+        rentAmount: formData.rentAmount as number,
+        endDate: formData.endDate || undefined,
+        signedDate: formData.signedDate || undefined,
         parties,
         rentComponents,
-      } as CreateContractRequest);
+      });
       if (contract) {
         navigate(`/contracts/${contract.identifier}`);
       } else {
