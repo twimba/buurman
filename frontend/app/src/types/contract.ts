@@ -131,17 +131,14 @@ import type {
 } from '../generated/models';
 
 // Derived from generated spec so top-level field names are enforced at compile time.
-// `parties` is overridden because the spec uses tenantIdentifier/newTenant but the
-// API uses contactIdentifier/newContact — tracked separately for a spec fix.
 // `countryMetadata` is overridden to optional: the spec marks it required but the
 // backend accepts requests without it for non-country-specific contracts.
 // `rentComponents` is overridden to RentComponentFormItem[] for form compatibility;
 // the submit function remaps to RentComponentRequest[] before sending.
 export type CreateContractRequest = Omit<
   GeneratedCreateContractRequest,
-  'parties' | 'countryMetadata' | 'rentComponents'
+  'countryMetadata' | 'rentComponents'
 > & {
-  parties: ContractPartyRequest[];
   countryMetadata?: Record<string, unknown>;
   rentComponents?: RentComponentFormItem[];
 };
