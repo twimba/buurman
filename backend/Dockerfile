@@ -1,6 +1,6 @@
 # === Dev stage: builds from source at startup (docker-compose) ===
 # Build context is the repo root (not ./backend) so openapi/ is accessible.
-FROM maven:3-eclipse-temurin-25-alpine AS dev
+FROM maven:3-eclipse-temurin-26-alpine AS dev
 
 WORKDIR /app
 
