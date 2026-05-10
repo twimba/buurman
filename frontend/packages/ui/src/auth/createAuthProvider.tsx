@@ -52,7 +52,12 @@ export function createAuthProvider(options: AuthProviderOptions) {
               ? { ...keycloakInitOptions, onLoad: 'check-sso' as const }
               : keycloakInitOptions;
 
-          const authenticated = await keycloak.init(initOptions);
+          const authenticated = await Promise.race([
+            keycloak.init(initOptions),
+            new Promise<never>((_, reject) =>
+              setTimeout(() => reject(new Error('timeout')), 8000)
+            ),
+          ]);
 
           setIsAuthenticated(authenticated);
           setToken(keycloak.token);
