@@ -353,7 +353,7 @@ public class DemoContactGenerator {
                       + "."
                       + teamKey.replace("-", "")
                       + i
-                      + "@example.com")
+                      + "@example.demo.buurman.io")
                   .replaceAll("[^a-z0-9.@]", "");
           phone = phoneForCountry(country, random);
           taxNumber = taxIdForCountry(country, random);
@@ -378,7 +378,7 @@ public class DemoContactGenerator {
                   .replaceAll("[^a-z0-9]+", "")
                   .substring(0, Math.min(15, companyName.replaceAll("[^a-z0-9]+", "").length()));
           String teamSlug = teamKey.replace("-", "");
-          email = "info." + teamSlug + "." + i + "@" + slug + domain;
+          email = "info." + teamSlug + "." + i + "@" + slug + ".demo.buurman.io";
           phone = phoneForCountry(country, random);
           taxNumber = taxIdForCountry(country, random);
           website = "https://www." + slug + domain;
@@ -400,7 +400,7 @@ public class DemoContactGenerator {
                   .replaceAll("[^a-z0-9]+", "")
                   .substring(0, Math.min(15, companyName.replaceAll("[^a-z0-9]+", "").length()));
           String teamSlug = teamKey.replace("-", "");
-          email = "contact." + teamSlug + "." + i + "@" + slug + domain;
+          email = "contact." + teamSlug + "." + i + "@" + slug + ".demo.buurman.io";
           phone = phoneForCountry(country, random);
           taxNumber = taxIdForCountry(country, random);
           website = "https://www." + slug + domain;
